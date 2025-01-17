@@ -6,7 +6,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { groupFactory } from '@shared/testing';
+import { groupFactory } from '@testing/factory/domainobject';
 import { Course, COURSE_REPO, CourseFilter, CourseRepo } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';

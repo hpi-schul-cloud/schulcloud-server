@@ -8,7 +8,7 @@ type MediaSourceEntityProps = {
 };
 
 export class Migration20240611081033 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const uniqueSourceIds: unknown[] = await this.getCollection('user-licenses').distinct('mediaSourceId');
 
 		const validSourceIds: string[] = uniqueSourceIds.filter(
@@ -63,7 +63,7 @@ export class Migration20240611081033 extends Migration {
 		console.info(`mediaSourceId was renamed to mediaSource in ${userLicensesNameChange.affectedRows} user licenses`);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		await this.driver.aggregate('user-licenses', [
 			{ $match: { mediaSource: { $ne: null } } },
 			{ $lookup: { from: 'media-sources', localField: 'mediaSource', foreignField: '_id', as: 'mediaSourceId' } }, // Joins media-sources as array in mediaSourceId

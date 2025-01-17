@@ -1,8 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { ColumnResponse } from '../dto';

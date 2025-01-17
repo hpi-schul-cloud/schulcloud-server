@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { currentUserFactory } from '@shared/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceDeprecatedUc } from '../uc';

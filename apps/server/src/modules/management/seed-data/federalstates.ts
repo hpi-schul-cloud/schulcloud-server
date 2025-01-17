@@ -1,6 +1,6 @@
-import { CountyEmbeddable, FederalStateProperties } from '@shared/domain/entity/federal-state.entity';
-import { federalStateFactory } from '@shared/testing/factory/federal-state.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CountyEmbeddable, FederalStateProperties } from '@shared/domain/entity/federal-state.entity';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { DeepPartial } from 'fishery';
 
 type SeedFederalStateProperties = Omit<FederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {

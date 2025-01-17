@@ -1,23 +1,23 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
-import { HttpService } from '@nestjs/axios';
-import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
-import { AxiosResponse } from 'axios';
-import { of, throwError } from 'rxjs';
-import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain/types';
 import {
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
 } from '@modules/deletion';
+import { HttpService } from '@nestjs/axios';
+import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { EntityId } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { AxiosResponse } from 'axios';
+import { of, throwError } from 'rxjs';
+import { CalendarEventId } from '../interface/calendar-event-id.interface';
 import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
-import { CalendarEventId } from '../interface/calendar-event-id.interface';
 
 describe('CalendarServiceSpec', () => {
 	let module: TestingModule;

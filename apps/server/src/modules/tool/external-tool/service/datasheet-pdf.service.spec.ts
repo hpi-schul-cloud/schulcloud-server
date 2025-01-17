@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { userDoFactory } from '@shared/testing';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { CustomParameter } from '../../common/domain';

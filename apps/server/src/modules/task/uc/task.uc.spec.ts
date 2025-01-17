@@ -8,15 +8,13 @@ import { PaginationParams } from '@shared/controller';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
 import { CourseRepo, TaskRepo } from '@shared/repo';
-import {
-	courseFactory,
-	lessonFactory,
-	roleFactory,
-	setupEntities,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 

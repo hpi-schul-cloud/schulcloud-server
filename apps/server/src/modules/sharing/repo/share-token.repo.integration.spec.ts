@@ -2,8 +2,10 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, schoolEntityFactory, shareTokenFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from './share-token.repo';
 

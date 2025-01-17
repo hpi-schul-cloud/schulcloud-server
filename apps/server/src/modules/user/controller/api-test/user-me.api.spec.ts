@@ -2,8 +2,9 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ServerTestModule } from '@modules/server/server.module';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 const baseRouteName = '/user';
 

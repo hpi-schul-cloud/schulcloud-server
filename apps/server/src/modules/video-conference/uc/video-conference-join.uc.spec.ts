@@ -1,13 +1,14 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { Permission, VideoConferenceScope } from '@shared/domain/interface';
-import { userDoFactory } from '@shared/testing';
-import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';
 import { BBBJoinConfig, BBBJoinResponse, BBBResponse, BBBRole } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
@@ -21,6 +22,7 @@ describe('VideoConferenceJoinUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
+	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,6 +40,10 @@ describe('VideoConferenceJoinUc', () => {
 					provide: VideoConferenceService,
 					useValue: createMock<VideoConferenceService>(),
 				},
+				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
 			],
 		}).compile();
 
@@ -45,6 +51,7 @@ describe('VideoConferenceJoinUc', () => {
 		bbbService = module.get(BBBService);
 		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
+		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 	});
 
 	afterAll(async () => {
@@ -327,6 +334,59 @@ describe('VideoConferenceJoinUc', () => {
 					meetingID: scope.id,
 					role: BBBRole.MODERATOR,
 					userID: currentUserId,
+				});
+			});
+		});
+
+		describe('feature check', () => {
+			describe('when scope is a video conference element', () => {
+				const setup = (scopeName: VideoConferenceScope) => {
+					const user: UserDO = userDoFactory.buildWithId();
+					const scope = { scope: scopeName, id: new ObjectId().toHexString() };
+					const options: VideoConferenceOptions = {
+						everyAttendeeJoinsMuted: true,
+						everybodyJoinsAsModerator: true,
+						moderatorMustApproveJoinRequests: true,
+					};
+					const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+
+					const bbbJoinResponse: BBBResponse<BBBJoinResponse> = {
+						response: {
+							url: 'url',
+						},
+					} as BBBResponse<BBBJoinResponse>;
+
+					userService.findById.mockResolvedValue(user);
+					videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
+						role: BBBRole.VIEWER,
+						isGuest: false,
+					});
+					videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
+					bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
+					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
+
+					return { user, scope };
+				};
+
+				it("should use the board context's schoolId", async () => {
+					const { user, scope } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+
+					boardContextApiHelperService.getSchoolIdForBoardNode.mockResolvedValue('contextSchoolId');
+
+					await uc.join(user.id!, scope);
+
+					expect(boardContextApiHelperService.getSchoolIdForBoardNode).toBeCalledWith(scope.id);
+					expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalledWith('contextSchoolId');
+				});
+
+				describe('when scope is not a video conference element', () => {
+					it("should use the user's schoolId", async () => {
+						const { user, scope } = setup(VideoConferenceScope.COURSE);
+
+						await uc.join(user.id!, scope);
+
+						expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalledWith(user.schoolId);
+					});
 				});
 			});
 		});
