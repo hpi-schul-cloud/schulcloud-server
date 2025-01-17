@@ -6,7 +6,6 @@ import { S3ClientModule } from '@infra/s3-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { LoggerModule } from '@src/core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
@@ -40,7 +39,7 @@ const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileRecord, FileRecordSecurityCheck],
+			entities: [FileRecord, FileRecordSecurityCheck],
 
 			// debug: true, // use it for locally debugging of querys
 		}),

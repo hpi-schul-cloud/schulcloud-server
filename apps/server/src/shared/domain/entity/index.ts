@@ -1,4 +1,3 @@
-export * from './all-entities';
 export * from './base.entity';
 export * from './column-board-node.entity';
 export * from './course.entity';

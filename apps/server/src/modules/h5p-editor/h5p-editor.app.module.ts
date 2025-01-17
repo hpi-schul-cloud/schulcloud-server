@@ -8,7 +8,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
@@ -32,9 +31,8 @@ const imports = [
 		clientUrl: DB_URL,
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
-		// Needs ALL_ENTITIES for authorization
 		allowGlobalContext: true,
-		entities: [...ALL_ENTITIES, H5PContent, InstalledLibrary],
+		entities: [H5PContent, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),

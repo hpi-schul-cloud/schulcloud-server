@@ -5,7 +5,6 @@ import { S3ClientModule } from '@infra/s3-client';
 import { AuthenticationApiTestModule } from '@modules/authentication/authentication-api-test.module';
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { H5PEditorController } from './controller';
@@ -19,7 +18,7 @@ import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [H5PContent] }),
 	AuthenticationApiTestModule,
 	AuthorizationClientModule.register(authorizationClientConfig),
 	UserModule,

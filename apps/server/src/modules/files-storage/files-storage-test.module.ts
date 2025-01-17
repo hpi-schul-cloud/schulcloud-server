@@ -2,7 +2,6 @@ import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/da
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { DynamicModule, Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { FileRecord } from './entity';
@@ -10,7 +9,7 @@ import { FilesStorageApiModule } from './files-storage-api.app.module';
 
 const imports = [
 	FilesStorageApiModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, FileRecord] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [FileRecord] }),
 	RabbitMQWrapperTestModule,
 	CoreModule,
 	LoggerModule,
@@ -23,7 +22,7 @@ const providers = [];
 	providers,
 })
 export class FilesStorageTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: FilesStorageTestModule,
 			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
