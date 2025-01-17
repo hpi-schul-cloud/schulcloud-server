@@ -16,7 +16,6 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { EtherpadClientModule } from '@src/infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
-import { adminApiServerConfig } from './admin-api-server.config';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
@@ -66,7 +65,8 @@ import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { User } from '@shared/domain/entity/user.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
-import { AdminApiRegistrationPinModule } from '../registration-pin/admin-api-registration-pin.module';
+import { AdminApiRegistrationPinModule } from '@modules/registration-pin/admin-api-registration-pin.module';
+import { adminApiServerConfig } from './admin-api-server.config';
 
 export const ENTITIES = [
 	AccountEntity,
@@ -128,7 +128,7 @@ export const ENTITIES = [
 	MediaSchoolLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
-	FileEntity
+	FileEntity,
 ];
 
 const serverModules = [
