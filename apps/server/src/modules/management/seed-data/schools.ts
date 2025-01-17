@@ -5,9 +5,9 @@ import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity } f
 import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { DeepPartial } from 'fishery';
+import { federalStateFactory } from './factory/federal-state.factory';
+import { schoolEntityFactory } from './factory/school.entity.factory';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
 

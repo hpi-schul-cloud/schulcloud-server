@@ -2,8 +2,8 @@
 
 import { Role, RoleProperties } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory } from '@testing/factory/role.factory';
 import { DeepPartial } from 'fishery';
+import { roleFactory } from './factory/role.factory';
 
 type SeedRoleProperties = Omit<RoleProperties, 'roles'> & {
 	id: string;
