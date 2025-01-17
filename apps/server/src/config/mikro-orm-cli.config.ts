@@ -1,9 +1,9 @@
 import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
+import { FileEntity } from '@modules/files/entity';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import path from 'path';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from './index';
 
 const migrationsPath = path.resolve(__dirname, '..', 'migrations', 'mikro-orm');
 

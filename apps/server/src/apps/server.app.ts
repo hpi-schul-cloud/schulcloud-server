@@ -4,35 +4,35 @@ import { Mail, MailService } from '@infra/mail';
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
+import { AccountUc } from '@modules/account/api/account.uc';
 import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
-import { InternalServerModule } from '@modules/internal-server';
+import { InternalServerModule } from '@modules/internal-server/internal-server.app.module';
 import { RocketChatService } from '@modules/rocketchat';
 import { FeathersRosterService } from '@modules/roster';
-import { ServerModule } from '@modules/server';
+import { ServerModule } from '@modules/server/server.app.module';
 import { TeamService } from '@modules/teams/service/team.service';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { AccountUc } from '@modules/account/api/account.uc';
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 import {
-	AppStartLoggable,
-	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
 	createAndStartPrometheusMetricsAppIfEnabled,
+	createRequestLoggerMiddleware,
+	enableOpenApiDocs,
 } from './helpers';
 import legacyAppPromise = require('../../../../src/app');
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a separate express instance
