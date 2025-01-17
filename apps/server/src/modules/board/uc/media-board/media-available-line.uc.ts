@@ -1,4 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
+import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
@@ -25,7 +26,8 @@ export class MediaAvailableLineUc {
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly mediaUserLicenseService: MediaUserLicenseService
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -42,13 +44,20 @@ export class MediaAvailableLineUc {
 		const availableExternalTools: ExternalTool[] =
 			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);
 
-		let matchedTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
+		const availableTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
 			availableExternalTools,
 			schoolExternalToolsForAvailableMediaLine
 		);
 
+		let matchedTools = [...availableTools];
+
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			matchedTools = await this.filterUnlicensedTools(userId, matchedTools);
+			matchedTools = await this.filterUnlicensedToolsForUser(userId, matchedTools);
+		}
+
+		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+			const matchedToolsForSchool = await this.filterUnlicensedToolsForSchool(user.school.id, availableTools);
+			matchedTools = Array.from(new Set([...matchedTools, ...matchedToolsForSchool]));
 		}
 
 		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
@@ -89,7 +98,7 @@ export class MediaAvailableLineUc {
 		}
 	}
 
-	private async filterUnlicensedTools(
+	private async filterUnlicensedToolsForUser(
 		userId: EntityId,
 		matchedTools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
@@ -101,6 +110,24 @@ export class MediaAvailableLineUc {
 			const externalToolMedium = tool[0]?.medium;
 			if (externalToolMedium) {
 				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+			}
+			return true;
+		});
+
+		return matchedTools;
+	}
+
+	private async filterUnlicensedToolsForSchool(
+		schoolId: EntityId,
+		matchedTools: [ExternalTool, SchoolExternalTool][]
+	): Promise<[ExternalTool, SchoolExternalTool][]> {
+		const mediaSchoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
+			const externalToolMedium = tool[0]?.medium;
+			if (externalToolMedium) {
+				return this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaSchoolLicenses);
 			}
 			return true;
 		});
