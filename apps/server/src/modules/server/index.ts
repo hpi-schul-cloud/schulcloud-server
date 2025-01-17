@@ -1,2 +1,2 @@
+export { ServerTestModule } from './server.app.module';
 export * from './server.config';
-export * from './server.module';
