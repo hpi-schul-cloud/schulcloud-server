@@ -116,6 +116,16 @@ describe('School', () => {
 				expect(school.getProps().county).toEqual(county);
 			});
 		});
+
+		describe('when school has no defined federalState', () => {
+			it('should throw `County cannot be set without a federal state being assigned to the school.` error', () => {
+				const school = schoolFactory.build({ federalState: undefined });
+
+				expect(() => school.updateCounty('abc')).toThrowError(
+					'County cannot be set without a federal state being assigned to the school.'
+				);
+			});
+		});
 	});
 
 	describe('updateOfficialSchoolNumber', () => {

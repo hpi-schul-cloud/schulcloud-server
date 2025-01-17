@@ -118,7 +118,6 @@ describe('School Controller (API)', () => {
 				const body = response.body as SchoolUserListResponse;
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(body.total).toEqual(publicTeachersOfSchool.length);
 				expect(body.data).toEqual(
 					expect.arrayContaining([
 						...publicTeachersOfSchool.map((teacher) => {
@@ -131,6 +130,7 @@ describe('School Controller (API)', () => {
 						}),
 					])
 				);
+				expect(body.data.length).toEqual(publicTeachersOfSchool.length);
 			});
 		});
 
