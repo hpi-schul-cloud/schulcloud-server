@@ -7,8 +7,7 @@ import { customParameterFactory, externalToolFactory } from '@modules/tool/exter
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
 import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
