@@ -1,5 +1,5 @@
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { mediaUserLicenseFactory } from '@modules/user-license';
 import { SchoolExternalToolCreatedLoggable } from './school-external-tool-created.loggable';
 
 describe('SchoolExternalToolCreatedLoggable', () => {
