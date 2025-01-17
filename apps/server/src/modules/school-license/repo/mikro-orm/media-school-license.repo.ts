@@ -43,7 +43,9 @@ export class MediaSchoolLicenseMikroOrmRepo
 		scope.bySchoolId(schoolId);
 		scope.bySchoolLicenseType(SchoolLicenseType.MEDIA_LICENSE);
 
-		const entities: MediaSchoolLicenseEntity[] = await this.em.find(MediaSchoolLicenseEntity, scope.query, {});
+		const entities: MediaSchoolLicenseEntity[] = await this.em.find(MediaSchoolLicenseEntity, scope.query, {
+			populate: ['mediaSource'],
+		});
 
 		const domainObjects: MediaSchoolLicense[] = entities.map((entity: MediaSchoolLicenseEntity) =>
 			this.mapEntityToDomainObject(entity)
