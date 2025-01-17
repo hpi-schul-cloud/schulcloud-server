@@ -14,6 +14,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardFeature,
+	BoardLayout,
 	BoardNodeFactory,
 	Column,
 	ColumnBoard,
@@ -156,6 +157,14 @@ export class BoardUc {
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
+		return board;
+	}
+
+	public async updateLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<ColumnBoard> {
+		const board: ColumnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+
+		await this.boardNodeService.updateLayout(board, layout);
 		return board;
 	}
 
