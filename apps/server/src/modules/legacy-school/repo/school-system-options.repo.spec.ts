@@ -4,14 +4,13 @@ import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsEntity } from '../entity';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
+import { schoolSystemOptionsEntityFactory, schoolSystemOptionsFactory } from '../testing';
 import { SchoolSystemOptionsRepo } from './school-system-options.repo';
-import { schoolSystemOptionsEntityFactory } from '../testing';
 
 describe(SchoolSystemOptionsRepo.name, () => {
 	let module: TestingModule;

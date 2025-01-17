@@ -3,9 +3,9 @@ import { Group, GroupService, GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchulconnexProvisioningOptionsUpdateService } from './schulconnex-provisioning-options-update.service';
+import { schoolSystemOptionsFactory } from '../testing';
 
 describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 	let module: TestingModule;

@@ -6,11 +6,11 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { SchoolSystemOptions } from '@modules/legacy-school';
+import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userFactory } from '@testing/factory/user.factory';
