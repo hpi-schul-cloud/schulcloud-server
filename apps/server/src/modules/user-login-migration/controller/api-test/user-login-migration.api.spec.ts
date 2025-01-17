@@ -18,7 +18,6 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userLoginMigrationFactory } from '@testing/factory/user-login-migration.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -26,6 +25,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { DeepPartial } from 'fishery';
 import { Response } from 'supertest';
+import { userLoginMigrationFactory } from '../../testing';
 import { UserLoginMigrationUc } from '../../uc';
 import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
 
