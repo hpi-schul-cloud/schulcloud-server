@@ -137,7 +137,7 @@ export class ManagementServerModule {}
 	imports: [ManagementModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
 })
 export class ManagementServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: ManagementModule,
 			imports: [MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],

@@ -126,7 +126,7 @@ module.exports = {
 								message: 'Remove src/ from import path',
 							},
 							{
-								group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+								group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing'],
 								message: 'Do not deep import from a module',
 							},
 						],
@@ -149,6 +149,40 @@ module.exports = {
 						'max-classes-per-file': 'off',
 						'@typescript-eslint/explicit-member-accessibility': 'off',
 					},
+				},
+				{
+					files: ['apps/server/src/modules/**/*.module.ts'],
+					rules: {
+						'@typescript-eslint/no-restricted-imports': [
+							'warn',
+							{
+								patterns: [
+									{
+										group: ['@infra/*/*', '@modules/*/*', '!*.module'],
+										message: 'Do not deep import from a module',
+									},
+								],
+							},
+						],
+					},
+					overrides: [
+						{
+							files: ['apps/server/src/modules/**/*.apps.module.ts'],
+							rules: {
+								'@typescript-eslint/no-restricted-imports': [
+									'warn',
+									{
+										patterns: [
+											{
+												group: ['@infra/*/*', '@modules/*/*', '!*.module', '!*.entity'],
+												message: 'Do not deep import from a module',
+											},
+										],
+									},
+								],
+							},
+						},
+					],
 				},
 				{
 					files: ['apps/server/src/migrations/**/*.ts'],
