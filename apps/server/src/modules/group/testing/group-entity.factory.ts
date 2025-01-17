@@ -1,9 +1,9 @@
 import { ExternalSourceEmbeddable } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from '../../../testing/factory/base.factory';
 import { roleFactory } from '../../../testing/factory/role.factory';
 import { schoolEntityFactory } from '../../../testing/factory/school-entity.factory';
-import { systemEntityFactory } from '../../../testing/factory/systemEntityFactory';
 import { userFactory } from '../../../testing/factory/user.factory';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '../entity';
 

@@ -1,6 +1,7 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
@@ -10,7 +11,6 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';

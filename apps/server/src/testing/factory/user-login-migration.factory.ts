@@ -1,7 +1,7 @@
-import { UserLoginMigrationEntity, IUserLoginMigration } from '@shared/domain/entity';
+import { systemEntityFactory } from '@modules/system/testing';
+import { IUserLoginMigration, UserLoginMigrationEntity } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 import { schoolEntityFactory } from './school-entity.factory';
-import { systemEntityFactory } from './systemEntityFactory';
 
 export const userLoginMigrationFactory = BaseFactory.define<UserLoginMigrationEntity, IUserLoginMigration>(
 	UserLoginMigrationEntity,

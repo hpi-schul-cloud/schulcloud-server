@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
@@ -8,7 +9,6 @@ import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migra
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userLoginMigrationFactory } from '@testing/factory/user-login-migration.factory';
 import { TestApiClient } from '@testing/test-api-client';

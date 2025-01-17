@@ -8,11 +8,11 @@ import {
 import { SchoolSystemOptions } from '@modules/legacy-school';
 import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { SchoolSystemOptionsRule } from './school-system-options.rule';

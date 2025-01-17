@@ -4,14 +4,13 @@ import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-c
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import type { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
-import { systemFactory } from '@modules/system/testing';
+import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SchoolEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ImportUser } from '../entity';

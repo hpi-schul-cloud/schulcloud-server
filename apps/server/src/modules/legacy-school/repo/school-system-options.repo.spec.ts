@@ -1,11 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsEntity } from '../entity';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';

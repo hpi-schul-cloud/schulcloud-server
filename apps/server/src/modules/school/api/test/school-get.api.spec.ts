@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { ServerTestModule } from '@src/modules/server';
@@ -7,7 +8,6 @@ import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.fact
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 

@@ -6,6 +6,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
 import { SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -17,7 +18,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { Logger } from '@src/core/logger';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
