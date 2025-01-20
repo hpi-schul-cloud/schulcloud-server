@@ -1,4 +1,3 @@
-import { AuthorizationService } from '@modules/authorization';
 import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
