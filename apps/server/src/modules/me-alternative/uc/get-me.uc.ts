@@ -1,20 +1,16 @@
-import { Injectable } from '@nestjs/common';
 import { ICurrentUser } from '@infra/auth-guard';
-import { SchoolRepo } from '../repo/school.repo';
+import { Injectable } from '@nestjs/common';
 import { UserRepo } from '../repo/user.repo';
-import { MeMapper } from './me.mapper';
+import { MeMapper } from './mapper/me.mapper';
 
 @Injectable()
 export class GetMeUc {
-	constructor(private readonly userRepo: UserRepo, private readonly schoolRepo: SchoolRepo) {}
+	constructor(private readonly userRepo: UserRepo) {}
 
 	public async execute(currentUser: ICurrentUser) {
-		const [school, user] = await Promise.all([
-			this.schoolRepo.getSchoolById(currentUser.schoolId),
-			this.userRepo.getUserById(currentUser.userId),
-		]);
+		const user = await this.userRepo.getUserById(currentUser.userId);
 
-		const dto = MeMapper.mapToDto(user.id, user.firstName, school.name);
+		const dto = MeMapper.mapToDto(user);
 
 		return dto;
 	}

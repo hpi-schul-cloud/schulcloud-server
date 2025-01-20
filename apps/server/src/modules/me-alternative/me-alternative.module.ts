@@ -1,11 +1,10 @@
 import { Module } from '@nestjs/common';
-import { GetMeUc } from './uc/get-me.uc';
-import { UserRepo } from './repo/user.repo';
-import { SchoolRepo } from './repo/school.repo';
 import { MeController } from './api/me.controller';
+import { UserRepo } from './repo/user.repo';
+import { GetMeUc } from './uc/get-me.uc';
 
 @Module({
 	controllers: [MeController],
-	providers: [GetMeUc, UserRepo, SchoolRepo],
+	providers: [GetMeUc, UserRepo],
 })
 export class MeAlternativeModule {}
