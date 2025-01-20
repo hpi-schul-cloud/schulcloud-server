@@ -1,7 +1,7 @@
-import { ICurrentUser } from '@src/infra/auth-guard';
+import { Injectable } from '@nestjs/common';
+import { ICurrentUser } from '@infra/auth-guard';
 import { SchoolRepo } from '../repo/school.repo';
 import { UserRepo } from '../repo/user.repo';
-import { Injectable } from '@nestjs/common';
 import { MeMapper } from './me.mapper';
 
 @Injectable()

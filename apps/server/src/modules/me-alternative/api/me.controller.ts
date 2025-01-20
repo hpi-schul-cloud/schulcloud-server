@@ -1,7 +1,7 @@
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get } from '@nestjs/common';
-import { GetMeUc } from '../uc/get-me.uc';
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@src/infra/auth-guard';
 import { ApiTags } from '@nestjs/swagger';
+import { GetMeUc } from '../uc/get-me.uc';
 
 @ApiTags('Me')
 @JwtAuthentication()
