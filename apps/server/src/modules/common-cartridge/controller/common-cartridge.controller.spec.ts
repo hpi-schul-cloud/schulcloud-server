@@ -4,7 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { StreamableFile } from '@nestjs/common';
-import { currentUserFactory } from '@shared/testing';
+import { currentUserFactory } from '@src/testing/factory/currentuser.factory';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';

@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
-import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { faker } from '@faker-js/faker';
 import { FileRecordParentType } from '@src/modules/files-storage/interface';
 import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
@@ -45,7 +45,7 @@ describe('CommonCartridgeExportService', () => {
 	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
 	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
-	let filesStorageClientAdapterMock: DeepMocked<FilesStorageRestClientAdapter>;
+	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
@@ -153,8 +153,8 @@ describe('CommonCartridgeExportService', () => {
 					useValue: createMock<LessonClientAdapter>(),
 				},
 				{
-					provide: FilesStorageRestClientAdapter,
-					useValue: createMock<FilesStorageRestClientAdapter>(),
+					provide: FilesStorageClientAdapter,
+					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 				{
 					provide: FilesStorageClientAdapterService,
@@ -170,7 +170,7 @@ describe('CommonCartridgeExportService', () => {
 		boardClientAdapterMock = module.get(BoardClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
 		filesMetadataClientAdapterMock = module.get(FilesStorageClientAdapterService);
-		filesStorageClientAdapterMock = module.get(FilesStorageRestClientAdapter);
+		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 	});
 
 	afterAll(async () => {

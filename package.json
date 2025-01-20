@@ -30,8 +30,6 @@
 	"scripts": {
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
-		"check": "tsc --project tsconfig.check.json",
-		"check:watch": "tsc --watch --project tsconfig.build.json",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup:db:seed && npm run nest:build && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup:db:seed && npm run mocha-inspect",
 		"setup": "command removed - check npm run setup:db:seed instead!",
