@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
@@ -9,14 +10,14 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User } from '@shared/domain/entity';
-import { setupEntities, userFactory as userEntityFactory, userFactory } from '@shared/testing';
-import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import {
 	MediaAvailableLine,
 	MediaAvailableLineElement,
 	MediaBoard,
-	MediaExternalToolElement,
 	MediaBoardColors,
+	MediaExternalToolElement,
 } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import {
@@ -28,8 +29,8 @@ import {
 import { MediaAvailableLineUc } from './media-available-line.uc';
 
 import {
-	mediaAvailableLineFactory,
 	mediaAvailableLineElementFactory,
+	mediaAvailableLineFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
 } from '../../testing';
@@ -441,7 +442,7 @@ describe(MediaAvailableLineUc.name, () => {
 	describe('updateAvailableLineColor', () => {
 		describe('when changes the color of the available line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -472,7 +473,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -496,7 +497,7 @@ describe(MediaAvailableLineUc.name, () => {
 	describe('collapseAvailableLine', () => {
 		describe('when changing the visibility of the available line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -527,7 +528,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

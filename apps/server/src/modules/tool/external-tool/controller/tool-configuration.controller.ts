@@ -86,7 +86,6 @@ export class ToolConfigurationController {
 		const availableTools: ContextExternalToolTemplateInfo[] =
 			await this.externalToolConfigurationUc.getAvailableToolsForContext(
 				currentUser.userId,
-				currentUser.schoolId,
 				params.contextId,
 				params.contextType
 			);

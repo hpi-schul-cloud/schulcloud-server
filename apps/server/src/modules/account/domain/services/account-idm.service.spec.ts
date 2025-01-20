@@ -218,6 +218,37 @@ describe('AccountIdmService', () => {
 		});
 	});
 
+	describe('saveAll', () => {
+		describe('when saving multiple accounts', () => {
+			const setup = () => {
+				const mockAccountSaves = [
+					{
+						id: mockIdmAccountRefId,
+						username: 'testUserName1',
+						userId: 'userId1',
+						systemId: 'systemId1',
+					} as AccountSave,
+					{
+						id: undefined,
+						username: 'testUserName2',
+						userId: 'userId2',
+						systemId: 'systemId2',
+					} as AccountSave,
+				];
+
+				return { mockAccountSaves };
+			};
+
+			it('should save all accounts', async () => {
+				const { mockAccountSaves } = setup();
+
+				const ret = await accountIdmService.saveAll(mockAccountSaves);
+
+				expect(ret).toHaveLength(mockAccountSaves.length);
+			});
+		});
+	});
+
 	describe('updateUsername', () => {
 		describe('when update Username', () => {
 			const setup = () => {

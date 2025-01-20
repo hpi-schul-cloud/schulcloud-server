@@ -1,6 +1,6 @@
-import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainOperationReport, DomainDeletionReport } from '../../domain/interface';
+import { setupEntities } from '@testing/setup-entities';
+import { DomainDeletionReport, DomainOperationReport } from '../../domain/interface';
 import { DomainName, OperationType } from '../../domain/types';
 import { DeletionLogEntity } from './deletion-log.entity';
 

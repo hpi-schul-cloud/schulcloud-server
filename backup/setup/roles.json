@@ -599,8 +599,7 @@
 		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_DELETE"
+			"ROOM_EDIT"
 		]
 	},
 	{
@@ -619,16 +618,42 @@
 	},
 	{
 		"_id": {
-			"$oid": "67404edd76a89449722a7fb1"
+			"$oid": "675abdb4e76b1142cd4c89e3"
 		},
-		"name": "groupSubstitutionTeacher",
-		"permissions": [],
-		"createdAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
+		"name": "roomowner",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_DELETE",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE",
+			"ROOM_CHANGE_OWNER"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e4"
 		},
-		"updatedAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"__v": 0
-	}
+		"name": "roomadmin",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE"
+		]
+	},
+  {
+    "_id": {
+      "$oid": "67404edd76a89449722a7fb1"
+    },
+    "name": "groupSubstitutionTeacher",
+    "permissions": [],
+    "createdAt": {
+      "$date": "2024-11-22T09:29:01.346Z"
+    },
+    "updatedAt": {
+      "$date": "2024-11-22T09:29:01.346Z"
+    },
+    "__v": 0
+  }
 ]

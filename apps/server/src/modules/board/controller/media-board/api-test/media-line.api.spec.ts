@@ -2,12 +2,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { type ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { BoardNodeEntity } from '../../../repo';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, MediaBoardColors } from '../../../domain';
+import { BoardNodeEntity } from '../../../repo';
+import { mediaBoardEntityFactory, mediaLineEntityFactory } from '../../../testing';
 import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
 import { CollapsableBodyParams, ColorBodyParams } from '../dto';
-import { mediaBoardEntityFactory, mediaLineEntityFactory } from '../../../testing';
 
 const baseRouteName = '/media-lines';
 

@@ -1,6 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
@@ -23,16 +28,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import {
-	groupFactory,
-	roleDtoFactory,
-	schoolYearFactory as schoolYearEntityFactory,
-	setupEntities,
-	UserAndAccountTestFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
-import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
+import { groupFactory } from '@testing/factory/domainobject';
+import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
+import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupFilter, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
@@ -157,7 +160,6 @@ describe('ClassGroupUc', () => {
 			const setup = () => {
 				const schoolYearDo = schoolYearFactory.build();
 				const school: School = schoolFactory.build({
-					permissions: { teacher: { STUDENT_LIST: true } },
 					currentYear: schoolYearDo,
 				});
 
@@ -227,6 +229,7 @@ describe('ClassGroupUc', () => {
 				schoolService.getCurrentYear.mockResolvedValueOnce(schoolYearDo);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
 				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
@@ -311,26 +314,6 @@ describe('ClassGroupUc', () => {
 					Permission.CLASS_FULL_ADMIN,
 					Permission.GROUP_FULL_ADMIN,
 				]);
-			});
-
-			describe('when accessing form course as a teacher', () => {
-				it('should call findClassesForSchool method from classService', async () => {
-					const { teacherUser } = setup();
-
-					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.COURSE);
-
-					expect(classService.findClassesForSchool).toHaveBeenCalled();
-				});
-			});
-
-			describe('when accessing form class overview as a teacher', () => {
-				it('should call findAllByUserId method from classService', async () => {
-					const { teacherUser } = setup();
-
-					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.CLASS_OVERVIEW);
-
-					expect(classService.findAllByUserId).toHaveBeenCalled();
-				});
 			});
 
 			describe('when no pagination is given', () => {
@@ -437,7 +420,6 @@ describe('ClassGroupUc', () => {
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
 						undefined,
-						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -496,7 +478,6 @@ describe('ClassGroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
-						undefined,
 						{ skip: 2, limit: 1 },
 						'name',
 						SortOrder.asc
@@ -577,7 +558,7 @@ describe('ClassGroupUc', () => {
 			});
 		});
 
-		describe('when accessing as a user with elevated permission', () => {
+		describe('when accessing as an admin', () => {
 			const setup = (generateClasses = false) => {
 				const school: School = schoolFactory.build();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
@@ -642,6 +623,7 @@ describe('ClassGroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+				authorizationService.hasPermission.mockReturnValueOnce(false);
 				classService.findClassesForSchool.mockResolvedValueOnce([...clazzes, clazz]);
 				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.findById.mockResolvedValue(system);
@@ -791,7 +773,6 @@ describe('ClassGroupUc', () => {
 						adminUser.school.id,
 						undefined,
 						undefined,
-						undefined,
 						'externalSourceName',
 						SortOrder.desc
 					);
@@ -839,7 +820,6 @@ describe('ClassGroupUc', () => {
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
-						undefined,
 						{ skip: 1, limit: 1 },
 						'name',
 						SortOrder.asc
@@ -863,13 +843,10 @@ describe('ClassGroupUc', () => {
 				it('should return classes with expected limit', async () => {
 					const { adminUser } = setup(true);
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
-						adminUser.id,
-						adminUser.school.id,
-						undefined,
-						undefined,
-						{ skip: 0, limit: 5 }
-					);
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id, undefined, {
+						skip: 0,
+						limit: 5,
+					});
 
 					expect(result.data.length).toEqual(5);
 				});
@@ -877,16 +854,169 @@ describe('ClassGroupUc', () => {
 				it('should return all classes without limit', async () => {
 					const { adminUser } = setup(true);
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
-						adminUser.id,
-						adminUser.school.id,
-						undefined,
-						undefined,
-						{ skip: 0, limit: -1 }
-					);
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id, undefined, {
+						skip: 0,
+						limit: -1,
+					});
 
 					expect(result.data.length).toEqual(14);
 				});
+			});
+		});
+
+		describe('when accessing as a teacher with elevated rights', () => {
+			const setup = (generateClasses = false) => {
+				const school: School = schoolFactory.build();
+				const { studentUser } = UserAndAccountTestFactory.buildStudent();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const { adminUser } = UserAndAccountTestFactory.buildAdmin();
+				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+					id: teacherUser.roles[0].id,
+					name: teacherUser.roles[0].name,
+				});
+				const studentRole: RoleDto = roleDtoFactory.buildWithId({
+					id: studentUser.roles[0].id,
+					name: studentUser.roles[0].name,
+				});
+				const adminUserDo: UserDO = userDoFactory.buildWithId({
+					id: adminUser.id,
+					lastName: adminUser.lastName,
+					roles: [{ id: adminUser.roles[0].id, name: adminUser.roles[0].name }],
+				});
+				const teacherUserDo: UserDO = userDoFactory.buildWithId({
+					id: teacherUser.id,
+					lastName: teacherUser.lastName,
+					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
+				});
+				const studentUserDo: UserDO = userDoFactory.buildWithId({
+					id: studentUser.id,
+					lastName: studentUser.lastName,
+					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
+				});
+				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
+				let clazzes: Class[] = [];
+				if (generateClasses) {
+					clazzes = classFactory.buildList(11, {
+						name: 'A',
+						teacherIds: [teacherUser.id],
+						source: 'LDAP',
+						year: schoolYear.id,
+					});
+				}
+				const clazz: Class = classFactory.build({
+					name: 'A',
+					teacherIds: [teacherUser.id],
+					source: 'LDAP',
+					year: schoolYear.id,
+				});
+				const system: System = systemFactory.withOauthConfig().build({
+					displayName: 'External System',
+				});
+				const group: Group = groupFactory.build({
+					name: 'B',
+					users: [{ userId: teacherUser.id, roleId: teacherUser.roles[0].id }],
+					externalSource: undefined,
+				});
+				const groupWithSystem: Group = groupFactory.build({
+					name: 'C',
+					externalSource: { externalId: 'externalId', systemId: system.id },
+					users: [
+						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
+						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
+					],
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+				classService.findClassesForSchool.mockResolvedValueOnce([...clazzes, clazz]);
+				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
+				systemService.findById.mockResolvedValue(system);
+
+				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === studentUser.id) {
+						return Promise.resolve(studentUserDo);
+					}
+
+					if (userId === adminUser.id) {
+						return Promise.resolve(adminUserDo);
+					}
+
+					throw new Error();
+				});
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === studentUser.id) {
+						return Promise.resolve(studentUserDo);
+					}
+
+					if (userId === adminUser.id) {
+						return Promise.resolve(adminUserDo);
+					}
+
+					throw new Error();
+				});
+				roleService.findById.mockImplementation((roleId: string): Promise<RoleDto> => {
+					if (roleId === teacherUser.roles[0].id) {
+						return Promise.resolve(teacherRole);
+					}
+
+					if (roleId === studentUser.roles[0].id) {
+						return Promise.resolve(studentRole);
+					}
+
+					throw new Error();
+				});
+				schoolYearService.findById.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+
+				return {
+					adminUser,
+					teacherUser,
+					school,
+					clazz,
+					group,
+					groupWithSystem,
+					system,
+					schoolYear,
+				};
+			};
+
+			it('should check the required permissions', async () => {
+				const { teacherUser, school } = setup();
+
+				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
+					teacherUser,
+					school,
+					{
+						action: Action.read,
+						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
+					}
+				);
+			});
+
+			it('should check the access to the full list', async () => {
+				const { teacherUser, school } = setup();
+
+				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
+					teacherUser,
+					school,
+					AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
+				);
 			});
 		});
 

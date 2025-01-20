@@ -26,8 +26,8 @@ export class SchoolResponse {
 	@ApiPropertyOptional({ type: SchoolYearResponse })
 	currentYear?: SchoolYearResponse;
 
-	@ApiProperty({ type: FederalStateResponse })
-	federalState: FederalStateResponse;
+	@ApiPropertyOptional({ type: FederalStateResponse })
+	federalState?: FederalStateResponse;
 
 	@ApiPropertyOptional()
 	county?: CountyResponse;

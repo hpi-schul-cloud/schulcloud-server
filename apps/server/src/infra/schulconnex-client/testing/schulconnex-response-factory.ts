@@ -8,6 +8,7 @@ export const schulconnexResponseFactory = Factory.define<SchulconnexResponse>(()
 		person: {
 			name: {
 				vorname: 'Hans',
+				rufname: 'Hansi',
 				familienname: 'Peter',
 			},
 			geburt: {

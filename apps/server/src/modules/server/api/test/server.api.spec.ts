@@ -1,7 +1,7 @@
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@shared/testing';
+import { TestApiClient } from '@testing/test-api-client';
 import { ConfigResponse } from '../dto';
 
 describe('Server Controller (API)', () => {
@@ -49,6 +49,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED',
 				'FEATURE_COLUMN_BOARD_SHARE',
 				'FEATURE_COLUMN_BOARD_SOCKET_ENABLED',
+				'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED',
 				'FEATURE_BOARD_LAYOUT_ENABLED',
 				'FEATURE_CONSENT_NECESSARY',
 				'FEATURE_COPY_SERVICE_ENABLED',

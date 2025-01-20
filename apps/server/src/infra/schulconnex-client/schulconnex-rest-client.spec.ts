@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { HttpService } from '@nestjs/axios';
-import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import {
@@ -25,8 +25,9 @@ describe(SchulconnexRestClient.name, () => {
 		clientId: 'clientId',
 		clientSecret: 'clientSecret',
 		tokenEndpoint: 'https://schulconnex.url/token',
-		personenInfoTimeoutInMs: 30000,
-		policiesInfoTimeoutInMs: 30000,
+		personInfoTimeoutInMs: 30001,
+		personenInfoTimeoutInMs: 30002,
+		policiesInfoTimeoutInMs: 30003,
 	};
 
 	beforeAll(() => {
@@ -100,6 +101,7 @@ describe(SchulconnexRestClient.name, () => {
 						Authorization: `Bearer ${accessToken}`,
 						'Accept-Encoding': 'gzip',
 					},
+					timeout: options.personInfoTimeoutInMs,
 				});
 			});
 

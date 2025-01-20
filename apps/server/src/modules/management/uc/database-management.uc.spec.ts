@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DatabaseManagementService } from '@infra/database';
-import { DefaultEncryptionService, LdapEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, LdapEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { setupEntities } from '@testing/setup-entities';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 import { DatabaseManagementUc } from './database-management.uc';
@@ -21,8 +21,8 @@ describe('DatabaseManagementService', () => {
 	let dbService: DeepMocked<DatabaseManagementService>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<LegacyLogger>;
-	let defaultEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
-	let ldapEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
+	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
+	let ldapEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let bsonConverter: BsonConverter;
 	const configGetSpy = jest.spyOn(Configuration, 'get');
 	const configHasSpy = jest.spyOn(Configuration, 'has');
@@ -173,11 +173,11 @@ describe('DatabaseManagementService', () => {
 			providers: [
 				DatabaseManagementUc,
 				BsonConverter,
-				{ provide: DefaultEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
+				{ provide: DefaultEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
 				{ provide: ConfigService, useValue: createMock<ConfigService>() },
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
-				{ provide: LdapEncryptionService, useValue: createMock<SymetricKeyEncryptionService>() },
+				{ provide: LdapEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: createMock<FileSystemAdapter>({

@@ -1,4 +1,4 @@
-import { BoardTaskStatusDto } from '../dto/board-task-status.dto';
+import { BoardTaskStatusDto } from '../dto';
 import { BoardTaskStatusResponse } from '../room-api-client';
 
 export class BoardTaskStatusMapper {

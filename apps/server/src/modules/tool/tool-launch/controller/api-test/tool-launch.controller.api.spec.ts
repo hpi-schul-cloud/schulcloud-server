@@ -5,9 +5,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, schoolEntityFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { BoardExternalReferenceType } from '@src/modules/board';
 import { mediaBoardEntityFactory } from '@src/modules/board/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
 import {
 	CustomParameterLocation,

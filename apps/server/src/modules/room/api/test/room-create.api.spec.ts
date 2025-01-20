@@ -1,11 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { GroupEntity } from '@modules/group/entity';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, roleFactory } from '@shared/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
-import { RoomMembershipEntity } from '@src/modules/room-membership';
-import { GroupEntity } from '@modules/group/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { RoomMembershipEntity } from '@src/modules/room-membership';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { roleFactory } from '@testing/factory/role.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
 
 describe('Room Controller (API)', () => {
@@ -69,10 +72,20 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const role = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT, Permission.ROOM_VIEW],
+					name: RoleName.TEACHER,
+					permissions: [Permission.ROOM_CREATE, Permission.ROOM_EDIT, Permission.ROOM_VIEW],
 				});
-				await em.persistAndFlush([teacherAccount, teacherUser, role]);
+				const roomOwnerRole = roleFactory.buildWithId({
+					name: RoleName.ROOMOWNER,
+					permissions: [
+						Permission.ROOM_CREATE,
+						Permission.ROOM_EDIT,
+						Permission.ROOM_VIEW,
+						Permission.ROOM_MEMBERS_ADD,
+						Permission.ROOM_MEMBERS_REMOVE,
+					],
+				});
+				await em.persistAndFlush([teacherAccount, teacherUser, role, roomOwnerRole]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

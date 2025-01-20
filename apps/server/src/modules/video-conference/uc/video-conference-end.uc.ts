@@ -2,7 +2,9 @@ import { UserService } from '@modules/user';
 import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { BBBBaseMeetingConfig, BBBBaseResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { VideoConferenceService } from '../service';
@@ -13,20 +15,26 @@ export class VideoConferenceEndUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
-	async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
+	public async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
 		/* need to be replace with
-		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+			this.videoConferenceService.loadScopeResources(scopeId, scope),
 		]);
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 		const userId: string = user.id as string;
 
-		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
+		const schoolId =
+			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
+				: user.schoolId;
+
+		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
 
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(userId, scope.id, scope.scope);
 

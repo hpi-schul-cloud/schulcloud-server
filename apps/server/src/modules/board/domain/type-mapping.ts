@@ -14,6 +14,7 @@ import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
 import type { AnyBoardNode } from './types/any-board-node';
 import { BoardNodeType } from './types/board-node-type.enum';
+import { VideoConferenceElement } from './video-conference-element.do';
 
 // register node types
 const BoardNodeTypeToConstructor = {
@@ -31,6 +32,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.RICH_TEXT_ELEMENT]: RichTextElement,
 	[BoardNodeType.SUBMISSION_CONTAINER_ELEMENT]: SubmissionContainerElement,
 	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
+	[BoardNodeType.VIDEO_CONFERENCE_ELEMENT]: VideoConferenceElement,
 	[BoardNodeType.DELETED_ELEMENT]: DeletedElement,
 } as const;
 

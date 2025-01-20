@@ -215,7 +215,7 @@
 		},
 		"TSP_SYNC_MIGRATION_LIMIT": {
 			"type": "number",
-			"default": "100",
+			"default": "500",
 			"description": "The amount of users the sync migrates at once."
 		},
 		"FEATURE_TSP_MIGRATION_ENABLED": {
@@ -861,7 +861,7 @@
 		},
 		"AES_KEY": {
 			"type": "string",
-			"description": "Symetric encryption key used to encrypt and decrypt secrets.",
+			"description": "Symmetric encryption key used to encrypt and decrypt secrets.",
 			"pattern": ".{16}.*"
 		},
 		"FEATURE_ETHERPAD_ENABLED": {
@@ -1208,6 +1208,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable link elements in column board."
+		},
+		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable video conference elements in column board."
 		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
@@ -1574,6 +1579,11 @@
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
 				},
+				"PERSON_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching person info from schulconnex",
+					"default": 3000
+				},
 				"PERSONEN_INFO_TIMEOUT_IN_MS": {
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
@@ -1637,6 +1647,10 @@
 			"description": "URL for fetching policies info from moin.schule schulconnex",
 			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
 		},
+		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
+			"type": "number",
+			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
+		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
 			"default": "ws://localhost:4450",
@@ -1661,6 +1675,21 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
+		},
+		"VIDIS_API_CLIENT_BASE_URL": {
+			"type": "string",
+			"default": "",
+			"description": "The VIDIS API base URL"
+		},
+		"VIDIS_SYNC_REGION": {
+			"type": "string",
+			"default": "",
+			"description": "The region for fetching activated offers from VIDIS"
+		},
+		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
+			"type": "boolean",
+			"default": "false",
+			"description": "if calling sync legacy indexes is allowed, only management module should have access to this, this should not exist in the long term when all entites and their indexes have been migrated"
 		}
 	},
 	"required": []

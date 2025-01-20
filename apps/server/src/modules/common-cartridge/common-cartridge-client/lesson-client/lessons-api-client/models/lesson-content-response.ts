@@ -13,6 +13,9 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { LessonContentResponseContent } from './lesson-content-response-content';
 
 /**
  * 
@@ -22,10 +25,10 @@
 export interface LessonContentResponse {
     /**
      * 
-     * @type {object}
+     * @type {LessonContentResponseContent}
      * @memberof LessonContentResponse
      */
-    'content': object;
+    'content': LessonContentResponseContent;
     /**
      * The id of the Material entity
      * @type {string}
@@ -65,7 +68,7 @@ export const LessonContentResponseComponent = {
     INTERNAL: 'internal',
     RESOURCES: 'resources',
     TEXT: 'text',
-    NE_XBOARD: 'neXboard'
+    NEX_BOARD: 'neXboard'
 } as const;
 
 export type LessonContentResponseComponent = typeof LessonContentResponseComponent[keyof typeof LessonContentResponseComponent];

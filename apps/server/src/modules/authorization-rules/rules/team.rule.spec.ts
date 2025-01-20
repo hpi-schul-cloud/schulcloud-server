@@ -5,7 +5,10 @@ import {
 } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, setupEntities, teamFactory, userFactory } from '@shared/testing';
+import { roleFactory } from '@testing/factory/role.factory';
+import { teamFactory } from '@testing/factory/team.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { TeamRule } from './team.rule';
 
 describe('TeamRule', () => {

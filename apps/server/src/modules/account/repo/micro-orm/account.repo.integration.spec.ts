@@ -3,7 +3,8 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
-import { cleanupCollections, userFactory } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { userFactory } from '@testing/factory/user.factory';
 import { AccountEntity } from '../../domain/entity/account.entity';
 import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountRepo } from './account.repo';
@@ -64,6 +65,26 @@ describe('account repo', () => {
 
 				const foundAccount = await repo.findById(account.id);
 				expect(foundAccount?.username).toBe(updatedAccount.username);
+			});
+		});
+	});
+
+	describe('saveAll', () => {
+		describe('When multiple accounts are given', () => {
+			const setup = () => {
+				const accounts = accountDoFactory.buildList(3);
+				const accountIds = accounts.map((account) => account.id);
+
+				return { accounts, accountIds };
+			};
+
+			it('should save all accounts', async () => {
+				const { accounts, accountIds } = setup();
+
+				await repo.saveAll(accounts);
+
+				const foundAccounts = await em.find(AccountEntity, { id: { $in: accountIds } });
+				expect(foundAccounts.length).toBe(accounts.length);
 			});
 		});
 	});

@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainObjectFactory } from '@shared/testing/factory/domainobject/domain-object.factory';
+import { DomainObjectFactory } from '@testing/factory/domainobject';
 import { DeepPartial, Factory } from 'fishery';
 import { LdapConfig, OauthConfig, OidcConfig, System, SystemProps, SystemType } from '../domain';
 

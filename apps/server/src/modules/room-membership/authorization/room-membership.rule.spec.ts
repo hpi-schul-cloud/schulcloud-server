@@ -2,7 +2,11 @@ import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@mod
 import { roomFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { roleDtoFactory, roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
 
@@ -112,6 +116,17 @@ describe(RoomMembershipRule.name, () => {
 					const res = service.hasPermission(user, roomMembershipAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+
+				it('should return false for change owner action', () => {
+					const { user, roomMembershipAuthorizable } = setup();
+
+					const res = service.hasPermission(user, roomMembershipAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
 					});
 
 					expect(res).toBe(false);

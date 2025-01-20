@@ -1,14 +1,15 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
-import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
 import type { MediaBoardConfig } from '../../media-board.config';
@@ -86,7 +87,7 @@ describe(MediaElementUc.name, () => {
 	describe('moveElement', () => {
 		describe('when the user moves a media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
@@ -129,7 +130,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
@@ -155,7 +156,7 @@ describe(MediaElementUc.name, () => {
 	describe('createElement', () => {
 		describe('when the user creates a not existing media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
@@ -253,7 +254,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the user creates an existing media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
@@ -291,7 +292,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
@@ -317,7 +318,7 @@ describe(MediaElementUc.name, () => {
 	describe('deleteElement', () => {
 		describe('when the user deletes a media element', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -348,7 +349,7 @@ describe(MediaElementUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

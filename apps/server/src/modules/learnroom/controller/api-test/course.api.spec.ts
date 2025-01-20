@@ -1,17 +1,15 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
-import { HttpStatus, INestApplication, StreamableFile } from '@nestjs/common';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	courseFactory,
-	groupEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { readFile } from 'node:fs/promises';
 import { CourseMetadataListResponse } from '../dto';
 import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
@@ -24,6 +22,7 @@ const createTeacher = () => {
 	const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [
 		Permission.COURSE_VIEW,
 		Permission.COURSE_EDIT,
+		Permission.COURSE_CREATE,
 	]);
 	return { account: teacherAccount, user: teacherUser };
 };
@@ -93,42 +92,6 @@ describe('Course Controller (API)', () => {
 			expect(typeof data[0].title).toBe('string');
 			expect(data[0].startDate).toBe(course.startDate);
 			expect(data[0].untilDate).toBe(course.untilDate);
-		});
-	});
-
-	describe('[POST] /courses/:id/export', () => {
-		const setup = async () => {
-			const student1 = createStudent();
-			const student2 = createStudent();
-			const teacher = createTeacher();
-			const substitutionTeacher = createTeacher();
-			const teacherUnknownToCourse = createTeacher();
-			const course = courseFactory.build({
-				teachers: [teacher.user],
-				students: [student1.user, student2.user],
-			});
-
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
-			em.clear();
-
-			const loggedInClient = await testApiClient.login(teacher.account);
-
-			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1, loggedInClient };
-		};
-
-		it('should find course export', async () => {
-			const { course, loggedInClient } = await setup();
-
-			const body = { topics: [faker.string.uuid()], tasks: [faker.string.uuid()], columnBoards: [faker.string.uuid()] };
-			const response = await loggedInClient.post(`${course.id}/export?version=1.1.0`, body);
-
-			expect(response.statusCode).toEqual(201);
-			const file = response.body as StreamableFile;
-			expect(file).toBeDefined();
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(response.header['content-type']).toBe('application/zip');
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			expect(response.header['content-disposition']).toBe('attachment;');
 		});
 	});
 
@@ -411,6 +374,28 @@ describe('Course Controller (API)', () => {
 
 			expect(response.statusCode).toBe(200);
 			expect(data.id).toBe(course.id);
+		});
+	});
+
+	describe('[POST] /courses', () => {
+		const setup = async () => {
+			const teacher = createTeacher();
+			const course = courseFactory.build();
+
+			await em.persistAndFlush([teacher.account, teacher.user]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { loggedInClient, course };
+		};
+
+		it('should create course', async () => {
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.post().send({ title: faker.lorem.words() });
+
+			expect(response.statusCode).toEqual(201);
 		});
 	});
 });

@@ -1,4 +1,6 @@
 /* eslint-disable import/extensions */
+import globals = require('../../../config/globals');
+
 export { BruteForcePrevention } from '../../../src/errors/index.js';
 export {
 	addTokenToWhitelist,
@@ -14,3 +16,14 @@ export type JwtRedisData = {
 	privateDevice: boolean;
 	expirationInSeconds: number;
 };
+
+interface GlobalConstants {
+	DB_URL: string;
+	DB_PASSWORD?: string;
+	DB_USERNAME?: string;
+}
+
+const usedGlobals: GlobalConstants = globals;
+
+/** Database URL */
+export const { DB_URL, DB_PASSWORD, DB_USERNAME } = usedGlobals;

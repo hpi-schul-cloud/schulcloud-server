@@ -770,4 +770,49 @@ describe('SchoolService', () => {
 			});
 		});
 	});
+
+	describe('getSchoolByOfficialSchoolNumber', () => {
+		describe('when a school with the provided official school number exists', () => {
+			const setup = () => {
+				const officialSchoolNumber = '00100';
+				const school = schoolFactory.build({ officialSchoolNumber });
+
+				schoolRepo.getSchoolByOfficialSchoolNumber.mockResolvedValueOnce(school);
+
+				return {
+					officialSchoolNumber,
+					expectedSchool: school,
+				};
+			};
+
+			it('should return the existing school', async () => {
+				const { officialSchoolNumber, expectedSchool } = setup();
+
+				const school = await service.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school).toEqual(expectedSchool);
+				expect(school?.officialSchoolNumber).toEqual(expectedSchool.officialSchoolNumber);
+			});
+		});
+
+		describe('when a school with the provided official school number does not exist', () => {
+			const setup = () => {
+				const officialSchoolNumber = '00100';
+
+				schoolRepo.getSchoolByOfficialSchoolNumber.mockResolvedValueOnce(null);
+
+				return {
+					officialSchoolNumber,
+				};
+			};
+
+			it('should return null', async () => {
+				const { officialSchoolNumber } = setup();
+
+				const school = await service.getSchoolByOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school).toBeNull();
+			});
+		});
+	});
 });

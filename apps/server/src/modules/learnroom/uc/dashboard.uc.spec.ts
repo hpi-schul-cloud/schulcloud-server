@@ -5,7 +5,7 @@ import { Course, DashboardEntity, GridElement } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { CourseRepo, IDashboardRepo } from '@shared/repo';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {

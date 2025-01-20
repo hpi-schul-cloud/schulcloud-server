@@ -9,7 +9,6 @@ const ltiTool = require('./ltiTool');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
-const analytics = require('./analytics');
 const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
@@ -46,6 +45,7 @@ const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
 const config = require('./config');
+const syncLegacyIndexes = require('./sync-legacy-indexes');
 const docs = require('./docs');
 
 module.exports = function initializeServices() {
@@ -56,7 +56,6 @@ module.exports = function initializeServices() {
 	// register services
 	app.configure(docs);
 	app.configure(authentication);
-	app.configure(analytics);
 	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
@@ -99,6 +98,7 @@ module.exports = function initializeServices() {
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);
+	app.configure(syncLegacyIndexes);
 	app.configure(config);
 
 	// initialize events
