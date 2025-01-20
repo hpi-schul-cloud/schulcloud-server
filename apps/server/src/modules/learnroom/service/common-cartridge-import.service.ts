@@ -97,7 +97,7 @@ export class CommonCartridgeImportService {
 		columnProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
-		column.title = `Column ${(this.counter += 1)}`;
+		// column.title = `Column ${(this.counter += 1)}`;
 		await this.boardNodeService.addToParent(columnBoard, column);
 		await this.createCardWithElement(parser, column, columnProps);
 	}
@@ -110,7 +110,7 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
 		await this.boardNodeService.addToParent(columnBoard, column);
-		column.title = `Column ${(this.counter += 1)}`;
+		// column.title = `Column ${(this.counter += 1)}`;
 
 		const cards = organizations.filter(
 			(organization) => organization.pathDepth === 2 && organization.path.startsWith(columnProps.path)
