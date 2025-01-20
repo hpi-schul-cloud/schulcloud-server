@@ -73,6 +73,8 @@ describe('TspProvisioningService', () => {
 
 	beforeEach(() => {
 		jest.resetAllMocks();
+		jest.restoreAllMocks();
+		jest.clearAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -119,11 +121,29 @@ describe('TspProvisioningService', () => {
 	});
 
 	describe('provisionClasses', () => {
-		describe('when user ID is missing', () => {
+		describe('when user ID is missing and class exists', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 				const classes = [externalClassDtoFactory.build()];
 				const user = userDoFactory.build();
+
+				return { school, classes, user };
+			};
+
+			it('should throw', async () => {
+				const { school, classes, user } = setup();
+
+				await expect(sut.provisionClasses(school, classes, user)).rejects.toThrow(BadDataLoggableException);
+			});
+		});
+
+		describe('when user ID is missing and class does not exist', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const classes = [setupExternalClass()];
+				const user = userDoFactory.build();
+
+				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
 
 				return { school, classes, user };
 			};

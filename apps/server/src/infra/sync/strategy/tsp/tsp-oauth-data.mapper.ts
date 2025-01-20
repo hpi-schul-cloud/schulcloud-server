@@ -33,10 +33,20 @@ export class TspOauthDataMapper {
 			provisioningStrategy: SystemProvisioningStrategy.TSP,
 		});
 
-		const externalSchools = new Map<string, ExternalSchoolDto>();
-		const externalClasses = new Map<string, ExternalClassDto>();
-		const teacherForClasses = new Map<string, Array<string>>();
+		const externalSchools = this.createMapOfExternalSchoolDtos(schools);
+		const { externalClasses, teacherForClasses } = this.createMapsOfClasses(tspClasses);
 		const oauthDataDtos: OauthDataDto[] = [];
+
+		oauthDataDtos.push(
+			...this.mapTspTeachersToOauthDataDtos(tspTeachers, systemDto, externalSchools, externalClasses, teacherForClasses)
+		);
+		oauthDataDtos.push(...this.mapTspStudentsToOauthDataDtos(tspStudents, systemDto, externalSchools, externalClasses));
+
+		return oauthDataDtos;
+	}
+
+	private createMapOfExternalSchoolDtos(schools: School[]): Map<string, ExternalSchoolDto> {
+		const externalSchools = new Map<string, ExternalSchoolDto>();
 
 		schools.forEach((school) => {
 			if (!school.externalId) {
@@ -50,6 +60,16 @@ export class TspOauthDataMapper {
 				})
 			);
 		});
+
+		return externalSchools;
+	}
+
+	private createMapsOfClasses(tspClasses: RobjExportKlasse[]): {
+		externalClasses: Map<string, ExternalClassDto>;
+		teacherForClasses: Map<string, Array<string>>;
+	} {
+		const externalClasses = new Map<string, ExternalClassDto>();
+		const teacherForClasses = new Map<string, Array<string>>();
 
 		tspClasses.forEach((tspClass) => {
 			if (!tspClass.klasseId) {
@@ -71,62 +91,87 @@ export class TspOauthDataMapper {
 			}
 		});
 
-		tspTeachers.forEach((tspTeacher) => {
-			if (!tspTeacher.lehrerUid) {
-				this.logger.info(new TspMissingExternalIdLoggable('teacher'));
-				return;
-			}
+		return { externalClasses, teacherForClasses };
+	}
 
-			const externalUser = new ExternalUserDto({
-				externalId: tspTeacher.lehrerUid,
-				firstName: tspTeacher.lehrerVorname,
-				lastName: tspTeacher.lehrerNachname,
-				roles: [RoleName.TEACHER],
-			});
+	private mapTspTeachersToOauthDataDtos(
+		tspTeachers: RobjExportLehrer[],
+		systemDto: ProvisioningSystemDto,
+		externalSchools: Map<string, ExternalSchoolDto>,
+		externalClasses: Map<string, ExternalClassDto>,
+		teacherForClasses: Map<string, Array<string>>
+	): OauthDataDto[] {
+		const oauthDataDtos = tspTeachers
+			.map((tspTeacher) => {
+				if (!tspTeacher.lehrerUid) {
+					this.logger.info(new TspMissingExternalIdLoggable('teacher'));
+					return null;
+				}
 
-			const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
-			const classes: ExternalClassDto[] = classIds
-				.map((classId) => externalClasses.get(classId))
-				.filter((externalClass: ExternalClassDto | undefined): externalClass is ExternalClassDto => !!externalClass);
+				const externalUser = new ExternalUserDto({
+					externalId: tspTeacher.lehrerUid,
+					firstName: tspTeacher.lehrerVorname,
+					lastName: tspTeacher.lehrerNachname,
+					roles: [RoleName.TEACHER],
+				});
 
-			const externalSchool = tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
+				const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
+				const classes: ExternalClassDto[] = classIds
+					.map((classId) => externalClasses.get(classId))
+					.filter((externalClass: ExternalClassDto | undefined): externalClass is ExternalClassDto => !!externalClass);
 
-			const oauthDataDto = new OauthDataDto({
-				system: systemDto,
-				externalUser,
-				externalSchool,
-				externalClasses: classes,
-			});
+				const externalSchool =
+					tspTeacher.schuleNummer == null ? undefined : externalSchools.get(tspTeacher.schuleNummer);
 
-			oauthDataDtos.push(oauthDataDto);
-		});
+				const oauthDataDto = new OauthDataDto({
+					system: systemDto,
+					externalUser,
+					externalSchool,
+					externalClasses: classes,
+				});
 
-		tspStudents.forEach((tspStudent) => {
-			if (!tspStudent.schuelerUid) {
-				this.logger.info(new TspMissingExternalIdLoggable('student'));
-				return;
-			}
+				return oauthDataDto;
+			})
+			.filter((oauthDataDto) => oauthDataDto !== null);
 
-			const externalUser = new ExternalUserDto({
-				externalId: tspStudent.schuelerUid,
-				firstName: tspStudent.schuelerVorname,
-				lastName: tspStudent.schuelerNachname,
-				roles: [RoleName.STUDENT],
-			});
+		return oauthDataDtos;
+	}
 
-			const classStudent = tspStudent.klasseId == null ? undefined : externalClasses.get(tspStudent.klasseId);
+	private mapTspStudentsToOauthDataDtos(
+		tspStudents: RobjExportSchueler[],
+		systemDto: ProvisioningSystemDto,
+		externalSchools: Map<string, ExternalSchoolDto>,
+		externalClasses: Map<string, ExternalClassDto>
+	): OauthDataDto[] {
+		const oauthDataDtos = tspStudents
+			.map((tspStudent) => {
+				if (!tspStudent.schuelerUid) {
+					this.logger.info(new TspMissingExternalIdLoggable('student'));
+					return null;
+				}
 
-			const externalSchool = tspStudent.schuleNummer == null ? undefined : externalSchools.get(tspStudent.schuleNummer);
+				const externalUser = new ExternalUserDto({
+					externalId: tspStudent.schuelerUid,
+					firstName: tspStudent.schuelerVorname,
+					lastName: tspStudent.schuelerNachname,
+					roles: [RoleName.STUDENT],
+				});
 
-			const oauthDataDto = new OauthDataDto({
-				system: systemDto,
-				externalUser,
-				externalSchool,
-				externalClasses: classStudent ? [classStudent] : [],
-			});
+				const classStudent = tspStudent.klasseId == null ? undefined : externalClasses.get(tspStudent.klasseId);
 
-			oauthDataDtos.push(oauthDataDto);
-		});
+				const externalSchool =
+					tspStudent.schuleNummer == null ? undefined : externalSchools.get(tspStudent.schuleNummer);
+
+				const oauthDataDto = new OauthDataDto({
+					system: systemDto,
+					externalUser,
+					externalSchool,
+					externalClasses: classStudent ? [classStudent] : [],
+				});
+
+				return oauthDataDto;
+			})
+			.filter((oauthDataDto) => oauthDataDto !== null);
 
 		return oauthDataDtos;
 	}
