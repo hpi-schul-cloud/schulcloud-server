@@ -1,6 +1,7 @@
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { H5PEditorModule, s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
+import { s3ConfigContent, s3ConfigLibraries } from '@modules/h5p-editor';
+import { H5PEditorModule } from '@modules/h5p-editor/h5p-editor.app.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';

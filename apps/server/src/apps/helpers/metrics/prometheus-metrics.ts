@@ -1,12 +1,12 @@
 import { Express } from 'express';
 
+import { LogMessage, Loggable, Logger } from '@src/core/logger';
+import { AppStartLoggable } from '../app-start-loggable';
 import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
-} from '@infra/metrics';
-import { LogMessage, Loggable, Logger } from '@src/core/logger';
-import { AppStartLoggable } from './app-start-loggable';
+} from './prometheus';
 
 export const enum PrometheusMetricsSetupState {
 	FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED = 'Prometheus metrics feature is disabled - no metrics middlewares will be added to the app',
