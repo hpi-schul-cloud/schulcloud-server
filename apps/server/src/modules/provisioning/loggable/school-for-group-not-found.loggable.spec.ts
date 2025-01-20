@@ -1,6 +1,5 @@
-import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { ExternalGroupDto, ExternalSchoolDto } from '../dto';
-import { externalGroupDtoFactory } from '../testing';
 import { SchoolForGroupNotFoundLoggable } from './school-for-group-not-found.loggable';
 
 describe('SchoolForGroupNotFoundLoggable', () => {

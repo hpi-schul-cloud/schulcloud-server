@@ -1,20 +1,21 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	ExternalClassDto,
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	ProvisioningSystemDto,
-} from '@modules/provisioning';
+import { robjExportKlasseFactory, robjExportLehrerFactory, robjExportSchuelerFactory } from '@infra/tsp-client/testing';
+import { ProvisioningSystemDto } from '@modules/provisioning';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import {
+	externalClassDtoFactory,
+	externalSchoolDtoFactory,
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '@modules/provisioning/testing/';
 import { schoolFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../../tsp-client';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 
@@ -64,71 +65,76 @@ describe(TspOauthDataMapper.name, () => {
 
 				const lehrerUid = faker.string.alpha();
 
-				const tspTeachers: RobjExportLehrer[] = [
-					{
-						lehrerUid,
-						lehrerNachname: faker.string.alpha(),
-						lehrerVorname: faker.string.alpha(),
-						schuleNummer: school.externalId,
-					},
-				];
+				const tspTeacher = robjExportLehrerFactory.build({
+					lehrerUid,
+					schuleNummer: school.externalId,
+				});
+				const tspTeachers = [tspTeacher];
 
 				const klasseId = faker.string.alpha();
 
-				const tspClasses: RobjExportKlasse[] = [
-					{
-						klasseId,
-						klasseName: faker.string.alpha(),
-						lehrerUid,
-					},
-				];
+				const tspClass = robjExportKlasseFactory.build({
+					klasseId,
+					lehrerUid,
+				});
+				const tspClasses = [tspClass];
 
-				const tspStudents: RobjExportSchueler[] = [
-					{
-						schuelerUid: faker.string.alpha(),
-						schuelerNachname: faker.string.alpha(),
-						schuelerVorname: faker.string.alpha(),
-						schuleNummer: school.externalId,
-						klasseId,
-					},
-				];
+				const tspStudent = robjExportSchuelerFactory.build({
+					schuelerUid: faker.string.alpha(),
+					schuelerNachname: faker.string.alpha(),
+					schuelerVorname: faker.string.alpha(),
+					schuleNummer: school.externalId,
+					klasseId,
+				});
+				const tspStudents = [tspStudent];
 
-				const provisioningSystemDto = new ProvisioningSystemDto({
+				const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 					systemId: system.id,
 					provisioningStrategy: SystemProvisioningStrategy.TSP,
 				});
 
-				const externalSchool = new ExternalSchoolDto({
-					externalId: school.externalId ?? '',
-				});
-
-				const externalClass = new ExternalClassDto({
-					externalId: klasseId,
+				const externalClassDto = externalClassDtoFactory.build({
+					externalId: tspClasses[0].klasseId ?? '',
 					name: tspClasses[0].klasseName,
 				});
 
-				const expected: OauthDataDto[] = [
-					new OauthDataDto({
+				const externalTeacherUserDto = externalUserDtoFactory.build({
+					externalId: tspTeachers[0].lehrerUid ?? '',
+					firstName: tspTeachers[0].lehrerVorname,
+					lastName: tspTeachers[0].lehrerNachname,
+					roles: [RoleName.TEACHER],
+					email: undefined,
+					birthday: undefined,
+				});
+
+				const externalStudentUserDto = externalUserDtoFactory.build({
+					externalId: tspStudents[0].schuelerUid ?? '',
+					firstName: tspStudents[0].schuelerVorname,
+					lastName: tspStudents[0].schuelerNachname,
+					roles: [RoleName.STUDENT],
+					email: undefined,
+					birthday: undefined,
+				});
+
+				const externalSchoolDto = externalSchoolDtoFactory.build({
+					externalId: school.externalId,
+					name: school.name,
+					officialSchoolNumber: undefined,
+					location: undefined,
+				});
+
+				const expected = [
+					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
-						externalUser: new ExternalUserDto({
-							externalId: tspTeachers[0].lehrerUid ?? '',
-							firstName: tspTeachers[0].lehrerVorname,
-							lastName: tspTeachers[0].lehrerNachname,
-							roles: [RoleName.TEACHER],
-						}),
-						externalSchool,
-						externalClasses: [externalClass],
+						externalUser: externalTeacherUserDto,
+						externalClasses: [externalClassDto],
+						externalSchool: externalSchoolDto,
 					}),
-					new OauthDataDto({
+					oauthDataDtoFactory.build({
 						system: provisioningSystemDto,
-						externalUser: new ExternalUserDto({
-							externalId: tspStudents[0].schuelerUid ?? '',
-							firstName: tspStudents[0].schuelerVorname,
-							lastName: tspStudents[0].schuelerNachname,
-							roles: [RoleName.STUDENT],
-						}),
-						externalSchool,
-						externalClasses: [externalClass],
+						externalUser: externalStudentUserDto,
+						externalClasses: [externalClassDto],
+						externalSchool: externalSchoolDto,
 					}),
 				];
 
@@ -165,9 +171,9 @@ describe(TspOauthDataMapper.name, () => {
 			const setup = () => {
 				const system = systemFactory.build();
 
-				const tspClass: RobjExportKlasse = {
+				const tspClass = robjExportKlasseFactory.build({
 					klasseId: undefined,
-				};
+				});
 
 				return { system, tspClass };
 			};
@@ -185,9 +191,9 @@ describe(TspOauthDataMapper.name, () => {
 			const setup = () => {
 				const system = systemFactory.build();
 
-				const tspTeacher: RobjExportLehrer = {
+				const tspTeacher = robjExportLehrerFactory.build({
 					lehrerUid: undefined,
-				};
+				});
 
 				return { system, tspTeacher };
 			};
@@ -205,9 +211,9 @@ describe(TspOauthDataMapper.name, () => {
 			const setup = () => {
 				const system = systemFactory.build();
 
-				const tspStudent: RobjExportSchueler = {
+				const tspStudent = robjExportSchuelerFactory.build({
 					schuelerUid: undefined,
-				};
+				});
 
 				return { system, tspStudent };
 			};

@@ -8,8 +8,14 @@ import {
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
 } from '@infra/tsp-client';
+import { robjExportSchuleFactory } from '@infra/tsp-client/testing';
 import { Account } from '@modules/account';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
+import {
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '@modules/provisioning/testing';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { System } from '@modules/system';
@@ -161,12 +167,12 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
-				const oauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
+				const oauthDataDto = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build({
 						systemId: faker.string.alpha(),
 						provisioningStrategy: SystemProvisioningStrategy.TSP,
 					}),
-					externalUser: new ExternalUserDto({
+					externalUser: externalUserDtoFactory.build({
 						externalId: faker.string.alpha(),
 						roles: [],
 					}),
@@ -278,10 +284,7 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does not exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
@@ -301,10 +304,7 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when school does exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 				const school = schoolFactory.build();
 
@@ -326,10 +326,8 @@ describe(TspSyncStrategy.name, () => {
 
 		describe('when tsp school does not have a schulnummer', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: undefined,
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
+				tspSchool.schuleNummer = undefined;
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
