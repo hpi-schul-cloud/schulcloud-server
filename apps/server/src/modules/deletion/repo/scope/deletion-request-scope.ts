@@ -9,8 +9,8 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byStatusAndDate(status: StatusModel, olderThan?: Date, newerThan?: Date): this {
-		let query = { status };
+	byStatusAndDate(status: StatusModel[], olderThan?: Date, newerThan?: Date): this {
+		let query = { status: { $in: status } };
 		if (olderThan) {
 			const olderThanQuery = { updatedAt: { $lt: olderThan } };
 			query = { ...query, ...olderThanQuery };

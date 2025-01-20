@@ -14,12 +14,6 @@ describe(DeletionRequestBodyProps.name, () => {
 				expect(deletionRequestBodyProps).toBeDefined();
 			});
 
-			it('deleteAfterMinutes should be a number', () => {
-				const { deletionRequestBodyProps } = setup();
-				expect(deletionRequestBodyProps.deleteAfterMinutes).toBeDefined();
-				expect(typeof deletionRequestBodyProps.deleteAfterMinutes).toBe('number');
-			});
-
 			it('deleteAfterMinutes should be optional', () => {
 				const { deletionRequestBodyProps } = setup();
 				deletionRequestBodyProps.deleteAfterMinutes = undefined;
@@ -31,6 +25,7 @@ describe(DeletionRequestBodyProps.name, () => {
 				const customdeleteAfterMinutes = 60;
 				deletionRequestBodyProps.deleteAfterMinutes = customdeleteAfterMinutes;
 				expect(deletionRequestBodyProps.deleteAfterMinutes).toBe(customdeleteAfterMinutes);
+				expect(typeof deletionRequestBodyProps.deleteAfterMinutes).toBe('number');
 			});
 		});
 	});

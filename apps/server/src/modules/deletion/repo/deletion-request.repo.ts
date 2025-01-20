@@ -32,7 +32,7 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(olderThan: Date, newerThan: Date, limit: number): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(limit: number, olderThan: Date, newerThan: Date): Promise<DeletionRequest[]> {
 		if (olderThan < newerThan) {
 			throw new Error('olderThan must be greater than newerThan');
 		}
@@ -40,12 +40,12 @@ export class DeletionRequestRepo {
 		scope.byDeleteAfter(new Date());
 
 		const statusScope = new DeletionRequestScope('$or');
-		statusScope.byStatusAndDate(StatusModel.REGISTERED);
+		statusScope.byStatusAndDate([StatusModel.REGISTERED]);
 		this.addScopeForFailedRequests(statusScope, olderThan, newerThan);
 
 		scope.addQuery(statusScope.query);
 
-		const order = { createdAt: SortOrder.desc }; // TODO why decending order? Should it not be ascending?
+		const order = { createdAt: SortOrder.asc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
 			limit,
@@ -58,8 +58,7 @@ export class DeletionRequestRepo {
 	}
 
 	private addScopeForFailedRequests(scope: DeletionRequestScope, olderThan: Date, newerThan: Date): void {
-		scope.byStatusAndDate(StatusModel.FAILED, olderThan, newerThan);
-		scope.byStatusAndDate(StatusModel.PENDING, olderThan, newerThan);
+		scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan, newerThan);
 	}
 
 	async countPendingDeletionRequests(olderThan: Date, newerThan: Date): Promise<number> {

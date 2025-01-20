@@ -117,34 +117,30 @@ describe(`deletionRequest create (api)`, () => {
 				expect(result.requestId).toBeDefined();
 			});
 
-			describe('when the "delete in minutes" param has not been provided', () => {
-				it(
-					'should set the "deletion planned at" date to the date after the default "delete in minutes" value ' +
-						'(43200 minutes which is 30 days), with some operational time tolerance',
-					async () => {
-						const { deletionRequestToCreate, defaultdeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
+			describe('when the "delete after minutes" param has not been provided', () => {
+				it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
+					const { deletionRequestToCreate, defaultdeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
 
-						const response = await testApiClient.post('', deletionRequestToCreate);
+					const response = await testApiClient.post('', deletionRequestToCreate);
 
-						const result = response.body as DeletionRequestResponse;
-						const createdDeletionRequestId = result.requestId;
+					const result = response.body as DeletionRequestResponse;
+					const createdDeletionRequestId = result.requestId;
 
-						const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+					const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
 
-						const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
-							createdItem.createdAt,
-							createdItem.deleteAfter,
-							defaultdeleteAfterMinutes,
-							operationalTimeToleranceInSeconds
-						);
+					const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
+						createdItem.createdAt,
+						createdItem.deleteAfter,
+						defaultdeleteAfterMinutes,
+						operationalTimeToleranceInSeconds
+					);
 
-						expect(isDeletionPlannedAtDateCorrect).toEqual(true);
-					}
-				);
+					expect(isDeletionPlannedAtDateCorrect).toEqual(true);
+				});
 			});
 
-			describe('when the "delete in minutes" param has been set to 0', () => {
-				it('should set the "deletion planned at" date to now, with some operational time tolerance', async () => {
+			describe('when the "delete after minutes" param has been set to 0', () => {
+				it('should set the "deleteAfter" date to now', async () => {
 					const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = setup();
 
 					const response = await testApiClient.post('', deletionRequestToImmediateRemoval);
@@ -158,6 +154,32 @@ describe(`deletionRequest create (api)`, () => {
 						createdItem.createdAt,
 						createdItem.deleteAfter,
 						0,
+						operationalTimeToleranceInSeconds
+					);
+
+					expect(isDeletionPlannedAtDateCorrect).toEqual(true);
+				});
+			});
+
+			describe('when the "delete after minutes" param has been set to > 0', () => {
+				it('should set the "deleteAfter" date to now plus "delete after minutes" ', async () => {
+					const { deletionRequestToCreate, operationalTimeToleranceInSeconds } = setup();
+
+					const deleteAfterMinutes = 120;
+
+					deletionRequestToCreate.deleteAfterMinutes = deleteAfterMinutes;
+
+					const response = await testApiClient.post('', deletionRequestToCreate);
+
+					const result = response.body as DeletionRequestResponse;
+					const createdDeletionRequestId = result.requestId;
+
+					const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+
+					const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
+						createdItem.createdAt,
+						createdItem.deleteAfter,
+						deleteAfterMinutes,
 						operationalTimeToleranceInSeconds
 					);
 

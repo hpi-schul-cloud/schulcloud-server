@@ -32,7 +32,7 @@ describe(DeletionRequestScope.name, () => {
 		});
 	});
 
-	describe('byStatus', () => {
+	describe('byStatusAndDate', () => {
 		const setup = () => {
 			const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
 			const expectedQuery = {
@@ -55,7 +55,7 @@ describe(DeletionRequestScope.name, () => {
 			it('should add query', () => {
 				const { expectedQuery, fifteenMinutesAgo } = setup();
 
-				const result = scope.byStatus(fifteenMinutesAgo);
+				const result = scope.byStatusAndDate(StatusModel.FAILED, fifteenMinutesAgo);
 
 				expect(result).toBeInstanceOf(DeletionRequestScope);
 				expect(scope.query).toEqual(expectedQuery);
@@ -63,7 +63,7 @@ describe(DeletionRequestScope.name, () => {
 		});
 	});
 
-	describe('byStatusPending', () => {
+	describe('byStatusAndDate for Pending', () => {
 		const setup = () => {
 			const expectedQuery = { status: [StatusModel.PENDING] };
 
@@ -74,7 +74,7 @@ describe(DeletionRequestScope.name, () => {
 			it('should add query', () => {
 				const { expectedQuery } = setup();
 
-				const result = scope.byStatusPending();
+				const result = scope.byStatusAndDate(StatusModel.PENDING);
 
 				expect(result).toBeInstanceOf(DeletionRequestScope);
 				expect(scope.query).toEqual(expectedQuery);

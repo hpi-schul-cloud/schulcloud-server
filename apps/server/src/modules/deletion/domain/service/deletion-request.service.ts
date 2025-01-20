@@ -50,9 +50,9 @@ export class DeletionRequestService {
 
 	async findAllItemsToExecute(limit: number): Promise<DeletionRequest[]> {
 		const deletionRequests = await this.deletionRequestRepo.findAllItemsToExecution(
+			limit,
 			this.olderThan,
-			this.newerThan,
-			limit
+			this.newerThan
 		);
 
 		return deletionRequests;
