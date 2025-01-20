@@ -1668,7 +1668,7 @@
 		},
 		"FEATURE_ROOMS_ENABLED": {
 			"type": "boolean",
-			"default": "false",
+			"default": "true",
 			"description": "Enables the rooms feature"
 		},
 		"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": {
