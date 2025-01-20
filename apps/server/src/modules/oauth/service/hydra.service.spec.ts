@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DefaultEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CookiesDto } from '@modules/oauth/service/dto/cookies.dto';
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
@@ -12,8 +12,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity';
 import { LtiToolRepo } from '@shared/repo';
-import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
@@ -92,7 +92,7 @@ describe('HydraService', () => {
 				},
 				{
 					provide: DefaultEncryptionService,
-					useValue: createMock<SymetricKeyEncryptionService>(),
+					useValue: createMock<SymmetricKeyEncryptionService>(),
 				},
 				{
 					provide: LegacyLogger,

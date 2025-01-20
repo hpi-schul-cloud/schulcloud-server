@@ -1,19 +1,17 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	groupEntityFactory,
-	roleFactory,
-	schoolEntityFactory,
-} from '@shared/testing';
-import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 
 describe('Room Controller (API)', () => {
@@ -54,6 +52,15 @@ describe('Room Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const role = roleFactory.buildWithId({
+				name: RoleName.ROOMADMIN,
+				permissions: [
+					Permission.ROOM_VIEW,
+					Permission.ROOM_EDIT,
+					Permission.ROOM_MEMBERS_ADD,
+					Permission.ROOM_MEMBERS_REMOVE,
+				],
+			});
+			const roomEditorRole = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
@@ -77,6 +84,7 @@ describe('Room Controller (API)', () => {
 				teacherUser,
 				teacherGuestRole,
 				studentGuestRole,
+				roomEditorRole,
 				otherTeacherUser,
 				otherTeacherAccount,
 				userGroupEntity,
@@ -109,10 +117,12 @@ describe('Room Controller (API)', () => {
 			};
 
 			it('should return forbidden error', async () => {
-				const { room } = await setupRoomWithMembers();
+				const { room, otherTeacherUser } = await setupRoomWithMembers();
 				const { loggedInClient } = await setupLoggedInUser();
 
-				const response = await loggedInClient.patch(`/${room.id}/members/add`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [otherTeacherUser.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -120,10 +130,12 @@ describe('Room Controller (API)', () => {
 
 		describe('when the feature is disabled', () => {
 			it('should return a 403 error', async () => {
-				const { loggedInClient, room } = await setupRoomWithMembers();
+				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 				config.FEATURE_ROOMS_ENABLED = false;
 
-				const response = await loggedInClient.patch(`/${room.id}/members/add`);
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [otherTeacherUser.id],
+				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
@@ -134,7 +146,7 @@ describe('Room Controller (API)', () => {
 				const { loggedInClient, room, otherTeacherUser } = await setupRoomWithMembers();
 
 				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
-					userIdsAndRoles: [{ userId: otherTeacherUser.id, roleName: RoleName.ROOMEDITOR }],
+					userIds: [otherTeacherUser.id],
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);

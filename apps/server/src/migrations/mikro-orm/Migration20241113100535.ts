@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20241113100535 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		const teacherRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'teacher' },
 			{
@@ -33,7 +33,7 @@ export class Migration20241113100535 extends Migration {
 		}
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		const teacherRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'teacher' },
 			{
@@ -46,7 +46,7 @@ export class Migration20241113100535 extends Migration {
 		);
 
 		if (teacherRoleUpdate.modifiedCount > 0) {
-			console.info('Rollback: Permission ROOM_CREATE added to role teacher.');
+			console.info('Rollback: Permission ROOM_CREATE removed from role teacher.');
 		}
 
 		const roomEditorRoleUpdate = await this.getCollection('roles').updateOne(
@@ -61,7 +61,7 @@ export class Migration20241113100535 extends Migration {
 		);
 
 		if (roomEditorRoleUpdate.modifiedCount > 0) {
-			console.info('Rollback: Permission ROOM_DELETE added to role roomeditor.');
+			console.info('Rollback: Permission ROOM_DELETE removed from role roomeditor.');
 		}
 	}
 }

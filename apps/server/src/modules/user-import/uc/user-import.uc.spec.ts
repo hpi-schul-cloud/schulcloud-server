@@ -19,21 +19,22 @@ import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted, SchoolFeature } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import {
-	federalStateFactory,
-	importUserFactory,
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	systemEntityFactory,
-	userDoFactory,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
-import { SchoolNotMigratedLoggableException, UserAlreadyMigratedLoggable } from '../loggable';
+import {
+	SchoolNotMigratedLoggableException,
+	UserAlreadyMigratedLoggable,
+	UserMigrationFailedLoggable,
+} from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { UserImportConfig } from '../user-import-config';
@@ -699,6 +700,7 @@ describe('[ImportUserModule]', () => {
 						);
 					});
 				});
+
 				describe('when user is already migrated', () => {
 					const setup = () => {
 						const system = systemEntityFactory.buildWithId();
@@ -760,6 +762,66 @@ describe('[ImportUserModule]', () => {
 						await uc.saveAllUsersMatches(user.id);
 
 						expect(logger.notice).toHaveBeenCalledWith(new UserAlreadyMigratedLoggable(importUser.user!.id));
+					});
+				});
+
+				describe('when a user migration fails', () => {
+					const setup = () => {
+						const system = systemEntityFactory.buildWithId();
+						const schoolEntity = schoolEntityFactory.buildWithId();
+						const user = userFactory.buildWithId({
+							school: schoolEntity,
+						});
+						const school = legacySchoolDoFactory.build({
+							id: schoolEntity.id,
+							externalId: 'externalId',
+							officialSchoolNumber: 'officialSchoolNumber',
+							inUserMigration: true,
+							inMaintenanceSince: new Date(),
+							systems: [system.id],
+						});
+						const importUser = importUserFactory.buildWithId({
+							school: schoolEntity,
+							user: userFactory.buildWithId({
+								school: schoolEntity,
+							}),
+							matchedBy: MatchCreator.AUTO,
+							system,
+							externalId: 'externalId',
+						});
+						const importUserWithoutUser = importUserFactory.buildWithId({
+							school: schoolEntity,
+							system,
+						});
+						const error = new Error();
+
+						userRepo.findById.mockResolvedValueOnce(user);
+						userService.findByExternalId.mockResolvedValueOnce(null);
+						schoolService.getSchoolById.mockResolvedValueOnce(school);
+						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
+						userMigrationService.migrateUser.mockRejectedValueOnce(error);
+						config.FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = true;
+
+						return {
+							user,
+							importUser,
+							importUserWithoutUser,
+							error,
+						};
+					};
+
+					it('should not throw', async () => {
+						const { user } = setup();
+
+						await expect(uc.saveAllUsersMatches(user.id)).resolves.not.toThrow();
+					});
+
+					it('should log information for skipped user ', async () => {
+						const { user, importUser, error } = setup();
+
+						await uc.saveAllUsersMatches(user.id);
+
+						expect(logger.warning).toHaveBeenCalledWith(new UserMigrationFailedLoggable(importUser, error));
 					});
 				});
 			});

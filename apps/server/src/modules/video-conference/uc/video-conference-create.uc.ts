@@ -1,7 +1,9 @@
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
@@ -21,10 +23,15 @@ export class VideoConferenceCreateUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
-	async createIfNotRunning(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+	public async createIfNotRunning(
+		currentUserId: EntityId,
+		scope: ScopeRef,
+		options: VideoConferenceOptions
+	): Promise<void> {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
 		try {
@@ -40,14 +47,19 @@ export class VideoConferenceCreateUc {
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
 		/* need to be replace with
-		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+		const [authorizableUser, scopeResource]: [User, TeamEntity | Course] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+			this.videoConferenceService.loadScopeResources(scopeId, scope),
 		]);
 		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 
-		await this.verifyFeaturesEnabled(user.schoolId);
+		const schoolId =
+			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
+				: user.schoolId;
+
+		await this.verifyFeaturesEnabled(schoolId);
 
 		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
@@ -90,7 +102,7 @@ export class VideoConferenceCreateUc {
 		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
 	}
 
-	private throwIfNotModerator(role: BBBRole, errorMessage: string) {
+	private throwIfNotModerator(role: BBBRole, errorMessage: string): void {
 		if (role !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION, errorMessage);
 		}

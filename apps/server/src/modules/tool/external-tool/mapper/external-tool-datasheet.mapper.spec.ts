@@ -3,7 +3,7 @@ import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { UserDO } from '@shared/domain/domainobject';
-import { userDoFactory } from '@shared/testing';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';

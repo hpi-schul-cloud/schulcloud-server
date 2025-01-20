@@ -3,13 +3,14 @@ import { Action } from '@modules/authorization';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { setupEntities, userFactory as userEntityFactory } from '@shared/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
+import { MediaBoard, MediaLine } from '../../domain';
+import { MediaBoardColors } from '../../domain/media-board/types';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaLineUc } from './media-line.uc';
-import { MediaBoard, MediaLine } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
 
 describe(MediaLineUc.name, () => {
 	let module: TestingModule;
@@ -63,7 +64,7 @@ describe(MediaLineUc.name, () => {
 	describe('moveLine', () => {
 		describe('when the user moves a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard: MediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
@@ -105,7 +106,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
@@ -131,7 +132,7 @@ describe(MediaLineUc.name, () => {
 	describe('updateLineTitle', () => {
 		describe('when the user renames a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -163,7 +164,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -187,7 +188,7 @@ describe(MediaLineUc.name, () => {
 	describe('deleteLine', () => {
 		describe('when the user deletes a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -215,7 +216,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -237,7 +238,7 @@ describe(MediaLineUc.name, () => {
 	describe('updateLineColor', () => {
 		describe('when the user changes background color of media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -269,7 +270,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);
@@ -293,7 +294,7 @@ describe(MediaLineUc.name, () => {
 	describe('collapseLine', () => {
 		describe('when the user collapse a media line', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(true);
@@ -325,7 +326,7 @@ describe(MediaLineUc.name, () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				const user = userEntityFactory.build();
+				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
 				configService.get.mockReturnValueOnce(false);

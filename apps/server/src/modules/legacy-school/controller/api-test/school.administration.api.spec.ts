@@ -1,10 +1,12 @@
-import { XApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
-import { TestApiClient, federalStateFactory, schoolYearFactory, storageProviderFactory } from '@shared/testing';
-import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
+import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.app.module';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
+import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
 const baseRouteName = '/admin/schools';
@@ -13,20 +15,12 @@ describe('Admin API - Schools (API)', () => {
 	let app: INestApplication;
 	let testApiClient: TestApiClient;
 	let em: EntityManager;
-	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideGuard(XApiKeyGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					return req.headers['x-api-key'] === API_KEY;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -42,13 +36,17 @@ describe('Admin API - Schools (API)', () => {
 		describe('without token', () => {
 			it('should refuse with wrong token', async () => {
 				const client = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
+
 				const response = await client.post('');
-				expect(response.status).toEqual(403);
+
+				expect(response.status).toEqual(401);
 			});
 			it('should refuse without token', async () => {
 				const client = new TestApiClient(app, baseRouteName, '', true);
+
 				const response = await client.post('');
-				expect(response.status).toEqual(403);
+
+				expect(response.status).toEqual(401);
 			});
 		});
 
@@ -63,7 +61,9 @@ describe('Admin API - Schools (API)', () => {
 
 			it('should return school', async () => {
 				const { federalState } = await setup();
+
 				const response = await testApiClient.post('', { name: 'schoolname', federalStateName: federalState.name });
+
 				expect(response.status).toEqual(201);
 				const result = response.body as AdminApiSchoolCreateResponseDto;
 				expect(result.id).toBeDefined();

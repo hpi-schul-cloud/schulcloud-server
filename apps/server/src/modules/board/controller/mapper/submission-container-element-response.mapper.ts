@@ -30,7 +30,7 @@ export class SubmissionContainerElementResponseMapper implements BaseResponseMap
 		return result;
 	}
 
-	canMap(element: SubmissionContainerElement): boolean {
+	canMap(element: unknown): boolean {
 		return element instanceof SubmissionContainerElement;
 	}
 }

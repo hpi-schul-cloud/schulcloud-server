@@ -10,14 +10,12 @@ import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	roleFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';

@@ -5,16 +5,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { News } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { NewsTargetModel } from '@shared/domain/types';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import {
-	cleanupCollections,
 	courseNewsFactory,
 	courseUnpublishedNewsFactory,
 	schoolNewsFactory,
 	schoolUnpublishedNewsFactory,
 	teamNewsFactory,
 	teamUnpublishedNewsFactory,
-	userFactory,
-} from '@shared/testing';
+} from '@testing/factory/news.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {

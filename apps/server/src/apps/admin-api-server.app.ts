@@ -3,17 +3,18 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { AdminApiServerModule } from '@modules/server/admin-api.server.module';
+import { AdminApiServerModule } from '@src/modules/server/admin-api.server.app.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import {
-	AppStartLoggable,
-	enableOpenApiDocs,
 	addPrometheusMetricsMiddlewaresIfEnabled,
+	AppStartLoggable,
 	createAndStartPrometheusMetricsAppIfEnabled,
+	enableOpenApiDocs,
 } from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	const nestAdminServerExpress = express();
@@ -23,6 +24,8 @@ async function bootstrap() {
 	const nestAdminServerApp = await NestFactory.create(AdminApiServerModule, nestAdminServerExpressAdapter);
 	const logger = await nestAdminServerApp.resolve(Logger);
 	const legacyLogger = await nestAdminServerApp.resolve(LegacyLogger);
+	nestAdminServerApp.use(createRequestLoggerMiddleware());
+
 	nestAdminServerApp.useLogger(legacyLogger);
 	nestAdminServerApp.enableCors();
 

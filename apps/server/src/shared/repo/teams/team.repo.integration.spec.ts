@@ -5,9 +5,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
-import { cleanupCollections, roleFactory } from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { roleFactory } from '@testing/factory/role.factory';
+import { teamFactory } from '@testing/factory/team.factory';
+import { teamUserFactory } from '@testing/factory/teamuser.factory';
 
 describe('team repo', () => {
 	let module: TestingModule;

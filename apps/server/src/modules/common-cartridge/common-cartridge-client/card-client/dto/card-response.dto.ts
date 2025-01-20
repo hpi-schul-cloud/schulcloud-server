@@ -3,31 +3,24 @@ import { TimestampResponseDto } from './timestamp-response.dto';
 import { VisibilitySettingsResponseDto } from './visibility-settings-response.dto';
 
 export class CardResponseDto {
-	id: string;
+	public id: string;
 
-	title?: string;
+	public title?: string;
 
-	height: number;
+	public height: number;
 
-	elements: Array<CardResponseElementsInnerDto>;
+	public elements: Array<CardResponseElementsInnerDto>;
 
-	visibilitySettings: VisibilitySettingsResponseDto;
+	public visibilitySettings: VisibilitySettingsResponseDto;
 
-	timeStamps: TimestampResponseDto;
+	public timeStamps: TimestampResponseDto;
 
-	constructor(
-		id: string,
-		title: string,
-		height: number,
-		elements: CardResponseElementsInnerDto[],
-		visibilitySettings: VisibilitySettingsResponseDto,
-		timestamps: TimestampResponseDto
-	) {
-		this.id = id;
-		this.title = title;
-		this.height = height;
-		this.elements = elements;
-		this.visibilitySettings = visibilitySettings;
-		this.timeStamps = timestamps;
+	constructor(props: Readonly<CardResponseDto>) {
+		this.id = props.id;
+		this.title = props.title;
+		this.height = props.height;
+		this.elements = props.elements;
+		this.visibilitySettings = props.visibilitySettings;
+		this.timeStamps = props.timeStamps;
 	}
 }

@@ -9,19 +9,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
+import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import {
-	cleanupCollections,
-	roleFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
@@ -842,6 +841,34 @@ describe('UserRepo', () => {
 						name: role.name,
 					},
 				]);
+			});
+		});
+	});
+
+	describe('findByTspUids', () => {
+		describe('when users are found', () => {
+			const setup = async () => {
+				const tspUid = new ObjectId().toHexString();
+
+				const user: User = userFactory.buildWithId({
+					sourceOptions: new UserSourceOptions({
+						tspUid,
+					}),
+				});
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				return { tspUid, user };
+			};
+
+			it('should return mapped users', async () => {
+				const { tspUid, user } = await setup();
+
+				const result = await repo.findByTspUids([tspUid]);
+
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe(user.id);
 			});
 		});
 	});

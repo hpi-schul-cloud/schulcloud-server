@@ -36,6 +36,10 @@ export class School extends DomainObject<SchoolProps> {
 		this.props.externalId = externalId;
 	}
 
+	get officialSchoolNumber(): string | undefined {
+		return this.props.officialSchoolNumber;
+	}
+
 	set ldapLastSync(ldapLastSync: string | undefined) {
 		this.props.ldapLastSync = ldapLastSync;
 	}
@@ -79,6 +83,9 @@ export class School extends DomainObject<SchoolProps> {
 
 		if (county) {
 			throw new ValidationError('County cannot be updated, once it is set.');
+		}
+		if (federalState === undefined) {
+			throw new ValidationError('County cannot be set without a federal state being assigned to the school.');
 		}
 		const { counties } = federalState.getProps();
 		const countyObject = counties?.find((item) => item.id === countyId);
@@ -144,7 +151,7 @@ export interface SchoolProps extends AuthorizableObject {
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
 	currentYear?: SchoolYear;
-	federalState: FederalState;
+	federalState?: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;

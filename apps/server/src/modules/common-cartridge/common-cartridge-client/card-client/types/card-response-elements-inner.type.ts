@@ -6,6 +6,7 @@ import { FileElementResponseDto } from '../dto/file-element-response.dto';
 import { LinkElementResponseDto } from '../dto/link-element-response.dto';
 import { RichTextElementResponseDto } from '../dto/rich-text-element-response.dto';
 import { SubmissionContainerElementResponseDto } from '../dto/submission-container-element-response.dto';
+import { VideoConferenceElementResponseDto } from '../dto/video-conference-element-response.dto';
 
 export type CardResponseElementsInnerDto =
 	| CollaborativeTextEditorElementResponseDto
@@ -15,4 +16,5 @@ export type CardResponseElementsInnerDto =
 	| FileElementResponseDto
 	| LinkElementResponseDto
 	| RichTextElementResponseDto
-	| SubmissionContainerElementResponseDto;
+	| SubmissionContainerElementResponseDto
+	| VideoConferenceElementResponseDto;

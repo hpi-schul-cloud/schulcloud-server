@@ -14,8 +14,10 @@ import { Course, Role, TeamEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
-import { teamFactory } from '@shared/testing/factory/team.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { teamFactory } from '@testing/factory/team.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { setupEntities } from '@testing/setup-entities';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -196,7 +198,7 @@ describe('VideoConferenceUc', () => {
 			// Assert
 			expect(result.scopeInfo.scopeId).toEqual(course.id);
 			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/courses/${course.id}?activeTab=tools`);
-			expect(result.scopeInfo.scopeName).toEqual('courses');
+			expect(result.scopeInfo.scopeName).toEqual(VideoConferenceScope.COURSE);
 			expect(result.scopeInfo.title).toEqual(course.name);
 			expect(result.object).toEqual(course);
 		});
@@ -209,7 +211,7 @@ describe('VideoConferenceUc', () => {
 			expect(result.scopeInfo.scopeId).toEqual(event.teamId);
 			expect(result.scopeInfo.title).toEqual(event.title);
 			expect(result.scopeInfo.logoutUrl).toEqual(`${hostUrl}/teams/${event.teamId}?activeTab=events`);
-			expect(result.scopeInfo.scopeName).toEqual('teams');
+			expect(result.scopeInfo.scopeName).toEqual(VideoConferenceScope.EVENT);
 			expect(result.object).toEqual(team);
 		});
 

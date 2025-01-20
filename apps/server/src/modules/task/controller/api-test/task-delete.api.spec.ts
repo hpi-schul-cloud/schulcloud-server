@@ -5,13 +5,11 @@ import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	courseFactory,
-	taskFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 const createStudent = () => {
 	const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({}, [
@@ -56,30 +54,64 @@ describe('Task Controller (API)', () => {
 	});
 
 	describe('[DELETE] :taskId', () => {
-		const setup = async () => {
-			const teacher = createTeacher();
-			const student = createStudent();
-			const course = courseFactory.build({
-				teachers: [teacher.user],
-				students: [student.user],
-			});
-			const task = taskFactory.isPublished().build({ course });
-
-			await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, task]);
-			em.clear();
-
-			const teacherClient = await testApiClient.login(teacher.account);
-
-			return { teacherClient, teacher, student, course, task };
-		};
-
 		describe('when logged in as a teacher', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const student = createStudent();
+				const course = courseFactory.build({
+					teachers: [teacher.user],
+					students: [student.user],
+				});
+				const task = taskFactory.isPublished().build({ course });
+
+				await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, task]);
+				em.clear();
+
+				const teacherClient = await testApiClient.login(teacher.account);
+
+				return { teacherClient, teacher, student, course, task };
+			};
+
 			it('should return status 200 for valid task', async () => {
 				const { teacherClient, task } = await setup();
 
 				const response = await teacherClient.delete(`${task.id}`);
 
 				expect(response.status).toEqual(200);
+			});
+		});
+
+		describe('when logged in as another teacher', () => {
+			const setup = async () => {
+				const teacher = createTeacher();
+				const anotherTeacher = createTeacher();
+
+				const task = taskFactory.isPublished().build();
+
+				await em.persistAndFlush([teacher.user, teacher.account, anotherTeacher.user, anotherTeacher.account, task]);
+				em.clear();
+
+				const anotherTeacherClient = await testApiClient.login(anotherTeacher.account);
+
+				return { anotherTeacherClient, anotherTeacher, task };
+			};
+
+			it('should return status 403 for valid task', async () => {
+				const { anotherTeacherClient, task } = await setup();
+
+				const response = await anotherTeacherClient.delete(`${task.id}`);
+
+				expect(response.status).toEqual(403);
+			});
+
+			it('should not actually delete the task', async () => {
+				const { anotherTeacherClient, task } = await setup();
+
+				await anotherTeacherClient.delete(`${task.id}`);
+
+				const taskAfterDelete = await em.findOneOrFail('Task', task.id);
+
+				expect(taskAfterDelete).toBeDefined();
 			});
 		});
 	});

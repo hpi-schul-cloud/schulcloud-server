@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { StorageLocation } from '@modules/files-storage/interface';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ToolConfig } from '@modules/tool/tool-config';
-import { copyContextExternalToolRejectDataFactory } from '@modules/tool/context-external-tool/testing';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import {
+	contextExternalToolFactory,
+	copyContextExternalToolRejectDataFactory,
+} from '@modules/tool/context-external-tool/testing';
+import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { CopyFileDto } from '@src/modules/files-storage-client/dto';
-import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
 
+import { setupEntities } from '@testing/setup-entities';
 import {
 	Card,
 	CollaborativeTextEditorElement,
@@ -42,6 +44,7 @@ import {
 	richTextElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
+	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -674,6 +677,31 @@ describe(BoardNodeCopyService.name, () => {
 			const result = await service.copyDeletedElement(deletedElement, copyContext);
 
 			expect(result.copyEntity).toBeInstanceOf(DeletedElement);
+		});
+	});
+
+	describe('copy video conference element', () => {
+		const setup = () => {
+			const { copyContext } = setupContext();
+			const videoConferenceElement = videoConferenceElementFactory.build();
+
+			return {
+				copyContext,
+				videoConferenceElement,
+			};
+		};
+
+		it('should copy the node', async () => {
+			const { copyContext, videoConferenceElement } = setup();
+
+			const result = await service.copyVideoConferenceElement(videoConferenceElement, copyContext);
+
+			const expectedStatus: CopyStatus = {
+				type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
+				status: CopyStatusEnum.NOT_DOING,
+			};
+
+			expect(result).toEqual(expectedStatus);
 		});
 	});
 });

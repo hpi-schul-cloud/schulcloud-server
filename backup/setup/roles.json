@@ -599,8 +599,7 @@
 		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_DELETE"
+			"ROOM_EDIT"
 		]
 	},
 	{
@@ -630,5 +629,31 @@
 			"$date": "2024-11-22T09:29:01.346Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e3"
+		},
+		"name": "roomowner",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_DELETE",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE",
+			"ROOM_CHANGE_OWNER"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "675abdb4e76b1142cd4c89e4"
+		},
+		"name": "roomadmin",
+		"permissions": [
+			"ROOM_VIEW",
+			"ROOM_EDIT",
+			"ROOM_MEMBERS_ADD",
+			"ROOM_MEMBERS_REMOVE"
+		]
 	}
 ]

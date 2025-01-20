@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { fileRecordFactory } from '@shared/testing';
-import { BaseFactory } from '@shared/testing/factory/base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { DeepPartial } from 'fishery';
 import {
 	CustomParameterLocation,

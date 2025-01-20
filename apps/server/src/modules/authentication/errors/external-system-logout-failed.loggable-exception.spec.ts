@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { ExternalSystemLogoutFailedLoggableException } from './external-system-logout-failed.loggable-exception';
 
 describe(ExternalSystemLogoutFailedLoggableException.name, () => {

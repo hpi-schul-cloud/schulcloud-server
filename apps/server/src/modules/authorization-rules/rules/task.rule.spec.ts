@@ -2,7 +2,12 @@ import { DeepPartial } from '@mikro-orm/core';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { courseFactory, lessonFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
@@ -143,6 +148,29 @@ describe('TaskRule', () => {
 				const { task, user } = setup();
 				const res = service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
+			});
+		});
+
+		describe('when task has no course or lesson', () => {
+			const setup = () => {
+				const role = roleFactory.build({ permissions: [permissionA, permissionB], name: RoleName.TEACHER });
+				const creator = userFactory.build({ roles: [role] });
+				const otherUser = userFactory.build({ roles: [role] });
+				const task = taskFactory.build({ creator });
+
+				return { role, creator, otherUser, task };
+			};
+
+			it('creator should have access to task', () => {
+				const { creator, task } = setup();
+				const res = service.hasPermission(creator, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(true);
+			});
+
+			it('otherUser should not have access to task', () => {
+				const { otherUser, task } = setup();
+				const res = service.hasPermission(otherUser, task, { action: Action.read, requiredPermissions: [] });
+				expect(res).toBe(false);
 			});
 		});
 

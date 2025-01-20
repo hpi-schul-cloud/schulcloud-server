@@ -1,6 +1,8 @@
-import { userFactory, roleFactory, setupEntities } from '@shared/testing';
-import { ResolvedUserMapper } from './resolved-user.mapper';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ResolvedUserResponse } from '../controller/dto';
+import { ResolvedUserMapper } from './resolved-user.mapper';
 
 describe('ResolvedUserMapper', () => {
 	beforeAll(async () => {

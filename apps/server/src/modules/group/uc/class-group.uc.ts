@@ -14,8 +14,8 @@ import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { System, SystemService } from '@src/modules/system';
-import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group, GroupFilter, GroupTypes } from '../domain';
+import { SchoolYearQueryType } from '../controller/dto/interface';
+import { Group, GroupFilter, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupUser } from './dto';
@@ -38,7 +38,6 @@ export class ClassGroupUc {
 		userId: EntityId,
 		schoolId: EntityId,
 		schoolYearQueryType?: SchoolYearQueryType,
-		calledFrom?: ClassRequestContext,
 		pagination?: Pagination,
 		sortBy: keyof ClassInfoDto = 'name',
 		sortOrder: SortOrder = SortOrder.asc
@@ -52,16 +51,10 @@ export class ClassGroupUc {
 			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
-		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [
-			Permission.CLASS_FULL_ADMIN,
-			Permission.GROUP_FULL_ADMIN,
-		]);
-
-		const calledFromCourse: boolean =
-			calledFrom === ClassRequestContext.COURSE && school.getPermissions()?.teacher?.STUDENT_LIST === true;
+		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user, school);
 
 		let combinedClassInfo: ClassInfoDto[];
-		if (canSeeFullList || calledFromCourse) {
+		if (groupVisibilityPermission === GroupVisibilityPermission.ALL_SCHOOL_GROUPS) {
 			combinedClassInfo = await this.findCombinedClassListForSchool(schoolId, schoolYearQueryType);
 		} else {
 			combinedClassInfo = await this.findCombinedClassListForUser(userId, schoolYearQueryType);
@@ -76,6 +69,22 @@ export class ClassGroupUc {
 		const page: Page<ClassInfoDto> = new Page<ClassInfoDto>(pageContent, combinedClassInfo.length);
 
 		return page;
+	}
+
+	private getGroupVisibilityPermission(user: User, school: School): GroupVisibilityPermission {
+		const canSeeAllSchoolGroups: boolean =
+			this.authorizationService.hasAllPermissions(user, [Permission.CLASS_FULL_ADMIN, Permission.GROUP_FULL_ADMIN]) ||
+			this.authorizationService.hasPermission(
+				user,
+				school,
+				AuthorizationContextBuilder.read([Permission.STUDENT_LIST])
+			);
+
+		if (canSeeAllSchoolGroups) {
+			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
+		}
+
+		return GroupVisibilityPermission.OWN_GROUPS;
 	}
 
 	private async findCombinedClassListForSchool(
