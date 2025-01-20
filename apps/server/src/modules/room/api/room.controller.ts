@@ -30,10 +30,9 @@ import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
-import { RoomMemberListResponse } from './dto/response/room-member.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
-import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
+import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 
 @ApiTags('Room')
 @JwtAuthentication()

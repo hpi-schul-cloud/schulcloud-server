@@ -131,7 +131,8 @@ export class RoomUc {
 			userId: member.userId,
 			firstName: user.firstName,
 			lastName: user.lastName,
-			roleName: member.roles[0].name,
+			roomRoleName: member.roles[0].name,
+			schoolRoleName: user.roles[0].name,
 			schoolName: user.schoolName ?? '',
 		});
 	}
