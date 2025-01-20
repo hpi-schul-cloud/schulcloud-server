@@ -15,8 +15,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
-import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { SubmissionService } from './submission.service';
 

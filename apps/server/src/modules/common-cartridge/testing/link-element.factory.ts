@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
 import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
 import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';

@@ -1,7 +1,7 @@
 /* eslint-disable no-new */
-import { setupEntities } from '@shared/testing';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ClassEntity } from '../class.entity';
 
 describe(ClassEntity.name, () => {

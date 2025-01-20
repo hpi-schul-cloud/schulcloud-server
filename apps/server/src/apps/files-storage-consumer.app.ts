@@ -3,10 +3,10 @@
 import { NestFactory } from '@nestjs/core';
 
 // register source-map-support for debugging
-import { FilesStorageAMQPModule } from '@modules/files-storage/files-storage-amqp.module';
+import { FilesStorageAMQPModule } from '@modules/files-storage/files-storage-amqp.app.module';
 import { install as sourceMapInstall } from 'source-map-support';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	const nestApp = await NestFactory.create(FilesStorageAMQPModule);

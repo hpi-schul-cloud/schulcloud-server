@@ -11,18 +11,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	cleanupCollections,
-	importUserFactory,
-	JwtTestFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-	userFactory,
-	userLoginMigrationFactory,
-} from '@shared/testing';
 import { ErrorResponse } from '@src/core/error/dto';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userLoginMigrationFactory } from '@testing/factory/user-login-migration.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
@@ -47,7 +45,6 @@ jest.mock('jwks-rsa', () => () => {
 describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
 	let configService: ConfigService;
 
@@ -58,7 +55,6 @@ describe('UserLoginMigrationController (API)', () => {
 			imports: [ServerTestModule],
 		}).compile();
 
-		axiosMock = new MockAdapter(axios);
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
@@ -437,6 +433,8 @@ describe('UserLoginMigrationController (API)', () => {
 			targetUserId: string,
 			officialSchoolNumber: string
 		) => {
+			const axiosMock = new MockAdapter(axios);
+
 			axiosMock
 				.onPost(targetSystem.oauthConfig?.tokenEndpoint)
 				.replyOnce<OauthTokenResponse>(200, {

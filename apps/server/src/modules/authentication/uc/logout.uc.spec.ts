@@ -1,17 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { accountDoFactory } from '@modules/account/testing';
+import { OauthSessionTokenService } from '@modules/oauth';
+import { oauthSessionTokenFactory } from '@modules/oauth/testing';
+import { SystemService } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
 import { BadRequestException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ErrorLoggable } from '@src/core/error/loggable';
 import { Logger } from '@src/core/logger';
-import { currentUserFactory, JwtTestFactory } from '@shared/testing';
-import { ConfigService } from '@nestjs/config';
-import { SystemService } from '@modules/system';
-import { systemFactory } from '@modules/system/testing';
-import { OauthSessionTokenService } from '@modules/oauth';
-import { oauthSessionTokenFactory } from '@modules/oauth/testing';
-import { AuthenticationService, LogoutService } from '../services';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { ExternalSystemLogoutIsDisabledLoggableException } from '../errors';
+import { AuthenticationService, LogoutService } from '../services';
 import { LogoutUc } from './logout.uc';
 
 describe(LogoutUc.name, () => {
