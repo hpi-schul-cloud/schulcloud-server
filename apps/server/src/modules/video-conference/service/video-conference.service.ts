@@ -200,6 +200,10 @@ export class VideoConferenceService {
 	}
 
 	public async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
+		const ensureMinTitleLength = (title: string): string => {
+			return title.length === 1 ? title + '_' : title;
+		};
+
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(scopeId);
@@ -208,7 +212,7 @@ export class VideoConferenceService {
 					scopeId,
 					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
-					title: course.name,
+					title: ensureMinTitleLength(course.name),
 				};
 			}
 			case VideoConferenceScope.EVENT: {
@@ -218,7 +222,7 @@ export class VideoConferenceService {
 					scopeId: event.teamId,
 					scopeName: VideoConferenceScope.EVENT,
 					logoutUrl: `${this.hostUrl}/teams/${event.teamId}?activeTab=events`,
-					title: event.title,
+					title: ensureMinTitleLength(event.title),
 				};
 			}
 			case VideoConferenceScope.ROOM: {
@@ -228,7 +232,7 @@ export class VideoConferenceService {
 					scopeId: room.id,
 					scopeName: VideoConferenceScope.ROOM,
 					logoutUrl: `${this.hostUrl}/rooms/${room.id}`,
-					title: room.name,
+					title: ensureMinTitleLength(room.name),
 				};
 			}
 			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
@@ -238,7 +242,7 @@ export class VideoConferenceService {
 					scopeId: element.id,
 					scopeName: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
 					logoutUrl: `${this.hostUrl}/boards/${element.rootId}`,
-					title: element.title,
+					title: ensureMinTitleLength(element.title),
 				};
 			}
 			default:
