@@ -33,6 +33,7 @@ import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
+import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
