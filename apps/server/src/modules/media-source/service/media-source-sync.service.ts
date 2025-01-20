@@ -12,6 +12,8 @@ export class MediaSourceSyncService {
 			operations: [],
 		};
 
+		await Promise.resolve();
+
 		return dummyReport;
 	}
 }
