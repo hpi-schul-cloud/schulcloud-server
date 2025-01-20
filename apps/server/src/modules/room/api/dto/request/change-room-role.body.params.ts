@@ -3,6 +3,11 @@ import { RoleName, RoomRole } from '@shared/domain/interface';
 import { IsArray, IsEnum, IsMongoId } from 'class-validator';
 
 export type AssignableRoomRole = Exclude<RoomRole, RoleName.ROOMOWNER>;
+export enum AssignableRoomRoleEnum {
+	ROOMADMIN = RoleName.ROOMADMIN,
+	ROOMEDITOR = RoleName.ROOMEDITOR,
+	ROOMVIEWER = RoleName.ROOMVIEWER,
+}
 
 export class ChangeRoomRoleBodyParams {
 	@ApiProperty({
@@ -16,8 +21,8 @@ export class ChangeRoomRoleBodyParams {
 	@ApiProperty({
 		description: 'The role to assign to the users. Must be a Room Role role other than ROOMOWNER.',
 		required: true,
-		enum: RoleName,
+		enum: AssignableRoomRoleEnum,
 	})
-	@IsEnum(RoleName)
+	@IsEnum(AssignableRoomRoleEnum)
 	public roleName!: AssignableRoomRole;
 }

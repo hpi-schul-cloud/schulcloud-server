@@ -50,19 +50,19 @@ describe('Room Controller (API)', () => {
 	describe('PATCH /rooms/:roomId/members/roles', () => {
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-			const targetUser = userFactory.buildWithId({ school: teacherUser.school });
-			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
+			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
+			const targetUser = userFactory.buildWithId({ school: owner.school });
+			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
-					{ role: roomOwnerRole, user: teacherUser },
+					{ role: roomOwnerRole, user: owner },
 					{ role: roomViewerRole, user: targetUser },
 				],
 				type: GroupEntityTypes.ROOM,
-				organization: teacherUser.school,
+				organization: owner.school,
 				externalSource: undefined,
 			});
 
@@ -75,7 +75,7 @@ describe('Room Controller (API)', () => {
 				room,
 				roomMemberships,
 				teacherAccount,
-				teacherUser,
+				owner,
 				teacherGuestRole,
 				studentGuestRole,
 				roomEditorRole,
@@ -90,7 +90,7 @@ describe('Room Controller (API)', () => {
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, targetUser };
+			return { loggedInClient, room, targetUser, owner };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -165,6 +165,39 @@ describe('Room Controller (API)', () => {
 				expect(body.data).toEqual(
 					expect.arrayContaining([expect.objectContaining({ userId: targetUser.id, roleName: RoleName.ROOMEDITOR })])
 				);
+			});
+
+			it('should return error when changing someones role to owner', async () => {
+				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [targetUser.id],
+					roleName: RoleName.ROOMOWNER,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			it('should return error when changing someones role to a non-room role', async () => {
+				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [targetUser.id],
+					roleName: RoleName.TEACHER,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			it('should return error when changing the owners role', async () => {
+				const { loggedInClient, room, owner } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [owner.id],
+					roleName: RoleName.ROOMEDITOR,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
 	});
