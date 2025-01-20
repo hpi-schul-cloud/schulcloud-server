@@ -140,7 +140,7 @@ describe('TspProvisioningService', () => {
 		describe('when user ID is missing and class does not exist', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const classes = [setupExternalClass()];
+				const classes = [externalClassDtoFactory.build()];
 				const user = userDoFactory.build();
 
 				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
