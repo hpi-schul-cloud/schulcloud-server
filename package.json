@@ -203,7 +203,7 @@
 		"express-openapi-validator": "^5.4.2",
 		"feathers-hooks-common": "^8.2.1",
 		"feathers-swagger": "^3.0.0",
-		"file-type": "^19.6.0",
+		"file-type": "^20.0.0",
 		"gm": "^1.25.0",
 		"html-entities": "^2.5.2",
 		"i18next": "^24.2.1",
