@@ -16,6 +16,7 @@ import { roomMembershipEntityFactory } from '@src/modules/room-membership/testin
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
+import { RoomMemberListResponse } from '../dto/response/room-member.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -39,6 +40,7 @@ describe('Room Controller (API)', () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		config.FEATURE_ROOMS_ENABLED = true;
+		await em.clearCache('roles-cache-byname-roomeditor');
 	});
 
 	afterAll(async () => {
@@ -54,7 +56,6 @@ describe('Room Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-			// TODO: add more than one user
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
 					{ role: roomOwnerRole, user: teacherUser },
@@ -118,7 +119,7 @@ describe('Room Controller (API)', () => {
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
 					userIds: [targetUser.id],
-					role: RoleName.ROOMEDITOR,
+					roleName: RoleName.ROOMEDITOR,
 				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -132,7 +133,7 @@ describe('Room Controller (API)', () => {
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
 					userIds: [targetUser.id],
-					role: RoleName.ROOMEDITOR,
+					roleName: RoleName.ROOMEDITOR,
 				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -145,10 +146,25 @@ describe('Room Controller (API)', () => {
 
 				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
 					userIds: [targetUser.id],
-					role: RoleName.ROOMEDITOR,
+					roleName: RoleName.ROOMEDITOR,
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should change the role of the user', async () => {
+				const { loggedInClient, room, targetUser } = await setupRoomWithMembers();
+
+				await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [targetUser.id],
+					roleName: RoleName.ROOMEDITOR,
+				});
+
+				const updatedRoomMembership = await loggedInClient.get(`/${room.id}/members`);
+				const body = updatedRoomMembership.body as RoomMemberListResponse;
+				expect(body.data).toEqual(
+					expect.arrayContaining([expect.objectContaining({ userId: targetUser.id, roleName: RoleName.ROOMEDITOR })])
+				);
 			});
 		});
 	});

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RoleName, RoomRole } from '@shared/domain/interface';
-import { IsArray, IsMongoId } from 'class-validator';
+import { IsArray, IsEnum, IsMongoId } from 'class-validator';
 
 export type AssignableRoomRole = Exclude<RoomRole, RoleName.ROOMOWNER>;
 
@@ -18,5 +18,6 @@ export class ChangeRoomRoleBodyParams {
 		required: true,
 		enum: RoleName,
 	})
+	@IsEnum(RoleName)
 	public roleName!: AssignableRoomRole;
 }
