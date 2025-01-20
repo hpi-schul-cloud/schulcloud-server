@@ -8,7 +8,7 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { externalGroupDtoFactory } from '@modules/provisioning/testing';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,7 +19,6 @@ import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { courseFactory } from '@src/modules/learnroom/testing';
 import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
