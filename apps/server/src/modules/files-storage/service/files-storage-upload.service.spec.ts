@@ -9,7 +9,6 @@ import { LegacyLogger } from '@src/core/logger';
 import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { readableStreamWithFileTypeFactory } from '@testing/factory/readable-stream-with-file-type.factory';
 import { setupEntities } from '@testing/setup-entities';
-import { MimeType } from 'file-type';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
@@ -120,7 +119,7 @@ describe('FilesStorageService upload methods', () => {
 			const fileRecord = createFileRecord(file.name, 0, file.mimeType, params, userId);
 			const { securityCheck, ...expectedFileRecord } = fileRecord;
 			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
-			const detectedMimeType: MimeType = 'image/tiff';
+			const detectedMimeType = 'image/tiff';
 			expectedFileRecord.mimeType = detectedMimeType;
 
 			const readableStreamWithFileType = readableStreamWithFileTypeFactory.build();
