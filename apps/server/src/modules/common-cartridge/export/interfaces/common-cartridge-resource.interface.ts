@@ -14,5 +14,5 @@ export abstract class CommonCartridgeResource extends CommonCartridgeElement {
 	 * This method is used to get the content of the resource.
 	 * @returns The content of the resource.
 	 */
-	abstract getFileContent(): string | Buffer;
+	public abstract getFileContent(): string | Buffer;
 }
