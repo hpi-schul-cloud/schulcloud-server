@@ -1,16 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-
 import { accountFactory } from '@modules/account/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
@@ -64,7 +64,8 @@ describe(`board lookup in room (api)`, () => {
 			],
 		});
 
-		const room = roomEntityFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
@@ -80,6 +81,7 @@ describe(`board lookup in room (api)`, () => {
 			userGroup,
 			room,
 			roomMembership,
+			school,
 		]);
 
 		const columnBoardNode = columnBoardEntityFactory.build({

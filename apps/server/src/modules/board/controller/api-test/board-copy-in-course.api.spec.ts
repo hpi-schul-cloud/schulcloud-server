@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
