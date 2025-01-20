@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { schoolFactory } from '@modules/school/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { MediaSchoolLicense, MediaSchoolLicenseProps } from '../domain';
 import { SchoolLicenseType } from '../enum';
 

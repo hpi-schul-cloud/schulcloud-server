@@ -3,10 +3,10 @@ import { createMock } from '@golevelup/ts-jest';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ManagementServerTestModule } from '@modules/management/management-server.module';
+import { ManagementServerTestModule } from '@modules/management/management-server.app.module';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createCollections } from '@shared/testing';
+import { createCollections } from '@testing/create-collections';
 import request from 'supertest';
 
 describe('Database Management Controller (API)', () => {

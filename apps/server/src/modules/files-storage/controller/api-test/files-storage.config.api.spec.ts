@@ -3,8 +3,8 @@ import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
-import { TestApiClient } from '@shared/testing';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 

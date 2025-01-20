@@ -1,14 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicenseEntity } from '@modules/user-license/entity';
 import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
-import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DateToString, fileRecordFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { DateToString } from '@testing/date-to-string';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {

@@ -2,23 +2,21 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService } from '@modules/lesson/service';
 import { ToolContextType } from '@modules/tool/common/enum';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
-import {
-	boardFactory,
-	courseFactory,
-	courseGroupFactory,
-	schoolEntityFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
+import { boardFactory } from '@testing/factory/board.factory';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
