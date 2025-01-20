@@ -7,14 +7,14 @@ import {
 	OauthDataDto,
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
+import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { schoolFactory } from '@modules/school/testing';
+import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { Logger } from '@src/core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@src/infra/tsp-client';
-import { BadDataLoggableException } from '@src/modules/provisioning/loggable';
-import { schoolFactory } from '@src/modules/school/testing';
-import { systemFactory } from '@src/modules/system/testing';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../../tsp-client';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 
