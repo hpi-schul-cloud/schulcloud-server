@@ -33,4 +33,13 @@ export class MediaSchoolLicenseMikroOrmRepo
 
 		return deleteCount;
 	}
+
+	public async deleteAllBySchoolAndMediaSource(schoolId: EntityId, mediaSourceId: EntityId): Promise<number> {
+		const deleteCount = await this.em.nativeDelete(this.entityName, {
+			school: new ObjectId(schoolId),
+			mediaSource: new ObjectId(mediaSourceId),
+		});
+
+		return deleteCount;
+	}
 }
