@@ -4,10 +4,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
-import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
-import { FilesStorageRestClientModule } from './files-storage-rest-client.module';
+import { FilesStorageRestClientAdapter } from './files-storage-client.adapter';
+import { FilesStorageRestClientModule } from './files-storage-client.module';
 
-describe(FilesStorageRestClientModule.name, () => {
+describe(FilesStorageClientModule.name, () => {
 	let module: TestingModule;
 
 	const configServiceMock = createMock<ConfigService>();
@@ -49,7 +49,7 @@ describe(FilesStorageRestClientModule.name, () => {
 			it('should resolve FilesStorageRestClientAdapter', async () => {
 				setup();
 
-				const provider = await module.resolve(FilesStorageRestClientAdapter);
+				const provider = await module.resolve(FilesStorageClientAdapter);
 
 				expect(provider).toBeInstanceOf(FilesStorageRestClientAdapter);
 			});

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
-import { FilesStorageRestClientAdapter } from '@infra/files-storage-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
@@ -38,7 +38,7 @@ export class CommonCartridgeExportService {
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClientAdapter: LessonClientAdapter,
 		private readonly filesMetadataClientAdapter: FilesStorageClientAdapterService,
-		private readonly filesStorageClientAdapter: FilesStorageRestClientAdapter,
+		private readonly filesStorageClientAdapter: FilesStorageClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper
 	) {}
 

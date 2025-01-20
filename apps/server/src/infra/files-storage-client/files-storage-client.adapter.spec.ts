@@ -8,10 +8,10 @@ import { axiosResponseFactory } from '@shared/testing';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import type { Request } from 'express';
 import { from, throwError } from 'rxjs';
-import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
+import { FilesStorageRestClientAdapter } from './files-storage-client.adapter';
 import { FileApi } from './generated';
 
-describe(FilesStorageRestClientAdapter.name, () => {
+describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: FilesStorageRestClientAdapter;
 	let httpServiceMock: DeepMocked<HttpService>;
@@ -53,7 +53,7 @@ describe(FilesStorageRestClientAdapter.name, () => {
 			],
 		}).compile();
 
-		sut = module.get(FilesStorageRestClientAdapter);
+		sut = module.get(FilesStorageClientAdapter);
 		httpServiceMock = module.get(HttpService);
 		errorLoggerMock = module.get(ErrorLogger);
 		configServiceMock = module.get(ConfigService);

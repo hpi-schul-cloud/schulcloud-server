@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { FilesStorageRestClientModule } from '@infra/files-storage-client';
+import { FilesStorageClientModule } from '@infra/files-storage-client';
 import { CoursesClientModule } from '@infra/courses-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
@@ -15,12 +15,12 @@ import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
-import { FilesStorageClientModule } from '../files-storage-client';
+import { FilesStorageClientModule as FilesMetadataClientModule } from '../files-storage-client';
 
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
-		FilesStorageRestClientModule,
+		FilesMetadataClientModule,
 		FilesStorageClientModule,
 		LoggerModule,
 		CoursesClientModule,

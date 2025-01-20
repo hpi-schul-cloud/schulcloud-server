@@ -8,21 +8,21 @@ import { ErrorLogger, Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
 import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
-import { FilesStorageRestClientConfig } from './files-storage-rest-client.config';
+import { FilesStorageClientConfig } from './files-storage-client.config';
 import { FileApi } from './generated';
 
 @Injectable()
-export class FilesStorageRestClientAdapter {
+export class FilesStorageClientAdapter {
 	constructor(
 		private readonly api: FileApi,
 		private readonly logger: Logger,
 		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<FilesStorageRestClientConfig, true>,
+		private readonly configService: ConfigService<FilesStorageClientConfig, true>,
 		@Inject(REQUEST) private readonly req: Request
 	) {
-		this.logger.setContext(FilesStorageRestClientAdapter.name);
+		this.logger.setContext(FilesStorageClientAdapter.name);
 	}
 
 	public async download(fileRecordId: string, fileName: string): Promise<Buffer | null> {

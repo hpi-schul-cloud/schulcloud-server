@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { EncryptionConfig } from '@infra/encryption/encryption.config';
-import type { FilesStorageRestClientConfig } from '@infra/files-storage-client';
+import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -12,7 +12,7 @@ import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { OauthConfig } from '@modules/oauth';
@@ -46,7 +46,7 @@ export enum NodeEnvType {
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
-		FilesStorageClientConfig,
+		FilesMetadataClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
 		SchoolConfig,
@@ -75,7 +75,7 @@ export interface ServerConfig
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
-		FilesStorageRestClientConfig {
+		FilesStorageClientConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;

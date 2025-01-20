@@ -5,18 +5,18 @@ import { extractJwtFromRequest } from '@shared/common/utils/jwt';
 import { LoggerModule } from '@src/core/logger';
 import { Request } from 'express';
 import { HttpModule } from '@nestjs/axios';
-import { FilesStorageRestClientAdapter } from './files-storage-rest-client.adapter';
-import { FilesStorageRestClientConfig } from './files-storage-rest-client.config';
+import { FilesStorageClientAdapter } from './files-storage-client.adapter';
+import { FilesStorageClientConfig } from './files-storage-client.config';
 import { Configuration, FileApi } from './generated';
 
 @Module({
 	imports: [LoggerModule, HttpModule],
 	providers: [
-		FilesStorageRestClientAdapter,
+		FilesStorageClientAdapter,
 		{
 			provide: FileApi,
 			scope: Scope.REQUEST,
-			useFactory: (configService: ConfigService<FilesStorageRestClientConfig, true>, request: Request): FileApi => {
+			useFactory: (configService: ConfigService<FilesStorageClientConfig, true>, request: Request): FileApi => {
 				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 
 				const config = new Configuration({
@@ -29,6 +29,6 @@ import { Configuration, FileApi } from './generated';
 			inject: [ConfigService, REQUEST],
 		},
 	],
-	exports: [FilesStorageRestClientAdapter],
+	exports: [FilesStorageClientAdapter],
 })
-export class FilesStorageRestClientModule {}
+export class FilesStorageClientModule {}

@@ -45,7 +45,6 @@ describe('CommonCartridgeExportService', () => {
 	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
 	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageRestClientAdapter>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
