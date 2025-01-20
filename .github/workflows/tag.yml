@@ -40,6 +40,8 @@ jobs:
 
       - name: Build and push ${{ github.repository }}
         uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
           file: ./Dockerfile
@@ -61,6 +63,8 @@ jobs:
             org.opencontainers.image.title=schulcloud-file-storage
       - name: Build and push ${{ github.repository }} (file-storage)
         uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           build-args: |
             BASE_IMAGE=quay.io/schulcloudverbund/schulcloud-server:${{ github.ref_name }}
