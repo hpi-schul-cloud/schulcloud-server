@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240725143018 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		// eslint-disable-next-line no-process-env
 		if (process.env.SC_THEME !== 'n21') {
 			return;
@@ -32,8 +32,8 @@ export class Migration20240725143018 extends Migration {
 		console.info(`Added 'oauthProvisioningEnabled' school feature to ${addOauthFeatureToSchools.affectedRows} schools`);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	async down(): Promise<void> {
+	// eslint-disable-next-line @typescript-eslint/require-await, require-await
+	public async down(): Promise<void> {
 		console.error(`Migration down not implemented. You might need to restore database from backup!`);
 	}
 }

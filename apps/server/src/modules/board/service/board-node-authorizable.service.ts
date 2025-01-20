@@ -24,7 +24,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 	/**
 	 * @deprecated
 	 */
-	async findById(id: EntityId): Promise<BoardNodeAuthorizable> {
+	public async findById(id: EntityId): Promise<BoardNodeAuthorizable> {
 		const boardNode = await this.boardNodeRepo.findById(id, 1);
 
 		const boardNodeAuthorizable = this.getBoardAuthorizable(boardNode);
@@ -32,7 +32,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		return boardNodeAuthorizable;
 	}
 
-	async getBoardAuthorizable(boardNode: AnyBoardNode): Promise<BoardNodeAuthorizable> {
+	public async getBoardAuthorizable(boardNode: AnyBoardNode): Promise<BoardNodeAuthorizable> {
 		const rootNode = await this.boardNodeService.findRoot(boardNode, 1);
 		const parentNode = await this.boardNodeService.findParent(boardNode, 1);
 		const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
@@ -48,15 +48,14 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		return boardNodeAuthorizable;
 	}
 
-	async getBoardAuthorizables(boardNodes: AnyBoardNode[]): Promise<BoardNodeAuthorizable[]> {
+	public async getBoardAuthorizables(boardNodes: AnyBoardNode[]): Promise<BoardNodeAuthorizable[]> {
 		const rootIds = boardNodes.map((node) => node.rootId);
 		const parentIds = boardNodes.map((node) => node.parentId).filter((defined) => defined) as EntityId[];
 		const boardNodeMap = await this.getBoardNodeMap([...rootIds, ...parentIds]);
-		const promises = boardNodes.map((boardNode) => {
+		const promises = boardNodes.map(async (boardNode) => {
 			const rootNode = boardNodeMap[boardNode.rootId];
-			return this.boardContextService.getUsersWithBoardRoles(rootNode).then((users) => {
-				return { id: boardNode.id, users };
-			});
+			const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
+			return { id: boardNode.id, users };
 		});
 
 		const results = await Promise.all(promises);
