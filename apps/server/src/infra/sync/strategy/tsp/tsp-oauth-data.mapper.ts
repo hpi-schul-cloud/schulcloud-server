@@ -12,7 +12,7 @@ import {
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
 import { Logger } from '@src/core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '../../../tsp-client';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@infra/tsp-client';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 
 @Injectable()

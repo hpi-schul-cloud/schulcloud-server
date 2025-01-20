@@ -1,4 +1,4 @@
-import { SyncConfig } from '../sync.config';
+import { SyncConfig } from '../../sync.config';
 
 export interface TspSyncConfig extends SyncConfig {
 	TSP_SYNC_SCHOOL_LIMIT: number;

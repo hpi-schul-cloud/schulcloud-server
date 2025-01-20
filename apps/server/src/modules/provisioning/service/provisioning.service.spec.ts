@@ -6,7 +6,7 @@ import { systemFactory } from '@modules/system/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '..';
+import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
 import { ProvisioningService } from './provisioning.service';
