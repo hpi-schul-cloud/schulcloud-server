@@ -4,16 +4,16 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
 import { ErrorLogger, Logger } from '@src/core/logger';
 import type { Request } from 'express';
 import { from, throwError } from 'rxjs';
-import { FilesStorageRestClientAdapter } from './files-storage-client.adapter';
+import { axiosResponseFactory } from '@src/testing/factory/axios-response.factory';
+import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FileApi } from './generated';
 
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
-	let sut: FilesStorageRestClientAdapter;
+	let sut: FilesStorageClientAdapter;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let errorLoggerMock: DeepMocked<ErrorLogger>;
 	let configServiceMock: DeepMocked<ConfigService>;
@@ -21,7 +21,7 @@ describe(FilesStorageClientAdapter.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				FilesStorageRestClientAdapter,
+				FilesStorageClientAdapter,
 				{
 					provide: FileApi,
 					useValue: createMock<FileApi>(),
