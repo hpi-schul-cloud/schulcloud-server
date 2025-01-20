@@ -3,7 +3,7 @@ const assert = require('assert');
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
 
-describe.only('CSVSyncer', () => {
+describe('CSVSyncer', () => {
 	it('works', () => new CSVSyncer());
 
 	it('implements the Syncer interface', () => {
