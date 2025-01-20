@@ -85,17 +85,17 @@ describe(`deletionRequest create (api)`, () => {
 						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',
 					},
-					deleteInMinutes: 0,
+					deleteAfterMinutes: 0,
 				};
 
-				const defaultDeleteInMinutes = 43200;
+				const defaultdeleteAfterMinutes = 43200;
 
 				const operationalTimeToleranceInSeconds = 30;
 
 				return {
 					deletionRequestToCreate,
 					deletionRequestToImmediateRemoval,
-					defaultDeleteInMinutes,
+					defaultdeleteAfterMinutes,
 					operationalTimeToleranceInSeconds,
 				};
 			};
@@ -122,7 +122,7 @@ describe(`deletionRequest create (api)`, () => {
 					'should set the "deletion planned at" date to the date after the default "delete in minutes" value ' +
 						'(43200 minutes which is 30 days), with some operational time tolerance',
 					async () => {
-						const { deletionRequestToCreate, defaultDeleteInMinutes, operationalTimeToleranceInSeconds } = setup();
+						const { deletionRequestToCreate, defaultdeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
 
 						const response = await testApiClient.post('', deletionRequestToCreate);
 
@@ -134,7 +134,7 @@ describe(`deletionRequest create (api)`, () => {
 						const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
 							createdItem.createdAt,
 							createdItem.deleteAfter,
-							defaultDeleteInMinutes,
+							defaultdeleteAfterMinutes,
 							operationalTimeToleranceInSeconds
 						);
 

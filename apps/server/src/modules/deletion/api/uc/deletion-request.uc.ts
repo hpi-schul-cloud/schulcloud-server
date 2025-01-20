@@ -36,15 +36,15 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			'course',
 			'dashboard',
 			'file',
-			'fileRecords',
+			//'fileRecords',
 			'lessons',
+			'news',
 			'pseudonyms',
 			'rocketChatUser',
+			'submissions',
 			'task',
 			'teams',
 			'user',
-			'submissions',
-			'news',
 		];
 	}
 
@@ -65,10 +65,14 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 
 	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
 		this.logger.debug({ action: 'createDeletionRequest', deletionRequest });
+		const hours =
+			deletionRequest.deleteAfterMinutes ?? this.configService.get<number>('ADMIN_API__DELETION_DELETE_AFTER_MINUTES');
+		const deleteAfter = new Date();
+		deleteAfter.setMinutes(deleteAfter.getHours() + hours);
 		const result = await this.deletionRequestService.createDeletionRequest(
 			deletionRequest.targetRef.id,
 			deletionRequest.targetRef.domain,
-			deletionRequest.deleteInMinutes
+			deleteAfter
 		);
 
 		return result;
@@ -77,7 +81,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	async executeDeletionRequests(limit?: number): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 
-		const max = this.configService.get<number>('ADMIN_API__MAX_CONCURRENT_DELETION_REQUESTS');
+		const max = this.configService.get<number>('ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS');
 
 		let deletionRequests: DeletionRequest[] = [];
 

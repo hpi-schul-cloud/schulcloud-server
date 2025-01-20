@@ -32,13 +32,18 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(olderThan: Date, limit: number): Promise<DeletionRequest[]> {
+	async findAllItemsToExecution(olderThan: Date, newerThan: Date, limit: number): Promise<DeletionRequest[]> {
+		if (olderThan < newerThan) {
+			throw new Error('olderThan must be greater than newerThan');
+		}
 		const scope = new DeletionRequestScope();
 		scope.byDeleteAfter(new Date());
-		scope.byStatus(StatusModel.REGISTERED, olderThan);
-		// TODO failed and hanging pending should be handled differently
-		scope.byStatus(StatusModel.FAILED, olderThan);
-		scope.byStatus(StatusModel.PENDING, olderThan);
+
+		const statusScope = new DeletionRequestScope('$or');
+		statusScope.byStatusAndDate(StatusModel.REGISTERED);
+		this.addScopeForFailedRequests(statusScope, olderThan, newerThan);
+
+		scope.addQuery(statusScope.query);
 
 		const order = { createdAt: SortOrder.desc }; // TODO why decending order? Should it not be ascending?
 
@@ -52,9 +57,14 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	async countPendingDeletionRequests(olderThan: Date): Promise<number> {
+	private addScopeForFailedRequests(scope: DeletionRequestScope, olderThan: Date, newerThan: Date): void {
+		scope.byStatusAndDate(StatusModel.FAILED, olderThan, newerThan);
+		scope.byStatusAndDate(StatusModel.PENDING, olderThan, newerThan);
+	}
+
+	async countPendingDeletionRequests(olderThan: Date, newerThan: Date): Promise<number> {
 		const scope = new DeletionRequestScope();
-		scope.byStatus(StatusModel.PENDING, olderThan);
+		this.addScopeForFailedRequests(scope, olderThan, newerThan);
 
 		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
 

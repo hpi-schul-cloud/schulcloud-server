@@ -9,12 +9,19 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byStatus(status: StatusModel, olderThan: Date): this {
+	byStatusAndDate(status: StatusModel, olderThan?: Date, newerThan?: Date): this {
+		let query = { status };
 		if (olderThan) {
-			this.addQuery({ $and: [{ status }, { updatedAt: { $lt: olderThan } }] });
-		} else {
-			this.addQuery({ status });
+			const olderThanQuery = { updatedAt: { $lt: olderThan } };
+			query = { ...query, ...olderThanQuery };
 		}
+
+		if (newerThan) {
+			const newerThanQuery = { updatedAt: { $gte: newerThan } };
+			query = { ...query, ...newerThanQuery };
+		}
+
+		this.addQuery(query);
 
 		return this;
 	}

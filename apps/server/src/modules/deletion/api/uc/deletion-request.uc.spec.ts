@@ -75,7 +75,7 @@ describe(DeletionRequestUc.name, () => {
 						domain: DomainName.USER,
 						id: new ObjectId().toHexString(),
 					},
-					deleteInMinutes: 1440,
+					deleteAfterMinutes: 1440,
 				};
 				const deletionRequest = deletionRequestFactory.build();
 
@@ -93,7 +93,7 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
 					deletionRequestToCreate.targetRef.domain,
-					deletionRequestToCreate.deleteInMinutes
+					deletionRequestToCreate.deleteAfterMinutes
 				);
 			});
 

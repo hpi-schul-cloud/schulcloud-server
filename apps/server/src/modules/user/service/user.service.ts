@@ -250,9 +250,14 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			return result;
 		}
 
+		const subdomainOperation: DomainDeletionReport[] = [];
 		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
+		subdomainOperation.push(registrationPinDeleted);
 
-		const calendarEventsDeleted = await this.removeCalendarEvents(userId);
+		if (this.configService.get<boolean>('CALENDAR_SERVICE_ENABLED')) {
+			const calendarEventsDeleted = await this.removeCalendarEvents(userId);
+			subdomainOperation.push(calendarEventsDeleted);
+		}
 
 		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
 
@@ -263,7 +268,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.USER,
 			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-			[registrationPinDeleted, calendarEventsDeleted]
+			subdomainOperation
 		);
 
 		this.logger.info(
