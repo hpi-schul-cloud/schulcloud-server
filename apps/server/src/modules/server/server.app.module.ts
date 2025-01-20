@@ -52,6 +52,7 @@ import { LoggerModule } from '@src/core/logger';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { MeAlternativeModule } from '../me-alternative/me-alternative.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -107,6 +108,7 @@ const serverModules = [
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
+	MeAlternativeModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
