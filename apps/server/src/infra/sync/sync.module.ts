@@ -24,6 +24,7 @@ import { SyncUc } from './uc/sync.uc';
 import { TspFetchService } from './tsp/tsp-fetch.service';
 import { TspSyncMigrationService } from './tsp/tsp-sync-migration.service';
 import { VidisSyncService, VidisSyncStrategy, VidisFetchService } from './media-licenses';
+import { MediaMetadataSyncStrategy } from './media-metadata';
 
 @Module({
 	imports: [
@@ -65,6 +66,7 @@ import { VidisSyncService, VidisSyncStrategy, VidisFetchService } from './media-
 		VidisSyncService,
 		VidisSyncStrategy,
 		VidisFetchService,
+		MediaMetadataSyncStrategy,
 	],
 	exports: [SyncConsole],
 })
