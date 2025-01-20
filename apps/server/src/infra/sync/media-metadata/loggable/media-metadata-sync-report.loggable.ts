@@ -31,7 +31,7 @@ export class MediaMetadataSyncReportLoggable implements Loggable {
 		const formattedString = operations
 			.map(
 				(operation: MediaSourceSyncOperationReport): string =>
-					`${operation.operation} Operation, Status: ${operation.status}, Total: ${operation.count}`
+					`${operation.operation} operation, Status: ${operation.status}, Total: ${operation.count}`
 			)
 			.join('\n');
 
