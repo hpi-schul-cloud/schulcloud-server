@@ -201,7 +201,11 @@ export class VideoConferenceService {
 
 	public async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
 		const ensureMinTitleLength = (title: string): string => {
-			return title.length === 1 ? title + '_' : title;
+			const trimmedTitle = title.trim();
+			if (trimmedTitle.length >= 2) {
+				return trimmedTitle;
+			}
+			return trimmedTitle.padEnd(2, '_');
 		};
 
 		switch (scope) {
