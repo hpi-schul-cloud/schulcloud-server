@@ -1,26 +1,27 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
-import { install as sourceMapInstall } from 'source-map-support';
-import { LegacyLogger } from '@src/core/logger';
-import { ManagementServerModule } from '@modules/management';
 import { MikroORM } from '@mikro-orm/core';
+import { ManagementServerModule } from '@modules/management/management-server.app.module';
+import { LegacyLogger } from '@src/core/logger';
+import { install as sourceMapInstall } from 'source-map-support';
+import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
 import legacyAppPromise = require('../../../../src/app');
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
-import { enableOpenApiDocs } from './helpers';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a separate express instance
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
-	const nestApp = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
+	const nestApp: NestExpressApplication = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
+
+	nestApp.useBodyParser('text');
 
 	nestApp.use(createRequestLoggerMiddleware());
 

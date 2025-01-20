@@ -9,13 +9,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import {
-	importUserFactory,
-	setupEntities,
-	systemEntityFactory,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationService } from '../../user-login-migration';
 import { ImportUser } from '../entity';
 import { UserLoginMigrationNotActiveLoggableException, UserMigrationIsNotEnabledLoggableException } from '../loggable';
@@ -147,7 +145,7 @@ describe(UserImportFetchUc.name, () => {
 
 				await uc.populateImportUsers(user.id);
 
-				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser], userLoginMigration);
+				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser], userLoginMigration, false);
 			});
 
 			it('should delete all existing imported users of the school', async () => {
@@ -164,6 +162,43 @@ describe(UserImportFetchUc.name, () => {
 				await uc.populateImportUsers(user.id);
 
 				expect(userImportService.saveImportUsers).toHaveBeenCalledWith([importUser]);
+			});
+		});
+
+		describe('when matching users by preferred name', () => {
+			const setup = () => {
+				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
+				const system: System = systemFactory.build({ id: systemEntity.id });
+				const user: User = userFactory.buildWithId();
+				const importUser: ImportUser = importUserFactory.build({
+					system: systemEntity,
+				});
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+					targetSystemId: system.id,
+				});
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
+				systemService.findByIdOrFail.mockResolvedValueOnce(system);
+				schulconnexFetchImportUsersService.getData.mockResolvedValueOnce([importUser]);
+				schulconnexFetchImportUsersService.filterAlreadyMigratedUser.mockResolvedValueOnce([importUser]);
+				userImportService.matchUsers.mockResolvedValueOnce([importUser]);
+
+				return {
+					user,
+					systemEntity,
+					system,
+					importUser,
+					userLoginMigration,
+				};
+			};
+
+			it('should match the users by preferred name', async () => {
+				const { user, importUser, userLoginMigration } = setup();
+
+				await uc.populateImportUsers(user.id, true);
+
+				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser], userLoginMigration, true);
 			});
 		});
 	});

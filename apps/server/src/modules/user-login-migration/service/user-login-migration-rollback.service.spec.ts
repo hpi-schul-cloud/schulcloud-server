@@ -4,9 +4,10 @@ import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { accountDoFactory } from '@src/modules/account/testing';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	UserLoginMigrationNotFoundLoggableException,
 	UserMigrationRollbackSuccessfulLoggable,

@@ -3,14 +3,6 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	materialFactory,
-} from '@shared/testing';
-import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
@@ -20,6 +12,12 @@ import {
 	ComponentTextProperties,
 	ComponentType,
 } from '@shared/domain/entity';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { materialFactory } from '@testing/factory/material.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { LessonResponse } from '../dto';
 
 describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {

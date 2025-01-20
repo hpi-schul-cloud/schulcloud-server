@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
+import { setupEntities } from '@testing/setup-entities';
 import axios, { CancelTokenSource } from 'axios';
 import Stream from 'stream';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';

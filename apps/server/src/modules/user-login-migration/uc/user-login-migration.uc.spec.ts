@@ -14,16 +14,13 @@ import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } fro
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	systemEntityFactory,
-	userDoFactory,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,

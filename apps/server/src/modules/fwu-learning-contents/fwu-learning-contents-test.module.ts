@@ -1,3 +1,4 @@
+import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
@@ -7,8 +8,8 @@ import { SystemEntity } from '@modules/system/entity';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@shared/common';
 import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
@@ -27,6 +28,7 @@ const imports = [
 	LoggerModule,
 	RabbitMQWrapperTestModule,
 	S3ClientModule.register([s3Config]),
+	AuthGuardModule.register([AuthGuardOptions.JWT]),
 ];
 const controllers = [FwuLearningContentsController];
 const providers = [FwuLearningContentsUc];

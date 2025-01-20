@@ -4,8 +4,12 @@ import { Test } from '@nestjs/testing';
 
 import { MongoIoAdapter } from '@infra/socketio';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import { cleanupCollections, courseFactory, userFactory } from '@shared/testing';
-import { getSocketApiClient, waitForEvent } from '@shared/testing/test-socket-api-client';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { getSocketApiClient, waitForEvent } from '@testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
 import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
@@ -48,14 +52,34 @@ describe(BoardCollaborationGateway.name, () => {
 
 	const setup = async () => {
 		await cleanupCollections(em);
-		const user = userFactory.buildWithId();
-		const unauthorizedUser = userFactory.buildWithId();
+		const school = schoolEntityFactory.build();
+		const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 
-		const course = courseFactory.build({ teachers: [user] });
-		await em.persistAndFlush([user, unauthorizedUser, course]);
+		const teacherAuthJwt = JwtAuthenticationFactory.createJwt({
+			accountId: teacherAccount.id,
+			userId: teacherUser.id,
+			schoolId: teacherUser.school.id,
+			roles: [teacherUser.roles[0].id],
+			support: false,
+			isExternalUser: false,
+		});
 
-		ioClient = await getSocketApiClient(app, user);
-		unauthorizedIoClient = await getSocketApiClient(app, unauthorizedUser);
+		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+		const studentAuthJwt = JwtAuthenticationFactory.createJwt({
+			accountId: studentAccount.id,
+			userId: studentUser.id,
+			schoolId: studentUser.school.id,
+			roles: [studentUser.roles[0].id],
+			support: false,
+			isExternalUser: false,
+		});
+
+		const course = courseFactory.build({ teachers: [teacherUser] });
+		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
+
+		ioClient = await getSocketApiClient(app, teacherAuthJwt);
+		unauthorizedIoClient = await getSocketApiClient(app, studentAuthJwt);
 
 		const columnBoardNode = columnBoardEntityFactory.buildWithId({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },

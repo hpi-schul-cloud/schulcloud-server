@@ -1,10 +1,9 @@
-import { XApiKeyGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, cleanupCollections } from '@shared/testing';
-import { Request } from 'express';
+import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.app.module';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { TestApiClient } from '@testing/test-api-client';
 import { DeletionRequestEntity } from '../../../repo/entity';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
@@ -14,21 +13,12 @@ describe(`deletionRequest delete (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		})
-			.overrideGuard(XApiKeyGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.headers['X-API-KEY'] = API_KEY;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();

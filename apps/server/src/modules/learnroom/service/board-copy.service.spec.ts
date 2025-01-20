@@ -9,22 +9,22 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
-import {
-	boardFactory,
-	columnboardBoardElementFactory,
-	columnBoardNodeFactory,
-	courseFactory,
-	lessonBoardElementFactory,
-	lessonFactory,
-	setupEntities,
-	taskBoardElementFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
 import { columnBoardFactory } from '@src/modules/board/testing';
 import { StorageLocation } from '@src/modules/files-storage/interface';
+import { boardFactory } from '@testing/factory/board.factory';
+import {
+	columnboardBoardElementFactory,
+	lessonBoardElementFactory,
+	taskBoardElementFactory,
+} from '@testing/factory/boardelement.factory';
+import { columnBoardNodeFactory } from '@testing/factory/column-board-node.factory';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ColumnBoardNodeRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 

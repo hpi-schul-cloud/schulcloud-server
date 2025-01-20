@@ -10,7 +10,8 @@ import {
 	GridElement,
 } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { courseFactory, userFactory } from '@shared/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 describe('dashboard model mapper', () => {

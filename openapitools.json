@@ -97,6 +97,25 @@
 					"withInterfaces": true,
 					"withSeparateModelsAndApi": true
 				}
+			},
+			"vidis-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "./apps/server/src/infra/vidis-client/vidis.yml",
+				"output": "./apps/server/src/infra/vidis-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:getActivatedOffersByRegion"
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
 			}
 		}
 	}

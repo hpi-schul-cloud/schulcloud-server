@@ -8,16 +8,14 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	groupFactory,
-	roleDtoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
 import { RoleDto, RoleService } from '@src/modules/role';
 import { UserService } from '@src/modules/user';
+import { groupFactory } from '@testing/factory/domainobject';
+import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';
@@ -301,13 +299,10 @@ describe('GroupService', () => {
 			it('should call repo', async () => {
 				const { user, nameQuery, options } = setup();
 
-				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_CLASSES, true, nameQuery, options);
+				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_GROUPS, true, nameQuery, options);
 
 				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
-					new GroupAggregateScope(options)
-						.byUserPermission(user.id, user.school.id, GroupVisibilityPermission.ALL_SCHOOL_CLASSES)
-						.byName(nameQuery)
-						.byAvailableForSync(true)
+					new GroupAggregateScope(options).byName(nameQuery).byAvailableForSync(true).byOrganization(user.school.id)
 				);
 			});
 
@@ -316,7 +311,7 @@ describe('GroupService', () => {
 
 				const result: Page<Group> = await service.findGroupsForUser(
 					user,
-					GroupVisibilityPermission.ALL_SCHOOL_CLASSES,
+					GroupVisibilityPermission.ALL_SCHOOL_GROUPS,
 					true,
 					nameQuery,
 					options
@@ -346,11 +341,7 @@ describe('GroupService', () => {
 				await service.findGroupsForUser(user, GroupVisibilityPermission.ALL_SCHOOL_GROUPS, true);
 
 				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
-					new GroupAggregateScope().byUserPermission(
-						user.id,
-						user.school.id,
-						GroupVisibilityPermission.ALL_SCHOOL_GROUPS
-					)
+					new GroupAggregateScope().byOrganization(user.school.id)
 				);
 			});
 
@@ -383,9 +374,7 @@ describe('GroupService', () => {
 
 				await service.findGroupsForUser(user, GroupVisibilityPermission.OWN_GROUPS, false);
 
-				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(
-					new GroupAggregateScope().byUserPermission(user.id, user.school.id, GroupVisibilityPermission.OWN_GROUPS)
-				);
+				expect(groupRepo.findGroupsForScope).toHaveBeenCalledWith(new GroupAggregateScope().byUser(user.id));
 			});
 
 			it('should return an empty array', async () => {

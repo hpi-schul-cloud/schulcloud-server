@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
 import { RequestTimeout, TimeoutInterceptor } from '@shared/common';
-import { TestApiClient } from '@shared/testing';
+import { TestApiClient } from '@testing/test-api-client';
 
 const delay = (ms: number) =>
 	new Promise((resolve) => {
