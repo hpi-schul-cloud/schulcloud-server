@@ -9,7 +9,7 @@ export class UserRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async getUserById(userId: string): Promise<User> {
-		const userEntity = await this.em.findOneOrFail(UserEntity, { id: userId }, { populate: ['roles', 'school'] });
+		const userEntity = await this.em.findOneOrFail(UserEntity, { id: userId }, { populate: ['roles.roles', 'school'] });
 
 		const user = UserMapper.mapToDomain(userEntity);
 
