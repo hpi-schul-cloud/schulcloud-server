@@ -19,8 +19,7 @@ export class CommonCartridgeImportService {
 
 		const course = await this.coursesClient.createCourse({ title: courseName });
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const boardIds = await this.createBoards(course.courseId, parser);
+		await this.createBoards(course.courseId, parser);
 	}
 
 	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<string[]> {
