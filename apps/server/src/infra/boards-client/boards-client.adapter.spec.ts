@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { axiosResponseFactory } from '@shared/testing';
 import { faker } from '@faker-js/faker';
+import { axiosResponseFactory } from '@src/testing/factory/axios-response.factory';
 import { BoardsClientAdapter } from './boards-client.adapter';
 import { BoardApi, BoardResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
 
