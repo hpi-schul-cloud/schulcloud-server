@@ -8,10 +8,10 @@ import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { LegacyLogger } from '@core/logger';
 import { FilesStorageApiModule } from '@modules/files-storage/files-storage-api.app.module';
 import { API_VERSION_PATH } from '@modules/files-storage/files-storage.const';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { LegacyLogger } from '@src/core/logger';
 import { enableOpenApiDocs } from './helpers';
 import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 

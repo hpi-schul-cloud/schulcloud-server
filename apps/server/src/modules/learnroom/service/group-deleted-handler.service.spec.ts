@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupDeletedEvent } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { groupFactory } from '@testing/factory/domainobject';
 import { setupEntities } from '@testing/setup-entities';
 import { Course } from '../domain';

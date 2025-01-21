@@ -13,7 +13,7 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 

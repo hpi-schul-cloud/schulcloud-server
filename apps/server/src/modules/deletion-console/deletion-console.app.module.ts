@@ -1,3 +1,4 @@
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
@@ -8,7 +9,6 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ConsoleModule } from 'nestjs-console';
 import { FileEntity } from '../files/entity';
 import { DeletionClient } from './deletion-client';

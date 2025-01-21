@@ -5,7 +5,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolEntity, StorageProviderEntity, UserLoginMigrationEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 /**

@@ -1,12 +1,12 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { Logger } from '@src/core/logger';
-import { accountDoFactory } from '@src/modules/account/testing';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
