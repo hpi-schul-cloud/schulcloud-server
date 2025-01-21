@@ -1676,6 +1676,11 @@
 			"default": "false",
 			"description": "Enables the external system logout feature"
 		},
+		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the Vidis media activations feature"
+		},
 		"VIDIS_API_CLIENT_BASE_URL": {
 			"type": "string",
 			"default": "",
