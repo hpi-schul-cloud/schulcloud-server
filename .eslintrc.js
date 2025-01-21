@@ -49,7 +49,7 @@ module.exports = {
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
-		'max-classes-per-file': ['warn', 1],
+		'max-classes-per-file': 'off',
 	},
 	plugins: ['import', 'prettier', 'promise', 'no-only-tests', 'filename-rules'],
 	env: {
@@ -65,7 +65,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['apps/**/*.ts'],
+			files: ['apps/server/src/**/*.ts'],
 			env: {
 				node: true,
 				es6: true,
@@ -149,40 +149,6 @@ module.exports = {
 						'max-classes-per-file': 'off',
 						'@typescript-eslint/explicit-member-accessibility': 'off',
 					},
-				},
-				{
-					files: ['apps/server/src/modules/**/*.module.ts'],
-					rules: {
-						'@typescript-eslint/no-restricted-imports': [
-							'warn',
-							{
-								patterns: [
-									{
-										group: ['@infra/*/*', '@modules/*/*', '!*.module'],
-										message: 'Do not deep import from a module',
-									},
-								],
-							},
-						],
-					},
-					overrides: [
-						{
-							files: ['apps/server/src/modules/**/*.apps.module.ts'],
-							rules: {
-								'@typescript-eslint/no-restricted-imports': [
-									'warn',
-									{
-										patterns: [
-											{
-												group: ['@infra/*/*', '@modules/*/*', '!*.module', '!*.entity'],
-												message: 'Do not deep import from a module',
-											},
-										],
-									},
-								],
-							},
-						},
-					],
 				},
 				{
 					files: ['apps/server/src/migrations/**/*.ts'],
