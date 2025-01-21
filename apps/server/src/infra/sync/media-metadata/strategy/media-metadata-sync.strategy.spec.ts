@@ -1,5 +1,5 @@
-import { Logger } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceSyncService } from '@modules/media-source/service';
 import { mediaSourceSyncReportFactory } from '@modules/media-source/testing';
@@ -11,6 +11,7 @@ describe(MediaMetadataSyncStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: MediaMetadataSyncStrategy;
 	let syncService: DeepMocked<MediaSourceSyncService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,11 +21,16 @@ describe(MediaMetadataSyncStrategy.name, () => {
 					provide: MediaSourceSyncService,
 					useValue: createMock<MediaSourceSyncService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		strategy = module.get(MediaMetadataSyncStrategy);
 		syncService = module.get(MediaSourceSyncService);
+		logger = module.get(Logger);
 	});
 
 	describe('getType', () => {
@@ -43,7 +49,6 @@ describe(MediaMetadataSyncStrategy.name, () => {
 				const report = mediaSourceSyncReportFactory.build();
 
 				syncService.syncAllMediaMetadata.mockResolvedValue(report);
-				jest.spyOn(Logger.prototype, 'log');
 
 				return { report };
 			};
@@ -62,7 +67,7 @@ describe(MediaMetadataSyncStrategy.name, () => {
 				await strategy.sync();
 
 				const loggable = new MediaMetadataSyncReportLoggable(report);
-				expect(Logger.prototype.log).toBeCalledWith(loggable.getLogMessage());
+				expect(logger.info).toBeCalledWith(loggable);
 			});
 		});
 	});
