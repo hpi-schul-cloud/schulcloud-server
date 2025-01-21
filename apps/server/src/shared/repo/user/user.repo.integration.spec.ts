@@ -12,7 +12,6 @@ import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { UserRepo } from './user.repo';
-import { beforeEach } from 'node:test';
 
 describe('user repo', () => {
 	let module: TestingModule;
