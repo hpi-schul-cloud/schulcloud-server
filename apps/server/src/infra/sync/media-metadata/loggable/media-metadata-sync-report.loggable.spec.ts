@@ -19,7 +19,7 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 			const operationsString = report.operations
 				.map(
 					(operation: MediaSourceSyncOperationReport): string =>
-						`${operation.operation} Operation, Status: ${operation.status}, Total: ${operation.count}`
+						`${operation.operation} operation, Status: ${operation.status}, Total: ${operation.count}`
 				)
 				.join('\n');
 
