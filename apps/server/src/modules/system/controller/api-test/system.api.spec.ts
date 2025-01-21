@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { systemEntityFactory, systemEntityFactory } from '@modules/system/testing';
+import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
