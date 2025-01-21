@@ -117,7 +117,7 @@ export class TspSyncMigrationService {
 
 	private getOldIdBatches(oldToNewMappings: Map<string, string>): string[][] {
 		const oldIds = Array.from(oldToNewMappings.keys());
-		const batchSize = this.configService.getOrThrow<number>('TSP_SYNC_MIGRATION_LIMIT');
+		const batchSize = this.configService.getOrThrow('TSP_SYNC_MIGRATION_LIMIT', { infer: true });
 
 		const batchCount = Math.ceil(oldIds.length / batchSize);
 		const batches: string[][] = [];

@@ -50,7 +50,7 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		const schools = await this.tspSyncService.findSchoolsForSystem(system);
 
-		if (this.configService.getOrThrow<boolean>('FEATURE_TSP_MIGRATION_ENABLED')) {
+		if (this.configService.getOrThrow('FEATURE_TSP_MIGRATION_ENABLED', { infer: true })) {
 			await this.runMigration(system);
 		}
 
@@ -58,11 +58,11 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncSchools(system: System): Promise<School[]> {
-		const schoolDaysToFetch = this.configService.getOrThrow<number>('TSP_SYNC_SCHOOL_DAYS_TO_FETCH');
+		const schoolDaysToFetch = this.configService.getOrThrow('TSP_SYNC_SCHOOL_DAYS_TO_FETCH', { infer: true });
 		const tspSchools = await this.tspFetchService.fetchTspSchools(system, schoolDaysToFetch);
 		this.logger.info(new TspSchoolsFetchedLoggable(tspSchools.length, schoolDaysToFetch));
 
-		const schoolLimit = this.configService.getOrThrow<number>('TSP_SYNC_SCHOOL_LIMIT');
+		const schoolLimit = this.configService.getOrThrow('TSP_SYNC_SCHOOL_LIMIT', { infer: true });
 		const schoolLimitFn = pLimit(schoolLimit);
 
 		const schoolPromises = tspSchools.map((tspSchool) =>
@@ -100,7 +100,7 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	private async syncData(system: System, schools: School[]): Promise<void> {
-		const schoolDataDaysToFetch = this.configService.getOrThrow<number>('TSP_SYNC_DATA_DAYS_TO_FETCH');
+		const schoolDataDaysToFetch = this.configService.getOrThrow('TSP_SYNC_DATA_DAYS_TO_FETCH', { infer: true });
 		const tspTeachers = await this.tspFetchService.fetchTspTeachers(system, schoolDataDaysToFetch);
 		const tspStudents = await this.tspFetchService.fetchTspStudents(system, schoolDataDaysToFetch);
 		const tspClasses = await this.tspFetchService.fetchTspClasses(system, schoolDataDaysToFetch);
@@ -118,7 +118,7 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
-		const dataLimit = this.configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
+		const dataLimit = this.configService.getOrThrow('TSP_SYNC_DATA_LIMIT', { infer: true });
 		const dataLimitFn = pLimit(dataLimit);
 
 		const dataPromises = oauthDataDtos.map((oauthDataDto) =>
