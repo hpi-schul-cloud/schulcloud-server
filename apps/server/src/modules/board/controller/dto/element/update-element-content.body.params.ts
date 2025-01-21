@@ -1,4 +1,3 @@
-// eslint-disable-next-line max-classes-per-file
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
