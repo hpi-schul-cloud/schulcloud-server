@@ -128,10 +128,9 @@ export class MediaSchoolLicenseService {
 
 		const vidisClient: IDMBetreiberApiInterface = this.vidisClientFactory.createVidisClient();
 
-		// const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
-		// const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
-		// const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
-		const basicAuthEncoded = btoa(`${mediaSource.basicAuthConfig.username}:${mediaSource.basicAuthConfig.password}`);
+		const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
+		const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
+		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
 
 		try {
 			const axiosResponse: AxiosResponse<PageOfferDTO> = await vidisClient.getActivatedOffersBySchool(
