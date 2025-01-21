@@ -1,10 +1,10 @@
+import { Logger } from '@core/logger';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@infra/tsp-client';
+import { ProvisioningService } from '@modules/provisioning';
 import { School } from '@modules/school';
+import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@src/infra/tsp-client';
-import { ProvisioningService } from '@src/modules/provisioning';
-import { System } from '@src/modules/system';
 import pLimit from 'p-limit';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { SyncStrategy } from '../sync-strategy';

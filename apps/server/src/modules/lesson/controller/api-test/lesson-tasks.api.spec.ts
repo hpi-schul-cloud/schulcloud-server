@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
+import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@src/modules/server';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';

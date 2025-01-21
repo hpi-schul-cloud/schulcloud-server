@@ -1,6 +1,8 @@
 import { AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
+import { School, SchoolService } from '@modules/school';
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
@@ -8,8 +10,6 @@ import { Consent } from '@shared/domain/domainobject/consent';
 import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
 import { UserConsent } from '@shared/domain/domainobject/user-consent';
 import { RoleName } from '@shared/domain/interface';
-import { School, SchoolService } from '@src/modules/school';
-import { UserService } from '@src/modules/user';
 import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';

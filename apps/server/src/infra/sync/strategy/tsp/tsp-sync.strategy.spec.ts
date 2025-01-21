@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -28,7 +29,6 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@src/core/logger';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';

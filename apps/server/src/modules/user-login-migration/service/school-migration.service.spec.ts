@@ -5,7 +5,7 @@ import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { LegacyLogger, Logger } from '@src/core/logger';
+import { LegacyLogger, Logger } from '@core/logger';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';

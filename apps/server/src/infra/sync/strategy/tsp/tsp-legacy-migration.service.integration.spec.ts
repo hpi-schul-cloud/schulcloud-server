@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -6,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';

@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardLayout } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardLayout } from '@src/modules/board';
-import { courseFactory } from '@src/testing/factory/course.factory';
+import { courseFactory } from '@testing/factory/course.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';

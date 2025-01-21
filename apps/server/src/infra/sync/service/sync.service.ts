@@ -1,10 +1,10 @@
+import { Logger } from '@core/logger';
 import { Injectable, Optional } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
-import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
-import { SyncStrategy } from '../strategy/sync-strategy';
-import { SyncStrategyTarget } from '../sync-strategy.types';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 import { VidisSyncStrategy } from '../media-licenses/strategy';
+import { SyncStrategy } from '../strategy/sync-strategy';
+import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
+import { SyncStrategyTarget } from '../sync-strategy.types';
 
 @Injectable()
 export class SyncService {

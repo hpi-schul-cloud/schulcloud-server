@@ -1,7 +1,7 @@
 import CryptoJs from 'crypto-js';
 
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { EncryptionService } from './encryption.interface';
 
 @Injectable()

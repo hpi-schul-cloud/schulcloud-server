@@ -11,7 +11,7 @@ import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';

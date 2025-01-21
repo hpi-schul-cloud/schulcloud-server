@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import {
 	CreateAuthorUsingGET200ResponseData,
 	CreateGroupUsingGET200ResponseData,

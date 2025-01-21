@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { SyncService } from './sync.service';
 import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';

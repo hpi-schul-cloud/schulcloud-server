@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CacheModule, CacheModuleOptions } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@core/logger';
 import { redisStore } from 'cache-manager-redis-yet';
 import { CacheStoreType } from './interface';
 import { CacheService } from './service/cache.service';

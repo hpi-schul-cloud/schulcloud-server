@@ -7,7 +7,7 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';

@@ -1,8 +1,8 @@
+import { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { AuthorizationClientConfig } from '@infra/authorization-client';
 import { S3Config } from '@infra/s3-client';
-import { CoreModuleConfig } from '@src/core';
 import { Algorithm } from 'jsonwebtoken';
 
 export const FILES_STORAGE_S3_CONNECTION = 'FILES_STORAGE_S3_CONNECTION';

@@ -1,7 +1,7 @@
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { RedisIoAdapter } from './redis-ioadapter';
 
-jest.mock('@src/core/logger', () => {
+jest.mock('@core/logger', () => {
 	return {
 		LegacyLogger: jest.fn().mockImplementation(() => {
 			return {

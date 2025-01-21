@@ -1,6 +1,6 @@
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import m, { subClass } from 'gm';
 import { PassThrough } from 'stream';
 import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from './interface';

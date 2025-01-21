@@ -1,10 +1,10 @@
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types'; // Fix me!!
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ManagementModule } from './management.module';
 
 @Module({

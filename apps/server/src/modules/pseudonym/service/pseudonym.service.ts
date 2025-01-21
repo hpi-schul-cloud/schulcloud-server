@@ -19,7 +19,7 @@ import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';

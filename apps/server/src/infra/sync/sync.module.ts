@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
@@ -13,7 +14,6 @@ import { SchoolLicenseModule } from '@modules/school-license/school-license.modu
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
 import { SyncConsole } from './console/sync.console';
 import { VidisFetchService, VidisSyncService, VidisSyncStrategy } from './media-licenses';
 import { SyncService } from './service/sync.service';

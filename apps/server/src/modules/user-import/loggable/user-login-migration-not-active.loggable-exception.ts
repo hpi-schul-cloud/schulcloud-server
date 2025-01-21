@@ -1,6 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class UserLoginMigrationNotActiveLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly schoolId: EntityId) {
