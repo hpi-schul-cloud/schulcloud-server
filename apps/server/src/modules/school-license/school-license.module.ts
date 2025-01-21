@@ -2,6 +2,7 @@ import { EncryptionModule } from '@infra/encryption';
 import { VidisClientModule } from '@infra/vidis-client';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+import { AuthorizationModule } from '../authorization';
 import { MediaSourceModule } from '../media-source/media-source.module';
 import { SchoolModule } from '../school';
 import { SchoolLicenseController } from './api/school-license.controller';
@@ -11,7 +12,7 @@ import { MediaSchoolLicenseService } from './service';
 import { MediaSchoolLicenseUc } from './uc';
 
 @Module({
-	imports: [MediaSourceModule, SchoolModule, LoggerModule, VidisClientModule, EncryptionModule],
+	imports: [MediaSourceModule, SchoolModule, LoggerModule, VidisClientModule, EncryptionModule, AuthorizationModule],
 	controllers: [SchoolLicenseController],
 	providers: [
 		MediaSchoolLicenseService,
