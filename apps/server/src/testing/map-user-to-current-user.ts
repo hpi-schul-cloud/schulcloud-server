@@ -1,8 +1,8 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
 
 export const mapUserToCurrentUser = (
 	user: User,

@@ -1,5 +1,5 @@
 import type { Group } from '@modules/group';
-import type { Loggable, LogMessage } from '@src/core/logger';
+import type { Loggable, LogMessage } from '@core/logger';
 import type { Course } from '../do';
 
 export class CourseSynchronizationStoppedLoggable implements Loggable {

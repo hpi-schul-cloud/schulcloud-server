@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { User } from '@shared/domain/entity';
 import { EntityNotFoundError } from '@shared/common';
 import { UsersAdminRepo } from '../repo';

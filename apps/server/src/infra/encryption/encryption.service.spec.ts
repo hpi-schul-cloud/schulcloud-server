@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { SymmetricKeyEncryptionService } from './encryption.service';
 
 describe('SymetricKeyEncryptionService', () => {

@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { ExternalGroupDto, ExternalSchoolDto } from '../dto';
 
 export class SchoolForGroupNotFoundLoggable implements Loggable {

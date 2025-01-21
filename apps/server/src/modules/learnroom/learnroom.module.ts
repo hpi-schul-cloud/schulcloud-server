@@ -19,7 +19,7 @@ import {
 	LegacyBoardRepo,
 	UserRepo,
 } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';

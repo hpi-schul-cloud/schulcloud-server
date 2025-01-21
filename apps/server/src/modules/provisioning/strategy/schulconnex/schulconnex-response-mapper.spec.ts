@@ -15,7 +15,7 @@ import { GroupTypes } from '@modules/group';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';

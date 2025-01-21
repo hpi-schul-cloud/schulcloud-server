@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { SystemModule } from '@modules/system';
 import { OauthModule } from '@modules/oauth';
 import { AuthenticationTestModule } from './authentication-test.module';

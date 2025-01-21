@@ -8,7 +8,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
