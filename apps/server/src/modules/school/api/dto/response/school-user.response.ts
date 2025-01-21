@@ -1,18 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller/dto';
 
 export class SchoolUserResponse {
 	@ApiProperty()
-	firstName!: string;
+	public firstName!: string;
 
 	@ApiProperty()
-	lastName!: string;
+	public lastName!: string;
 
 	@ApiProperty()
-	schoolName!: string;
+	public schoolName!: string;
 
 	@ApiProperty()
-	id!: string;
+	public id!: string;
 
 	constructor(props: SchoolUserResponse) {
 		this.id = props.id;
@@ -22,9 +21,8 @@ export class SchoolUserResponse {
 	}
 }
 
-export class SchoolUserListResponse extends PaginationResponse<SchoolUserResponse[]> {
-	constructor(data: SchoolUserResponse[], total: number, skip?: number, limit?: number) {
-		super(total, skip, limit);
+export class SchoolUserListResponse {
+	constructor(data: SchoolUserResponse[]) {
 		this.data = data;
 	}
 

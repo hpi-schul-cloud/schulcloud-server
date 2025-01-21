@@ -39,7 +39,9 @@ jobs:
           password: ${{ secrets.QUAY_TOKEN }}
 
       - name: Build and push ${{ github.repository }}
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           context: .
           file: ./Dockerfile
@@ -60,7 +62,9 @@ jobs:
           labels: |
             org.opencontainers.image.title=schulcloud-file-storage
       - name: Build and push ${{ github.repository }} (file-storage)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
+        env:
+          DOCKER_BUILD_RECORD_UPLOAD: false
         with:
           build-args: |
             BASE_IMAGE=quay.io/schulcloudverbund/schulcloud-server:${{ github.ref_name }}
@@ -81,14 +85,14 @@ jobs:
       contents: write
     steps:
       - name: create sbom
-        uses: aquasecurity/trivy-action@1f6384b6ceecbbc6673526f865b818a2a06b07c9
+        uses: aquasecurity/trivy-action@0.29.0
         with:
           scan-type: 'image'
           format: 'cyclonedx'
           image-ref: 'docker.io/schulcloud/schulcloud-server:${{ github.ref_name }}'
           output: 'dependency-results.sbom.json'
       - name: create release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           body: 'refer to the schulcloud-client release notes https://github.com/hpi-schul-cloud/schulcloud-client/releases/'
           files: dependency-results.sbom.json

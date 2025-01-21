@@ -1,4 +1,3 @@
-import { PaginationParams } from '@shared/controller/dto';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolUserListResponse, SchoolUserResponse } from '../dto/response/school-user.response';
 
@@ -14,9 +13,9 @@ export class SchoolUserResponseMapper {
 		return res;
 	}
 
-	static mapToListResponse(users: Page<UserDO>, pagination?: PaginationParams): SchoolUserListResponse {
+	public static mapToListResponse(users: Page<UserDO>): SchoolUserListResponse {
 		const data: SchoolUserResponse[] = users.data.map((user) => this.mapToResponse(user));
-		const response = new SchoolUserListResponse(data, users.total, pagination?.skip, pagination?.limit);
+		const response = new SchoolUserListResponse(data);
 
 		return response;
 	}
