@@ -178,7 +178,7 @@ describe('CourseService', () => {
 	describe('create', () => {
 		const setup = () => {
 			const course = courseFactory.buildWithId();
-			legacyCourseRepo.createCourse.mockResolvedValueOnce();
+			legacyCourseRepo.createCourse.mockResolvedValueOnce(course);
 
 			return { course };
 		};
