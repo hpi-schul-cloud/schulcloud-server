@@ -92,7 +92,7 @@ module.exports = {
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
-				'filename-rules/match': [1, 'kebabcase'],
+				'filename-rules/match': [2, /^([a-z0-9]+-)*[a-z]+(?:\..*)?$/],
 				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',
