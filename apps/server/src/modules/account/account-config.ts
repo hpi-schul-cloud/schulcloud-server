@@ -1,4 +1,4 @@
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 import { SystemConfig } from '@modules/system';
 
 export interface AccountConfig extends LoggerConfig, SystemConfig {

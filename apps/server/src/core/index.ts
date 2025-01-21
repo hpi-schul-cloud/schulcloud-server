@@ -1,3 +1,6 @@
-export { CoreModule } from './core.module';
-export { DomainErrorHandler } from './error';
-export { CoreModuleConfig } from './core.config';
+/**
+
+    Import external dependencies directly, not from here.
+    Avoid loading all external references for testing.
+    Do not re-export here.
+    */
