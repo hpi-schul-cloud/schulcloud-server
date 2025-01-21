@@ -18,9 +18,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
-import { accountFactory } from '@modules/account/testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
