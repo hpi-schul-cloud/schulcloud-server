@@ -31,6 +31,8 @@ export class CourseMapper {
 	}
 
 	public static mapToCreateCourseResponse(course: Course): CreateCourseResponse {
-		return new CreateCourseResponse({ courseId: course.id });
+		const response = new CreateCourseResponse({ courseId: course.id });
+
+		return response;
 	}
 }

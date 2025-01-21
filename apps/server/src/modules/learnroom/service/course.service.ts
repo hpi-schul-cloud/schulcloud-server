@@ -37,7 +37,9 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 	}
 
 	public findById(courseId: EntityId): Promise<CourseEntity> {
-		return this.repo.findById(courseId);
+		const course = this.repo.findById(courseId);
+
+		return course;
 	}
 
 	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<CourseEntity[]>> {
