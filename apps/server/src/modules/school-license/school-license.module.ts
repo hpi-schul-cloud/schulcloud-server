@@ -9,6 +9,7 @@ import { SchoolLicenseController } from './api/school-license.controller';
 import { MEDIA_SCHOOL_LICENSE_REPO } from './repo';
 import { MediaSchoolLicenseMikroOrmRepo } from './repo/mikro-orm/media-school-license.repo';
 import { MediaSchoolLicenseService } from './service';
+import { MediaSchoolLicenseFetchService } from './service/media-school-license-fetch.service';
 import { MediaSchoolLicenseUc } from './uc';
 
 @Module({
@@ -18,6 +19,7 @@ import { MediaSchoolLicenseUc } from './uc';
 		MediaSchoolLicenseService,
 		{ provide: MEDIA_SCHOOL_LICENSE_REPO, useClass: MediaSchoolLicenseMikroOrmRepo },
 		MediaSchoolLicenseUc,
+		MediaSchoolLicenseFetchService,
 	],
 	exports: [MediaSchoolLicenseService],
 })
