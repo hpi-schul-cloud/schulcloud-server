@@ -57,17 +57,21 @@ export class CourseSyncService {
 	}
 
 	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
-		const [studentRole, teacherRole] = await Promise.all([
+		const [studentRole, teacherRole, substituteTeacherRole] = await Promise.all([
 			this.roleService.findByName(RoleName.STUDENT),
 			this.roleService.findByName(RoleName.TEACHER),
+			this.roleService.findByName(RoleName.GROUPSUBSTITUTIONTEACHER),
 		]);
 
-		const studentIds = group.users
+		const studentIds: EntityId[] = group.users
 			.filter((user: GroupUser) => user.roleId === studentRole.id)
-			.map((student) => student.userId);
-		const teacherIds = group.users
+			.map((student: GroupUser) => student.userId);
+		const teacherIds: EntityId[] = group.users
 			.filter((user: GroupUser) => user.roleId === teacherRole.id)
-			.map((teacher) => teacher.userId);
+			.map((teacher: GroupUser) => teacher.userId);
+		const substituteTeacherIds: EntityId[] = group.users
+			.filter((user: GroupUser) => user.roleId === substituteTeacherRole.id)
+			.map((substituteTeacher: GroupUser) => substituteTeacher.userId);
 
 		for (const course of courses) {
 			course.syncedWithGroup = group.id;
@@ -80,7 +84,7 @@ export class CourseSyncService {
 				course.name = group.name;
 			}
 
-			const excludedFromSync = new Set(course.excludeFromSync || []);
+			const excludedFromSync: Set<SyncAttribute> = new Set(course.excludeFromSync || []);
 
 			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
 				course.students = studentIds;
@@ -88,6 +92,14 @@ export class CourseSyncService {
 				course.teachers = teacherIds.length > 0 ? teacherIds : course.teachers;
 				course.students = teacherIds.length > 0 ? studentIds : [];
 			}
+
+			// To ensure unique teachers per course, filter out already assigned teachers from the substitution teacher list
+			const teacherSet: Set<EntityId> = new Set(course.teachers);
+			const filteredSubstituteTeacherIds: string[] = substituteTeacherIds.filter(
+				(substituteTeacherId: EntityId) => !teacherSet.has(substituteTeacherId)
+			);
+
+			course.substitutionTeachers = filteredSubstituteTeacherIds;
 		}
 
 		await this.courseRepo.saveAll(courses);
