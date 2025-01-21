@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
+import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
@@ -34,7 +35,6 @@ import {
 	mediaExternalToolElementFactory,
 } from '../../testing';
 import { MediaAvailableLineUc } from './media-available-line.uc';
-import { mediaSchoolLicenseFactory } from '../../../school-license/testing';
 
 describe(MediaAvailableLineUc.name, () => {
 	let module: TestingModule;

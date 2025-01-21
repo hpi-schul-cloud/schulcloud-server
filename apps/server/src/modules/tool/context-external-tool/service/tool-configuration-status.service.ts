@@ -1,5 +1,6 @@
 import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
+import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ConfigService } from '@nestjs/config';
@@ -14,7 +15,6 @@ import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalToolLaunchable } from '../domain';
-import { UserService } from '../../../user';
 
 @Injectable()
 export class ToolConfigurationStatusService {
