@@ -6,6 +6,7 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
+import { BoardsClientModule } from '@infra/boards-client';
 import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
@@ -18,6 +19,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 	imports: [
 		RabbitMQWrapperModule,
 		CoursesClientModule,
+		BoardsClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
