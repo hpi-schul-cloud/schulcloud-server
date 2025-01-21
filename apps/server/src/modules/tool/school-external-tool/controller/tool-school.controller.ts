@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
@@ -13,7 +14,6 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common/error';
-import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import {

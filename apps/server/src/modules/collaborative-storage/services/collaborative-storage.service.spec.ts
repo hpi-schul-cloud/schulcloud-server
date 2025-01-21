@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -11,7 +12,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { TeamsRepo } from '@shared/repo/teams';
-import { LegacyLogger } from '@src/core/logger';
 import { teamFactory } from '@testing/factory/team.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { TeamDto } from './dto/team.dto';

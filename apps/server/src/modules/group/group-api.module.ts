@@ -7,7 +7,7 @@ import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
 import { ClassGroupUc, GroupUc } from './uc';

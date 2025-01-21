@@ -1,3 +1,5 @@
+import { ErrorLoggable } from '@core/error/loggable/error.loggable';
+import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
 import { Account } from '@modules/account';
 import { System, SystemService } from '@modules/system';
@@ -7,8 +9,6 @@ import { TypeGuard } from '@shared/common/guards';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { UserRepo } from '@shared/repo/user';
-import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
-import { Logger } from '@src/core/logger';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';

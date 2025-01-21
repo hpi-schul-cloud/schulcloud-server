@@ -3,7 +3,7 @@ import { Controller, Get, HttpStatus, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
-import { ErrorResponse } from '@src/core/error/dto';
+import { ErrorResponse } from '@core/error/dto';
 import { CourseInfoResponseMapper } from '../mapper/course-info-response.mapper';
 import { CourseInfoUc } from '../uc/course-info.uc';
 import { CourseInfoDto } from '../uc/dto';

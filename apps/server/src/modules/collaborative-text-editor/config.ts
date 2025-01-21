@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { EtherpadClientConfig } from '@src/infra/etherpad-client';
+import { EtherpadClientConfig } from '@infra/etherpad-client';
 
 export const etherpadClientConfig: EtherpadClientConfig = {
 	apiKey: Configuration.has('ETHERPAD__API_KEY') ? (Configuration.get('ETHERPAD__API_KEY') as string) : undefined,

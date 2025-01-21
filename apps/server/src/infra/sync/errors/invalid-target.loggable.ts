@@ -1,4 +1,4 @@
-import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@core/logger';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 
 export class InvalidTargetLoggable implements Loggable {

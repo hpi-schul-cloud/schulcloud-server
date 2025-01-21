@@ -12,7 +12,7 @@ export class AccountSearchQueryParams extends PaginationParams {
 		required: true,
 		nullable: false,
 	})
-	type!: AccountSearchType;
+	public type!: AccountSearchType;
 
 	@IsString()
 	@SanitizeHtml()
@@ -21,5 +21,5 @@ export class AccountSearchQueryParams extends PaginationParams {
 		required: true,
 		nullable: false,
 	})
-	value!: string;
+	public value!: string;
 }

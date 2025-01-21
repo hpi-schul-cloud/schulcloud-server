@@ -1,7 +1,11 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
+import { CopyColumnBoardParams } from '@modules/board/service/internal';
+import { columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,10 +13,6 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo/legacy-board';
-import { LegacyLogger } from '@src/core/logger';
-import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
-import { columnBoardFactory } from '@src/modules/board/testing';
-import { StorageLocation } from '@src/modules/files-storage/interface';
 import { boardFactory } from '@testing/factory/board.factory';
 import {
 	columnboardBoardElementFactory,

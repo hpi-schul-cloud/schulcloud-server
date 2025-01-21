@@ -3,7 +3,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { FederalStateRepo } from '@shared/repo/federalstate';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { SchoolSystemOptionsRepo, SchoolYearRepo } from './repo';
 import {
 	FederalStateService,

@@ -1,6 +1,6 @@
+import { ErrorLogMessage, Loggable } from '@core/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
 
 export class SchoolInMigrationLoggableException extends BusinessError implements Loggable {
 	constructor() {

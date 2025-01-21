@@ -7,7 +7,7 @@ import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';

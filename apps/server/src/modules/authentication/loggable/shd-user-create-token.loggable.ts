@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types';
-import { Loggable } from '@src/core/logger/interfaces';
-import { LogMessage } from '@src/core/logger/types';
+import { Loggable } from '@core/logger/interfaces';
+import { LogMessage } from '@core/logger/types';
 
 export class ShdUserCreateTokenLoggable implements Loggable {
 	constructor(private supportUserId: EntityId, private targetUserId: EntityId, private expiredIn: number) {}

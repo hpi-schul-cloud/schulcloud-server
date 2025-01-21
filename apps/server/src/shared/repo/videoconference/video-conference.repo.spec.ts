@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, NotFoundError } from '@mikro-orm/core';
@@ -7,7 +8,6 @@ import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/doma
 import { TargetModels, VideoConference, VideoConferenceOptions } from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { VideoConferenceRepo } from '@shared/repo/videoconference';
-import { LegacyLogger } from '@src/core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
 

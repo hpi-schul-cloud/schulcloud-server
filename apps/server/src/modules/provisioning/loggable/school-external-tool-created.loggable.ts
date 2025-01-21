@@ -1,6 +1,6 @@
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense } from '@modules/user-license';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class SchoolExternalToolCreatedLoggable implements Loggable {
 	constructor(private readonly license: MediaUserLicense, private readonly schoolExternalTool: SchoolExternalTool) {}

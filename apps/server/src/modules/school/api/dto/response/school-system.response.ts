@@ -1,5 +1,5 @@
+import { LdapConfig, OauthConfig } from '@modules/system';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { LdapConfig, OauthConfig } from '@src/modules/system';
 
 export class ProviderConfigResponse {
 	@ApiProperty()

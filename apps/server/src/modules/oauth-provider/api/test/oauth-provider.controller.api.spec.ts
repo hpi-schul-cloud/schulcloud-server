@@ -1,10 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { externalToolEntityFactory } from '@src/modules/tool/external-tool/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { externalToolPseudonymEntityFactory } from '@testing/factory/external-tool-pseudonym.factory';
 import { ltiToolFactory } from '@testing/factory/ltitool.factory';

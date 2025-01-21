@@ -1,3 +1,5 @@
+import { Logger } from '@core/logger';
+import { CalendarService } from '@infra/calendar';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
@@ -25,8 +27,6 @@ import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { Logger } from '@src/core/logger';
-import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 import { UserMapper } from '../mapper/user.mapper';

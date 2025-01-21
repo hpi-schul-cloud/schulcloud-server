@@ -1,3 +1,4 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
@@ -6,7 +7,6 @@ import { Course } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
-import { ICurrentUser } from '@src/infra/auth-guard';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseService } from '../service';
 

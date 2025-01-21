@@ -3,8 +3,8 @@ import { Synchronization, SynchronizationService, SynchronizationStatusModel } f
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Logger } from '@src/core/logger';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { Logger } from '@core/logger';
+import { ErrorLogMessage } from '@core/logger/types';
 import { AccountService } from '@modules/account';
 import { StartSynchronizationLoggable, SucessSynchronizationLoggable } from './loggable';
 import {

@@ -1,9 +1,9 @@
+import { LegacyLogger, Logger } from '@core/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
-import { LegacyLogger, Logger } from '@src/core/logger';
 import { performance } from 'perf_hooks';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,

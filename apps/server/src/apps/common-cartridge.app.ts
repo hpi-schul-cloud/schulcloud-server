@@ -1,9 +1,9 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
+import { LegacyLogger, Logger } from '@core/logger';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import {

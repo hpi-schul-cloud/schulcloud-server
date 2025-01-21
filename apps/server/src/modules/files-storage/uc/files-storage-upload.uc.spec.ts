@@ -1,3 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
@@ -9,8 +11,6 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { DomainErrorHandler } from '@src/core';
-import { LegacyLogger } from '@src/core/logger';
 import { AxiosHeadersKeyValue, axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';

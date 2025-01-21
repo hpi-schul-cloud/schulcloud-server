@@ -1,4 +1,4 @@
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { EtherpadErrorType } from '../interface';
 import { EtherpadErrorLoggableException } from './etherpad-error-loggable-exception';
 

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FeathersAuthorizationService } from '@modules/authorization';
@@ -7,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { CreateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo/news';
-import { Logger } from '@src/core/logger';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {

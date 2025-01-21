@@ -10,9 +10,9 @@ import {
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
 import { IHubContentType } from '@lumieducation/h5p-server/build/src/types';
+import { ContentStorage, LibraryStorage } from '@modules/h5p-editor';
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ContentStorage, LibraryStorage } from '@src/modules/h5p-editor';
 import { readFileSync } from 'fs';
 import { parse } from 'yaml';
 import { IH5PLibraryManagementConfig } from './h5p-library-management.config';

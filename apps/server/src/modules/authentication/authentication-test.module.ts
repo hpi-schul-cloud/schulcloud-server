@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { CacheWrapperModule } from '@infra/cache';
@@ -13,7 +14,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { UserRepo } from '@shared/repo/user';
-import { LoggerModule } from '@src/core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { UserModule } from '../user';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';

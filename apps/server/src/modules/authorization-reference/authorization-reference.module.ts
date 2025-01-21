@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { InstanceModule } from '@modules/instance';
 import { Module } from '@nestjs/common';
@@ -7,7 +8,6 @@ import { LegacySchoolRepo } from '@shared/repo/school';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
-import { LoggerModule } from '@src/core/logger';
 import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 
 /**

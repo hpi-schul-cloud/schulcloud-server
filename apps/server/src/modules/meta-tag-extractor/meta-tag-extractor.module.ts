@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { ConsoleWriterModule } from '@infra/console';
 import { BoardModule } from '@modules/board';
 import { LearnroomModule } from '@modules/learnroom';
@@ -8,7 +9,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { LoggerModule } from '@src/core/logger';
 import metaTagExtractorConfig from './meta-tag-extractor.config';
 import { MetaTagExtractorService } from './service';
 import { MetaTagExternalUrlService } from './service/meta-tag-external-url.service';

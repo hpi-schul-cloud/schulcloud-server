@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class InvalidOriginForLogoutUrlLoggableException extends BadRequestException implements Loggable {
 	constructor(private readonly logoutUrl: string, private readonly origin: string | undefined) {

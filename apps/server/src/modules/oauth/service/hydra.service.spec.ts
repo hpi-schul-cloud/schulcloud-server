@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
@@ -12,7 +13,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity';
 import { LtiToolRepo } from '@shared/repo/ltitool';
-import { LegacyLogger } from '@src/core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';

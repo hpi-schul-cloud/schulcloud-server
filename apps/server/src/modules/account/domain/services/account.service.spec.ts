@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
@@ -22,7 +23,6 @@ import {
 } from '@shared/common/error';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
-import { Logger } from '@src/core/logger';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';

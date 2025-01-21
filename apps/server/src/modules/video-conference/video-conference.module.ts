@@ -7,7 +7,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
 import { RoleModule } from '../role';
