@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
-import { BoardClientAdapter, BoardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
+import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
@@ -30,7 +30,7 @@ import { createIdentifier } from '../export/utils';
 @Injectable()
 export class CommonCartridgeExportService {
 	constructor(
-		private readonly boardClientAdapter: BoardClientAdapter,
+		private readonly boardClientAdapter: BoardsClientAdapter,
 		private readonly cardClientAdapter: CardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
@@ -134,7 +134,7 @@ export class CommonCartridgeExportService {
 		const columnBoardsIds = columnBoards
 			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
 			.map((columBoard) => columBoard.columnBoardId);
-		const boardSkeletons: BoardSkeletonDto[] = await Promise.all(
+		const boardSkeletons: BoardResponse[] = await Promise.all(
 			columnBoardsIds.map((columnBoardId) => this.findBoardSkeletonById(columnBoardId))
 		);
 
@@ -142,7 +142,7 @@ export class CommonCartridgeExportService {
 			boardSkeletons.map(async (boardSkeleton) => {
 				const columnBoardOrganization = builder.createOrganization({
 					title: boardSkeleton.title,
-					identifier: createIdentifier(boardSkeleton.boardId),
+					identifier: createIdentifier(boardSkeleton.id),
 				});
 
 				await Promise.all(
@@ -153,13 +153,12 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addColumnToOrganization(
-		column: ColumnSkeletonDto,
+		column: ColumnResponse,
 		columnBoardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
-		const { columnId } = column;
 		const columnOrganization = columnBoardOrganization.createChild({
 			title: column.title ?? '',
-			identifier: createIdentifier(columnId),
+			identifier: createIdentifier(column.id),
 		});
 
 		if (column.cards.length) {
@@ -237,7 +236,7 @@ export class CommonCartridgeExportService {
 		return roomBoardDto;
 	}
 
-	private async findBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
+	private async findBoardSkeletonById(boardId: string): Promise<BoardResponse> {
 		const boardSkeletonDto = await this.boardClientAdapter.getBoardSkeletonById(boardId);
 
 		return boardSkeletonDto;

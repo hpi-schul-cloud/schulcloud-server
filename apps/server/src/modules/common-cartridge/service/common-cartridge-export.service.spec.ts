@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { CourseCommonCartridgeMetadataDto } from '@src/infra/courses-client/dto';
-import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
+import { BoardsClientAdapter, BoardResponse } from '@infra/boards-client';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
@@ -39,7 +39,7 @@ describe('CommonCartridgeExportService', () => {
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let courseRoomsClientAdapterMock: DeepMocked<CourseRoomsClientAdapter>;
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
-	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
+	let boardClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
@@ -57,7 +57,7 @@ describe('CommonCartridgeExportService', () => {
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
 
-		const boardSkeleton: BoardSkeletonDto = columnBoardFactory.build();
+		const boardSkeleton: BoardResponse = columnBoardFactory.build();
 		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.build();
 		const boardTask: BoardTaskDto = boardTaskFactory.build();
 		boardTask.courseName = courseMetadata.title;
@@ -112,8 +112,8 @@ describe('CommonCartridgeExportService', () => {
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 				{
-					provide: BoardClientAdapter,
-					useValue: createMock<BoardClientAdapter>(),
+					provide: BoardsClientAdapter,
+					useValue: createMock<BoardsClientAdapter>(),
 				},
 				{
 					provide: CoursesClientAdapter,
@@ -138,7 +138,7 @@ describe('CommonCartridgeExportService', () => {
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		courseRoomsClientAdapterMock = module.get(CourseRoomsClientAdapter);
 		cardClientAdapterMock = module.get(CardClientAdapter);
-		boardClientAdapterMock = module.get(BoardClientAdapter);
+		boardClientAdapterMock = module.get(BoardsClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
 	});
 
