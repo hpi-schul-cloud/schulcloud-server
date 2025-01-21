@@ -1,8 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { RoleName } from '@shared/domain/interface';
 import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
@@ -10,6 +7,9 @@ import { RoleService } from '@modules/role';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
+import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { RoleName } from '@shared/domain/interface';
 import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
@@ -67,14 +67,12 @@ describe('TspProvisioningService', () => {
 		accountServiceMock = module.get(AccountService);
 	});
 
-	afterAll(async () => {
-		await module.close();
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
-	beforeEach(() => {
-		jest.resetAllMocks();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -164,7 +162,7 @@ describe('TspProvisioningService', () => {
 					roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
 				});
 
-				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValue(clazz);
+				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(clazz);
 
 				return { school, classes, user };
 			};
@@ -186,7 +184,7 @@ describe('TspProvisioningService', () => {
 					roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
 				});
 
-				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValue(null);
+				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
 
 				return { school, classes, user };
 			};
@@ -232,9 +230,9 @@ describe('TspProvisioningService', () => {
 				});
 				const user = userDoFactory.build({ id: faker.string.uuid() });
 
-				userServiceMock.findByExternalId.mockResolvedValue(user);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 
 				return { data, school };
 			};
@@ -263,10 +261,10 @@ describe('TspProvisioningService', () => {
 					roleDtoFactory.build({ name: RoleName.STUDENT }),
 				];
 
-				userServiceMock.findByExternalId.mockResolvedValue(user);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue(roles);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roles);
 
 				return { data, school };
 			};
@@ -294,9 +292,9 @@ describe('TspProvisioningService', () => {
 					externalSchool: externalSchoolDtoFactory.build(),
 				});
 
-				userServiceMock.findByExternalId.mockResolvedValue(null);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue([]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
 				return { data, school };
 			};
@@ -328,10 +326,10 @@ describe('TspProvisioningService', () => {
 				});
 				const user = userDoFactory.build({ id: faker.string.uuid(), roles: [] });
 
-				userServiceMock.findByExternalId.mockResolvedValue(null);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue([]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
 				return { data, school };
 			};
@@ -360,10 +358,10 @@ describe('TspProvisioningService', () => {
 				});
 				const user = userDoFactory.build({ id: undefined, roles: [] });
 
-				userServiceMock.findByExternalId.mockResolvedValue(null);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue([]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
 				return { data, school };
 			};

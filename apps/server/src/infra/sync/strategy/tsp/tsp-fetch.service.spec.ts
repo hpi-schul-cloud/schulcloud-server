@@ -1,11 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosError, AxiosResponse } from 'axios';
-import { Logger } from '@src/core/logger';
-import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
-import { systemFactory } from '@modules/system/testing';
-import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,
@@ -16,6 +10,20 @@ import {
 	RobjExportSchule,
 	TspClientFactory,
 } from '@infra/tsp-client';
+import {
+	robjExportKlasseFactory,
+	robjExportLehrerFactory,
+	robjExportLehrerMigrationFactory,
+	robjExportSchuelerFactory,
+	robjExportSchuelerMigrationFactory,
+	robjExportSchuleFactory,
+} from '@infra/tsp-client/testing';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
+import { systemFactory } from '@modules/system/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
+import { Logger } from '@src/core/logger';
+import { AxiosError, AxiosResponse } from 'axios';
 import { TspFetchService } from './tsp-fetch.service';
 
 describe(TspFetchService.name, () => {
@@ -45,7 +53,6 @@ describe(TspFetchService.name, () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.resetAllMocks();
 	});
 
@@ -60,8 +67,8 @@ describe(TspFetchService.name, () => {
 	});
 
 	const setupTspClient = () => {
-		const clientId = faker.string.alpha();
-		const clientSecret = faker.string.alpha();
+		const clientId = faker.string.uuid();
+		const clientSecret = faker.string.alphanumeric(40);
 		const tokenEndpoint = faker.internet.url();
 		const system = systemFactory.build({
 			oauthConfig: {
@@ -71,61 +78,37 @@ describe(TspFetchService.name, () => {
 			},
 		});
 
-		const tspSchool: RobjExportSchule = {
-			schuleName: faker.string.alpha(),
-			schuleNummer: faker.string.alpha(),
-		};
+		const tspSchool = robjExportSchuleFactory.build();
 		const schools = [tspSchool];
 		const responseSchools = createMock<AxiosResponse<Array<RobjExportSchule>>>({
 			data: schools,
 		});
 
-		const tspTeacher: RobjExportLehrer = {
-			schuleNummer: faker.string.alpha(),
-			lehrerVorname: faker.string.alpha(),
-			lehrerNachname: faker.string.alpha(),
-			lehrerUid: faker.string.alpha(),
-		};
+		const tspTeacher = robjExportLehrerFactory.build();
 		const teachers = [tspTeacher];
 		const responseTeachers = createMock<AxiosResponse<Array<RobjExportLehrer>>>({
 			data: teachers,
 		});
 
-		const tspStudent: RobjExportSchueler = {
-			schuleNummer: faker.string.alpha(),
-			schuelerVorname: faker.string.alpha(),
-			schuelerNachname: faker.string.alpha(),
-			schuelerUid: faker.string.alpha(),
-		};
+		const tspStudent = robjExportSchuelerFactory.build();
 		const students = [tspStudent];
 		const responseStudents = createMock<AxiosResponse<Array<RobjExportSchueler>>>({
 			data: students,
 		});
 
-		const tspClass: RobjExportKlasse = {
-			schuleNummer: faker.string.alpha(),
-			klasseId: faker.string.alpha(),
-			klasseName: faker.string.alpha(),
-			lehrerUid: faker.string.alpha(),
-		};
+		const tspClass = robjExportKlasseFactory.build();
 		const classes = [tspClass];
 		const responseClasses = createMock<AxiosResponse<Array<RobjExportKlasse>>>({
 			data: classes,
 		});
 
-		const tspTeacherMigration: RobjExportLehrerMigration = {
-			lehrerUidAlt: faker.string.alpha(),
-			lehrerUidNeu: faker.string.alpha(),
-		};
+		const tspTeacherMigration = robjExportLehrerMigrationFactory.build();
 		const teacherMigrations = [tspTeacherMigration];
 		const responseTeacherMigrations = createMock<AxiosResponse<Array<RobjExportLehrerMigration>>>({
 			data: teacherMigrations,
 		});
 
-		const tspStudentMigration: RobjExportSchuelerMigration = {
-			schuelerUidAlt: faker.string.alpha(),
-			schuelerUidNeu: faker.string.alpha(),
-		};
+		const tspStudentMigration = robjExportSchuelerMigrationFactory.build();
 		const studentMigrations = [tspStudentMigration];
 		const responseStudentMigrations = createMock<AxiosResponse<Array<RobjExportSchuelerMigration>>>({
 			data: studentMigrations,
@@ -359,8 +342,8 @@ describe(TspFetchService.name, () => {
 			const setup = () => {
 				const system = systemFactory.build({
 					oauthConfig: {
-						clientId: faker.string.alpha(),
-						clientSecret: faker.string.alpha(),
+						clientId: faker.string.uuid(),
+						clientSecret: faker.string.alphanumeric(40),
 						tokenEndpoint: faker.internet.url(),
 					},
 				});
@@ -391,8 +374,8 @@ describe(TspFetchService.name, () => {
 			const setup = () => {
 				const system = systemFactory.build({
 					oauthConfig: {
-						clientId: faker.string.alpha(),
-						clientSecret: faker.string.alpha(),
+						clientId: faker.string.uuid(),
+						clientSecret: faker.string.alphanumeric(40),
 						tokenEndpoint: faker.internet.url(),
 					},
 				});
@@ -431,7 +414,7 @@ describe(TspFetchService.name, () => {
 			it('should throw an OauthConfigMissingLoggableException', async () => {
 				const { system } = setup();
 
-				await expect(async () => sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
+				await expect(() => sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
 			});
 		});
 	});

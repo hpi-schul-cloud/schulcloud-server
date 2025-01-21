@@ -8,7 +8,11 @@ import {
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
 } from '@infra/tsp-client';
-import { robjExportSchuleFactory } from '@infra/tsp-client/testing';
+import {
+	robjExportLehrerMigrationFactory,
+	robjExportSchuelerMigrationFactory,
+	robjExportSchuleFactory,
+} from '@infra/tsp-client/testing';
 import { Account } from '@modules/account';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import {
@@ -95,9 +99,7 @@ describe(TspSyncStrategy.name, () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.resetAllMocks();
-		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -147,7 +149,7 @@ describe(TspSyncStrategy.name, () => {
 		tspFetchService.fetchTspTeacherMigrations.mockResolvedValueOnce(params.fetchedTeacherMigrations ?? []);
 		tspFetchService.fetchTspStudentMigrations.mockResolvedValueOnce(params.fetchedStudentMigrations ?? []);
 
-		tspSyncService.findSchool.mockResolvedValue(params.foundSchool ?? undefined);
+		tspSyncService.findSchool.mockResolvedValueOnce(params.foundSchool ?? undefined);
 		tspSyncService.findAllSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
 		tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(params.foundSystem ?? systemFactory.build());
 
@@ -169,23 +171,17 @@ describe(TspSyncStrategy.name, () => {
 			const setup = () => {
 				const oauthDataDto = oauthDataDtoFactory.build({
 					system: provisioningSystemDtoFactory.build({
-						systemId: faker.string.alpha(),
+						systemId: faker.string.uuid(),
 						provisioningStrategy: SystemProvisioningStrategy.TSP,
 					}),
 					externalUser: externalUserDtoFactory.build({
-						externalId: faker.string.alpha(),
+						externalId: faker.string.uuid(),
 						roles: [],
 					}),
 				});
-				const tspTeacher: RobjExportLehrerMigration = {
-					lehrerUidAlt: faker.string.alpha(),
-					lehrerUidNeu: faker.string.alpha(),
-				};
+				const tspTeacher = robjExportLehrerMigrationFactory.build();
 
-				const tspStudent: RobjExportSchuelerMigration = {
-					schuelerUidAlt: faker.string.alpha(),
-					schuelerUidNeu: faker.string.alpha(),
-				};
+				const tspStudent = robjExportSchuelerMigrationFactory.build();
 
 				setupMockServices({
 					fetchedStudentMigrations: [tspStudent],

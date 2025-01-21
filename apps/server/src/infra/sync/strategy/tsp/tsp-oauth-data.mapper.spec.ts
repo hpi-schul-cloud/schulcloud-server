@@ -40,7 +40,6 @@ describe(TspOauthDataMapper.name, () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.resetAllMocks();
 	});
 
@@ -60,10 +59,10 @@ describe(TspOauthDataMapper.name, () => {
 				const system = systemFactory.build();
 
 				const school = schoolFactory.build({
-					externalId: faker.string.alpha(),
+					externalId: faker.string.uuid(),
 				});
 
-				const lehrerUid = faker.string.alpha();
+				const lehrerUid = faker.string.uuid();
 
 				const tspTeacher = robjExportLehrerFactory.build({
 					lehrerUid,
@@ -71,7 +70,7 @@ describe(TspOauthDataMapper.name, () => {
 				});
 				const tspTeachers = [tspTeacher];
 
-				const klasseId = faker.string.alpha();
+				const klasseId = faker.string.uuid();
 
 				const tspClass = robjExportKlasseFactory.build({
 					klasseId,
@@ -80,9 +79,9 @@ describe(TspOauthDataMapper.name, () => {
 				const tspClasses = [tspClass];
 
 				const tspStudent = robjExportSchuelerFactory.build({
-					schuelerUid: faker.string.alpha(),
-					schuelerNachname: faker.string.alpha(),
-					schuelerVorname: faker.string.alpha(),
+					schuelerUid: faker.string.uuid(),
+					schuelerNachname: faker.person.lastName(),
+					schuelerVorname: faker.person.firstName(),
 					schuleNummer: school.externalId,
 					klasseId,
 				});

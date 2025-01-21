@@ -52,7 +52,6 @@ describe(TspSyncService.name, () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.resetAllMocks();
 	});
 
@@ -102,7 +101,7 @@ describe(TspSyncService.name, () => {
 	describe('findSchool', () => {
 		describe('when school is found', () => {
 			const setup = () => {
-				const externalId = faker.string.alpha();
+				const externalId = faker.string.uuid();
 				const system = systemFactory.build();
 				const school = schoolFactory.build();
 
@@ -122,7 +121,7 @@ describe(TspSyncService.name, () => {
 
 		describe('when school is not found', () => {
 			const setup = () => {
-				const externalId = faker.string.alpha();
+				const externalId = faker.string.uuid();
 				const system = systemFactory.build();
 
 				schoolService.getSchools.mockResolvedValueOnce([]);
@@ -164,8 +163,8 @@ describe(TspSyncService.name, () => {
 	describe('updateSchool', () => {
 		describe('when school is updated', () => {
 			const setup = () => {
-				const newName = faker.string.alpha();
-				const oldName = faker.string.alpha();
+				const newName = faker.person.fullName();
+				const oldName = faker.person.fullName();
 				const school = schoolFactory.build({
 					name: oldName,
 				});
@@ -189,7 +188,7 @@ describe(TspSyncService.name, () => {
 		describe('when school name is undefined', () => {
 			const setup = () => {
 				const newName = undefined;
-				const oldName = faker.string.alpha();
+				const oldName = faker.person.fullName();
 				const school = schoolFactory.build({
 					name: oldName,
 				});
@@ -211,8 +210,8 @@ describe(TspSyncService.name, () => {
 		describe('when school is created', () => {
 			const setup = () => {
 				const system = systemFactory.build();
-				const name = faker.string.alpha();
-				const externalId = faker.string.alpha();
+				const name = faker.word.noun();
+				const externalId = faker.string.uuid();
 
 				const schoolYearEntity = schoolYearFactory.build();
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
@@ -249,8 +248,8 @@ describe(TspSyncService.name, () => {
 		describe('when federalState is already cached', () => {
 			const setup = () => {
 				const system = systemFactory.build();
-				const name = faker.string.alpha();
-				const externalId = faker.string.alpha();
+				const name = faker.word.noun();
+				const externalId = faker.string.uuid();
 
 				const schoolYearEntity = schoolYearFactory.build();
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
