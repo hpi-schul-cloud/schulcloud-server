@@ -5,13 +5,14 @@ import request from 'supertest';
 
 import { InternalServerTestModule } from '@modules/internal-server/internal-server-test.module';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import type { Server } from 'node:net';
 import { HealthStatuses } from '../../domain';
 import { HealthStatusResponse } from '../dto';
 
 class API {
-	app: INestApplication;
+	app: INestApplication<Server>;
 
-	constructor(app: INestApplication) {
+	constructor(app: INestApplication<Server>) {
 		this.app = app;
 	}
 
@@ -26,7 +27,7 @@ class API {
 }
 
 describe('health checks (api)', () => {
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let em: EntityManager;
 	let api: API;
 
