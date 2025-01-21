@@ -1,11 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { SchoolEntity, User as UserEntity } from '@shared/domain/entity';
-import { UserMapper } from './mapper/user.mapper';
+import { User as UserEntity } from '@shared/domain/entity';
 import { User } from '../domain/user';
+import { UserMapper } from './mapper/user.mapper';
+import { UserRepo } from '../uc/interface/user.repo.interface';
 
 @Injectable()
-export class UserRepo {
+export class UserMikroOrmRepo implements UserRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async getUserById(userId: string): Promise<User> {
