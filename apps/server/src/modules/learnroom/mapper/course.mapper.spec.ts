@@ -1,5 +1,5 @@
-import { courseFactory } from '@src/testing/factory/course.factory';
-import { setupEntities } from '@src/testing/setup-entities';
+import { courseFactory } from '@testing/factory/course.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CourseMapper } from './course.mapper';
 import { CreateCourseResponse } from '../controller/dto';
 

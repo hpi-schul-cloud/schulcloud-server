@@ -14,7 +14,6 @@ import {
 	RichTextElementContentDto,
 } from '../common-cartridge-client/card-client/dto';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import {
 	BoardColumnBoardDto,
 	BoardLessonDto,
@@ -32,7 +31,6 @@ import {
 	listOfCardResponseFactory,
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
