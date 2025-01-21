@@ -1,5 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { OauthAdapterService } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
@@ -31,7 +31,7 @@ export class TspClientFactory {
 		private readonly oauthAdapterService: OauthAdapterService,
 		configService: ConfigService<TspClientConfig, true>,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		private readonly logger: Logger
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {
 		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
 		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
@@ -42,7 +42,7 @@ export class TspClientFactory {
 			new Configuration({
 				// accessToken has to be a function otherwise it will be called once
 				// and will not be refresh the access token when it expires
-				apiKey: async () => this.getAccessToken(params),
+				apiKey: () => this.getAccessToken(params),
 				basePath: this.baseUrl,
 			})
 		);
@@ -74,9 +74,9 @@ export class TspClientFactory {
 			return `Bearer ${this.cachedToken}`;
 		} catch (e) {
 			if (e instanceof AxiosError) {
-				this.logger.warning(new AxiosErrorLoggable(e, 'TSP_OAUTH_ERROR'));
+				this.domainErrorHandler.exec(new AxiosErrorLoggable(e, 'TSP_OAUTH_ERROR'));
 			} else {
-				this.logger.warning(new ErrorLoggable(e));
+				this.domainErrorHandler.exec(new ErrorLoggable(e));
 			}
 			return Promise.reject();
 		}

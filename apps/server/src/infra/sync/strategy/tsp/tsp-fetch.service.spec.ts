@@ -1,5 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -30,7 +30,7 @@ describe(TspFetchService.name, () => {
 	let module: TestingModule;
 	let sut: TspFetchService;
 	let tspClientFactory: DeepMocked<TspClientFactory>;
-	let logger: DeepMocked<Logger>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -41,15 +41,15 @@ describe(TspFetchService.name, () => {
 					useValue: createMock<TspClientFactory>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
 
 		sut = module.get(TspFetchService);
 		tspClientFactory = module.get(TspClientFactory);
-		logger = module.get(Logger);
+		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
@@ -366,7 +366,9 @@ describe(TspFetchService.name, () => {
 
 				await sut.fetchTspSchools(system, 1);
 
-				expect(logger.warning).toHaveBeenCalledWith(new AxiosErrorLoggable(new AxiosError(), 'TSP_FETCH_ERROR'));
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
+					new AxiosErrorLoggable(new AxiosError(), 'TSP_FETCH_ERROR')
+				);
 			});
 		});
 
@@ -398,7 +400,7 @@ describe(TspFetchService.name, () => {
 
 				await sut.fetchTspSchools(system, 1);
 
-				expect(logger.warning).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
 			});
 		});
 	});

@@ -1,11 +1,11 @@
+import { DomainErrorHandler } from '@core/error';
+import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { OauthAdapterService } from '@modules/oauth';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import axios, { AxiosError } from 'axios';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
@@ -16,7 +16,7 @@ describe('TspClientFactory', () => {
 	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
 	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
 	let encryptionService: DeepMocked<EncryptionService>;
-	let logger: DeepMocked<Logger>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,8 +46,8 @@ describe('TspClientFactory', () => {
 					useValue: createMock<EncryptionService>(),
 				},
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();
@@ -56,7 +56,7 @@ describe('TspClientFactory', () => {
 		configServiceMock = module.get(ConfigService);
 		oauthAdapterServiceMock = module.get(OauthAdapterService);
 		encryptionService = module.get(DefaultEncryptionService);
-		logger = module.get(Logger);
+		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
@@ -169,7 +169,9 @@ describe('TspClientFactory', () => {
 
 				await expect(() => sut.getAccessToken(params)).rejects.toBeUndefined();
 
-				expect(logger.warning).toHaveBeenCalledWith(new AxiosErrorLoggable(new AxiosError(), 'TSP_OAUTH_ERROR'));
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
+					new AxiosErrorLoggable(new AxiosError(), 'TSP_OAUTH_ERROR')
+				);
 			});
 		});
 
@@ -197,7 +199,7 @@ describe('TspClientFactory', () => {
 
 				await expect(() => sut.getAccessToken(params)).rejects.toBeUndefined();
 
-				expect(logger.warning).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
 			});
 		});
 	});
