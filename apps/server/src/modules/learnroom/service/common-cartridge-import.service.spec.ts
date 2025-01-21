@@ -38,6 +38,8 @@ describe('CommonCartridgeImportService', () => {
 	const card3Title = 'Karte 3';
 	const card4Title = 'Karte 4';
 
+	const columnPlaceholderTitle1 = '1';
+
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 	const objectContainingTitle = (title: string) => expect.objectContaining({ title });
 
@@ -122,27 +124,27 @@ describe('CommonCartridgeImportService', () => {
 
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board1Title),
-					objectContainingTitle(column1ofBoard1Title)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board2Title),
-					objectContainingTitle(column1ofBoard2Title)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(column1ofBoard3Title)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(column2ofBoard3Title)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(column3ofBoard3Title)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(column4ofBoard3Title)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 			});
 
