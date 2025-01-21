@@ -17,6 +17,7 @@ import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
+import objectContaining = jasmine.objectContaining;
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -61,6 +62,9 @@ describe(DeletionRequestUc.name, () => {
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
 		eventBus = module.get(EventBus);
+
+		jest.useFakeTimers();
+		jest.setSystemTime(new Date(Date.now()));
 	});
 
 	beforeEach(() => {
@@ -70,30 +74,35 @@ describe(DeletionRequestUc.name, () => {
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
+				const deleteAfterMinutes = 1;
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
 						domain: DomainName.USER,
 						id: new ObjectId().toHexString(),
 					},
-					deleteAfterMinutes: 1440,
+					deleteAfterMinutes,
 				};
 				const deletionRequest = deletionRequestFactory.build();
+
+				const deleteAfter = new Date();
+				deleteAfter.setMinutes(deleteAfter.getMinutes() + deleteAfterMinutes);
 
 				return {
 					deletionRequestToCreate,
 					deletionRequest,
+					deleteAfter,
 				};
 			};
 
 			it('should call the service to create the deletionRequest', async () => {
-				const { deletionRequestToCreate } = setup();
+				const { deletionRequestToCreate, deleteAfter } = setup();
 
 				await uc.createDeletionRequest(deletionRequestToCreate);
 
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
 					deletionRequestToCreate.targetRef.domain,
-					deletionRequestToCreate.deleteAfterMinutes
+					deleteAfter
 				);
 			});
 
