@@ -19,7 +19,7 @@ import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted, SchoolFeature } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { importUserFactory } from '@testing/factory/import-user.factory';

@@ -20,6 +20,7 @@ import {
 	ILibraryDetailedDataForClient,
 	ILibraryOverviewForClient,
 } from '@lumieducation/h5p-server/build/src/types';
+import { UserService } from '@modules/user';
 import {
 	BadRequestException,
 	HttpException,
@@ -29,7 +30,6 @@ import {
 } from '@nestjs/common';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserService } from '@src/modules/user';
 import { Request } from 'express';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
 import { H5PContentParentType } from '../entity';

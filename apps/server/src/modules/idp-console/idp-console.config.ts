@@ -6,7 +6,7 @@ import { AccountConfig } from '@modules/account';
 import { SynchronizationConfig } from '@modules/synchronization';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 
 export interface IdpConsoleConfig
 	extends ConsoleWriterConfig,

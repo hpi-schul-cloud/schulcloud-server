@@ -6,11 +6,11 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
+import { LegacyLogger, Logger } from '@core/logger';
 import { RedisIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,

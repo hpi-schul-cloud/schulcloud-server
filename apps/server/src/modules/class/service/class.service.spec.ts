@@ -14,7 +14,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';

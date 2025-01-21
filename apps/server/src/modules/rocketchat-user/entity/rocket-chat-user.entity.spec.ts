@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
+import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { setupEntities } from '@testing/setup-entities';
 
 describe(RocketChatUserEntity.name, () => {
