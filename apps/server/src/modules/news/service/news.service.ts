@@ -16,7 +16,7 @@ import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

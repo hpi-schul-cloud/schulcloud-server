@@ -4,9 +4,9 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
+import { LegacyLogger } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { ManagementServerModule } from '@modules/management/management-server.app.module';
-import { LegacyLogger } from '@src/core/logger';
 import { install as sourceMapInstall } from 'source-map-support';
 import { createRequestLoggerMiddleware, enableOpenApiDocs } from './helpers';
 import legacyAppPromise = require('../../../../src/app');

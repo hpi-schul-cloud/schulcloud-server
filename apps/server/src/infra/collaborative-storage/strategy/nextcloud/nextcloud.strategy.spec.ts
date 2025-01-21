@@ -10,7 +10,7 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { LtiToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { ltiToolDOFactory, pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';

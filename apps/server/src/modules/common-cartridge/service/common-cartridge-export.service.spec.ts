@@ -1,27 +1,25 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { CoursesClientAdapter } from '@infra/courses-client';
+import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
-import { CoursesClientAdapter } from '@infra/courses-client';
-import { CourseCommonCartridgeMetadataDto } from '@src/infra/courses-client/dto';
 import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import {
-	RoomBoardDto,
-	BoardTaskDto,
-	BoardLessonDto,
-	BoardColumnBoardDto,
-} from '../common-cartridge-client/room-client/dto';
-import {
-	RichTextElementContentDto,
-	LinkElementContentDto,
 	CardListResponseDto,
+	LinkElementContentDto,
+	RichTextElementContentDto,
 } from '../common-cartridge-client/card-client/dto';
+import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import {
+	BoardColumnBoardDto,
+	BoardLessonDto,
+	BoardTaskDto,
+	RoomBoardDto,
+} from '../common-cartridge-client/room-client/dto';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import {
 	boardCloumnBoardFactory,
 	boardLessonFactory,
@@ -32,6 +30,8 @@ import {
 	listOfCardResponseFactory,
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;

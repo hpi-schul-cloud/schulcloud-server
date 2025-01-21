@@ -11,7 +11,7 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';

@@ -1,7 +1,7 @@
+import { School } from '@modules/school';
+import { System } from '@modules/system';
 import { Role, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { School } from '@src/modules/school';
-import { System } from '@src/modules/system';
 import {
 	MeAccountResponse,
 	MeResponse,

@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 import { PreviewFileOptions } from '../interface';
 import { ErrorType } from '../interface/error-status.enum';
 

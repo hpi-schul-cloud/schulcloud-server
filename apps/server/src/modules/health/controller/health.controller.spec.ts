@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 
-import { HealthUC } from '@src/modules/health/uc';
+import { HealthUC } from '@modules/health/uc';
 import { setupEntities } from '@testing/setup-entities';
 import { HealthStatus, HealthStatuses } from '../domain';
 import { HealthController } from './health.controller';

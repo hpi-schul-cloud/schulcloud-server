@@ -1,4 +1,4 @@
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { Command, Console } from 'nestjs-console';
 import { SyncUc } from '../uc/sync.uc';
 

@@ -11,7 +11,7 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { isObject } from '@nestjs/common/utils/shared.utils';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {

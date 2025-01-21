@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { UserRepo } from '@shared/repo';
 import { UsersAdminService } from './service';
 import { UsersAdminRepo } from './repo';
