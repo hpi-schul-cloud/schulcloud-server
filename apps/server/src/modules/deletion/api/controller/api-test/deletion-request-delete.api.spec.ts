@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.app.module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { DeletionRequestEntity } from '../../../repo/entity';

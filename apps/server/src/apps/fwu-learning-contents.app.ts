@@ -9,11 +9,11 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger } from '@core/logger';
-import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { FwuLearningContentsModule } from '@modules/fwu-learning-contents/fwu-learning-contents.app.module';
 import { enableOpenApiDocs } from './helpers';
+import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
 	// create the NestJS application on a seperate express instance

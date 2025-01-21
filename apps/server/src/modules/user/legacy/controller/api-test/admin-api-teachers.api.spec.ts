@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { accountFactory } from '@modules/account/testing';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';

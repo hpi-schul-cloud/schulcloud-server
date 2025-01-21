@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -86,7 +86,7 @@ describe('Admin API - Users (API)', () => {
 						firstName: body.firstName,
 						lastName: body.lastName,
 						email: body.email,
-					})
+					}),
 				);
 			});
 
@@ -100,7 +100,7 @@ describe('Admin API - Users (API)', () => {
 					expect.objectContaining({
 						id: accountId,
 						username: body.email,
-					})
+					}),
 				);
 			});
 		});

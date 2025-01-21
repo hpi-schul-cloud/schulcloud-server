@@ -2,6 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -25,6 +26,7 @@ describe(BoardUc.name, () => {
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
+	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -63,6 +65,10 @@ describe(BoardUc.name, () => {
 					useValue: createMock<RoomMembershipService>(),
 				},
 				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
+				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -76,6 +82,7 @@ describe(BoardUc.name, () => {
 		columnBoardService = module.get(ColumnBoardService);
 		courseRepo = module.get(CourseRepo);
 		boardNodeFactory = module.get(BoardNodeFactory);
+		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 		await setupEntities();
 	});
 
@@ -209,7 +216,7 @@ describe(BoardUc.name, () => {
 							layout: BoardLayout.COLUMNS,
 							parentId: new ObjectId().toHexString(),
 							parentType: BoardExternalReferenceType.User,
-						})
+						}),
 					).rejects.toThrowError('Unsupported context type user');
 				});
 			});
@@ -234,13 +241,21 @@ describe(BoardUc.name, () => {
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
-		it('should return the column board object', async () => {
+		it('should call the board context api helper service to get features', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.findBoard(user.id, boardId);
+
+			expect(boardContextApiHelperService.getFeaturesForBoardNode).toHaveBeenCalledWith(boardId);
+		});
+
+		it('should return the column board object + features', async () => {
 			const { user, board } = globalSetup();
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await uc.findBoard(user.id, board.id);
 
-			expect(result).toEqual(board);
+			expect(result).toEqual({ board, features: [] });
 		});
 	});
 
@@ -493,7 +508,7 @@ describe(BoardUc.name, () => {
 			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(
-				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId })
+				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId }),
 			);
 		});
 

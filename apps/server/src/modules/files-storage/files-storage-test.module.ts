@@ -6,7 +6,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { FileRecord } from './entity';
-import { FilesStorageApiModule } from './files-storage-api.module';
+import { FilesStorageApiModule } from './files-storage-api.app.module';
 
 const imports = [
 	FilesStorageApiModule,
