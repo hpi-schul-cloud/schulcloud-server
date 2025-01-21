@@ -220,7 +220,7 @@ export class UserLoginMigrationController {
 	}
 
 	@Post('migrate-to-oauth2')
-	@ApiOkResponse({ description: 'The User has been successfully migrated.', status: 200 })
+	@ApiOkResponse({ description: 'The User has been successfully migrated.' })
 	@ApiUnprocessableEntityResponse({ description: 'The migration of the User was not possible.' })
 	async migrateUserLogin(
 		@JWT() jwt: string,
