@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { CalendarModule } from '@infra/calendar';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
@@ -12,7 +13,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { LoggerModule } from '@src/core/logger';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceService } from './service';

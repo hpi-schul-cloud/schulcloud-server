@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
 import { ConsoleWriterModule } from '@infra/console';
 import { AccountModule } from '@modules/account';

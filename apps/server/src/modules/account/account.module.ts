@@ -4,7 +4,7 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger/logger.module';
+import { LoggerModule } from '@core/logger/logger.module';
 import { AccountConfig } from './account-config';
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';

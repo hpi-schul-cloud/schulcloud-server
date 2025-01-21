@@ -14,7 +14,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { LessonRepo } from '../repository';

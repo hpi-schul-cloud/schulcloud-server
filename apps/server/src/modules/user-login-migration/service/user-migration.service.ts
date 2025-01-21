@@ -3,7 +3,7 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import {
 	UserMigrationDatabaseOperationFailedLoggableException,

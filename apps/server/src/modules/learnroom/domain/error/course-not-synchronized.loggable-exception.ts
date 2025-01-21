@@ -1,6 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 
 export class CourseNotSynchronizedLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly courseId: EntityId) {

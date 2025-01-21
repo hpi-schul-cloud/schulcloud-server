@@ -1,7 +1,11 @@
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
+import { VideoConferenceElement } from '@modules/board/domain';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -10,10 +14,6 @@ import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity'
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
-import { VideoConferenceElement } from '@modules/board/domain';
-import { Room, RoomService } from '@modules/room';
-import { RoomMembershipService } from '@modules/room-membership';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -176,7 +176,7 @@ export class VideoConferenceService {
 		return hasPermission;
 	}
 
-	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
+	public async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
 		const [authorizableUser, scopeResource]: [User, ConferenceResource | null] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),

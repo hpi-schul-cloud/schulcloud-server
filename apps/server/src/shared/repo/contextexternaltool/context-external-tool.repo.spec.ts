@@ -16,7 +16,7 @@ import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-t
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { ContextExternalToolRepo } from './context-external-tool.repo';

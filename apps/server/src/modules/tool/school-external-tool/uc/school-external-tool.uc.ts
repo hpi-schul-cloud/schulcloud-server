@@ -1,9 +1,9 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { School, SchoolService } from '@modules/school';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { School, SchoolService } from '@src/modules/school';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';

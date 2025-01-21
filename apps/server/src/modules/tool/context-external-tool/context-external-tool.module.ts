@@ -1,7 +1,7 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';

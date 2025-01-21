@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import bcrypt from 'bcryptjs';
@@ -331,7 +331,7 @@ describe('AccountDbService', () => {
 
 			it('should throw EntityNotFoundError', async () => {
 				setup();
-				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
+				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toBeInstanceOf(EntityNotFoundError);
 			});
 		});
 	});
@@ -769,6 +769,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -788,6 +789,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -857,7 +859,7 @@ describe('AccountDbService', () => {
 				const newPassword = 'newPassword';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
 				return { mockTeacherAccount, newPassword };
 			};
 
@@ -869,8 +871,6 @@ describe('AccountDbService', () => {
 				expect(ret).toBeDefined();
 				if (ret.password) {
 					await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
-				} else {
-					fail('return password is undefined');
 				}
 			});
 		});

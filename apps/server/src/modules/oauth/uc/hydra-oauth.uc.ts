@@ -1,6 +1,6 @@
 import { OauthConfigEntity } from '@modules/system/entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
 import { OAuthTokenDto } from '../interface';

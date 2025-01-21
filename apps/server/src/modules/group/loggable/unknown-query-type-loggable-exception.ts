@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export class UnknownQueryTypeLoggableException extends InternalServerErrorException implements Loggable {
