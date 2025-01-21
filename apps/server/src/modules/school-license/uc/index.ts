@@ -1,1 +1,1 @@
-export { Me } from './media-school-license.uc';
+export { MediaSchoolLicenseUc } from './media-school-license.uc';

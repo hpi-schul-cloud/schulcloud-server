@@ -49,19 +49,20 @@ export class MediaSchoolLicenseService {
 		return deleteCount;
 	}
 
-	public async syncMediaSchoolLicenses(schoolId: EntityId): Promise<void> {
+	public async updateMediaSchoolLicenses(schoolId: EntityId): Promise<void> {
 		const school = await this.schoolService.getSchoolById(schoolId);
 
 		if (!school) {
 			this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolId));
 		}
 
-		const prefix: string = school.getProps().federalState.getProps().abbreviation;
+		// const prefix: string = school.getProps().federalState.getProps().abbreviation;
+		const prefix: string =
+			school.getProps().federalState.getProps().abbreviation === 'NI' ? 'DE-VIDIS-vidis_test' : 'FAILING';
 		const { officialSchoolNumber } = school;
 		if (!officialSchoolNumber) {
-			throw new SchoolNumberNotFoundLoggableException(school.id);
+			throw new SchoolNumberNotFoundLoggableException(schoolId);
 		}
-
 		const schoolname = `${prefix}_${officialSchoolNumber}`;
 
 		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
@@ -127,9 +128,10 @@ export class MediaSchoolLicenseService {
 
 		const vidisClient: IDMBetreiberApiInterface = this.vidisClientFactory.createVidisClient();
 
-		const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
-		const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
-		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
+		// const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
+		// const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
+		// const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
+		const basicAuthEncoded = btoa(`${mediaSource.basicAuthConfig.username}:${mediaSource.basicAuthConfig.password}`);
 
 		try {
 			const axiosResponse: AxiosResponse<PageOfferDTO> = await vidisClient.getActivatedOffersBySchool(
