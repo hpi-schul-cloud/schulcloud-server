@@ -5,11 +5,19 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { LegacyLogger } from '@src/core/logger';
+import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { StorageLocation } from '@src/modules/files-storage/interface';
 import { RoomService } from '@src/modules/room';
 import { RoomMembershipService } from '@src/modules/room-membership';
 import { CreateBoardBodyParams } from '../controller/dto';
-import { BoardExternalReference, BoardExternalReferenceType, BoardNodeFactory, Column, ColumnBoard } from '../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardFeature,
+	BoardNodeFactory,
+	Column,
+	ColumnBoard,
+} from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
 
@@ -25,7 +33,8 @@ export class BoardUc {
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo,
 		private readonly roomService: RoomService,
-		private readonly boardNodeFactory: BoardNodeFactory
+		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
@@ -46,14 +55,18 @@ export class BoardUc {
 		return board;
 	}
 
-	public async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
+	public async findBoard(
+		userId: EntityId,
+		boardId: EntityId
+	): Promise<{ board: ColumnBoard; features: BoardFeature[] }> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
 
-		return board;
+		return { board, features };
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {

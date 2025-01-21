@@ -9,7 +9,10 @@ import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-t
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 
 describe('ContextExternalToolRule', () => {

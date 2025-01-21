@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { JwtTestFactory } from '@shared/testing';
+import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { TokenInvalidLoggableException } from '../../loggable';
 import { OauthSessionToken } from './oauth-session-token';
 import { OauthSessionTokenFactory } from './oauth-session-token.factory';

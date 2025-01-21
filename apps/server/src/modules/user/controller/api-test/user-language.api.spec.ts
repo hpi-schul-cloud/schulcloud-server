@@ -1,133 +1,63 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { ApiValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 
 const baseRouteName = '/user/language';
 
-class API {
-	app: INestApplication;
-
-	routeName: string;
-
-	constructor(app: INestApplication, routeName: string) {
-		this.app = app;
-		this.routeName = routeName;
-	}
-
-	async patch(language: string) {
-		const response = await request(this.app.getHttpServer())
-			.patch(`${this.routeName}`)
-			.set('Accept', 'application/json')
-			.send({ language });
-
-		return {
-			result: response.body as boolean,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(baseRouteName, () => {
-	describe('with user is not logged in', () => {
-		let app: INestApplication;
-		let em: EntityManager;
-		let api: API;
+	let app: INestApplication;
+	let em: EntityManager;
+	let apiClient: TestApiClient;
 
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate() {
-						return false;
-					},
-				})
-				.compile();
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		}).compile();
 
-			app = module.createNestApplication();
-			await app.init();
-			em = module.get(EntityManager);
-			api = new API(app, baseRouteName);
-		});
+		app = module.createNestApplication();
+		await app.init();
+		em = module.get(EntityManager);
+		apiClient = new TestApiClient(app, baseRouteName);
+	});
 
-		afterAll(async () => {
-			await app.close();
-		});
+	afterAll(async () => {
+		await app.close();
+	});
 
-		beforeEach(async () => {
-			await cleanupCollections(em);
+	describe('when user is not logged in', () => {
+		it('should return status 401', async () => {
+			const response = await apiClient.patch(undefined, LanguageType.DE);
 
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles });
-
-			await em.persistAndFlush([user]);
-			em.clear();
-		});
-
-		it('should return status 403', async () => {
-			const response = await api.patch(LanguageType.DE);
-
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(401);
 		});
 	});
 
 	describe('with bad request data', () => {
-		let app: INestApplication;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
+		const setup = async () => {
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			em = module.get(EntityManager);
-			api = new API(app, baseRouteName);
-		});
-
-		afterAll(async () => {
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await cleanupCollections(em);
-
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles });
-
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([teacherAccount, teacherUser]);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
-		});
+			const loggedInClient = await apiClient.login(teacherAccount);
+
+			return { loggedInClient };
+		};
 
 		it('should throw an validation error is not supported language is passed.', async () => {
-			const response = await api.patch('super');
+			const { loggedInClient } = await setup();
 
-			expect(response.error.validationErrors).toEqual([
+			const result = await loggedInClient.patch(undefined, 'super');
+			const response = result.body as ApiValidationError;
+
+			expect(response.validationErrors).toEqual([
 				{
 					errors: ['language must be one of the following values: de, en, es, uk'],
 					field: ['language'],
@@ -136,73 +66,52 @@ describe(baseRouteName, () => {
 		});
 	});
 
-	describe('without valid request data', () => {
-		let app: INestApplication;
-		let em: EntityManager;
-		let currentUser: ICurrentUser;
-		let api: API;
+	describe('with valid request data', () => {
+		const setup = async () => {
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ language: LanguageType.DE });
 
-		beforeAll(async () => {
-			const module: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			})
-				.overrideGuard(JwtAuthGuard)
-				.useValue({
-					canActivate(context: ExecutionContext) {
-						const req: Request = context.switchToHttp().getRequest();
-						req.user = currentUser;
-						return true;
-					},
-				})
-				.compile();
-
-			app = module.createNestApplication();
-			await app.init();
-			em = module.get(EntityManager);
-			api = new API(app, baseRouteName);
-		});
-
-		afterAll(async () => {
-			await app.close();
-		});
-
-		beforeEach(async () => {
-			await cleanupCollections(em);
-
-			const roles = roleFactory.buildList(1, { permissions: [] });
-			const user = userFactory.build({ roles, language: LanguageType.DE });
-
-			await em.persistAndFlush([user]);
+			await em.persistAndFlush([teacherAccount, teacherUser]);
 			em.clear();
 
-			currentUser = mapUserToCurrentUser(user);
-		});
+			const loggedInClient = await apiClient.login(teacherAccount);
+
+			return { loggedInClient, teacherUser };
+		};
 
 		it('should return status 200 for successful request.', async () => {
-			const response = await api.patch(LanguageType.EN);
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.patch(undefined, { language: LanguageType.EN });
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should return successful true.', async () => {
-			const response = await api.patch(LanguageType.EN);
+			const { loggedInClient } = await setup();
 
-			expect(response.result).toEqual({ successful: true });
+			const result = await loggedInClient.patch(undefined, { language: LanguageType.EN });
+			const response = result.body as { successful: boolean };
+
+			expect(response).toEqual({ successful: true });
 		});
 
 		it('should change the language', async () => {
-			await api.patch(LanguageType.EN);
+			const { loggedInClient, teacherUser } = await setup();
 
-			const user = await em.findOne(User, { id: currentUser.userId });
+			await loggedInClient.patch(undefined, { language: LanguageType.EN });
+
+			const user = await em.findOne(User, { id: teacherUser.id });
 
 			expect(user?.language).toEqual('en');
 		});
 
 		it('should support de, en, es, ua', async () => {
-			const de = await api.patch(LanguageType.DE);
-			const en = await api.patch(LanguageType.EN);
-			const es = await api.patch(LanguageType.ES);
-			const ua = await api.patch(LanguageType.UK);
+			const { loggedInClient } = await setup();
+
+			const de = await loggedInClient.patch(undefined, { language: LanguageType.DE });
+			const en = await loggedInClient.patch(undefined, { language: LanguageType.EN });
+			const es = await loggedInClient.patch(undefined, { language: LanguageType.ES });
+			const ua = await loggedInClient.patch(undefined, { language: LanguageType.UK });
 
 			expect(de.status).toEqual(200);
 			expect(en.status).toEqual(200);

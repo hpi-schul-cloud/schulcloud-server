@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
-import { jwtPayloadFactory } from '@shared/testing';
+import { jwtPayloadFactory } from '@testing/factory/jwtpayload.factory';
 import { JwtValidationAdapter } from '../adapter';
 import { WsJwtStrategy } from './ws-jwt.strategy';
 

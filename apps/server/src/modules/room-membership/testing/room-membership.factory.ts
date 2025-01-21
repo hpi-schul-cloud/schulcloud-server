@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseFactory } from '@shared/testing';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { RoomMembership, RoomMembershipProps } from '../do/room-membership.do';
 
 export const roomMembershipFactory = BaseFactory.define<RoomMembership, RoomMembershipProps>(RoomMembership, () => {

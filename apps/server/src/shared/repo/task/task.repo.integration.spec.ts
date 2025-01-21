@@ -3,15 +3,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Task } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	courseFactory,
-	courseGroupFactory,
-	lessonFactory,
-	submissionFactory,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { submissionFactory } from '@testing/factory/submission.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
 import { TaskRepo } from './task.repo';
 
 const yesterday = new Date(Date.now() - 86400000);

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, GridPosition } from '@shared/domain/entity';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { currentUserFactory } from '@shared/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';

@@ -36,6 +36,7 @@ const RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
 
 const GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>> = {
 	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
+	[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
 	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
 };
 
@@ -89,6 +90,7 @@ export class SchulconnexResponseMapper {
 
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
+			preferredName: source.person.name.rufname,
 			lastName: source.person.name.familienname,
 			roles: role ? [role] : [],
 			externalId: source.pid,

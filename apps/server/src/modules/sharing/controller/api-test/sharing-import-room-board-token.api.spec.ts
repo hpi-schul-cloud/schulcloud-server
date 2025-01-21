@@ -3,20 +3,18 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	groupEntityFactory,
-	roleFactory,
-	schoolEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
 import { BoardExternalReferenceType } from '@src/modules/board';
 import { columnBoardEntityFactory } from '@src/modules/board/testing';
 import { GroupEntityTypes } from '@src/modules/group/entity';
 import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
 import { roomEntityFactory } from '@src/modules/room/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
 import { ShareTokenService } from '../../service';
 

@@ -3,7 +3,7 @@ import { Collection, Entity, Enum, ManyToMany, ManyToOne, Property } from '@mikr
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { cleanupCollections } from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
 
 @Entity({ tableName: 'users' })
 class User extends BaseEntityWithTimestamps {
