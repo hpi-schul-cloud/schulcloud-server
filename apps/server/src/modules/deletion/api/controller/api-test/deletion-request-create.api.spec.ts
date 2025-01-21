@@ -38,12 +38,12 @@ const isDeletionPlannedWithinAcceptableRange = (
 	creationDate: Date,
 	deletionPlannedAt: Date,
 	diffInMinutes: number,
-	toleranceInSeconds: number,
+	toleranceInSeconds: number
 ) => {
 	const { minDeletionPlannedAt, maxDeletionPlannedAt } = getMinAndMaxDeletionPlannedAt(
 		creationDate,
 		diffInMinutes,
-		toleranceInSeconds,
+		toleranceInSeconds
 	);
 
 	return deletionPlannedAt >= minDeletionPlannedAt && deletionPlannedAt <= maxDeletionPlannedAt;
@@ -135,11 +135,11 @@ describe(`deletionRequest create (api)`, () => {
 							createdItem.createdAt,
 							createdItem.deleteAfter,
 							defaultDeleteInMinutes,
-							operationalTimeToleranceInSeconds,
+							operationalTimeToleranceInSeconds
 						);
 
 						expect(isDeletionPlannedAtDateCorrect).toEqual(true);
-					},
+					}
 				);
 			});
 
@@ -158,7 +158,7 @@ describe(`deletionRequest create (api)`, () => {
 						createdItem.createdAt,
 						createdItem.deleteAfter,
 						0,
-						operationalTimeToleranceInSeconds,
+						operationalTimeToleranceInSeconds
 					);
 
 					expect(isDeletionPlannedAtDateCorrect).toEqual(true);

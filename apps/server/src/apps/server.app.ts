@@ -136,7 +136,7 @@ async function bootstrap(): Promise<void> {
 				appName: 'Main server app',
 				port,
 				mountsDescription: '/, /api, /api/v1 --> FeathersJS, /api/v3 --> NestJS',
-			}),
+			})
 		);
 
 		createAndStartPrometheusMetricsAppIfEnabled(logger);

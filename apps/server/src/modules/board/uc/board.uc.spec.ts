@@ -216,7 +216,7 @@ describe(BoardUc.name, () => {
 							layout: BoardLayout.COLUMNS,
 							parentId: new ObjectId().toHexString(),
 							parentType: BoardExternalReferenceType.User,
-						}),
+						})
 					).rejects.toThrowError('Unsupported context type user');
 				});
 			});
@@ -508,7 +508,7 @@ describe(BoardUc.name, () => {
 			await uc.copyBoard(user.id, boardId, user.school.id);
 
 			expect(columnBoardService.copyColumnBoard).toHaveBeenCalledWith(
-				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId }),
+				expect.objectContaining({ userId: user.id, originalColumnBoardId: boardId })
 			);
 		});
 

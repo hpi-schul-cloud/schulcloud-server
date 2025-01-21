@@ -41,7 +41,7 @@ async function bootstrap(): Promise<void> {
 			new AppStartLoggable({
 				appName: 'course export & import service',
 				port,
-			}),
+			})
 		);
 		createAndStartPrometheusMetricsAppIfEnabled(logger);
 	});

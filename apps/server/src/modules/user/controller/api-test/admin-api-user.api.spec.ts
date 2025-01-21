@@ -86,7 +86,7 @@ describe('Admin API - Users (API)', () => {
 						firstName: body.firstName,
 						lastName: body.lastName,
 						email: body.email,
-					}),
+					})
 				);
 			});
 
@@ -100,7 +100,7 @@ describe('Admin API - Users (API)', () => {
 					expect.objectContaining({
 						id: accountId,
 						username: body.email,
-					}),
+					})
 				);
 			});
 		});

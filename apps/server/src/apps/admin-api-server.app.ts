@@ -44,7 +44,7 @@ async function bootstrap(): Promise<void> {
 				appName: 'Admin API server app',
 				port: adminApiServerPort,
 				mountsDescription: `/admin/api/v1 --> Admin API Server`,
-			}),
+			})
 		);
 
 		createAndStartPrometheusMetricsAppIfEnabled(logger);

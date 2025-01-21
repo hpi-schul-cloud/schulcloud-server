@@ -258,7 +258,7 @@ describe('VideoConferenceInfoUc', () => {
 								},
 							});
 							const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-								scope.id,
+								scope.id
 							);
 
 							userService.findById.mockResolvedValue(user);
@@ -306,7 +306,7 @@ describe('VideoConferenceInfoUc', () => {
 								},
 							});
 							const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-								scope.id,
+								scope.id
 							);
 
 							userService.findById.mockResolvedValue(user);
@@ -350,7 +350,7 @@ describe('VideoConferenceInfoUc', () => {
 							},
 						});
 						const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-							scope.id,
+							scope.id
 						);
 
 						userService.findById.mockResolvedValue(user);
@@ -401,7 +401,7 @@ describe('VideoConferenceInfoUc', () => {
 					});
 
 					const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-						scope.id,
+						scope.id
 					);
 
 					userService.findById.mockResolvedValue(user);

@@ -16,7 +16,7 @@ export class VideoConferenceJoinUc {
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	public async join(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceJoin> {
@@ -32,7 +32,7 @@ export class VideoConferenceJoinUc {
 		const { role, isGuest } = await this.videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb(
 			currentUserId,
 			scope.id,
-			scope.scope,
+			scope.scope
 		);
 
 		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
@@ -43,7 +43,7 @@ export class VideoConferenceJoinUc {
 
 		const videoConference: VideoConferenceDO = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 			scope.id,
-			scope.scope,
+			scope.scope
 		);
 
 		if (isGuest) {
@@ -57,7 +57,7 @@ export class VideoConferenceJoinUc {
 		if (!videoConference.options.moderatorMustApproveJoinRequests && isGuest) {
 			throw new ForbiddenException(
 				ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE,
-				'Guests cannot join this conference, since the waiting room is not enabled.',
+				'Guests cannot join this conference, since the waiting room is not enabled.'
 			);
 		}
 

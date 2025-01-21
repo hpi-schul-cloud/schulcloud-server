@@ -204,7 +204,7 @@ describe('VideoConferenceJoinUc', () => {
 						const result: VideoConferenceJoin = await uc.join(currentUserId, scope);
 
 						expect(result).toEqual(
-							expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url }),
+							expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url })
 						);
 					});
 
@@ -320,7 +320,7 @@ describe('VideoConferenceJoinUc', () => {
 				await uc.join(currentUserId, scope);
 
 				expect(bbbService.join).toBeCalledWith(
-					expect.objectContaining<Partial<BBBJoinConfig>>({ role: BBBRole.MODERATOR }),
+					expect.objectContaining<Partial<BBBJoinConfig>>({ role: BBBRole.MODERATOR })
 				);
 			});
 

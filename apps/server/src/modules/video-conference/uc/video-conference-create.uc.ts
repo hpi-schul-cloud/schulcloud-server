@@ -24,13 +24,13 @@ export class VideoConferenceCreateUc {
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	public async createIfNotRunning(
 		currentUserId: EntityId,
 		scope: ScopeRef,
-		options: VideoConferenceOptions,
+		options: VideoConferenceOptions
 	): Promise<void> {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		// try and catch based on legacy behavior
@@ -66,7 +66,7 @@ export class VideoConferenceCreateUc {
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,
 			scopeInfo.scopeId,
-			scope.scope,
+			scope.scope
 		);
 		this.throwIfNotModerator(bbbRole, 'You are not allowed to start the videoconference. Ask a moderator.');
 
@@ -80,7 +80,7 @@ export class VideoConferenceCreateUc {
 	private prepareBBBCreateConfigBuilder(
 		scope: ScopeRef,
 		options: VideoConferenceOptions,
-		scopeInfo: ScopeInfo,
+		scopeInfo: ScopeInfo
 	): BBBCreateConfigBuilder {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),

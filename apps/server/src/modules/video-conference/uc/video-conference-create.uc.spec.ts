@@ -129,7 +129,7 @@ describe('VideoConferenceCreateUc', () => {
 					expect(videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions).toBeCalledWith(
 						scope.id,
 						scope.scope,
-						options,
+						options
 					);
 				});
 

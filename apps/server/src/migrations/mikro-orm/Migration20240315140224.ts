@@ -35,7 +35,7 @@ export class Migration20240315140224 extends Migration {
 		const submissionsByTeachersIds = submissionsByTeachers.map((submission: any) => submission._id);
 
 		console.log(
-			`Found ${submissionsByTeachersIds.length} submissions by teachers, which will be excluded from update.`,
+			`Found ${submissionsByTeachersIds.length} submissions by teachers, which will be excluded from update.`
 		);
 
 		const result = await this.driver.nativeUpdate(
@@ -45,7 +45,7 @@ export class Migration20240315140224 extends Migration {
 				creator: { $in: teacherIds },
 				parent: { $nin: submissionsByTeachersIds },
 			},
-			{ $set: { parentType: FileRecordParentType.Grading } },
+			{ $set: { parentType: FileRecordParentType.Grading } }
 		);
 
 		console.log(`Updated ${result.affectedRows} filerecords.`);
@@ -57,7 +57,7 @@ export class Migration20240315140224 extends Migration {
 		const result = await this.driver.nativeUpdate(
 			'filerecords',
 			{ parentType: FileRecordParentType.Grading },
-			{ $set: { parentType: FileRecordParentType.Submission } },
+			{ $set: { parentType: FileRecordParentType.Submission } }
 		);
 
 		console.log(`Updated ${result.affectedRows} filerecords.`);

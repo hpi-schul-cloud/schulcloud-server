@@ -1,12 +1,12 @@
 import { Express } from 'express';
 
 import { LogMessage, Loggable, Logger } from '@core/logger';
+import { AppStartLoggable } from '../app-start-loggable';
 import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
 } from './prometheus';
-import { AppStartLoggable } from '../app-start-loggable';
 
 export const enum PrometheusMetricsSetupState {
 	FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED = 'Prometheus metrics feature is disabled - no metrics middlewares will be added to the app',
@@ -33,8 +33,8 @@ export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Ex
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
 		logger.debug(
 			new PrometheusMetricsSetupStateLoggable(
-				PrometheusMetricsSetupState.FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED,
-			),
+				PrometheusMetricsSetupState.FEATURE_DISABLED_MIDDLEWARES_WILL_NOT_BE_CREATED
+			)
 		);
 
 		return;
@@ -44,15 +44,15 @@ export const addPrometheusMetricsMiddlewaresIfEnabled = (logger: Logger, app: Ex
 
 	logger.debug(
 		new PrometheusMetricsSetupStateLoggable(
-			PrometheusMetricsSetupState.API_RESPONSE_TIME_METRIC_MIDDLEWARE_SUCCESSFULLY_ADDED,
-		),
+			PrometheusMetricsSetupState.API_RESPONSE_TIME_METRIC_MIDDLEWARE_SUCCESSFULLY_ADDED
+		)
 	);
 };
 
 export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 	if (!PrometheusMetricsConfig.instance.isEnabled) {
 		logger.debug(
-			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.FEATURE_DISABLED_APP_WILL_NOT_BE_CREATED),
+			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.FEATURE_DISABLED_APP_WILL_NOT_BE_CREATED)
 		);
 
 		return;
@@ -62,13 +62,13 @@ export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 
 	if (!collectDefaultMetrics) {
 		logger.debug(
-			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.COLLECTING_DEFAULT_METRICS_DISABLED),
+			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.COLLECTING_DEFAULT_METRICS_DISABLED)
 		);
 	}
 
 	if (!collectMetricsRouteMetrics) {
 		logger.debug(
-			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.COLLECTING_METRICS_ROUTE_METRICS_DISABLED),
+			new PrometheusMetricsSetupStateLoggable(PrometheusMetricsSetupState.COLLECTING_METRICS_ROUTE_METRICS_DISABLED)
 		);
 	}
 
@@ -82,7 +82,7 @@ export const createAndStartPrometheusMetricsAppIfEnabled = (logger: Logger) => {
 				appName: 'Prometheus metrics server app',
 				port: prometheusMetricsAppPort,
 				mountsDescription: `${route} --> Prometheus metrics`,
-			}),
+			})
 		);
 	});
 };

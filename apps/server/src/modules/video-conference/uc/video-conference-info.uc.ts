@@ -17,7 +17,7 @@ export class VideoConferenceInfoUc {
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	public async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceInfo> {
@@ -41,7 +41,7 @@ export class VideoConferenceInfoUc {
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,
 			scopeInfo.scopeId,
-			scope.scope,
+			scope.scope
 		);
 
 		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
@@ -70,7 +70,7 @@ export class VideoConferenceInfoUc {
 		const isGuest: boolean = await this.videoConferenceService.hasExpertRole(
 			currentUserId,
 			scope.scope,
-			scopeInfo.scopeId,
+			scopeInfo.scopeId
 		);
 
 		if (!this.videoConferenceService.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
@@ -85,7 +85,7 @@ export class VideoConferenceInfoUc {
 		try {
 			const vcDO: VideoConferenceDO = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 				scope.id,
-				scope.scope,
+				scope.scope
 			);
 			options = vcDO.options;
 		} catch {

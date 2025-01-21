@@ -34,7 +34,7 @@ export class BoardUc {
 		private readonly courseRepo: CourseRepo,
 		private readonly roomService: RoomService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
@@ -57,7 +57,7 @@ export class BoardUc {
 
 	public async findBoard(
 		userId: EntityId,
-		boardId: EntityId,
+		boardId: EntityId
 	): Promise<{ board: ColumnBoard; features: BoardFeature[] }> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
@@ -115,7 +115,7 @@ export class BoardUc {
 		userId: EntityId,
 		columnId: EntityId,
 		targetBoardId: EntityId,
-		targetPosition: number,
+		targetPosition: number
 	): Promise<Column> {
 		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
 

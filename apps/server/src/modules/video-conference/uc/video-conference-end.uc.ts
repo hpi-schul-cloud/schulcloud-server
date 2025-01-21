@@ -16,7 +16,7 @@ export class VideoConferenceEndUc {
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
 		private readonly videoConferenceService: VideoConferenceService,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
 	public async end(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConference<BBBBaseResponse>> {
