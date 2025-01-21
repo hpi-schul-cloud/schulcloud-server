@@ -12,6 +12,6 @@ export class SchoolLicenseController {
 	@ApiOperation({ summary: 'Update media school licenses' })
 	@Post()
 	async updateMediaSchoolLicenses(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.mediaSchoolLicenseUc.updateMediaSchoolLicenses(currentUser.schoolId);
+		await this.mediaSchoolLicenseUc.updateMediaSchoolLicenses(currentUser.userId, currentUser.schoolId);
 	}
 }
