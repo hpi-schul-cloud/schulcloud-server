@@ -1050,6 +1050,32 @@ describe(VideoConferenceService.name, () => {
 			});
 		});
 
+		describe('when conference scope title is empty', () => {
+			it('should return scope information with a title of two characters', async () => {
+				const { userId } = setup();
+				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+				const element = videoConferenceElementFactory.build({ title: '' });
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
+
+				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
+
+				expect(result.title).toHaveLength(2);
+			});
+		});
+
+		describe('when conference scope title has only one character', () => {
+			it('should return scope information with a title of two characters', async () => {
+				const { userId } = setup();
+				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+				const element = videoConferenceElementFactory.build({ title: 'E' });
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
+
+				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
+
+				expect(result.title).toHaveLength(2);
+			});
+		});
+
 		describe('when conference scope is unknown', () => {
 			it('should throw a BadRequestException for an unknown conference scope', async () => {
 				const { userId, scopeId } = setup();
