@@ -1,7 +1,7 @@
 import { Factory } from 'fishery';
 import { faker } from '@faker-js/faker';
 import { ContentElementType } from '@modules/board';
-import { BaseFactory } from '@src/testing/factory/base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { FileElementContentDto } from '../common-cartridge-client/card-client/dto/file-element-content.dto';
 import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto';
 

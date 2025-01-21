@@ -1,5 +1,5 @@
 import sanitizeHtml from 'sanitize-html';
-import { FileDto } from '@src/modules/files-storage-client/dto';
+import { FileDto } from '@modules/files-storage-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import {
 	LessonContentDto,

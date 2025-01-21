@@ -4,10 +4,10 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorLogger, Logger } from '@src/core/logger';
+import { ErrorLogger, Logger } from '@core/logger';
 import type { Request } from 'express';
 import { from, throwError } from 'rxjs';
-import { axiosResponseFactory } from '@src/testing/factory/axios-response.factory';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FileApi } from './generated';
 
