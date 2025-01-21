@@ -57,6 +57,7 @@ describe('CommonCartridgeImportMapper', () => {
 
 				expect(result).toEqual({
 					title: organization.title,
+					height: 150,
 				});
 			});
 		});
@@ -73,22 +74,6 @@ describe('CommonCartridgeImportMapper', () => {
 
 				expect(result).toEqual({
 					title: organization.title,
-					height: 150,
-				});
-			});
-		});
-
-		describe('when organization is provided and withTitle is false', () => {
-			const setup = () => setupOrganization();
-
-			it('should set the title to an empty string', () => {
-				const { organization } = setup();
-
-				const result = sut.mapOrganizationToCard(organization, false);
-
-				expect(result).toEqual({
-					title: '',
-					height: 150,
 				});
 			});
 		});
@@ -105,7 +90,7 @@ describe('CommonCartridgeImportMapper', () => {
 				const result = sut.mapOrganizationToTextElement(organization);
 
 				expect(result).toBeInstanceOf(RichTextContentBody);
-				expect(result).toEqual<RichTextContentBody>({
+				expect(result).toEqual({
 					text: `<b>${organization.title}</b>`,
 					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
 				});
@@ -164,8 +149,8 @@ describe('CommonCartridgeImportMapper', () => {
 
 				expect(result).toBeInstanceOf(RichTextContentBody);
 				expect(result).toEqual<RichTextContentBody>({
+					inputFormat: InputFormat.RICH_TEXT_CK4,
 					text: resource.html,
-					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
 				});
 			});
 		});

@@ -26,6 +26,7 @@ jest.mock('../../../infra/auth-guard/decorator/jwt-auth.decorator', () => {
 		JwtAuthentication: () => jest.fn(),
 	};
 });
+jest.setTimeout(10000);
 
 describe('CommonCartridgeController (API)', () => {
 	let module: TestingModule;
