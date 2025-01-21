@@ -46,10 +46,10 @@ describe('account repo', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('migrateLegacyData', () => {
+	describe('prepareLegacySyncDataForNewSync', () => {
 		describe('when legacy system is not found', () => {
 			it('should log TspLegacyMigrationSystemMissingLoggable', async () => {
-				await sut.migrateLegacyData('');
+				await sut.prepareLegacySyncDataForNewSync('');
 
 				expect(logger.info).toHaveBeenCalledWith(new TspLegacyMigrationSystemMissingLoggable());
 			});
@@ -94,7 +94,7 @@ describe('account repo', () => {
 			it('should update the school to the new format', async () => {
 				const { newSystem, legacySchool, schoolId: schoolIdentifier } = await setup();
 
-				await sut.migrateLegacyData(newSystem.id);
+				await sut.prepareLegacySyncDataForNewSync(newSystem.id);
 
 				const migratedSchool = await em.findOne<SchoolEntity>(SchoolEntity.name, {
 					id: legacySchool.id,

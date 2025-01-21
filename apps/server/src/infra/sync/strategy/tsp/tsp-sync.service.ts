@@ -49,7 +49,7 @@ export class TspSyncService {
 		return schools[0];
 	}
 
-	public async findSchoolsForSystem(system: System): Promise<School[]> {
+	public async findAllSchoolsForSystem(system: System): Promise<School[]> {
 		const schools = await this.schoolService.getSchools({
 			systemId: system.id,
 		});

@@ -148,7 +148,7 @@ describe(TspSyncStrategy.name, () => {
 		tspFetchService.fetchTspStudentMigrations.mockResolvedValueOnce(params.fetchedStudentMigrations ?? []);
 
 		tspSyncService.findSchool.mockResolvedValue(params.foundSchool ?? undefined);
-		tspSyncService.findSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
+		tspSyncService.findAllSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
 		tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(params.foundSystem ?? systemFactory.build());
 
 		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
@@ -210,7 +210,7 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(tspLegacyMigrationService.migrateLegacyData).toHaveBeenCalled();
+				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalled();
 			});
 
 			it('should fetch the schools', async () => {
@@ -236,7 +236,7 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(tspSyncService.findSchoolsForSystem).toHaveBeenCalled();
+				expect(tspSyncService.findAllSchoolsForSystem).toHaveBeenCalled();
 			});
 
 			it('should map to OauthDataDto', async () => {

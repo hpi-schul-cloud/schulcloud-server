@@ -24,7 +24,7 @@ export class TspLegacyMigrationService {
 		logger.setContext(TspLegacyMigrationService.name);
 	}
 
-	public async migrateLegacyData(newSystemId: EntityId): Promise<void> {
+	public async prepareLegacySyncDataForNewSync(newSystemId: EntityId): Promise<void> {
 		this.logger.info(new TspLegacyMigrationStartLoggable());
 
 		const legacySystemId = await this.findLegacySystemId();

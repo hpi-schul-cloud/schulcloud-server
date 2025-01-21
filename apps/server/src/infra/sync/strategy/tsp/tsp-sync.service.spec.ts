@@ -140,7 +140,7 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
-	describe('findSchoolsForSystem', () => {
+	describe('findAllSchoolsForSystem', () => {
 		describe('when findSchoolsForSystem is called', () => {
 			const setup = () => {
 				const system = systemFactory.build();
@@ -154,7 +154,7 @@ describe(TspSyncService.name, () => {
 			it('should return an array of schools', async () => {
 				const { system, school } = setup();
 
-				const schools = await sut.findSchoolsForSystem(system);
+				const schools = await sut.findAllSchoolsForSystem(system);
 
 				expect(schools).toEqual([school]);
 			});
