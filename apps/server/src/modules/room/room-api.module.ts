@@ -1,6 +1,6 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { BoardModule } from '../board';
 import { RoomMembershipModule } from '../room-membership/room-membership.module';
 import { UserModule } from '../user';

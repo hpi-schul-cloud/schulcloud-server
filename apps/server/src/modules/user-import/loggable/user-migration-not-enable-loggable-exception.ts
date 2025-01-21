@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class UserMigrationIsNotEnabledLoggableException extends ForbiddenException implements Loggable {
 	constructor(private readonly userId?: string, private readonly schoolId?: string) {

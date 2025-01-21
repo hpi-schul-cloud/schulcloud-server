@@ -8,7 +8,7 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 
 describe('BaseDomainObjectRepo', () => {
 	interface TestEntityProperties {

@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
 import { federalStateFactory as federalStateEntityFactory } from '@testing/factory/federal-state.factory';

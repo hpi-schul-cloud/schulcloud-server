@@ -2,7 +2,7 @@ import { MediaSource } from '@modules/media-source';
 import { MediaSchoolLicenseService, MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
 import { School, SchoolService } from '@modules/school';
 import { OfferDTO } from '@infra/vidis-client';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '../loggable';

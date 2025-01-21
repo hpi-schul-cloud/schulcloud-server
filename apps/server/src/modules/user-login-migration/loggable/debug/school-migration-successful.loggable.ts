@@ -1,5 +1,5 @@
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { Loggable, LogMessage } from '@src/core/logger';
+import { Loggable, LogMessage } from '@core/logger';
 
 export class SchoolMigrationSuccessfulLoggable implements Loggable {
 	constructor(private readonly school: LegacySchoolDo, private readonly userLoginMigration: UserLoginMigrationDO) {}
