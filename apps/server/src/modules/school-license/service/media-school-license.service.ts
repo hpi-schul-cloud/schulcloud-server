@@ -1,8 +1,4 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import {
-	MediaSourceForSyncNotFoundLoggableException,
-	SchoolForSchoolMediaLicenseSyncNotFoundLoggable,
-} from '@infra/sync/media-licenses/loggable';
 import { IDMBetreiberApiInterface, OfferDTO, PageOfferDTO, VidisClientFactory } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject } from '@nestjs/common';
@@ -11,11 +7,16 @@ import { EntityId } from '@shared/domain/types';
 import { School, SchoolService } from '@src/modules/school';
 import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@src/modules/media-source';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { AxiosErrorLoggable } from '../../../core/error/loggable';
-import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '../../media-source/loggable';
+import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@src/modules/media-source/loggable';
+import { AxiosErrorLoggable } from '@src/core/error/loggable';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
-import { SchoolNumberNotFoundLoggableException } from '../loggable/school-number-not-found.loggable-exception';
+import {
+	BuildMediaSchoolLicenseFailedLoggable,
+	MediaSourceNotFoundLoggableException,
+	SchoolNotFoundLoggable,
+	SchoolNumberNotFoundLoggableException,
+} from '../loggable';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 
 export class MediaSchoolLicenseService {
@@ -53,25 +54,27 @@ export class MediaSchoolLicenseService {
 		const school = await this.schoolService.getSchoolById(schoolId);
 
 		if (!school) {
-			this.logger.info(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolId));
+			this.logger.info(new SchoolNotFoundLoggable(schoolId));
 		}
 
 		// const prefix: string = school.getProps().federalState.getProps().abbreviation;
 		const prefix: string =
 			school.getProps().federalState.getProps().abbreviation === 'NI' ? 'DE-VIDIS-vidis_test' : 'FAILING';
 		const { officialSchoolNumber } = school;
+
 		if (!officialSchoolNumber) {
 			throw new SchoolNumberNotFoundLoggableException(schoolId);
 		}
-		const schoolname = `${prefix}_${officialSchoolNumber}`;
+
+		const schoolName = `${prefix}_${officialSchoolNumber}`;
 
 		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
 
 		if (!mediaSource) {
-			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
+			throw new MediaSourceNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
 
-		const offersFromMediaSource: OfferDTO[] = await this.fetchOffersForSchoolFromVidis(mediaSource, schoolname);
+		const offersFromMediaSource: OfferDTO[] = await this.fetchOffersForSchoolFromVidis(mediaSource, schoolName);
 
 		await this.deleteAllBySchoolAndMediaSource(schoolId, mediaSource.id);
 
@@ -84,8 +87,8 @@ export class MediaSchoolLicenseService {
 		mediumId: number | undefined
 	): Promise<MediaSchoolLicense | null> {
 		if (!mediumId) {
-			// TODO: Log this?
-			// this.logger.info(new OfferIdNotFoundLoggableException());
+			this.logger.info(new BuildMediaSchoolLicenseFailedLoggable());
+
 			return null;
 		}
 

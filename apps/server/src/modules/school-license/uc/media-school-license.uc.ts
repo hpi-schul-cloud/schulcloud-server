@@ -15,7 +15,7 @@ export class MediaSchoolLicenseUc {
 
 	public async updateMediaSchoolLicenses(currentUserId: string, schoolId: EntityId): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
-		// TODO permission check
+		// TODO introduce permission
 		this.authorizationService.checkAllPermissions(user, []);
 
 		await this.mediaSchoolLicenseService.updateMediaSchoolLicenses(schoolId);
