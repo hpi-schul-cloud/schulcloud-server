@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
-import { Loggable } from '@src/core/logger/interfaces';
-import { ErrorLogMessage } from '@src/core/logger/types';
+import { Loggable } from '@core/logger/interfaces';
+import { ErrorLogMessage } from '@core/logger/types';
 
 export class LdapUserCouldNotBeAuthenticatedLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly error: Error) {

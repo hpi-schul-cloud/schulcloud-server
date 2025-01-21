@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RocketChatModule } from '@modules/rocketchat/rocket-chat.module';

@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 
-import { InternalServerTestModule } from '@src/modules/internal-server/internal-server-test.module';
+import { InternalServerTestModule } from '@modules/internal-server/internal-server-test.module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { HealthStatuses } from '../../domain';
 import { HealthStatusResponse } from '../dto';

@@ -1,5 +1,5 @@
+import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { Injectable } from '@nestjs/common';
-import { ProviderOauthClient } from '@src/modules/oauth-provider/domain';
 import { Oauth2ToolConfig } from '../domain';
 
 @Injectable()

@@ -18,7 +18,7 @@ import {
 	DashboardRepo,
 	LegacyBoardRepo,
 } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';

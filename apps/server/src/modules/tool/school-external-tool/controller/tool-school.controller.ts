@@ -13,7 +13,7 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import {

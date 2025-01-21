@@ -1,13 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { FilesStorageClientModule } from '@infra/files-storage-client';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { CoursesClientModule } from '@infra/courses-client';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { LoggerModule } from '@src/core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
-import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
+import { LoggerModule } from '@core/logger';
 import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';

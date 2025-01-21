@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
-import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.app.module';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';

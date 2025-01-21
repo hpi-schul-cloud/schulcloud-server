@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
