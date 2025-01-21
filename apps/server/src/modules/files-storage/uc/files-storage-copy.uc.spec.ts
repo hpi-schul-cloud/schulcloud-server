@@ -1,3 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
@@ -8,9 +10,8 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { DomainErrorHandler } from '@src/core';
-import { LegacyLogger } from '@src/core/logger';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { CopyFilesOfParentParams, FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';

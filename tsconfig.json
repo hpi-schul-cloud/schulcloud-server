@@ -18,10 +18,12 @@
 		"baseUrl": "./",
 		"incremental": true,
 		"paths": {
-			"@shared/*": ["apps/server/src/shared/*"],
-			"@src/*": ["apps/server/src/*"],
+			"@core/*": ["apps/server/src/core/*"],
+			"@imports-from-feathers": ["apps/server/src/imports-from-feathers"],
+			"@infra/*": ["apps/server/src/infra/*"],
 			"@modules/*": ["apps/server/src/modules/*"],
-			"@infra/*": ["apps/server/src/infra/*"]
+			"@shared/*": ["apps/server/src/shared/*"],
+			"@testing/*": ["apps/server/src/testing/*"],
 		}
 	}
 }

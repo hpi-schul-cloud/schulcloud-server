@@ -1,10 +1,11 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { BoardNodeFactory, BoardNodeService } from '@modules/board';
+import { LinkElement, RichTextElement } from '@modules/board/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
-import { setupEntities, userFactory } from '@shared/testing';
-import { BoardNodeFactory, BoardNodeService } from '@src/modules/board';
-import { LinkElement, RichTextElement } from '@src/modules/board/domain';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';

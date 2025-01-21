@@ -53,6 +53,13 @@ describe('CSVSyncer', () => {
 			expect(result).to.not.equal(undefined);
 		});
 
+		it('should remove utf-8 bom from all required arguments', () => {
+			const out = new CSVSyncer();
+			out.options.csvData = '\uFEFFfirstName,\uFEFFlastName,\uFEFFemail\n1,2,3';
+			const result = out.parseCsvData();
+			expect(result).to.not.equal(undefined);
+		});
+
 		it('should support the optional class attribute', () => {
 			const out = new CSVSyncer();
 			out.options.csvData = 'firstName,lastName,email,class\n1,2,test,4a';

@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { Request } from 'express';
 import { OAuthTokenDto } from '../interface';
 import { HydraOauthUc } from '../uc';

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { NewsRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { CqrsModule } from '@nestjs/cqrs';
 import { NewsController } from './controller/news.controller';

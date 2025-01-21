@@ -1,18 +1,18 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { CoursesClientModule } from '@infra/courses-client';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
-import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
-import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
+import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 
 @Module({
 	imports: [

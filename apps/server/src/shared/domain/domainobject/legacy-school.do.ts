@@ -1,6 +1,6 @@
+import { FileStorageType } from '@modules/school/domain';
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { FileStorageType } from '@src/modules/school/domain';
 import { BaseDO } from './base.do';
 
 /**

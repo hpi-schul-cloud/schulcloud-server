@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
@@ -9,6 +10,7 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
+import { externalGroupDtoFactory } from '@modules/provisioning/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -16,16 +18,11 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	externalGroupDtoFactory,
-	externalSchoolDtoFactory,
-	groupFactory,
-	legacySchoolDoFactory,
-	roleDtoFactory,
-	roleFactory,
-	userDoFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
+import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';

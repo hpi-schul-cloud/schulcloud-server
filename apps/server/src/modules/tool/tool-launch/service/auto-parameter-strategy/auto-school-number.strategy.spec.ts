@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { legacySchoolDoFactory } from '@shared/testing';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';

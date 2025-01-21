@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
+import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool';
+import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { CollaborativeTextEditorService } from '@src/modules/collaborative-text-editor';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { ContextExternalToolService } from '@src/modules/tool/context-external-tool';
-import { contextExternalToolFactory } from '@src/modules/tool/context-external-tool/testing';
+import { setupEntities } from '@testing/setup-entities';
 import {
 	collaborativeTextEditorFactory,
 	drawingElementFactory,

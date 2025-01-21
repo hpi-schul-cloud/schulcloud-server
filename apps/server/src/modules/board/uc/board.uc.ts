@@ -1,15 +1,23 @@
+import { LegacyLogger } from '@core/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
+import { StorageLocation } from '@modules/files-storage/interface';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyLogger } from '@src/core/logger';
-import { StorageLocation } from '@src/modules/files-storage/interface';
-import { RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
 import { CreateBoardBodyParams } from '../controller/dto';
-import { BoardExternalReference, BoardExternalReferenceType, BoardNodeFactory, Column, ColumnBoard } from '../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardFeature,
+	BoardNodeFactory,
+	Column,
+	ColumnBoard,
+} from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
 
@@ -25,12 +33,13 @@ export class BoardUc {
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo,
 		private readonly roomService: RoomService,
-		private readonly boardNodeFactory: BoardNodeFactory
+		private readonly boardNodeFactory: BoardNodeFactory,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
 
-	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
+	public async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'createBoard', userId, title: params.title });
 
 		await this.checkReferenceWritePermission(userId, { type: params.parentType, id: params.parentId });
@@ -46,17 +55,21 @@ export class BoardUc {
 		return board;
 	}
 
-	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
+	public async findBoard(
+		userId: EntityId,
+		boardId: EntityId
+	): Promise<{ board: ColumnBoard; features: BoardFeature[] }> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
 
-		return board;
+		return { board, features };
 	}
 
-	async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
+	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
 		this.logger.debug({ action: 'findBoardContext', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
@@ -65,7 +78,7 @@ export class BoardUc {
 		return board.context;
 	}
 
-	async deleteBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
+	public async deleteBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'deleteBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
@@ -75,7 +88,7 @@ export class BoardUc {
 		return board;
 	}
 
-	async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<ColumnBoard> {
+	public async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
@@ -85,7 +98,7 @@ export class BoardUc {
 		return board;
 	}
 
-	async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
+	public async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
 		this.logger.debug({ action: 'createColumn', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
@@ -98,7 +111,7 @@ export class BoardUc {
 		return column;
 	}
 
-	async moveColumn(
+	public async moveColumn(
 		userId: EntityId,
 		columnId: EntityId,
 		targetBoardId: EntityId,
@@ -116,7 +129,7 @@ export class BoardUc {
 		return column;
 	}
 
-	async copyBoard(userId: EntityId, boardId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
+	public async copyBoard(userId: EntityId, boardId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
 		this.logger.debug({ action: 'copyBoard', userId, boardId });
 
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
@@ -138,7 +151,7 @@ export class BoardUc {
 		return copyStatus;
 	}
 
-	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
+	public async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		await this.boardPermissionService.checkPermission(userId, board, Action.write);
 
@@ -148,7 +161,7 @@ export class BoardUc {
 
 	// ---- Move to shared service? (see apps/server/src/modules/sharing/uc/share-token.uc.ts)
 
-	private async checkReferenceWritePermission(userId: EntityId, context: BoardExternalReference) {
+	private async checkReferenceWritePermission(userId: EntityId, context: BoardExternalReference): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {

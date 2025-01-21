@@ -1,6 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { ProvisioningConfig } from '@modules/provisioning';
+import { RoleDto, RoleService } from '@modules/role';
+import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,16 +10,12 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	groupFactory,
-	roleDtoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	userDoFactory,
-	userFactory,
-} from '@shared/testing';
-import { RoleDto, RoleService } from '@src/modules/role';
-import { UserService } from '@src/modules/user';
+import { groupFactory } from '@testing/factory/domainobject';
+import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { GroupService } from './group.service';

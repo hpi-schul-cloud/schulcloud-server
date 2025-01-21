@@ -7,8 +7,9 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities, userDoFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';
 import { RegistrationPinRepo } from '../repo';

@@ -9,7 +9,10 @@ import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.ex
 import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { currentUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../domain/entity/account.entity';
 import { AccountService } from '../domain/services';

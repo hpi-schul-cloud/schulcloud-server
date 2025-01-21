@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolSystemOptionsFactory } from '@shared/testing';
+import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchulConneXProvisioningOptionsInterface } from '../interface';
 import { ProvisioningOptionsInvalidTypeLoggableException } from '../loggable';
@@ -105,7 +105,12 @@ describe(SchoolSystemOptionsService.name, () => {
 		});
 
 		describe('when there are no options', () => {
+			const setup = () => {
+				schoolSystemOptionsRepo.findBySchoolIdAndSystemId.mockResolvedValue(null);
+			};
+
 			it('should return the default options', async () => {
+				setup();
 				const result: SchulConneXProvisioningOptions = await service.getProvisioningOptions(
 					SchulConneXProvisioningOptions,
 					new ObjectId().toHexString(),

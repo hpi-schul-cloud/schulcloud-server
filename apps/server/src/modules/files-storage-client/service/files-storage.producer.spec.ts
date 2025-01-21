@@ -5,8 +5,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
+import { setupEntities } from '@testing/setup-entities';
 import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageProducer', () => {

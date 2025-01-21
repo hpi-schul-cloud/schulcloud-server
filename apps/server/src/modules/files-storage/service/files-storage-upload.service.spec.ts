@@ -5,10 +5,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { readableStreamWithFileTypeFactory } from '@shared/testing/factory/readable-stream-with-file-type.factory';
-import { LegacyLogger } from '@src/core/logger';
-import { MimeType } from 'file-type';
+import { LegacyLogger } from '@core/logger';
+import { fileRecordFactory } from '@testing/factory/filerecord.factory';
+import { readableStreamWithFileTypeFactory } from '@testing/factory/readable-stream-with-file-type.factory';
+import { setupEntities } from '@testing/setup-entities';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
@@ -119,7 +119,7 @@ describe('FilesStorageService upload methods', () => {
 			const fileRecord = createFileRecord(file.name, 0, file.mimeType, params, userId);
 			const { securityCheck, ...expectedFileRecord } = fileRecord;
 			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
-			const detectedMimeType: MimeType = 'image/tiff';
+			const detectedMimeType = 'image/tiff';
 			expectedFileRecord.mimeType = detectedMimeType;
 
 			const readableStreamWithFileType = readableStreamWithFileTypeFactory.build();
@@ -151,6 +151,7 @@ describe('FilesStorageService upload methods', () => {
 					.spyOn(service, 'getFileRecordsOfParent')
 					.mockResolvedValue([[fileRecord], 1]);
 
+				// @ts-expect-error - fileTypeStream is mocked
 				const getMimeTypeSpy = jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
@@ -289,6 +290,7 @@ describe('FilesStorageService upload methods', () => {
 
 				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
+				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				fileRecordRepo.save.mockRejectedValueOnce(error);
@@ -311,6 +313,7 @@ describe('FilesStorageService upload methods', () => {
 
 				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
+				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
@@ -341,6 +344,7 @@ describe('FilesStorageService upload methods', () => {
 
 				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
+				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
@@ -390,6 +394,7 @@ describe('FilesStorageService upload methods', () => {
 					}
 				});
 
+				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				return { params, file, userId };
@@ -423,6 +428,7 @@ describe('FilesStorageService upload methods', () => {
 
 				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
+				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				configService.get.mockReturnValueOnce(false);
@@ -456,6 +462,7 @@ describe('FilesStorageService upload methods', () => {
 				jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValue([[fileRecord], 1]);
 
 				const readableStreamWithFileType = readableStreamWithFileTypeFactory.build({ fileType: undefined });
+				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.

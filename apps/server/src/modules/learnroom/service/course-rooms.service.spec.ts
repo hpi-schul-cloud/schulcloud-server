@@ -5,15 +5,13 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyBoardRepo } from '@shared/repo';
-import {
-	boardFactory,
-	columnBoardNodeFactory,
-	courseFactory,
-	lessonFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { boardFactory } from '@testing/factory/board.factory';
+import { columnBoardNodeFactory } from '@testing/factory/column-board-node.factory';
+import { courseFactory } from '@testing/factory/course.factory';
+import { lessonFactory } from '@testing/factory/lesson.factory';
+import { taskFactory } from '@testing/factory/task.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ColumnBoardNodeRepo } from '../repo';
 import { CourseRoomsService } from './course-rooms.service';
 

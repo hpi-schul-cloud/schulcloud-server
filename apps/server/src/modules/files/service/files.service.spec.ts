@@ -11,8 +11,8 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
+import { setupEntities } from '@testing/setup-entities';
 import { FileEntity } from '../entity';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from '../repo';

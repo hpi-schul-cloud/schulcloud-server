@@ -19,18 +19,15 @@ import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted, SchoolFeature } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import {
-	federalStateFactory,
-	importUserFactory,
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	setupEntities,
-	systemEntityFactory,
-	userDoFactory,
-	userFactory,
-	userLoginMigrationDOFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
+import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { importUserFactory } from '@testing/factory/import-user.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {

@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { AxiosErrorLoggable, ErrorLoggable } from '@src/core/error/loggable';
-import { Logger } from '@src/core/logger';
+import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,
@@ -10,9 +9,10 @@ import {
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
 	TspClientFactory,
-} from '@src/infra/tsp-client';
-import { OauthConfigMissingLoggableException } from '@src/modules/oauth/loggable';
-import { System } from '@src/modules/system';
+} from '@infra/tsp-client';
+import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
+import { System } from '@modules/system';
+import { Injectable } from '@nestjs/common';
 import { AxiosError, AxiosResponse } from 'axios';
 import moment from 'moment';
 

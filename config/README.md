@@ -162,7 +162,7 @@ This code shows a minimal flow.
     import { Module } from '@nestjs/common';
     import { ConfigModule } from '@nestjs/config';
     import serverConfig from './server.config';
-    import { createConfigModuleOptions } from '@src/config';
+    import { createConfigModuleOptions } from '@shared/common';
 
 
     const serverModules = [
@@ -254,7 +254,7 @@ Mocking in api tests.
     Configuration.set('MY_ENVIREMENT_VARIABLE', 'value');
 
     // eslint-disable-next-line import/first
-    import { ServerTestModule } from '@src/modules/server/server.module';
+    import { ServerTestModule } from '@modules/server/server.app.module';
 
     describe('XXX', () => {
 
@@ -279,7 +279,7 @@ The parsing of decorators in files starts first and after it the injections are 
 It is possible to import the config file of the application directly and use the values.
 
 ``` javascript
-    import serverConfig from '@src/modules/server/server.config';
+    import serverConfig from '@modules/server/server.config';
 
     @RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
 ```

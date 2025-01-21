@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { firstValueFrom, Observable } from 'rxjs';

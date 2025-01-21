@@ -1,9 +1,9 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolFactory } from '@modules/school/domain/factory';
 import { SystemEntity } from '@modules/system/entity';
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
@@ -12,7 +12,7 @@ import { SchoolYearEntityMapper } from './school-year.entity.mapper';
 export class SchoolEntityMapper {
 	public static mapToDo(entity: SchoolEntity): School {
 		const currentYear = entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear);
-		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
+		const federalState = entity.federalState ? FederalStateEntityMapper.mapToDo(entity.federalState) : undefined;
 		const features = new Set(entity.features);
 		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
 		const systemIds = entity.systems.getItems().map((system) => system.id);

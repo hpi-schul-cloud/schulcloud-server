@@ -1,11 +1,10 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { PaginationParams } from '@shared/controller';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserService } from '@src/modules/user';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import { SchoolUpdateBodyParams } from './dto/param';
 import {
@@ -16,7 +15,7 @@ import {
 } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolUserListResponse } from './dto/response/school-user.response';
-import { SchoolResponseMapper, SystemResponseMapper, SchoolUserResponseMapper } from './mapper';
+import { SchoolResponseMapper, SchoolUserResponseMapper, SystemResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
 
 @Injectable()
@@ -133,11 +132,7 @@ export class SchoolUc {
 		return dto;
 	}
 
-	public async getSchoolTeachers(
-		schoolId: EntityId,
-		userId: EntityId,
-		pagination?: PaginationParams
-	): Promise<SchoolUserListResponse> {
+	public async getSchoolTeachers(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
 		const [school, user] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
@@ -149,12 +144,12 @@ export class SchoolUc {
 
 		let result: Page<UserDO>;
 		if (isUserOfSchool) {
-			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER, { pagination });
+			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER);
 		} else {
-			result = await this.userService.findPublicTeachersBySchool(schoolId, { pagination });
+			result = await this.userService.findPublicTeachersBySchool(schoolId);
 		}
 
-		const responseDto = SchoolUserResponseMapper.mapToListResponse(result, pagination);
+		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
 		return responseDto;
 	}
 

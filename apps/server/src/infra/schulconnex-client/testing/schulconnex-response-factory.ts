@@ -8,6 +8,7 @@ export const schulconnexResponseFactory = Factory.define<SchulconnexResponse>(()
 		person: {
 			name: {
 				vorname: 'Hans',
+				rufname: 'Hansi',
 				familienname: 'Peter',
 			},
 			geburt: {
@@ -50,6 +51,10 @@ export const schulconnexResponseFactory = Factory.define<SchulconnexResponse>(()
 							{
 								rollen: [SchulconnexGroupRole.STUDENT],
 								ktid: 'ktid',
+							},
+							{
+								rollen: [SchulconnexGroupRole.SUBSTITUTE_TEACHER],
+								ktid: 'ktid1',
 							},
 						],
 					},

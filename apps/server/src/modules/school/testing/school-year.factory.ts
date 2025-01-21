@@ -1,5 +1,5 @@
-import { BaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { SchoolYear, SchoolYearProps } from '../domain';
 
 type SchoolYearTransientParams = {

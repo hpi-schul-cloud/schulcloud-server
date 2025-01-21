@@ -1,16 +1,20 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
+import { accountFactory } from '@modules/account/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, cleanupCollections, groupEntityFactory, roleFactory, userFactory } from '@shared/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { accountFactory } from '@src/modules/account/testing';
-import { GroupEntityTypes } from '@src/modules/group/entity';
-import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
-import { roomEntityFactory } from '@src/modules/room/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
-import { columnBoardEntityFactory } from '../../testing';
 import { BoardNodeEntity } from '../../repo';
+import { columnBoardEntityFactory } from '../../testing';
 
 const baseRouteName = '/boards';
 

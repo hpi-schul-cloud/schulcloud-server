@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import {
@@ -12,6 +13,7 @@ import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
@@ -19,8 +21,6 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
-import { RoomMembershipService } from '@src/modules/room-membership';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,

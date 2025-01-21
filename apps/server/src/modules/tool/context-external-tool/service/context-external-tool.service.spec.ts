@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { legacySchoolDoFactory } from '@shared/testing';
-import { School } from '@modules/school';
-import { schoolFactory } from '@modules/school/testing';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';

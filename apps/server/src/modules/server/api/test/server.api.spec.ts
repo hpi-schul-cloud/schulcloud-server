@@ -1,7 +1,7 @@
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@shared/testing';
+import { TestApiClient } from '@testing/test-api-client';
 import { ConfigResponse } from '../dto';
 
 describe('Server Controller (API)', () => {
@@ -102,6 +102,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED',
 				'FEATURE_AI_TUTOR_ENABLED',
 				'FEATURE_ROOMS_ENABLED',
+				'FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED',
 				'FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED',
 			];
 

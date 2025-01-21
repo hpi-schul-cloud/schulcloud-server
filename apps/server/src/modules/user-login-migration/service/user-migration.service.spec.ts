@@ -1,14 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountService, Account } from '@modules/account';
+import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { roleFactory, setupEntities, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { roleFactory } from '@testing/factory/role.factory';
+import { userDoFactory } from '@testing/factory/user.do.factory';
+import { setupEntities } from '@testing/setup-entities';
 import {
-	UserMigrationDatabaseOperationFailedLoggableException,
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
+	UserMigrationDatabaseOperationFailedLoggableException,
 } from '../loggable';
 import { UserMigrationService } from './user-migration.service';
 

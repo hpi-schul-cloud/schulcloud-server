@@ -2,27 +2,25 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadFactory } from '@infra/auth-guard';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import { OauthConfig } from '@modules/system';
-import { OauthSessionTokenService } from '@modules/oauth';
 import { accountDoFactory } from '@modules/account/testing';
-import { systemFactory } from '@modules/system/testing';
-import { oauthSessionTokenFactory } from '@modules/oauth/testing';
+import { OauthSessionTokenService } from '@modules/oauth';
 import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
+import { oauthSessionTokenFactory } from '@modules/oauth/testing';
+import { OauthConfig } from '@modules/system';
+import { systemFactory } from '@modules/system/testing';
+import { HttpService } from '@nestjs/axios';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HttpService } from '@nestjs/axios';
-import {
-	axiosErrorFactory,
-	axiosResponseFactory,
-	currentUserFactory,
-	setupEntities,
-	userFactory,
-} from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import jwt from 'jsonwebtoken';
+import { Logger } from '@core/logger';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { AxiosHeaders, AxiosRequestConfig } from 'axios';
+import jwt from 'jsonwebtoken';
 import { of, throwError } from 'rxjs';
 import {
 	BruteForceError,

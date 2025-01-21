@@ -1,6 +1,6 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { DynamicModule, Module } from '@nestjs/common';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@core/logger';
 import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 

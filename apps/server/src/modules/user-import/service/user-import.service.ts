@@ -6,11 +6,11 @@ import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
-import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
-import { UserImportConfig } from '../user-import-config';
-import { ImportUserRepo } from '../repo/import-user.repo';
+import { Logger } from '@core/logger';
 import { ImportUser, MatchCreator } from '../entity';
+import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import { ImportUserRepo } from '../repo/import-user.repo';
+import { UserImportConfig } from '../user-import-config';
 
 @Injectable()
 export class UserImportService {
@@ -45,20 +45,26 @@ export class UserImportService {
 		}
 	}
 
-	public async matchUsers(importUsers: ImportUser[], userLoginMigration: UserLoginMigrationDO): Promise<ImportUser[]> {
+	public async matchUsers(
+		importUsers: ImportUser[],
+		userLoginMigration: UserLoginMigrationDO,
+		matchByPreferredName: boolean
+	): Promise<ImportUser[]> {
 		const importUserMap: Map<string, number> = new Map();
 
-		importUsers.forEach((importUser) => {
-			const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
+		importUsers.forEach((importUser: ImportUser): void => {
+			const firstName: string = this.getFirstNameForMatching(importUser, matchByPreferredName);
+			const key = `${importUser.school.id}_${firstName}_${importUser.lastName}`;
 			const count = importUserMap.get(key) || 0;
 			importUserMap.set(key, count + 1);
 		});
 
 		const matchedImportUsers: ImportUser[] = await Promise.all(
 			importUsers.map(async (importUser: ImportUser): Promise<ImportUser> => {
+				const firstName: string = this.getFirstNameForMatching(importUser, matchByPreferredName);
 				const users: User[] = await this.userService.findUserBySchoolAndName(
 					importUser.school.id,
-					importUser.firstName,
+					firstName,
 					importUser.lastName
 				);
 
@@ -66,7 +72,7 @@ export class UserImportService {
 					(user: User) => !user.lastLoginSystemChange || user.lastLoginSystemChange < userLoginMigration.startedAt
 				);
 
-				const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
+				const key = `${importUser.school.id}_${firstName}_${importUser.lastName}`;
 
 				if (users.length === 1 && unmigratedUsers.length === 1 && importUserMap.get(key) === 1) {
 					importUser.user = unmigratedUsers[0];
@@ -78,6 +84,10 @@ export class UserImportService {
 		);
 
 		return matchedImportUsers;
+	}
+
+	private getFirstNameForMatching(importUser: ImportUser, matchByPreferredName: boolean): string {
+		return matchByPreferredName && importUser.preferredName ? importUser.preferredName : importUser.firstName;
 	}
 
 	public async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {

@@ -1,8 +1,8 @@
-import { UserMigrationCorrectionSuccessfulLoggable } from '@modules/user-login-migration/loggable/debug/user-migration-correction-successful-loggable';
-import { userLoginMigrationDOFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { UserMigrationCorrectionSuccessfulLoggable } from '@modules/user-login-migration/loggable/debug/user-migration-correction-successful-loggable';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { LogMessage } from '@src/core/logger';
+import { LogMessage } from '@core/logger';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 
 describe(UserMigrationCorrectionSuccessfulLoggable.name, () => {
 	describe('getLogMessage', () => {

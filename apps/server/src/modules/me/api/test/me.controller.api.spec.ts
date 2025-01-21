@@ -1,17 +1,15 @@
+import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { ServerTestModule } from '@modules/server';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { User } from '@shared/domain/entity';
-import {
-	currentUserFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
-} from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { Request } from 'express';
 import { MeResponse } from '../dto';
 

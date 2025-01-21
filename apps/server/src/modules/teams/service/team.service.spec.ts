@@ -11,8 +11,10 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
-import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
+import { teamFactory } from '@testing/factory/team.factory';
+import { teamUserFactory } from '@testing/factory/teamuser.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { TeamService } from './team.service';
 

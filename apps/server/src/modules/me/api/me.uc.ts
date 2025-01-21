@@ -1,8 +1,8 @@
+import { SchoolService } from '@modules/school';
+import { System, SystemService } from '@modules/system';
+import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SchoolService } from '@src/modules/school';
-import { UserService } from '@src/modules/user';
-import { System, SystemService } from '@src/modules/system';
 import { MeResponse } from './dto';
 import { MeResponseMapper } from './mapper';
 

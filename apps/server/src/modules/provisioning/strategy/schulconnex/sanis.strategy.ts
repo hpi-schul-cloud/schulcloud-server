@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import {

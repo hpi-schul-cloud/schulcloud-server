@@ -1,4 +1,4 @@
-import { axiosErrorFactory } from '@shared/testing/factory';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
 import { AxiosErrorLoggable } from './axios-error.loggable';
 

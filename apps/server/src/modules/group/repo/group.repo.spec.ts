@@ -6,16 +6,14 @@ import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	cleanupCollections,
-	courseFactory,
-	groupEntityFactory,
-	groupFactory,
-	roleFactory,
-	schoolEntityFactory,
-	systemEntityFactory,
-	userFactory,
-} from '@shared/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { groupFactory } from '@testing/factory/domainobject';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { GroupRepo } from './group.repo';
@@ -78,6 +76,10 @@ describe(GroupRepo.name, () => {
 						new GroupUser({
 							userId: group.users[1].user.id,
 							roleId: group.users[1].role.id,
+						}),
+						new GroupUser({
+							userId: group.users[2].user.id,
+							roleId: group.users[2].role.id,
 						}),
 					],
 					organizationId: group.organization?.id,
@@ -707,6 +709,10 @@ describe(GroupRepo.name, () => {
 						new GroupUser({
 							userId: groupEntity.users[1].user.id,
 							roleId: groupEntity.users[1].role.id,
+						}),
+						new GroupUser({
+							userId: groupEntity.users[2].user.id,
+							roleId: groupEntity.users[2].role.id,
 						}),
 					],
 					organizationId: groupEntity.organization?.id,

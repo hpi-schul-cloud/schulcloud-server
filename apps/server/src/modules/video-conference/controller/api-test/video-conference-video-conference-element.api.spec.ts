@@ -1,34 +1,32 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { accountFactory } from '@modules/account/testing';
+import { BoardExternalReferenceType } from '@modules/board';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	videoConferenceElementEntityFactory,
+} from '@modules/board/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, TargetModels, User, VideoConference } from '@shared/domain/entity';
+import { Role, TargetModels, User, VideoConference } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import {
-	TestApiClient,
-	UserAndAccountTestFactory,
-	cleanupCollections,
-	groupEntityFactory,
-	roleFactory,
-	schoolEntityFactory,
-	userFactory,
-} from '@shared/testing';
-import { videoConferenceFactory } from '@shared/testing/factory/video-conference.factory';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { groupEntityFactory } from '@testing/factory/group-entity.factory';
+import { roleFactory } from '@testing/factory/role.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { roomEntityFactory } from '@src/modules/room/testing';
-import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
-import { BoardExternalReferenceType } from '@src/modules/board';
-import {
-	columnBoardEntityFactory,
-	columnEntityFactory,
-	cardEntityFactory,
-	videoConferenceElementEntityFactory,
-} from '@src/modules/board/testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
@@ -161,9 +159,10 @@ describe('VideoConferenceController (API)', () => {
 
 		describe('when the logoutUrl is from a wrong origin', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [] });
+				const school = schoolEntityFactory.buildWithId({ features: [] });
 
 				const room = roomEntityFactory.build({
+					schoolId: school.id,
 					startDate: new Date('2024-10-01'),
 					endDate: new Date('2024-10-20'),
 				});
@@ -235,9 +234,10 @@ describe('VideoConferenceController (API)', () => {
 		describe('when conference params are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [] });
+					const school = schoolEntityFactory.buildWithId({ features: [] });
 
 					const room = roomEntityFactory.build({
+						schoolId: school.id,
 						startDate: new Date('2024-10-01'),
 						endDate: new Date('2024-10-20'),
 					});
@@ -306,8 +306,9 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has not the required permission', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 					const room = roomEntityFactory.build({
+						schoolId: school.id,
 						startDate: new Date('2024-10-01'),
 						endDate: new Date('2025-10-20'),
 					});
@@ -376,9 +377,10 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has the required permission in room scope', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 					const room = roomEntityFactory.build({
+						schoolId: school.id,
 						startDate: new Date('2024-10-01'),
 						endDate: new Date('2024-10-20'),
 					});
@@ -447,9 +449,10 @@ describe('VideoConferenceController (API)', () => {
 
 		describe('when conference is for scope and scopeId is already running', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+				const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 				const room = roomEntityFactory.build({
+					schoolId: school.id,
 					startDate: new Date('2024-10-01'),
 					endDate: new Date('2024-10-20'),
 				});
@@ -527,9 +530,10 @@ describe('VideoConferenceController (API)', () => {
 			describe('when scope and scopeId are given', () => {
 				describe('when school has not enabled the school feature videoconference', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [] });
+						const school = schoolEntityFactory.buildWithId({ features: [] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -600,9 +604,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when user has the required permission', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -676,9 +681,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when conference is not running', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -761,9 +767,10 @@ describe('VideoConferenceController (API)', () => {
 			describe('when scope and scopeId are given', () => {
 				describe('when school has not enabled the school feature videoconference', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [] });
+						const school = schoolEntityFactory.buildWithId({ features: [] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -834,9 +841,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when user has the required permission', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -908,9 +916,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when guest want meeting info of conference without waiting room', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -993,9 +1002,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when conference is not running', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -1079,9 +1089,10 @@ describe('VideoConferenceController (API)', () => {
 			describe('when scope and scopeId are given', () => {
 				describe('when school has not enabled the school feature videoconference', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [] });
+						const school = schoolEntityFactory.buildWithId({ features: [] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -1153,9 +1164,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when a user without required permission wants to end a conference', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});
@@ -1225,9 +1237,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when a user with required permission wants to end a conference', () => {
 					const setup = async () => {
-						const school: SchoolEntity = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
+						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
+							schoolId: school.id,
 							startDate: new Date('2024-10-01'),
 							endDate: new Date('2024-10-20'),
 						});

@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
-import { ServerConfig } from '@modules/server';
+import { accountDoFactory } from '@modules/account/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { setupEntities, userFactory } from '@shared/testing';
-import { accountDoFactory } from '@src/modules/account/testing';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
@@ -29,7 +29,7 @@ describe('LocalStrategy', () => {
 		await setupEntities();
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
-		configServiceMock = createMock<ConfigService<ServerConfig, true>>();
+		configServiceMock = createMock<ConfigService>();
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();

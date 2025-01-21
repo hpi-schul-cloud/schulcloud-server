@@ -18,8 +18,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
+import { cleanupCollections } from '@testing/cleanup-collections';
 
 describe(ExternalToolRepo.name, () => {
 	let module: TestingModule;

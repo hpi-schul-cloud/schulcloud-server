@@ -1,112 +1,88 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.module';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain/interface';
-import {
-	cleanupCollections,
-	courseFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolEntityFactory,
-	userFactory,
-} from '@shared/testing';
-import { Request } from 'express';
-import request from 'supertest';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { courseFactory } from '@testing/factory/course.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
-import { ShareTokenBodyParams, ShareTokenResponse } from '../dto';
+import { ShareTokenResponse } from '../dto';
 
 const baseRouteName = '/sharetoken';
-
-class API {
-	app: INestApplication;
-
-	constructor(app: INestApplication) {
-		this.app = app;
-	}
-
-	async post(body: ShareTokenBodyParams) {
-		const response = await request(this.app.getHttpServer())
-			.post(`${baseRouteName}`)
-			.set('Accept', 'application/json')
-			.send(body);
-
-		return {
-			result: response.body as ShareTokenResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
 
 describe(`share token creation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let currentUser: ICurrentUser;
-	let api: API;
+	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideGuard(JwtAuthGuard)
-			.useValue({
-				canActivate(context: ExecutionContext) {
-					const req: Request = context.switchToHttp().getRequest();
-					req.user = currentUser;
-					return true;
-				},
-			})
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+
+		apiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	beforeEach(() => {
-		Configuration.set('FEATURE_COURSE_SHARE', true);
-	});
-
-	const setup = async () => {
-		await cleanupCollections(em);
-		const school = schoolEntityFactory.build();
-		const roles = roleFactory.buildList(1, {
-			permissions: [Permission.COURSE_CREATE],
-		});
-		const user = userFactory.build({ school, roles });
-		const course = courseFactory.build({ teachers: [user] });
-
-		await em.persistAndFlush([user, course]);
-		em.clear();
-
-		currentUser = mapUserToCurrentUser(user);
-
-		return { course };
-	};
-
 	describe('with the feature disabled', () => {
-		it('should return status 403', async () => {
-			Configuration.set('FEATURE_COURSE_SHARE', false);
-			const { course } = await setup();
+		const setup = async () => {
+			await cleanupCollections(em);
 
-			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ teachers: [teacherUser] });
+
+			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			em.clear();
+
+			Configuration.set('FEATURE_COURSE_SHARE', false);
+
+			const loggedInClient = await apiClient.login(teacherAccount);
+
+			return { course, loggedInClient };
+		};
+
+		it('should return status 403', async () => {
+			const { course, loggedInClient } = await setup();
+
+			const response = await loggedInClient.post(undefined, {
+				parentId: course.id,
+				parentType: ShareTokenParentType.Course,
+			});
 
 			expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 		});
 	});
 
 	describe('with invalid request data', () => {
+		const setup = async () => {
+			await cleanupCollections(em);
+
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.build({ teachers: [teacherUser] });
+
+			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			em.clear();
+
+			Configuration.set('FEATURE_COURSE_SHARE', true);
+
+			const loggedInClient = await apiClient.login(teacherAccount);
+
+			return { course, loggedInClient };
+		};
+
 		it('should return status 400 on empty parent id', async () => {
-			const response = await api.post({
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.post(undefined, {
 				parentId: '',
 				parentType: ShareTokenParentType.Course,
 			});
@@ -115,7 +91,9 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 404 when parent id is not found', async () => {
-			const response = await api.post({
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.post(undefined, {
 				parentId: new ObjectId().toHexString(),
 				parentType: ShareTokenParentType.Course,
 			});
@@ -124,7 +102,9 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 400 on invalid parent id', async () => {
-			const response = await api.post({
+			const { loggedInClient } = await setup();
+
+			const response = await loggedInClient.post(undefined, {
 				parentId: 'foobar',
 				parentType: ShareTokenParentType.Course,
 			});
@@ -133,11 +113,10 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 400 on invalid parent type', async () => {
-			const { course } = await setup();
+			const { course, loggedInClient } = await setup();
 
-			const response = await api.post({
+			const response = await loggedInClient.post(undefined, {
 				parentId: course.id,
-				// @ts-expect-error test
 				parentType: 'invalid',
 			});
 
@@ -145,12 +124,11 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 400 when expiresInDays is invalid integer', async () => {
-			const { course } = await setup();
+			const { course, loggedInClient } = await setup();
 
-			const response = await api.post({
+			const response = await loggedInClient.post(undefined, {
 				parentId: course.id,
 				parentType: ShareTokenParentType.Course,
-				// @ts-expect-error test
 				expiresInDays: 'foo',
 			});
 
@@ -158,9 +136,9 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 400 when expiresInDays is negative', async () => {
-			const { course } = await setup();
+			const { course, loggedInClient } = await setup();
 
-			const response = await api.post({
+			const response = await loggedInClient.post(undefined, {
 				parentId: course.id,
 				parentType: ShareTokenParentType.Course,
 				expiresInDays: -10,
@@ -170,9 +148,9 @@ describe(`share token creation (api)`, () => {
 		});
 
 		it('should return status 400 when expiresInDays is not an integer', async () => {
-			const { course } = await setup();
+			const { course, loggedInClient } = await setup();
 
-			const response = await api.post({
+			const response = await loggedInClient.post(undefined, {
 				parentId: course.id,
 				parentType: ShareTokenParentType.Course,
 				expiresInDays: 2.5,
@@ -183,90 +161,144 @@ describe(`share token creation (api)`, () => {
 	});
 
 	describe('with valid course payload', () => {
-		it('should return status 201', async () => {
-			const { course } = await setup();
+		describe('with authenticated user', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
 
-			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const course = courseFactory.build({ teachers: [teacherUser] });
 
-			expect(response.status).toEqual(HttpStatus.CREATED);
-		});
+				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				em.clear();
 
-		it('should return a valid result', async () => {
-			const { course } = await setup();
+				Configuration.set('FEATURE_COURSE_SHARE', true);
 
-			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
+				const loggedInClient = await apiClient.login(teacherAccount);
 
-			expect(response.result).toEqual({
-				token: expect.any(String),
-				payload: {
-					parentId: course.id,
-					parentType: ShareTokenParentType.Course,
-				},
-			});
-		});
+				return { course, loggedInClient };
+			};
 
-		describe('when exclusive to school', () => {
 			it('should return status 201', async () => {
-				const { course } = await setup();
+				const { course, loggedInClient } = await setup();
 
-				const response = await api.post({
+				const response = await loggedInClient.post(undefined, {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
-					schoolExclusive: true,
 				});
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 
 			it('should return a valid result', async () => {
-				const { course } = await setup();
+				const { course, loggedInClient } = await setup();
 
-				const response = await api.post({
+				const response = await loggedInClient.post(undefined, {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
-					schoolExclusive: true,
 				});
+				const result = response.body as ShareTokenResponse;
 
-				expect(response.result).toEqual({
+				expect(result).toEqual({
 					token: expect.any(String),
 					payload: {
 						parentId: course.id,
 						parentType: ShareTokenParentType.Course,
 					},
+				});
+			});
+
+			describe('when exclusive to school', () => {
+				it('should return status 201', async () => {
+					const { course, loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(undefined, {
+						parentId: course.id,
+						parentType: ShareTokenParentType.Course,
+						schoolExclusive: true,
+					});
+
+					expect(response.status).toEqual(HttpStatus.CREATED);
+				});
+
+				it('should return a valid result', async () => {
+					const { course, loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(undefined, {
+						parentId: course.id,
+						parentType: ShareTokenParentType.Course,
+						schoolExclusive: true,
+					});
+					const result = response.body as ShareTokenResponse;
+
+					expect(result).toEqual({
+						token: expect.any(String),
+						payload: {
+							parentId: course.id,
+							parentType: ShareTokenParentType.Course,
+						},
+					});
+				});
+			});
+
+			describe('with expiration duration', () => {
+				it('should return status 201', async () => {
+					const { course, loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(undefined, {
+						parentId: course.id,
+						parentType: ShareTokenParentType.Course,
+						expiresInDays: 5,
+					});
+
+					expect(response.status).toEqual(HttpStatus.CREATED);
+				});
+
+				it('should return a valid result containg the expiration timestamp', async () => {
+					const { course, loggedInClient } = await setup();
+
+					const response = await loggedInClient.post(undefined, {
+						parentId: course.id,
+						parentType: ShareTokenParentType.Course,
+						expiresInDays: 5,
+					});
+					const result = response.body as ShareTokenResponse;
+
+					expect(result).toEqual({
+						token: expect.any(String),
+						expiresAt: expect.any(String),
+						payload: {
+							parentId: course.id,
+							parentType: ShareTokenParentType.Course,
+						},
+					});
 				});
 			});
 		});
 
-		describe('with expiration duration', () => {
-			it('should return status 201', async () => {
+		describe('with not authenticated user', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const course = courseFactory.build({ teachers: [teacherUser] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				em.clear();
+
+				Configuration.set('FEATURE_COURSE_SHARE', true);
+
+				return { course };
+			};
+
+			it('should return status 401', async () => {
 				const { course } = await setup();
 
-				const response = await api.post({
+				const response = await apiClient.post(undefined, {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
-					expiresInDays: 5,
 				});
 
-				expect(response.status).toEqual(HttpStatus.CREATED);
-			});
-
-			it('should return a valid result containg the expiration timestamp', async () => {
-				const { course } = await setup();
-
-				const response = await api.post({
-					parentId: course.id,
-					parentType: ShareTokenParentType.Course,
-					expiresInDays: 5,
-				});
-
-				expect(response.result).toEqual({
-					token: expect.any(String),
-					expiresAt: expect.any(String),
-					payload: {
-						parentId: course.id,
-						parentType: ShareTokenParentType.Course,
-					},
-				});
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});

@@ -5,7 +5,10 @@ import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SyncAttribute } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { groupFactory, roleDtoFactory, setupEntities, userFactory } from '@shared/testing';
+import { groupFactory } from '@testing/factory/domainobject';
+import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import {
 	Course,
 	COURSE_REPO,
@@ -383,6 +386,79 @@ describe(CourseSyncService.name, () => {
 			};
 
 			it('should synchronize with the new group', async () => {
+				const { course, newGroup, studentId, teacherId } = setup();
+
+				await service.synchronizeCourseWithGroup(newGroup);
+
+				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: newGroup.id,
+						startDate: newGroup.validPeriod?.from,
+						untilDate: newGroup.validPeriod?.until,
+						studentIds: [studentId],
+						teacherIds: [teacherId],
+						substitutionTeacherIds: [],
+						classIds: [],
+						groupIds: [],
+					}),
+				]);
+			});
+		});
+
+		describe('when synchronizing with a new group with substitute teacher', () => {
+			const setup = () => {
+				const studentId: string = new ObjectId().toHexString();
+				const teacherId: string = new ObjectId().toHexString();
+				const substituteTeacherId: string = new ObjectId().toHexString();
+				const studentRoleId: string = new ObjectId().toHexString();
+				const teacherRoleId: string = new ObjectId().toHexString();
+				const substituteTeacherRoleId: string = new ObjectId().toHexString();
+				const studentRole: RoleDto = roleDtoFactory.build({ id: studentRoleId });
+				const teacherRole: RoleDto = roleDtoFactory.build({ id: teacherRoleId });
+				const substituteTeacherRole: RoleDto = roleDtoFactory.build({ id: substituteTeacherRoleId });
+				const newGroup: Group = groupFactory.build({
+					users: [
+						{
+							userId: studentId,
+							roleId: studentRoleId,
+						},
+						{
+							userId: teacherId,
+							roleId: teacherRoleId,
+						},
+						{
+							userId: substituteTeacherId,
+							roleId: substituteTeacherRoleId,
+						},
+						{
+							userId: teacherId,
+							roleId: substituteTeacherRoleId,
+						},
+					],
+				});
+				const course: Course = courseFactory.build({
+					classIds: [new ObjectId().toHexString()],
+					groupIds: [new ObjectId().toHexString()],
+					substitutionTeacherIds: [],
+				});
+
+				courseRepo.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				roleService.findByName
+					.mockResolvedValueOnce(studentRole)
+					.mockResolvedValueOnce(teacherRole)
+					.mockResolvedValueOnce(substituteTeacherRole);
+
+				return {
+					course,
+					newGroup,
+					studentId,
+					teacherId,
+					substituteTeacherId,
+				};
+			};
+
+			it('should synchronize the substitution teachers, without creating duplicates in teacherIds', async () => {
 				const { course, newGroup, studentId, teacherId, substituteTeacherId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
@@ -395,9 +471,9 @@ describe(CourseSyncService.name, () => {
 						untilDate: newGroup.validPeriod?.until,
 						studentIds: [studentId],
 						teacherIds: [teacherId],
+						substitutionTeacherIds: [substituteTeacherId],
 						classIds: [],
 						groupIds: [],
-						substitutionTeacherIds: [substituteTeacherId],
 					}),
 				]);
 			});
@@ -405,12 +481,10 @@ describe(CourseSyncService.name, () => {
 
 		describe('when the course name is the same as the old group name', () => {
 			const setup = () => {
-				const substituteTeacherId = new ObjectId().toHexString();
 				const course: Course = courseFactory.build({
 					name: 'Course Name',
 					classIds: [new ObjectId().toHexString()],
 					groupIds: [new ObjectId().toHexString()],
-					substitutionTeacherIds: [substituteTeacherId],
 				});
 				const studentRole: RoleDto = roleDtoFactory.build();
 				const teacherRole: RoleDto = roleDtoFactory.build();
@@ -428,12 +502,11 @@ describe(CourseSyncService.name, () => {
 					course,
 					newGroup,
 					oldGroup,
-					substituteTeacherId,
 				};
 			};
 
 			it('should synchronize the group name', async () => {
-				const { course, newGroup, oldGroup, substituteTeacherId } = setup();
+				const { course, newGroup, oldGroup } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -447,7 +520,7 @@ describe(CourseSyncService.name, () => {
 						teacherIds: [],
 						classIds: [],
 						groupIds: [],
-						substitutionTeacherIds: [substituteTeacherId],
+						substitutionTeacherIds: [],
 					}),
 				]);
 			});
@@ -455,12 +528,10 @@ describe(CourseSyncService.name, () => {
 
 		describe('when the course name is different from the old group name', () => {
 			const setup = () => {
-				const substituteTeacherId = new ObjectId().toHexString();
 				const course: Course = courseFactory.build({
 					name: 'Custom Course Name',
 					classIds: [new ObjectId().toHexString()],
 					groupIds: [new ObjectId().toHexString()],
-					substitutionTeacherIds: [substituteTeacherId],
 				});
 				const studentRole: RoleDto = roleDtoFactory.build();
 				const teacherRole: RoleDto = roleDtoFactory.build();
@@ -478,12 +549,11 @@ describe(CourseSyncService.name, () => {
 					course,
 					newGroup,
 					oldGroup,
-					substituteTeacherId,
 				};
 			};
 
 			it('should keep the old course name', async () => {
-				const { course, newGroup, oldGroup, substituteTeacherId } = setup();
+				const { course, newGroup, oldGroup } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -497,7 +567,7 @@ describe(CourseSyncService.name, () => {
 						teacherIds: [],
 						classIds: [],
 						groupIds: [],
-						substitutionTeacherIds: [substituteTeacherId],
+						substitutionTeacherIds: [],
 					}),
 				]);
 			});
@@ -505,7 +575,6 @@ describe(CourseSyncService.name, () => {
 
 		describe('when the teachers are not synced from group', () => {
 			const setup = () => {
-				const substituteTeacherId = new ObjectId().toHexString();
 				const studentUserId = new ObjectId().toHexString();
 				const teacherUserId = new ObjectId().toHexString();
 				const studentRoleId: string = new ObjectId().toHexString();
@@ -523,7 +592,6 @@ describe(CourseSyncService.name, () => {
 
 				const course: Course = courseFactory.build({
 					syncedWithGroup: newGroup.id,
-					substitutionTeacherIds: [substituteTeacherId],
 					teacherIds: [teacherUserId],
 					excludeFromSync: [],
 				});
@@ -535,13 +603,12 @@ describe(CourseSyncService.name, () => {
 					course,
 					newGroup,
 					teacherUserId,
-					substituteTeacherId,
 					studentUserId,
 				};
 			};
 
 			it('should not sync group students', async () => {
-				const { course, newGroup, teacherUserId, substituteTeacherId } = setup();
+				const { course, newGroup, teacherUserId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -556,7 +623,7 @@ describe(CourseSyncService.name, () => {
 						classIds: [],
 						groupIds: [],
 						excludeFromSync: [],
-						substitutionTeacherIds: [substituteTeacherId],
+						substitutionTeacherIds: [],
 					}),
 				]);
 			});
@@ -604,7 +671,7 @@ describe(CourseSyncService.name, () => {
 			};
 
 			it('should not sync group teachers', async () => {
-				const { course, newGroup, substituteTeacherId, teacherUserId, studentUserId } = setup();
+				const { course, newGroup, teacherUserId, studentUserId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
 				expect(courseRepo.saveAll).toHaveBeenCalledWith<[Course[]]>([
@@ -619,7 +686,7 @@ describe(CourseSyncService.name, () => {
 						classIds: [],
 						groupIds: [],
 						excludeFromSync: [SyncAttribute.TEACHERS],
-						substitutionTeacherIds: [substituteTeacherId],
+						substitutionTeacherIds: [],
 					}),
 				]);
 			});

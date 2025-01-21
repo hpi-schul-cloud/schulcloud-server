@@ -1,7 +1,9 @@
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { UserService } from '@modules/user';
 import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BBBJoinConfigBuilder, BBBRole, BBBService } from '../bbb';
 import { PermissionMapping } from '../mapper/video-conference.mapper';
@@ -13,13 +15,19 @@ export class VideoConferenceJoinUc {
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly userService: UserService,
-		private readonly videoConferenceService: VideoConferenceService
+		private readonly videoConferenceService: VideoConferenceService,
+		private readonly boardContextApiHelperService: BoardContextApiHelperService
 	) {}
 
-	async join(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceJoin> {
+	public async join(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceJoin> {
 		const user: UserDO = await this.userService.findById(currentUserId);
 
-		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
+		const schoolId =
+			scope.scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT
+				? await this.boardContextApiHelperService.getSchoolIdForBoardNode(scope.id)
+				: user.schoolId;
+
+		await this.videoConferenceService.throwOnFeaturesDisabled(schoolId);
 
 		const { role, isGuest } = await this.videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb(
 			currentUserId,

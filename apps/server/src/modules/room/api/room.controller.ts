@@ -18,7 +18,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface';
-import { ErrorResponse } from '@src/core/error/dto';
+import { ErrorResponse } from '@core/error/dto';
 import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -30,9 +30,9 @@ import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
-import { RoomMemberListResponse } from './dto/response/room-member.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
+import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 
 @ApiTags('Room')
 @JwtAuthentication()

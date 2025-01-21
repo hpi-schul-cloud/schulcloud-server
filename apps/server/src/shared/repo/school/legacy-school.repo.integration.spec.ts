@@ -13,14 +13,12 @@ import {
 	SchoolYearEntity,
 	UserLoginMigrationEntity,
 } from '@shared/domain/entity';
-import {
-	legacySchoolDoFactory,
-	schoolEntityFactory,
-	schoolYearFactory,
-	systemEntityFactory,
-	userLoginMigrationFactory,
-} from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
+import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
+import { userLoginMigrationFactory } from '@testing/factory/user-login-migration.factory';
 import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {

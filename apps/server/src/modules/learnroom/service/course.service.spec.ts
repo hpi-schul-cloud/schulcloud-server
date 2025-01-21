@@ -12,8 +12,10 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { CourseRepo as LegacyCourseRepo, UserRepo } from '@shared/repo';
-import { courseFactory as courseEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
+import { courseFactory } from '@testing/factory/course.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { CourseService } from './course.service';
 
@@ -89,9 +91,9 @@ describe('CourseService', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course1 = courseEntityFactory.buildWithId({ students: [user] });
-				const course2 = courseEntityFactory.buildWithId({ teachers: [user] });
-				const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
+				const course1 = courseFactory.buildWithId({ students: [user] });
+				const course2 = courseFactory.buildWithId({ teachers: [user] });
+				const course3 = courseFactory.buildWithId({ substitutionTeachers: [user] });
 				const allCourses = [course1, course2, course3];
 
 				userRepo.findById.mockResolvedValue(user);
@@ -125,9 +127,9 @@ describe('CourseService', () => {
 	describe('when deleting by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const course1 = courseEntityFactory.buildWithId({ students: [user] });
-			const course2 = courseEntityFactory.buildWithId({ teachers: [user] });
-			const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
+			const course1 = courseFactory.buildWithId({ students: [user] });
+			const course2 = courseFactory.buildWithId({ teachers: [user] });
+			const course3 = courseFactory.buildWithId({ substitutionTeachers: [user] });
 			const allCourses = [course1, course2, course3];
 
 			userRepo.findById.mockResolvedValue(user);
@@ -175,7 +177,7 @@ describe('CourseService', () => {
 
 	describe('create', () => {
 		const setup = () => {
-			const course = courseEntityFactory.buildWithId();
+			const course = courseFactory.buildWithId();
 			legacyCourseRepo.createCourse.mockResolvedValueOnce();
 
 			return { course };

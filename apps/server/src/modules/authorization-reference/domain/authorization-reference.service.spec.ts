@@ -1,7 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	AuthorizableReferenceType,
@@ -9,8 +6,13 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
-import { ReferenceLoader } from './reference.loader';
+import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory } from '@testing/factory/course.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { setupEntities } from '@testing/setup-entities';
 import { AuthorizationReferenceService } from './authorization-reference.service';
+import { ReferenceLoader } from './reference.loader';
 
 describe('AuthorizationReferenceService', () => {
 	let service: AuthorizationReferenceService;
