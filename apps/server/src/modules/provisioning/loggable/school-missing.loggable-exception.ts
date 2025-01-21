@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { ExternalUserDto } from '../dto';
 
@@ -11,7 +11,7 @@ export class SchoolMissingLoggableException extends BusinessError implements Log
 				title: 'Invalid school data',
 				defaultMessage: 'Unable to create new external user without a school',
 			},
-			HttpStatus.UNPROCESSABLE_ENTITY
+			HttpStatus.UNPROCESSABLE_ENTITY,
 		);
 	}
 

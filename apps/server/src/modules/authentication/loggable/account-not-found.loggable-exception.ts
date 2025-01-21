@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 
@@ -11,7 +11,7 @@ export class AccountNotFoundLoggableException extends BusinessError implements L
 				title: 'Login has failed because account not found',
 				defaultMessage: 'Login has failed because account not found',
 			},
-			HttpStatus.UNAUTHORIZED
+			HttpStatus.UNAUTHORIZED,
 		);
 	}
 

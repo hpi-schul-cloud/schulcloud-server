@@ -4,7 +4,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Course, LessonEntity, TaskWithStatusVo, User } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { TaskRepo } from '@shared/repo/task';
 import { TaskService } from '../service';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -41,7 +42,7 @@ export class TaskUC {
 				lessonIdsOfOpenCourses,
 				lessonIdsOfFinishedCourses,
 			},
-			{ pagination, order: { dueDate: SortOrder.desc } }
+			{ pagination, order: { dueDate: SortOrder.desc } },
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -133,7 +134,7 @@ export class TaskUC {
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
-			}
+			},
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -161,7 +162,7 @@ export class TaskUC {
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },
-			}
+			},
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -188,7 +189,7 @@ export class TaskUC {
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<LessonEntity[]> {
 		const writeCourses = courses.filter((c) =>
-			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
+			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([])),
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 

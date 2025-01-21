@@ -1,7 +1,9 @@
 import { BoardModule } from '@modules/board';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
+import { ExternalToolRepo } from '@shared/repo/externaltool';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { LoggerModule } from '@src/core/logger';
 import { SchoolModule } from '@src/modules/school';
 import {

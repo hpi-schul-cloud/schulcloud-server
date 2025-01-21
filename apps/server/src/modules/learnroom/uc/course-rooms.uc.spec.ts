@@ -1,7 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo, LegacyBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
+import { TaskRepo } from '@shared/repo/task';
+import { UserRepo } from '@shared/repo/user';
 import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
@@ -244,7 +247,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id)
+				tasks.map((task) => task.id),
 			);
 			expect(userSpy).toHaveBeenCalledWith(user.id);
 		});
@@ -255,7 +258,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id)
+				tasks.map((task) => task.id),
 			);
 			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
 		});
@@ -266,7 +269,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id)
+				tasks.map((task) => task.id),
 			);
 			expect(boardSpy).toHaveBeenCalledWith(room.id);
 		});
@@ -277,7 +280,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id)
+				tasks.map((task) => task.id),
 			);
 			expect(reorderSpy).toHaveBeenCalledWith(tasks.map((task) => task.id));
 		});
@@ -288,7 +291,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id)
+				tasks.map((task) => task.id),
 			);
 			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
@@ -299,7 +302,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id)
+				tasks.map((task) => task.id),
 			);
 			expect(authorisationSpy).toHaveBeenCalledWith(user, room);
 		});
@@ -311,7 +314,7 @@ describe('rooms usecase', () => {
 				uc.reorderBoardElements(
 					room.id,
 					user.id,
-					tasks.map((task) => task.id)
+					tasks.map((task) => task.id),
 				);
 			await expect(call).rejects.toThrow(ForbiddenException);
 		});

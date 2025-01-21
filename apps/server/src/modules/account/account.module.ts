@@ -3,7 +3,7 @@ import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { LoggerModule } from '@src/core/logger/logger.module';
 import { AccountConfig } from './account-config';
 import { AccountServiceDb } from './domain/services/account-db.service';

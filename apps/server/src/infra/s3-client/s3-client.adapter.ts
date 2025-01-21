@@ -14,7 +14,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { TypeGuard } from '@shared/common';
+import { TypeGuard } from '@shared/common/guards';
 import { ErrorUtils } from '@src/core/error/utils';
 import { LegacyLogger } from '@src/core/logger';
 import { Readable } from 'stream';
@@ -28,7 +28,7 @@ export class S3ClientAdapter {
 	constructor(
 		@Inject(S3_CLIENT) readonly client: S3Client,
 		@Inject(S3_CONFIG) readonly config: S3Config,
-		private logger: LegacyLogger
+		private logger: LegacyLogger,
 	) {
 		this.logger.setContext(S3ClientAdapter.name);
 	}
@@ -46,7 +46,7 @@ export class S3ClientAdapter {
 			}
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:createBucket',
-				ErrorUtils.createHttpExceptionOptions(err)
+				ErrorUtils.createHttpExceptionOptions(err),
 			);
 		}
 	}
@@ -285,7 +285,7 @@ export class S3ClientAdapter {
 		} catch (err) {
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:deleteDirectory',
-				ErrorUtils.createHttpExceptionOptions(err)
+				ErrorUtils.createHttpExceptionOptions(err),
 			);
 		}
 	}

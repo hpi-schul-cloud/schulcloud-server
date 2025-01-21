@@ -1,4 +1,4 @@
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams } from '@shared/controller/dto';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolUserListResponse, SchoolUserResponse } from '../dto/response/school-user.response';
 

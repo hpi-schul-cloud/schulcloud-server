@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 
 export class UserAccountDeactivatedLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class UserAccountDeactivatedLoggableException extends BusinessError imple
 				title: 'Login failed because user account is deactivated',
 				defaultMessage: 'Login failed because user account is deactivated',
 			},
-			HttpStatus.UNAUTHORIZED
+			HttpStatus.UNAUTHORIZED,
 		);
 	}
 

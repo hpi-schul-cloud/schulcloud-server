@@ -1,4 +1,4 @@
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -124,7 +124,7 @@ describe('CurrentUserMapper', () => {
 				const { accountId, user } = setup();
 
 				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
-					ValidationError
+					ValidationError,
 				);
 			});
 		});

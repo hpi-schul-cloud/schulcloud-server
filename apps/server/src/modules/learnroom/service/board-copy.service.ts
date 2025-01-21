@@ -20,7 +20,7 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { LegacyLogger } from '@src/core/logger';
 import { StorageLocation } from '@src/modules/files-storage/interface';
 import { sortBy } from 'lodash';
@@ -43,7 +43,7 @@ export class BoardCopyService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly copyHelperService: CopyHelperService,
 		// TODO comment this, legacy!
-		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
+		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo,
 	) {}
 
 	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
@@ -85,7 +85,7 @@ export class BoardCopyService {
 		boardElements: LegacyBoardElement[],
 		user: User,
 		originalCourse: Course,
-		destinationCourse: Course
+		destinationCourse: Course,
 	): Promise<CopyStatus[]> {
 		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
 			if (element.target === undefined) {
@@ -142,7 +142,7 @@ export class BoardCopyService {
 		columnBoard: ColumnBoardNode,
 		user: User,
 		originalCourse: Course,
-		destinationCourse: Course
+		destinationCourse: Course,
 	): Promise<CopyStatus> {
 		return this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: columnBoard.id,
@@ -211,7 +211,7 @@ export class BoardCopyService {
 					el.copyEntity = await this.columnBoardService.swapLinkedIds(el.copyEntity?.id, map);
 				}
 				return el;
-			})
+			}),
 		);
 
 		copyStatus.elements = updatedElements;

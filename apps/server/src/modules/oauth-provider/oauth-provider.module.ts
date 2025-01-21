@@ -3,7 +3,7 @@ import { PseudonymModule } from '@modules/pseudonym';
 import { ToolModule } from '@modules/tool';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { LoggerModule } from '@src/core/logger';
 import { IdTokenService } from './domain/service/id-token.service';
 import { OauthProviderLoginFlowService } from './domain/service/oauth-provider.login-flow.service';

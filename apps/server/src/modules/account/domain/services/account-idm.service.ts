@@ -2,7 +2,7 @@ import { IdentityManagementOauthService, IdentityManagementService } from '@infr
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
@@ -19,7 +19,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		private readonly accountIdmToDoMapper: AccountIdmToDoMapper,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly logger: Logger,
-		private readonly configService: ConfigService<AccountConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>,
 	) {
 		super();
 	}
@@ -76,7 +76,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	public async searchByUsernamePartialMatch(
 		userName: string,
 		skip: number,
-		limit: number
+		limit: number,
 	): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));

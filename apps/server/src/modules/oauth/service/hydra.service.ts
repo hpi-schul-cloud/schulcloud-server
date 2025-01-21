@@ -8,7 +8,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
@@ -24,7 +24,7 @@ export class HydraSsoService {
 		private readonly ltiRepo: LtiToolRepo,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
 	) {}
 
 	private readonly HOST: string = Configuration.get('HOST') as string;

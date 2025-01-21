@@ -4,8 +4,8 @@ import { Account } from '@modules/account';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { TypeGuard } from '@shared/common';
-import { UserRepo } from '@shared/repo';
+import { TypeGuard } from '@shared/common/guards';
+import { UserRepo } from '@shared/repo/user';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
 import { CurrentUserMapper } from '../mapper';
@@ -17,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly configService: ConfigService<IdentityManagementConfig, true>,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
 	) {
 		super();
 	}
@@ -36,7 +36,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 		const accountUserId = TypeGuard.checkNotNullOrUndefined(
 			account.userId,
-			new Error(`login failing, because account ${account.id} has no userId`)
+			new Error(`login failing, because account ${account.id} has no userId`),
 		);
 		const user = await this.userRepo.findById(accountUserId, true);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);

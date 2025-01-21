@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '@shared/repo';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { FileRecord } from '../entity';
 import { StorageLocation } from '../interface';
 import { FileRecordScope } from './filerecord-scope';
@@ -37,7 +37,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>
+		options?: IFindOptions<FileRecord>,
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
 			.byStorageType(storageLocation)
@@ -53,7 +53,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>
+		options?: IFindOptions<FileRecord>,
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
 			.byStorageType(storageLocation)
@@ -83,7 +83,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 
 	private async findAndCount(
 		scope: FileRecordScope,
-		options?: IFindOptions<FileRecord>
+		options?: IFindOptions<FileRecord>,
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };

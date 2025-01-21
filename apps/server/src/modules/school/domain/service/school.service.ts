@@ -1,7 +1,7 @@
 import { System, SystemService } from '@modules/system';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeGuard } from '@shared/common';
+import { TypeGuard } from '@shared/common/guards';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
@@ -22,7 +22,7 @@ export class SchoolService {
 	constructor(
 		@Inject(SCHOOL_REPO) private readonly schoolRepo: SchoolRepo,
 		private readonly systemService: SystemService,
-		private readonly configService: ConfigService<SchoolConfig, true>
+		private readonly configService: ConfigService<SchoolConfig, true>,
 	) {}
 
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
@@ -50,7 +50,7 @@ export class SchoolService {
 	public async getSchoolsForExternalInvite(
 		query: SchoolQuery,
 		ownSchoolId: EntityId,
-		options?: IFindOptions<SchoolProps>
+		options?: IFindOptions<SchoolProps>,
 	): Promise<School[]> {
 		const schools = await this.getSchools(query, options);
 
@@ -97,7 +97,7 @@ export class SchoolService {
 		const schoolsWithLdapLoginSystems = await this.schoolRepo.getSchoolsBySystemIds(ldapLoginSystemsIds);
 
 		const schoolsForLdapLogin = schoolsWithLdapLoginSystems.map((school) =>
-			this.mapToSchoolForLdapLogin(school, ldapLoginSystems)
+			this.mapToSchoolForLdapLogin(school, ldapLoginSystems),
 		);
 
 		return schoolsForLdapLogin;
@@ -162,7 +162,7 @@ export class SchoolService {
 	private addLdapLoginSystems(
 		schoolProps: SchoolProps,
 		ldapLoginSystems: System[],
-		schoolForLdapLoginProps: SchoolForLdapLoginProps
+		schoolForLdapLoginProps: SchoolForLdapLoginProps,
 	): void {
 		schoolProps.systemIds?.forEach((systemIdInSchool) => {
 			const relatedSystem = ldapLoginSystems.find((system) => system.id === systemIdInSchool);

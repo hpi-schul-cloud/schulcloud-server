@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams } from '@shared/controller/dto';
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc/news.uc';
 import {
@@ -27,7 +27,7 @@ export class NewsController {
 		const news = await this.newsUc.create(
 			currentUser.userId,
 			currentUser.schoolId,
-			NewsMapper.mapCreateNewsToDomain(params)
+			NewsMapper.mapCreateNewsToDomain(params),
 		);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;
@@ -40,12 +40,12 @@ export class NewsController {
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterNewsParams,
-		@Query() pagination: PaginationParams
+		@Query() pagination: PaginationParams,
 	): Promise<NewsListResponse> {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
 			NewsMapper.mapNewsScopeToDomain(scope),
-			{ pagination }
+			{ pagination },
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		const response = new NewsListResponse(dtoList, count);
@@ -71,12 +71,12 @@ export class NewsController {
 	async update(
 		@Param() urlParams: NewsUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: UpdateNewsParams
+		@Body() params: UpdateNewsParams,
 	): Promise<NewsResponse> {
 		const news = await this.newsUc.update(
 			urlParams.newsId,
 			currentUser.userId,
-			NewsMapper.mapUpdateNewsToDomain(params)
+			NewsMapper.mapUpdateNewsToDomain(params),
 		);
 		const dto = NewsMapper.mapToResponse(news);
 		return dto;

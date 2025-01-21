@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import { TargetModels, VideoConference, VideoConferenceOptions } from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { VideoConferenceRepo } from '@shared/repo';
+import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { LegacyLogger } from '@src/core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';

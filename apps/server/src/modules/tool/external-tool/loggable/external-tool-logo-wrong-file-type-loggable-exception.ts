@@ -1,6 +1,6 @@
-import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class ExternalToolLogoWrongFileTypeLoggableException extends BusinessError implements Loggable {
 	constructor() {
@@ -10,7 +10,7 @@ export class ExternalToolLogoWrongFileTypeLoggableException extends BusinessErro
 				title: 'External tool logo wrong file type.',
 				defaultMessage: 'External tool logo has the wrong file type. Only JPEG and PNG files are supported.',
 			},
-			HttpStatus.BAD_REQUEST
+			HttpStatus.BAD_REQUEST,
 		);
 	}
 

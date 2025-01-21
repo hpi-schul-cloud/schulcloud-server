@@ -1,7 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { EntityId } from '@shared/domain/types';
-import { MongoDbScope, MongoPatterns } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
+import { MongoDbScope } from '@shared/repo/mongodb-scope';
 import { GroupEntity } from '../entity';
 import { GroupTypes } from './group-types';
 
@@ -30,7 +31,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 					$match: {
 						$or: [{ syncedCourses: { $size: 0 } }, { type: { $eq: GroupTypes.CLASS } }],
 					},
-				}
+				},
 			);
 		}
 

@@ -7,7 +7,7 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { LoggerModule } from '@src/core/logger';
 import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';

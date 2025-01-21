@@ -10,7 +10,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { LegacyLogger } from '@src/core/logger';
 import { teamFactory } from '@testing/factory/team.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -118,7 +118,7 @@ describe('Collaborative Storage Service', () => {
 					create: false,
 					delete: false,
 					share: false,
-				})
+				}),
 			).rejects.toThrow(ForbiddenException);
 		});
 	});

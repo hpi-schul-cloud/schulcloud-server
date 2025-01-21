@@ -5,7 +5,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

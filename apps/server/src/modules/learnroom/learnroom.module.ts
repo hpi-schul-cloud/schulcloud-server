@@ -10,15 +10,11 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	DashboardElementRepo,
-	DashboardModelMapper,
-	DashboardRepo,
-	LegacyBoardRepo,
-	UserRepo,
-} from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
+import { DashboardElementRepo, DashboardModelMapper, DashboardRepo } from '@shared/repo/dashboard';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
+import { UserRepo } from '@shared/repo/user';
 import { LoggerModule } from '@src/core/logger';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';

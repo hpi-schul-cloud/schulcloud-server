@@ -1,10 +1,10 @@
 /* eslint-disable no-await-in-loop */
 import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { LegacyLogger } from '@src/core/logger';
-import { TypeGuard } from '@shared/common';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
@@ -15,7 +15,7 @@ export class DeleteFilesUc {
 	constructor(
 		private readonly filesRepo: FilesRepo,
 		private readonly storageProviderRepo: StorageProviderRepo,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
 	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
@@ -49,14 +49,14 @@ export class DeleteFilesUc {
 			batchCounter += 1;
 
 			this.logger.log(
-				`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files and ${numberOfFailingFilesInBatch} failed deletions`
+				`Finished batch ${batchCounter} with ${numberOfFilesInBatch} files and ${numberOfFailingFilesInBatch} failed deletions`,
 			);
 		} while (numberOfFilesInBatch > 0);
 
 		this.logger.log(
 			`${
 				numberOfProcessedFiles - failingFileIds.length
-			} out of ${numberOfProcessedFiles} files were successfully deleted`
+			} out of ${numberOfProcessedFiles} files were successfully deleted`,
 		);
 
 		if (failingFileIds.length > 0) {
@@ -107,7 +107,7 @@ export class DeleteFilesUc {
 	private getClientForFile(file: FileEntity): S3Client {
 		const storageProvider = TypeGuard.checkNotNullOrUndefined(
 			file.storageProvider,
-			new Error(`File ${file.id} has no provider.`)
+			new Error(`File ${file.id} has no provider.`),
 		);
 
 		const client = this.s3ClientMap.get(storageProvider.id);

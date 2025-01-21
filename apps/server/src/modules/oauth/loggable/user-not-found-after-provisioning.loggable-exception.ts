@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
@@ -7,7 +7,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends BusinessErro
 	constructor(
 		private readonly externalUserId: string,
 		private readonly systemId: EntityId,
-		private readonly officialSchoolNumber?: string
+		private readonly officialSchoolNumber?: string,
 	) {
 		super(
 			{
@@ -16,7 +16,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends BusinessErro
 				defaultMessage:
 					'Unable to find user after provisioning. The feature for OAuth2 provisioning might be disabled for this school.',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

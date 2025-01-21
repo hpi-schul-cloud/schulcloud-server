@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class SchoolNameRequiredLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class SchoolNameRequiredLoggableException extends BusinessError implement
 				title: 'School name is required',
 				defaultMessage: 'External school name is required',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

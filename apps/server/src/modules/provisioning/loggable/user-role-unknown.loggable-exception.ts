@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { ExternalUserDto } from '../dto';
 
@@ -11,7 +11,7 @@ export class UserRoleUnknownLoggableException extends BusinessError implements L
 				title: 'Invalid user role',
 				defaultMessage: 'External user has no or no known role assigned to them',
 			},
-			HttpStatus.UNPROCESSABLE_ENTITY
+			HttpStatus.UNPROCESSABLE_ENTITY,
 		);
 	}
 

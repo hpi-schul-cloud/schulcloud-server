@@ -6,7 +6,7 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { extractJwtFromHeader } from '@shared/common';
+import { extractJwtFromHeader } from '@shared/common/utils';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../guard';
 import { ICurrentUser } from '../interface';
@@ -36,7 +36,7 @@ export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, 
 
 	if (!requestUser || !isCurrentUser(requestUser)) {
 		throw new UnauthorizedException(
-			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
+			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.',
 		);
 	}
 

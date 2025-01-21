@@ -5,14 +5,14 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { ContextExternalTool } from '../domain';
 
 @Injectable()
 export class ContextExternalToolAuthorizableService implements AuthorizationLoaderService {
 	constructor(
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
-		injectionService: AuthorizationInjectionService
+		injectionService: AuthorizationInjectionService,
 	) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.ContextExternalToolEntity, this);
 	}

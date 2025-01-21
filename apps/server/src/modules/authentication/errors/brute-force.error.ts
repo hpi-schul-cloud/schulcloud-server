@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 
 export class BruteForceError extends BusinessError {
 	readonly timeToWait: number;
@@ -10,7 +10,7 @@ export class BruteForceError extends BusinessError {
 			HttpStatus.TOO_MANY_REQUESTS,
 			{
 				timeToWait,
-			}
+			},
 		);
 		this.timeToWait = timeToWait;
 	}

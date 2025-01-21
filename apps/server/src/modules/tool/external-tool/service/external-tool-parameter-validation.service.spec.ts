@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { CommonToolValidationService } from '../../common/service';
@@ -65,7 +65,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const result: Promise<void> = service.validateCommon(externalTool);
 
 				await expect(result).rejects.toThrow(
-					new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name}" is already used.`)
+					new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name}" is already used.`),
 				);
 			});
 
@@ -90,7 +90,7 @@ describe('ExternalToolParameterValidationService', () => {
 				const func = () => service.validateCommon(externalTool);
 
 				await expect(func()).rejects.toThrow(
-					new ValidationError(`tool_param_name: A custom parameter is missing a name.`)
+					new ValidationError(`tool_param_name: A custom parameter is missing a name.`),
 				);
 			});
 		});
@@ -109,8 +109,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 				await expect(func()).rejects.toThrow(
 					new ValidationError(
-						`tool_param_duplicate: The tool ${externalTool.name} contains multiple of the same custom parameters.`
-					)
+						`tool_param_duplicate: The tool ${externalTool.name} contains multiple of the same custom parameters.`,
+					),
 				);
 			});
 
@@ -127,8 +127,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`tool_param_duplicate: The tool ${externalTool.name} contains multiple of the same custom parameters.`
-					)
+						`tool_param_duplicate: The tool ${externalTool.name} contains multiple of the same custom parameters.`,
+					),
 				);
 			});
 		});
@@ -146,8 +146,8 @@ describe('ExternalToolParameterValidationService', () => {
 					new ValidationError(
 						`tool_param_regex_invalid: The custom Parameter "${
 							externalTool.parameters?.[0].name ?? ''
-						}" has an invalid regex.`
-					)
+						}" has an invalid regex.`,
+					),
 				);
 			});
 		});
@@ -178,8 +178,8 @@ describe('ExternalToolParameterValidationService', () => {
 					new ValidationError(
 						`tool_param_regexComment: The custom parameter "${
 							externalTool.parameters?.[0].name ?? ''
-						}" parameter is missing a regex comment.`
-					)
+						}" parameter is missing a regex comment.`,
+					),
 				);
 			});
 		});
@@ -235,8 +235,8 @@ describe('ExternalToolParameterValidationService', () => {
 						new ValidationError(
 							`tool_param_default_required: The custom parameter "${
 								externalTool.parameters?.[0].name ?? ''
-							}" is a global parameter and requires a default value.`
-						)
+							}" is a global parameter and requires a default value.`,
+						),
 					);
 				});
 			});
@@ -266,8 +266,8 @@ describe('ExternalToolParameterValidationService', () => {
 						new ValidationError(
 							`tool_param_default_required: The custom parameter "${
 								externalTool.parameters?.[0].name ?? ''
-							}" is a global parameter and requires a default value.`
-						)
+							}" is a global parameter and requires a default value.`,
+						),
 					);
 				});
 			});
@@ -323,8 +323,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`tool_param_auto_requires_global: The custom parameter "${parameter.name}" with type "${parameter.type}" must have the scope "global", since it is automatically filled.`
-					)
+						`tool_param_auto_requires_global: The custom parameter "${parameter.name}" with type "${parameter.type}" must have the scope "global", since it is automatically filled.`,
+					),
 				);
 			});
 		});
@@ -349,8 +349,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 				await expect(result).rejects.toThrow(
 					new ValidationError(
-						`tool_param_type_mismatch: The default value of the custom parameter "${parameter.name}" should be of type "${parameter.type}".`
-					)
+						`tool_param_type_mismatch: The default value of the custom parameter "${parameter.name}" should be of type "${parameter.type}".`,
+					),
 				);
 			});
 		});
@@ -382,8 +382,8 @@ describe('ExternalToolParameterValidationService', () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_param_auto_medium_id: The custom parameter "${parameter.name}" with type "${parameter.type}" must have the mediumId set.`
-						)
+							`tool_param_auto_medium_id: The custom parameter "${parameter.name}" with type "${parameter.type}" must have the mediumId set.`,
+						),
 					);
 				});
 			});

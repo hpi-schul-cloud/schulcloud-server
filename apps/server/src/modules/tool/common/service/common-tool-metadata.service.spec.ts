@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardCommonToolService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolMetadata } from '../../external-tool/domain';
@@ -115,7 +116,7 @@ describe(CommonToolMetadataService.name, () => {
 				setup();
 
 				const result: SchoolExternalToolMetadata = await service.getMetadataForSchoolExternalTool(
-					new ObjectId().toHexString()
+					new ObjectId().toHexString(),
 				);
 
 				expect(result).toEqual<SchoolExternalToolMetadata>({
@@ -142,7 +143,7 @@ describe(CommonToolMetadataService.name, () => {
 				setup();
 
 				const result: SchoolExternalToolMetadata = await service.getMetadataForSchoolExternalTool(
-					new ObjectId().toHexString()
+					new ObjectId().toHexString(),
 				);
 
 				expect(result).toEqual<SchoolExternalToolMetadata>({

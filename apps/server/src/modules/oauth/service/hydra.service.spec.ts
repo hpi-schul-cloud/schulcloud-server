@@ -11,7 +11,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity';
-import { LtiToolRepo } from '@shared/repo';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { LegacyLogger } from '@src/core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
@@ -120,7 +120,7 @@ describe('HydraService', () => {
 			// Assert
 			expect(httpService.get).toHaveBeenCalledWith(
 				`http://hydra.mock/oauth2/auth?response_type=code&scope=openid%20uuid&client_id=12345&redirect_uri=localhost%2Fapi%2Fv3%2Fsso%2Fhydra%2F12345&state=mockNanoId`,
-				{}
+				{},
 			);
 			expect(result.data).toEqual(responseData);
 		});
@@ -167,7 +167,7 @@ describe('HydraService', () => {
 			// Assert
 			expect(httpService.get).toHaveBeenCalledWith(
 				`${apiHost}${axiosResponse1.headers.location as string}`,
-				axiosConfig
+				axiosConfig,
 			);
 			expect(resDto.response.data).toEqual(expectedAuthParams);
 		});

@@ -13,7 +13,12 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	ValidationError,
+} from '@shared/common/error';
 import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
@@ -61,7 +66,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly orm: MikroORM,
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -117,7 +122,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		updateData: UpdateMyAccount,
 		user: User,
 		account: Account,
-		accountSave: AccountSave
+		accountSave: AccountSave,
 	): Promise<boolean> {
 		if (updateData.email && user.email !== updateData.email) {
 			const newMail = updateData.email.toLowerCase();

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { EntityId } from '@shared/domain/types';
 
 export class CourseMetadataResponse {
@@ -10,7 +10,7 @@ export class CourseMetadataResponse {
 		displayColor: string,
 		startDate?: Date,
 		untilDate?: Date,
-		copyingSince?: Date
+		copyingSince?: Date,
 	) {
 		this.id = id;
 		this.title = title;

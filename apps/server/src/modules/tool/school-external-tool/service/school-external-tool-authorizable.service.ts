@@ -5,14 +5,14 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolRepo } from '@shared/repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { SchoolExternalTool } from '../domain';
 
 @Injectable()
 export class SchoolExternalToolAuthorizableService implements AuthorizationLoaderServiceGeneric<SchoolExternalTool> {
 	constructor(
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		injectionService: AuthorizationInjectionService
+		injectionService: AuthorizationInjectionService,
 	) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this);
 	}

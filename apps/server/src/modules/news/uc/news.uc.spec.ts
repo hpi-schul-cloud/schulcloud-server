@@ -6,7 +6,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { CreateNews, NewsTargetModel } from '@shared/domain/types';
-import { NewsRepo } from '@shared/repo';
+import { NewsRepo } from '@shared/repo/news';
 import { Logger } from '@src/core/logger';
 import { NewsUc } from './news.uc';
 

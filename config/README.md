@@ -162,7 +162,7 @@ This code shows a minimal flow.
     import { Module } from '@nestjs/common';
     import { ConfigModule } from '@nestjs/config';
     import serverConfig from './server.config';
-    import { createConfigModuleOptions } from '@shared/common';
+    import { createConfigModuleOptions } from '@shared/common/config-module-options';
 
 
     const serverModules = [

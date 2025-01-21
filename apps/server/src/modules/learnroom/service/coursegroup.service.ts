@@ -15,7 +15,7 @@ import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { CourseGroup } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
-import { CourseGroupRepo } from '@shared/repo';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class CourseGroupService implements DeletionService, IEventHandler<UserDe
 		private readonly repo: CourseGroupRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly orm: MikroORM,
 	) {
 		this.logger.setContext(CourseGroupService.name);
 	}
@@ -48,8 +48,8 @@ export class CourseGroupService implements DeletionService, IEventHandler<UserDe
 				'Deleting user data from CourseGroup',
 				DomainName.COURSEGROUP,
 				userId,
-				StatusModel.PENDING
-			)
+				StatusModel.PENDING,
+			),
 		);
 		const [courseGroups, count] = await this.repo.findByUserId(userId);
 
@@ -68,8 +68,8 @@ export class CourseGroupService implements DeletionService, IEventHandler<UserDe
 				userId,
 				StatusModel.FINISHED,
 				count,
-				0
-			)
+				0,
+			),
 		);
 
 		return result;

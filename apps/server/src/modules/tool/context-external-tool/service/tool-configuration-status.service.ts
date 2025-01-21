@@ -2,7 +2,7 @@ import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ConfigService } from '@nestjs/config';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import {
 	ContextExternalToolConfigurationStatus,
@@ -19,14 +19,14 @@ export class ToolConfigurationStatusService {
 	constructor(
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>
+		private readonly configService: ConfigService<MediaBoardConfig, true>,
 	) {}
 
 	public async determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalToolLaunchable,
-		userId: EntityId
+		userId: EntityId,
 	): Promise<ContextExternalToolConfigurationStatus> {
 		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: false,
@@ -39,7 +39,7 @@ export class ToolConfigurationStatusService {
 
 		const schoolParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
 			externalTool,
-			schoolExternalTool
+			schoolExternalTool,
 		);
 
 		if (schoolParameterErrors.length) {
@@ -48,7 +48,7 @@ export class ToolConfigurationStatusService {
 
 		const contextParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
 			externalTool,
-			contextExternalTool
+			contextExternalTool,
 		);
 
 		if (contextParameterErrors.length) {
@@ -56,7 +56,7 @@ export class ToolConfigurationStatusService {
 
 			if (
 				contextParameterErrors.some(
-					(error: ValidationError) => error instanceof ToolParameterMandatoryValueMissingLoggableException
+					(error: ValidationError) => error instanceof ToolParameterMandatoryValueMissingLoggableException,
 				)
 			) {
 				configurationStatus.isIncompleteOnScopeContext = true;
@@ -77,9 +77,8 @@ export class ToolConfigurationStatusService {
 
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
-				userId
-			);
+			const mediaUserLicenses: MediaUserLicense[] =
+				await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium) {
@@ -95,7 +94,7 @@ export class ToolConfigurationStatusService {
 
 	private isOutdated(contextParameterErrors: ValidationError[]): boolean {
 		const parameterWithoutOptional: ValidationError[] = contextParameterErrors.filter(
-			(error: ValidationError) => !this.isOptional(error)
+			(error: ValidationError) => !this.isOptional(error),
 		);
 
 		return parameterWithoutOptional.length > 0;

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
 import { autoParameters, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { ToolParameterTypeValidationUtil } from '../../common/service';
@@ -18,7 +18,7 @@ export class ExternalToolParameterValidationService {
 		if (externalTool.parameters) {
 			if (this.hasDuplicateAttributes(externalTool.parameters)) {
 				throw new ValidationError(
-					`tool_param_duplicate: The tool ${externalTool.name || ''} contains multiple of the same custom parameters.`
+					`tool_param_duplicate: The tool ${externalTool.name || ''} contains multiple of the same custom parameters.`,
 				);
 			}
 
@@ -29,43 +29,43 @@ export class ExternalToolParameterValidationService {
 
 				if (!this.isGlobalParameterValid(param)) {
 					throw new ValidationError(
-						`tool_param_default_required: The custom parameter "${param.name}" is a global parameter and requires a default value.`
+						`tool_param_default_required: The custom parameter "${param.name}" is a global parameter and requires a default value.`,
 					);
 				}
 
 				if (!this.isAutoParameterGlobal(param)) {
 					throw new ValidationError(
-						`tool_param_auto_requires_global: The custom parameter "${param.name}" with type "${param.type}" must have the scope "global", since it is automatically filled.`
+						`tool_param_auto_requires_global: The custom parameter "${param.name}" with type "${param.type}" must have the scope "global", since it is automatically filled.`,
 					);
 				}
 
 				if (!this.isAutoParameterMediumIdValid(param, externalTool)) {
 					throw new ValidationError(
-						`tool_param_auto_medium_id: The custom parameter "${param.name}" with type "${param.type}" must have the mediumId set.`
+						`tool_param_auto_medium_id: The custom parameter "${param.name}" with type "${param.type}" must have the mediumId set.`,
 					);
 				}
 
 				if (!this.isRegexCommentMandatoryAndFilled(param)) {
 					throw new ValidationError(
-						`tool_param_regexComment: The custom parameter "${param.name}" parameter is missing a regex comment.`
+						`tool_param_regexComment: The custom parameter "${param.name}" parameter is missing a regex comment.`,
 					);
 				}
 
 				if (!this.isRegexValid(param)) {
 					throw new ValidationError(
-						`tool_param_regex_invalid: The custom Parameter "${param.name}" has an invalid regex.`
+						`tool_param_regex_invalid: The custom Parameter "${param.name}" has an invalid regex.`,
 					);
 				}
 
 				if (!this.isDefaultValueOfValidType(param)) {
 					throw new ValidationError(
-						`tool_param_type_mismatch: The default value of the custom parameter "${param.name}" should be of type "${param.type}".`
+						`tool_param_type_mismatch: The default value of the custom parameter "${param.name}" should be of type "${param.type}".`,
 					);
 				}
 
 				if (!this.isDefaultValueOfValidRegex(param)) {
 					throw new ValidationError(
-						`tool_param_default_regex: The default value of a the custom parameter "${param.name}" does not match its regex.`
+						`tool_param_default_regex: The default value of a the custom parameter "${param.name}" does not match its regex.`,
 					);
 				}
 			});
@@ -90,8 +90,8 @@ export class ExternalToolParameterValidationService {
 		return customParameter.some((item, itemIndex) =>
 			customParameter.some(
 				(other, otherIndex) =>
-					itemIndex !== otherIndex && item.name.toLocaleLowerCase() === other.name.toLocaleLowerCase()
-			)
+					itemIndex !== otherIndex && item.name.toLocaleLowerCase() === other.name.toLocaleLowerCase(),
+			),
 		);
 	}
 

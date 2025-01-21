@@ -1,12 +1,12 @@
 import { EntityData, EntityDictionary, EntityName, QueryOrder } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { ScopeAggregateResult } from '@shared/repo/mongodb-scope';
 import { Group, GroupAggregateScope, GroupFilter, GroupTypes } from '../domain';
 import { GroupEntity } from '../entity';
@@ -87,13 +87,13 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
 		const mongoEntitiesFacet = (await this.em.aggregate(
 			GroupEntity,
-			scope.build()
+			scope.build(),
 		)) as ScopeAggregateResult<GroupEntity>;
 
 		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
 
 		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: EntityDictionary<GroupEntity>) =>
-			this.em.map(GroupEntity, entity)
+			this.em.map(GroupEntity, entity),
 		);
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));

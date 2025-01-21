@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolRepo } from '@shared/repo';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -14,7 +14,7 @@ export class SchoolExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly commonToolValidationService: CommonToolValidationService,
-		private readonly commonToolDeleteService: CommonToolDeleteService
+		private readonly commonToolDeleteService: CommonToolDeleteService,
 	) {}
 
 	public async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
@@ -40,8 +40,8 @@ export class SchoolExternalToolService {
 	private async enrichWithDataFromExternalTools(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
 		const enrichedTools: SchoolExternalTool[] = await Promise.all(
 			tools.map(
-				async (tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichWithDataFromExternalTool(tool)
-			)
+				async (tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichWithDataFromExternalTool(tool),
+			),
 		);
 
 		return enrichedTools;
@@ -63,7 +63,7 @@ export class SchoolExternalToolService {
 
 	private determineSchoolToolStatus(
 		tool: SchoolExternalTool,
-		externalTool: ExternalTool
+		externalTool: ExternalTool,
 	): SchoolExternalToolConfigurationStatus {
 		let isOutdatedOnScopeSchool = false;
 

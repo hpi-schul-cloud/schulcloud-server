@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class OauthConfigMissingLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class OauthConfigMissingLoggableException extends BusinessError implement
 				title: 'Oauth config missing',
 				defaultMessage: 'Requested system has no oauth configured',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

@@ -9,7 +9,7 @@ import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { LtiToolRepo } from '@shared/repo';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { LegacyLogger } from '@src/core/logger';
 import { ltiToolDOFactory, pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
@@ -146,7 +146,7 @@ describe('NextCloudStrategy', () => {
 				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
 
 				expect(client.findGroupId).toHaveBeenCalledWith(
-					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
+					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto),
 				);
 			});
 
@@ -182,7 +182,7 @@ describe('NextCloudStrategy', () => {
 				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
 
 				expect(client.findGroupId).toHaveBeenCalledWith(
-					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
+					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto),
 				);
 			});
 

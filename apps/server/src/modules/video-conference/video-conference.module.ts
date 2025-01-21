@@ -5,18 +5,18 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
+import { RoleModule } from '../role';
+import { RoomModule } from '../room';
+import { RoomMembershipModule } from '../room-membership';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
-import { RoleModule } from '../role';
-import { RoomMembershipModule } from '../room-membership';
-import { RoomModule } from '../room';
 
 @Module({
 	imports: [

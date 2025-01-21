@@ -1,15 +1,18 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromHeader } from '@shared/common';
+import { extractJwtFromHeader } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import { BoardApi } from './board-api-client';
-import { BoardSkeletonDtoMapper } from './mapper';
 import { BoardSkeletonDto } from './dto';
+import { BoardSkeletonDtoMapper } from './mapper';
 
 @Injectable()
 export class BoardClientAdapter {
-	constructor(private readonly boardApi: BoardApi, @Inject(REQUEST) private request: Request) {}
+	constructor(
+		private readonly boardApi: BoardApi,
+		@Inject(REQUEST) private request: Request,
+	) {}
 
 	public async getBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
 		const options = this.createOptionParams();

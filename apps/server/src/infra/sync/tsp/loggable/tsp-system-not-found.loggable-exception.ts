@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError, ErrorLogMessage } from '@shared/common';
+import { BusinessError, ErrorLogMessage } from '@shared/common/error';
 import { Loggable, LogMessage } from '@src/core/logger';
 
 export class TspSystemNotFoundLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class TspSystemNotFoundLoggableException extends BusinessError implements
 				title: 'The TSP system could not be found',
 				defaultMessage: 'The TSP system could not be found during the sync',
 			},
-			HttpStatus.BAD_REQUEST
+			HttpStatus.BAD_REQUEST,
 		);
 	}
 

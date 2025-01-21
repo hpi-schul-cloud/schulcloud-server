@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
-import { SchoolExternalToolRepo } from '@shared/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
 import { type ExternalTool } from '../../external-tool/domain';
@@ -171,7 +171,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-					})
+					}),
 				);
 			});
 		});
@@ -217,7 +217,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-					})
+					}),
 				);
 			});
 		});

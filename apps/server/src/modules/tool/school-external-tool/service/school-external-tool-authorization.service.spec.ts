@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolExternalToolRepo } from '@shared/repo';
+import { SchoolExternalToolRepo } from '@shared/rep/schoolexternaltool';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { SchoolExternalTool } from '../domain';
 import { schoolExternalToolFactory } from '../testing';
@@ -46,7 +46,7 @@ describe('SchoolExternalToolAuthorizableService', () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
 			expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(
 				AuthorizableReferenceType.SchoolExternalToolEntity,
-				service
+				service,
 			);
 		});
 	});

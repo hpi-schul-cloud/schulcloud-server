@@ -1,7 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
+import { ExternalToolRepo } from '@shared/repo/externaltool';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalToolDeletedEvent } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { externalToolFactory } from '../../external-tool/testing';
@@ -135,7 +137,7 @@ describe(CommonToolDeleteService.name, () => {
 						id: contextExternalTool.id,
 						title: displayName,
 						description: 'description',
-					})
+					}),
 				);
 			});
 		});
@@ -201,7 +203,7 @@ describe(CommonToolDeleteService.name, () => {
 						id: contextExternalTool.id,
 						title: externalTool.name,
 						description: undefined,
-					})
+					}),
 				);
 			});
 		});
@@ -257,7 +259,7 @@ describe(CommonToolDeleteService.name, () => {
 						id: contextExternalTool.id,
 						title: externalTool.name,
 						description: externalTool.description,
-					})
+					}),
 				);
 			});
 		});

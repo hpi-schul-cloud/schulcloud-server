@@ -6,7 +6,7 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { UserLoginMigrationRepo } from '@shared/repo';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
@@ -20,7 +20,7 @@ export class UserLoginMigrationService {
 		private readonly userService: UserService,
 		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemService: SystemService
+		private readonly systemService: SystemService,
 	) {}
 
 	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
@@ -53,7 +53,7 @@ export class UserLoginMigrationService {
 
 	public async setMigrationMandatory(
 		userLoginMigration: UserLoginMigrationDO,
-		mandatory: boolean
+		mandatory: boolean,
 	): Promise<UserLoginMigrationDO> {
 		this.checkGracePeriod(userLoginMigration);
 
@@ -81,7 +81,7 @@ export class UserLoginMigrationService {
 
 		await this.schoolService.removeFeature(
 			userLoginMigration.schoolId,
-			SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
+			SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION,
 		);
 
 		const now: Date = new Date();
@@ -99,7 +99,7 @@ export class UserLoginMigrationService {
 		if (userLoginMigration.finishedAt && this.isGracePeriodExpired(userLoginMigration)) {
 			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
 				userLoginMigration.id as string,
-				userLoginMigration.finishedAt
+				userLoginMigration.finishedAt,
 			);
 		}
 	}

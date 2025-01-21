@@ -7,7 +7,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { CoreModule } from '@src/core';

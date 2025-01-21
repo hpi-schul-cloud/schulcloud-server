@@ -1,10 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
+import { UserRepo } from '@shared/repo/user';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
-import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
+import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
 @Injectable()
 export class CourseRoomsUc {
@@ -14,7 +16,7 @@ export class CourseRoomsUc {
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: CourseRoomsAuthorisationService,
-		private readonly roomsService: CourseRoomsService
+		private readonly roomsService: CourseRoomsService,
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
@@ -34,7 +36,7 @@ export class CourseRoomsUc {
 		roomId: EntityId,
 		elementId: EntityId,
 		userId: EntityId,
-		visibility: boolean
+		visibility: boolean,
 	): Promise<void> {
 		const user = await this.userRepo.findById(userId);
 		const course = await this.courseRepo.findOne(roomId, userId);

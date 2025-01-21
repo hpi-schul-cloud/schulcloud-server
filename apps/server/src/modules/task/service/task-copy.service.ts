@@ -3,7 +3,7 @@ import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-cli
 import { Injectable } from '@nestjs/common';
 import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { TaskRepo } from '@shared/repo';
+import { TaskRepo } from '@shared/repo/task';
 
 type TaskCopyParams = {
 	originalTaskId: EntityId;
@@ -18,7 +18,7 @@ export class TaskCopyService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly copyFilesService: CopyFilesService
+		private readonly copyFilesService: CopyFilesService,
 	) {}
 
 	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
@@ -30,7 +30,7 @@ export class TaskCopyService {
 		const { fileUrlReplacements, fileCopyStatus } = await this.copyFilesService.copyFilesOfEntity(
 			originalTask,
 			taskCopy,
-			user.id
+			user.id,
 		);
 
 		await this.updateFileUrls(taskCopy, fileUrlReplacements);
@@ -43,7 +43,7 @@ export class TaskCopyService {
 		originalTask: Task,
 		user: User,
 		destinationCourse: Course | undefined,
-		destinationLesson: LessonEntity | undefined
+		destinationLesson: LessonEntity | undefined,
 	) {
 		const taskCopy = new Task({
 			name: params.copyName || originalTask.name,

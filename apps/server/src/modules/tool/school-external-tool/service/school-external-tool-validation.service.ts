@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -9,7 +9,7 @@ import { SchoolExternalTool } from '../domain';
 export class SchoolExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService
+		private readonly commonToolValidationService: CommonToolValidationService,
 	) {}
 
 	async validate(schoolExternalTool: SchoolExternalTool): Promise<void> {
@@ -17,7 +17,7 @@ export class SchoolExternalToolValidationService {
 
 		const errors: ValidationError[] = this.commonToolValidationService.validateParameters(
 			loadedExternalTool,
-			schoolExternalTool
+			schoolExternalTool,
 		);
 
 		if (errors.length) {

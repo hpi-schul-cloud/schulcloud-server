@@ -1,4 +1,4 @@
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameter, CustomParameterEntry, ToolParameterRequiredLoggableException } from '../../../domain';
 import { ParameterArrayValidator } from './parameter-array-validator';
@@ -17,13 +17,13 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 	validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],
-		toolId: EntityId | undefined
+		toolId: EntityId | undefined,
 	): ValidationError[] {
 		const errors: ValidationError[] = [];
 
 		for (const param of declarations) {
 			const foundEntry: CustomParameterEntry | undefined = entries.find(
-				({ name }: CustomParameterEntry): boolean => name === param.name
+				({ name }: CustomParameterEntry): boolean => name === param.name,
 			);
 
 			if (foundEntry) {

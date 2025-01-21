@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, LogMessageData, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class BadDataLoggableException extends BusinessError implements Loggable {
@@ -11,7 +11,7 @@ export class BadDataLoggableException extends BusinessError implements Loggable 
 				defaultMessage: message || 'Request data is invalid and cannot be processed',
 			},
 			HttpStatus.BAD_REQUEST,
-			details
+			details,
 		);
 	}
 

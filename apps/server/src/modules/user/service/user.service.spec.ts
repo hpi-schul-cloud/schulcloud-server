@@ -22,7 +22,7 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
 import { schoolFactory } from '@src/modules/school/testing';
@@ -476,7 +476,7 @@ describe('UserService', () => {
 
 				expect(userDORepo.find).toHaveBeenCalledWith(
 					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.NOT_FALSE },
-					undefined
+					undefined,
 				);
 			});
 		});
@@ -490,7 +490,7 @@ describe('UserService', () => {
 
 				expect(userDORepo.find).toHaveBeenCalledWith(
 					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.TRUE },
-					undefined
+					undefined,
 				);
 			});
 		});
@@ -586,7 +586,7 @@ describe('UserService', () => {
 				setupGuestRoles();
 
 				await expect(() =>
-					service.addSecondarySchoolToUsers([user.id as string], targetSchool.id)
+					service.addSecondarySchoolToUsers([user.id as string], targetSchool.id),
 				).rejects.toThrowError();
 			});
 		});
@@ -609,7 +609,7 @@ describe('UserService', () => {
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith(
-					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })]),
 				);
 			});
 		});
@@ -637,7 +637,9 @@ describe('UserService', () => {
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith(
-					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: expectedSecondarySchools })])
+					expect.arrayContaining([
+						expect.objectContaining({ id: user.id, secondarySchools: expectedSecondarySchools }),
+					]),
 				);
 			});
 		});
@@ -665,7 +667,7 @@ describe('UserService', () => {
 				await service.removeSecondarySchoolFromUsers([user.id as EntityId], targetSchool.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith(
-					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
+					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })]),
 				);
 			});
 		});
@@ -842,7 +844,7 @@ describe('UserService', () => {
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.USER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id])],
-					[registrationPinDeleted, calendarEventsDeleted]
+					[registrationPinDeleted, calendarEventsDeleted],
 				);
 
 				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
@@ -895,7 +897,7 @@ describe('UserService', () => {
 				userRepo.deleteUser.mockResolvedValue(0);
 
 				const expectedError = new DeletionErrorLoggableException(
-					`Failed to delete user '${user.id}' from User collection`
+					`Failed to delete user '${user.id}' from User collection`,
 				);
 
 				return {

@@ -11,7 +11,7 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
@@ -29,7 +29,10 @@ import {
 @JwtAuthentication()
 @Controller('tools/context-external-tools')
 export class ToolContextController {
-	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
+	constructor(
+		private readonly contextExternalToolUc: ContextExternalToolUc,
+		private readonly logger: LegacyLogger,
+	) {}
 
 	@Post()
 	@ApiCreatedResponse({
@@ -43,14 +46,14 @@ export class ToolContextController {
 	@ApiOperation({ summary: 'Creates a ContextExternalTool' })
 	public async createContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() body: ContextExternalToolPostParams
+		@Body() body: ContextExternalToolPostParams,
 	): Promise<ContextExternalToolResponse> {
 		const contextExternalTool: ContextExternalToolDto =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
 		const createdTool: ContextExternalTool = await this.contextExternalToolUc.createContextExternalTool(
 			currentUser.userId,
-			contextExternalTool
+			contextExternalTool,
 		);
 
 		const response: ContextExternalToolResponse =
@@ -68,12 +71,12 @@ export class ToolContextController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	public async deleteContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolIdParams
+		@Param() params: ContextExternalToolIdParams,
 	): Promise<void> {
 		await this.contextExternalToolUc.deleteContextExternalTool(currentUser.userId, params.contextExternalToolId);
 
 		this.logger.debug(
-			`ContextExternalTool with id ${params.contextExternalToolId} was deleted by user with id ${currentUser.userId}`
+			`ContextExternalTool with id ${params.contextExternalToolId} was deleted by user with id ${currentUser.userId}`,
 		);
 	}
 
@@ -87,22 +90,22 @@ export class ToolContextController {
 	@ApiOperation({ summary: 'Returns a list of ContextExternalTools for the given context' })
 	public async getContextExternalToolsForContext(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolContextParams
+		@Param() params: ContextExternalToolContextParams,
 	): Promise<ContextExternalToolSearchListResponse> {
 		const contextExternalTools: ContextExternalTool[] =
 			await this.contextExternalToolUc.getContextExternalToolsForContext(
 				currentUser.userId,
 				params.contextType,
-				params.contextId
+				params.contextId,
 			);
 
 		const mappedTools: ContextExternalToolResponse[] = contextExternalTools.map(
 			(tool: ContextExternalTool): ContextExternalToolResponse =>
-				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool)
+				ContextExternalToolResponseMapper.mapContextExternalToolResponse(tool),
 		);
 
 		this.logger.debug(
-			`User with id ${currentUser.userId} fetched ContextExternalTools for contextType: ${params.contextType} and contextId: ${params.contextId}`
+			`User with id ${currentUser.userId} fetched ContextExternalTools for contextType: ${params.contextType} and contextId: ${params.contextId}`,
 		);
 
 		const response: ContextExternalToolSearchListResponse = new ContextExternalToolSearchListResponse(mappedTools);
@@ -120,11 +123,11 @@ export class ToolContextController {
 	@ApiOperation({ summary: 'Searches a ContextExternalTool for the given id' })
 	public async getContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ContextExternalToolIdParams
+		@Param() params: ContextExternalToolIdParams,
 	): Promise<ContextExternalToolResponse> {
 		const contextExternalTool: ContextExternalTool = await this.contextExternalToolUc.getContextExternalTool(
 			currentUser.userId,
-			params.contextExternalToolId
+			params.contextExternalToolId,
 		);
 
 		const response: ContextExternalToolResponse =
@@ -145,7 +148,7 @@ export class ToolContextController {
 	public async updateContextExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams,
-		@Body() body: ContextExternalToolPostParams
+		@Body() body: ContextExternalToolPostParams,
 	): Promise<ContextExternalToolResponse> {
 		const contextExternalTool: ContextExternalToolDto =
 			ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
@@ -154,7 +157,7 @@ export class ToolContextController {
 			currentUser.userId,
 			currentUser.schoolId,
 			params.contextExternalToolId,
-			contextExternalTool
+			contextExternalTool,
 		);
 
 		const response: ContextExternalToolResponse =

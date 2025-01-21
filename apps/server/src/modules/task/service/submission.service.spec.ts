@@ -14,7 +14,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
-import { SubmissionRepo } from '@shared/repo';
+import { SubmissionRepo } from '@shared/repo/submission';
 import { Logger } from '@src/core/logger';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class UserLoginMigrationInvalidExternalSchoolIdLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class UserLoginMigrationInvalidExternalSchoolIdLoggableException extends 
 				title: 'The given external school ID is invalid',
 				defaultMessage: 'The given external school ID does not match with the migrated school',
 			},
-			HttpStatus.UNPROCESSABLE_ENTITY
+			HttpStatus.UNPROCESSABLE_ENTITY,
 		);
 	}
 

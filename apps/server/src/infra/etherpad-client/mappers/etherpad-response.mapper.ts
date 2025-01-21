@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { TypeGuard } from '@shared/common';
+import { TypeGuard } from '@shared/common/guards';
 import { ErrorUtils } from '@src/core/error/utils';
 import {
 	CreateAuthorUsingGET200ResponseData,
@@ -60,13 +60,13 @@ export class EtherpadResponseMapper {
 	static mapResponseToException<T extends EtherpadResponse>(
 		type: EtherpadErrorType,
 		payload: EtherpadParams,
-		response: T | Error
+		response: T | Error,
 	): EtherpadErrorLoggableException {
 		return new EtherpadErrorLoggableException(
 			type,
 			payload,
 			response.message,
-			ErrorUtils.createHttpExceptionOptions(response.message)
+			ErrorUtils.createHttpExceptionOptions(response.message),
 		);
 	}
 

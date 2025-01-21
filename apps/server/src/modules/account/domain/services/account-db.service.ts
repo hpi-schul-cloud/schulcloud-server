@@ -2,7 +2,7 @@ import { IdentityManagementService } from '@infra/identity-management/identity-m
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../../account-config';
@@ -16,7 +16,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<AccountConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>,
 	) {
 		super();
 	}
@@ -69,7 +69,7 @@ export class AccountServiceDb extends AbstractAccountService {
 				}
 				await account.update(accountSave);
 				return account;
-			})
+			}),
 		);
 
 		const savedAccounts = this.accountRepo.saveAll(updatedAccounts);

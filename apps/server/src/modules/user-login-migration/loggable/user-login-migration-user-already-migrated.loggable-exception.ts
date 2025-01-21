@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class UserLoginMigrationUserAlreadyMigratedLoggableException extends BusinessError implements Loggable {
@@ -13,7 +13,7 @@ export class UserLoginMigrationUserAlreadyMigratedLoggableException extends Busi
 			HttpStatus.UNPROCESSABLE_ENTITY,
 			{
 				multipleUsersFound: true,
-			}
+			},
 		);
 	}
 

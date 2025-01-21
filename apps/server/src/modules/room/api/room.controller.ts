@@ -16,7 +16,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@src/core/error/dto';
 import { Room } from '../domain';
@@ -49,7 +49,7 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getRooms(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: RoomPaginationParams
+		@Query() pagination: RoomPaginationParams,
 	): Promise<RoomListResponse> {
 		const findOptions: IFindOptions<Room> = { pagination };
 
@@ -69,7 +69,7 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async createRoom(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() createRoomParams: CreateRoomBodyParams
+		@Body() createRoomParams: CreateRoomBodyParams,
 	): Promise<RoomItemResponse> {
 		const room = await this.roomUc.createRoom(currentUser.userId, createRoomParams);
 
@@ -88,7 +88,7 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getRoomDetails(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomUrlParams
+		@Param() urlParams: RoomUrlParams,
 	): Promise<RoomDetailsResponse> {
 		const { room, permissions } = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
@@ -107,7 +107,7 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getRoomBoards(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomUrlParams
+		@Param() urlParams: RoomUrlParams,
 	): Promise<RoomBoardListResponse> {
 		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
 
@@ -127,7 +127,7 @@ export class RoomController {
 	public async updateRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
-		@Body() updateRoomParams: UpdateRoomBodyParams
+		@Body() updateRoomParams: UpdateRoomBodyParams,
 	): Promise<RoomDetailsResponse> {
 		const { room, permissions } = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
 
@@ -159,7 +159,7 @@ export class RoomController {
 	public async addMembers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
-		@Body() bodyParams: AddRoomMembersBodyParams
+		@Body() bodyParams: AddRoomMembersBodyParams,
 	): Promise<void> {
 		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
 	}
@@ -174,7 +174,7 @@ export class RoomController {
 	public async removeMembers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
-		@Body() bodyParams: RemoveRoomMembersBodyParams
+		@Body() bodyParams: RemoveRoomMembersBodyParams,
 	): Promise<void> {
 		await this.roomUc.removeMembersFromRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
 	}
@@ -192,7 +192,7 @@ export class RoomController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getMembers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomUrlParams
+		@Param() urlParams: RoomUrlParams,
 	): Promise<RoomMemberListResponse> {
 		const members = await this.roomUc.getRoomMembers(currentUser.userId, urlParams.roomId);
 		const response = new RoomMemberListResponse(members);

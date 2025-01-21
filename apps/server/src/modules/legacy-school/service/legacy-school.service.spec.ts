@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
@@ -176,7 +176,7 @@ describe('LegacySchoolService', () => {
 				expect(schoolRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						features: [SchoolFeature.VIDEOCONFERENCE],
-					})
+					}),
 				);
 			});
 		});
@@ -216,7 +216,7 @@ describe('LegacySchoolService', () => {
 
 			const schoolDO: LegacySchoolDo | null = await schoolService.getSchoolByExternalId(
 				schoolSavedExternalId,
-				systems[0]
+				systems[0],
 			);
 
 			expect(schoolDO).toBeInstanceOf(LegacySchoolDo);
@@ -439,7 +439,7 @@ describe('LegacySchoolService', () => {
 				const { name, federalStateName } = setup();
 
 				await expect(schoolService.createSchool({ name, federalStateName })).rejects.toThrowError(
-					'No storage providers found'
+					'No storage providers found',
 				);
 			});
 		});

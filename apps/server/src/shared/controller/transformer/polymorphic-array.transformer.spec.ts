@@ -1,4 +1,4 @@
-import { PolymorphicArrayTransform } from '@shared/controller';
+import { PolymorphicArrayTransform } from '@shared/controller/transformer';
 import { ClassConstructor, plainToClass } from 'class-transformer';
 
 describe(PolymorphicArrayTransform.name, () => {
@@ -13,7 +13,7 @@ describe(PolymorphicArrayTransform.name, () => {
 	class PolymorphicArrayDto {
 		@PolymorphicArrayTransform(
 			(obj: unknown): ClassConstructor<Str | Num> =>
-				typeof obj === 'object' && obj !== null && 'str' in obj ? Str : Num
+				typeof obj === 'object' && obj !== null && 'str' in obj ? Str : Num,
 		)
 		input!: (Str | Num)[];
 	}

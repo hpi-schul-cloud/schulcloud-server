@@ -1,5 +1,5 @@
 import { ValidationError } from '@nestjs/common';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { ErrorResponse } from './error.response';
 import { ValidationErrorDetailResponse } from './validation-error-detail.response';
 
@@ -31,7 +31,7 @@ export class ApiValidationErrorResponse extends ErrorResponse {
 
 		if (validationError.children) {
 			validationError.children.forEach((childError: ValidationError) =>
-				this.extractValidationErrorDetails(childError, propertyPath)
+				this.extractValidationErrorDetails(childError, propertyPath),
 			);
 		}
 	}

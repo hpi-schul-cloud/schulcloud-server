@@ -1,5 +1,5 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,
@@ -24,7 +24,7 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	SubmissionContainerElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
-	VideoConferenceElementResponse
+	VideoConferenceElementResponse,
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {

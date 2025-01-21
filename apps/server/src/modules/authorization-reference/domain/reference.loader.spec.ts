@@ -5,7 +5,12 @@ import { InstanceService } from '@modules/instance';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
+import { LegacySchoolRepo } from '@shared/repo/school';
+import { SubmissionRepo } from '@shared/repo/submission';
+import { TaskRepo } from '@shared/repo/task';
+import { UserRepo } from '@shared/repo/user';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ReferenceLoader } from './reference.loader';
@@ -114,7 +119,7 @@ describe('reference.loader', () => {
 
 		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
-				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
+				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId),
 			).rejects.toThrow(NotImplementedException);
 		});
 	});
@@ -131,7 +136,7 @@ describe('reference.loader', () => {
 		it('should inject course group repo', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.CourseGroup,
-				courseGroupRepo
+				courseGroupRepo,
 			);
 		});
 
@@ -146,14 +151,14 @@ describe('reference.loader', () => {
 		it('should inject submission repo', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.Submission,
-				submissionRepo
+				submissionRepo,
 			);
 		});
 
 		it('should inject instance service', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.Instance,
-				instanceService
+				instanceService,
 			);
 		});
 	});

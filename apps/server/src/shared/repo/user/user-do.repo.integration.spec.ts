@@ -6,7 +6,7 @@ import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { SystemEntity } from '@modules/system/entity';
 import { UserDiscoverableQuery, UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
@@ -140,7 +140,7 @@ describe('UserRepo', () => {
 						id: user.id,
 						externalId: user.externalId,
 						schoolId: school.id,
-					})
+					}),
 				);
 			});
 
@@ -178,7 +178,7 @@ describe('UserRepo', () => {
 
 			it('should throw error', async () => {
 				await expect(repo.findByExternalId(users[0].externalId as string, system.id)).rejects.toThrow(
-					new MultipleUsersFoundLoggableException(externalId)
+					new MultipleUsersFoundLoggableException(externalId),
 				);
 			});
 		});
@@ -207,7 +207,7 @@ describe('UserRepo', () => {
 					id: user.id,
 					externalId: user.externalId,
 					schoolId: school.id,
-				})
+				}),
 			);
 		});
 
@@ -215,7 +215,7 @@ describe('UserRepo', () => {
 			it('should fail', async () => {
 				await em.nativeDelete(User, {});
 				await expect(repo.findByExternalIdOrFail(user.externalId as string, system.id)).rejects.toThrow(
-					EntityNotFoundError
+					EntityNotFoundError,
 				);
 			});
 		});
@@ -284,7 +284,7 @@ describe('UserRepo', () => {
 							name: role.name,
 						}),
 					],
-				})
+				}),
 			);
 		});
 	});
@@ -312,7 +312,7 @@ describe('UserRepo', () => {
 					preferences: { firstLogin: true },
 					birthday: new Date(),
 				},
-				id.toHexString()
+				id.toHexString(),
 			);
 			const role: Role = roleFactory.buildWithId();
 			testEntity.roles.add(role);
@@ -364,7 +364,7 @@ describe('UserRepo', () => {
 					lastLoginSystemChange: testEntity.lastLoginSystemChange,
 					previousExternalId: testEntity.previousExternalId,
 					birthday: testEntity.birthday,
-				})
+				}),
 			);
 		});
 	});
@@ -396,7 +396,7 @@ describe('UserRepo', () => {
 						previousExternalId: 'someId',
 						birthday: new Date(),
 					},
-					'testId'
+					'testId',
 				);
 
 			const result: EntityData<User> = repo.mapDOToEntityProperties(testDO);
@@ -638,7 +638,7 @@ describe('UserRepo', () => {
 					{},
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({ _id: options.order.id }) as QueryOrderMap<User>,
-					})
+					}),
 				);
 			});
 
@@ -653,7 +653,7 @@ describe('UserRepo', () => {
 					{},
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
-					})
+					}),
 				);
 			});
 		});
@@ -681,7 +681,7 @@ describe('UserRepo', () => {
 						expect.objectContaining({
 							offset: undefined,
 							limit: undefined,
-						})
+						}),
 					);
 				});
 			});
@@ -794,7 +794,7 @@ describe('UserRepo', () => {
 					},
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
-					})
+					}),
 				);
 			});
 		});

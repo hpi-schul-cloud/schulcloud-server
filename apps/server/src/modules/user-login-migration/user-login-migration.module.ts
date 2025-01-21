@@ -3,7 +3,7 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { UserLoginMigrationRepo } from '@shared/repo';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import { LoggerModule } from '@src/core/logger';
 import {
 	MigrationCheckService,

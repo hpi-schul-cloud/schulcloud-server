@@ -4,7 +4,7 @@ import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { ColumnBoardNodeRepo } from '../repo';
 
 /**
@@ -16,7 +16,7 @@ export class CourseRoomsService {
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,
 		private readonly boardRepo: LegacyBoardRepo,
-		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
+		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo,
 	) {}
 
 	async updateLegacyBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {

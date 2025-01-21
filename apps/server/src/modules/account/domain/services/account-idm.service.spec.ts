@@ -5,7 +5,7 @@ import { IdentityManagementOauthService, IdentityManagementService } from '@infr
 import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccount } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { Account, AccountSave } from '..';
@@ -297,14 +297,14 @@ describe('AccountIdmService', () => {
 		describe('when validate password', () => {
 			const setup = (acceptPassword: boolean) => {
 				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValue(
-					acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined
+					acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined,
 				);
 			};
 			it('should validate password by checking JWT', async () => {
 				setup(true);
 				const ret = await accountIdmService.validatePassword(
 					{ username: 'username' } as unknown as Account,
-					'password'
+					'password',
 				);
 				expect(ret).toBe(true);
 			});
@@ -312,7 +312,7 @@ describe('AccountIdmService', () => {
 				setup(false);
 				const ret = await accountIdmService.validatePassword(
 					{ username: 'username' } as unknown as Account,
-					'password'
+					'password',
 				);
 				expect(ret).toBe(false);
 			});

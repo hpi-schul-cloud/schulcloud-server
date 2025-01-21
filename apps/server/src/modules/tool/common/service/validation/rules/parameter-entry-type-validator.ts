@@ -1,4 +1,4 @@
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameter, CustomParameterEntry, ToolParameterTypeMismatchLoggableException } from '../../../domain';
 import { ToolParameterTypeValidationUtil } from '../tool-parameter-type-validation.util';
@@ -8,7 +8,7 @@ export class ParameterEntryTypeValidator implements ParameterEntryValidator {
 	public validate(
 		entry: CustomParameterEntry,
 		declaration: CustomParameter,
-		toolId: EntityId | undefined
+		toolId: EntityId | undefined,
 	): BusinessError[] {
 		if (
 			entry.value !== undefined &&

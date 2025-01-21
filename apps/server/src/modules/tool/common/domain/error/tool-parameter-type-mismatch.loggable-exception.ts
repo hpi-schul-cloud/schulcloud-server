@@ -1,11 +1,14 @@
-import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { CustomParameter } from '../custom-parameter.do';
 
 export class ToolParameterTypeMismatchLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolId: EntityId | undefined, private readonly parameterDeclaration: CustomParameter) {
+	constructor(
+		private readonly toolId: EntityId | undefined,
+		private readonly parameterDeclaration: CustomParameter,
+	) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_TYPE_MISMATCH',
@@ -16,7 +19,7 @@ export class ToolParameterTypeMismatchLoggableException extends BusinessError im
 			{
 				toolId,
 				parameterDeclaration,
-			}
+			},
 		);
 	}
 

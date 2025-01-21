@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger/types';
 
@@ -11,7 +11,7 @@ export class TooManyPseudonymsLoggableException extends BusinessError implements
 				title: 'Too many pseudonyms where found.',
 				defaultMessage: 'Too many pseudonyms where found.',
 			},
-			HttpStatus.BAD_REQUEST
+			HttpStatus.BAD_REQUEST,
 		);
 	}
 

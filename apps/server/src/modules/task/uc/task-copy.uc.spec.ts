@@ -7,7 +7,9 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { TaskRepo } from '@shared/repo/task';
+import { UserRepo } from '@shared/repo/user';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
@@ -136,7 +138,7 @@ describe('task copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 
 				await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
-					InternalServerErrorException
+					InternalServerErrorException,
 				);
 			});
 		});
@@ -282,7 +284,7 @@ describe('task copy uc', () => {
 					const { user, task, parentParams } = setupWithTaskForbidden();
 
 					await expect(uc.copyTask(user.id, task.id, parentParams)).rejects.toThrowError(
-						new NotFoundException('could not find task to copy')
+						new NotFoundException('could not find task to copy'),
 					);
 				});
 			});
@@ -387,7 +389,7 @@ describe('task copy uc', () => {
 				const { userId, taskId, parentParams } = setupWithLessonForbidden();
 
 				await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrowError(
-					new ForbiddenException('you dont have permission to add to this lesson')
+					new ForbiddenException('you dont have permission to add to this lesson'),
 				);
 			});
 		});

@@ -7,13 +7,13 @@ import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-impo
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { Logger } from '@src/core/logger';
 import { isError } from 'lodash';
 
@@ -57,7 +57,7 @@ export class UserImportUc {
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
-		private readonly userMigrationService: UserMigrationService
+		private readonly userMigrationService: UserMigrationService,
 	) {
 		this.logger.setContext(UserImportUc.name);
 	}
@@ -72,7 +72,7 @@ export class UserImportUc {
 	public async findAllImportUsers(
 		currentUserId: EntityId,
 		query: ImportUserFilter,
-		options?: IFindOptions<ImportUser>
+		options?: IFindOptions<ImportUser>,
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
@@ -103,7 +103,7 @@ export class UserImportUc {
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
 			this.logger.warning(
-				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id)
+				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id),
 			);
 			throw new ForbiddenException('not same school');
 		}
@@ -164,7 +164,7 @@ export class UserImportUc {
 	public async findAllUnmatchedUsers(
 		currentUserId: EntityId,
 		query: ImportUserNameMatchFilter,
-		options?: IFindOptions<User>
+		options?: IFindOptions<User>,
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.IMPORT_USER_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
@@ -246,7 +246,7 @@ export class UserImportUc {
 
 	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = this.configService.get<boolean>(
-			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
+			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION',
 		);
 
 		if (FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION) {
@@ -289,9 +289,8 @@ export class UserImportUc {
 	}
 
 	private async checkSchoolMigrated(schoolId: EntityId, school: LegacySchoolDo): Promise<void> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
+		const userLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			throw new NotFoundLoggableException('UserLoginMigration', { schoolId });
@@ -303,9 +302,8 @@ export class UserImportUc {
 	}
 
 	private async checkMigrationActive(schoolId: EntityId): Promise<void> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
+		const userLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration || userLoginMigration?.closedAt) {
 			throw new UserLoginMigrationNotActiveLoggableException(schoolId);
@@ -326,7 +324,7 @@ export class UserImportUc {
 		school.inMaintenanceSince = undefined;
 
 		const isMigrationRestartable: boolean = this.configService.get(
-			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
+			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION',
 		);
 		if (isMigrationRestartable) {
 			school.inUserMigration = undefined;
@@ -355,7 +353,7 @@ export class UserImportUc {
 		const filters: ImportUserFilter = { matches: [ImportUserMatchCreatorScope.AUTO] };
 		const [autoMatchedUsers]: Counted<ImportUser[]> = await this.importUserRepo.findImportUsers(
 			currentUser.school,
-			filters
+			filters,
 		);
 
 		for (const autoMatchedUser of autoMatchedUsers) {
@@ -374,7 +372,7 @@ export class UserImportUc {
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise<void> {
 		const FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION = this.configService.get<boolean>(
-			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
+			'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION',
 		);
 
 		if (FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION) {

@@ -17,7 +17,7 @@ import { externalToolEntityFactory, externalToolFactory } from '@modules/tool/ex
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
+import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo/externaltool';
 import { LegacyLogger } from '@src/core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 

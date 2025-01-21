@@ -5,7 +5,7 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -177,7 +177,7 @@ describe('files-storage controller (API)', () => {
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
 						size: expect.any(Number),
-					})
+					}),
 				);
 			});
 
@@ -380,7 +380,7 @@ describe('files-storage controller (API)', () => {
 							mimeType: 'application/octet-stream',
 							parentType: 'schools',
 							securityCheckStatus: 'pending',
-						})
+						}),
 					);
 				});
 			});

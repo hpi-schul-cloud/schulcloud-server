@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
 import { RequestedRoleEnum } from '../enum';
 import { UsersAdminApiUc } from '../uc';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from './dto';
@@ -21,7 +21,7 @@ export class AdminApiTeachersController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authorized.' })
 	async searchTeachers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() params: UsersSearchQueryParams
+		@Query() params: UsersSearchQueryParams,
 	): Promise<UserListResponse> {
 		return this.uc.findUsersByParams(RequestedRoleEnum.TEACHERS, currentUser.userId, params);
 	}
@@ -34,7 +34,7 @@ export class AdminApiTeachersController {
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Teacher not found.' })
 	async findTeacherById(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: UserByIdParams
+		@Param() params: UserByIdParams,
 	): Promise<UserResponse> {
 		return this.uc.findUserById(RequestedRoleEnum.TEACHERS, currentUser.userId, params);
 	}

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { LessonEntity } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '@shared/repo';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { LessonScope } from './lesson-scope';
 
 @Injectable()
@@ -57,7 +57,7 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 		const rawLessonsDocuments = await this._em.aggregate(LessonEntity, pipeline);
 
 		const lessons = rawLessonsDocuments.map((rawLessonDocument) =>
-			this._em.map(LessonEntity, rawLessonDocument as EntityDictionary<LessonEntity>)
+			this._em.map(LessonEntity, rawLessonDocument as EntityDictionary<LessonEntity>),
 		);
 
 		return lessons;

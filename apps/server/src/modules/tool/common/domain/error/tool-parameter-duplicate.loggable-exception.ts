@@ -1,10 +1,13 @@
-import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class ToolParameterDuplicateLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolId: EntityId | undefined, private readonly parameterName: string) {
+	constructor(
+		private readonly toolId: EntityId | undefined,
+		private readonly parameterName: string,
+	) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_DUPLICATE',
@@ -15,7 +18,7 @@ export class ToolParameterDuplicateLoggableException extends BusinessError imple
 			{
 				toolId,
 				parameterName,
-			}
+			},
 		);
 	}
 

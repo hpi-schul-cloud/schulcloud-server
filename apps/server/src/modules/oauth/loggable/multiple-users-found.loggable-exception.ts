@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class MultipleUsersFoundLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class MultipleUsersFoundLoggableException extends BusinessError implement
 				title: 'Multiple users found',
 				defaultMessage: 'Multiple users found with this externalId',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

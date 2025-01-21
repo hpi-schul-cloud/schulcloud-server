@@ -15,7 +15,7 @@ import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { NewsRepo } from '@shared/repo';
+import { NewsRepo } from '@shared/repo/news';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly newsRepo: NewsRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly orm: MikroORM,
 	) {
 		this.logger.setContext(NewsService.name);
 	}
@@ -42,8 +42,8 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 				'Deleting user data from News',
 				DomainName.NEWS,
 				userId,
-				StatusModel.PENDING
-			)
+				StatusModel.PENDING,
+			),
 		);
 
 		const [newsWithUserData, counterOfNews] = await this.newsRepo.findByCreatorOrUpdaterId(userId);
@@ -66,8 +66,8 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 				userId,
 				StatusModel.FINISHED,
 				counterOfNews,
-				0
-			)
+				0,
+			),
 		);
 		return result;
 	}

@@ -25,7 +25,7 @@ import {
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller/';
+import { PaginationParams } from '@shared/controller/dto';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import {
@@ -44,13 +44,13 @@ export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
 		private readonly courseImportUc: CourseImportUc,
-		private readonly courseSyncUc: CourseSyncUc
+		private readonly courseSyncUc: CourseSyncUc,
 	) {}
 
 	@Get()
 	public async findForUser(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationParams
+		@Query() pagination: PaginationParams,
 	): Promise<CourseMetadataListResponse> {
 		const [courses, total] = await this.courseUc.findAllByUser(currentUser.userId, pagination);
 		const courseResponses = courses.map((course) => CourseMapper.mapToMetadataResponse(course));
@@ -82,7 +82,7 @@ export class CourseController {
 	public async importCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@UploadedFile(CommonCartridgeFileValidatorPipe)
-		file: Express.Multer.File
+		file: Express.Multer.File,
 	): Promise<void> {
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
 	}
@@ -94,7 +94,7 @@ export class CourseController {
 	@ApiUnprocessableEntityResponse({ description: 'The course is not synchronized with a group.' })
 	public async stopSynchronization(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: CourseUrlParams
+		@Param() params: CourseUrlParams,
 	): Promise<void> {
 		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
 	}
@@ -108,7 +108,7 @@ export class CourseController {
 	public async startSynchronization(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: CourseUrlParams,
-		@Body() bodyParams: CourseSyncBodyParams
+		@Body() bodyParams: CourseSyncBodyParams,
 	): Promise<void> {
 		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
 	}
@@ -124,7 +124,7 @@ export class CourseController {
 	})
 	public async getUserPermissions(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: CourseUrlParams
+		@Param() params: CourseUrlParams,
 	): Promise<{ [userId: string]: string[] }> {
 		const permissions = await this.courseUc.getUserPermissionByCourseId(currentUser.userId, params.courseId);
 
@@ -138,7 +138,7 @@ export class CourseController {
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async getCourseCcMetadataById(
-		@Param() param: CourseUrlParams
+		@Param() param: CourseUrlParams,
 	): Promise<CourseCommonCartridgeMetadataResponse> {
 		const course = await this.courseUc.findCourseById(param.courseId);
 

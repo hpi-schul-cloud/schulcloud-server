@@ -12,7 +12,7 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { LegacyLogger } from '@src/core/logger';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
@@ -35,7 +35,10 @@ import {
 @JwtAuthentication()
 @Controller('tools/school-external-tools')
 export class ToolSchoolController {
-	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc, private readonly logger: LegacyLogger) {}
+	constructor(
+		private readonly schoolExternalToolUc: SchoolExternalToolUc,
+		private readonly logger: LegacyLogger,
+	) {}
 
 	@Get()
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
@@ -44,7 +47,7 @@ export class ToolSchoolController {
 	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
 	async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
+		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams,
 	): Promise<SchoolExternalToolSearchListResponse> {
 		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
@@ -60,11 +63,11 @@ export class ToolSchoolController {
 	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: SchoolExternalToolIdParams
+		@Param() params: SchoolExternalToolIdParams,
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolUc.getSchoolExternalTool(
 			currentUser.userId,
-			params.schoolExternalToolId
+			params.schoolExternalToolId,
 		);
 		const mapped: SchoolExternalToolResponse =
 			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);
@@ -80,14 +83,14 @@ export class ToolSchoolController {
 	async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
-		@Body() body: SchoolExternalToolPostParams
+		@Body() body: SchoolExternalToolPostParams,
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalToolDto: SchoolExternalToolProps =
 			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 		const updated: SchoolExternalTool = await this.schoolExternalToolUc.updateSchoolExternalTool(
 			currentUser.userId,
 			params.schoolExternalToolId,
-			schoolExternalToolDto
+			schoolExternalToolDto,
 		);
 
 		const mapped: SchoolExternalToolResponse =
@@ -103,11 +106,11 @@ export class ToolSchoolController {
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: SchoolExternalToolIdParams
+		@Param() params: SchoolExternalToolIdParams,
 	): Promise<void> {
 		await this.schoolExternalToolUc.deleteSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
 		this.logger.debug(
-			`SchoolExternalTool with id ${params.schoolExternalToolId} was deleted by user with id ${currentUser.userId}`
+			`SchoolExternalTool with id ${params.schoolExternalToolId} was deleted by user with id ${currentUser.userId}`,
 		);
 	}
 
@@ -123,14 +126,14 @@ export class ToolSchoolController {
 	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
 	async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() body: SchoolExternalToolPostParams
+		@Body() body: SchoolExternalToolPostParams,
 	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalToolDto: SchoolExternalToolProps =
 			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 
 		const createdSchoolExternalToolDO: SchoolExternalTool = await this.schoolExternalToolUc.createSchoolExternalTool(
 			currentUser.userId,
-			schoolExternalToolDto
+			schoolExternalToolDto,
 		);
 
 		const response: SchoolExternalToolResponse =
@@ -150,7 +153,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getMetaDataForExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: SchoolExternalToolIdParams
+		@Param() params: SchoolExternalToolIdParams,
 	): Promise<SchoolExternalToolMetadataResponse> {
 		const schoolExternalToolMetadata: SchoolExternalToolMetadata =
 			await this.schoolExternalToolUc.getMetadataForSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);

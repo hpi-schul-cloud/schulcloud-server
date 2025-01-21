@@ -1,6 +1,6 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
@@ -9,7 +9,7 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 	constructor(
 		private readonly medium: ExternalToolMedium,
 		private readonly userId: EntityId,
-		private readonly contextExternalTool: ContextExternalToolLaunchable
+		private readonly contextExternalTool: ContextExternalToolLaunchable,
 	) {
 		super(
 			{
@@ -17,7 +17,7 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 				title: 'Missing media license',
 				defaultMessage: 'The user does not have the required license to launch this medium.',
 			},
-			HttpStatus.FORBIDDEN
+			HttpStatus.FORBIDDEN,
 		);
 	}
 

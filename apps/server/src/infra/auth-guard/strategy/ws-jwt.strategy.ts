@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
-import { JwtExtractor } from '@shared/common';
+import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
 import { JwtAuthGuardConfig } from '../config';
@@ -13,7 +13,7 @@ import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
 	constructor(
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<JwtAuthGuardConfig>
+		configService: ConfigService<JwtAuthGuardConfig>,
 	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), configService);
 

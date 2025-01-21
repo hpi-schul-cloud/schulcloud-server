@@ -3,13 +3,16 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { ChangeLanguageParams } from '../controller/dto';
 import { UserConfig } from '../interfaces';
 
 @Injectable()
 export class UserUc {
-	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService<UserConfig, true>) {}
+	constructor(
+		private readonly userRepo: UserRepo,
+		private readonly configService: ConfigService<UserConfig, true>,
+	) {}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);

@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class IdTokenExtractionFailureLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class IdTokenExtractionFailureLoggableException extends BusinessError imp
 				title: 'Id token extraction failure',
 				defaultMessage: 'Failed to extract field',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

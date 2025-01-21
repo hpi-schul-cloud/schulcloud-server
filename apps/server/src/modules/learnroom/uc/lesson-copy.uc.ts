@@ -6,7 +6,7 @@ import { ForbiddenException, Injectable, InternalServerErrorException } from '@n
 import { Course, LessonEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 
 @Injectable()
 export class LessonCopyUC {
@@ -15,7 +15,7 @@ export class LessonCopyUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonService: LessonService,
 		private readonly courseRepo: CourseRepo,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {

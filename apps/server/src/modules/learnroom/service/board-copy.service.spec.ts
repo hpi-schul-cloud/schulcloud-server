@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyColumnBoardParams } from '@src/modules/board/service/internal';
 import { columnBoardFactory } from '@src/modules/board/testing';
@@ -223,7 +223,7 @@ describe('board copy service', () => {
 					destinationCourse,
 				});
 				const taskStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name
+					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name,
 				);
 				expect(taskStatus).toBeDefined();
 			});

@@ -19,7 +19,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaLineUc } from '../../uc';
 import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import { CollapsableBodyParams, ColorBodyParams, LineUrlParams } from './dto';
@@ -40,7 +40,7 @@ export class MediaLineController {
 	public async moveLine(
 		@Param() urlParams: LineUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaLineUc.moveLine(currentUser.userId, urlParams.lineId, bodyParams.toBoardId, bodyParams.toPosition);
 	}
@@ -55,7 +55,7 @@ export class MediaLineController {
 	public async updateLineTitle(
 		@Param() urlParams: LineUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaLineUc.updateLineTitle(currentUser.userId, urlParams.lineId, bodyParams.title);
 	}
@@ -70,7 +70,7 @@ export class MediaLineController {
 	public async updateBackgroundColor(
 		@Param() urlParams: LineUrlParams,
 		@Body() bodyParams: ColorBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaLineUc.updateLineColor(currentUser.userId, urlParams.lineId, bodyParams.backgroundColor);
 	}
@@ -85,7 +85,7 @@ export class MediaLineController {
 	public async collapseMediaLine(
 		@Param() urlParams: LineUrlParams,
 		@Body() bodyParams: CollapsableBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaLineUc.collapseLine(currentUser.userId, urlParams.lineId, bodyParams.collapsed);
 	}

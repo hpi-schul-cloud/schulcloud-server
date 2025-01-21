@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { LegacyLogger } from '@src/core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
@@ -93,7 +93,7 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
 					deletionRequestToCreate.targetRef.domain,
-					deletionRequestToCreate.deleteInMinutes
+					deletionRequestToCreate.deleteInMinutes,
 				);
 			});
 
@@ -185,7 +185,7 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(eventBus.publish).toHaveBeenCalledWith(
-					new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId)
+					new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId),
 				);
 			});
 		});
@@ -221,19 +221,19 @@ describe(DeletionRequestUc.name, () => {
 
 				const targetRef = DeletionTargetRefBuilder.build(
 					deletionRequestExecuted.targetRefDomain,
-					deletionRequestExecuted.targetRefId
+					deletionRequestExecuted.targetRefId,
 				);
 				const statistics: DomainDeletionReport = DomainDeletionReportBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
-					deletionLogExecuted.subdomainOperations
+					deletionLogExecuted.subdomainOperations,
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
 					StatusModel.SUCCESS,
-					[statistics]
+					[statistics],
 				);
 
 				return {
@@ -274,19 +274,19 @@ describe(DeletionRequestUc.name, () => {
 
 				const targetRef = DeletionTargetRefBuilder.build(
 					deletionRequestExecuted.targetRefDomain,
-					deletionRequestExecuted.targetRefId
+					deletionRequestExecuted.targetRefId,
 				);
 				const statistics = DeletionLogStatisticBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
-					deletionLogExecuted.subdomainOperations
+					deletionLogExecuted.subdomainOperations,
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
 					StatusModel.FAILED,
-					[statistics]
+					[statistics],
 				);
 
 				return {
@@ -328,7 +328,7 @@ describe(DeletionRequestUc.name, () => {
 					targetRef,
 					deletionRequest.deleteAfter,
 					StatusModel.REGISTERED,
-					[]
+					[],
 				);
 
 				return {

@@ -3,12 +3,13 @@ import { Account } from '@modules/account';
 import { System, SystemService } from '@modules/system';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { TypeGuard } from '@shared/common/guards';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo/school';
+import { UserRepo } from '@shared/repo/user';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
 import { Strategy } from 'passport-custom';
-import { TypeGuard } from '@shared/common';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';
 import { CurrentUserMapper } from '../mapper';
@@ -23,7 +24,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly userRepo: UserRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
 	) {
 		super();
 	}
@@ -96,14 +97,14 @@ export class LdapStrategy extends PassportStrategy(Strategy, StrategyType.LDAP) 
 				this.logger.info(
 					new ErrorLoggable(
 						new Error(
-							`Could not find LDAP account with externalSchoolId ${externalSchoolId} for user ${username}. Trying to use the previousExternalId ${school.previousExternalId} next...`
-						)
-					)
+							`Could not find LDAP account with externalSchoolId ${externalSchoolId} for user ${username}. Trying to use the previousExternalId ${school.previousExternalId} next...`,
+						),
+					),
 				);
 
 				account = await this.authenticationService.loadAccount(
 					`${school.previousExternalId}/${username}`.toLowerCase(),
-					systemId
+					systemId,
 				);
 			} else {
 				throw err;

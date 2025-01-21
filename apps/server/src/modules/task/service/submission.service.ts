@@ -17,7 +17,7 @@ import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Submission } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
-import { SubmissionRepo } from '@shared/repo';
+import { SubmissionRepo } from '@shared/repo/submission';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
@@ -28,7 +28,7 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly orm: MikroORM,
 	) {
 		this.logger.setContext(SubmissionService.name);
 	}
@@ -72,8 +72,8 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 				'Deleting single Submissions owned by user',
 				DomainName.SUBMISSIONS,
 				userId,
-				StatusModel.PENDING
-			)
+				StatusModel.PENDING,
+			),
 		);
 		let [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
 
@@ -89,7 +89,7 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 		const result = DomainOperationReportBuilder.build(
 			OperationType.DELETE,
 			submissionsCount,
-			this.getSubmissionsId(submissionsEntities)
+			this.getSubmissionsId(submissionsEntities),
 		);
 
 		this.logger.info(
@@ -99,8 +99,8 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 				userId,
 				StatusModel.FINISHED,
 				submissionsCount,
-				0
-			)
+				0,
+			),
 		);
 
 		return result;
@@ -112,8 +112,8 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 				'Deleting user references from Submissions',
 				DomainName.SUBMISSIONS,
 				userId,
-				StatusModel.PENDING
-			)
+				StatusModel.PENDING,
+			),
 		);
 
 		let [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
@@ -135,7 +135,7 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 		const result = DomainOperationReportBuilder.build(
 			OperationType.UPDATE,
 			submissionsCount,
-			this.getSubmissionsId(submissionsEntities)
+			this.getSubmissionsId(submissionsEntities),
 		);
 
 		this.logger.info(
@@ -145,8 +145,8 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 				userId,
 				StatusModel.FINISHED,
 				submissionsCount,
-				0
-			)
+				0,
+			),
 		);
 		return result;
 	}

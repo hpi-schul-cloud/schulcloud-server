@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { UserLoginMigrationResponse } from './user-login-migration.response';
 
 export class UserLoginMigrationSearchListResponse extends PaginationResponse<UserLoginMigrationResponse[]> {

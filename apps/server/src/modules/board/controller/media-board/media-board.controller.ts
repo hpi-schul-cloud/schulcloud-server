@@ -21,7 +21,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaAvailableLine, MediaBoard, MediaLine } from '../../domain';
 import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';
@@ -41,7 +41,7 @@ import { MediaAvailableLineResponseMapper, MediaBoardResponseMapper, MediaLineRe
 export class MediaBoardController {
 	constructor(
 		private readonly mediaBoardUc: MediaBoardUc,
-		private readonly mediaAvailableLineUc: MediaAvailableLineUc
+		private readonly mediaAvailableLineUc: MediaAvailableLineUc,
 	) {}
 
 	@ApiOperation({ summary: 'Get the media shelf of the user.' })
@@ -65,7 +65,7 @@ export class MediaBoardController {
 	@Post(':boardId/media-lines')
 	public async createLine(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<MediaLineResponse> {
 		const line: MediaLine = await this.mediaBoardUc.createLine(currentUser.userId, urlParams.boardId);
 
@@ -80,11 +80,11 @@ export class MediaBoardController {
 	@Get(':boardId/media-available-line')
 	public async getMediaAvailableLine(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<MediaAvailableLineResponse> {
 		const mediaAvailableLine: MediaAvailableLine = await this.mediaAvailableLineUc.getMediaAvailableLine(
 			currentUser.userId,
-			urlParams.boardId
+			urlParams.boardId,
 		);
 
 		const response: MediaAvailableLineResponse = MediaAvailableLineResponseMapper.mapToResponse(mediaAvailableLine);
@@ -102,12 +102,12 @@ export class MediaBoardController {
 	public async updateMediaAvailableLineColor(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: ColorBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaAvailableLineUc.updateAvailableLineColor(
 			currentUser.userId,
 			urlParams.boardId,
-			bodyParams.backgroundColor
+			bodyParams.backgroundColor,
 		);
 	}
 
@@ -121,7 +121,7 @@ export class MediaBoardController {
 	public async collapseMediaAvailableLine(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: CollapsableBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaAvailableLineUc.collapseAvailableLine(currentUser.userId, urlParams.boardId, bodyParams.collapsed);
 	}
@@ -136,7 +136,7 @@ export class MediaBoardController {
 	public async setMediaBoardLayout(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: LayoutBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaBoardUc.setLayout(currentUser.userId, urlParams.boardId, bodyParams.layout);
 	}

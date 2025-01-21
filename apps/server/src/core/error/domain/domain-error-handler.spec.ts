@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import util from 'util';
 import { AxiosError } from 'axios';
+import util from 'util';
+import { AxiosErrorLoggable } from '../loggable';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
-import { AxiosErrorLoggable } from '../loggable';
 import { DomainErrorHandler } from './domain-error-handler';
 
 class SampleLoggableException extends BadRequestException implements Loggable {
@@ -29,7 +29,10 @@ class SampleLoggableException extends BadRequestException implements Loggable {
 }
 
 class SampleLoggableExceptionWithCause extends InternalServerErrorException implements Loggable {
-	constructor(private readonly testValue: string, error?: unknown) {
+	constructor(
+		private readonly testValue: string,
+		error?: unknown,
+	) {
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 
@@ -54,7 +57,7 @@ class SampleLoggableFromBusinessException extends BusinessError implements Logga
 				title: 'test_title',
 				defaultMessage: 'test_defaultMessage',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

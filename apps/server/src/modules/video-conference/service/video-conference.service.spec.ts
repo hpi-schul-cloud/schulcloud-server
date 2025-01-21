@@ -13,7 +13,8 @@ import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import { Course, TeamUserEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
+import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
 import { VideoConferenceElement } from '@src/modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@src/modules/board/testing';
@@ -460,7 +461,7 @@ describe(VideoConferenceService.name, () => {
 				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING])
+					AuthorizationContextBuilder.read([Permission.START_MEETING]),
 				);
 			});
 
@@ -595,7 +596,7 @@ describe(VideoConferenceService.name, () => {
 				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING])
+					AuthorizationContextBuilder.read([Permission.START_MEETING]),
 				);
 			});
 
@@ -636,13 +637,13 @@ describe(VideoConferenceService.name, () => {
 					1,
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING])
+					AuthorizationContextBuilder.read([Permission.START_MEETING]),
 				);
 				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(
 					2,
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.JOIN_MEETING])
+					AuthorizationContextBuilder.read([Permission.JOIN_MEETING]),
 				);
 			});
 
@@ -1287,7 +1288,7 @@ describe(VideoConferenceService.name, () => {
 
 				expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(
 					videoConference.target,
-					videoConference.targetModel
+					videoConference.targetModel,
 				);
 			});
 
@@ -1296,7 +1297,7 @@ describe(VideoConferenceService.name, () => {
 
 				const result: VideoConferenceDO = await service.findVideoConferenceByScopeIdAndScope(
 					videoConference.target,
-					videoConference.targetModel
+					videoConference.targetModel,
 				);
 
 				expect(result).toBe(videoConference);
@@ -1372,7 +1373,7 @@ describe(VideoConferenceService.name, () => {
 				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
 					scope.id,
 					scope.scope,
-					newOptions
+					newOptions,
 				);
 
 				expect(result).toEqual({ ...videoConference, options: newOptions });
@@ -1404,7 +1405,7 @@ describe(VideoConferenceService.name, () => {
 				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
 					scope.id,
 					scope.scope,
-					options
+					options,
 				);
 
 				expect(result).toEqual(videoConference);

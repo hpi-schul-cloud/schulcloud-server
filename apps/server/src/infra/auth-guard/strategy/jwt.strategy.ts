@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { extractJwtFromHeader } from '@shared/common';
+import { extractJwtFromHeader } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
 import { JwtAuthGuardConfig } from '../config';
@@ -12,7 +12,7 @@ import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<JwtAuthGuardConfig>
+		configService: ConfigService<JwtAuthGuardConfig>,
 	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(extractJwtFromHeader, configService);
 

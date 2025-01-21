@@ -3,7 +3,7 @@ import { RegistrationPinModule } from '@modules/registration-pin';
 import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { LoggerModule } from '@src/core/logger';
 import { UserService } from './service';

@@ -20,7 +20,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaExternalToolElement } from '../../domain';
 import { MediaElementUc } from '../../uc';
 import {
@@ -47,13 +47,13 @@ export class MediaElementController {
 	public async moveElement(
 		@Param() urlParams: ElementUrlParams,
 		@Body() bodyParams: MoveElementBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaElementUc.moveElement(
 			currentUser.userId,
 			urlParams.elementId,
 			bodyParams.toLineId,
-			bodyParams.toPosition
+			bodyParams.toPosition,
 		);
 	}
 
@@ -64,13 +64,13 @@ export class MediaElementController {
 	@Post()
 	public async createElement(
 		@Body() params: CreateMediaElementBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<MediaExternalToolElementResponse> {
 		const element: MediaExternalToolElement = await this.mediaElementUc.createElement(
 			currentUser.userId,
 			params.schoolExternalToolId,
 			params.lineId,
-			params.position
+			params.position,
 		);
 
 		const response: MediaExternalToolElementResponse =
@@ -87,7 +87,7 @@ export class MediaElementController {
 	@Delete(':elementId')
 	public async deleteElement(
 		@Param() urlParams: ElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
+		@CurrentUser() currentUser: ICurrentUser,
 	): Promise<void> {
 		await this.mediaElementUc.deleteElement(currentUser.userId, urlParams.elementId);
 	}

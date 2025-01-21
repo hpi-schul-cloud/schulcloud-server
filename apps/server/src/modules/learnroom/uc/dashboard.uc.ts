@@ -2,14 +2,15 @@ import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { DashboardEntity, GridPosition, GridPositionWithGroupIndex } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, IDashboardRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { IDashboardRepo } from '@shared/repo/dashboard';
 // import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
 
 @Injectable()
 export class DashboardUc {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
-		private readonly courseRepo: CourseRepo
+		private readonly courseRepo: CourseRepo,
 	) {}
 
 	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
@@ -17,7 +18,7 @@ export class DashboardUc {
 		const [courses] = await this.courseRepo.findAllByUserId(
 			userId,
 			{ onlyActiveCourses: true },
-			{ order: { name: SortOrder.asc } }
+			{ order: { name: SortOrder.asc } },
 		);
 
 		dashboard.setLearnRooms(courses);
@@ -29,7 +30,7 @@ export class DashboardUc {
 		dashboardId: EntityId,
 		from: GridPositionWithGroupIndex,
 		to: GridPositionWithGroupIndex,
-		userId: EntityId
+		userId: EntityId,
 	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);
@@ -44,7 +45,7 @@ export class DashboardUc {
 		dashboardId: EntityId,
 		position: GridPosition,
 		params: string,
-		userId: EntityId
+		userId: EntityId,
 	): Promise<DashboardEntity> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);

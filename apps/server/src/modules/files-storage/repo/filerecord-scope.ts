@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { FileRecord } from '../entity';
 import { StorageLocation } from '../interface';
 

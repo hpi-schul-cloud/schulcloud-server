@@ -12,7 +12,8 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestTimeout } from '@shared/common';
+import { RequestTimeout } from '@shared/common/decorators';
+import { ApiValidationError } from '@shared/common/error';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
 import { ShareTokenUC } from '../uc';
 import {
@@ -37,7 +38,7 @@ export class ShareTokenController {
 	@Post()
 	public async createShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() body: ShareTokenBodyParams
+		@Body() body: ShareTokenBodyParams,
 	): Promise<ShareTokenResponse> {
 		const shareToken = await this.shareTokenUC.createShareToken(
 			currentUser.userId,
@@ -48,7 +49,7 @@ export class ShareTokenController {
 			{
 				schoolExclusive: body.schoolExclusive,
 				expiresInDays: body.expiresInDays,
-			}
+			},
 		);
 
 		const response = ShareTokenResponseMapper.mapToResponse(shareToken);
@@ -64,7 +65,7 @@ export class ShareTokenController {
 	@Get(':token')
 	public async lookupShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: ShareTokenUrlParams
+		@Param() urlParams: ShareTokenUrlParams,
 	): Promise<ShareTokenInfoResponse> {
 		const shareTokenInfo = await this.shareTokenUC.lookupShareToken(currentUser.userId, urlParams.token);
 
@@ -84,13 +85,13 @@ export class ShareTokenController {
 	public async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,
-		@Body() body: ShareTokenImportBodyParams
+		@Body() body: ShareTokenImportBodyParams,
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.shareTokenUC.importShareToken(
 			currentUser.userId,
 			urlParams.token,
 			body.newName,
-			body.destinationId
+			body.destinationId,
 		);
 
 		const response = CopyMapper.mapToResponse(copyStatus);

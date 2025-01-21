@@ -3,7 +3,7 @@ import { AuthorizationClientModule } from '@infra/authorization-client';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { CoreModule } from '@src/core';
 import { authorizationClientConfig } from '../files-storage/files-storage.config';
 import { config } from './common-cartridge.config';

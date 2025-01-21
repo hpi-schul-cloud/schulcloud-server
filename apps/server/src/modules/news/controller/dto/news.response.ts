@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { NewsTargetModel } from '@shared/domain/types';
 import { SchoolInfoResponse } from './school-info.response';
 import { TargetInfoResponse } from './target-info.response';
@@ -8,7 +8,7 @@ import { UserInfoResponse } from './user-info.response';
 const NEWS_SOURCES = ['internal', 'rss'] as const;
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
-type SourceType = typeof NEWS_SOURCES[number];
+type SourceType = (typeof NEWS_SOURCES)[number];
 export class NewsResponse {
 	constructor({
 		id,

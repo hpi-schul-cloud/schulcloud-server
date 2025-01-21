@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ValidationError } from '@shared/common';
 import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 
@@ -68,7 +68,7 @@ export class RoomService {
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
 		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
 			throw new ValidationError(
-				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
+				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`,
 			);
 		}
 	}

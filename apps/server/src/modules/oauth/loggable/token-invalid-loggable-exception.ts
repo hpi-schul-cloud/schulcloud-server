@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class TokenInvalidLoggableException extends BusinessError implements Loggable {
@@ -10,7 +10,7 @@ export class TokenInvalidLoggableException extends BusinessError implements Logg
 				title: 'token invalid',
 				defaultMessage: 'Failed to validate token',
 			},
-			HttpStatus.UNAUTHORIZED
+			HttpStatus.UNAUTHORIZED,
 		);
 	}
 

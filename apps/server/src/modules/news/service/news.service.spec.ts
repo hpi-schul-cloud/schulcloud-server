@@ -11,7 +11,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewsRepo } from '@shared/repo';
+import { NewsRepo } from '@shared/repo/news';
 import { Logger } from '@src/core/logger';
 import { teamNewsFactory } from '@testing/factory/news.factory';
 import { userFactory } from '@testing/factory/user.factory';

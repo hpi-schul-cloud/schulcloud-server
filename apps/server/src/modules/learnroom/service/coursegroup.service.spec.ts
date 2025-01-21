@@ -10,7 +10,8 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseGroupRepo, UserRepo } from '@shared/repo';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
+import { UserRepo } from '@shared/repo/user';
 import { Logger } from '@src/core/logger';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';

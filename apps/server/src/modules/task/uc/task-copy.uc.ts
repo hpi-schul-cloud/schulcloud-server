@@ -5,7 +5,8 @@ import { LessonService } from '@modules/lesson';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { TaskRepo } from '@shared/repo/task';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 
@@ -17,7 +18,7 @@ export class TaskCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly taskRepo: TaskRepo,
-		private readonly copyHelperService: CopyHelperService
+		private readonly copyHelperService: CopyHelperService,
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {

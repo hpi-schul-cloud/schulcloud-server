@@ -5,7 +5,7 @@ import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { UserService } from '@src/modules/user';
 import { h5pContentFactory } from '@testing/factory/h5p-content.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -119,7 +119,7 @@ describe('get H5P editor', () => {
 					language,
 					expect.objectContaining({
 						id: mockCurrentUser.userId,
-					})
+					}),
 				);
 			});
 
@@ -174,7 +174,7 @@ describe('get H5P editor', () => {
 				expect(authorizationClientAdapter.checkPermissionsByReference).toBeCalledWith(
 					content.parentType,
 					content.parentId,
-					AuthorizationContextBuilder.write([])
+					AuthorizationContextBuilder.write([]),
 				);
 			});
 
@@ -188,13 +188,13 @@ describe('get H5P editor', () => {
 					language,
 					expect.objectContaining({
 						id: mockCurrentUser.userId,
-					})
+					}),
 				);
 				expect(h5pEditor.getContent).toHaveBeenCalledWith(
 					content.id,
 					expect.objectContaining({
 						id: mockCurrentUser.userId,
-					})
+					}),
 				);
 			});
 

@@ -4,7 +4,7 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
-import { IDashboardRepo } from '@shared/repo';
+import { IDashboardRepo } from '@shared/repo/dashboard';
 import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -156,7 +156,7 @@ describe('Dashboard Controller (API)', () => {
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Mathe' })
+							courseFactory.build({ students: [teacherUser], name: 'Mathe' }),
 						),
 					},
 				],
@@ -181,14 +181,14 @@ describe('Dashboard Controller (API)', () => {
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Quantumphysics' })
+							courseFactory.build({ students: [teacherUser], name: 'Quantumphysics' }),
 						),
 					},
 					{
 						pos: { x: 2, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Astrophysics' })
+							courseFactory.build({ students: [teacherUser], name: 'Astrophysics' }),
 						),
 					},
 				],
@@ -216,7 +216,7 @@ describe('Dashboard Controller (API)', () => {
 						pos: { x: 2, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'mannequinization' })
+							courseFactory.build({ students: [teacherUser], name: 'mannequinization' }),
 						),
 					},
 					{
@@ -278,7 +278,7 @@ describe('Dashboard Controller (API)', () => {
 						pos: { x: 1, y: 3 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [teacherUser], name: 'Mathe' })
+							courseFactory.build({ students: [teacherUser], name: 'Mathe' }),
 						),
 					},
 				],

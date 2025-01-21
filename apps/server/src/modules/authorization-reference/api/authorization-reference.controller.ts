@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { AuthorizationReferenceUc } from './authorization-reference.uc';
 import { AuthorizationBodyParams, AuthorizedReponse } from './dto';
 
@@ -19,13 +19,13 @@ export class AuthorizationReferenceController {
 	@Post('by-reference')
 	public async authorizeByReference(
 		@Body() body: AuthorizationBodyParams,
-		@CurrentUser() user: ICurrentUser
+		@CurrentUser() user: ICurrentUser,
 	): Promise<AuthorizedReponse> {
 		const authorizationReponse = await this.authorizationReferenceUc.authorizeByReference(
 			user.userId,
 			body.referenceType,
 			body.referenceId,
-			body.context
+			body.context,
 		);
 
 		return authorizationReponse;

@@ -1,6 +1,6 @@
+import { PrivacyProtect } from '@shared/controller/validator';
 import { EntityId } from '@shared/domain/types';
 import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { PrivacyProtect } from '@shared/controller';
 import { passwordPattern } from './password-pattern';
 
 export class ResolvedAccountDto {

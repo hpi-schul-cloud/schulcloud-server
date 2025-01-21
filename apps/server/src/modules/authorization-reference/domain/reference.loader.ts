@@ -9,7 +9,12 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
+import { LegacySchoolRepo } from '@shared/repo/school';
+import { SubmissionRepo } from '@shared/repo/submission';
+import { TaskRepo } from '@shared/repo/task';
+import { UserRepo } from '@shared/repo/user';
 
 @Injectable()
 export class ReferenceLoader {
@@ -21,7 +26,7 @@ export class ReferenceLoader {
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly instanceService: InstanceService,
-		private readonly authorizationInjectionService: AuthorizationInjectionService
+		private readonly authorizationInjectionService: AuthorizationInjectionService,
 	) {
 		const service = this.authorizationInjectionService;
 		service.injectReferenceLoader(AuthorizableReferenceType.Task, this.taskRepo);
@@ -43,7 +48,7 @@ export class ReferenceLoader {
 
 	async loadAuthorizableObject(
 		objectName: AuthorizableReferenceType,
-		objectId: EntityId
+		objectId: EntityId,
 	): Promise<AuthorizableObject | BaseDO> {
 		const referenceLoader: AuthorizationLoaderService = this.resolveLoader(objectName);
 		const object = await referenceLoader.findById(objectId);

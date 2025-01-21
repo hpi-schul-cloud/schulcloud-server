@@ -1,11 +1,11 @@
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
-import { PaginationParams } from '@shared/controller/';
+import { PaginationParams } from '@shared/controller/dto';
 import { Course } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
 import { ICurrentUser } from '@src/infra/auth-guard';
 import { RoleNameMapper } from '../mapper/rolename.mapper';
 import { CourseService } from '../service';
@@ -16,7 +16,7 @@ export class CourseUc {
 		private readonly courseRepo: CourseRepo,
 		private readonly courseService: CourseService,
 		private readonly authService: AuthorizationService,
-		private readonly roleService: RoleService
+		private readonly roleService: RoleService,
 	) {}
 
 	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {

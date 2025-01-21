@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
@@ -27,14 +27,14 @@ export class CommonToolValidationService {
 
 		const parametersForScope: CustomParameter[] = this.filterParametersForScope(
 			externalTool.parameters,
-			validatableTool
+			validatableTool,
 		);
 
 		this.arrayValidators.forEach((validator: ParameterArrayValidator) => {
 			const entryErrors: ValidationError[] = validator.validate(
 				validatableTool.parameters,
 				parametersForScope,
-				validatableTool.id
+				validatableTool.id,
 			);
 
 			errors.push(...entryErrors);
@@ -45,12 +45,12 @@ export class CommonToolValidationService {
 
 	private filterParametersForScope(
 		params: CustomParameter[] | undefined,
-		validatableTool: ValidatableTool
+		validatableTool: ValidatableTool,
 	): CustomParameter[] {
 		const parametersForScope: CustomParameter[] = (params ?? []).filter(
 			(param: CustomParameter) =>
 				(validatableTool instanceof SchoolExternalTool && param.scope === CustomParameterScope.SCHOOL) ||
-				(validatableTool instanceof ContextExternalTool && param.scope === CustomParameterScope.CONTEXT)
+				(validatableTool instanceof ContextExternalTool && param.scope === CustomParameterScope.CONTEXT),
 		);
 
 		return parametersForScope;

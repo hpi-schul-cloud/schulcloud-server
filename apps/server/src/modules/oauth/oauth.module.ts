@@ -8,7 +8,7 @@ import { UserModule } from '@modules/user';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { LoggerModule } from '@src/core/logger';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
 import { HydraSsoService, OauthAdapterService, OAuthService, OauthSessionTokenService } from './service';

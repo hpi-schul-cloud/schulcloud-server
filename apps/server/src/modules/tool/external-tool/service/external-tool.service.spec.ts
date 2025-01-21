@@ -4,7 +4,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { ExternalToolRepo } from '@shared/repo';
+import { ExternalToolRepo } from '@shared/repo/externaltool';
 import { LegacyLogger } from '@src/core/logger';
 import { OauthProviderService } from '../../../oauth-provider/domain/service/oauth-provider.service';
 import { providerOauthClientFactory } from '../../../oauth-provider/testing';
@@ -316,7 +316,7 @@ describe(ExternalToolService.name, () => {
 						...externalTool,
 						config: oauth2ToolConfig,
 						id: expect.any(String),
-					})
+					}),
 				);
 			});
 		});
@@ -328,7 +328,7 @@ describe(ExternalToolService.name, () => {
 				externalTool.config = oauth2ToolConfigWithoutExternalData;
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 				oauthProviderService.getOAuth2Client.mockRejectedValueOnce(
-					new Error('some error occurred during fetching data')
+					new Error('some error occurred during fetching data'),
 				);
 
 				return { externalTool };

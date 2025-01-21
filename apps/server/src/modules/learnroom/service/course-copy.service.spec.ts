@@ -10,7 +10,9 @@ import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
-import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
+import { UserRepo } from '@shared/repo/user';
 import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
@@ -189,7 +191,7 @@ describe('course copy service', () => {
 			await service.copyCourse({ userId: user.id, courseId: course.id });
 			const expectedDestinationCourse = expect.objectContaining({ name: courseCopyName }) as Course;
 			expect(boardCopyService.copyBoard).toBeCalledWith(
-				expect.objectContaining({ originalBoard, destinationCourse: expectedDestinationCourse, user })
+				expect.objectContaining({ originalBoard, destinationCourse: expectedDestinationCourse, user }),
 			);
 		});
 
@@ -201,7 +203,7 @@ describe('course copy service', () => {
 					title: courseCopyName,
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
-				})
+				}),
 			);
 		});
 
@@ -362,12 +364,12 @@ describe('course copy service', () => {
 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
 				tools[0],
 				courseCopy.id,
-				tools[0].schoolToolRef.schoolId
+				tools[0].schoolToolRef.schoolId,
 			);
 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
 				tools[1],
 				courseCopy.id,
-				tools[0].schoolToolRef.schoolId
+				tools[0].schoolToolRef.schoolId,
 			);
 		});
 
@@ -376,7 +378,7 @@ describe('course copy service', () => {
 				const { course, user } = setup();
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
-					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL,
 				);
 
 				expect(courseToolCopyStatus).not.toBeUndefined();
@@ -390,7 +392,7 @@ describe('course copy service', () => {
 
 				const copyRejectData = copyContextExternalToolRejectDataFactory.build();
 				const mockWithCorrectType = Object.create(
-					CopyContextExternalToolRejectData.prototype
+					CopyContextExternalToolRejectData.prototype,
 				) as CopyContextExternalToolRejectData;
 				Object.assign(mockWithCorrectType, { ...copyRejectData });
 
@@ -406,7 +408,7 @@ describe('course copy service', () => {
 				const { course, user } = setupPartialCopySuccessTools();
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
-					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL,
 				);
 
 				expect(courseToolCopyStatus).not.toBeUndefined();
@@ -420,7 +422,7 @@ describe('course copy service', () => {
 
 				const copyRejectData = copyContextExternalToolRejectDataFactory.build();
 				const mockWithCorrectType = Object.create(
-					CopyContextExternalToolRejectData.prototype
+					CopyContextExternalToolRejectData.prototype,
 				) as CopyContextExternalToolRejectData;
 				Object.assign(mockWithCorrectType, { ...copyRejectData });
 
@@ -436,7 +438,7 @@ describe('course copy service', () => {
 				const { course, user } = setupAllCopyFailedTools();
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
-					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL,
 				);
 
 				expect(courseToolCopyStatus).not.toBeUndefined();
@@ -460,7 +462,7 @@ describe('course copy service', () => {
 
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 				const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
-					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+					(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL,
 				);
 
 				expect(courseToolCopyStatus).toBeUndefined();
@@ -523,7 +525,7 @@ describe('course copy service', () => {
 
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 			const courseToolCopyStatus: CopyStatus | undefined = status.elements?.find(
-				(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL
+				(copyStatus: CopyStatus) => copyStatus.type === CopyElementType.EXTERNAL_TOOL,
 			);
 
 			expect(courseToolCopyStatus).toBeUndefined();

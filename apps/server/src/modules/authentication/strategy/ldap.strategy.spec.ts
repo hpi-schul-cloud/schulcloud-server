@@ -10,7 +10,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo/school';
+import { UserRepo } from '@shared/repo/user';
 import { Logger } from '@src/core/logger';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -389,7 +390,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: undefined },
-					user.school.id
+					user.school.id,
 				);
 
 				const account: Account = accountDoFactory.build({
@@ -453,7 +454,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: 'previousExternalId' },
-					user.school.id
+					user.school.id,
 				);
 
 				const account: Account = accountDoFactory.build({

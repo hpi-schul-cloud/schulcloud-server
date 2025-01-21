@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { BusinessError } from '@shared/common';
 
 export class UserImportConfigurationFailureLoggableException extends BusinessError implements Loggable {
 	constructor() {
@@ -10,7 +10,7 @@ export class UserImportConfigurationFailureLoggableException extends BusinessErr
 				title: 'The user import configuration has a failure.',
 				defaultMessage: 'Please check the user import configuration.',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.INTERNAL_SERVER_ERROR,
 		);
 	}
 

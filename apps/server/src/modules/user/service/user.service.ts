@@ -23,15 +23,15 @@ import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo/user';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { CalendarService } from '@src/infra/calendar';
 import { UserConfig } from '../interfaces';
+import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
-import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -45,7 +45,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		private readonly orm: MikroORM,
 	) {
 		this.logger.setContext(UserService.name);
 	}
@@ -119,7 +119,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	public async findBySchoolRole(
 		schoolId: EntityId,
 		roleName: RoleName,
-		options?: IFindOptions<UserDO>
+		options?: IFindOptions<UserDO>,
 	): Promise<Page<UserDO>> {
 		const role = await this.roleService.findByName(roleName);
 		const query = { schoolId, roleId: role.id };
@@ -201,7 +201,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
 		const isProtectedUser: boolean = user.roles.some(
 			(roleRef: RoleReference): boolean =>
-				!!protectedRoles.find((protectedRole: RoleDto): boolean => roleRef.id === protectedRole.id)
+				!!protectedRoles.find((protectedRole: RoleDto): boolean => roleRef.id === protectedRole.id),
 		);
 
 		const displayName: string = isProtectedUser ? user.lastName : `${user.firstName} ${user.lastName}`;
@@ -226,7 +226,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
-			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING),
 		);
 
 		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
@@ -243,8 +243,8 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 					userId,
 					StatusModel.FINISHED,
 					0,
-					0
-				)
+					0,
+				),
 			);
 
 			return result;
@@ -263,7 +263,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.USER,
 			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-			[registrationPinDeleted, calendarEventsDeleted]
+			[registrationPinDeleted, calendarEventsDeleted],
 		);
 
 		this.logger.info(
@@ -273,8 +273,8 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 				userId,
 				StatusModel.FINISHED,
 				0,
-				numberOfDeletedUsers
-			)
+				numberOfDeletedUsers,
+			),
 		);
 
 		return result;
@@ -313,7 +313,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		let extractedOperationReport: DomainOperationReport[] = [];
 		if (emailsToDeletion.length > 0) {
 			const results = await Promise.all(
-				emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
+				emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email)),
 			);
 
 			extractedOperationReport = OperationReportHelper.extractOperationReports(results);

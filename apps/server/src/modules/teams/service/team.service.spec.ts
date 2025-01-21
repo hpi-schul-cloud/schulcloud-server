@@ -10,7 +10,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { Logger } from '@src/core/logger';
 import { teamFactory } from '@testing/factory/team.factory';
 import { teamUserFactory } from '@testing/factory/teamuser.factory';

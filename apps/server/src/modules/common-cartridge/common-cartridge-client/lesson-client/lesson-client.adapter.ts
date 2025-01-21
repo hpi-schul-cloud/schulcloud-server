@@ -1,6 +1,6 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromHeader } from '@shared/common';
+import { extractJwtFromHeader } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import { LessonDto, LessonLinkedTaskDto } from './dto';
@@ -9,7 +9,10 @@ import { LessonDtoMapper } from './mapper/lesson-dto.mapper';
 
 @Injectable()
 export class LessonClientAdapter {
-	constructor(private readonly lessonApi: LessonApi, @Inject(REQUEST) private request: Request) {}
+	constructor(
+		private readonly lessonApi: LessonApi,
+		@Inject(REQUEST) private request: Request,
+	) {}
 
 	public async getLessonById(lessonId: string): Promise<LessonDto> {
 		const options = this.createOptionParams();
