@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Inject } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { S3ClientModule } from './s3-client.module';
 

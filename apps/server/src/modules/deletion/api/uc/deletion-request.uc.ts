@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';

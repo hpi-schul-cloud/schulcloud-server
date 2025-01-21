@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import {
+	IdTokenExtractionFailureLoggableException,
+	IdTokenUserNotFoundLoggableException,
+} from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import {
-	IdTokenExtractionFailureLoggableException,
-	IdTokenUserNotFoundLoggableException,
-} from '@src/modules/oauth/loggable';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt from 'jsonwebtoken';

@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import {
 	DataDeletionDomainOperationLoggable,
 	DeletionService,

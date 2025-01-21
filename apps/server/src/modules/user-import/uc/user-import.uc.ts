@@ -14,7 +14,7 @@ import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { isError } from 'lodash';
 
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';

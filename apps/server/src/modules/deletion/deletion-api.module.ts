@@ -7,7 +7,7 @@ import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { TeamsModule } from '@modules/teams';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { DeletionModule } from '.';
 import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
 import { DeletionRequestsController } from './api/controller/deletion-requests.controller';

@@ -15,7 +15,7 @@ import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import {
 	ExternalGroupDto,
@@ -36,6 +36,7 @@ const RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
 
 const GroupRoleMapping: Partial<Record<SchulconnexGroupRole | string, RoleName>> = {
 	[SchulconnexGroupRole.TEACHER]: RoleName.TEACHER,
+	[SchulconnexGroupRole.SUBSTITUTE_TEACHER]: RoleName.GROUPSUBSTITUTIONTEACHER,
 	[SchulconnexGroupRole.STUDENT]: RoleName.STUDENT,
 };
 

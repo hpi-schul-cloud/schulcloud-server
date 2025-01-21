@@ -1,7 +1,7 @@
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { Logger } from '@src/core/logger';
 import express, { Express, NextFunction, Request, RequestHandler, Response } from 'express';
 import {
 	PrometheusMetricsConfig,

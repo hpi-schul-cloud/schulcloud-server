@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { HydraOauthUc } from '@modules/oauth/uc/hydra-oauth.uc';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request } from 'express';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';

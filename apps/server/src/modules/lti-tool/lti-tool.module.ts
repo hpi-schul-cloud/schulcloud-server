@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { LtiToolService } from './service';
 
 @Module({

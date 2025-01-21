@@ -3,7 +3,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { PassThrough, Readable } from 'node:stream';
 import { ErrorType } from './interface/error-status.enum';
 import { PreviewGeneratorService } from './preview-generator.service';

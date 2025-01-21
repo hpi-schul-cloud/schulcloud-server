@@ -8,7 +8,7 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import metaTagExtractorConfig from './meta-tag-extractor.config';
 import { MetaTagExtractorService } from './service';
 import { MetaTagExternalUrlService } from './service/meta-tag-external-url.service';

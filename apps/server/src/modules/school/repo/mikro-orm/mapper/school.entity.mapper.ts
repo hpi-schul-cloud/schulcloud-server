@@ -1,9 +1,9 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolFactory } from '@modules/school/domain/factory';
 import { SystemEntity } from '@modules/system/entity';
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';

@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { ToolConfig } from '../../tool-config';
