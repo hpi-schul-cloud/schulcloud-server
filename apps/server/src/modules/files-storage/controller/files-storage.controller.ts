@@ -62,7 +62,7 @@ export class FilesStorageController {
 	async uploadFromUrl(
 		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.uploadFromUrl(currentUser.userId, { ...body, ...params });
 
@@ -83,7 +83,7 @@ export class FilesStorageController {
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Req() req: Request,
+		@Req() req: Request
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
@@ -107,7 +107,7 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
-		@Headers('Range') bytesRange?: string,
+		@Headers('Range') bytesRange?: string
 	): Promise<StreamableFile> {
 		const fileResponse = await this.filesStorageUC.download(params, bytesRange);
 
@@ -135,13 +135,13 @@ export class FilesStorageController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
 		@Headers('Range') bytesRange?: string,
-		@Headers('If-None-Match') etag?: string,
+		@Headers('If-None-Match') etag?: string
 	): Promise<StreamableFile | void> {
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
 			previewParams,
-			bytesRange,
+			bytesRange
 		);
 
 		response.set({ ETag: fileResponse.etag });
@@ -161,7 +161,7 @@ export class FilesStorageController {
 		req: Request,
 		fileResponse: GetFileResponse,
 		httpResponse: Response,
-		bytesRange?: string,
+		bytesRange?: string
 	): StreamableFile {
 		req.on('close', () => fileResponse.data.destroy());
 
@@ -191,7 +191,7 @@ export class FilesStorageController {
 	@Get('/list/:storageLocation/:storageLocationId/:parentType/:parentId')
 	async list(
 		@Param() params: FileRecordParams,
-		@Query() pagination: PaginationParams,
+		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.getFileRecordsOfParent(params);
 		const { skip, limit } = pagination;
@@ -214,7 +214,7 @@ export class FilesStorageController {
 	@UseInterceptors(RequestLoggingInterceptor)
 	async patchFilename(
 		@Param() params: SingleFileParams,
-		@Body() renameFileParam: RenameFileParams,
+		@Body() renameFileParam: RenameFileParams
 	): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.patchFilename(params, renameFileParam);
 
@@ -290,7 +290,7 @@ export class FilesStorageController {
 	async copy(
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyFileListResponse> {
 		const [response, count] = await this.filesStorageUC.copyFilesOfParent(currentUser.userId, params, copyFilesParam);
 
@@ -307,7 +307,7 @@ export class FilesStorageController {
 	async copyFile(
 		@Param() params: SingleFileParams,
 		@Body() copyFileParam: CopyFileParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyFileResponse> {
 		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 

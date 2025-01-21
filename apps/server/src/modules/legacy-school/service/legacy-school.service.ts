@@ -18,7 +18,7 @@ export class LegacySchoolService {
 		private readonly schoolValidationService: SchoolValidationService,
 		private readonly federalStateService: FederalStateService,
 		private readonly schoolYearService: SchoolYearService,
-		private readonly storageProviderRepo: StorageProviderRepo,
+		private readonly storageProviderRepo: StorageProviderRepo
 	) {}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {

@@ -25,7 +25,7 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 		private readonly dashboardElementRepo: DashboardElementRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(DashboardService.name);
 	}
@@ -42,8 +42,8 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 				'Deleting user data from Dashboard',
 				DomainName.DASHBOARD,
 				userId,
-				StatusModel.PENDING,
-			),
+				StatusModel.PENDING
+			)
 		);
 		let deletedDashboard = 0;
 		const refs: string[] = [];
@@ -65,8 +65,8 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 				userId,
 				StatusModel.FINISHED,
 				0,
-				deletedDashboard,
-			),
+				deletedDashboard
+			)
 		);
 
 		return result;

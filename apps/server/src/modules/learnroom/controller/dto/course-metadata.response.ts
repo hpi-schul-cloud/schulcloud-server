@@ -10,7 +10,7 @@ export class CourseMetadataResponse {
 		displayColor: string,
 		startDate?: Date,
 		untilDate?: Date,
-		copyingSince?: Date,
+		copyingSince?: Date
 	) {
 		this.id = id;
 		this.title = title;

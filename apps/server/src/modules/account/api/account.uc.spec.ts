@@ -81,7 +81,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				setup();
 				await expect(accountUc.updateMyAccount('accountWithoutUser', { passwordOld: defaultPassword })).rejects.toThrow(
-					EntityNotFoundError,
+					EntityNotFoundError
 				);
 			});
 		});
@@ -112,7 +112,7 @@ describe('AccountUc', () => {
 				await expect(
 					accountUc.updateMyAccount(mockUserWithoutAccount.id, {
 						passwordOld: defaultPassword,
-					}),
+					})
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -145,13 +145,13 @@ describe('AccountUc', () => {
 					accountUc.updateMyAccount(mockStudentUser.id, {
 						passwordOld: defaultPassword,
 						firstName: 'newFirstName',
-					}),
+					})
 				).rejects.toThrow(UnauthorizedException);
 				await expect(
 					accountUc.updateMyAccount(mockStudentUser.id, {
 						passwordOld: defaultPassword,
 						lastName: 'newLastName',
-					}),
+					})
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -196,13 +196,13 @@ describe('AccountUc', () => {
 					accountUc.updateMyAccount(mockAdminUser.id, {
 						passwordOld: defaultPassword,
 						firstName: 'newFirstName',
-					}),
+					})
 				).resolves.not.toThrow();
 				await expect(
 					accountUc.updateMyAccount(mockAdminUser.id, {
 						passwordOld: defaultPassword,
 						lastName: 'newLastName',
-					}),
+					})
 				).resolves.not.toThrow();
 			});
 		});
@@ -237,13 +237,13 @@ describe('AccountUc', () => {
 					accountUc.updateMyAccount(mockSuperheroUser.id, {
 						passwordOld: defaultPassword,
 						firstName: 'newFirstName',
-					}),
+					})
 				).resolves.not.toThrow();
 				await expect(
 					accountUc.updateMyAccount(mockSuperheroUser.id, {
 						passwordOld: defaultPassword,
 						lastName: 'newLastName',
-					}),
+					})
 				).resolves.not.toThrow();
 			});
 		});
@@ -311,7 +311,7 @@ describe('AccountUc', () => {
 					],
 					1,
 					0,
-					1,
+					1
 				);
 				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
 			});
@@ -463,21 +463,21 @@ describe('AccountUc', () => {
 					accountUc.searchAccounts(currentUserFactory.build({ userId: mockTeacherUser.id }), {
 						type: AccountSearchType.USER_ID,
 						value: mockAdminUser.id,
-					} as AccountSearchDto),
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
 					accountUc.searchAccounts(currentUserFactory.build({ userId: mockStudentUser.id }), {
 						type: AccountSearchType.USER_ID,
 						value: mockOtherStudentUser.id,
-					} as AccountSearchDto),
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
 					accountUc.searchAccounts(currentUserFactory.build({ userId: mockStudentUser.id }), {
 						type: AccountSearchType.USER_ID,
 						value: mockTeacherUser.id,
-					} as AccountSearchDto),
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -505,7 +505,7 @@ describe('AccountUc', () => {
 				await expect(
 					accountUc.searchAccounts(currentUserFactory.build({ userId: mockSuperheroUser.id }), {
 						type: '' as AccountSearchType,
-					} as AccountSearchDto),
+					} as AccountSearchDto)
 				).rejects.toThrow('Invalid search type.');
 			});
 		});
@@ -543,7 +543,7 @@ describe('AccountUc', () => {
 					accountUc.searchAccounts(currentUserFactory.build({ userId: mockTeacherUser.id }), {
 						type: AccountSearchType.USERNAME,
 						value: mockStudentUser.id,
-					} as AccountSearchDto),
+					} as AccountSearchDto)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -1264,7 +1264,7 @@ describe('AccountUc', () => {
 				const { mockSuperheroUser, mockStudentUser, mockStudentAccount } = setup();
 				const account = await accountUc.findAccountById(
 					currentUserFactory.build({ userId: mockSuperheroUser.id }),
-					mockStudentAccount.id,
+					mockStudentAccount.id
 				);
 				expect(account).toStrictEqual(
 					expect.objectContaining({
@@ -1272,7 +1272,7 @@ describe('AccountUc', () => {
 						username: mockStudentAccount.username,
 						userId: mockStudentUser.id,
 						activated: mockStudentAccount.activated,
-					}),
+					})
 				);
 			});
 		});
@@ -1309,7 +1309,7 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.findAccountById(currentUserFactory.build({ userId: mockTeacherUser.id }), mockStudentAccount.id),
+					accountUc.findAccountById(currentUserFactory.build({ userId: mockTeacherUser.id }), mockStudentAccount.id)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -1338,7 +1338,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.findAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx'),
+					accountUc.findAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1367,7 +1367,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.findAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx'),
+					accountUc.findAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1392,7 +1392,7 @@ describe('AccountUc', () => {
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
 						username: 'john.doe@domain.tld',
-					}),
+					})
 				);
 			});
 		});
@@ -1423,7 +1423,7 @@ describe('AccountUc', () => {
 				const currentUser = currentUserFactory.build({ userId: '00000000000' });
 				const body = {} as UpdateAccountDto;
 				await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).rejects.toThrow(
-					EntityNotFoundError,
+					EntityNotFoundError
 				);
 			});
 		});
@@ -1467,7 +1467,7 @@ describe('AccountUc', () => {
 				const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 				const body = {} as UpdateAccountDto;
 				await expect(accountUc.updateAccountById(currentUser, '000000000000000', body)).rejects.toThrow(
-					EntityNotFoundError,
+					EntityNotFoundError
 				);
 			});
 		});
@@ -1505,8 +1505,8 @@ describe('AccountUc', () => {
 						mockAccountWithoutUser.id,
 						{
 							username: 'user-fail@to.update',
-						} as UpdateAccountDto,
-					),
+						} as UpdateAccountDto
+					)
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1690,7 +1690,7 @@ describe('AccountUc', () => {
 					const currentUser = currentUserFactory.build({ userId: mockTeacherUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockOtherTeacherAccount.id, body)).rejects.toThrow(
-						UnauthorizedException,
+						UnauthorizedException
 					);
 				});
 			});
@@ -1749,7 +1749,7 @@ describe('AccountUc', () => {
 					const currentUser = currentUserFactory.build({ userId: mockDifferentSchoolAdminUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockTeacherAccount.id, body)).rejects.toThrow(
-						UnauthorizedException,
+						UnauthorizedException
 					);
 				});
 			});
@@ -1836,7 +1836,7 @@ describe('AccountUc', () => {
 					const currentUser = currentUserFactory.build({ userId: mockUnknownRoleUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockAccountWithoutRole.id, body)).rejects.toThrow(
-						UnauthorizedException,
+						UnauthorizedException
 					);
 				});
 			});
@@ -1884,7 +1884,7 @@ describe('AccountUc', () => {
 					const currentUser = currentUserFactory.build({ userId: mockAdminUser.id });
 					const body = {} as UpdateAccountDto;
 					await expect(accountUc.updateAccountById(currentUser, mockUnknownRoleUserAccount.id, body)).rejects.toThrow(
-						UnauthorizedException,
+						UnauthorizedException
 					);
 				});
 			});
@@ -1923,10 +1923,7 @@ describe('AccountUc', () => {
 			it('should delete an account', async () => {
 				const { mockSuperheroUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.deleteAccountById(
-						currentUserFactory.build({ userId: mockSuperheroUser.id }),
-						mockStudentAccount.id,
-					),
+					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), mockStudentAccount.id)
 				).resolves.not.toThrow();
 			});
 		});
@@ -1979,7 +1976,7 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockAdminUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockAdminUser.id }), mockStudentAccount.id),
+					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockAdminUser.id }), mockStudentAccount.id)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -2017,7 +2014,7 @@ describe('AccountUc', () => {
 			it('should throw, if no account matches the search term', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx'),
+					accountUc.deleteAccountById(currentUserFactory.build({ userId: mockSuperheroUser.id }), 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});

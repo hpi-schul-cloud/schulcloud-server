@@ -15,7 +15,7 @@ export class NewsUc {
 	constructor(
 		private newsRepo: NewsRepo,
 		private authorizationService: FeathersAuthorizationService,
-		private logger: Logger,
+		private logger: Logger
 	) {
 		this.logger.setContext(NewsUc.name);
 	}
@@ -58,7 +58,7 @@ export class NewsUc {
 	public async findAllForUser(
 		userId: EntityId,
 		scope?: INewsScope,
-		options?: IFindOptions<News>,
+		options?: IFindOptions<News>
 	): Promise<Counted<News[]>> {
 		const unpublished = !!scope?.unpublished; // default is only published news
 		const permissions: [NewsPermission] = NewsUc.getRequiredPermissions(unpublished);
@@ -76,7 +76,7 @@ export class NewsUc {
 		await Promise.all(
 			newsList.map(async (news: News) => {
 				news.permissions = await this.getNewsPermissions(userId, news);
-			}),
+			})
 		);
 
 		return [newsList, newsCount];
@@ -96,7 +96,7 @@ export class NewsUc {
 			userId,
 			news.targetModel,
 			news.target.id,
-			requiredPermissions,
+			requiredPermissions
 		);
 		news.permissions = await this.getNewsPermissions(userId, news);
 
@@ -171,7 +171,7 @@ export class NewsUc {
 	private async getTargetFilters(
 		userId: EntityId,
 		targetModels: NewsTargetModel[],
-		permissions: string[],
+		permissions: string[]
 	): Promise<NewsTargetFilter[]> {
 		const targets = await Promise.all(
 			targetModels.map(async (targetModel) => {
@@ -179,7 +179,7 @@ export class NewsUc {
 					targetModel,
 					targetIds: await this.authorizationService.getPermittedEntities(userId, targetModel, permissions),
 				};
-			}),
+			})
 		);
 		const nonEmptyTargets = targets.filter((target) => target.targetIds.length > 0);
 

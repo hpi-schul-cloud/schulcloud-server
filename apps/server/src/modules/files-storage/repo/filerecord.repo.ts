@@ -37,7 +37,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>,
+		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
 			.byStorageType(storageLocation)
@@ -53,7 +53,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>,
+		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
 			.byStorageType(storageLocation)
@@ -83,7 +83,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 
 	private async findAndCount(
 		scope: FileRecordScope,
-		options?: IFindOptions<FileRecord>,
+		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };

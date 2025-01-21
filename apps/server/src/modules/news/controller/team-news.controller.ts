@@ -20,7 +20,7 @@ export class TeamNewsController {
 		@Param() urlParams: TeamUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterNewsParams,
-		@Query() pagination: PaginationParams,
+		@Query() pagination: PaginationParams
 	): Promise<NewsListResponse> {
 		// enforce filter by a given team, used in team tab
 		scope.targetId = urlParams.teamId;
@@ -28,7 +28,7 @@ export class TeamNewsController {
 		const [newsList, count] = await this.newsUc.findAllForUser(
 			currentUser.userId,
 			NewsMapper.mapNewsScopeToDomain(scope),
-			{ pagination },
+			{ pagination }
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
 		const response = new NewsListResponse(dtoList, count);

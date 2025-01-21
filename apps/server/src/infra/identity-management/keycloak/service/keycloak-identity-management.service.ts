@@ -55,7 +55,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 				firstName: account.firstName,
 				lastName: account.lastName,
 				enabled: true,
-			},
+			}
 		);
 		return id;
 	}
@@ -136,7 +136,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 
 	async getUserAttribute<TValue extends boolean | number | string | unknown = unknown>(
 		userId: string,
-		attributeName: string,
+		attributeName: string
 	): Promise<TValue | null> {
 		const kc = await this.kcAdminClient.callKcAdminClient();
 		const user = await kc.users.findOne({ id: userId });
@@ -153,7 +153,7 @@ export class KeycloakIdentityManagementService extends IdentityManagementService
 	async setUserAttribute<TValue extends boolean | number | string>(
 		userId: string,
 		attributeName: string,
-		attributeValue: TValue,
+		attributeValue: TValue
 	): Promise<void> {
 		const kc = await this.kcAdminClient.callKcAdminClient();
 		const user = await kc.users.findOne({ id: userId });

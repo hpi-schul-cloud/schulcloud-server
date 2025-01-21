@@ -8,7 +8,7 @@ export class NewsCrudOperationLoggable implements Loggable {
 	constructor(
 		private readonly operation: CrudOperation,
 		private readonly userId: EntityId,
-		private readonly news: News,
+		private readonly news: News
 	) {}
 
 	getLogMessage(): LogMessage {

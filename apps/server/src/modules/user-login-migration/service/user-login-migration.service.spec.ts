@@ -30,7 +30,7 @@ describe(UserLoginMigrationService.name, () => {
 
 	const mockedDate: Date = new Date('2023-05-02');
 	const finishDate: Date = new Date(
-		mockedDate.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number),
+		mockedDate.getTime() + (Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number)
 	);
 
 	beforeAll(async () => {
@@ -285,7 +285,7 @@ describe(UserLoginMigrationService.name, () => {
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<LegacySchoolDo>>({
 						features: [existingFeature, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
-					}),
+					})
 				);
 			});
 		});
@@ -318,7 +318,7 @@ describe(UserLoginMigrationService.name, () => {
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<LegacySchoolDo>>({
 						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
-					}),
+					})
 				);
 			});
 		});
@@ -373,7 +373,7 @@ describe(UserLoginMigrationService.name, () => {
 				const func = async () => service.startMigration(schoolId);
 
 				await expect(func).rejects.toThrow(
-					new IdenticalUserLoginMigrationSystemLoggableException(schoolId, targetSystemId),
+					new IdenticalUserLoginMigrationSystemLoggableException(schoolId, targetSystemId)
 				);
 			});
 		});
@@ -545,7 +545,7 @@ describe(UserLoginMigrationService.name, () => {
 				const { userLoginMigration, dateInThePast } = setup();
 
 				await expect(service.restartMigration({ ...userLoginMigration })).rejects.toThrow(
-					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast),
+					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
 				);
 			});
 		});
@@ -628,7 +628,7 @@ describe(UserLoginMigrationService.name, () => {
 				const { userLoginMigration, dateInThePast } = setup();
 
 				await expect(service.setMigrationMandatory({ ...userLoginMigration }, true)).rejects.toThrow(
-					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast),
+					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
 				);
 			});
 		});
@@ -679,7 +679,7 @@ describe(UserLoginMigrationService.name, () => {
 
 				expect(schoolService.removeFeature).toHaveBeenCalledWith(
 					userLoginMigration.schoolId,
-					SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION,
+					SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
 				);
 			});
 
@@ -755,7 +755,7 @@ describe(UserLoginMigrationService.name, () => {
 				const { userLoginMigration, dateInThePast } = setup();
 
 				await expect(service.closeMigration({ ...userLoginMigration })).rejects.toThrow(
-					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast),
+					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
 				);
 			});
 		});

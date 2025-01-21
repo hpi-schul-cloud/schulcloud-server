@@ -15,7 +15,7 @@ export class LessonCopyUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly lessonService: LessonService,
 		private readonly courseRepo: CourseRepo,
-		private readonly copyHelperService: CopyHelperService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copyLesson(userId: EntityId, lessonId: EntityId, parentParams: LessonCopyParentParams): Promise<CopyStatus> {

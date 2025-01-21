@@ -12,19 +12,19 @@ export class ContextExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService,
+		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
 	async validate(contextExternalTool: ContextExternalTool): Promise<void> {
 		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-			contextExternalTool.schoolToolRef.schoolToolId,
+			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
 		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(loadedSchoolExternalTool.toolId);
 
 		const errors: ValidationError[] = this.commonToolValidationService.validateParameters(
 			loadedExternalTool,
-			contextExternalTool,
+			contextExternalTool
 		);
 
 		if (errors.length) {

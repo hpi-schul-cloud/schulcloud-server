@@ -14,7 +14,7 @@ export class AuthorizationService {
 	constructor(
 		private readonly ruleManager: RuleManager,
 		private readonly authorizationHelper: AuthorizationHelper,
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepo
 	) {}
 
 	public checkPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): void {

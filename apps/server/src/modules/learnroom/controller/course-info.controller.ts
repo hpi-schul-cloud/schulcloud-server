@@ -26,7 +26,7 @@ export class CourseInfoController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams,
 		@Query() sortingQuery: CourseSortParams,
-		@Query() filterParams: CourseFilterParams,
+		@Query() filterParams: CourseFilterParams
 	): Promise<CourseInfoListResponse> {
 		const courses: Page<CourseInfoDto> = await this.courseInfoUc.getCourseInfo(
 			currentUser.userId,
@@ -34,13 +34,13 @@ export class CourseInfoController {
 			sortingQuery.sortBy,
 			filterParams.status,
 			pagination,
-			sortingQuery.sortOrder,
+			sortingQuery.sortOrder
 		);
 
 		const response: CourseInfoListResponse = CourseInfoResponseMapper.mapToCourseInfoListResponse(
 			courses,
 			pagination.skip,
-			pagination.limit,
+			pagination.limit
 		);
 
 		return response;

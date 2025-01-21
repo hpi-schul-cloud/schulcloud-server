@@ -116,7 +116,7 @@ describe(CommonToolMetadataService.name, () => {
 				setup();
 
 				const result: SchoolExternalToolMetadata = await service.getMetadataForSchoolExternalTool(
-					new ObjectId().toHexString(),
+					new ObjectId().toHexString()
 				);
 
 				expect(result).toEqual<SchoolExternalToolMetadata>({
@@ -143,7 +143,7 @@ describe(CommonToolMetadataService.name, () => {
 				setup();
 
 				const result: SchoolExternalToolMetadata = await service.getMetadataForSchoolExternalTool(
-					new ObjectId().toHexString(),
+					new ObjectId().toHexString()
 				);
 
 				expect(result).toEqual<SchoolExternalToolMetadata>({

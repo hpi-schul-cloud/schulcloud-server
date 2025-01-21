@@ -34,17 +34,14 @@ import { PopulateImportUserParams } from './dto/populate-import-user.params';
 @JwtAuthentication()
 @Controller('user/import')
 export class ImportUserController {
-	constructor(
-		private readonly userImportUc: UserImportUc,
-		private readonly userImportFetchUc: UserImportFetchUc,
-	) {}
+	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}
 
 	@Get()
 	async findAllImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterImportUserParams,
 		@Query() sortingQuery: SortImportUserParams,
-		@Query() pagination: PaginationParams,
+		@Query() pagination: PaginationParams
 	): Promise<ImportUserListResponse> {
 		const options: IFindOptions<ImportUser> = { pagination };
 		options.order = ImportUserMapper.mapSortingQueryToDomain(sortingQuery);
@@ -61,7 +58,7 @@ export class ImportUserController {
 	async setMatch(
 		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: UpdateMatchParams,
+		@Body() params: UpdateMatchParams
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.setMatch(currentUser.userId, urlParams.importUserId, params.userId);
 		const response = ImportUserMapper.mapToResponse(result);
@@ -72,7 +69,7 @@ export class ImportUserController {
 	@Delete(':importUserId/match')
 	async removeMatch(
 		@Param() urlParams: ImportUserUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.removeMatch(currentUser.userId, urlParams.importUserId);
 		const response = ImportUserMapper.mapToResponse(result);
@@ -84,7 +81,7 @@ export class ImportUserController {
 	async updateFlag(
 		@Param() urlParams: ImportUserUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: UpdateFlagParams,
+		@Body() params: UpdateFlagParams
 	): Promise<ImportUserResponse> {
 		const result = await this.userImportUc.updateFlag(currentUser.userId, urlParams.importUserId, params.flagged);
 		const response = ImportUserMapper.mapToResponse(result);
@@ -96,7 +93,7 @@ export class ImportUserController {
 	async findAllUnmatchedUsers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterUserParams,
-		@Query() pagination: PaginationParams,
+		@Query() pagination: PaginationParams
 	): Promise<UserMatchListResponse> {
 		const options: IFindOptions<User> = { pagination };
 
@@ -118,7 +115,7 @@ export class ImportUserController {
 	@Post('startUserMigration')
 	async startSchoolInUserMigration(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query('useCentralLdap') useCentralLdap?: boolean,
+		@Query('useCentralLdap') useCentralLdap?: boolean
 	): Promise<void> {
 		await this.userImportUc.startSchoolInUserMigration(currentUser.userId, useCentralLdap);
 	}
@@ -141,7 +138,7 @@ export class ImportUserController {
 	@ApiForbiddenResponse()
 	async populateImportUsers(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: PopulateImportUserParams,
+		@Query() query: PopulateImportUserParams
 	): Promise<void> {
 		await this.userImportFetchUc.populateImportUsers(currentUser.userId, query.matchByPreferredName);
 	}

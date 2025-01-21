@@ -101,7 +101,7 @@ describe('lesson copy uc', () => {
 				const { userId, lessonId, parentParams } = setup();
 
 				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrowError(
-					new InternalServerErrorException('Copy Feature not enabled'),
+					new InternalServerErrorException('Copy Feature not enabled')
 				);
 			});
 		});
@@ -315,7 +315,7 @@ describe('lesson copy uc', () => {
 				const { parentParams, userId, lessonId } = setup();
 
 				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrowError(
-					new ForbiddenException('could not find lesson to copy'),
+					new ForbiddenException('could not find lesson to copy')
 				);
 			});
 		});

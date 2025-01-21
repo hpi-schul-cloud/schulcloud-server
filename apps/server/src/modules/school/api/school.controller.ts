@@ -18,7 +18,7 @@ export class SchoolController {
 	@JwtAuthentication()
 	public async getSchoolById(
 		@Param() urlParams: SchoolUrlParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolResponse> {
 		const res = await this.schoolUc.getSchoolById(urlParams.schoolId, user.userId);
 
@@ -29,7 +29,7 @@ export class SchoolController {
 	@JwtAuthentication()
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolForExternalInviteResponse[]> {
 		const res = await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
 
@@ -59,7 +59,7 @@ export class SchoolController {
 	@Get('/:schoolId/systems')
 	public async getSchoolSystems(
 		@Param() urlParams: SchoolUrlParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolSystemResponse[]> {
 		const { schoolId } = urlParams;
 		const res = await this.schoolUc.getSchoolSystems(schoolId, user.userId);
@@ -77,7 +77,7 @@ export class SchoolController {
 	public async updateSchool(
 		@Param() urlParams: SchoolUrlParams,
 		@Body() body: SchoolUpdateBodyParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolResponse> {
 		const res = await this.schoolUc.updateSchool(user.userId, urlParams.schoolId, body);
 
@@ -88,7 +88,7 @@ export class SchoolController {
 	@JwtAuthentication()
 	public async removeSystemFromSchool(
 		@Param() urlParams: SchoolRemoveSystemUrlParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<void> {
 		await this.schoolUc.removeSystemFromSchool(urlParams.schoolId, urlParams.systemId, user.userId);
 	}
@@ -97,7 +97,7 @@ export class SchoolController {
 	@JwtAuthentication()
 	public async getTeachers(
 		@Param() urlParams: SchoolUrlParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<SchoolUserListResponse> {
 		const res = await this.schoolUc.getSchoolTeachers(urlParams.schoolId, user.userId);
 		return res;

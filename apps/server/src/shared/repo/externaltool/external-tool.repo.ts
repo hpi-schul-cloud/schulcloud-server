@@ -59,7 +59,7 @@ export class ExternalToolRepo {
 			{ name },
 			{
 				populate: ['thumbnail.fileRecord'],
-			},
+			}
 		);
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
@@ -74,7 +74,7 @@ export class ExternalToolRepo {
 			{ config: { type } },
 			{
 				populate: ['thumbnail.fileRecord'],
-			},
+			}
 		);
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
@@ -89,7 +89,7 @@ export class ExternalToolRepo {
 			{ config: { clientId } },
 			{
 				populate: ['thumbnail.fileRecord'],
-			},
+			}
 		);
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
@@ -106,7 +106,7 @@ export class ExternalToolRepo {
 			},
 			{
 				populate: ['thumbnail.fileRecord'],
-			},
+			}
 		);
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
@@ -118,7 +118,7 @@ export class ExternalToolRepo {
 	public async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
-			options?.order || {},
+			options?.order || {}
 		);
 		const scope: Scope<ExternalToolEntity> = new ExternalToolScope()
 			.byName(query.name)
@@ -140,7 +140,7 @@ export class ExternalToolRepo {
 				limit: pagination?.limit,
 				orderBy: order,
 				populate: ['thumbnail.fileRecord'],
-			},
+			}
 		);
 
 		const entityDos: ExternalTool[] = entities.map((entity) => this.mapEntityToDomainObject(entity));

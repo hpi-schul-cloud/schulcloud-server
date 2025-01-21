@@ -60,7 +60,7 @@ describe('AccountService', () => {
 			userRepo,
 			accountRepo,
 			eventBus,
-			orm,
+			orm
 		);
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -374,7 +374,7 @@ describe('AccountService', () => {
 
 				accountServiceDb.save.mockResolvedValueOnce(account);
 				accountServiceIdm.save.mockImplementation(() =>
-					Promise.resolve(new Account({ username: 'otherUsername', id: '' })),
+					Promise.resolve(new Account({ username: 'otherUsername', id: '' }))
 				);
 
 				return { service: newAccountService(), account };
@@ -446,7 +446,7 @@ describe('AccountService', () => {
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
 						username: ' John.Doe@domain.tld ',
-					}),
+					})
 				);
 				spy.mockRestore();
 			});
@@ -1101,7 +1101,7 @@ describe('AccountService', () => {
 				await expect(
 					accountService.updateMyAccount(mockExternalUser, mockExternalAccount, {
 						passwordOld: defaultPassword,
-					}),
+					})
 				).rejects.toThrow(ForbiddenOperationError);
 			});
 		});
@@ -1130,7 +1130,7 @@ describe('AccountService', () => {
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccount, {
 						passwordOld: 'DoesNotMatch',
-					}),
+					})
 				).rejects.toThrow(AuthorizationError);
 			});
 		});
@@ -1160,7 +1160,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						passwordNew: otherPassword,
-					}),
+					})
 				).resolves.not.toThrow();
 			});
 		});
@@ -1199,7 +1199,7 @@ describe('AccountService', () => {
 				expect(spyAccountServiceSave).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: undefined,
-					}),
+					})
 				);
 			});
 		});
@@ -1231,7 +1231,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: 'an@available.mail',
-					}),
+					})
 				).resolves.not.toThrow();
 			});
 		});
@@ -1267,7 +1267,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: testMail,
-					}),
+					})
 				).resolves.not.toThrow();
 				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 			});
@@ -1303,7 +1303,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: testMail,
-					}),
+					})
 				).resolves.not.toThrow();
 				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 			});
@@ -1339,7 +1339,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: testMail,
-					}),
+					})
 				).resolves.not.toThrow();
 				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
@@ -1371,7 +1371,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: 'already@in.use',
-					}),
+					})
 				).rejects.toThrow(ValidationError);
 			});
 		});
@@ -1401,13 +1401,13 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
 						passwordOld: defaultPassword,
 						firstName: 'newFirstName',
-					}),
+					})
 				).resolves.not.toThrow();
 				await expect(
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
 						passwordOld: defaultPassword,
 						lastName: 'newLastName',
-					}),
+					})
 				).resolves.not.toThrow();
 			});
 		});
@@ -1438,7 +1438,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
 						passwordOld: defaultPassword,
 						firstName: 'failToUpdate',
-					}),
+					})
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1471,7 +1471,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: 'fail@to.update',
-					}),
+					})
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1504,7 +1504,7 @@ describe('AccountService', () => {
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
 						email: 'fail@to.update',
-					}),
+					})
 				).rejects.toThrow(ValidationError);
 			});
 		});
@@ -1635,7 +1635,7 @@ describe('AccountService', () => {
 				const body = { username: 'fail@to.update' } as UpdateAccount;
 
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
-					EntityNotFoundError,
+					EntityNotFoundError
 				);
 			});
 		});
@@ -1664,7 +1664,7 @@ describe('AccountService', () => {
 				const body = { username: 'user-fail@to.update' } as UpdateAccount;
 
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
-					EntityNotFoundError,
+					EntityNotFoundError
 				);
 			});
 		});
@@ -1725,7 +1725,7 @@ describe('AccountService', () => {
 				const body = { username: mockOtherTeacherAccount.username } as UpdateAccount;
 
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
-					ValidationError,
+					ValidationError
 				);
 			});
 		});
@@ -1735,7 +1735,7 @@ describe('AccountService', () => {
 		describe('When passwords do not match', () => {
 			it('should throw ForbiddenOperationError', async () => {
 				await expect(
-					accountService.replaceMyTemporaryPassword('userId', defaultPassword, otherPassword),
+					accountService.replaceMyTemporaryPassword('userId', defaultPassword, otherPassword)
 				).rejects.toThrow(ForbiddenOperationError);
 			});
 		});
@@ -1758,7 +1758,7 @@ describe('AccountService', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockUserWithoutAccount } = setup();
 				await expect(
-					accountService.replaceMyTemporaryPassword(mockUserWithoutAccount.id, defaultPassword, defaultPassword),
+					accountService.replaceMyTemporaryPassword(mockUserWithoutAccount.id, defaultPassword, defaultPassword)
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1771,7 +1771,7 @@ describe('AccountService', () => {
 			it('should throw EntityNotFoundError', async () => {
 				setup();
 				await expect(
-					accountService.replaceMyTemporaryPassword('accountWithoutUser', defaultPassword, defaultPassword),
+					accountService.replaceMyTemporaryPassword('accountWithoutUser', defaultPassword, defaultPassword)
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1792,7 +1792,7 @@ describe('AccountService', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockExternalUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(
-					AccountEntityToDoMapper.mapToDo(mockExternalUserAccount),
+					AccountEntityToDoMapper.mapToDo(mockExternalUserAccount)
 				);
 
 				return { mockExternalUserAccount };
@@ -1804,8 +1804,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockExternalUserAccount.userId?.toString() ?? '',
 						defaultPassword,
-						defaultPassword,
-					),
+						defaultPassword
+					)
 				).rejects.toThrow(ForbiddenOperationError);
 			});
 		});
@@ -1837,8 +1837,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						defaultPassword,
-						defaultPassword,
-					),
+						defaultPassword
+					)
 				).rejects.toThrow(ForbiddenOperationError);
 			});
 		});
@@ -1871,8 +1871,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						defaultPassword,
-						defaultPassword,
-					),
+						defaultPassword
+					)
 				).rejects.toThrow(ForbiddenOperationError);
 			});
 		});
@@ -1905,8 +1905,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						defaultPassword,
-						defaultPassword,
-					),
+						defaultPassword
+					)
 				).rejects.toThrow(Error);
 			});
 		});
@@ -1940,8 +1940,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						otherPassword,
-						otherPassword,
-					),
+						otherPassword
+					)
 				).resolves.not.toThrow();
 			});
 		});
@@ -1975,8 +1975,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						otherPassword,
-						otherPassword,
-					),
+						otherPassword
+					)
 				).resolves.not.toThrow();
 			});
 		});
@@ -2010,8 +2010,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						otherPassword,
-						otherPassword,
-					),
+						otherPassword
+					)
 				).resolves.not.toThrow();
 			});
 		});
@@ -2051,8 +2051,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						otherPassword,
-						otherPassword,
-					),
+						otherPassword
+					)
 				).rejects.toThrow(new EntityNotFoundError(User.name));
 			});
 		});
@@ -2088,8 +2088,8 @@ describe('AccountService', () => {
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
 						otherPassword,
-						otherPassword,
-					),
+						otherPassword
+					)
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});

@@ -8,6 +8,7 @@ import { CourseRepo } from '@shared/repo/course';
 import { IDashboardRepo } from '@shared/repo/dashboard';
 import { setupEntities } from '@testing/setup-entities';
 import { DashboardUc } from './dashboard.uc';
+
 const learnroomMock = (id: string, name: string) => {
 	return {
 		getMetadata(): LearnroomMetadata {
@@ -78,7 +79,7 @@ describe('dashboard uc', () => {
 			const dashboardRepoSpy = jest
 				.spyOn(repo, 'getUsersDashboard')
 				.mockImplementation(() => Promise.resolve(dashboard));
-			const courses = new Array(5).map(() => ({}) as Course);
+			const courses = new Array(5).map(() => ({} as Course));
 			const courseRepoSpy = jest
 				.spyOn(courseRepo, 'findAllByUserId')
 				.mockImplementation(() => Promise.resolve([courses, 5]));
@@ -92,7 +93,7 @@ describe('dashboard uc', () => {
 			expect(courseRepoSpy).toHaveBeenCalledWith(
 				userId,
 				{ onlyActiveCourses: true },
-				{ order: { name: SortOrder.asc } },
+				{ order: { name: SortOrder.asc } }
 			);
 			expect(syncSpy).toHaveBeenCalledWith(courses);
 			expect(persistSpy).toHaveBeenCalledWith(result);
@@ -130,7 +131,7 @@ describe('dashboard uc', () => {
 								},
 							],
 							userId: 'userId',
-						}),
+						})
 					);
 				throw new Error('not found');
 			});
@@ -150,8 +151,8 @@ describe('dashboard uc', () => {
 							},
 						],
 						userId: 'differentId',
-					}),
-				),
+					})
+				)
 			);
 
 			const callFut = () => service.moveElementOnDashboard('dashboardId', { x: 1, y: 2 }, { x: 2, y: 1 }, 'userId');
@@ -197,7 +198,7 @@ describe('dashboard uc', () => {
 								},
 							],
 							userId: 'userId',
-						}),
+						})
 					);
 				throw new Error('not found');
 			});
@@ -220,8 +221,8 @@ describe('dashboard uc', () => {
 							},
 						],
 						userId: 'differentUserId',
-					}),
-				),
+					})
+				)
 			);
 
 			const callFut = () => service.renameGroupOnDashboard('dashboardId', { x: 3, y: 4 }, 'groupTitle', 'userId');

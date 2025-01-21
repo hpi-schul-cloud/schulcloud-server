@@ -28,7 +28,7 @@ describe(ParameterArrayUnknownKeyValidator.name, () => {
 				const result: ValidationError[] = new ParameterArrayUnknownKeyValidator().validate(
 					entries,
 					declarations,
-					undefined,
+					undefined
 				);
 
 				expect(result).toHaveLength(0);
@@ -58,7 +58,7 @@ describe(ParameterArrayUnknownKeyValidator.name, () => {
 				const result: ValidationError[] = new ParameterArrayUnknownKeyValidator().validate(
 					entries,
 					declarations,
-					undefined,
+					undefined
 				);
 
 				expect(result[0]).toBeInstanceOf(ToolParameterUnknownLoggableException);

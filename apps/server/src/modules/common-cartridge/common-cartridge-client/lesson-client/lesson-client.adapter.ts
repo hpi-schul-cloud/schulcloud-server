@@ -9,10 +9,7 @@ import { LessonDtoMapper } from './mapper/lesson-dto.mapper';
 
 @Injectable()
 export class LessonClientAdapter {
-	constructor(
-		private readonly lessonApi: LessonApi,
-		@Inject(REQUEST) private request: Request,
-	) {}
+	constructor(private readonly lessonApi: LessonApi, @Inject(REQUEST) private request: Request) {}
 
 	public async getLessonById(lessonId: string): Promise<LessonDto> {
 		const options = this.createOptionParams();

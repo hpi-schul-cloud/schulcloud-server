@@ -26,7 +26,7 @@ export class ReferenceLoader {
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly instanceService: InstanceService,
-		private readonly authorizationInjectionService: AuthorizationInjectionService,
+		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
 		const service = this.authorizationInjectionService;
 		service.injectReferenceLoader(AuthorizableReferenceType.Task, this.taskRepo);
@@ -48,7 +48,7 @@ export class ReferenceLoader {
 
 	async loadAuthorizableObject(
 		objectName: AuthorizableReferenceType,
-		objectId: EntityId,
+		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
 		const referenceLoader: AuthorizationLoaderService = this.resolveLoader(objectName);
 		const object = await referenceLoader.findById(objectId);

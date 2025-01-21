@@ -124,7 +124,7 @@ describe('CurrentUserMapper', () => {
 				const { accountId, user } = setup();
 
 				expect(() => CurrentUserMapper.mapToOauthCurrentUser(accountId, user, undefined, 'idToken')).toThrow(
-					ValidationError,
+					ValidationError
 				);
 			});
 		});

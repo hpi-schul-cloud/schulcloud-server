@@ -15,7 +15,7 @@ export class IdTokenService {
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly pseudonymService: PseudonymService,
 		private readonly teamsRepo: TeamsRepo,
-		private readonly userService: UserService,
+		private readonly userService: UserService
 	) {}
 
 	async createIdToken(userId: string, scopes: string[], clientId: string): Promise<IdToken> {

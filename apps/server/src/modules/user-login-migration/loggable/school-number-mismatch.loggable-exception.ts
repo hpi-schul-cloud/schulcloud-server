@@ -3,10 +3,7 @@ import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class SchoolNumberMismatchLoggableException extends BusinessError implements Loggable {
-	constructor(
-		private readonly sourceSchoolNumber: string,
-		private readonly targetSchoolNumber: string,
-	) {
+	constructor(private readonly sourceSchoolNumber: string, private readonly targetSchoolNumber: string) {
 		super(
 			{
 				type: 'SCHOOL_MIGRATION_FAILED',
@@ -17,7 +14,7 @@ export class SchoolNumberMismatchLoggableException extends BusinessError impleme
 			{
 				sourceSchoolNumber,
 				targetSchoolNumber,
-			},
+			}
 		);
 	}
 

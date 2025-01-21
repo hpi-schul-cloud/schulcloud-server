@@ -42,7 +42,7 @@ export class BoardController {
 	@Post()
 	async createBoard(
 		@Body() bodyParams: CreateBoardBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CreateBoardResponse> {
 		const board = await this.boardUc.createBoard(currentUser.userId, bodyParams);
 
@@ -59,7 +59,7 @@ export class BoardController {
 	@Get(':boardId')
 	async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
 		const { board, features } = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
@@ -76,7 +76,7 @@ export class BoardController {
 	@Get(':boardId/context')
 	async getBoardContext(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardContextResponse> {
 		const boardContext = await this.boardUc.findBoardContext(currentUser.userId, urlParams.boardId);
 
@@ -95,7 +95,7 @@ export class BoardController {
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: UpdateBoardTitleParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);
 	}
@@ -119,7 +119,7 @@ export class BoardController {
 	@Post(':boardId/columns')
 	async createColumn(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ColumnResponse> {
 		const column = await this.boardUc.createColumn(currentUser.userId, urlParams.boardId);
 
@@ -137,7 +137,7 @@ export class BoardController {
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	async copyBoard(
 		@Param() urlParams: BoardUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId, currentUser.schoolId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
@@ -154,7 +154,7 @@ export class BoardController {
 	async updateVisibility(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: VisibilityBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	) {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
 	}

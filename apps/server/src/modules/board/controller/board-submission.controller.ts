@@ -34,7 +34,7 @@ export class BoardSubmissionController {
 	constructor(
 		private readonly cardUc: CardUc,
 		private readonly elementUc: ElementUc,
-		private readonly submissionItemUc: SubmissionItemUc,
+		private readonly submissionItemUc: SubmissionItemUc
 	) {}
 
 	@ApiOperation({ summary: 'Get a list of submission items by their parent container.' })
@@ -44,11 +44,11 @@ export class BoardSubmissionController {
 	@Get(':submissionContainerId')
 	async getSubmissionItems(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: SubmissionContainerUrlParams,
+		@Param() urlParams: SubmissionContainerUrlParams
 	): Promise<SubmissionsResponse> {
 		const { submissionItems, users } = await this.submissionItemUc.findSubmissionItems(
 			currentUser.userId,
-			urlParams.submissionContainerId,
+			urlParams.submissionContainerId
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
 		const response = mapper.mapToResponse(submissionItems, users);
@@ -66,12 +66,12 @@ export class BoardSubmissionController {
 	async updateSubmissionItem(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: SubmissionItemUrlParams,
-		@Body() bodyParams: UpdateSubmissionItemBodyParams,
+		@Body() bodyParams: UpdateSubmissionItemBodyParams
 	) {
 		await this.submissionItemUc.updateSubmissionItem(
 			currentUser.userId,
 			urlParams.submissionItemId,
-			bodyParams.completed,
+			bodyParams.completed
 		);
 	}
 
@@ -101,7 +101,7 @@ export class BoardSubmissionController {
 	async createElement(
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<FileElementResponse | RichTextElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);

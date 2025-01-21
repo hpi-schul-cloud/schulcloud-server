@@ -10,7 +10,7 @@ export class IdTokenExtractionFailureLoggableException extends BusinessError imp
 				title: 'Id token extraction failure',
 				defaultMessage: 'Failed to extract field',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

@@ -9,7 +9,7 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 	constructor(
 		private readonly medium: ExternalToolMedium,
 		private readonly userId: EntityId,
-		private readonly contextExternalTool: ContextExternalToolLaunchable,
+		private readonly contextExternalTool: ContextExternalToolLaunchable
 	) {
 		super(
 			{
@@ -17,7 +17,7 @@ export class MissingMediaLicenseLoggableException extends BusinessError implemen
 				title: 'Missing media license',
 				defaultMessage: 'The user does not have the required license to launch this medium.',
 			},
-			HttpStatus.FORBIDDEN,
+			HttpStatus.FORBIDDEN
 		);
 	}
 

@@ -137,7 +137,7 @@ describe(CommonToolDeleteService.name, () => {
 						id: contextExternalTool.id,
 						title: displayName,
 						description: 'description',
-					}),
+					})
 				);
 			});
 		});
@@ -203,7 +203,7 @@ describe(CommonToolDeleteService.name, () => {
 						id: contextExternalTool.id,
 						title: externalTool.name,
 						description: undefined,
-					}),
+					})
 				);
 			});
 		});
@@ -259,7 +259,7 @@ describe(CommonToolDeleteService.name, () => {
 						id: contextExternalTool.id,
 						title: externalTool.name,
 						description: externalTool.description,
-					}),
+					})
 				);
 			});
 		});

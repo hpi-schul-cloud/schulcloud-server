@@ -24,7 +24,7 @@ export class CurrentUserMapper {
 		accountId: string,
 		user: UserDO,
 		systemId?: string,
-		externalIdToken?: string,
+		externalIdToken?: string
 	): ICurrentUser {
 		if (!user.id) {
 			throw new ValidationError('user has no ID');

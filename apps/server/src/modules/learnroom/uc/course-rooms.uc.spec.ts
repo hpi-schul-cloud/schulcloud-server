@@ -247,7 +247,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id),
+				tasks.map((task) => task.id)
 			);
 			expect(userSpy).toHaveBeenCalledWith(user.id);
 		});
@@ -258,7 +258,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id),
+				tasks.map((task) => task.id)
 			);
 			expect(roomSpy).toHaveBeenCalledWith(room.id, user.id);
 		});
@@ -269,7 +269,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id),
+				tasks.map((task) => task.id)
 			);
 			expect(boardSpy).toHaveBeenCalledWith(room.id);
 		});
@@ -280,7 +280,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id),
+				tasks.map((task) => task.id)
 			);
 			expect(reorderSpy).toHaveBeenCalledWith(tasks.map((task) => task.id));
 		});
@@ -291,7 +291,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id),
+				tasks.map((task) => task.id)
 			);
 			expect(saveSpy).toHaveBeenCalledWith(board);
 		});
@@ -302,7 +302,7 @@ describe('rooms usecase', () => {
 			await uc.reorderBoardElements(
 				room.id,
 				user.id,
-				tasks.map((task) => task.id),
+				tasks.map((task) => task.id)
 			);
 			expect(authorisationSpy).toHaveBeenCalledWith(user, room);
 		});
@@ -314,7 +314,7 @@ describe('rooms usecase', () => {
 				uc.reorderBoardElements(
 					room.id,
 					user.id,
-					tasks.map((task) => task.id),
+					tasks.map((task) => task.id)
 				);
 			await expect(call).rejects.toThrow(ForbiddenException);
 		});

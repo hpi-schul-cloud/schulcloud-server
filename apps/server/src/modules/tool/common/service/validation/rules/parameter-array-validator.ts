@@ -6,6 +6,6 @@ export interface ParameterArrayValidator {
 	validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],
-		toolId: EntityId | undefined,
+		toolId: EntityId | undefined
 	): ValidationError[];
 }

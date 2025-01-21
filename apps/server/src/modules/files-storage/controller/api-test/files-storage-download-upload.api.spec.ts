@@ -177,7 +177,7 @@ describe('files-storage controller (API)', () => {
 						parentType: 'schools',
 						securityCheckStatus: 'pending',
 						size: expect.any(Number),
-					}),
+					})
 				);
 			});
 
@@ -380,7 +380,7 @@ describe('files-storage controller (API)', () => {
 							mimeType: 'application/octet-stream',
 							parentType: 'schools',
 							securityCheckStatus: 'pending',
-						}),
+						})
 					);
 				});
 			});

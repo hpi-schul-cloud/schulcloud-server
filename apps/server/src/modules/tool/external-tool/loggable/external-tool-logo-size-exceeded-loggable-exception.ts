@@ -5,7 +5,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class ExternalToolLogoSizeExceededLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly externalToolId: string | undefined,
-		private readonly maxExternalToolLogoSizeInBytes: number,
+		private readonly maxExternalToolLogoSizeInBytes: number
 	) {
 		super(
 			{
@@ -13,7 +13,7 @@ export class ExternalToolLogoSizeExceededLoggableException extends BusinessError
 				title: 'External tool logo size exceeded.',
 				defaultMessage: 'External tool logo size exceeded.',
 			},
-			HttpStatus.BAD_REQUEST,
+			HttpStatus.BAD_REQUEST
 		);
 	}
 

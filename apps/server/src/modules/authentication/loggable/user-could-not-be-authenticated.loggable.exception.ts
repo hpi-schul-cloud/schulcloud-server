@@ -11,7 +11,7 @@ export class LdapUserCouldNotBeAuthenticatedLoggableException extends BusinessEr
 				title: 'User could not be authenticated',
 				defaultMessage: 'LdapService connection failed because User could not be authenticated',
 			},
-			HttpStatus.UNAUTHORIZED,
+			HttpStatus.UNAUTHORIZED
 		);
 	}
 

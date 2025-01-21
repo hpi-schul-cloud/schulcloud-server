@@ -10,7 +10,7 @@ export class TspSystemNotFoundLoggableException extends BusinessError implements
 				title: 'The TSP system could not be found',
 				defaultMessage: 'The TSP system could not be found during the sync',
 			},
-			HttpStatus.BAD_REQUEST,
+			HttpStatus.BAD_REQUEST
 		);
 	}
 

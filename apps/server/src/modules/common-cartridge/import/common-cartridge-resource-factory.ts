@@ -15,7 +15,7 @@ export class CommonCartridgeResourceFactory {
 
 	public create(
 		organization: CommonCartridgeOrganizationProps,
-		inputFormat: InputFormat,
+		inputFormat: InputFormat
 	): CommonCartridgeResourceProps | undefined {
 		if (!this.isValidOrganization(organization)) {
 			return undefined;
@@ -60,7 +60,7 @@ export class CommonCartridgeResourceFactory {
 	private createWebContentResource(
 		content: string,
 		title: string,
-		inputFormat: InputFormat,
+		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
 		const document = this.tryCreateDocument(content, 'text/html');
 

@@ -10,7 +10,7 @@ export class MultipleUsersFoundLoggableException extends BusinessError implement
 				title: 'Multiple users found',
 				defaultMessage: 'Multiple users found with this externalId',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

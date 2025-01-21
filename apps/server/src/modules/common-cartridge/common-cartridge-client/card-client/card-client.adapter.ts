@@ -9,10 +9,7 @@ import { CardResponseMapper } from './mapper/card-response.mapper';
 
 @Injectable()
 export class CardClientAdapter {
-	constructor(
-		private readonly boardCardApi: BoardCardApi,
-		@Inject(REQUEST) private request: Request,
-	) {}
+	constructor(private readonly boardCardApi: BoardCardApi, @Inject(REQUEST) private request: Request) {}
 
 	public async getAllBoardCardsByIds(cardsIds: string[]): Promise<CardListResponseDto> {
 		const options = this.createOptionParams();

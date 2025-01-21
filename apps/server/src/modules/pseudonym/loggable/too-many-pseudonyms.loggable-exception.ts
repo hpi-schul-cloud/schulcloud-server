@@ -11,7 +11,7 @@ export class TooManyPseudonymsLoggableException extends BusinessError implements
 				title: 'Too many pseudonyms where found.',
 				defaultMessage: 'Too many pseudonyms where found.',
 			},
-			HttpStatus.BAD_REQUEST,
+			HttpStatus.BAD_REQUEST
 		);
 	}
 

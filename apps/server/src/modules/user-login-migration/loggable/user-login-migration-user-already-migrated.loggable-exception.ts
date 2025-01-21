@@ -13,7 +13,7 @@ export class UserLoginMigrationUserAlreadyMigratedLoggableException extends Busi
 			HttpStatus.UNPROCESSABLE_ENTITY,
 			{
 				multipleUsersFound: true,
-			},
+			}
 		);
 	}
 

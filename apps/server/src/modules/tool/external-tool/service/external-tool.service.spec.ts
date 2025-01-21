@@ -316,7 +316,7 @@ describe(ExternalToolService.name, () => {
 						...externalTool,
 						config: oauth2ToolConfig,
 						id: expect.any(String),
-					}),
+					})
 				);
 			});
 		});
@@ -328,7 +328,7 @@ describe(ExternalToolService.name, () => {
 				externalTool.config = oauth2ToolConfigWithoutExternalData;
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 				oauthProviderService.getOAuth2Client.mockRejectedValueOnce(
-					new Error('some error occurred during fetching data'),
+					new Error('some error occurred during fetching data')
 				);
 
 				return { externalTool };

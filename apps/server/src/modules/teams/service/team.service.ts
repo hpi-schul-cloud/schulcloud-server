@@ -25,7 +25,7 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly teamsRepo: TeamsRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(TeamService.name);
 	}
@@ -48,8 +48,8 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 				'Deleting user data from Teams',
 				DomainName.TEAMS,
 				userId,
-				StatusModel.PENDING,
-			),
+				StatusModel.PENDING
+			)
 		);
 		const teams = await this.teamsRepo.findByUserId(userId);
 
@@ -72,8 +72,8 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedTeams,
-				0,
-			),
+				0
+			)
 		);
 
 		return result;

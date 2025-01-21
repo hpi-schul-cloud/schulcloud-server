@@ -10,10 +10,7 @@ import { ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolAuthorizableService implements AuthorizationLoaderService {
-	constructor(
-		private readonly externalToolRepo: ExternalToolRepo,
-		injectionService: AuthorizationInjectionService,
-	) {
+	constructor(private readonly externalToolRepo: ExternalToolRepo, injectionService: AuthorizationInjectionService) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.ExternalTool, this);
 	}
 

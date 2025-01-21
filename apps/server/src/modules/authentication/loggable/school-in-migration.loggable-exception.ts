@@ -10,7 +10,7 @@ export class SchoolInMigrationLoggableException extends BusinessError implements
 				title: 'Login failed because school is in migration',
 				defaultMessage: 'Login failed because creation of user is not possible during migration',
 			},
-			HttpStatus.UNAUTHORIZED,
+			HttpStatus.UNAUTHORIZED
 		);
 	}
 

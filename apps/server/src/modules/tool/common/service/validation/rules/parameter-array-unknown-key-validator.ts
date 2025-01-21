@@ -7,13 +7,13 @@ export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidato
 	validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],
-		toolId: EntityId | undefined,
+		toolId: EntityId | undefined
 	): ValidationError[] {
 		const errors: ValidationError[] = [];
 
 		for (const entry of entries) {
 			const foundParameter: CustomParameter | undefined = declarations.find(
-				({ name }: CustomParameter): boolean => name === entry.name,
+				({ name }: CustomParameter): boolean => name === entry.name
 			);
 
 			if (!foundParameter) {

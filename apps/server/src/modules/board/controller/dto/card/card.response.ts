@@ -24,7 +24,7 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	SubmissionContainerElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
-	VideoConferenceElementResponse,
+	VideoConferenceElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {

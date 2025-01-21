@@ -22,10 +22,7 @@ import { CardResponseMapper } from './mapper';
 @JwtAuthentication()
 @Controller('columns')
 export class ColumnController {
-	constructor(
-		private readonly boardUc: BoardUc,
-		private readonly columnUc: ColumnUc,
-	) {}
+	constructor(private readonly boardUc: BoardUc, private readonly columnUc: ColumnUc) {}
 
 	@ApiOperation({ summary: 'Move a single column.' })
 	@ApiResponse({ status: 204 })
@@ -37,7 +34,7 @@ export class ColumnController {
 	async moveColumn(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: MoveColumnBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.moveColumn(currentUser.userId, urlParams.columnId, bodyParams.toBoardId, bodyParams.toPosition);
 	}
@@ -52,7 +49,7 @@ export class ColumnController {
 	async updateColumnTitle(
 		@Param() urlParams: ColumnUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.columnUc.updateColumnTitle(currentUser.userId, urlParams.columnId, bodyParams.title);
 	}
@@ -78,7 +75,7 @@ export class ColumnController {
 	async createCard(
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() createCardBodyParams?: CreateCardBodyParams,
+		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardResponse> {
 		const { requiredEmptyElements } = createCardBodyParams || {};
 		const card = await this.columnUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);

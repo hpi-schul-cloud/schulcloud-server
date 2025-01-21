@@ -12,15 +12,12 @@ import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableExce
 
 @Injectable()
 export class AuthorizationClientAdapter {
-	constructor(
-		private readonly authorizationApi: AuthorizationApi,
-		@Inject(REQUEST) private request: Request,
-	) {}
+	constructor(private readonly authorizationApi: AuthorizationApi, @Inject(REQUEST) private request: Request) {}
 
 	public async checkPermissionsByReference(
 		referenceType: AuthorizationBodyParamsReferenceType,
 		referenceId: string,
-		context: AuthorizationContextParams,
+		context: AuthorizationContextParams
 	): Promise<void> {
 		const hasPermission = await this.hasPermissionsByReference(referenceType, referenceId, context);
 
@@ -32,7 +29,7 @@ export class AuthorizationClientAdapter {
 	public async hasPermissionsByReference(
 		referenceType: AuthorizationBodyParamsReferenceType,
 		referenceId: string,
-		context: AuthorizationContextParams,
+		context: AuthorizationContextParams
 	): Promise<boolean> {
 		const params = {
 			referenceType,
@@ -45,7 +42,7 @@ export class AuthorizationClientAdapter {
 
 			const response = await this.authorizationApi.authorizationReferenceControllerAuthorizeByReference(
 				params,
-				options,
+				options
 			);
 			const hasPermission = response.data.isAuthorized;
 

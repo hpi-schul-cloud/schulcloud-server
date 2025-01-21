@@ -100,7 +100,7 @@ describe('AccountDbService', () => {
 					const resultAccount = await accountService.findById(mockTeacherAccount.id);
 					expect(resultAccount).toEqual(mockTeacherAccount);
 				},
-				10 * 60 * 1000,
+				10 * 60 * 1000
 			);
 		});
 
@@ -177,7 +177,7 @@ describe('AccountDbService', () => {
 				const { mockAccountWithSystemId } = setup();
 				const resultAccount = await accountService.findByUsernameAndSystemId(
 					mockAccountWithSystemId.username,
-					mockAccountWithSystemId.systemId ?? '',
+					mockAccountWithSystemId.systemId ?? ''
 				);
 				expect(resultAccount).not.toBe(undefined);
 			});
@@ -194,7 +194,7 @@ describe('AccountDbService', () => {
 							return Promise.resolve(mockAccountWithSystemId);
 						}
 						return Promise.resolve(null);
-					},
+					}
 				);
 				return { mockAccountWithSystemId };
 			};
@@ -203,7 +203,7 @@ describe('AccountDbService', () => {
 				const { mockAccountWithSystemId } = setup();
 				const resultAccount = await accountService.findByUsernameAndSystemId(
 					'nonExistentUsername',
-					mockAccountWithSystemId.systemId ?? '',
+					mockAccountWithSystemId.systemId ?? ''
 				);
 				expect(resultAccount).toBeNull();
 			});
@@ -221,7 +221,7 @@ describe('AccountDbService', () => {
 							return Promise.resolve(mockAccountWithSystemId);
 						}
 						return Promise.resolve(null);
-					},
+					}
 				);
 				return { mockAccountWithSystemId };
 			};
@@ -230,7 +230,7 @@ describe('AccountDbService', () => {
 				const { mockAccountWithSystemId } = setup();
 				const resultAccount = await accountService.findByUsernameAndSystemId(
 					mockAccountWithSystemId.username,
-					'nonExistentSystemId',
+					'nonExistentSystemId'
 				);
 				expect(resultAccount).toBeNull();
 			});
@@ -253,7 +253,7 @@ describe('AccountDbService', () => {
 
 				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
 					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
-						userIds.find((userId) => tempAccount.userId?.toString() === userId),
+						userIds.find((userId) => tempAccount.userId?.toString() === userId)
 					);
 					return Promise.resolve(accounts);
 				});
@@ -276,7 +276,7 @@ describe('AccountDbService', () => {
 
 				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
 					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
-						userIds.find((userId) => tempAccount.userId?.toString() === userId),
+						userIds.find((userId) => tempAccount.userId?.toString() === userId)
 					);
 					return Promise.resolve(accounts);
 				});
@@ -471,7 +471,7 @@ describe('AccountDbService', () => {
 						systemId: accountToSave.systemId,
 						createdAt: accountToSave.createdAt,
 						updatedAt: accountToSave.updatedAt,
-					}),
+					})
 				);
 
 				return { accountToSave };
@@ -516,7 +516,7 @@ describe('AccountDbService', () => {
 						userId: accountToSave.userId,
 						createdAt: accountToSave.createdAt,
 						updatedAt: accountToSave.updatedAt,
-					}),
+					})
 				);
 
 				return { accountToSave };
@@ -553,7 +553,7 @@ describe('AccountDbService', () => {
 						userId: accountToSave.userId,
 						createdAt: accountToSave.createdAt,
 						updatedAt: accountToSave.updatedAt,
-					}),
+					})
 				);
 
 				return { accountToSave };
@@ -567,7 +567,7 @@ describe('AccountDbService', () => {
 
 				expect(accountRepo.save).toBeCalledWith(
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) }),
+					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) })
 				);
 			});
 		});
@@ -607,7 +607,7 @@ describe('AccountDbService', () => {
 						userId: accountToSave.userId,
 						createdAt: accountToSave.createdAt,
 						updatedAt: accountToSave.updatedAt,
-					}),
+					})
 				);
 
 				return { accountToSave, accountInRepo };
@@ -643,7 +643,7 @@ describe('AccountDbService', () => {
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: undefined,
-					}),
+					})
 				);
 			});
 		});
@@ -671,7 +671,7 @@ describe('AccountDbService', () => {
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: mockTeacherAccount.password,
-					}),
+					})
 				);
 			});
 		});
@@ -805,7 +805,7 @@ describe('AccountDbService', () => {
 			const setup = async () => {
 				const ret = await accountService.validatePassword(
 					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
-					defaultPassword,
+					defaultPassword
 				);
 
 				return { ret };
@@ -822,7 +822,7 @@ describe('AccountDbService', () => {
 			const setup = async () => {
 				const ret = await accountService.validatePassword(
 					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
-					'incorrectPwd',
+					'incorrectPwd'
 				);
 
 				return { ret };

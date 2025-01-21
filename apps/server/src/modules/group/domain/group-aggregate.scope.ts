@@ -31,7 +31,7 @@ export class GroupAggregateScope extends MongoDbScope<GroupEntity> {
 					$match: {
 						$or: [{ syncedCourses: { $size: 0 } }, { type: { $eq: GroupTypes.CLASS } }],
 					},
-				},
+				}
 			);
 		}
 

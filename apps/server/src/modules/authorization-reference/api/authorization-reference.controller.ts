@@ -19,13 +19,13 @@ export class AuthorizationReferenceController {
 	@Post('by-reference')
 	public async authorizeByReference(
 		@Body() body: AuthorizationBodyParams,
-		@CurrentUser() user: ICurrentUser,
+		@CurrentUser() user: ICurrentUser
 	): Promise<AuthorizedReponse> {
 		const authorizationReponse = await this.authorizationReferenceUc.authorizeByReference(
 			user.userId,
 			body.referenceType,
 			body.referenceId,
-			body.context,
+			body.context
 		);
 
 		return authorizationReponse;

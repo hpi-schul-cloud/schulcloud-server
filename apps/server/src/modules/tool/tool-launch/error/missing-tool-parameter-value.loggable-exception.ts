@@ -7,7 +7,7 @@ import { ContextExternalToolLaunchable } from '../../context-external-tool/domai
 export class MissingToolParameterValueLoggableException extends BusinessError implements Loggable {
 	constructor(
 		private readonly contextExternalTool: ContextExternalToolLaunchable,
-		private readonly parameters: CustomParameter[],
+		private readonly parameters: CustomParameter[]
 	) {
 		super(
 			{
@@ -19,7 +19,7 @@ export class MissingToolParameterValueLoggableException extends BusinessError im
 			{
 				parameterKeys: parameters.map((param): string => param.name),
 				parameterNames: parameters.map((param): string => param.displayName),
-			},
+			}
 		);
 	}
 

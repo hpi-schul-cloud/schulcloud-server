@@ -57,7 +57,7 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 		const rawLessonsDocuments = await this._em.aggregate(LessonEntity, pipeline);
 
 		const lessons = rawLessonsDocuments.map((rawLessonDocument) =>
-			this._em.map(LessonEntity, rawLessonDocument as EntityDictionary<LessonEntity>),
+			this._em.map(LessonEntity, rawLessonDocument as EntityDictionary<LessonEntity>)
 		);
 
 		return lessons;

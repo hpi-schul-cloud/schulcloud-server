@@ -10,7 +10,7 @@ export class SchoolNameRequiredLoggableException extends BusinessError implement
 				title: 'School name is required',
 				defaultMessage: 'External school name is required',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

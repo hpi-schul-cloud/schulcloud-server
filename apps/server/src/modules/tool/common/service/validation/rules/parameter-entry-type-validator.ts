@@ -8,7 +8,7 @@ export class ParameterEntryTypeValidator implements ParameterEntryValidator {
 	public validate(
 		entry: CustomParameterEntry,
 		declaration: CustomParameter,
-		toolId: EntityId | undefined,
+		toolId: EntityId | undefined
 	): BusinessError[] {
 		if (
 			entry.value !== undefined &&

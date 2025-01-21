@@ -119,7 +119,7 @@ describe('reference.loader', () => {
 
 		it('should throw on unknown authorization entity type', () => {
 			void expect(async () =>
-				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId),
+				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
 		});
 	});
@@ -136,7 +136,7 @@ describe('reference.loader', () => {
 		it('should inject course group repo', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.CourseGroup,
-				courseGroupRepo,
+				courseGroupRepo
 			);
 		});
 
@@ -151,14 +151,14 @@ describe('reference.loader', () => {
 		it('should inject submission repo', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.Submission,
-				submissionRepo,
+				submissionRepo
 			);
 		});
 
 		it('should inject instance service', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(
 				AuthorizableReferenceType.Instance,
-				instanceService,
+				instanceService
 			);
 		});
 	});

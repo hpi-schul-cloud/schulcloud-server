@@ -13,7 +13,7 @@ class SampleBusinessError extends BusinessError {
 				title: 'Sample Error',
 				defaultMessage: 'sample error message',
 			},
-			HttpStatus.NOT_IMPLEMENTED,
+			HttpStatus.NOT_IMPLEMENTED
 		);
 	}
 }

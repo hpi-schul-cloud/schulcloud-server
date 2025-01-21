@@ -146,7 +146,7 @@ describe('NextCloudStrategy', () => {
 				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
 
 				expect(client.findGroupId).toHaveBeenCalledWith(
-					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto),
+					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
 				);
 			});
 
@@ -182,7 +182,7 @@ describe('NextCloudStrategy', () => {
 				await strategy.updateTeamPermissionsForRole(teamRolePermissionsDto);
 
 				expect(client.findGroupId).toHaveBeenCalledWith(
-					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto),
+					NextcloudStrategySpec.specGenerateGroupId(teamRolePermissionsDto)
 				);
 			});
 

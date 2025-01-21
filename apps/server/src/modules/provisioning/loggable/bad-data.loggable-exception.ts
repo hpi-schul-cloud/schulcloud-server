@@ -11,7 +11,7 @@ export class BadDataLoggableException extends BusinessError implements Loggable 
 				defaultMessage: message || 'Request data is invalid and cannot be processed',
 			},
 			HttpStatus.BAD_REQUEST,
-			details,
+			details
 		);
 	}
 

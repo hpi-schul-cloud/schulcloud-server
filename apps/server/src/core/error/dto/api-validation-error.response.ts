@@ -31,7 +31,7 @@ export class ApiValidationErrorResponse extends ErrorResponse {
 
 		if (validationError.children) {
 			validationError.children.forEach((childError: ValidationError) =>
-				this.extractValidationErrorDetails(childError, propertyPath),
+				this.extractValidationErrorDetails(childError, propertyPath)
 			);
 		}
 	}

@@ -19,13 +19,13 @@ export class UsersAdminApiUc {
 		private readonly userRepo: UserRepo,
 		private readonly roleService: RoleService,
 		private readonly adminUsersService: UsersAdminService,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	public async findUsersByParams(
 		requestedRole: RequestedRoleEnum,
 		currentUserId: string,
-		params: UsersSearchQueryParams,
+		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.validateAccessToContext(requestedRole, currentUser);
@@ -40,7 +40,7 @@ export class UsersAdminApiUc {
 	public async findUserById(
 		requestedRole: RequestedRoleEnum,
 		currentUserId: string,
-		params: UserByIdParams,
+		params: UserByIdParams
 	): Promise<UserResponse> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.validateAccessToContext(requestedRole, currentUser);

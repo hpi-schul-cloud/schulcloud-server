@@ -16,7 +16,7 @@ export class CourseRoomsService {
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,
 		private readonly boardRepo: LegacyBoardRepo,
-		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo,
+		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
 	async updateLegacyBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {

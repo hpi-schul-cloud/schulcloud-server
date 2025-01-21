@@ -138,7 +138,7 @@ describe('task copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 
 				await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
-					InternalServerErrorException,
+					InternalServerErrorException
 				);
 			});
 		});
@@ -284,7 +284,7 @@ describe('task copy uc', () => {
 					const { user, task, parentParams } = setupWithTaskForbidden();
 
 					await expect(uc.copyTask(user.id, task.id, parentParams)).rejects.toThrowError(
-						new NotFoundException('could not find task to copy'),
+						new NotFoundException('could not find task to copy')
 					);
 				});
 			});
@@ -389,7 +389,7 @@ describe('task copy uc', () => {
 				const { userId, taskId, parentParams } = setupWithLessonForbidden();
 
 				await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrowError(
-					new ForbiddenException('you dont have permission to add to this lesson'),
+					new ForbiddenException('you dont have permission to add to this lesson')
 				);
 			});
 		});

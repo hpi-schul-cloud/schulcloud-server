@@ -10,7 +10,7 @@ export class UserLoginMigrationInvalidExternalSchoolIdLoggableException extends 
 				title: 'The given external school ID is invalid',
 				defaultMessage: 'The given external school ID does not match with the migrated school',
 			},
-			HttpStatus.UNPROCESSABLE_ENTITY,
+			HttpStatus.UNPROCESSABLE_ENTITY
 		);
 	}
 

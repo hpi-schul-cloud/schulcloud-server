@@ -9,10 +9,7 @@ import { CourseRoomsApi } from './room-api-client';
 
 @Injectable()
 export class CourseRoomsClientAdapter {
-	constructor(
-		private readonly courseRoomsApi: CourseRoomsApi,
-		@Inject(REQUEST) private request: Request,
-	) {}
+	constructor(private readonly courseRoomsApi: CourseRoomsApi, @Inject(REQUEST) private request: Request) {}
 
 	public async getRoomBoardByCourseId(roomId: string): Promise<RoomBoardDto> {
 		const options = this.createOptionParams();

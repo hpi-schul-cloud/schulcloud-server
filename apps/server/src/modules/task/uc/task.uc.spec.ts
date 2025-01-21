@@ -532,7 +532,7 @@ describe('TaskUC', () => {
 				const task2 = taskFactory.build({ course });
 				const task3 = taskFactory.build({ course });
 				task2.submissions.add(
-					submissionFactory.submitted().build({ task: task2, student: user, teamMembers: [user], graded: true }),
+					submissionFactory.submitted().build({ task: task2, student: user, teamMembers: [user], graded: true })
 				);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);

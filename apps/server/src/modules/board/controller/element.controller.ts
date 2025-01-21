@@ -44,10 +44,7 @@ import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './m
 @JwtAuthentication()
 @Controller('elements')
 export class ElementController {
-	constructor(
-		private readonly cardUc: CardUc,
-		private readonly elementUc: ElementUc,
-	) {}
+	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}
 
 	@ApiOperation({ summary: 'Move a single content element.' })
 	@ApiResponse({ status: 204 })
@@ -59,13 +56,13 @@ export class ElementController {
 	async moveElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: MoveContentElementBody,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.moveElement(
 			currentUser.userId,
 			urlParams.contentElementId,
 			bodyParams.toCardId,
-			bodyParams.toPosition,
+			bodyParams.toPosition
 		);
 	}
 
@@ -77,7 +74,7 @@ export class ElementController {
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
 		DrawingElementContentBody,
-		VideoConferenceElementContentBody,
+		VideoConferenceElementContentBody
 	)
 	@ApiResponse({
 		status: 200,
@@ -101,12 +98,12 @@ export class ElementController {
 	async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
 		const element = await this.elementUc.updateElement(
 			currentUser.userId,
 			urlParams.contentElementId,
-			bodyParams.data.content,
+			bodyParams.data.content
 		);
 		const response = ContentElementResponseFactory.mapToResponse(element);
 		return response;
@@ -121,7 +118,7 @@ export class ElementController {
 	@Delete(':contentElementId')
 	async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.deleteElement(currentUser.userId, urlParams.contentElementId);
 	}
@@ -137,12 +134,12 @@ export class ElementController {
 	async createSubmissionItem(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SubmissionItemResponse> {
 		const submissionItem = await this.elementUc.createSubmissionItem(
 			currentUser.userId,
 			urlParams.contentElementId,
-			bodyParams.completed,
+			bodyParams.completed
 		);
 		const mapper = SubmissionItemResponseMapper.getInstance();
 		const response = mapper.mapSubmissionItemToResponse(submissionItem);
@@ -158,7 +155,7 @@ export class ElementController {
 	@Get(':contentElementId/permission')
 	async readPermission(
 		@Param() urlParams: ContentElementUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.checkElementReadPermission(currentUser.userId, urlParams.contentElementId);
 	}

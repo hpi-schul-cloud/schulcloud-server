@@ -19,7 +19,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		private readonly accountIdmToDoMapper: AccountIdmToDoMapper,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly logger: Logger,
-		private readonly configService: ConfigService<AccountConfig, true>,
+		private readonly configService: ConfigService<AccountConfig, true>
 	) {
 		super();
 	}
@@ -76,7 +76,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	public async searchByUsernamePartialMatch(
 		userName: string,
 		skip: number,
-		limit: number,
+		limit: number
 	): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));

@@ -12,7 +12,7 @@ import { SchoolExternalTool } from '../domain';
 export class SchoolExternalToolAuthorizableService implements AuthorizationLoaderServiceGeneric<SchoolExternalTool> {
 	constructor(
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
-		injectionService: AuthorizationInjectionService,
+		injectionService: AuthorizationInjectionService
 	) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.SchoolExternalToolEntity, this);
 	}

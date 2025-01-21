@@ -33,7 +33,7 @@ export class CourseCopyService {
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
-		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	async copyCourse({
@@ -73,8 +73,8 @@ export class CourseCopyService {
 							await this.contextExternalToolService.copyContextExternalTool(tool, courseCopy.id, user.school.id);
 
 						return copiedResult;
-					},
-				),
+					}
+				)
 			);
 
 			courseToolsCopyStatus = this.deriveCourseToolCopyStatus(copyCourseToolsResult);
@@ -92,7 +92,7 @@ export class CourseCopyService {
 			originalCourse,
 			finishedCourseCopy,
 			boardStatus,
-			courseToolsCopyStatus,
+			courseToolsCopyStatus
 		);
 
 		return courseStatus;
@@ -124,7 +124,7 @@ export class CourseCopyService {
 		originalCourse: Course,
 		courseCopy: Course,
 		boardStatus: CopyStatus,
-		courseToolsCopyStatus: CopyStatus | null,
+		courseToolsCopyStatus: CopyStatus | null
 	): CopyStatus {
 		const elements = [
 			{
@@ -170,14 +170,14 @@ export class CourseCopyService {
 	}
 
 	private deriveCourseToolCopyStatus(
-		copyCourseToolsResult: (ContextExternalTool | CopyContextExternalToolRejectData)[],
+		copyCourseToolsResult: (ContextExternalTool | CopyContextExternalToolRejectData)[]
 	): CopyStatus | null {
 		if (!copyCourseToolsResult.length) {
 			return null;
 		}
 
 		const rejectedCopies: CopyContextExternalToolRejectData[] = copyCourseToolsResult.filter(
-			(result) => result instanceof CopyContextExternalToolRejectData,
+			(result) => result instanceof CopyContextExternalToolRejectData
 		);
 
 		let status: CopyStatusEnum;

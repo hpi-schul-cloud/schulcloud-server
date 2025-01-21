@@ -15,7 +15,7 @@ export class TaskUC {
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseRepo: CourseRepo,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService,
+		private readonly taskService: TaskService
 	) {}
 
 	async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
@@ -42,7 +42,7 @@ export class TaskUC {
 				lessonIdsOfOpenCourses,
 				lessonIdsOfFinishedCourses,
 			},
-			{ pagination, order: { dueDate: SortOrder.desc } },
+			{ pagination, order: { dueDate: SortOrder.desc } }
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -134,7 +134,7 @@ export class TaskUC {
 			{
 				pagination,
 				order: { dueDate: SortOrder.asc },
-			},
+			}
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -162,7 +162,7 @@ export class TaskUC {
 			{
 				pagination,
 				order: { dueDate: SortOrder.desc },
-			},
+			}
 		);
 
 		const taskWithStatusVos = tasks.map((task) => {
@@ -189,7 +189,7 @@ export class TaskUC {
 
 	private async getPermittedLessons(user: User, courses: Course[]): Promise<LessonEntity[]> {
 		const writeCourses = courses.filter((c) =>
-			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([])),
+			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);
 		const readCourses = courses.filter((c) => !writeCourses.includes(c));
 

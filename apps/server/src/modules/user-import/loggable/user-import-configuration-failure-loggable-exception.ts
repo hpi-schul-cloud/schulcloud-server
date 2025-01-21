@@ -10,7 +10,7 @@ export class UserImportConfigurationFailureLoggableException extends BusinessErr
 				title: 'The user import configuration has a failure.',
 				defaultMessage: 'Please check the user import configuration.',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

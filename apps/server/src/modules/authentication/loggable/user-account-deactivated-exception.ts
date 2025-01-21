@@ -10,7 +10,7 @@ export class UserAccountDeactivatedLoggableException extends BusinessError imple
 				title: 'Login failed because user account is deactivated',
 				defaultMessage: 'Login failed because user account is deactivated',
 			},
-			HttpStatus.UNAUTHORIZED,
+			HttpStatus.UNAUTHORIZED
 		);
 	}
 

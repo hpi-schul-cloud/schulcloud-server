@@ -11,7 +11,7 @@ export class AccountNotFoundLoggableException extends BusinessError implements L
 				title: 'Login has failed because account not found',
 				defaultMessage: 'Login has failed because account not found',
 			},
-			HttpStatus.UNAUTHORIZED,
+			HttpStatus.UNAUTHORIZED
 		);
 	}
 

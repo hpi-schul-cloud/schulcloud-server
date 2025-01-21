@@ -5,10 +5,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { CustomParameter } from '../custom-parameter.do';
 
 export class ToolParameterRequiredLoggableException extends BusinessError implements Loggable {
-	constructor(
-		private readonly toolId: EntityId | undefined,
-		private readonly param: CustomParameter,
-	) {
+	constructor(private readonly toolId: EntityId | undefined, private readonly param: CustomParameter) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_REQUIRED',
@@ -19,7 +16,7 @@ export class ToolParameterRequiredLoggableException extends BusinessError implem
 			{
 				param,
 				toolId,
-			},
+			}
 		);
 	}
 

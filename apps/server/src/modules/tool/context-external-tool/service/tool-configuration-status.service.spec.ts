@@ -87,7 +87,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -146,7 +146,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -205,7 +205,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -264,7 +264,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -328,7 +328,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -375,7 +375,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -423,7 +423,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -467,7 +467,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -510,7 +510,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({
@@ -576,7 +576,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
-					userId,
+					userId
 				);
 
 				expect(status).toEqual<ContextExternalToolConfigurationStatus>({

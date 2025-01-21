@@ -46,7 +46,7 @@ describe('SchoolExternalToolAuthorizableService', () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
 			expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(
 				AuthorizableReferenceType.SchoolExternalToolEntity,
-				service,
+				service
 			);
 		});
 	});

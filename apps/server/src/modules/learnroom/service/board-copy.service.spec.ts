@@ -223,7 +223,7 @@ describe('board copy service', () => {
 					destinationCourse,
 				});
 				const taskStatus = status.elements?.find(
-					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name,
+					(el) => el.type === CopyElementType.TASK && el.title === originalTask.name
 				);
 				expect(taskStatus).toBeDefined();
 			});

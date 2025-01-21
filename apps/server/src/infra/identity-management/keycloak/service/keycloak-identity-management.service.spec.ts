@@ -90,13 +90,13 @@ describe('KeycloakIdentityManagementService', () => {
 			expect(ret).not.toBeNull();
 			expect(ret).toBe(accountId);
 			expect(createUserMock).toBeCalledWith(
-				expect.objectContaining({ username: testAccount.username, email: testAccount.email }),
+				expect.objectContaining({ username: testAccount.username, email: testAccount.email })
 			);
 			expect(resetPasswordMock).toBeCalledWith(
 				expect.objectContaining({
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					credential: expect.objectContaining({ value: testAccountPassword }),
-				}),
+				})
 			);
 		});
 
@@ -145,7 +145,7 @@ describe('KeycloakIdentityManagementService', () => {
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
-				}),
+				})
 			);
 		});
 
@@ -161,7 +161,7 @@ describe('KeycloakIdentityManagementService', () => {
 			expect(ret).toEqual(
 				expect.objectContaining<IdmAccount>({
 					id: '',
-				}),
+				})
 			);
 		});
 
@@ -176,7 +176,7 @@ describe('KeycloakIdentityManagementService', () => {
 				date.getUTCHours(),
 				date.getUTCMinutes(),
 				date.getUTCSeconds(),
-				date.getUTCMilliseconds(),
+				date.getUTCMilliseconds()
 			);
 
 			kcUsersMock.findOne.mockResolvedValueOnce({
@@ -191,7 +191,7 @@ describe('KeycloakIdentityManagementService', () => {
 				expect.objectContaining<IdmAccount>({
 					id: ret.id,
 					createdDate: date,
-				}),
+				})
 			);
 		});
 
@@ -215,7 +215,7 @@ describe('KeycloakIdentityManagementService', () => {
 					attDbcAccountId: 'dbcAccountId',
 					attDbcUserId: 'dbcUserId',
 					attDbcSystemId: 'dbcSystemId',
-				}),
+				})
 			);
 		});
 
@@ -239,7 +239,7 @@ describe('KeycloakIdentityManagementService', () => {
 					attDbcAccountId: 'dbcAccountId',
 					attDbcUserId: 'dbcUserId',
 					attDbcSystemId: 'dbcSystemId',
-				}),
+				})
 			);
 		});
 
@@ -267,7 +267,7 @@ describe('KeycloakIdentityManagementService', () => {
 						firstName: mockedAccount1.firstName,
 						lastName: mockedAccount1.lastName,
 					}),
-				]),
+				])
 			);
 		});
 		it('should return undefined if no account found', async () => {
@@ -291,7 +291,7 @@ describe('KeycloakIdentityManagementService', () => {
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
-				}),
+				})
 			);
 		});
 		it('should throw if no account found', async () => {
@@ -317,7 +317,7 @@ describe('KeycloakIdentityManagementService', () => {
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
-				}),
+				})
 			);
 		});
 		it('should throw if no account found', async () => {
@@ -345,7 +345,7 @@ describe('KeycloakIdentityManagementService', () => {
 					email: mockedAccount1.email,
 					firstName: mockedAccount1.firstName,
 					lastName: mockedAccount1.lastName,
-				}),
+				})
 			);
 			expect(ret).toContainEqual(
 				expect.objectContaining({
@@ -354,7 +354,7 @@ describe('KeycloakIdentityManagementService', () => {
 					email: mockedAccount2.email,
 					firstName: mockedAccount2.firstName,
 					lastName: mockedAccount2.lastName,
-				}),
+				})
 			);
 		});
 
@@ -378,7 +378,7 @@ describe('KeycloakIdentityManagementService', () => {
 			expect(ret).toBe(accountId);
 			expect(updateUserMock).toBeCalledWith(
 				expect.objectContaining({ id: accountId }),
-				expect.objectContaining({ firstName: testAccount.firstName, email: testAccount.email }),
+				expect.objectContaining({ firstName: testAccount.firstName, email: testAccount.email })
 			);
 		});
 
@@ -394,7 +394,7 @@ describe('KeycloakIdentityManagementService', () => {
 			expect(ret).toBe(accountId);
 			expect(updateUserMock).toBeCalledWith(
 				expect.objectContaining({ id: accountId }),
-				expect.objectContaining({ enabled: true }),
+				expect.objectContaining({ enabled: true })
 			);
 		});
 
@@ -442,7 +442,7 @@ describe('KeycloakIdentityManagementService', () => {
 				expect.objectContaining({
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					credential: expect.objectContaining({ value: testAccountPassword }),
-				}),
+				})
 			);
 		});
 
@@ -509,7 +509,7 @@ describe('KeycloakIdentityManagementService', () => {
 				await idm.setUserAttribute(mockedAccount1.id, attributeName, attributeValue);
 				expect(kcUsersMock.update).toBeCalledWith(
 					expect.objectContaining({ id: mockedAccount1.id }),
-					expect.objectContaining({ attributes: { [attributeName]: attributeValue } }),
+					expect.objectContaining({ attributes: { [attributeName]: attributeValue } })
 				);
 			});
 
@@ -519,7 +519,7 @@ describe('KeycloakIdentityManagementService', () => {
 				await idm.setUserAttribute(mockedAccount1.id, attributeName, attributeValue);
 				expect(kcUsersMock.update).toBeCalledWith(
 					expect.objectContaining({ id: mockedAccount1.id }),
-					expect.objectContaining({ attributes: { [attributeName]: attributeValue } }),
+					expect.objectContaining({ attributes: { [attributeName]: attributeValue } })
 				);
 			});
 		});
@@ -532,7 +532,7 @@ describe('KeycloakIdentityManagementService', () => {
 			it('should throw an error', async () => {
 				setup();
 				await expect(idm.setUserAttribute('userId', 'attributeName', 'attributeValue')).rejects.toThrow(
-					EntityNotFoundError,
+					EntityNotFoundError
 				);
 			});
 		});

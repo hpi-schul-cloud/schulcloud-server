@@ -16,7 +16,7 @@ export class CourseUc {
 		private readonly courseRepo: CourseRepo,
 		private readonly courseService: CourseService,
 		private readonly authService: AuthorizationService,
-		private readonly roleService: RoleService,
+		private readonly roleService: RoleService
 	) {}
 
 	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {

@@ -61,7 +61,7 @@ export class LoginController {
 		@CurrentUser() user: OauthCurrentUser,
 		// Body is not used, but validated and used in the strategy implementation
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		@Body() _: Oauth2AuthorizationBodyParams,
+		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise<OauthLoginResponse> {
 		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
 

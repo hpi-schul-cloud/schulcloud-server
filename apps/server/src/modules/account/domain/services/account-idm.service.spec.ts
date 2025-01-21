@@ -297,14 +297,14 @@ describe('AccountIdmService', () => {
 		describe('when validate password', () => {
 			const setup = (acceptPassword: boolean) => {
 				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValue(
-					acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined,
+					acceptPassword ? '{ "alg": "HS256", "typ": "JWT" }' : undefined
 				);
 			};
 			it('should validate password by checking JWT', async () => {
 				setup(true);
 				const ret = await accountIdmService.validatePassword(
 					{ username: 'username' } as unknown as Account,
-					'password',
+					'password'
 				);
 				expect(ret).toBe(true);
 			});
@@ -312,7 +312,7 @@ describe('AccountIdmService', () => {
 				setup(false);
 				const ret = await accountIdmService.validatePassword(
 					{ username: 'username' } as unknown as Account,
-					'password',
+					'password'
 				);
 				expect(ret).toBe(false);
 			});

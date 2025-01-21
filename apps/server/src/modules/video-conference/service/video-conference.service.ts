@@ -37,7 +37,7 @@ export class VideoConferenceService {
 		private readonly schoolService: LegacySchoolService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly userService: UserService,
-		private readonly videoConferenceRepo: VideoConferenceRepo,
+		private readonly videoConferenceRepo: VideoConferenceRepo
 	) {}
 
 	get hostUrl(): string {
@@ -58,7 +58,7 @@ export class VideoConferenceService {
 	public async hasExpertRole(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
-		scopeId: string,
+		scopeId: string
 	): Promise<boolean> {
 		let isExpert = false;
 		switch (conferenceScope) {
@@ -73,7 +73,7 @@ export class VideoConferenceService {
 			case VideoConferenceScope.EVENT: {
 				const team: TeamEntity = await this.teamsRepo.findById(scopeId);
 				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
-					(userInTeam: TeamUserEntity) => userInTeam.user.id === userId,
+					(userInTeam: TeamUserEntity) => userInTeam.user.id === userId
 				);
 
 				if (teamUser === undefined) {
@@ -200,7 +200,7 @@ export class VideoConferenceService {
 		if (!this.isVideoConferenceFeatureEnabled) {
 			throw new ForbiddenException(
 				ErrorStatus.SCHOOL_FEATURE_DISABLED,
-				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled',
+				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'
 			);
 		}
 
@@ -264,7 +264,7 @@ export class VideoConferenceService {
 	public async getUserRoleAndGuestStatusByUserIdForBbb(
 		userId: string,
 		scopeId: EntityId,
-		scope: VideoConferenceScope,
+		scope: VideoConferenceScope
 	): Promise<{ role: BBBRole; isGuest: boolean }> {
 		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, scopeId, scope);
 
@@ -277,7 +277,7 @@ export class VideoConferenceService {
 
 	public async findVideoConferenceByScopeIdAndScope(
 		scopeId: EntityId,
-		scope: VideoConferenceScope,
+		scope: VideoConferenceScope
 	): Promise<VideoConferenceDO> {
 		const videoConference: VideoConferenceDO = await this.videoConferenceRepo.findByScopeAndScopeId(scopeId, scope);
 
@@ -287,7 +287,7 @@ export class VideoConferenceService {
 	public async createOrUpdateVideoConferenceForScopeWithOptions(
 		scopeId: EntityId,
 		scope: VideoConferenceScope,
-		options: VideoConferenceOptions,
+		options: VideoConferenceOptions
 	): Promise<VideoConferenceDO> {
 		let vcDo: VideoConferenceDO;
 

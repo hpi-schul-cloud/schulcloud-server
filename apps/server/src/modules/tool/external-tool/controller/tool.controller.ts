@@ -59,7 +59,7 @@ export class ToolController {
 		private readonly externalToolUc: ExternalToolUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly logger: LegacyLogger,
-		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	@Post()
@@ -72,7 +72,7 @@ export class ToolController {
 	async createExternalTool(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolParams: ExternalToolCreateParams,
+		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 
@@ -94,14 +94,14 @@ export class ToolController {
 	async importExternalTools(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() externalToolBulkParams: ExternalToolBulkCreateParams,
+		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
 	): Promise<ExternalToolImportResultListResponse> {
 		const externalTools: ExternalToolCreate[] = this.externalToolDOMapper.mapBulkCreateRequest(externalToolBulkParams);
 
 		const results: ExternalToolImportResult[] = await this.externalToolUc.importExternalTools(
 			currentUser.userId,
 			externalTools,
-			jwt,
+			jwt
 		);
 
 		const response: ExternalToolImportResultListResponse = ExternalToolResponseMapper.mapToImportResponse(results);
@@ -118,7 +118,7 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() filterQuery: ExternalToolSearchParams,
 		@Query() pagination: PaginationParams,
-		@Query() sortingQuery: SortExternalToolParams,
+		@Query() sortingQuery: SortExternalToolParams
 	): Promise<ExternalToolSearchListResponse> {
 		const options: IFindOptions<ExternalTool> = { pagination };
 		options.order = this.externalToolDOMapper.mapSortingQueryToDomain(sortingQuery);
@@ -128,13 +128,13 @@ export class ToolController {
 		const tools: Page<ExternalTool> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
 		const dtoList: ExternalToolResponse[] = tools.data.map(
-			(tool: ExternalTool): ExternalToolResponse => ExternalToolResponseMapper.mapToExternalToolResponse(tool),
+			(tool: ExternalTool): ExternalToolResponse => ExternalToolResponseMapper.mapToExternalToolResponse(tool)
 		);
 		const response: ExternalToolSearchListResponse = new ExternalToolSearchListResponse(
 			dtoList,
 			tools.total,
 			pagination.skip,
-			pagination.limit,
+			pagination.limit
 		);
 
 		return response;
@@ -144,11 +144,11 @@ export class ToolController {
 	@ApiOperation({ summary: 'Returns an ExternalTool for the given id' })
 	async getExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ExternalToolIdParams,
+		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(
 			currentUser.userId,
-			params.externalToolId,
+			params.externalToolId
 		);
 		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
 
@@ -165,14 +165,14 @@ export class ToolController {
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
-		@Body() externalToolParams: ExternalToolUpdateParams,
+		@Body() externalToolParams: ExternalToolUpdateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalToolUpdate = this.externalToolDOMapper.mapUpdateRequest(externalToolParams);
 		const updated: ExternalTool = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.externalToolId,
 			externalTool,
-			jwt,
+			jwt
 		);
 		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
@@ -188,15 +188,15 @@ export class ToolController {
 	async deleteExternalTool(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ExternalToolIdParams,
+		@Param() params: ExternalToolIdParams
 	): Promise<void> {
 		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(
 			currentUser.userId,
 			params.externalToolId,
-			jwt,
+			jwt
 		);
 		this.logger.debug(
-			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`,
+			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`
 		);
 
 		return promise;
@@ -210,7 +210,7 @@ export class ToolController {
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise<void> {
 		const externalToolLogo: ExternalToolLogo = await this.externalToolLogoService.getExternalToolBinaryLogo(
-			params.externalToolId,
+			params.externalToolId
 		);
 		res.setHeader('Content-Type', externalToolLogo.contentType);
 		res.setHeader('Cache-Control', 'must-revalidate');
@@ -226,11 +226,11 @@ export class ToolController {
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getMetaDataForExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ExternalToolIdParams,
+		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolMetadataResponse> {
 		const externalToolMetadata: ExternalToolMetadata = await this.externalToolUc.getMetadataForExternalTool(
 			currentUser.userId,
-			params.externalToolId,
+			params.externalToolId
 		);
 
 		const mapped: ExternalToolMetadataResponse =
@@ -246,7 +246,7 @@ export class ToolController {
 	async getDatasheet(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
-		@Res({ passthrough: true }) res: Response,
+		@Res({ passthrough: true }) res: Response
 	): Promise<StreamableFile> {
 		const datasheetBuffer: Buffer = await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
 

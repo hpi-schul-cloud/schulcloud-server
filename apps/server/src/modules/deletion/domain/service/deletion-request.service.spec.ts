@@ -67,7 +67,7 @@ describe(DeletionRequestService.name, () => {
 						deleteAfter: expect.any(Date),
 						targetRefId,
 						status: StatusModel.REGISTERED,
-					}),
+					})
 				);
 			});
 		});

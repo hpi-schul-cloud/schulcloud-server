@@ -10,7 +10,7 @@ export class UserImportPopulateFailureLoggableException extends BusinessError im
 				title: 'Fetching import user failed.',
 				defaultMessage: 'While fetching import users an error occurred.',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

@@ -15,14 +15,14 @@ export class CommonToolDeleteService {
 		private readonly externalToolRepo: ExternalToolRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
-		private readonly eventBus: EventBus,
+		private readonly eventBus: EventBus
 	) {}
 
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
 		await this.externalToolRepo.deleteById(externalTool.id);
 
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.findByExternalToolId(
-			externalTool.id,
+			externalTool.id
 		);
 
 		const promises: Promise<void>[] = schoolExternalTools.map(async (schoolExternalTool) => {
@@ -40,7 +40,7 @@ export class CommonToolDeleteService {
 
 	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.findById(
-			contextExternalTool.schoolToolRef.schoolToolId,
+			contextExternalTool.schoolToolRef.schoolToolId
 		);
 
 		const externalTool: ExternalTool = await this.externalToolRepo.findById(schoolExternalTool.toolId);
@@ -58,7 +58,7 @@ export class CommonToolDeleteService {
 
 	private async deleteSchoolExternalToolInternal(
 		externalTool: ExternalTool,
-		schoolExternalTool: SchoolExternalTool,
+		schoolExternalTool: SchoolExternalTool
 	): Promise<void> {
 		await this.schoolExternalToolRepo.deleteById(schoolExternalTool.id);
 
@@ -75,7 +75,7 @@ export class CommonToolDeleteService {
 
 	private async deleteContextExternalToolInternal(
 		externalTool: ExternalTool,
-		contextExternalTool: ContextExternalTool,
+		contextExternalTool: ContextExternalTool
 	): Promise<void> {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 
@@ -84,7 +84,7 @@ export class CommonToolDeleteService {
 				id: contextExternalTool.id,
 				title: contextExternalTool.displayName ?? externalTool.name,
 				description: externalTool.description,
-			}),
+			})
 		);
 	}
 }

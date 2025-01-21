@@ -10,7 +10,7 @@ export class OauthConfigMissingLoggableException extends BusinessError implement
 				title: 'Oauth config missing',
 				defaultMessage: 'Requested system has no oauth configured',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

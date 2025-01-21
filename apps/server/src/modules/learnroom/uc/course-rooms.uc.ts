@@ -16,7 +16,7 @@ export class CourseRoomsUc {
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: CourseRoomsAuthorisationService,
-		private readonly roomsService: CourseRoomsService,
+		private readonly roomsService: CourseRoomsService
 	) {}
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
@@ -36,7 +36,7 @@ export class CourseRoomsUc {
 		roomId: EntityId,
 		elementId: EntityId,
 		userId: EntityId,
-		visibility: boolean,
+		visibility: boolean
 	): Promise<void> {
 		const user = await this.userRepo.findById(userId);
 		const course = await this.courseRepo.findOne(roomId, userId);

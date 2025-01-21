@@ -35,7 +35,7 @@ export class EtherpadClientAdapter {
 		private readonly groupApi: GroupApi,
 		private readonly sessionApi: SessionApi,
 		private readonly authorApi: AuthorApi,
-		private readonly padApi: PadApi,
+		private readonly padApi: PadApi
 	) {}
 
 	public async getOrCreateAuthorId(userId: EntityId, username?: string): Promise<AuthorId> {
@@ -49,7 +49,7 @@ export class EtherpadClientAdapter {
 
 	private async tryCreateAuthor(
 		userId: string,
-		username?: string,
+		username?: string
 	): Promise<AxiosResponse<CreateAuthorUsingGET200Response>> {
 		try {
 			const response = await this.authorApi.createAuthorIfNotExistsForUsingGET(userId, username);
@@ -88,7 +88,7 @@ export class EtherpadClientAdapter {
 		authorId: AuthorId,
 		parentId: EntityId,
 		sessionCookieExpire: Date,
-		durationThreshold: number,
+		durationThreshold: number
 	): Promise<SessionId> {
 		const session = await this.getSessionByGroupAndAuthor(groupId, authorId);
 
@@ -115,7 +115,7 @@ export class EtherpadClientAdapter {
 	private async tryCreateSession(
 		groupId: string,
 		authorId: string,
-		sessionCookieExpire: Date,
+		sessionCookieExpire: Date
 	): Promise<AxiosResponse<CreateSessionUsingGET200Response>> {
 		try {
 			const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000);
@@ -162,7 +162,7 @@ export class EtherpadClientAdapter {
 	}
 
 	private async tryListSessionsOfAuthor(
-		authorId: AuthorId,
+		authorId: AuthorId
 	): Promise<AxiosResponse<ListSessionsOfGroupUsingGET200Response>> {
 		try {
 			const response = await this.authorApi.listSessionsOfAuthorUsingGET(authorId);
@@ -209,7 +209,7 @@ export class EtherpadClientAdapter {
 
 	private async tryCreateEtherpad(
 		groupId: string,
-		parentId: string,
+		parentId: string
 	): Promise<AxiosResponse<DeleteGroupUsingGET200Response>> {
 		try {
 			const response = await this.groupApi.createGroupPadUsingGET(groupId, parentId);
@@ -333,7 +333,7 @@ export class EtherpadClientAdapter {
 
 	private handleEtherpadResponse<T extends EtherpadResponse>(
 		axiosResponse: AxiosResponse<T>,
-		payload: EtherpadParams,
+		payload: EtherpadParams
 	): T['data'] {
 		const response = axiosResponse.data;
 

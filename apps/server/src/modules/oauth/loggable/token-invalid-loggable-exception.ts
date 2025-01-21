@@ -10,7 +10,7 @@ export class TokenInvalidLoggableException extends BusinessError implements Logg
 				title: 'token invalid',
 				defaultMessage: 'Failed to validate token',
 			},
-			HttpStatus.UNAUTHORIZED,
+			HttpStatus.UNAUTHORIZED
 		);
 	}
 

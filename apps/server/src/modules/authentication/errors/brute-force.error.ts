@@ -10,7 +10,7 @@ export class BruteForceError extends BusinessError {
 			HttpStatus.TOO_MANY_REQUESTS,
 			{
 				timeToWait,
-			},
+			}
 		);
 		this.timeToWait = timeToWait;
 	}

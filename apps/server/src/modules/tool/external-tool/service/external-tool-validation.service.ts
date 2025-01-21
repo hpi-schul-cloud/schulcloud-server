@@ -14,7 +14,7 @@ export class ExternalToolValidationService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly configService: ConfigService<ToolConfig, true>,
+		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
 	async validateCreate(externalTool: ExternalTool): Promise<void> {
@@ -45,7 +45,7 @@ export class ExternalToolValidationService {
 			externalTool.config.type !== loadedTool.config.type
 		) {
 			throw new ValidationError(
-				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`,
+				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
 
@@ -56,7 +56,7 @@ export class ExternalToolValidationService {
 			externalTool.config.clientId !== loadedTool.config.clientId
 		) {
 			throw new ValidationError(
-				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`,
+				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
 			);
 		}
 
@@ -71,13 +71,13 @@ export class ExternalToolValidationService {
 		if (ExternalTool.isOauth2Config(externalTool.config)) {
 			if (!externalTool.config.clientSecret) {
 				throw new ValidationError(
-					`tool_clientSecret_missing: The Client Secret of the tool ${externalTool.name || ''} is missing.`,
+					`tool_clientSecret_missing: The Client Secret of the tool ${externalTool.name || ''} is missing.`
 				);
 			}
 
 			if (!(await this.isClientIdUnique(externalTool))) {
 				throw new ValidationError(
-					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`,
+					`tool_clientId_duplicate: The Client Id of the tool ${externalTool.name || ''} is already used.`
 				);
 			}
 		}
@@ -87,7 +87,7 @@ export class ExternalToolValidationService {
 		if (ExternalTool.isLti11Config(externalTool.config)) {
 			if (!externalTool.config.secret) {
 				throw new ValidationError(
-					`tool_secret_missing: The secret of the LTI tool ${externalTool.name || ''} is missing.`,
+					`tool_secret_missing: The secret of the LTI tool ${externalTool.name || ''} is missing.`
 				);
 			}
 		}
@@ -104,7 +104,7 @@ export class ExternalToolValidationService {
 	private async validatePreferredTool(toolToValidate: ExternalTool): Promise<void> {
 		if (!toolToValidate.iconName) {
 			throw new ValidationError(
-				`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolToValidate.name} is missing.`,
+				`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolToValidate.name} is missing.`
 			);
 		}
 
@@ -113,7 +113,7 @@ export class ExternalToolValidationService {
 		});
 
 		const isToolToValidateAlreadyPreferred: boolean = preferredTools.data.some(
-			(existingPreferredTool: ExternalTool) => existingPreferredTool.id === toolToValidate.id,
+			(existingPreferredTool: ExternalTool) => existingPreferredTool.id === toolToValidate.id
 		);
 		if (isToolToValidateAlreadyPreferred) {
 			return;
@@ -121,7 +121,7 @@ export class ExternalToolValidationService {
 
 		if (preferredTools.total >= this.configService.get<number>('CTL_TOOLS__PREFERRED_TOOLS_LIMIT')) {
 			throw new ValidationError(
-				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`,
+				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 			);
 		}
 	}

@@ -66,7 +66,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly userRepo: UserRepo,
 		private readonly accountRepo: AccountRepo,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
+		private readonly orm: MikroORM
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -122,7 +122,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		updateData: UpdateMyAccount,
 		user: User,
 		account: Account,
-		accountSave: AccountSave,
+		accountSave: AccountSave
 	): Promise<boolean> {
 		if (updateData.email && user.email !== updateData.email) {
 			const newMail = updateData.email.toLowerCase();

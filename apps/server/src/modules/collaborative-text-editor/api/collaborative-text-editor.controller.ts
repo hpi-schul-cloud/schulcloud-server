@@ -23,11 +23,11 @@ export class CollaborativeTextEditorController {
 	async getOrCreateCollaborativeTextEditorForParent(
 		@Param() getCollaborativeTextEditorForParentParams: GetCollaborativeTextEditorForParentParams,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Res({ passthrough: true }) res: Response,
+		@Res({ passthrough: true }) res: Response
 	): Promise<CollaborativeTextEditorResponse> {
 		const textEditor = await this.collaborativeTextEditorUc.getOrCreateCollaborativeTextEditorForParent(
 			currentUser.userId,
-			getCollaborativeTextEditorForParentParams,
+			getCollaborativeTextEditorForParentParams
 		);
 
 		res.cookie('sessionID', textEditor.sessionId, {

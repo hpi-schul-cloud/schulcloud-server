@@ -9,10 +9,7 @@ import { BoardSkeletonDtoMapper } from './mapper';
 
 @Injectable()
 export class BoardClientAdapter {
-	constructor(
-		private readonly boardApi: BoardApi,
-		@Inject(REQUEST) private request: Request,
-	) {}
+	constructor(private readonly boardApi: BoardApi, @Inject(REQUEST) private request: Request) {}
 
 	public async getBoardSkeletonById(boardId: string): Promise<BoardSkeletonDto> {
 		const options = this.createOptionParams();

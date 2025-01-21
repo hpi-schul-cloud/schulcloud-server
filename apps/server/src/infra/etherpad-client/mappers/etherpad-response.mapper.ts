@@ -60,13 +60,13 @@ export class EtherpadResponseMapper {
 	static mapResponseToException<T extends EtherpadResponse>(
 		type: EtherpadErrorType,
 		payload: EtherpadParams,
-		response: T | Error,
+		response: T | Error
 	): EtherpadErrorLoggableException {
 		return new EtherpadErrorLoggableException(
 			type,
 			payload,
 			response.message,
-			ErrorUtils.createHttpExceptionOptions(response.message),
+			ErrorUtils.createHttpExceptionOptions(response.message)
 		);
 	}
 

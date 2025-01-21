@@ -318,7 +318,7 @@ describe(ContextExternalToolService.name, () => {
 
 				expect(commonToolService.isContextRestricted).toHaveBeenCalledWith(
 					externalTool,
-					contextExternalTool.contextRef.type,
+					contextExternalTool.contextRef.type
 				);
 			});
 
@@ -387,7 +387,7 @@ describe(ContextExternalToolService.name, () => {
 				const { contextExternalTool, externalTool } = setup();
 
 				await expect(service.checkContextRestrictions(contextExternalTool)).rejects.toThrow(
-					new RestrictedContextMismatchLoggableException(externalTool.name, contextExternalTool.contextRef.type),
+					new RestrictedContextMismatchLoggableException(externalTool.name, contextExternalTool.contextRef.type)
 				);
 			});
 		});
@@ -456,7 +456,7 @@ describe(ContextExternalToolService.name, () => {
 				let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData = await service.copyContextExternalTool(
 					contextExternalTool,
 					contextCopyId,
-					schoolExternalTool.schoolId,
+					schoolExternalTool.schoolId
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
@@ -478,7 +478,7 @@ describe(ContextExternalToolService.name, () => {
 								value: contextExternalTool.parameters[1].value,
 							},
 						],
-					}),
+					})
 				);
 			});
 
@@ -488,7 +488,7 @@ describe(ContextExternalToolService.name, () => {
 				let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData = await service.copyContextExternalTool(
 					contextExternalTool,
 					contextCopyId,
-					schoolExternalTool.schoolId,
+					schoolExternalTool.schoolId
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
@@ -504,7 +504,7 @@ describe(ContextExternalToolService.name, () => {
 				await service.copyContextExternalTool(contextExternalTool, contextCopyId, schoolExternalTool.schoolId);
 
 				expect(contextExternalToolRepo.save).toHaveBeenCalledWith(
-					new ContextExternalTool({ ...contextExternalTool.getProps(), id: expect.any(String) }),
+					new ContextExternalTool({ ...contextExternalTool.getProps(), id: expect.any(String) })
 				);
 			});
 		});
@@ -579,7 +579,7 @@ describe(ContextExternalToolService.name, () => {
 							...contextExternalTool.getProps(),
 							schoolToolRef: expectedSchoolToolRef,
 							id: expect.any(String),
-						}),
+						})
 					);
 				});
 			});

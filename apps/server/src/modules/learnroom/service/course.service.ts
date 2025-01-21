@@ -25,7 +25,7 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		private readonly repo: LegacyCourseRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(CourseService.name);
 	}
@@ -52,8 +52,8 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 				'Deleting data from Courses',
 				DomainName.COURSE,
 				userId,
-				StatusModel.PENDING,
-			),
+				StatusModel.PENDING
+			)
 		);
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
@@ -72,8 +72,8 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 				userId,
 				StatusModel.FINISHED,
 				0,
-				count,
-			),
+				count
+			)
 		);
 
 		return result;

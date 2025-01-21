@@ -10,7 +10,7 @@ export class ExternalToolLogoWrongFileTypeLoggableException extends BusinessErro
 				title: 'External tool logo wrong file type.',
 				defaultMessage: 'External tool logo has the wrong file type. Only JPEG and PNG files are supported.',
 			},
-			HttpStatus.BAD_REQUEST,
+			HttpStatus.BAD_REQUEST
 		);
 	}
 

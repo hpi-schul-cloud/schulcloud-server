@@ -21,7 +21,7 @@ export class AdminApiStudentsController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authorized.' })
 	async searchStudents(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() params: UsersSearchQueryParams,
+		@Query() params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
 		return this.uc.findUsersByParams(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
 	}
@@ -34,7 +34,7 @@ export class AdminApiStudentsController {
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Student not found.' })
 	async findStudentById(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: UserByIdParams,
+		@Param() params: UserByIdParams
 	): Promise<UserResponse> {
 		return this.uc.findUserById(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
 	}

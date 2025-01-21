@@ -87,13 +87,13 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
 		const mongoEntitiesFacet = (await this.em.aggregate(
 			GroupEntity,
-			scope.build(),
+			scope.build()
 		)) as ScopeAggregateResult<GroupEntity>;
 
 		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
 
 		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: EntityDictionary<GroupEntity>) =>
-			this.em.map(GroupEntity, entity),
+			this.em.map(GroupEntity, entity)
 		);
 
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));

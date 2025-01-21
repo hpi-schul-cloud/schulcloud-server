@@ -12,7 +12,7 @@ import { ContextExternalTool } from '../domain';
 export class ContextExternalToolAuthorizableService implements AuthorizationLoaderService {
 	constructor(
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
-		injectionService: AuthorizationInjectionService,
+		injectionService: AuthorizationInjectionService
 	) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.ContextExternalToolEntity, this);
 	}

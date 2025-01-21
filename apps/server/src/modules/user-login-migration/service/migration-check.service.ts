@@ -10,13 +10,13 @@ export class MigrationCheckService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
+		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
 	public async shouldUserMigrate(
 		externalUserId: string,
 		systemId: EntityId,
-		officialSchoolNumber: string,
+		officialSchoolNumber: string
 	): Promise<boolean> {
 		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 

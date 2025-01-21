@@ -18,7 +18,7 @@ export class CollaborativeStorageService {
 		private teamsMapper: TeamMapper,
 		private teamsRepo: TeamsRepo,
 		private authService: AuthorizationService,
-		private logger: LegacyLogger,
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageService.name);
 	}
@@ -44,17 +44,17 @@ export class CollaborativeStorageService {
 		currentUserId: string,
 		teamId: string,
 		roleId: string,
-		teamPermissions: TeamPermissionsDto,
+		teamPermissions: TeamPermissionsDto
 	): Promise<void> {
 		this.authService.checkPermission(
 			await this.authService.getUserWithPermissions(currentUserId),
 			await this.teamsRepo.findById(teamId, true),
-			AuthorizationContextBuilder.write([Permission.CHANGE_TEAM_ROLES]),
+			AuthorizationContextBuilder.write([Permission.CHANGE_TEAM_ROLES])
 		);
 		return this.adapter.updateTeamPermissionsForRole(
 			await this.findTeamById(teamId, true),
 			await this.roleService.findById(roleId),
-			teamPermissions,
+			teamPermissions
 		);
 	}
 

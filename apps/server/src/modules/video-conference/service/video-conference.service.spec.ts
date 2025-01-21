@@ -461,7 +461,7 @@ describe(VideoConferenceService.name, () => {
 				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING]),
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
 				);
 			});
 
@@ -596,7 +596,7 @@ describe(VideoConferenceService.name, () => {
 				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING]),
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
 				);
 			});
 
@@ -637,13 +637,13 @@ describe(VideoConferenceService.name, () => {
 					1,
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.START_MEETING]),
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
 				);
 				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(
 					2,
 					user,
 					entity,
-					AuthorizationContextBuilder.read([Permission.JOIN_MEETING]),
+					AuthorizationContextBuilder.read([Permission.JOIN_MEETING])
 				);
 			});
 
@@ -1288,7 +1288,7 @@ describe(VideoConferenceService.name, () => {
 
 				expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(
 					videoConference.target,
-					videoConference.targetModel,
+					videoConference.targetModel
 				);
 			});
 
@@ -1297,7 +1297,7 @@ describe(VideoConferenceService.name, () => {
 
 				const result: VideoConferenceDO = await service.findVideoConferenceByScopeIdAndScope(
 					videoConference.target,
-					videoConference.targetModel,
+					videoConference.targetModel
 				);
 
 				expect(result).toBe(videoConference);
@@ -1373,7 +1373,7 @@ describe(VideoConferenceService.name, () => {
 				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
 					scope.id,
 					scope.scope,
-					newOptions,
+					newOptions
 				);
 
 				expect(result).toEqual({ ...videoConference, options: newOptions });
@@ -1405,7 +1405,7 @@ describe(VideoConferenceService.name, () => {
 				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
 					scope.id,
 					scope.scope,
-					options,
+					options
 				);
 
 				expect(result).toEqual(videoConference);

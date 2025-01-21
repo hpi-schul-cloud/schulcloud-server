@@ -59,7 +59,7 @@ describe('AccountService Integration', () => {
 				attDbcSystemId: testAccount.systemId,
 				attDbcAccountId: refId,
 			},
-			testAccount.password,
+			testAccount.password
 		);
 		return idmId;
 	};
@@ -151,7 +151,7 @@ describe('AccountService Integration', () => {
 				attDbcAccountId: createdAccount.id,
 				attDbcUserId: createdAccount.userId,
 				attDbcSystemId: createdAccount.systemId,
-			}),
+			})
 		);
 	};
 
@@ -162,7 +162,7 @@ describe('AccountService Integration', () => {
 				username: createdAccount.username,
 				userId: new ObjectId(createdAccount.userId),
 				systemId: new ObjectId(createdAccount.systemId),
-			}),
+			})
 		);
 	};
 
@@ -235,12 +235,12 @@ describe('AccountService Integration', () => {
 				expect(foundAccount).toEqual(
 					expect.objectContaining<Partial<IdmAccount>>({
 						username: newUsername,
-					}),
+					})
 				);
 				expect(foundDbAccount).toEqual(
 					expect.objectContaining<Partial<AccountEntity>>({
 						username: newUsername,
-					}),
+					})
 				);
 			});
 		});

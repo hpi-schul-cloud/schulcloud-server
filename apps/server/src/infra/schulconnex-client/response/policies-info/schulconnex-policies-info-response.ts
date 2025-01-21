@@ -5,7 +5,7 @@ import { SchulconnexPoliciesInfoErrorResponse } from './schulconnex-policies-inf
 import { SchulconnexPoliciesInfoLicenseResponse } from './schulconnex-policies-info-license-response';
 
 const policiesInfoDiscriminator = (
-	obj: unknown,
+	obj: unknown
 ): ClassConstructor<SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse> =>
 	typeof obj === 'object' && obj !== null && 'target' in obj && 'permission' in obj
 		? SchulconnexPoliciesInfoLicenseResponse

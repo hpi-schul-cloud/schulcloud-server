@@ -24,7 +24,7 @@ export class HydraSsoService {
 		private readonly ltiRepo: LtiToolRepo,
 		private readonly httpService: HttpService,
 		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
-		private readonly logger: LegacyLogger,
+		private readonly logger: LegacyLogger
 	) {}
 
 	private readonly HOST: string = Configuration.get('HOST') as string;

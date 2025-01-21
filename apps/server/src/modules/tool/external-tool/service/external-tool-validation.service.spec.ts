@@ -133,8 +133,8 @@ describe(ExternalToolValidationService.name, () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_clientId_duplicate: The Client Id of the tool ${externalOauthTool.name} is already used.`,
-						),
+							`tool_clientId_duplicate: The Client Id of the tool ${externalOauthTool.name} is already used.`
+						)
 					);
 				});
 			});
@@ -154,8 +154,8 @@ describe(ExternalToolValidationService.name, () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_clientSecret_missing: The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`,
-						),
+							`tool_clientSecret_missing: The Client Secret of the tool ${externalOauthToolDOWithoutSecret.name} is missing.`
+						)
 					);
 				});
 			});
@@ -179,8 +179,8 @@ describe(ExternalToolValidationService.name, () => {
 						new ValidationError(
 							`tool_secret_missing: The secret of the LTI tool ${
 								externalLti11ToolDOWithoutSecret.name || ''
-							} is missing.`,
-						),
+							} is missing.`
+						)
 					);
 				});
 			});
@@ -242,7 +242,7 @@ describe(ExternalToolValidationService.name, () => {
 					configService.get.mockReturnValue(10);
 
 					const expectedError = new ValidationError(
-						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`,
+						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`
 					);
 
 					return {
@@ -273,7 +273,7 @@ describe(ExternalToolValidationService.name, () => {
 					configService.get.mockReturnValue(10);
 
 					const expectedError = new ValidationError(
-						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`,
+						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`
 					);
 
 					return {
@@ -300,14 +300,14 @@ describe(ExternalToolValidationService.name, () => {
 
 					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>(
 						externalToolFactory.buildList(3),
-						3,
+						3
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
 					configService.get.mockReturnValue(3);
 
 					const expectedError = new ValidationError(
-						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`,
+						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 					);
 
 					return {
@@ -334,14 +334,14 @@ describe(ExternalToolValidationService.name, () => {
 
 					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>(
 						externalToolFactory.buildList(5),
-						3,
+						3
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
 					configService.get.mockReturnValue(3);
 
 					const expectedError = new ValidationError(
-						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`,
+						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 					);
 
 					return {
@@ -402,7 +402,7 @@ describe(ExternalToolValidationService.name, () => {
 				const func = () => service.validateUpdate('notMatchToolId', externalOauthTool);
 
 				await expect(func).rejects.toThrow(
-					new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`),
+					new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`)
 				);
 			});
 
@@ -440,8 +440,8 @@ describe(ExternalToolValidationService.name, () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_type_immutable: The Config Type of the tool ${newExternalTool.name} is immutable.`,
-						),
+							`tool_type_immutable: The Config Type of the tool ${newExternalTool.name} is immutable.`
+						)
 					);
 				});
 			});
@@ -488,8 +488,8 @@ describe(ExternalToolValidationService.name, () => {
 
 					await expect(result).rejects.toThrow(
 						new ValidationError(
-							`tool_clientId_immutable: The Client Id of the tool ${externalOauthTool.name} is immutable.`,
-						),
+							`tool_clientId_immutable: The Client Id of the tool ${externalOauthTool.name} is immutable.`
+						)
 					);
 				});
 			});
@@ -587,7 +587,7 @@ describe(ExternalToolValidationService.name, () => {
 						configService.get.mockReturnValue(10);
 
 						const expectedError = new ValidationError(
-							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`,
+							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`
 						);
 
 						return {
@@ -625,7 +625,7 @@ describe(ExternalToolValidationService.name, () => {
 						configService.get.mockReturnValue(10);
 
 						const expectedError = new ValidationError(
-							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`,
+							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`
 						);
 
 						return {
@@ -662,14 +662,14 @@ describe(ExternalToolValidationService.name, () => {
 								isPreferred: true,
 								iconName: 'mdiFlag',
 							}),
-							3,
+							3
 						);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
 						configService.get.mockReturnValue(3);
 
 						const expectedError = new ValidationError(
-							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`,
+							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 						);
 
 						return {
@@ -707,14 +707,14 @@ describe(ExternalToolValidationService.name, () => {
 								isPreferred: true,
 								iconName: 'mdiFlag',
 							}),
-							5,
+							5
 						);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
 						configService.get.mockReturnValue(3);
 
 						const expectedError = new ValidationError(
-							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`,
+							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 						);
 
 						return {
@@ -757,7 +757,7 @@ describe(ExternalToolValidationService.name, () => {
 
 					const existingTools: Page<ExternalTool> = new Page<ExternalTool>(
 						[existingToolToUpdate, ...existingOtherPreferredTools],
-						4,
+						4
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(existingTools);
@@ -799,14 +799,14 @@ describe(ExternalToolValidationService.name, () => {
 
 					const existingTools: Page<ExternalTool> = new Page<ExternalTool>(
 						[existingToolToUpdate, ...existingOtherPreferredTools],
-						4,
+						4
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(existingTools);
 					configService.get.mockReturnValue(2);
 
 					const expectedError = new ValidationError(
-						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`,
+						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 					);
 
 					return {

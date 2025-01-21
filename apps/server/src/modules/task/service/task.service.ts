@@ -31,7 +31,7 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
+		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(TaskService.name);
 	}
@@ -46,7 +46,7 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 		creatorId: EntityId,
 		courseId: EntityId,
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
-		options?: IFindOptions<Task>,
+		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
 		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}
@@ -94,8 +94,8 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 				'Deleting data from Task',
 				DomainName.TASK,
 				creatorId,
-				StatusModel.PENDING,
-			),
+				StatusModel.PENDING
+			)
 		);
 
 		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
@@ -108,7 +108,7 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainOperationReportBuilder.build(
 			OperationType.DELETE,
 			counterOfTasksOnlyWithCreatorId,
-			this.getTasksId(tasksByOnlyCreatorId),
+			this.getTasksId(tasksByOnlyCreatorId)
 		);
 
 		this.logger.info(
@@ -118,8 +118,8 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksOnlyWithCreatorId,
-				0,
-			),
+				0
+			)
 		);
 
 		return result;
@@ -131,8 +131,8 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 				'Deleting user data from Task',
 				DomainName.TASK,
 				creatorId,
-				StatusModel.PENDING,
-			),
+				StatusModel.PENDING
+			)
 		);
 		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
 			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
@@ -145,7 +145,7 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainOperationReportBuilder.build(
 			OperationType.UPDATE,
 			counterOfTasksWithCoursesorLessons,
-			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons),
+			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
 		);
 
 		this.logger.info(
@@ -155,8 +155,8 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksWithCoursesorLessons,
-				0,
-			),
+				0
+			)
 		);
 		return result;
 	}
@@ -167,11 +167,12 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 				'Deleting user data from Task archive collection',
 				DomainName.TASK,
 				userId,
-				StatusModel.PENDING,
-			),
+				StatusModel.PENDING
+			)
 		);
-		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] =
-			await this.taskRepo.findByUserIdInFinished(userId);
+		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] = await this.taskRepo.findByUserIdInFinished(
+			userId
+		);
 
 		if (counterOfTasksWithUserInFinished > 0) {
 			tasksWithUserInFinished.forEach((task: Task) => task.removeUserFromFinished(userId));
@@ -182,7 +183,7 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainOperationReportBuilder.build(
 			OperationType.UPDATE,
 			counterOfTasksWithUserInFinished,
-			this.getTasksId(tasksWithUserInFinished),
+			this.getTasksId(tasksWithUserInFinished)
 		);
 
 		this.logger.info(
@@ -192,8 +193,8 @@ export class TaskService implements DeletionService, IEventHandler<UserDeletedEv
 				userId,
 				StatusModel.FINISHED,
 				counterOfTasksWithUserInFinished,
-				0,
-			),
+				0
+			)
 		);
 
 		return result;

@@ -13,7 +13,7 @@ import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
 	constructor(
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
-		configService: ConfigService<JwtAuthGuardConfig>,
+		configService: ConfigService<JwtAuthGuardConfig>
 	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), configService);
 

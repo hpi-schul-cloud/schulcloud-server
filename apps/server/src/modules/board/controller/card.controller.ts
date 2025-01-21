@@ -40,10 +40,7 @@ import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 @JwtAuthentication()
 @Controller('cards')
 export class CardController {
-	constructor(
-		private readonly columnUc: ColumnUc,
-		private readonly cardUc: CardUc,
-	) {}
+	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
 
 	@ApiOperation({ summary: 'Get a list of cards by their ids.' })
 	@ApiResponse({ status: 200, type: CardListResponse })
@@ -52,7 +49,7 @@ export class CardController {
 	@Get()
 	async getCards(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() cardIdParams: CardIdsParams,
+		@Query() cardIdParams: CardIdsParams
 	): Promise<CardListResponse> {
 		const cardIds = Array.isArray(cardIdParams.ids) ? cardIdParams.ids : [cardIdParams.ids];
 		const cards = await this.cardUc.findCards(currentUser.userId, cardIds);
@@ -74,7 +71,7 @@ export class CardController {
 	async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.columnUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 	}
@@ -89,7 +86,7 @@ export class CardController {
 	async updateCardHeight(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: SetHeightBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
 	}
@@ -104,7 +101,7 @@ export class CardController {
 	async updateCardTitle(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
 	}
@@ -129,7 +126,7 @@ export class CardController {
 		SubmissionContainerElementResponse,
 		DrawingElementResponse,
 		DeletedElementResponse,
-		VideoConferenceElementResponse,
+		VideoConferenceElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -153,7 +150,7 @@ export class CardController {
 	async createElement(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
 		const { type, toPosition } = bodyParams;
 		const element = await this.cardUc.createElement(currentUser.userId, urlParams.cardId, type, toPosition);

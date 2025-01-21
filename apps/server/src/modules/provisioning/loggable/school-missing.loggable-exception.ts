@@ -11,7 +11,7 @@ export class SchoolMissingLoggableException extends BusinessError implements Log
 				title: 'Invalid school data',
 				defaultMessage: 'Unable to create new external user without a school',
 			},
-			HttpStatus.UNPROCESSABLE_ENTITY,
+			HttpStatus.UNPROCESSABLE_ENTITY
 		);
 	}
 

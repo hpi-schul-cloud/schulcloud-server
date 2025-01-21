@@ -28,13 +28,13 @@ export class CourseRoomsController {
 		private readonly roomsUc: CourseRoomsUc,
 		private readonly mapper: RoomBoardResponseMapper,
 		private readonly courseCopyUc: CourseCopyUC,
-		private readonly lessonCopyUc: LessonCopyUC,
+		private readonly lessonCopyUc: LessonCopyUC
 	) {}
 
 	@Get(':roomId/board')
 	async getRoomBoard(
 		@Param() urlParams: CourseRoomUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SingleColumnBoardResponse> {
 		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
@@ -45,13 +45,13 @@ export class CourseRoomsController {
 	async patchElementVisibility(
 		@Param() urlParams: CourseRoomElementUrlParams,
 		@Body() params: PatchVisibilityParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.roomsUc.updateVisibilityOfLegacyBoardElement(
 			urlParams.roomId,
 			urlParams.elementId,
 			currentUser.userId,
-			params.visibility,
+			params.visibility
 		);
 	}
 
@@ -59,7 +59,7 @@ export class CourseRoomsController {
 	async patchOrderingOfElements(
 		@Param() urlParams: CourseRoomUrlParams,
 		@Body() params: PatchOrderParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.roomsUc.reorderBoardElements(urlParams.roomId, currentUser.userId, params.elements);
 	}
@@ -68,7 +68,7 @@ export class CourseRoomsController {
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: CourseRoomUrlParams,
+		@Param() urlParams: CourseRoomUrlParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
@@ -80,12 +80,12 @@ export class CourseRoomsController {
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,
-		@Body() params: LessonCopyApiParams,
+		@Body() params: LessonCopyApiParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.lessonCopyUc.copyLesson(
 			currentUser.userId,
 			urlParams.lessonId,
-			CopyMapper.mapLessonCopyToDomain(params, currentUser.userId),
+			CopyMapper.mapLessonCopyToDomain(params, currentUser.userId)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;

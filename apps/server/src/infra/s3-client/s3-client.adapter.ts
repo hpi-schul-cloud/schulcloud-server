@@ -28,7 +28,7 @@ export class S3ClientAdapter {
 	constructor(
 		@Inject(S3_CLIENT) readonly client: S3Client,
 		@Inject(S3_CONFIG) readonly config: S3Config,
-		private logger: LegacyLogger,
+		private logger: LegacyLogger
 	) {
 		this.logger.setContext(S3ClientAdapter.name);
 	}
@@ -46,7 +46,7 @@ export class S3ClientAdapter {
 			}
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:createBucket',
-				ErrorUtils.createHttpExceptionOptions(err),
+				ErrorUtils.createHttpExceptionOptions(err)
 			);
 		}
 	}
@@ -285,7 +285,7 @@ export class S3ClientAdapter {
 		} catch (err) {
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:deleteDirectory',
-				ErrorUtils.createHttpExceptionOptions(err),
+				ErrorUtils.createHttpExceptionOptions(err)
 			);
 		}
 	}

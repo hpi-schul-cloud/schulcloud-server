@@ -10,7 +10,7 @@ export class MoinSchuleSystemNotFoundLoggableException extends BusinessError imp
 				title: 'moin.schule system not found',
 				defaultMessage: 'Cannot find moin.schule system',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

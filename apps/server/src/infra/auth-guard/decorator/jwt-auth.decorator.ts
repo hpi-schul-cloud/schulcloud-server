@@ -36,7 +36,7 @@ export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, 
 
 	if (!requestUser || !isCurrentUser(requestUser)) {
 		throw new UnauthorizedException(
-			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.',
+			'CurrentUser missing in request context. This route requires jwt authentication guard enabled.'
 		);
 	}
 

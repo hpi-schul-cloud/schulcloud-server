@@ -68,7 +68,7 @@ export class RoomService {
 	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
 		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
 			throw new ValidationError(
-				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`,
+				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
 			);
 		}
 	}

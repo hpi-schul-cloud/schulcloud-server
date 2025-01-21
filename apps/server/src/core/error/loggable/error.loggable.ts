@@ -9,10 +9,7 @@ import { ErrorUtils } from '../utils/error.utils';
 export class ErrorLoggable implements Loggable {
 	readonly actualError: Error;
 
-	constructor(
-		private readonly error: unknown,
-		private readonly data?: LogMessageDataObject,
-	) {
+	constructor(private readonly error: unknown, private readonly data?: LogMessageDataObject) {
 		if (this.error instanceof Error) {
 			this.actualError = <Error>error;
 		} else {
@@ -71,13 +68,13 @@ export class ErrorLoggable implements Loggable {
 			target.constructor,
 			'',
 			true,
-			true,
+			true
 		);
 
 		const privacyProtected = metadatas.some(
 			(validationMetadata) =>
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				validationMetadata.propertyName === property && validationMetadata.context?.privacyProtected,
+				validationMetadata.propertyName === property && validationMetadata.context?.privacyProtected
 		);
 
 		return privacyProtected;

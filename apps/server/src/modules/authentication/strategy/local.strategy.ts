@@ -17,7 +17,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
 		private readonly configService: ConfigService<IdentityManagementConfig, true>,
-		private readonly userRepo: UserRepo,
+		private readonly userRepo: UserRepo
 	) {
 		super();
 	}
@@ -36,7 +36,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 		const accountUserId = TypeGuard.checkNotNullOrUndefined(
 			account.userId,
-			new Error(`login failing, because account ${account.id} has no userId`),
+			new Error(`login failing, because account ${account.id} has no userId`)
 		);
 		const user = await this.userRepo.findById(accountUserId, true);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);

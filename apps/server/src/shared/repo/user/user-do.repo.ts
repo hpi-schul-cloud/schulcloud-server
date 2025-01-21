@@ -32,7 +32,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			.whereLastLoginSystemChangeSmallerThan(query.lastLoginSystemChangeSmallerThan)
 			.whereLastLoginSystemChangeIsBetween(
 				query.lastLoginSystemChangeBetweenStart,
-				query.lastLoginSystemChangeBetweenEnd,
+				query.lastLoginSystemChangeBetweenEnd
 			)
 			.withOutdatedSince(query.outdatedSince)
 			.allowEmptyQuery(true);
@@ -73,8 +73,8 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 						'school.currentYear',
 						'school.name',
 						'secondarySchools.role',
-					]),
-				),
+					])
+				)
 			);
 			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
 		}
@@ -178,7 +178,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 					new SecondarySchoolReference({
 						schoolId: school.school.id,
 						role: new RoleReference({ id: school.role.id, name: school.role.name }),
-					}),
+					})
 			);
 		}
 
@@ -198,7 +198,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 					new UserSchoolEmbeddable({
 						school: this._em.getReference(SchoolEntity, secondarySchool.schoolId),
 						role: this._em.getReference(Role, secondarySchool.role.id),
-					}),
+					})
 			),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
@@ -223,7 +223,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			},
 			{
 				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
-			},
+			}
 		);
 
 		const userDOs = users.map((user) => this.mapEntityToDO(user));

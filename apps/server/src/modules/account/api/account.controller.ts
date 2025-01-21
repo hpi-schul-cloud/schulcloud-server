@@ -34,7 +34,7 @@ export class AccountController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() query: AccountSearchQueryParams,
+		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
 		const search = new AccountSearchDto(query);
 		const searchResult = await this.accountUc.searchAccounts(currentUser, search);
@@ -50,7 +50,7 @@ export class AccountController {
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async findAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: AccountByIdParams,
+		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
 		const dto = await this.accountUc.findAccountById(currentUser, params.id);
 		return AccountResponseMapper.mapToAccountResponse(dto);
@@ -79,7 +79,7 @@ export class AccountController {
 	async updateAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams,
-		@Body() body: AccountByIdBodyParams,
+		@Body() body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
 		const updateData = new UpdateAccountDto(body);
 		const dto = await this.accountUc.updateAccountById(currentUser, params.id, updateData);
@@ -95,7 +95,7 @@ export class AccountController {
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async deleteAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: AccountByIdParams,
+		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
 		const dto = await this.accountUc.deleteAccountById(currentUser, params.id);
 		return AccountResponseMapper.mapToAccountResponse(dto);
@@ -109,7 +109,7 @@ export class AccountController {
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account or user not found.' })
 	async replaceMyPassword(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() params: PatchMyPasswordParams,
+		@Body() params: PatchMyPasswordParams
 	): Promise<void> {
 		return this.accountUc.replaceMyTemporaryPassword(currentUser.userId, params.password, params.confirmPassword);
 	}

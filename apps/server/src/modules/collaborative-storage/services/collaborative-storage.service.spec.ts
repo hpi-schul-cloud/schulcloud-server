@@ -118,7 +118,7 @@ describe('Collaborative Storage Service', () => {
 					create: false,
 					delete: false,
 					share: false,
-				}),
+				})
 			).rejects.toThrow(ForbiddenException);
 		});
 	});

@@ -5,17 +5,14 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class LaunchContextUnavailableLoggableException extends BusinessError implements Loggable {
-	constructor(
-		private readonly contextExternalTool: ContextExternalToolLaunchable,
-		private readonly userId: EntityId,
-	) {
+	constructor(private readonly contextExternalTool: ContextExternalToolLaunchable, private readonly userId: EntityId) {
 		super(
 			{
 				type: 'LAUNCH_CONTEXT_UNAVAILABLE',
 				title: 'Launch context unavailable',
 				defaultMessage: 'The context type cannot launch school external tools',
 			},
-			HttpStatus.FORBIDDEN,
+			HttpStatus.FORBIDDEN
 		);
 	}
 

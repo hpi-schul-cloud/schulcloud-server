@@ -41,7 +41,7 @@ class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {
 	async getScopeInfoSpec(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
-		refId: string,
+		refId: string
 	): Promise<{ scopeInfo: ScopeInfo; object: AuthorizableObject }> {
 		return this.getScopeInfo(userId, conferenceScope, refId);
 	}
@@ -219,7 +219,7 @@ describe('VideoConferenceUc', () => {
 		it('should throw on unknown scope', async () => {
 			// Act & Assert
 			await expect(
-				useCase.getScopeInfoSpec('userId', 'unknown' as VideoConferenceScope, 'someScopeId'),
+				useCase.getScopeInfoSpec('userId', 'unknown' as VideoConferenceScope, 'someScopeId')
 			).rejects.toThrow(BadRequestException);
 		});
 	});
@@ -255,7 +255,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.checkPermissionSpec('userId', course)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION),
+				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
 			);
 		});
 	});
@@ -272,7 +272,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED),
+				new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED)
 			);
 		});
 
@@ -282,7 +282,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.throwOnFeaturesDisabledSpec('schoolId')).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED),
+				new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED)
 			);
 		});
 	});
@@ -320,7 +320,7 @@ describe('VideoConferenceUc', () => {
 
 				// Act & Assert
 				await expect(
-					useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions),
+					useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions)
 				).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
 			});
 
@@ -334,7 +334,7 @@ describe('VideoConferenceUc', () => {
 					defaultCurrentUser,
 					VideoConferenceScope.COURSE,
 					course.id,
-					defaultOptions,
+					defaultOptions
 				);
 
 				// Assert
@@ -343,7 +343,7 @@ describe('VideoConferenceUc', () => {
 						target: course.id,
 						targetModel: VideoConferenceScope.COURSE,
 						options: defaultOptions,
-					}),
+					})
 				);
 				expect(bbbService.create).toHaveBeenCalledWith(builder.build());
 
@@ -362,7 +362,7 @@ describe('VideoConferenceUc', () => {
 					defaultCurrentUser,
 					VideoConferenceScope.COURSE,
 					course.id,
-					defaultOptions,
+					defaultOptions
 				);
 
 				// Assert
@@ -389,7 +389,7 @@ describe('VideoConferenceUc', () => {
 					defaultCurrentUser,
 					VideoConferenceScope.COURSE,
 					course.id,
-					defaultOptions,
+					defaultOptions
 				);
 
 				// Assert
@@ -409,7 +409,7 @@ describe('VideoConferenceUc', () => {
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 
 				await expect(
-					useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions),
+					useCase.create(defaultCurrentUser, VideoConferenceScope.COURSE, course.id, defaultOptions)
 				).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
 			});
 		});
@@ -461,7 +461,7 @@ describe('VideoConferenceUc', () => {
 			const result: VideoConferenceJoin = await useCase.join(
 				defaultCurrentUser,
 				VideoConferenceScope.COURSE,
-				course.id,
+				course.id
 			);
 
 			// Assert
@@ -510,7 +510,7 @@ describe('VideoConferenceUc', () => {
 			const result: VideoConferenceJoin = await useCase.join(
 				defaultCurrentUser,
 				VideoConferenceScope.COURSE,
-				course.id,
+				course.id
 			);
 
 			// Assert
@@ -557,14 +557,14 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE),
+				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
 			);
 		});
 
 		it('should throw on unknown scope', async () => {
 			// Act & Assert
 			await expect(
-				useCase.join(defaultCurrentUser, 'unknown scope' as VideoConferenceScope, course.id),
+				useCase.join(defaultCurrentUser, 'unknown scope' as VideoConferenceScope, course.id)
 			).rejects.toThrow(BadRequestException);
 		});
 
@@ -574,7 +574,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.UNKNOWN_USER),
+				new ForbiddenException(ErrorStatus.UNKNOWN_USER)
 			);
 		});
 
@@ -591,7 +591,7 @@ describe('VideoConferenceUc', () => {
 			const result: VideoConferenceJoin = await useCase.join(
 				defaultCurrentUser,
 				VideoConferenceScope.COURSE,
-				course.id,
+				course.id
 			);
 
 			// Assert
@@ -625,7 +625,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.end(defaultCurrentUser, VideoConferenceScope.COURSE, course.id)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION),
+				new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION)
 			);
 		});
 
@@ -637,7 +637,7 @@ describe('VideoConferenceUc', () => {
 			const result: VideoConference<BBBBaseResponse> = await useCase.end(
 				defaultCurrentUser,
 				VideoConferenceScope.COURSE,
-				course.id,
+				course.id
 			);
 
 			// Assert
@@ -741,7 +741,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE),
+				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
 			);
 		});
 
@@ -753,7 +753,7 @@ describe('VideoConferenceUc', () => {
 
 			// Act & Assert
 			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(
-				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE),
+				new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE)
 			);
 		});
 	});

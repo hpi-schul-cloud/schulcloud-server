@@ -16,7 +16,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	constructor(
 		private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<AccountConfig, true>,
+		private readonly configService: ConfigService<AccountConfig, true>
 	) {
 		super();
 	}
@@ -69,7 +69,7 @@ export class AccountServiceDb extends AbstractAccountService {
 				}
 				await account.update(accountSave);
 				return account;
-			}),
+			})
 		);
 
 		const savedAccounts = this.accountRepo.saveAll(updatedAccounts);

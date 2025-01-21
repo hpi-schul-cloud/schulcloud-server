@@ -390,7 +390,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: undefined },
-					user.school.id,
+					user.school.id
 				);
 
 				const account: Account = accountDoFactory.build({
@@ -454,7 +454,7 @@ describe('LdapStrategy', () => {
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: 'previousExternalId' },
-					user.school.id,
+					user.school.id
 				);
 
 				const account: Account = accountDoFactory.build({

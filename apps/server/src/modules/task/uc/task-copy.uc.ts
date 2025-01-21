@@ -18,7 +18,7 @@ export class TaskCopyUC {
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly taskRepo: TaskRepo,
-		private readonly copyHelperService: CopyHelperService,
+		private readonly copyHelperService: CopyHelperService
 	) {}
 
 	async copyTask(userId: EntityId, taskId: EntityId, parentParams: TaskCopyParentParams): Promise<CopyStatus> {

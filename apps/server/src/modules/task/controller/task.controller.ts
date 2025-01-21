@@ -14,15 +14,12 @@ import { TaskCopyApiParams } from './dto/task-copy.params';
 @JwtAuthentication()
 @Controller('tasks')
 export class TaskController {
-	constructor(
-		private readonly taskUc: TaskUC,
-		private readonly taskCopyUc: TaskCopyUC,
-	) {}
+	constructor(private readonly taskUc: TaskUC, private readonly taskCopyUc: TaskCopyUC) {}
 
 	@Get()
 	async findAll(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationParams,
+		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
 		return this.findAllTasks(currentUser, pagination);
 	}
@@ -30,7 +27,7 @@ export class TaskController {
 	@Get('finished')
 	async findAllFinished(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Query() pagination: PaginationParams,
+		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
 		return this.findAllTasks(currentUser, pagination, true);
 	}
@@ -38,7 +35,7 @@ export class TaskController {
 	private async findAllTasks(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams,
-		finished = false,
+		finished = false
 	): Promise<TaskListResponse> {
 		const [tasksWithStatus, total] = finished
 			? await this.taskUc.findAllFinished(currentUser.userId, pagination)
@@ -72,7 +69,7 @@ export class TaskController {
 	@Patch(':taskId/revertPublished')
 	async revertPublished(
 		@Param() urlParams: TaskUrlParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<TaskResponse> {
 		const task = await this.taskUc.revertPublished(currentUser.userId, urlParams.taskId);
 
@@ -86,12 +83,12 @@ export class TaskController {
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
-		@Body() params: TaskCopyApiParams,
+		@Body() params: TaskCopyApiParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.taskCopyUc.copyTask(
 			currentUser.userId,
 			urlParams.taskId,
-			CopyMapper.mapTaskCopyToDomain(params, currentUser.userId),
+			CopyMapper.mapTaskCopyToDomain(params, currentUser.userId)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
 		return dto;

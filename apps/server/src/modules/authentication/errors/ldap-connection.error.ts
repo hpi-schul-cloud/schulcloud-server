@@ -10,7 +10,7 @@ export class LdapConnectionError extends BusinessError {
 				defaultMessage: 'LDAP connection failed',
 			},
 			HttpStatus.BAD_GATEWAY,
-			details,
+			details
 		);
 	}
 }

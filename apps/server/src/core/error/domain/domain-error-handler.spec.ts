@@ -29,10 +29,7 @@ class SampleLoggableException extends BadRequestException implements Loggable {
 }
 
 class SampleLoggableExceptionWithCause extends InternalServerErrorException implements Loggable {
-	constructor(
-		private readonly testValue: string,
-		error?: unknown,
-	) {
+	constructor(private readonly testValue: string, error?: unknown) {
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 
@@ -57,7 +54,7 @@ class SampleLoggableFromBusinessException extends BusinessError implements Logga
 				title: 'test_title',
 				defaultMessage: 'test_defaultMessage',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

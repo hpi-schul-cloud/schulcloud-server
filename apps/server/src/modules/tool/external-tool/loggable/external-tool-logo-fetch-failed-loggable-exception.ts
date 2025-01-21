@@ -3,17 +3,14 @@ import { BusinessError } from '@shared/common/error';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class ExternalToolLogoFetchFailedLoggableException extends BusinessError implements Loggable {
-	constructor(
-		private readonly logoUrl: string,
-		private readonly httpStatus?: HttpStatus,
-	) {
+	constructor(private readonly logoUrl: string, private readonly httpStatus?: HttpStatus) {
 		super(
 			{
 				type: 'EXTERNAL_TOOL_LOGO_FETCH_FAILED',
 				title: 'External tool logo fetch failed.',
 				defaultMessage: 'External tool logo could not been fetched.',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR,
+			HttpStatus.INTERNAL_SERVER_ERROR
 		);
 	}
 

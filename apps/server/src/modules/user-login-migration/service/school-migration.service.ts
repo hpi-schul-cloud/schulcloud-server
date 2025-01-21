@@ -17,13 +17,13 @@ export class SchoolMigrationService {
 		private readonly legacyLogger: LegacyLogger,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
-		private readonly userLoginMigrationRepo: UserLoginMigrationRepo,
+		private readonly userLoginMigrationRepo: UserLoginMigrationRepo
 	) {}
 
 	public async migrateSchool(
 		existingSchool: LegacySchoolDo,
 		externalId: string,
-		targetSystemId: string,
+		targetSystemId: string
 	): Promise<void> {
 		const schoolDOCopy: LegacySchoolDo = new LegacySchoolDo({ ...existingSchool });
 
@@ -54,7 +54,7 @@ export class SchoolMigrationService {
 			await this.schoolService.save(originalSchoolDO);
 		} catch (error: unknown) {
 			this.logger.warning(
-				new SchoolMigrationDatabaseOperationFailedLoggableException(originalSchoolDO, 'rollback', error),
+				new SchoolMigrationDatabaseOperationFailedLoggableException(originalSchoolDO, 'rollback', error)
 			);
 		}
 	}
@@ -62,7 +62,7 @@ export class SchoolMigrationService {
 	public async getSchoolForMigration(
 		userId: string,
 		externalId: string,
-		officialSchoolNumber: string,
+		officialSchoolNumber: string
 	): Promise<LegacySchoolDo | null> {
 		const user: UserDO = await this.userService.findById(userId);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(user.schoolId);
@@ -82,7 +82,7 @@ export class SchoolMigrationService {
 		if (schoolDO.officialSchoolNumber !== officialExternalSchoolNumber) {
 			throw new SchoolNumberMismatchLoggableException(
 				schoolDO.officialSchoolNumber ?? '',
-				officialExternalSchoolNumber,
+				officialExternalSchoolNumber
 			);
 		}
 	}
@@ -95,7 +95,7 @@ export class SchoolMigrationService {
 
 	public hasSchoolMigratedInMigrationPhase(
 		schoolDO: LegacySchoolDo,
-		userLoginMigrationDO: UserLoginMigrationDO,
+		userLoginMigrationDO: UserLoginMigrationDO
 	): boolean {
 		if (!schoolDO.systems) {
 			return false;
@@ -125,7 +125,7 @@ export class SchoolMigrationService {
 		this.legacyLogger.warn(
 			`markUnmigratedUsersAsOutdated for schoolId ${userLoginMigration.schoolId} took ${
 				endTime - startTime
-			} milliseconds`,
+			} milliseconds`
 		);
 	}
 
@@ -145,7 +145,7 @@ export class SchoolMigrationService {
 
 		const endTime: number = performance.now();
 		this.legacyLogger.warn(
-			`unmarkOutdatedUsers for schoolId ${userLoginMigration.schoolId} took ${endTime - startTime} milliseconds`,
+			`unmarkOutdatedUsers for schoolId ${userLoginMigration.schoolId} took ${endTime - startTime} milliseconds`
 		);
 	}
 

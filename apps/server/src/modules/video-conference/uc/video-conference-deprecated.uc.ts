@@ -50,7 +50,7 @@ export class VideoConferenceDeprecatedUc {
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: LegacySchoolService,
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}
@@ -67,7 +67,7 @@ export class VideoConferenceDeprecatedUc {
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
-		options: VideoConferenceOptions,
+		options: VideoConferenceOptions
 	): Promise<VideoConference<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
 
@@ -79,7 +79,7 @@ export class VideoConferenceDeprecatedUc {
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(
 				ErrorStatus.INSUFFICIENT_PERMISSION,
-				'you are not allowed to start the videoconference. ask a moderator.',
+				'you are not allowed to start the videoconference. ask a moderator.'
 			);
 		}
 
@@ -130,7 +130,7 @@ export class VideoConferenceDeprecatedUc {
 	async join(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
-		refId: EntityId,
+		refId: EntityId
 	): Promise<VideoConferenceJoin> {
 		const { userId, schoolId } = currentUser;
 
@@ -162,7 +162,7 @@ export class VideoConferenceDeprecatedUc {
 		if (!vcDO.options.moderatorMustApproveJoinRequests && isGuest) {
 			throw new ForbiddenException(
 				ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE,
-				'Guests cannot join this conference, since the waiting room is not enabled.',
+				'Guests cannot join this conference, since the waiting room is not enabled.'
 			);
 		}
 
@@ -185,7 +185,7 @@ export class VideoConferenceDeprecatedUc {
 	async getMeetingInfo(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
-		refId: EntityId,
+		refId: EntityId
 	): Promise<VideoConferenceInfo> {
 		const { userId, schoolId } = currentUser;
 
@@ -213,7 +213,7 @@ export class VideoConferenceDeprecatedUc {
 						permission: PermissionMapping[bbbRole],
 						bbbResponse,
 						options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-					}),
+					})
 			)
 			.catch(
 				() =>
@@ -221,7 +221,7 @@ export class VideoConferenceDeprecatedUc {
 						state: VideoConferenceState.NOT_STARTED,
 						permission: PermissionMapping[bbbRole],
 						options: bbbRole === BBBRole.MODERATOR ? options : ({} as VideoConferenceOptions),
-					}),
+					})
 			);
 
 		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
@@ -262,7 +262,7 @@ export class VideoConferenceDeprecatedUc {
 	async end(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
-		refId: EntityId,
+		refId: EntityId
 	): Promise<VideoConference<BBBBaseResponse>> {
 		const { userId, schoolId } = currentUser;
 
@@ -292,7 +292,7 @@ export class VideoConferenceDeprecatedUc {
 	protected async isExpert(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
-		scopeId: string,
+		scopeId: string
 	): Promise<boolean> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
@@ -303,7 +303,7 @@ export class VideoConferenceDeprecatedUc {
 			case VideoConferenceScope.EVENT: {
 				const team: TeamEntity = await this.teamsRepo.findById(scopeId);
 				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
-					(userInTeam: TeamUserEntity) => userInTeam.user.id === currentUser.userId,
+					(userInTeam: TeamUserEntity) => userInTeam.user.id === currentUser.userId
 				);
 
 				if (teamUser === undefined) {
@@ -328,7 +328,7 @@ export class VideoConferenceDeprecatedUc {
 	protected async getScopeInfo(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
-		refId: string,
+		refId: string
 	): Promise<{ scopeInfo: ScopeInfo; object: AuthorizableObject }> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
@@ -391,7 +391,7 @@ export class VideoConferenceDeprecatedUc {
 	private hasReadPermissions(
 		user: User,
 		object: AuthorizableObject,
-		permissions: Permission[],
+		permissions: Permission[]
 	): Map<Permission, boolean> {
 		const returnMap: Map<Permission, boolean> = new Map();
 		permissions.forEach((permission) => {
@@ -414,7 +414,7 @@ export class VideoConferenceDeprecatedUc {
 		if (!Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED')) {
 			throw new ForbiddenException(
 				ErrorStatus.SCHOOL_FEATURE_DISABLED,
-				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled',
+				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'
 			);
 		}
 		// throw, if the current users school does not have the feature enabled

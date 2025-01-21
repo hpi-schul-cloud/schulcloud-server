@@ -24,10 +24,7 @@ import { GroupResponseMapper } from './mapper';
 @JwtAuthentication()
 @Controller('groups')
 export class GroupController {
-	constructor(
-		private readonly groupUc: GroupUc,
-		private readonly classGroupUc: ClassGroupUc,
-	) {}
+	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
 
 	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
@@ -38,7 +35,7 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
-		@CurrentUser() currentUser: ICurrentUser,
+		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.classGroupUc.findAllClasses(
 			currentUser.userId,
@@ -46,13 +43,13 @@ export class GroupController {
 			filterParams.type,
 			pagination,
 			sortingQuery.sortBy,
-			sortingQuery.sortOrder,
+			sortingQuery.sortOrder
 		);
 
 		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfoSearchListResponse(
 			board,
 			pagination.skip,
-			pagination.limit,
+			pagination.limit
 		);
 
 		return response;
@@ -65,7 +62,7 @@ export class GroupController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getGroup(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: GroupIdParams,
+		@Param() params: GroupIdParams
 	): Promise<GroupResponse> {
 		const group: ResolvedGroupDto = await this.groupUc.getGroup(currentUser.userId, params.groupId);
 
@@ -84,7 +81,7 @@ export class GroupController {
 	public async getAllGroups(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: GroupPaginationParams,
-		@Query() params: GroupParams,
+		@Query() params: GroupParams
 	): Promise<GroupListResponse> {
 		const options: IFindOptions<Group> = { pagination };
 
@@ -93,7 +90,7 @@ export class GroupController {
 			currentUser.schoolId,
 			options,
 			params.nameQuery,
-			params.availableGroupsForCourseSync,
+			params.availableGroupsForCourseSync
 		);
 
 		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);

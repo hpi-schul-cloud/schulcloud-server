@@ -46,7 +46,7 @@ describe('ImportUser Controller (API)', () => {
 		permissions: Permission[] = [],
 		features: SchoolFeature[] = [],
 		schoolHasExternalId = true,
-		officialSchoolNumber = 'foo',
+		officialSchoolNumber = 'foo'
 	) => {
 		const system = systemEntityFactory.buildWithId();
 		const school = schoolEntityFactory.build({
@@ -224,7 +224,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ school, system, account } = await authenticatedUser(
 						[Permission.IMPORT_USER_VIEW],
-						[SchoolFeature.LDAP_UNIVENTION_MIGRATION],
+						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					testApiClient = await testApiClient.login(account);
 					const config: ServerConfig = serverConfig();
@@ -497,7 +497,7 @@ describe('ImportUser Controller (API)', () => {
 						roleNames: expect.any(Array),
 						classNames: expect.any(Array),
 						flagged: expect.any(Boolean),
-					} as Partial<Record<keyof ImportUserResponse, unknown>>),
+					} as Partial<Record<keyof ImportUserResponse, unknown>>)
 				);
 				expect(data.roleNames.length).toBeGreaterThanOrEqual(1);
 				expect(data.classNames.length).toBeGreaterThanOrEqual(1);
@@ -1165,7 +1165,7 @@ describe('ImportUser Controller (API)', () => {
 					[Permission.IMPORT_USER_MIGRATE],
 					[],
 					true,
-					'00100',
+					'00100'
 				);
 				setConfig(system._id.toString());
 
