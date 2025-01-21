@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class SchoolYearsNoYearsLeft extends InternalServerErrorException implements Loggable {
 	// this is a 500, because our development team is responsible to create schoolyears.

@@ -1,4 +1,4 @@
-import { MediaSource } from '@src/modules/media-source/domain';
+import { MediaSource } from '@modules/media-source/domain';
 import { UserLicense, UserLicenseProps } from './user-license';
 
 export interface MediaUserLicenseProps extends UserLicenseProps {

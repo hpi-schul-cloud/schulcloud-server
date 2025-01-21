@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
@@ -13,6 +14,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
+import { schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -24,8 +26,6 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { Logger } from '@src/core/logger';
-import { schoolFactory } from '@src/modules/school/testing';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';

@@ -1,4 +1,4 @@
-import { AxiosErrorLoggable } from '@src/core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { AxiosError } from 'axios';
 
 export class HydraOauthFailedLoggableException extends AxiosErrorLoggable {

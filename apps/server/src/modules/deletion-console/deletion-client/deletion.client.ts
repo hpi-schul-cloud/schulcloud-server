@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { firstValueFrom } from 'rxjs';
 import { AxiosResponse, HttpStatusCode } from 'axios';
 import { DeletionRequestInput, DeletionRequestOutput } from './interface';

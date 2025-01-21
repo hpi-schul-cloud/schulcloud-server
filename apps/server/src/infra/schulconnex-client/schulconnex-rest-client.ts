@@ -2,7 +2,7 @@ import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
 import { HttpService } from '@nestjs/axios';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';

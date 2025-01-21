@@ -1,5 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@src/modules/room-membership';
+import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
+import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -7,7 +8,6 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';

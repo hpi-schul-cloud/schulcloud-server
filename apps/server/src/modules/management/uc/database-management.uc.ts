@@ -8,7 +8,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
