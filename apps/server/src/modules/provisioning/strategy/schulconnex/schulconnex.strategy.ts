@@ -2,7 +2,7 @@ import { Group, GroupService } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { GroupProvisioningInfoLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';

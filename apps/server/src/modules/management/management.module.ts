@@ -9,7 +9,7 @@ import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';

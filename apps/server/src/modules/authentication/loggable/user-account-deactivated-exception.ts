@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 
 export class UserAccountDeactivatedLoggableException extends BusinessError implements Loggable {
 	constructor() {

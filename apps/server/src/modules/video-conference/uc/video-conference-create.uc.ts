@@ -1,9 +1,9 @@
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,

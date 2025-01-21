@@ -1,6 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import type { ProvisioningConfig } from '@modules/provisioning';
+import { RoleService } from '@modules/role';
+import { UserService } from '@modules/user/service/user.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -9,8 +11,6 @@ import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { RoleService } from '@src/modules/role';
-import { UserService } from '@src/modules/user/service/user.service';
 import {
 	Group,
 	GroupAggregateScope,

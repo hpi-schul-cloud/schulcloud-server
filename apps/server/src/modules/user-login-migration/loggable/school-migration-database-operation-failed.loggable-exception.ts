@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { ErrorUtils } from '@src/core/error/utils';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorUtils } from '@core/error/utils';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 
 export class SchoolMigrationDatabaseOperationFailedLoggableException
 	extends InternalServerErrorException

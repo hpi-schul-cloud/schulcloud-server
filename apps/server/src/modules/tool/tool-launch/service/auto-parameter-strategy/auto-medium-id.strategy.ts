@@ -1,6 +1,6 @@
+import { ContextExternalToolLaunchable } from '@modules/tool/context-external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { Injectable } from '@nestjs/common';
-import { ContextExternalToolLaunchable } from '@src/modules/tool/context-external-tool/domain';
-import { SchoolExternalTool } from '@src/modules/tool/school-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { ExternalToolService } from '../../../external-tool/service';
 import { AutoParameterStrategy } from './auto-parameter.strategy';

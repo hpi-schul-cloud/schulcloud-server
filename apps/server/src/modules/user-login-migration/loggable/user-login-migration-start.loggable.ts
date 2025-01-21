@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class UserLoginMigrationStartLoggable implements Loggable {
 	constructor(private readonly userId: EntityId, private readonly userLoginMigrationId: EntityId | undefined) {}

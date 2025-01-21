@@ -13,7 +13,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';

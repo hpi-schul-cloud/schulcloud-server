@@ -5,7 +5,7 @@ import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, CreateNews, EntityId, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;

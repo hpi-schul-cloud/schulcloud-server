@@ -11,7 +11,7 @@ import {
 } from '@modules/deletion';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { mediaBoardFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';

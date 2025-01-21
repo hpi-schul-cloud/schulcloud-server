@@ -1,6 +1,6 @@
 import { Express } from 'express';
 
-import { LogMessage, Loggable, Logger } from '@src/core/logger';
+import { LogMessage, Loggable, Logger } from '@core/logger';
 import { AppStartLoggable } from '../app-start-loggable';
 import {
 	PrometheusMetricsConfig,

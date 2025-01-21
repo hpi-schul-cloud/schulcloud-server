@@ -1,3 +1,5 @@
+import { CoreModule } from '@core/core.module';
+import { LoggerModule } from '@core/logger';
 import { AuthorizationClientModule } from '@infra/authorization-client';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
@@ -6,8 +8,6 @@ import { AuthenticationApiTestModule } from '@modules/authentication/authenticat
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
 import { H5PEditorController } from './controller';
 import { H5PContent } from './entity';
 import { H5PEditorModule } from './h5p-editor.app.module';

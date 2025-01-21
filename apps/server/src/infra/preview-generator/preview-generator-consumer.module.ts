@@ -2,7 +2,7 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientAdapter, S3ClientModule } from '@infra/s3-client';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { Logger, LoggerModule } from '@src/core/logger';
+import { Logger, LoggerModule } from '@core/logger';
 import { PreviewConfig } from './interface/preview-consumer-config';
 import { PreviewGeneratorConsumer } from './preview-generator.consumer';
 import { PreviewGeneratorService } from './preview-generator.service';
