@@ -5,7 +5,7 @@ import {
 	PrometheusMetricsConfig,
 	createAPIResponseTimeMetricMiddleware,
 	createPrometheusMetricsApp,
-} from '@infra/metrics';
+} from './prometheus';
 import { AppStartLoggable } from '../app-start-loggable';
 
 export const enum PrometheusMetricsSetupState {
