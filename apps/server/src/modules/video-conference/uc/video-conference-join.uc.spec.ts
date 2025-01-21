@@ -1,12 +1,12 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { Permission, VideoConferenceScope } from '@shared/domain/interface';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';
 import { BBBJoinConfig, BBBJoinResponse, BBBResponse, BBBRole } from '../bbb';
@@ -204,7 +204,7 @@ describe('VideoConferenceJoinUc', () => {
 						const result: VideoConferenceJoin = await uc.join(currentUserId, scope);
 
 						expect(result).toEqual(
-							expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url })
+							expect.objectContaining<Partial<VideoConferenceJoin>>({ url: bbbJoinResponse.response.url }),
 						);
 					});
 
@@ -320,7 +320,7 @@ describe('VideoConferenceJoinUc', () => {
 				await uc.join(currentUserId, scope);
 
 				expect(bbbService.join).toBeCalledWith(
-					expect.objectContaining<Partial<BBBJoinConfig>>({ role: BBBRole.MODERATOR })
+					expect.objectContaining<Partial<BBBJoinConfig>>({ role: BBBRole.MODERATOR }),
 				);
 			});
 

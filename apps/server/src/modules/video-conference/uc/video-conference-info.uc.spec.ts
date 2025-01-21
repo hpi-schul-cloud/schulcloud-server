@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
 import {} from '@shared/domain/entity';
 import { Permission, VideoConferenceScope } from '@shared/domain/interface';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';
 import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
@@ -258,7 +258,7 @@ describe('VideoConferenceInfoUc', () => {
 								},
 							});
 							const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-								scope.id
+								scope.id,
 							);
 
 							userService.findById.mockResolvedValue(user);
@@ -306,7 +306,7 @@ describe('VideoConferenceInfoUc', () => {
 								},
 							});
 							const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-								scope.id
+								scope.id,
 							);
 
 							userService.findById.mockResolvedValue(user);
@@ -350,7 +350,7 @@ describe('VideoConferenceInfoUc', () => {
 							},
 						});
 						const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-							scope.id
+							scope.id,
 						);
 
 						userService.findById.mockResolvedValue(user);
@@ -401,7 +401,7 @@ describe('VideoConferenceInfoUc', () => {
 					});
 
 					const bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> = createBbbMeetingInfoSuccessResponse(
-						scope.id
+						scope.id,
 					);
 
 					userService.findById.mockResolvedValue(user);

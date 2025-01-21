@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.app.module';
 import { TestApiClient } from '@testing/test-api-client';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
@@ -38,12 +38,12 @@ const isDeletionPlannedWithinAcceptableRange = (
 	creationDate: Date,
 	deletionPlannedAt: Date,
 	diffInMinutes: number,
-	toleranceInSeconds: number
+	toleranceInSeconds: number,
 ) => {
 	const { minDeletionPlannedAt, maxDeletionPlannedAt } = getMinAndMaxDeletionPlannedAt(
 		creationDate,
 		diffInMinutes,
-		toleranceInSeconds
+		toleranceInSeconds,
 	);
 
 	return deletionPlannedAt >= minDeletionPlannedAt && deletionPlannedAt <= maxDeletionPlannedAt;
@@ -135,11 +135,11 @@ describe(`deletionRequest create (api)`, () => {
 							createdItem.createdAt,
 							createdItem.deleteAfter,
 							defaultDeleteInMinutes,
-							operationalTimeToleranceInSeconds
+							operationalTimeToleranceInSeconds,
 						);
 
 						expect(isDeletionPlannedAtDateCorrect).toEqual(true);
-					}
+					},
 				);
 			});
 
@@ -158,7 +158,7 @@ describe(`deletionRequest create (api)`, () => {
 						createdItem.createdAt,
 						createdItem.deleteAfter,
 						0,
-						operationalTimeToleranceInSeconds
+						operationalTimeToleranceInSeconds,
 					);
 
 					expect(isDeletionPlannedAtDateCorrect).toEqual(true);
