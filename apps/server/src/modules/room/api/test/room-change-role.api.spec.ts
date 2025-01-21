@@ -14,7 +14,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
-import { RoomMemberListResponse } from '../dto/response/room-member.response';
+import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
