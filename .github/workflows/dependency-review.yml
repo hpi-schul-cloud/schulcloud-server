@@ -14,5 +14,17 @@ jobs:
       - name: 'Dependency Review'
         uses: actions/dependency-review-action@v4
         with:
-          allow-licenses: 'AGPL-3.0-only, LGPL-3.0, MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, X11, 0BSD, GPL-3.0, Unlicense, CC0-1.0, JSON AND LicenseRef-scancode-proprietary-license AND MIT'
+          allow-licenses: |
+            AGPL-3.0-only, 
+            LGPL-3.0, 
+            MIT, 
+            Apache-2.0, 
+            BSD-2-Clause, 
+            BSD-3-Clause, 
+            ISC, 
+            X11, 
+            0BSD, 
+            GPL-3.0, 
+            Unlicense, 
+            CC0-1.0,
           allow-ghsas: 'GHSA-vxvm-qww3-2fh7'
