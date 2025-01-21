@@ -3,34 +3,29 @@ import { RoleName } from '@shared/domain/interface';
 
 export class RoomMemberResponse {
 	@ApiProperty()
-	firstName!: string;
+	public firstName!: string;
 
 	@ApiProperty()
-	lastName!: string;
+	public lastName!: string;
 
 	@ApiProperty()
-	roleName!: RoleName;
+	public roomRoleName!: RoleName;
 
 	@ApiProperty()
-	schoolName!: string;
+	public schoolRoleName!: RoleName;
 
 	@ApiProperty()
-	userId!: string;
+	public schoolName!: string;
+
+	@ApiProperty()
+	public userId!: string;
 
 	constructor(props: RoomMemberResponse) {
 		this.userId = props.userId;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
-		this.roleName = props.roleName;
+		this.roomRoleName = props.roomRoleName;
+		this.schoolRoleName = props.schoolRoleName;
 		this.schoolName = props.schoolName;
 	}
-}
-
-export class RoomMemberListResponse {
-	constructor(data: RoomMemberResponse[]) {
-		this.data = data;
-	}
-
-	@ApiProperty({ type: [RoomMemberResponse] })
-	data: RoomMemberResponse[];
 }

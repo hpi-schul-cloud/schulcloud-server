@@ -10,7 +10,9 @@ export class SchoolResponseMapper {
 	public static mapToResponse(school: School, years: YearsResponse): SchoolResponse {
 		const schoolProps = school.getProps();
 
-		const federalState = FederalStateResponseMapper.mapToResponse(schoolProps.federalState);
+		const federalState = schoolProps.federalState
+			? FederalStateResponseMapper.mapToResponse(schoolProps.federalState)
+			: undefined;
 		const currentYear = schoolProps.currentYear && SchoolYearResponseMapper.mapToResponse(schoolProps.currentYear);
 		const features = Array.from(schoolProps.features);
 		const county = schoolProps.county && CountyResponseMapper.mapToResponse(schoolProps.county);
