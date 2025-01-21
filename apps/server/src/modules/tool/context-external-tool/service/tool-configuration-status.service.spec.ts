@@ -642,7 +642,6 @@ describe(ToolConfigurationStatusService.name, () => {
 						commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 						commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
 						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
-
 						userService.findById.mockResolvedValueOnce(user);
 						mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([]);
 						return {
@@ -691,7 +690,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					};
 					configService.get.mockImplementation((key: keyof Partial<ToolConfig>) => config[key]);
 				});
-				describe('when license feature is enabled and user has no license for externalTool', () => {
+				describe('when license feature is enabled and user school has no license for externalTool', () => {
 					const setup = () => {
 						const userId: string = new ObjectId().toHexString();
 
