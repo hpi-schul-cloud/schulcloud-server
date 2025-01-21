@@ -11,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { teamFactory } from '@testing/factory/team.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { TeamDto } from './dto/team.dto';

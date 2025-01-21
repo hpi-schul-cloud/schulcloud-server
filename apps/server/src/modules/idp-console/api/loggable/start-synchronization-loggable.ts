@@ -1,4 +1,4 @@
-import { LogMessage, Loggable } from '@src/core/logger';
+import { LogMessage, Loggable } from '@core/logger';
 
 export class StartSynchronizationLoggable implements Loggable {
 	constructor(private readonly systemId: string) {}

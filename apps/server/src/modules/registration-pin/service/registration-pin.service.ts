@@ -11,7 +11,7 @@ import {
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { RegistrationPinEntity } from '../entity';
 import { RegistrationPinRepo } from '../repo';
 

@@ -1,6 +1,6 @@
 import { News } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
-import { LogMessageData } from '@src/core/logger';
+import { LogMessageData } from '@core/logger';
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';

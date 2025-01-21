@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { LoggerConfig } from '@src/core/logger';
+import { LoggerConfig } from '@core/logger';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { CoursesClientConfig } from '@infra/courses-client';
 import { Algorithm } from 'jsonwebtoken';

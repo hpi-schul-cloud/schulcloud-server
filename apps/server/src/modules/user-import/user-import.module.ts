@@ -9,7 +9,7 @@ import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { ImportUserController } from './controller/import-user.controller';
 import { ImportUserRepo } from './repo';
 import { SchulconnexFetchImportUsersService, UserImportService } from './service';

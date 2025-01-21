@@ -5,7 +5,7 @@ import { ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorExce
 import { Test, TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
 import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable } from '@src/core/logger';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 import { Response } from 'express';
 import { AxiosError } from 'axios';
 import { DomainErrorHandler } from '../domain';

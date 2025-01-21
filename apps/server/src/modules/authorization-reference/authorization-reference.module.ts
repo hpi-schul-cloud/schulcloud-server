@@ -1,7 +1,7 @@
 import { InstanceModule } from '@modules/instance';
 import { Module } from '@nestjs/common';
 import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 
