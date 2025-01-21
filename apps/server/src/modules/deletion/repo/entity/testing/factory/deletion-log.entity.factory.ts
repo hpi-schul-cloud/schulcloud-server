@@ -1,5 +1,5 @@
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@src/modules/deletion/domain/builder';
-import { DomainName, OperationType } from '@src/modules/deletion/domain/types';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@modules/deletion/domain/builder';
+import { DomainName, OperationType } from '@modules/deletion/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from 'bson';
 import { DeletionLogEntity, DeletionLogEntityProps } from '../../deletion-log.entity';

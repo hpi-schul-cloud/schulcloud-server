@@ -3,7 +3,7 @@ import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { TypeGuard } from '@shared/common';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';

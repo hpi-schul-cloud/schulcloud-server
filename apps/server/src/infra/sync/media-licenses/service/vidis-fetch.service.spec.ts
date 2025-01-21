@@ -7,7 +7,7 @@ import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/me
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosErrorLoggable } from '@src/core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse, RawAxiosRequestConfig } from 'axios';

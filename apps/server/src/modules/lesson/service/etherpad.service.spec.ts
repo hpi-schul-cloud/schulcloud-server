@@ -3,7 +3,7 @@ import { FeathersServiceProvider } from '@infra/feathers/feathers-service.provid
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { EtherpadService } from './etherpad.service';
 
 describe('Etherpad service', () => {

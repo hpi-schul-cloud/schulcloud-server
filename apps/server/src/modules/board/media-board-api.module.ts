@@ -2,7 +2,7 @@ import { AuthorizationModule } from '@modules/authorization';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserLicenseModule } from '@modules/user-license';
 import { forwardRef, Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { ToolModule } from '../tool';
 import { BoardModule } from './board.module';
 import { MediaBoardController, MediaElementController, MediaLineController } from './controller';

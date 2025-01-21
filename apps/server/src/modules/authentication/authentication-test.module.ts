@@ -12,7 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { HttpModule } from '@nestjs/axios';
 import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { UserModule } from '../user';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';

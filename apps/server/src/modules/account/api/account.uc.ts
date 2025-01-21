@@ -174,7 +174,7 @@ export class AccountUc {
 	 * @param currentUserId the current user
 	 * @param updateMyAccountDto account details
 	 */
-	public async updateMyAccount(currentUserId: EntityId, updateMyAccountDto: UpdateMyAccountDto) {
+	public async updateMyAccount(currentUserId: EntityId, updateMyAccountDto: UpdateMyAccountDto): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		if (
 			(updateMyAccountDto.firstName && user.firstName !== updateMyAccountDto.firstName) ||
@@ -205,7 +205,7 @@ export class AccountUc {
 		currentUser: User,
 		targetUser: User,
 		action: 'READ' | 'UPDATE' | 'DELETE' | 'CREATE'
-	) {
+	): boolean {
 		if (this.hasRole(currentUser, RoleName.SUPERHERO)) {
 			return true;
 		}
@@ -267,7 +267,7 @@ export class AccountUc {
 		);
 	}
 
-	private hasRole(user: User, roleName: string) {
+	private hasRole(user: User, roleName: string): boolean {
 		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 

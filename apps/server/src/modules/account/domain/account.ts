@@ -22,91 +22,91 @@ export interface AccountProps extends AuthorizableObject {
 }
 
 export class Account extends DomainObject<AccountProps> {
-	public get id(): EntityId {
+	get id(): EntityId {
 		return this.props.id;
 	}
 
-	public get createdAt(): Date | undefined {
+	get createdAt(): Date | undefined {
 		return this.props.createdAt;
 	}
 
-	public get updatedAt(): Date | undefined {
+	get updatedAt(): Date | undefined {
 		return this.props.updatedAt;
 	}
 
-	public get userId(): EntityId | undefined {
+	get userId(): EntityId | undefined {
 		return this.props.userId;
 	}
 
-	public set userId(userId: EntityId | undefined) {
+	set userId(userId: EntityId | undefined) {
 		this.props.userId = userId;
 	}
 
-	public get systemId(): EntityId | undefined {
+	get systemId(): EntityId | undefined {
 		return this.props.systemId;
 	}
 
-	public set systemId(systemId: EntityId | undefined) {
+	set systemId(systemId: EntityId | undefined) {
 		this.props.systemId = systemId;
 	}
 
-	public get username(): string {
+	get username(): string {
 		return this.props.username;
 	}
 
-	public set username(username: string) {
+	set username(username: string) {
 		this.props.username = username;
 	}
 
-	public get password(): string | undefined {
+	get password(): string | undefined {
 		return this.props.password;
 	}
 
-	public set password(password: string | undefined) {
+	set password(password: string | undefined) {
 		this.props.password = password;
 	}
 
-	public get token(): string | undefined {
+	get token(): string | undefined {
 		return this.props.token;
 	}
 
-	public get credentialHash(): string | undefined {
+	get credentialHash(): string | undefined {
 		return this.props.credentialHash;
 	}
 
-	public get lastLogin(): Date | undefined {
+	get lastLogin(): Date | undefined {
 		return this.props.lastLogin;
 	}
 
-	public set lastLogin(lastLogin: Date | undefined) {
+	set lastLogin(lastLogin: Date | undefined) {
 		this.props.lastLogin = lastLogin;
 	}
 
-	public get lasttriedFailedLogin(): Date | undefined {
+	get lasttriedFailedLogin(): Date | undefined {
 		return this.props.lasttriedFailedLogin;
 	}
 
-	public set lasttriedFailedLogin(lasttriedFailedLogin: Date | undefined) {
+	set lasttriedFailedLogin(lasttriedFailedLogin: Date | undefined) {
 		this.props.lasttriedFailedLogin = lasttriedFailedLogin;
 	}
 
-	public get expiresAt(): Date | undefined {
+	get expiresAt(): Date | undefined {
 		return this.props.expiresAt;
 	}
 
-	public get activated(): boolean | undefined {
+	get activated(): boolean | undefined {
 		return this.props.activated;
 	}
 
-	public set activated(activated: boolean | undefined) {
+	set activated(activated: boolean | undefined) {
 		this.props.activated = activated;
 	}
 
-	public get idmReferenceId(): string | undefined {
+	get idmReferenceId(): string | undefined {
 		return this.props.idmReferenceId;
 	}
 
-	public get deactivatedAt(): Date | undefined {
+	get deactivatedAt(): Date | undefined {
 		return this.props.deactivatedAt;
 	}
 

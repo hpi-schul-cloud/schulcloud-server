@@ -1,8 +1,10 @@
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
+import { RoomMembershipModule } from '@modules/room-membership';
 import { forwardRef, Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
-import { LoggerModule } from '@src/core/logger';
-import { RoomMembershipModule } from '@src/modules/room-membership';
+import { BoardContextApiHelperModule } from '../board-context';
+import { RoomModule } from '../room';
 import { BoardModule } from './board.module';
 import {
 	BoardController,
@@ -13,8 +15,6 @@ import {
 } from './controller';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
-import { RoomModule } from '../room';
-import { BoardContextApiHelperModule } from '../board-context';
 
 @Module({
 	imports: [

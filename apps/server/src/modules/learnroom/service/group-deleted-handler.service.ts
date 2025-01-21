@@ -2,7 +2,7 @@ import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Group, GroupDeletedEvent } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { Course, CourseSynchronizationStoppedLoggable } from '../domain';
 import { CourseDoService } from './course-do.service';
 
