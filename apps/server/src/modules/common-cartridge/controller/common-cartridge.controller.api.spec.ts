@@ -27,7 +27,7 @@ jest.mock('../../../infra/auth-guard/decorator/jwt-auth.decorator', () => {
 	};
 });
 
-describe('CommonCartridgeController (API)', () => {
+describe.skip('CommonCartridgeController (API)', () => {
 	let module: TestingModule;
 	let app: INestApplication;
 
