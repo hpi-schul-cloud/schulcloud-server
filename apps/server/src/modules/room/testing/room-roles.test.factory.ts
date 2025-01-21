@@ -1,6 +1,6 @@
 import { Role } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { roleFactory } from '@src/testing/factory/role.factory';
+import { roleFactory } from '@testing/factory/role.factory';
 
 export class RoomRolesTestFactory {
 	public static createRoomRoles(): {
