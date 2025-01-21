@@ -38,7 +38,9 @@ describe('Room Controller (API)', () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		config.FEATURE_ROOMS_ENABLED = true;
+
 		await em.clearCache('roles-cache-byname-roomeditor');
+		await em.clearCache('roles-cache-byname-teacher');
 	});
 
 	afterAll(async () => {
@@ -49,7 +51,8 @@ describe('Room Controller (API)', () => {
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
-			const targetUser = userFactory.buildWithId({ school: owner.school });
+			const teacherRole = owner.roles[0];
+			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
@@ -74,6 +77,7 @@ describe('Room Controller (API)', () => {
 				roomMemberships,
 				teacherAccount,
 				owner,
+				teacherRole,
 				teacherGuestRole,
 				studentGuestRole,
 				roomEditorRole,
@@ -161,7 +165,9 @@ describe('Room Controller (API)', () => {
 				const updatedRoomMembership = await loggedInClient.get(`/${room.id}/members`);
 				const body = updatedRoomMembership.body as RoomMemberListResponse;
 				expect(body.data).toEqual(
-					expect.arrayContaining([expect.objectContaining({ userId: targetUser.id, roleName: RoleName.ROOMEDITOR })])
+					expect.arrayContaining([
+						expect.objectContaining({ userId: targetUser.id, roomRoleName: RoleName.ROOMEDITOR }),
+					])
 				);
 			});
 
