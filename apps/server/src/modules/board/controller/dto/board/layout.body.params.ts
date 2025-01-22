@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, NotEquals } from 'class-validator';
-import { BoardLayout } from '../../../domain/types';
+import { IsEnum } from 'class-validator';
+import { BoardLayout } from '../../../domain';
 
 export class LayoutBodyParams {
 	@IsEnum(BoardLayout)
-	@NotEquals(BoardLayout[BoardLayout.COLUMNS])
 	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
 	public layout!: BoardLayout;
 }
