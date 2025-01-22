@@ -8,6 +8,7 @@ import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import NodeClam from 'clamscan';
+import type { Server } from 'node:net';
 import request from 'supertest';
 import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
@@ -18,9 +19,9 @@ const baseRouteName = '/file-security';
 const scanResult: ScanResultParams = { virus_detected: false };
 
 class API {
-	app: INestApplication;
+	app: INestApplication<Server>;
 
-	constructor(app: INestApplication) {
+	constructor(app: INestApplication<Server>) {
 		this.app = app;
 	}
 
@@ -39,7 +40,7 @@ class API {
 }
 
 describe(`${baseRouteName} (api)`, () => {
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let em: EntityManager;
 	let api: API;
 	let validId: string;

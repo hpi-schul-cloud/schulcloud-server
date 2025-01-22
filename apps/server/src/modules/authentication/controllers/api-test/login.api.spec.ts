@@ -17,6 +17,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
+import type { Server } from 'node:net';
 import request, { Response } from 'supertest';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
@@ -71,7 +72,7 @@ jest.mock('jwks-rsa', () => () => {
 describe('Login Controller (api)', () => {
 	const basePath = '/authentication';
 
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let em: EntityManager;
 
 	const defaultPassword = 'DummyPasswd!1';
