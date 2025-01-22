@@ -413,10 +413,15 @@ describe(TspFetchService.name, () => {
 				return { system };
 			};
 
-			it('should throw an OauthConfigMissingLoggableException', async () => {
+			it('should throw an OauthConfigMissingLoggableException into domainErrorHandler', async () => {
 				const { system } = setup();
 
-				await expect(() => sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
+				const result = await sut.fetchTspSchools(system, 1);
+				expect(result).toStrictEqual([]);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
+					new ErrorLoggable(new OauthConfigMissingLoggableException(system.id))
+				);
 			});
 		});
 	});

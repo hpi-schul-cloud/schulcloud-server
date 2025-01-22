@@ -1,3 +1,4 @@
+import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@infra/console';
@@ -28,6 +29,7 @@ import { SyncUc } from './uc/sync.uc';
 @Module({
 	imports: [
 		LoggerModule,
+		ErrorModule,
 		ConsoleWriterModule,
 		SystemModule,
 		SchoolModule,

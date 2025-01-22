@@ -1,5 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { TspAccessTokenLoggableError } from '@infra/sync/strategy/tsp/loggable/tsp-access-token.loggable-error';
 import { OauthAdapterService } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
@@ -78,7 +79,7 @@ export class TspClientFactory {
 			} else {
 				this.domainErrorHandler.exec(new ErrorLoggable(e));
 			}
-			return Promise.reject();
+			return Promise.reject(new TspAccessTokenLoggableError());
 		}
 	}
 

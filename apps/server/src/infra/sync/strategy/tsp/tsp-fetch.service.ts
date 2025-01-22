@@ -68,8 +68,9 @@ export class TspFetchService {
 		fetchFunction: (client: ExportApiInterface) => Promise<AxiosResponse<T>>,
 		defaultValue: T
 	): Promise<T> {
-		const client = this.createClient(system);
 		try {
+			const client = this.createClient(system);
+
 			const response = await fetchFunction(client);
 			const { data } = response;
 

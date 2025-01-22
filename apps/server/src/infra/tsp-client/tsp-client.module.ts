@@ -1,11 +1,12 @@
+import { ErrorModule } from '@core/error';
+import { LoggerModule } from '@core/logger';
 import { OauthModule } from '@modules/oauth';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '../encryption';
 import { TspClientFactory } from './tsp-client-factory';
 
 @Module({
-	imports: [LoggerModule, OauthModule, EncryptionModule],
+	imports: [LoggerModule, OauthModule, EncryptionModule, ErrorModule],
 	providers: [TspClientFactory],
 	exports: [TspClientFactory],
 })

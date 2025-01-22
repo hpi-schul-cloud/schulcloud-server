@@ -2,6 +2,7 @@ import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { TspAccessTokenLoggableError } from '@infra/sync/strategy/tsp/loggable/tsp-access-token.loggable-error';
 import { OauthAdapterService } from '@modules/oauth';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
@@ -167,7 +168,7 @@ describe('TspClientFactory', () => {
 			it('should log an AxiosErrorLoggable as warning and reject', async () => {
 				const params = setup();
 
-				await expect(() => sut.getAccessToken(params)).rejects.toBeUndefined();
+				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
 
 				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
 					new AxiosErrorLoggable(new AxiosError(), 'TSP_OAUTH_ERROR')
@@ -197,7 +198,7 @@ describe('TspClientFactory', () => {
 			it('should log an ErrorLoggable as warning and reject', async () => {
 				const params = setup();
 
-				await expect(() => sut.getAccessToken(params)).rejects.toBeUndefined();
+				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
 
 				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
 			});
