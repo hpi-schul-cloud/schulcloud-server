@@ -14,11 +14,13 @@ export class DeletionExecutionConsole {
 		options: [
 			{
 				flags: '-l, --limit <value>',
+				fn: (value: string) => (value ? Number(value) : undefined),
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},
 			{
 				flags: '-f, --runFailed <value>',
+				fn: (value: string) => /^(true|yes|1)$/i.test(value),
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},
@@ -31,10 +33,7 @@ export class DeletionExecutionConsole {
 		let result: DeletionExecutionTriggerResult;
 
 		try {
-			const limit = options.limit ? Number(options.limit) : undefined;
-			const runFailed = options.runFailed ?? false;
-			await this.deletionExecutionUc.triggerDeletionExecution(limit, runFailed);
-
+			await this.deletionExecutionUc.triggerDeletionExecution(options.limit, options.runFailed);
 			result = DeletionExecutionTriggerResultBuilder.buildSuccess();
 		} catch (err) {
 			result = DeletionExecutionTriggerResultBuilder.buildFailure(err as Error);
