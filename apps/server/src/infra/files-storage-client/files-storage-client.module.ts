@@ -2,7 +2,7 @@ import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { extractJwtFromRequest } from '@shared/common/utils/jwt';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { Request } from 'express';
 import { HttpModule } from '@nestjs/axios';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
