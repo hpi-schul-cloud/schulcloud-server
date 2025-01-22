@@ -127,7 +127,7 @@ describe(DeletionRequestService.name, () => {
 				const deletionRequest1 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 				const deletionRequest2 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 
-				deletionRequestRepo.findAllItemsToExecution.mockResolvedValue([deletionRequest1, deletionRequest2]);
+				deletionRequestRepo.findAllItems.mockResolvedValue([deletionRequest1, deletionRequest2]);
 
 				const deletionRequests = [deletionRequest1, deletionRequest2];
 
@@ -140,7 +140,7 @@ describe(DeletionRequestService.name, () => {
 				await service.findAllItemsToExecute(limit);
 
 				// TODO fix date comparison
-				expect(deletionRequestRepo.findAllItemsToExecution).toBeCalledWith(limit, expect.any(Date), expect.any(Date));
+				expect(deletionRequestRepo.findAllItems).toBeCalledWith(limit, expect.any(Date), expect.any(Date));
 			});
 
 			it('should return array of two deletionRequests to execute', async () => {

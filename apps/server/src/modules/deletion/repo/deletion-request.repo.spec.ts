@@ -117,7 +117,7 @@ describe(DeletionRequestRepo.name, () => {
 			};
 			it('should return empty array', async () => {
 				const { limit, olderThan, newerThan } = setup();
-				const result = await repo.findAllItemsToExecution(limit, olderThan, newerThan);
+				const result = await repo.findAllItems(limit, olderThan, newerThan);
 
 				expect(result).toEqual([]);
 			});
@@ -200,7 +200,7 @@ describe(DeletionRequestRepo.name, () => {
 				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit, olderThan, newerThan } =
 					await setup();
 
-				const results = await repo.findAllItemsToExecution(limit, olderThan, newerThan);
+				const results = await repo.findAllItems(limit, olderThan, newerThan);
 
 				expect(results.length).toEqual(2);
 
@@ -221,7 +221,7 @@ describe(DeletionRequestRepo.name, () => {
 			it('should find deletionRequests to execute with limit = 2', async () => {
 				const { expectedArray, olderThan, newerThan } = await setup();
 
-				const results = await repo.findAllItemsToExecution(2, olderThan, newerThan);
+				const results = await repo.findAllItems(2, olderThan, newerThan);
 
 				expect(results.length).toEqual(2);
 

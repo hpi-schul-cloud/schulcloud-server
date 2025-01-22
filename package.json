@@ -91,7 +91,7 @@
 		"nest:start:console:debug": "nest start console --debug --watch --",
 		"nest:start:deletion-console": "nest start deletion-console --",
 		"nest:start:deletion-console:dev": "nest start deletion-console --watch --",
-		"nest:start:deletion-console:debug": "nest start deletion-console --debug --watch --",
+		"nest:start:deletion-console:debug": "nest start deletion-console --debug --watch -- execution trigger -f true",
 		"nest:start:idp-console": "nest start idp-console --",
 		"nest:start:idp-console:dev": "nest start idp-console --watch --",
 		"nest:start:idp-console:debug": "nest start idp-console --debug --watch --",

@@ -32,18 +32,10 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(limit: number, olderThan: Date, newerThan: Date): Promise<DeletionRequest[]> {
-		if (olderThan < newerThan) {
-			throw new Error('olderThan must be greater than newerThan');
-		}
+	async findAllItems(limit: number): Promise<DeletionRequest[]> {
 		const scope = new DeletionRequestScope();
 		scope.byDeleteAfter(new Date());
-
-		const statusScope = new DeletionRequestScope('$or');
-		statusScope.byStatusAndDate([StatusModel.REGISTERED]);
-		this.addScopeForFailedRequests(statusScope, olderThan, newerThan);
-
-		scope.addQuery(statusScope.query);
+		scope.byStatusAndDate([StatusModel.REGISTERED]);
 
 		const order = { createdAt: SortOrder.asc };
 
@@ -57,17 +49,24 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	private addScopeForFailedRequests(scope: DeletionRequestScope, olderThan: Date, newerThan: Date): void {
-		scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan, newerThan);
-	}
-
-	async countPendingDeletionRequests(olderThan: Date, newerThan: Date): Promise<number> {
+	async findAllFailedItems(limit: number, olderThan: Date, newerThan: Date): Promise<DeletionRequest[]> {
+		if (olderThan < newerThan) {
+			throw new Error('olderThan must be greater than newerThan');
+		}
 		const scope = new DeletionRequestScope();
-		this.addScopeForFailedRequests(scope, olderThan, newerThan);
+		scope.byDeleteAfter(new Date());
+		scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan, newerThan);
 
-		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+		const order = { createdAt: SortOrder.asc };
 
-		return numberItemsWithStatusPending;
+		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+			limit,
+			orderBy: order,
+		});
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
 	}
 
 	async update(deletionRequest: DeletionRequest): Promise<void> {

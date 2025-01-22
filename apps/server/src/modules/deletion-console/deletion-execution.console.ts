@@ -17,6 +17,11 @@ export class DeletionExecutionConsole {
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},
+			{
+				flags: '-f, --runFailed <value>',
+				description: 'Limit of the requested deletion executions that should be performed.',
+				required: false,
+			},
 		],
 	})
 	async triggerDeletionExecution(options: TriggerDeletionExecutionOptions): Promise<void> {
@@ -26,7 +31,9 @@ export class DeletionExecutionConsole {
 		let result: DeletionExecutionTriggerResult;
 
 		try {
-			await this.deletionExecutionUc.triggerDeletionExecution(options.limit ? Number(options.limit) : undefined);
+			const limit = options.limit ? Number(options.limit) : undefined;
+			const runFailed = options.runFailed ?? false;
+			await this.deletionExecutionUc.triggerDeletionExecution(limit, runFailed);
 
 			result = DeletionExecutionTriggerResultBuilder.buildSuccess();
 		} catch (err) {

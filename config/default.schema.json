@@ -1399,7 +1399,7 @@
 				},
 				"DELETION_CONSIDER_FAILED_AFTER_MS" : {
 					"type": "number",
-					"default": 3600000,
+					"default": 360000000,
 					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
 				},
 				"DELETION_MAX_CONCURRENT_DELETION_REQUESTS": {
