@@ -49,11 +49,11 @@ export class MediaAvailableLineUc {
 			schoolExternalToolsForAvailableMediaLine
 		);
 
-		const tools = await this.getFilteredTools(userId, user.school.id, matchedTools);
+		const filteredTools = await this.getFilteredTools(userId, user.school.id, matchedTools);
 
 		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
 			mediaBoard,
-			tools
+			filteredTools
 		);
 
 		return mediaAvailableLine;
