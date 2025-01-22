@@ -1249,12 +1249,18 @@ describe(VideoConferenceService.name, () => {
 		});
 
 		describe('when conference scope is VideoConferenceScope.EVENT', () => {
-			it('should throw a ForbiddenException if the user is not an expert for an event conference', async () => {
-				const { userId, scopeId, team } = setup(VideoConferenceScope.EVENT);
+			const setupForEvent = () => {
+				const { userId, scopeId, team, conferenceScope } = setup(VideoConferenceScope.EVENT);
 				teamsRepo.findById.mockResolvedValue(team);
 				calendarService.findEvent.mockResolvedValue({ title: 'Event', teamId: team.id });
 
-				const func = () => service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, VideoConferenceScope.EVENT);
+				return { userId, conferenceScope, scopeId };
+			};
+
+			it('should throw a ForbiddenException if the user is not an expert for an event conference', async () => {
+				const { userId, conferenceScope, scopeId } = setupForEvent();
+
+				const func = () => service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));
 			});
