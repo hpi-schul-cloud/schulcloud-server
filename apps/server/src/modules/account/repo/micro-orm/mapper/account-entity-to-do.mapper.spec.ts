@@ -1,6 +1,6 @@
-import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
 import { AccountEntity } from '../../../domain/entity/account.entity';
 import { accountFactory } from '../../../testing';
+import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
 
 describe('AccountEntityToDoMapper', () => {
 	beforeEach(() => {
@@ -16,7 +16,7 @@ describe('AccountEntityToDoMapper', () => {
 	describe('mapToDo', () => {
 		describe('When mapping AccountEntity to Account', () => {
 			const setup = () => {
-				const accountEntity = accountFactory.withAllProperties().buildWithId({}, '000000000000000000000001');
+				const accountEntity = accountFactory.withAllProperties().buildWithId();
 
 				const missingSystemUserIdEntity: AccountEntity = accountFactory.withoutSystemAndUserId().build();
 
@@ -28,7 +28,21 @@ describe('AccountEntityToDoMapper', () => {
 
 				const ret = AccountEntityToDoMapper.mapToDo(accountEntity);
 
-				expect({ ...ret.getProps(), _id: accountEntity._id }).toMatchObject(accountEntity);
+				expect({ ...ret.getProps(), _id: accountEntity._id }).toMatchObject({
+					id: accountEntity.id,
+					createdAt: accountEntity.createdAt,
+					updatedAt: accountEntity.updatedAt,
+					userId: accountEntity.userId?.toHexString(),
+					systemId: accountEntity.systemId?.toHexString(),
+					username: accountEntity.username,
+					password: accountEntity.password,
+					token: accountEntity.token,
+					credentialHash: accountEntity.credentialHash,
+					lastLogin: accountEntity.lastLogin,
+					expiresAt: accountEntity.expiresAt,
+					activated: accountEntity.activated,
+					deactivatedAt: accountEntity.deactivatedAt,
+				});
 			});
 
 			it('should ignore missing ids', () => {
