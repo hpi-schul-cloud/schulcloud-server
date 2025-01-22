@@ -37,7 +37,7 @@ describe(BoardsClientAdapter.name, () => {
 	});
 
 	describe('createBoard', () => {
-		describe('when createBoard is called', () => {
+		describe('when creating a board', () => {
 			const setup = () => {
 				const params: CreateBoardBodyParams = {
 					title: faker.lorem.words(),
@@ -69,7 +69,7 @@ describe(BoardsClientAdapter.name, () => {
 	});
 
 	describe('getBoardSkeletonById', () => {
-		describe('when getBoardSkeletonById is called', () => {
+		describe('when reading a board', () => {
 			const setup = () => {
 				const boardId = faker.string.uuid();
 				const responseData: BoardResponse = {
