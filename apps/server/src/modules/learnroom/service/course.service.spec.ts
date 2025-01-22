@@ -176,19 +176,22 @@ describe('CourseService', () => {
 	});
 
 	describe('create', () => {
-		const setup = () => {
-			const course = courseFactory.buildWithId();
-			legacyCourseRepo.createCourse.mockResolvedValueOnce(course);
+		describe('when creating new Course', () => {
+			const setup = () => {
+				const course = courseFactory.buildWithId();
 
-			return { course };
-		};
+				legacyCourseRepo.createCourse.mockResolvedValueOnce(course);
 
-		it('should call createCourse from course repository', async () => {
-			const { course } = setup();
+				return { course };
+			};
 
-			await expect(courseService.create(course)).resolves.not.toThrow();
+			it('should call createCourse from course repository', async () => {
+				const { course } = setup();
 
-			expect(legacyCourseRepo.createCourse).toBeCalledWith(course);
+				await expect(courseService.create(course)).resolves.not.toThrow();
+
+				expect(legacyCourseRepo.createCourse).toBeCalledWith(course);
+			});
 		});
 	});
 
@@ -232,26 +235,6 @@ describe('CourseService', () => {
 				await courseService.handle({ deletionRequestId, targetRefId });
 
 				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
-			});
-		});
-	});
-
-	describe('create', () => {
-		describe('when creating new Course', () => {
-			const setup = () => {
-				const course = courseFactory.buildWithId();
-
-				legacyCourseRepo.createCourse.mockResolvedValueOnce(course);
-
-				return { course };
-			};
-
-			it('should call createCourse from course repository', async () => {
-				const { course } = setup();
-
-				await expect(courseService.create(course)).resolves.not.toThrow();
-
-				expect(legacyCourseRepo.createCourse).toBeCalledWith(course);
 			});
 		});
 	});
