@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import crypto, { Hash } from 'crypto';
@@ -183,7 +183,7 @@ describe(BBBService.name, () => {
 				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbCreateResponse.data);
 
 				const error = new InternalServerErrorException(
-					`${bbbCreateResponse.data.response.messageKey}, ${bbbCreateResponse.data.response.message}`
+					`${bbbCreateResponse.data.response.messageKey}: ${bbbCreateResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
 					null,
@@ -238,7 +238,7 @@ describe(BBBService.name, () => {
 				jest.spyOn(service, 'xml2object').mockReturnValueOnce(bbbBaseResponse.data);
 
 				const error = new InternalServerErrorException(
-					`${bbbBaseResponse.data.response.messageKey}, ${bbbBaseResponse.data.response.message}`
+					`${bbbBaseResponse.data.response.messageKey}: ${bbbBaseResponse.data.response.message}`
 				);
 				const expectedError = new InternalServerErrorException(
 					null,
@@ -251,7 +251,7 @@ describe(BBBService.name, () => {
 			it('should throw an error if there is a different return code then success', async () => {
 				const { param, expectedError } = setup();
 
-				await expect(service.end(param)).rejects.toThrowError(expectedError);
+				await expect(service.end(param)).rejects.toThrow(expectedError);
 			});
 		});
 	});

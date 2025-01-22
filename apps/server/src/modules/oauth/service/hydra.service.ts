@@ -9,7 +9,7 @@ import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 import QueryString from 'qs';

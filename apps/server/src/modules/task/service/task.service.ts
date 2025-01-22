@@ -19,7 +19,7 @@ import { Task } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

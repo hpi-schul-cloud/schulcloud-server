@@ -25,7 +25,7 @@ export class FileContentBody {
 }
 
 export class FileElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.FILE })
+	@ApiProperty({ type: () => ContentElementType.FILE })
 	type!: ContentElementType.FILE;
 
 	@ValidateNested()
@@ -60,7 +60,7 @@ export class LinkContentBody {
 }
 
 export class LinkElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.LINK })
+	@ApiProperty({ type: () => ContentElementType.LINK })
 	type!: ContentElementType.LINK;
 
 	@ValidateNested()
@@ -75,7 +75,7 @@ export class DrawingContentBody {
 }
 
 export class DrawingElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.DRAWING })
+	@ApiProperty({ type: () => ContentElementType.DRAWING })
 	type!: ContentElementType.DRAWING;
 
 	@ValidateNested()
@@ -94,7 +94,7 @@ export class RichTextContentBody {
 }
 
 export class RichTextElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.RICH_TEXT })
+	@ApiProperty({ type: () => ContentElementType.RICH_TEXT })
 	type!: ContentElementType.RICH_TEXT;
 
 	@ValidateNested()
@@ -112,7 +112,7 @@ export class SubmissionContainerContentBody {
 }
 
 export class SubmissionContainerElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.SUBMISSION_CONTAINER })
+	@ApiProperty({ type: () => ContentElementType.SUBMISSION_CONTAINER })
 	type!: ContentElementType.SUBMISSION_CONTAINER;
 
 	@ValidateNested()
@@ -128,7 +128,7 @@ export class ExternalToolContentBody {
 }
 
 export class ExternalToolElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.EXTERNAL_TOOL })
+	@ApiProperty({ type: () => ContentElementType.EXTERNAL_TOOL })
 	type!: ContentElementType.EXTERNAL_TOOL;
 
 	@ValidateNested()
@@ -143,7 +143,7 @@ export class VideoConferenceContentBody {
 }
 
 export class VideoConferenceElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: ContentElementType.VIDEO_CONFERENCE })
+	@ApiProperty({ type: () => ContentElementType.VIDEO_CONFERENCE })
 	type!: ContentElementType.VIDEO_CONFERENCE;
 
 	@ValidateNested()
@@ -188,7 +188,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(VideoConferenceElementContentBody) },
 		],
 	})
-	data!:
+	public data!:
 		| FileElementContentBody
 		| LinkElementContentBody
 		| RichTextElementContentBody

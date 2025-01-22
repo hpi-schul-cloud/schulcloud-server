@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { ErrorMapper, FilesPreviewEvents, FilesPreviewExchange } from '../rabbitmq';
 import { PreviewFileOptions } from './interface';

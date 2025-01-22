@@ -5,7 +5,7 @@ import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/li
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';

@@ -4,7 +4,7 @@ import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';

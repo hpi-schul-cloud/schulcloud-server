@@ -11,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { importUserFactory } from '@testing/factory/import-user.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
