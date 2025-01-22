@@ -1673,8 +1673,13 @@
 		},
 		"FEATURE_ROOMS_ENABLED": {
 			"type": "boolean",
-			"default": "false",
+			"default": "true",
 			"description": "Enables the rooms feature"
+		},
+		"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the ability to change permissions of room members"
 		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",

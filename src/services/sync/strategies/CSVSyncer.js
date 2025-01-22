@@ -1,5 +1,4 @@
 const { parse } = require('papaparse');
-const stripBOM = require('strip-bom');
 const { mix } = require('mixwith');
 const { Forbidden } = require('@feathersjs/errors');
 const { Configuration } = require('@hpi-schul-cloud/commons');
@@ -8,6 +7,14 @@ const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
 const { SC_TITLE } = require('../../../../config/globals');
 const { equal } = require('../../../helper/compare').ObjectId;
+
+function stripBOM(string) {
+	if (typeof string === 'string' && string.charCodeAt(0) === 0xfeff) {
+		return string.slice(1);
+	}
+
+	return string;
+}
 
 const ATTRIBUTES = [
 	{ name: 'namePrefix', aliases: ['nameprefix', 'prefix', 'title', 'affix'] },
