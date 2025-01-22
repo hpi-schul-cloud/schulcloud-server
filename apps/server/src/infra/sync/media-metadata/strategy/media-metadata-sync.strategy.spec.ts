@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceSyncService } from '@modules/media-source/service';
 import { mediaSourceSyncReportFactory } from '@modules/media-source/testing';

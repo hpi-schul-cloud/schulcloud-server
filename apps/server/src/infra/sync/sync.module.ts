@@ -14,8 +14,6 @@ import { SchoolLicenseModule } from '@modules/school-license/school-license.modu
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { ProvisioningModule } from '@src/modules/provisioning';
 import { SyncConsole } from './console/sync.console';
 import { VidisFetchService, VidisSyncService, VidisSyncStrategy } from './media-licenses';
 import { MediaMetadataSyncStrategy } from './media-metadata';

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { MediaSourceSyncService } from '@modules/media-source/service';
 import { MediaSourceSyncReport } from '@modules/media-source/domain';
 import { SyncStrategy } from '../../strategy/sync-strategy';

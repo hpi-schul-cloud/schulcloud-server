@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { MediaSourceSyncOperationReport, MediaSourceSyncReport } from '@modules/media-source/domain';
 
 export class MediaMetadataSyncReportLoggable implements Loggable {
