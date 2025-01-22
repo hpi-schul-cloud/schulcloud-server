@@ -1,9 +1,9 @@
-import { MediaSource } from '@modules/media-source';
-import { MediaSchoolLicenseService, MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
-import { School, SchoolService } from '@modules/school';
-import { OfferDTO } from '@infra/vidis-client';
 import { Logger } from '@core/logger';
+import { OfferDTO } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaSource } from '@modules/media-source';
+import { School, SchoolService } from '@modules/school';
+import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
 import { Injectable } from '@nestjs/common';
 import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '../loggable';
 
@@ -78,7 +78,9 @@ export class VidisSyncService {
 		);
 
 		const newLicenses = await Promise.all(newLicensesPromises);
-		const filteredLicenses = newLicenses.filter<MediaSchoolLicense>((license: MediaSchoolLicense | null) => !!license);
+		const filteredLicenses = newLicenses.filter(
+			(license: MediaSchoolLicense | null): license is MediaSchoolLicense => !!license
+		);
 
 		if (filteredLicenses.length) {
 			await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(filteredLicenses);

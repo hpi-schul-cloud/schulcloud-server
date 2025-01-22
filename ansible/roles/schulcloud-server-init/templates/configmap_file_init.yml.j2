@@ -569,10 +569,11 @@ data:
                 "sourceId" : "vidis.fwu.de",
                 "createdAt": new Date(),
                 "updatedAt": new Date(),
-                "basicAuthConfig" : {
+                "vidisConfig" : {
                    "username" : "'$MEDIA_SOURCE_VIDIS_USERNAME'",
                    "password" : "'$MEDIA_SOURCE_VIDIS_PASSWORD'",
-                   "authEndpoint" : "https://service-stage.vidis.schule/o/vidis-rest/v1.0/offers/activated/by-region/test-region"
+                   "baseUrl" : "https://service-stage.vidis.schule/o/vidis-rest"
+                   "region": "test-region",
                 }
              }
          );'

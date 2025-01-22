@@ -1,14 +1,11 @@
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { MediaSourceBasicAuthConfigNotFoundLoggableException } from './media-source-basic-auth-config-not-found-loggable.exception';
+import { MediaSourceVidisConfigNotFoundLoggableException } from './media-source-vidis-config-not-found-loggable.exception';
 
-describe(MediaSourceBasicAuthConfigNotFoundLoggableException.name, () => {
+describe(MediaSourceVidisConfigNotFoundLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const mediaSource = mediaSourceFactory.build();
-			const exception = new MediaSourceBasicAuthConfigNotFoundLoggableException(
-				mediaSource.id,
-				mediaSource.name as string
-			);
+			const exception = new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, mediaSource.name as string);
 
 			return {
 				mediaSource,
