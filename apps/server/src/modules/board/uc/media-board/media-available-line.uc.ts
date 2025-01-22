@@ -95,7 +95,7 @@ export class MediaAvailableLineUc {
 		}
 
 		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
-			filteredTools = await this.filterUnlicensedToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
+			filteredTools = await this.getUnlicensedToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
 		}
 
 		return filteredTools;
@@ -120,7 +120,7 @@ export class MediaAvailableLineUc {
 		return filteredTools;
 	}
 
-	private async filterUnlicensedToolsForUserAndSchool(
+	private async getUnlicensedToolsForUserAndSchool(
 		schoolId: EntityId,
 		tools: [ExternalTool, SchoolExternalTool][],
 		userTools: [ExternalTool, SchoolExternalTool][]
@@ -129,7 +129,7 @@ export class MediaAvailableLineUc {
 			schoolId
 		);
 
-		const filteredTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
+		const schoolTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
 			if (externalToolMedium) {
 				return this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, schoolLicenses);
@@ -137,9 +137,9 @@ export class MediaAvailableLineUc {
 			return true;
 		});
 
-		const filteredToolsForUserAndSchool = Array.from(new Set([...filteredTools, ...userTools]));
+		const schoolAndUserTools = Array.from(new Set([...schoolTools, ...userTools]));
 
-		return filteredToolsForUserAndSchool;
+		return schoolAndUserTools;
 	}
 
 	private checkFeatureEnabled(): void {
