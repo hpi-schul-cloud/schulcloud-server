@@ -105,7 +105,12 @@ describe(SchoolSystemOptionsService.name, () => {
 		});
 
 		describe('when there are no options', () => {
+			const setup = () => {
+				schoolSystemOptionsRepo.findBySchoolIdAndSystemId.mockResolvedValue(null);
+			};
+
 			it('should return the default options', async () => {
+				setup();
 				const result: SchulConneXProvisioningOptions = await service.getProvisioningOptions(
 					SchulConneXProvisioningOptions,
 					new ObjectId().toHexString(),

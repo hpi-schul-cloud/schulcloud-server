@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { OauthSSOController } from './controller/oauth-sso.controller';
 import { OauthModule } from './oauth.module';
 import { HydraOauthUc } from './uc';

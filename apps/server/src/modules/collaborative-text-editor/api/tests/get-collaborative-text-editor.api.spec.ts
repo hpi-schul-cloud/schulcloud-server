@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { EtherpadClientAdapter } from '@infra/etherpad-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
-import { EtherpadClientAdapter } from '@src/infra/etherpad-client';
-import { BoardExternalReferenceType } from '@src/modules/board';
+import { BoardExternalReferenceType } from '@modules/board';
 import {
 	cardEntityFactory,
 	collaborativeTextEditorEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
-} from '@src/modules/board/testing';
-import { ServerTestModule } from '@src/modules/server';
+} from '@modules/board/testing';
+import { ServerTestModule } from '@modules/server';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

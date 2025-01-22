@@ -1,8 +1,8 @@
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { EntityId } from '@shared/domain/types';
-import { FileRecordParentType } from '@src/infra/rabbitmq';
 import { CopyContext } from './board-node-copy.service';
 
 export type StorageLocationReference = {

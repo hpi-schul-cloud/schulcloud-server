@@ -8,7 +8,7 @@ import { Page, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { Group, GroupUser, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
 import { ResolvedGroupDto, ResolvedGroupUser } from './dto';

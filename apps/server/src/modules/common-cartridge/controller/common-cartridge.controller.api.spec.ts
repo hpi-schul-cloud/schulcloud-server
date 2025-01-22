@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
+import { CoursesApi } from '@infra/courses-client/generated';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoursesApi } from '@src/infra/courses-client/generated';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import type { Server } from 'node:net';
 import supertest from 'supertest';
 import { CommonCartridgeApiModule } from '../common-cartridge-api.app.module';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
@@ -30,7 +31,7 @@ jest.setTimeout(10000);
 
 describe('CommonCartridgeController (API)', () => {
 	let module: TestingModule;
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

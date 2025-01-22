@@ -4,5 +4,5 @@ import { Account } from '../../../domain/account';
 
 @Injectable()
 export abstract class AccountIdmToDoMapper {
-	abstract mapToDo(account: IdmAccount): Account;
+	public abstract mapToDo(account: IdmAccount): Account;
 }
