@@ -1,7 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { MediaSourceBasicAuthConfig } from './media-source-basic-auth-config';
 import { MediaSourceOauthConfig } from './media-source-oauth-config';
-import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceDataFormat } from '../../enum';
 
 export interface MediaSourceProps extends AuthorizableObject {
 	id: string;
