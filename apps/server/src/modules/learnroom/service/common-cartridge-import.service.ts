@@ -27,8 +27,6 @@ export class CommonCartridgeImportService {
 		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
-	public counter = 0;
-
 	public async importFile(user: User, file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 		const course = new Course({ teachers: [user], school: user.school, name: parser.getTitle() });
@@ -52,7 +50,7 @@ export class CommonCartridgeImportService {
 		boardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
-		this.counter = 0;
+		const counter = 0;
 		const columnBoard = this.boardNodeFactory.buildColumnBoard({
 			context: {
 				type: BoardExternalReferenceType.Course,
@@ -63,14 +61,15 @@ export class CommonCartridgeImportService {
 		});
 		await this.boardNodeService.addRoot(columnBoard);
 
-		await this.createColumns(parser, columnBoard, boardProps, organizations);
+		await this.createColumns(parser, columnBoard, boardProps, organizations, counter);
 	}
 
 	private async createColumns(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
 		boardProps: CommonCartridgeImportOrganizationProps,
-		organizations: CommonCartridgeImportOrganizationProps[]
+		organizations: CommonCartridgeImportOrganizationProps[],
+		counter: number
 	): Promise<void> {
 		const columnsWithResource = organizations.filter(
 			(organization) =>
@@ -78,7 +77,7 @@ export class CommonCartridgeImportService {
 		);
 
 		for await (const columnWithResource of columnsWithResource) {
-			await this.createColumnWithResource(parser, columnBoard, columnWithResource);
+			await this.createColumnWithResource(parser, columnBoard, columnWithResource, counter + 1);
 		}
 
 		const columnsWithoutResource = organizations.filter(
@@ -87,17 +86,18 @@ export class CommonCartridgeImportService {
 		);
 
 		for await (const columnWithoutResource of columnsWithoutResource) {
-			await this.createColumn(parser, columnBoard, columnWithoutResource, organizations);
+			await this.createColumn(parser, columnBoard, columnWithoutResource, organizations, counter + 1);
 		}
 	}
 
 	private async createColumnWithResource(
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
-		columnProps: CommonCartridgeImportOrganizationProps
+		columnProps: CommonCartridgeImportOrganizationProps,
+		counter: number
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
-		column.title = `${(this.counter += 1)}`;
+		column.title = `${counter}`;
 		await this.boardNodeService.addToParent(columnBoard, column);
 		await this.createCardWithElement(parser, column, columnProps);
 	}
@@ -106,11 +106,12 @@ export class CommonCartridgeImportService {
 		parser: CommonCartridgeFileParser,
 		columnBoard: ColumnBoard,
 		columnProps: CommonCartridgeImportOrganizationProps,
-		organizations: CommonCartridgeImportOrganizationProps[]
+		organizations: CommonCartridgeImportOrganizationProps[],
+		counter: number
 	): Promise<void> {
 		const column = this.boardNodeFactory.buildColumn();
 		await this.boardNodeService.addToParent(columnBoard, column);
-		column.title = `${(this.counter += 1)}`;
+		column.title = `${counter}`;
 
 		const cards = organizations.filter(
 			(organization) => organization.pathDepth === 2 && organization.path.startsWith(columnProps.path)

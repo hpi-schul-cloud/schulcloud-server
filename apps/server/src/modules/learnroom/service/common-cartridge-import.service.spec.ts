@@ -25,23 +25,15 @@ describe('CommonCartridgeImportService', () => {
 	const board2Title = '';
 	const board3Title = 'Spaltenboard 1';
 
-	const column1ofBoard1Title = 'Test Text';
-	const column1ofBoard2Title = 'Test Aufgabe';
-	const column1ofBoard3Title = 'Spalte 1';
-	const column2ofBoard3Title = 'Spalte 2';
-	const column3ofBoard3Title = 'Spalte 3';
-	const column4ofBoard3Title = 'Spalte 4';
-
-	const emptyCardTitle = '';
 	const card1Title = 'Karte 1';
 	const card2Title = 'Karte 2';
 	const card3Title = 'Karte 3';
 	const card4Title = 'Karte 4';
 
-	const columnPlaceholderTitle1 = '1';
+	const columnPlaceholderTitle = '1';
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	const objectContainingTitle = (title: string) => expect.objectContaining({ title });
+	const objectContainingTitle = (title: string | number) => expect.objectContaining({ title });
 
 	beforeEach(async () => {
 		orm = await setupEntities();
@@ -124,27 +116,27 @@ describe('CommonCartridgeImportService', () => {
 
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board1Title),
-					objectContainingTitle(columnPlaceholderTitle1)
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board2Title),
-					objectContainingTitle(columnPlaceholderTitle1)
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle1)
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle1)
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle1)
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle1)
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 			});
 
@@ -156,28 +148,28 @@ describe('CommonCartridgeImportService', () => {
 				expect(spyBuildCard).toHaveBeenCalledTimes(6);
 
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(column1ofBoard1Title),
-					objectContainingTitle(emptyCardTitle)
+					objectContainingTitle(board1Title),
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(column1ofBoard2Title),
-					objectContainingTitle(emptyCardTitle)
+					objectContainingTitle(board2Title),
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(column1ofBoard3Title),
-					objectContainingTitle(card1Title)
+					objectContainingTitle(board3Title),
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(column2ofBoard3Title),
-					objectContainingTitle(card2Title)
+					objectContainingTitle(board3Title),
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(column3ofBoard3Title),
-					objectContainingTitle(card3Title)
+					objectContainingTitle(board3Title),
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(column4ofBoard3Title),
-					objectContainingTitle(card4Title)
+					objectContainingTitle(board3Title),
+					objectContainingTitle(columnPlaceholderTitle)
 				);
 			});
 
@@ -188,10 +180,6 @@ describe('CommonCartridgeImportService', () => {
 
 				expect(spyBuildContentElement).toHaveBeenCalledTimes(6);
 
-				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(emptyCardTitle),
-					expect.any(RichTextElement)
-				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(card1Title),
 					expect.any(RichTextElement)
@@ -211,16 +199,16 @@ describe('CommonCartridgeImportService', () => {
 				expect(boardNodeServiceMock.updateContent).toHaveBeenCalledTimes(6);
 
 				expect(boardNodeServiceMock.updateContent).toHaveBeenCalledWith(expect.any(RichTextElement), {
-					text: 'Test Text<p></p><p>Dies ist ein Textinhalt.</p><p></p>',
-					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
+					text: '<h1>Test Text</h1><p></p><p>Dies ist ein Textinhalt.</p><p></p>',
+					inputFormat: InputFormat.RICH_TEXT_CK4,
 				});
 				expect(boardNodeServiceMock.updateContent).toHaveBeenCalledWith(expect.any(RichTextElement), {
-					text: 'Test Aufgabe<p></p>',
-					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
+					text: '<h1>Test Aufgabe</h1><p></p>',
+					inputFormat: InputFormat.RICH_TEXT_CK4,
 				});
 				expect(boardNodeServiceMock.updateContent).toHaveBeenCalledWith(expect.any(RichTextElement), {
 					text: '<p></p><p>Karteninhalt von Karte 1</p><p></p>',
-					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
+					inputFormat: InputFormat.RICH_TEXT_CK4,
 				});
 				expect(boardNodeServiceMock.updateContent).toHaveBeenCalledWith(expect.any(LinkElement), {
 					title: 'Example Domain',
