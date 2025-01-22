@@ -49,15 +49,17 @@ export class MediaAvailableLineUc {
 			schoolExternalToolsForAvailableMediaLine
 		);
 
-		let matchedTools = [...availableTools];
+		let matchedTools = availableTools;
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			matchedTools = await this.filterUnlicensedToolsForUser(userId, matchedTools);
+			const matchedToolsForUser = await this.filterUnlicensedToolsForUser(userId, matchedTools);
+			matchedTools = matchedToolsForUser;
 		}
 
 		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
 			const matchedToolsForSchool = await this.filterUnlicensedToolsForSchool(user.school.id, availableTools);
-			matchedTools = Array.from(new Set([...matchedTools, ...matchedToolsForSchool]));
+			const matchedToolsForUserAndSchool = new Set([...matchedTools, ...matchedToolsForSchool]);
+			matchedTools = Array.from(matchedToolsForUserAndSchool);
 		}
 
 		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
