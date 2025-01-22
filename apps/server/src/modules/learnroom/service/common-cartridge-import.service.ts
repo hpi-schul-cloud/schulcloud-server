@@ -77,7 +77,8 @@ export class CommonCartridgeImportService {
 		);
 
 		for await (const columnWithResource of columnsWithResource) {
-			await this.createColumnWithResource(parser, columnBoard, columnWithResource, counter + 1);
+			counter += 1;
+			await this.createColumnWithResource(parser, columnBoard, columnWithResource, counter);
 		}
 
 		const columnsWithoutResource = organizations.filter(
@@ -86,7 +87,8 @@ export class CommonCartridgeImportService {
 		);
 
 		for await (const columnWithoutResource of columnsWithoutResource) {
-			await this.createColumn(parser, columnBoard, columnWithoutResource, organizations, counter + 1);
+			counter += 1;
+			await this.createColumn(parser, columnBoard, columnWithoutResource, organizations, counter);
 		}
 	}
 
