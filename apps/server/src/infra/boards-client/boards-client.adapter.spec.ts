@@ -69,7 +69,7 @@ describe(BoardsClientAdapter.name, () => {
 	});
 
 	describe('getBoardSkeletonById', () => {
-		describe('when called', () => {
+		describe('when getBoardSkeletonById is called', () => {
 			const setup = () => {
 				const boardId = faker.string.uuid();
 				const responseData: BoardResponse = {
