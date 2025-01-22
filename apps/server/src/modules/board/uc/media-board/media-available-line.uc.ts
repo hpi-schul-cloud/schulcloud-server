@@ -116,6 +116,7 @@ export class MediaAvailableLineUc {
 			}
 			return true;
 		});
+
 		return filteredTools;
 	}
 
@@ -135,7 +136,9 @@ export class MediaAvailableLineUc {
 			}
 			return true;
 		});
+
 		const filteredToolsForUserAndSchool = Array.from(new Set([...filteredTools, ...userTools]));
+
 		return filteredToolsForUserAndSchool;
 	}
 
