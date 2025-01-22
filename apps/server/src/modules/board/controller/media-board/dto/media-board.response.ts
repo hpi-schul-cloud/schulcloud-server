@@ -18,7 +18,7 @@ export class MediaBoardResponse {
 
 	@ApiProperty({
 		enum: BoardLayout,
-		enumName: 'MediaBoardLayoutType',
+		enumName: 'BoardLayout',
 		description: 'Layout of media board',
 	})
 	layout: BoardLayout;

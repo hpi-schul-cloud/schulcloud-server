@@ -21,6 +21,7 @@ import {
 	ColumnResponse,
 	CreateBoardBodyParams,
 	CreateBoardResponse,
+	LayoutBodyParams,
 	UpdateBoardTitleParams,
 	VisibilityBodyParams,
 } from './dto';
@@ -156,5 +157,20 @@ export class BoardController {
 		@CurrentUser() currentUser: ICurrentUser
 	) {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
+	}
+
+	@ApiOperation({ summary: 'Update the layout of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/layout')
+	public async updateLayout(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: LayoutBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateLayout(currentUser.userId, urlParams.boardId, bodyParams.layout);
 	}
 }
