@@ -2,7 +2,7 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const freeport = require('freeport');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const decode = require('jwt-decode');
+const jsonwebtoken = require('jsonwebtoken');
 const logger = require('../../../src/logger');
 const MockServer = require('./MockServer');
 const appPromise = require('../../../src/app');
@@ -70,7 +70,7 @@ describe('Etherpad Permission Check: Students', () => {
 				authentication: { accessToken },
 			},
 		} = await testObjects.setupUser({ roles: ['student'] });
-		const jwt = decode(accessToken);
+		const jwt = jsonwebtoken.decode(accessToken);
 		const course = await testObjects.createTestCourse({
 			userIds: [jwt.userId],
 		});
@@ -113,7 +113,7 @@ describe('Etherpad Permission Check: Students', () => {
 			},
 		} = await testObjects.setupUser({ roles: ['student'] });
 
-		const jwt = decode(accessToken);
+		const jwt = jsonwebtoken.decode(accessToken);
 		const course = await testObjects.createTestCourse({
 			userIds: [jwt.userId],
 		});
