@@ -17,7 +17,6 @@ import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
-import objectContaining = jasmine.objectContaining;
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -160,17 +159,7 @@ describe(DeletionRequestUc.name, () => {
 
 				return { deletionRequest };
 			};
-			it('should call deletionRequestService.countPendingDeletionRequests', async () => {
-				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
-
-				await uc.executeDeletionRequests();
-
-				expect(deletionRequestService.countPendingDeletionRequests).toHaveBeenCalled();
-			});
-
 			it('should call deletionRequestService.findAllItemsToExecute', async () => {
-				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
-
 				await uc.executeDeletionRequests();
 
 				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
@@ -178,7 +167,7 @@ describe(DeletionRequestUc.name, () => {
 
 			it('should call deletionRequestService.markDeletionRequestAsPending to update status of deletionRequests', async () => {
 				const { deletionRequest } = setup();
-				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 
 				await uc.executeDeletionRequests();
@@ -188,7 +177,7 @@ describe(DeletionRequestUc.name, () => {
 
 			it('should call eventBus.publish', async () => {
 				const { deletionRequest } = setup();
-				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
+
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 
 				await uc.executeDeletionRequests();
@@ -203,7 +192,6 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				deletionRequestService.countPendingDeletionRequests.mockResolvedValue(0);
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 				eventBus.publish.mockRejectedValueOnce(new Error());
 
