@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceDataFormat } from '../../enum';
 import { MediaSourceOauthConfig } from './media-source-oauth-config';
 import { MediaSourceVidisConfig } from './media-source-vidis-config';
 

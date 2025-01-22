@@ -4,3 +4,5 @@ export { mediaSourceVidisConfigFactory } from './media-source-vidis-config.facto
 export { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
 export { mediaSourceVidisConfigEmbeddableFactory } from './media-source-basic-auth-config.embeddable.factory';
 export { mediaSourceOAuthConfigEmbeddableFactory } from './media-source-oauth-config.embeddable.factory';
+export { mediaSourceSyncReportFactory } from './media-source-sync-report.factory';
+export { mediaSourceSyncOperationReportFactory } from './media-source-sync-operation-report.factory';

@@ -31,6 +31,10 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		return this.props.layout;
 	}
 
+	set layout(layout: BoardLayout) {
+		this.props.layout = layout;
+	}
+
 	canHaveChild(childNode: AnyBoardNode): boolean {
 		const allowed = childNode instanceof Column;
 		return allowed;
