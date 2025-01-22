@@ -37,7 +37,7 @@ describe(BoardsClientAdapter.name, () => {
 	});
 
 	describe('createBoard', () => {
-		describe('when called', () => {
+		describe('when createBoard is called', () => {
 			const setup = () => {
 				const params: CreateBoardBodyParams = {
 					title: faker.lorem.words(),
