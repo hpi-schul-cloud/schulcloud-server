@@ -19,7 +19,7 @@ export class Migration20250120131625 extends Migration {
 			console.info('Permissions ROOM_MEMBERS_CHANGE_ROLE added to role roomowner.');
 		}
 
-		const roomEditorRoleUpdate = await this.getCollection('roles').updateOne(
+		const roomAdminRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'roomadmin' },
 			{
 				$addToSet: {
@@ -30,7 +30,7 @@ export class Migration20250120131625 extends Migration {
 			}
 		);
 
-		if (roomEditorRoleUpdate.modifiedCount > 0) {
+		if (roomAdminRoleUpdate.modifiedCount > 0) {
 			console.info('Permissions ROOM_MEMBERS_CHANGE_ROLE added to role roomadmin.');
 		}
 	}
@@ -51,7 +51,7 @@ export class Migration20250120131625 extends Migration {
 			console.info('Rollback: Permission ROOM_CREATE removed from role roomowner.');
 		}
 
-		const roomEditorRoleUpdate = await this.getCollection('roles').updateOne(
+		const roomAdminRoleUpdate = await this.getCollection('roles').updateOne(
 			{ name: 'roomadmin' },
 			{
 				$pull: {
@@ -62,7 +62,7 @@ export class Migration20250120131625 extends Migration {
 			}
 		);
 
-		if (roomEditorRoleUpdate.modifiedCount > 0) {
+		if (roomAdminRoleUpdate.modifiedCount > 0) {
 			console.info('Rollback: Permission ROOM_DELETE removed from role roomadmin.');
 		}
 	}

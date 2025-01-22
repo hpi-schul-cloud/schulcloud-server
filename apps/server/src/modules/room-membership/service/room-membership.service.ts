@@ -92,7 +92,7 @@ export class RoomMembershipService {
 	public async removeMembersFromRoom(roomId: EntityId, userIds: EntityId[]): Promise<void> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			throw new BadRequestException('Room member not found');
+			throw new BadRequestException('Room membership not found');
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
@@ -106,7 +106,7 @@ export class RoomMembershipService {
 	public async changeRoleOfRoomMembers(roomId: EntityId, userIds: EntityId[], roleName: RoleName): Promise<void> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			throw new BadRequestException('Room member not found');
+			throw new BadRequestException('Room membership not found');
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
