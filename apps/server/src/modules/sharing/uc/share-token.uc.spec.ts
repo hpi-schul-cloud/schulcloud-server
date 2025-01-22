@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 
+import { LegacyLogger } from '@core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
@@ -18,7 +19,6 @@ import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
-import { LegacyLogger } from '@src/core/logger';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';

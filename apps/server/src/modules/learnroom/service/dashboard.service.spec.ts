@@ -13,7 +13,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';

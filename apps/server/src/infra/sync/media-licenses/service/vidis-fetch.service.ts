@@ -4,7 +4,7 @@ import { VidisClientFactory, IDMBetreiberApiInterface, PageOfferDTO, OfferDTO } 
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { AxiosErrorLoggable } from '@src/core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ConfigService } from '@nestjs/config';
 import { VidisSyncConfig } from '../vidis-sync-config';
 

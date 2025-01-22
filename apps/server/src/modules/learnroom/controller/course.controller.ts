@@ -119,7 +119,6 @@ export class CourseController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	@ApiUnprocessableEntityResponse({ description: 'Unsupported role.' })
 	@ApiCreatedResponse({
-		status: 200,
 		schema: { type: 'object', example: { userId: ['permission1', 'permission2'] } },
 	})
 	public async getUserPermissions(

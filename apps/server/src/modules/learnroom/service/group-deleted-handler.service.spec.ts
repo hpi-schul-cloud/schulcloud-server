@@ -1,10 +1,10 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupDeletedEvent } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { Course } from '../domain';
 import { courseFactory } from '../testing';

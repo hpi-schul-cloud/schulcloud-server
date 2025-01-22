@@ -1,3 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
@@ -6,8 +8,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DomainErrorHandler } from '@src/core';
-import { LegacyLogger } from '@src/core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';

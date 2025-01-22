@@ -3,8 +3,8 @@ import { Upload } from '@aws-sdk/lib-storage';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@src/core/error/utils';
-import { LegacyLogger } from '@src/core/logger';
+import { ErrorUtils } from '@core/error/utils';
+import { LegacyLogger } from '@core/logger';
 import { Readable } from 'node:stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
 import { File, S3Config } from './interface';
@@ -255,7 +255,8 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { file } = createFile();
 				const { pathToFile } = createParameter();
-				const error = new InternalServerErrorException('S3ClientAdapter:create');
+				const error = new Error('Connection Error');
+				const expectedError = new InternalServerErrorException('S3ClientAdapter:create', { cause: error });
 
 				const uploadDoneMock = jest.spyOn(Upload.prototype, 'done').mockRejectedValueOnce(error);
 
@@ -263,13 +264,13 @@ describe('S3ClientAdapter', () => {
 					uploadDoneMock.mockRestore();
 				};
 
-				return { file, pathToFile, error, restoreMocks };
+				return { file, pathToFile, expectedError, restoreMocks };
 			};
 
 			it('should throw error from client', async () => {
-				const { file, pathToFile, error, restoreMocks } = setup();
+				const { file, pathToFile, expectedError, restoreMocks } = setup();
 
-				await expect(service.create(pathToFile, file)).rejects.toThrow(error);
+				await expect(service.create(pathToFile, file)).rejects.toThrow(expectedError);
 
 				restoreMocks();
 			});
@@ -451,13 +452,13 @@ describe('S3ClientAdapter', () => {
 			const setup = () => {
 				const { pathToFile } = createParameter();
 				const filePath = 'directory/test.txt';
-				const error = new Error('testError');
+				const error = new Error('S3ClientAdapter:delete');
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				client.send.mockResolvedValueOnce({ Contents: [{ Key: filePath }] });
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
-				client.send.mockRejectedValueOnce(error);
+				client.send.mockRejectedValueOnce();
 
 				const expectedError = new InternalServerErrorException(
 					'S3ClientAdapter:deleteDirectory',
