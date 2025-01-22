@@ -1,12 +1,12 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType } from '@modules/board';
+import { mediaBoardEntityFactory } from '@modules/board/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { BoardExternalReferenceType } from '@src/modules/board';
-import { mediaBoardEntityFactory } from '@src/modules/board/testing';
 import { courseFactory } from '@testing/factory/course.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

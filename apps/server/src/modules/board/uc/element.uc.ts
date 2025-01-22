@@ -1,7 +1,7 @@
 import { Action } from '@modules/authorization';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyContentElement,

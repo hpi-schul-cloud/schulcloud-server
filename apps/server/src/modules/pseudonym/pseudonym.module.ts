@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { LegacyLogger, LoggerModule } from '@core/logger';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';
 import { PseudonymService } from './service';
 

@@ -1,7 +1,7 @@
 import { Action } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { BoardNodeFactory, Card, Column, ContentElementType } from '../domain';
 import { BoardNodePermissionService, BoardNodeService } from '../service';
 

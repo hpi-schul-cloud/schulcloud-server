@@ -4,7 +4,7 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams } from '../controller/dto';

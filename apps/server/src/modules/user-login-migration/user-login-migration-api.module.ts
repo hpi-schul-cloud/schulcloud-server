@@ -6,7 +6,7 @@ import { ProvisioningModule } from '@modules/provisioning';
 import { UserModule } from '@modules/user';
 import { ImportUserModule } from '@modules/user-import';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { UserLoginMigrationRollbackController } from './controller/user-login-migration-rollback.controller';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
 import {

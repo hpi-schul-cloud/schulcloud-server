@@ -1,7 +1,7 @@
 import { Account } from '@modules/account';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ErrorLoggable } from '@src/core/error/loggable';
-import { Logger } from '@src/core/logger';
+import { ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
 import { System, SystemService } from '@modules/system';
 import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
