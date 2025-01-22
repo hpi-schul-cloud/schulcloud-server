@@ -10,13 +10,14 @@ npm run nest:start:console sync run <target>
 Where `<target>` is the name of the system you want to start the synchronization for. The currently available systems are:
 - `tsp` - Synchronize Thüringer schulportal.
 - `vidis` - Synchronize Vidis Activation Data.
+- `media_metadata` - Synchronize media metadata in ctl tools in SVS with data from its media source.
 
 
 If the target is not provided, the synchronization will not start and the available targets will be displayed in an error message.
 ```bash
 {
     message: 'Either synchronization is not activated or the target entered is invalid',  
-    data: { enteredTarget: 'tsp', availableTargets: { TSP: 'tsp', VIDIS: 'vidis' }}
+    data: { enteredTarget: 'tsp', availableTargets: { TSP: 'tsp', VIDIS: 'vidis', MEDIA_METADTA: 'media_metadata' }}
 }
 ```
 
