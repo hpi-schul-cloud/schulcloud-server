@@ -30,10 +30,11 @@ describe('CommonCartridgeImportService', () => {
 	const card3Title = 'Karte 3';
 	const card4Title = 'Karte 4';
 
-	const columnPlaceholderTitle = '1';
+	const columnPlaceholderTitle1 = '1';
+	const columnPlaceholderTitle2 = '2';
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
-	const objectContainingTitle = (title: string | number) => expect.objectContaining({ title });
+	const objectContainingTitle = (title: string) => expect.objectContaining({ title });
 
 	beforeEach(async () => {
 		orm = await setupEntities();
@@ -116,27 +117,15 @@ describe('CommonCartridgeImportService', () => {
 
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board1Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board2Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
-				);
-				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
-				);
-				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
-				);
-				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 			});
 
@@ -149,27 +138,19 @@ describe('CommonCartridgeImportService', () => {
 
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board1Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board2Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle1)
 				);
 				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
 					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
-				);
-				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
-				);
-				expect(boardNodeServiceMock.addToParent).toHaveBeenCalledWith(
-					objectContainingTitle(board3Title),
-					objectContainingTitle(columnPlaceholderTitle)
+					objectContainingTitle(columnPlaceholderTitle2)
 				);
 			});
 
