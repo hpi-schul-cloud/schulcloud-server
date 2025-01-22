@@ -266,7 +266,7 @@ export class ServerModule {}
 	controllers,
 })
 export class ServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: ServerTestModule,
 			imports: [
