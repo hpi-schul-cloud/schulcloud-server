@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import type { Server } from 'node:net';
 import supertest from 'supertest';
 import { CommonCartridgeApiModule } from '../common-cartridge-api.app.module';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
@@ -11,7 +12,7 @@ import { CommonCartridgeElementType, CommonCartridgeVersion } from '../export/co
 // because we are not able to ensure a correct environment for the tests to run with other microservices.
 describe.skip('CommonCartridgeController (API)', () => {
 	let module: TestingModule;
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

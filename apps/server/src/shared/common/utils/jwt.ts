@@ -1,5 +1,5 @@
 import { UnauthorizedException } from '@nestjs/common';
-import cookie from 'cookie';
+import * as cookie from 'cookie';
 import { Request } from 'express';
 import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
 

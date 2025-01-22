@@ -81,7 +81,7 @@ export class DatasheetPdfService {
 					},
 				};
 
-				const pdfDoc: TCreatedPdf = createPdf(documentDefinition, {}, undefined, pdfFonts.pdfMake.vfs);
+				const pdfDoc: TCreatedPdf = createPdf(documentDefinition, {}, undefined, pdfFonts.vfs);
 				pdfDoc.getBuffer((buffer: Buffer): void => {
 					resolve(buffer);
 				});
