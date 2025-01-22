@@ -1,7 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
 import { faker } from '@faker-js/faker';
-import { LoggerConfig } from '@src/core/logger';
 import { Request } from 'express';
 import { createMock } from '@golevelup/ts-jest';
 import { REQUEST } from '@nestjs/core';
@@ -25,11 +24,9 @@ describe(BoardsClientModule.name, () => {
 				ConfigModule.forRoot({
 					isGlobal: true,
 					load: [
-						(): BoardsClientConfig & LoggerConfig => {
+						(): BoardsClientConfig => {
 							return {
 								API_HOST: faker.internet.url(),
-								EXIT_ON_ERROR: true,
-								NEST_LOG_LEVEL: 'error',
 							};
 						},
 					],

@@ -3,13 +3,11 @@ import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common';
 import { Request } from 'express';
-import { LoggerModule } from '@src/core/logger';
 import { BoardsClientAdapter } from './boards-client.adapter';
 import { BoardsClientConfig } from './boards-client.config';
 import { Configuration, BoardApi } from './generated';
 
 @Module({
-	imports: [LoggerModule],
 	providers: [
 		BoardsClientAdapter,
 		{
