@@ -4,7 +4,7 @@ import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
-import { RoomService } from '@modules/room/domain';
+import { RoomService } from '@modules/room';
 import { roomFactory } from '@modules/room/testing';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
