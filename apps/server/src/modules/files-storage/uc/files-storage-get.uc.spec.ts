@@ -8,7 +8,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';
@@ -16,6 +15,7 @@ import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {

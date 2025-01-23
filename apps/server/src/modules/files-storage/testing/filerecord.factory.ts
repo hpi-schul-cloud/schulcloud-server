@@ -1,14 +1,14 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '@modules/files-storage/entity';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '../entity';
+import { StorageLocation } from '../interface';
 
 const yesterday = new Date(Date.now() - 86400000);
 
 class FileRecordFactory extends BaseFactory<FileRecord, FileRecordProperties> {
-	markedForDelete(): this {
+	public markedForDelete(): this {
 		const params: DeepPartial<FileRecordProperties> = { deletedSince: yesterday };
 		return this.params(params);
 	}

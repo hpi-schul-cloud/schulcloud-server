@@ -1,6 +1,5 @@
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import {
 	DownloadFileParams,
@@ -11,6 +10,7 @@ import {
 } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { FileRecordParentType } from '../interface';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {

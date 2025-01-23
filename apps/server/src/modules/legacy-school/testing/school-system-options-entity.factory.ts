@@ -1,8 +1,8 @@
-import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '@modules/legacy-school/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { BaseFactory } from './base.factory';
-import { schoolEntityFactory } from './school-entity.factory';
-import { systemEntityFactory } from './systemEntityFactory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '../entity';
 
 export const schoolSystemOptionsEntityFactory = BaseFactory.define<
 	SchoolSystemOptionsEntity,

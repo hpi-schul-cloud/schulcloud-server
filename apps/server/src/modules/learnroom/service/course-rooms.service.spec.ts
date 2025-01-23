@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { columnBoardNodeFactory } from '@modules/board/testing';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { boardFactory } from '@testing/factory/board.factory';
-import { columnBoardNodeFactory } from '@testing/factory/column-board-node.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
