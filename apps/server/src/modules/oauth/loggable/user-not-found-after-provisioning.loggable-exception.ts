@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 

@@ -1,5 +1,5 @@
-import { PaginationResponse } from '@shared/controller';
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationResponse } from '@shared/controller/dto';
 import { UserResponse } from './user.response';
 
 export class UserListResponse extends PaginationResponse<UserResponse[]> {

@@ -1,11 +1,11 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { ExternalToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@core/logger';
+import { ExternalToolRepo } from '@shared/repo/externaltool';
 import { OauthProviderService } from '../../../oauth-provider/domain/service/oauth-provider.service';
 import { providerOauthClientFactory } from '../../../oauth-provider/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';

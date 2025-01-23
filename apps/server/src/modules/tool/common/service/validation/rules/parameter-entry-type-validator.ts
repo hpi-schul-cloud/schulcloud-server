@@ -1,4 +1,4 @@
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameter, CustomParameterEntry, ToolParameterTypeMismatchLoggableException } from '../../../domain';
 import { ToolParameterTypeValidationUtil } from '../tool-parameter-type-validation.util';

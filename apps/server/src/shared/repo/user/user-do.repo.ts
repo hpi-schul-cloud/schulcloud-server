@@ -2,7 +2,7 @@ import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/c
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { SecondarySchoolReference, UserDO } from '@shared/domain/domainobject/user.do';
@@ -10,7 +10,8 @@ import { Role, SchoolEntity, User, UserSchoolEmbeddable } from '@shared/domain/e
 import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BaseDORepo, Scope } from '@shared/repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
+import { Scope } from '@shared/repo/scope';
 import { UserScope } from './user.scope';
 
 @Injectable()

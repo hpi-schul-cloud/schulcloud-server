@@ -1,6 +1,6 @@
-import { HttpStatus } from '@nestjs/common';
-import { BusinessError, ErrorLogMessage } from '@shared/common';
 import { Loggable, LogMessage } from '@core/logger';
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError, ErrorLogMessage } from '@shared/common/error';
 
 export class TspSystemNotFoundLoggableException extends BusinessError implements Loggable {
 	constructor() {

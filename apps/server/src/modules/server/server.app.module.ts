@@ -47,7 +47,7 @@ import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { ServerConfigController, ServerController, ServerUc } from './api';

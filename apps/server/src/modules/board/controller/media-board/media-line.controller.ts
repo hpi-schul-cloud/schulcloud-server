@@ -19,7 +19,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaLineUc } from '../../uc';
 import { MoveColumnBodyParams, RenameBodyParams } from '../dto';
 import { CollapsableBodyParams, ColorBodyParams, LineUrlParams } from './dto';

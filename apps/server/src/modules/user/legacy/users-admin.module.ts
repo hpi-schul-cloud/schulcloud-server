@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
 import { LoggerModule } from '@core/logger';
-import { UserRepo } from '@shared/repo';
-import { UsersAdminService } from './service';
+import { Module } from '@nestjs/common';
+import { UserRepo } from '@shared/repo/user';
 import { UsersAdminRepo } from './repo';
+import { UsersAdminService } from './service';
 
 @Module({
 	imports: [LoggerModule],

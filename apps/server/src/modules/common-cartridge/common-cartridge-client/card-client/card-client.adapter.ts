@@ -1,8 +1,8 @@
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { extractJwtFromHeader } from '@shared/common';
+import { REQUEST } from '@nestjs/core';
+import { extractJwtFromHeader } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
-import { REQUEST } from '@nestjs/core';
 import { BoardCardApi } from './cards-api-client';
 import { CardListResponseDto } from './dto/card-list-response.dto';
 import { CardResponseMapper } from './mapper/card-response.mapper';
