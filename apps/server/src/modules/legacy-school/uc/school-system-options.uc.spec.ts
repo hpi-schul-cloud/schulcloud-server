@@ -7,13 +7,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';
 import { SchoolSystemOptionsUc } from './school-system-options.uc';
+import { schoolSystemOptionsFactory } from '../testing';
 
 describe(SchoolSystemOptionsUc.name, () => {
 	let module: TestingModule;

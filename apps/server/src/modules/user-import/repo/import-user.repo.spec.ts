@@ -6,11 +6,11 @@ import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { createCollections } from '@testing/create-collections';
-import { importUserFactory } from '@testing/factory/import-user.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, ImportUserRoleName, MatchCreator } from '../entity';
+import { importUserFactory } from '../testing';
 import { ImportUserRepo } from './import-user.repo';
 
 describe('ImportUserRepo', () => {

@@ -8,6 +8,7 @@ import {
 	columnEntityFactory,
 	videoConferenceElementEntityFactory,
 } from '@modules/board/testing';
+import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { serverConfig, ServerTestModule } from '@modules/server';
@@ -17,7 +18,6 @@ import { Role, TargetModels, User, VideoConference } from '@shared/domain/entity
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
