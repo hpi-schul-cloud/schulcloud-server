@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
@@ -9,8 +10,7 @@ import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiPrivacyPermission, LtiRoleType, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { LtiToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@core/logger';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { ltiToolDOFactory, pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';

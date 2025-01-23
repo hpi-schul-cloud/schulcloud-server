@@ -5,7 +5,7 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ExternalToolRepo } from '@shared/repo';
+import { ExternalToolRepo } from '@shared/repo/externaltool';
 import { ExternalTool } from '../domain';
 
 @Injectable()

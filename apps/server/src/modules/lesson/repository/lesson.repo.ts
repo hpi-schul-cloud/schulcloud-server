@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { LessonEntity } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '@shared/repo';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { LessonScope } from './lesson-scope';
 
 @Injectable()

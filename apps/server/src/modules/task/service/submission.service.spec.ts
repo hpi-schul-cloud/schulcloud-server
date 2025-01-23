@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { MikroORM } from '@mikro-orm/core';
@@ -14,8 +15,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
-import { SubmissionRepo } from '@shared/repo';
-import { Logger } from '@core/logger';
+import { SubmissionRepo } from '@shared/repo/submission';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
