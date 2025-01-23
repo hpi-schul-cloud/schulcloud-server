@@ -4,10 +4,6 @@ import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
@@ -31,18 +27,15 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity';
 import { Course } from '@shared/domain/entity/course.entity';
 import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
 import { CountyEmbeddable, FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
-import {
-	ColumnboardBoardElement,
-	LegacyBoard,
-	LegacyBoardElement,
-	LessonBoardElement,
-	TaskBoardElement,
-} from '@shared/domain/entity/legacy-board';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { LtiTool } from '@shared/domain/entity/ltitool.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
@@ -63,17 +56,11 @@ import { config } from './board-collaboration.config';
 import { BoardWsApiModule } from './board-ws-api.module';
 import { BoardModule } from './board.module';
 
-
 export const ENTITIES = [
 	AccountEntity,
-	LegacyBoard,
-	LegacyBoardElement,
 	BoardNodeEntity,
-	ColumnboardBoardElement,
-	ColumnBoardNode,
 	ClassEntity,
-	DeletionRequestEntity,
-	DeletionLogEntity,
+	ColumnBoardNode,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,
@@ -81,22 +68,32 @@ export const ENTITIES = [
 	CourseNews,
 	DashboardGridElementModel,
 	DashboardModelEntity,
+	DeletionLogEntity,
+	DeletionRequestEntity,
 	ExternalToolEntity,
+	ExternalToolPseudonymEntity,
 	FederalStateEntity,
+	GroupEntity,
 	ImportUser,
+	InstanceEntity,
 	LessonEntity,
-	LessonBoardElement,
+	LtiDeepLinkTokenEntity,
 	LtiTool,
 	Material,
+	MediaSchoolLicenseEntity,
+	MediaSourceEntity,
+	MediaUserLicenseEntity,
 	News,
+	OauthSessionTokenEntity,
 	PseudonymEntity,
-	ExternalToolPseudonymEntity,
+	RegistrationPinEntity,
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
 	RoomMembershipEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
+	SchoolLicenseEntity,
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
@@ -107,23 +104,13 @@ export const ENTITIES = [
 	Submission,
 	SystemEntity,
 	Task,
-	TaskBoardElement,
 	TeamEntity,
 	TeamNews,
 	TeamUserEntity,
 	User,
+	UserLicenseEntity,
 	UserLoginMigrationEntity,
 	VideoConference,
-	GroupEntity,
-	RegistrationPinEntity,
-	UserLicenseEntity,
-	MediaUserLicenseEntity,
-	InstanceEntity,
-	MediaSourceEntity,
-	SchoolLicenseEntity,
-	MediaSchoolLicenseEntity,
-	OauthSessionTokenEntity,
-	LtiDeepLinkTokenEntity,
 ];
 
 const imports = [
