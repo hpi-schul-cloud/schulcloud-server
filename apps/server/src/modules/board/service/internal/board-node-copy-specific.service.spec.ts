@@ -63,6 +63,8 @@ describe(BoardNodeCopyService.name, () => {
 		CTL_TOOLS__PREFERRED_TOOLS_LIMIT: 10,
 		FEATURE_PREFERRED_CTL_TOOLS_ENABLED: false,
 		PUBLIC_BACKEND_URL: '',
+		FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
+		FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
 	};
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
