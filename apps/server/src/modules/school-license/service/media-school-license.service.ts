@@ -1,5 +1,4 @@
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { OfferDTO, VidisClientFactory } from '@infra/vidis-client';
+import { OfferDTO } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
@@ -11,7 +10,6 @@ import { SchoolLicenseType } from '../enum';
 import {
 	BuildMediaSchoolLicenseFailedLoggable,
 	MediaSourceNotFoundLoggableException,
-	SchoolNotFoundLoggable,
 	SchoolNumberNotFoundLoggableException,
 } from '../loggable';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
@@ -22,9 +20,7 @@ export class MediaSchoolLicenseService {
 		@Inject(MEDIA_SCHOOL_LICENSE_REPO) private readonly mediaSchoolLicenseRepo: MediaSchoolLicenseRepo,
 		private readonly schoolService: SchoolService,
 		private readonly logger: Logger,
-		private readonly vidisClientFactory: VidisClientFactory,
 		private readonly mediaSourceService: MediaSourceService,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly mediaSchoolLicenseFetchService: MediaSchoolLicenseFetchService
 	) {}
 
@@ -52,13 +48,7 @@ export class MediaSchoolLicenseService {
 	public async updateMediaSchoolLicenses(schoolId: EntityId): Promise<void> {
 		const school = await this.schoolService.getSchoolById(schoolId);
 
-		if (!school) {
-			this.logger.info(new SchoolNotFoundLoggable(schoolId));
-		}
-
-		// const prefix: string = school.getProps().federalState.getProps().abbreviation;
-		const prefix: string =
-			school.getProps().federalState.getProps().abbreviation === 'NI' ? 'DE-VIDIS-vidis_test' : 'FAILING';
+		const prefix: string = school.getProps().federalState.getProps().abbreviation;
 		const { officialSchoolNumber } = school;
 
 		if (!officialSchoolNumber) {

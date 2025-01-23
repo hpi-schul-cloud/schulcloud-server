@@ -3,7 +3,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class BuildMediaSchoolLicenseFailedLoggable implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: 'Could not build media school license, because mediumId is missing.',
+			message: 'Unable to build media school license, because mediumId is missing.',
 		};
 	}
 }
