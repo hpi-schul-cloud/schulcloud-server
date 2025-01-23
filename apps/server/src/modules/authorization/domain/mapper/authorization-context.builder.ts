@@ -1,5 +1,6 @@
-import { Permission } from '@shared/domain/interface';
-import { Action, AuthorizationContext } from '../type';
+import type { Permission } from '@shared/domain/interface/permission.enum';
+import type { AuthorizationContext } from '../type';
+import { Action } from '../type';
 
 export class AuthorizationContextBuilder {
 	private static build(requiredPermissions: Permission[], action: Action): AuthorizationContext {

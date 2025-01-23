@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId, NewsTargetModel } from '@shared/domain/types';
+import type { EntityId } from '@shared/domain/types/entity-id';
+import { NewsTargetModel } from '@shared/domain/types/news.types';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 @Injectable()
@@ -13,7 +14,11 @@ export class FeathersAuthorizationService {
 	 * @param targetId
 	 * @returns The list of entity permissions for the user
 	 */
-	async getEntityPermissions(userId: EntityId, targetModel: NewsTargetModel, targetId: EntityId): Promise<string[]> {
+	public async getEntityPermissions(
+		userId: EntityId,
+		targetModel: NewsTargetModel,
+		targetId: EntityId
+	): Promise<string[]> {
 		const permissions =
 			targetModel === NewsTargetModel.School
 				? await this.feathersAuthProvider.getUserSchoolPermissions(userId, targetId)
@@ -29,7 +34,7 @@ export class FeathersAuthorizationService {
 	 * @param permissions
 	 * @throws UnauthorizedException if the permissions are not satisfied
 	 */
-	async checkEntityPermissions(
+	public async checkEntityPermissions(
 		userId: EntityId,
 		targetModel: NewsTargetModel,
 		targetId: EntityId,
@@ -51,7 +56,7 @@ export class FeathersAuthorizationService {
 	 * @param permissions
 	 * @returns The list of ids of all entities that satisfy the provided permissions for the user
 	 */
-	async getPermittedEntities(
+	public async getPermittedEntities(
 		userId: EntityId,
 		targetModel: NewsTargetModel,
 		permissions: string[]

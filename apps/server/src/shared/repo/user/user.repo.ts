@@ -1,19 +1,22 @@
+import { EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
+import type { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { Injectable } from '@nestjs/common';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
-import { IFindOptions } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
+import type { Role } from '@shared/domain/entity/role.entity';
+import type { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import type { IFindOptions } from '@shared/domain/interface';
+import type { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { UserScope } from './user.scope';
 
 @Injectable()
 export class UserRepo extends BaseRepo<User> {
-	get entityName() {
+	get entityName(): EntityName<User> {
 		return User;
 	}
 
-	async findById(id: EntityId, populate = false): Promise<User> {
+	public async findById(id: EntityId, populate = false): Promise<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
@@ -24,7 +27,7 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
-	async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
+	public async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
 		const user: User | null = await this._em.findOne(User, { id });
 
 		if (!user) {
@@ -39,7 +42,7 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
-	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<User> {
+	public async findByExternalIdOrFail(externalId: string, systemId: string): Promise<User> {
 		const [users] = await this._em.findAndCount(User, { externalId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
 			const { systems } = user.school;
@@ -48,7 +51,7 @@ export class UserRepo extends BaseRepo<User> {
 		return resultUser ?? Promise.reject();
 	}
 
-	async findForImportUser(
+	public async findForImportUser(
 		school: SchoolEntity,
 		filters?: ImportUserNameMatchFilter,
 		options?: IFindOptions<User>
@@ -69,7 +72,7 @@ export class UserRepo extends BaseRepo<User> {
 		return countedUsers;
 	}
 
-	async findByEmail(email: string): Promise<User[]> {
+	public findByEmail(email: string): Promise<User[]> {
 		// find mail case-insensitive by regex
 		const promise: Promise<User[]> = this._em.find(User, {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
@@ -77,7 +80,7 @@ export class UserRepo extends BaseRepo<User> {
 		return promise;
 	}
 
-	async deleteUser(userId: EntityId): Promise<number> {
+	public async deleteUser(userId: EntityId): Promise<number> {
 		const deletedUserNumber = await this._em.nativeDelete(User, {
 			id: userId,
 		});
@@ -85,7 +88,7 @@ export class UserRepo extends BaseRepo<User> {
 		return deletedUserNumber;
 	}
 
-	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const user: User | null = await this._em.findOne(User, { id: userId });
 		let parentsEmails: string[] = [];
 		if (user !== null) {
@@ -107,11 +110,11 @@ export class UserRepo extends BaseRepo<User> {
 		}
 	}
 
-	saveWithoutFlush(user: User): void {
+	public saveWithoutFlush(user: User): void {
 		this._em.persist(user);
 	}
 
-	async flush(): Promise<void> {
+	public async flush(): Promise<void> {
 		await this._em.flush();
 	}
 
