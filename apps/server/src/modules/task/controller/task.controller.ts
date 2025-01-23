@@ -2,8 +2,8 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
-import { PaginationParams } from '@shared/controller/';
+import { RequestTimeout } from '@shared/common/decorators';
+import { PaginationParams } from '@shared/controller/dto';
 import { TaskMapper } from '../mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';

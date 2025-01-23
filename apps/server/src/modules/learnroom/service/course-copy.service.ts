@@ -11,7 +11,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, LegacyBoardRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
+import { UserRepo } from '@shared/repo/user';
 import { BoardCopyService } from './board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
 

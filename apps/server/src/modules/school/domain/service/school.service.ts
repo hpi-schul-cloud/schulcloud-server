@@ -1,7 +1,7 @@
 import { System, SystemService } from '@modules/system';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TypeGuard } from '@shared/common';
+import { TypeGuard } from '@shared/common/guards';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';

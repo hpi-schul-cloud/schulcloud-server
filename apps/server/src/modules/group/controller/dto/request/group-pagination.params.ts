@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams } from '@shared/controller/dto';
 import { IsInt } from 'class-validator';
 
 export class GroupPaginationParams extends PaginationParams {

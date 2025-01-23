@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { StringToBoolean } from '@shared/controller';
+import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class GroupParams {

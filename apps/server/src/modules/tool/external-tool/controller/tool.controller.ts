@@ -25,8 +25,8 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
+import { ValidationError } from '@shared/common/error';
+import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { LegacyLogger } from '@core/logger';

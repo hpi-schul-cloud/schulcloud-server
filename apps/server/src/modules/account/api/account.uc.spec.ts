@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 
 import { faker } from '@faker-js/faker';
 import { AuthorizationService } from '@modules/authorization';

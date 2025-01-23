@@ -13,7 +13,12 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	ValidationError,
+} from '@shared/common/error';
 import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';

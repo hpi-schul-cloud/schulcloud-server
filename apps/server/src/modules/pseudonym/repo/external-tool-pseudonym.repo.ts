@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
