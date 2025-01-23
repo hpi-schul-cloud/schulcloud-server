@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
+import { Injectable } from '@nestjs/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { User } from '@shared/domain/entity';
-import { EntityNotFoundError } from '@shared/common';
-import { UsersAdminRepo } from '../repo';
+import { EntityId } from '@shared/domain/types';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
+import { UsersAdminRepo } from '../repo';
 
 @Injectable()
 export class UsersAdminService {

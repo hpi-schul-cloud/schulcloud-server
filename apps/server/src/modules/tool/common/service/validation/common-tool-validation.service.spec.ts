@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { customParameterFactory, externalToolFactory } from '../../../external-tool/testing';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';

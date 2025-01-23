@@ -52,7 +52,7 @@ export class VidisSyncService {
 		const license: MediaSchoolLicense = new MediaSchoolLicense({
 			id: new ObjectId().toHexString(),
 			type: SchoolLicenseType.MEDIA_LICENSE,
-			school,
+			schoolId: school.id,
 			mediaSource,
 			mediumId,
 		});

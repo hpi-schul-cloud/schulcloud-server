@@ -1,12 +1,12 @@
+import { LoggerModule } from '@core/logger';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationExecutionExportRepresentation';
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { systemEntityFactory } from '@modules/system/testing';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LoggerModule } from '@core/logger';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';

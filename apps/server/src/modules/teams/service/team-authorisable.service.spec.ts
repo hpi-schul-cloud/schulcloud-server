@@ -1,7 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { teamFactory } from '@testing/factory/team.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { TeamAuthorisableService } from './team-authorisable.service';

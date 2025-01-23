@@ -5,7 +5,7 @@ import {
 	SchoolSystemOptionsProps,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { DomainObjectFactory } from '../domain-object.factory';
+import { DomainObjectFactory } from '../../../testing/factory/domainobject/domain-object.factory';
 
 export const schoolSystemOptionsFactory = DomainObjectFactory.define<
 	SchoolSystemOptions,

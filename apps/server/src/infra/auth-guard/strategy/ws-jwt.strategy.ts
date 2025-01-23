@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
-import { JwtExtractor } from '@shared/common';
+import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
 import { JwtValidationAdapter } from '../adapter';
 import { JwtAuthGuardConfig } from '../config';

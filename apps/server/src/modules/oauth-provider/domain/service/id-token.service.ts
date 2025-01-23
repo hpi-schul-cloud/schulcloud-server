@@ -4,7 +4,7 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { IdTokenCreationLoggableException } from '../error';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';

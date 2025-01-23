@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { RoleService } from '../../../role';
+import { UserRepo } from '@shared/repo/user';
 import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '../../../authorization';
-import { RequestedRoleEnum } from '../enum';
+import { RoleService } from '../../../role';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
+import { RequestedRoleEnum } from '../enum';
 import { UsersAdminService } from '../service';
 
 @Injectable()
