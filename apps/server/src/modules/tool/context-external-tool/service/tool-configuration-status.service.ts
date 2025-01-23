@@ -4,7 +4,7 @@ import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ConfigService } from '@nestjs/config';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import {
 	ContextExternalToolConfigurationStatus,

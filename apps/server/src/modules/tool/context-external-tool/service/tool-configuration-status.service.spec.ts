@@ -8,7 +8,7 @@ import { UserService } from '@modules/user';
 import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { UserDO } from '@shared/domain/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ToolConfig } from '../..';

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
@@ -15,8 +16,7 @@ import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { TeamEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo';
-import { Logger } from '@core/logger';
+import { TeamsRepo } from '@shared/repo/teams';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

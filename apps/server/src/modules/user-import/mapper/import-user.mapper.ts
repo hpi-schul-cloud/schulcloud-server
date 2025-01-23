@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { SortOrderMap } from '@shared/domain/interface';
 import {
 	FilterImportUserParams,

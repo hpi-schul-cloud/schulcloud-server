@@ -1,12 +1,12 @@
 import { EntityData, EntityDictionary, EntityName, QueryOrder } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { MongoPatterns } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { ScopeAggregateResult } from '@shared/repo/mongodb-scope';
 import { Group, GroupAggregateScope, GroupFilter, GroupTypes } from '../domain';
 import { GroupEntity } from '../entity';

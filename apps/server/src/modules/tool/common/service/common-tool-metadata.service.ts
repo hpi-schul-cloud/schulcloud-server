@@ -1,7 +1,8 @@
 import { BoardCommonToolService } from '@modules/board';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolType } from '../../context-external-tool/entity';
 import { ExternalToolMetadata } from '../../external-tool/domain';

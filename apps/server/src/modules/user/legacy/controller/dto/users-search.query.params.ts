@@ -1,7 +1,7 @@
-import { PaginationParams } from '@shared/controller';
-import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller/dto';
 import { SortOrderNumberType } from '@shared/domain/interface';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class UsersSearchQueryParams extends PaginationParams {
 	@IsInt()

@@ -5,7 +5,8 @@ import { LessonService } from '@modules/lesson';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { TaskRepo } from '@shared/repo/task';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 

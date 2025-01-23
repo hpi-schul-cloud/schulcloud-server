@@ -4,7 +4,7 @@ import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { boardFactory } from '@testing/factory/board.factory';
 import { columnBoardNodeFactory } from '@testing/factory/column-board-node.factory';
 import { courseFactory } from '@testing/factory/course.factory';

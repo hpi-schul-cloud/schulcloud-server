@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { ValidationError } from '@shared/common';
 import { RoomRepo } from '../../repo';
 import { roomFactory } from '../../testing';
 import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
