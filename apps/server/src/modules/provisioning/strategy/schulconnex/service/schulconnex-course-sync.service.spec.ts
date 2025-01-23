@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Group } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { CourseSyncService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { groupFactory } from '@testing/factory/domainobject';
 import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 describe(SchulconnexCourseSyncService.name, () => {

@@ -1,4 +1,6 @@
 import { MediaBoardConfig } from '@modules/board/media-board.config';
+import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
+import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +21,9 @@ export class ToolConfigurationStatusService {
 	constructor(
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
+		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		private readonly userService: UserService
 	) {}
 
 	public async determineToolConfigurationStatus(
@@ -76,6 +80,15 @@ export class ToolConfigurationStatusService {
 	}
 
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
+		const user = await this.userService.findById(userId);
+		const isToolLicensedForUser = await this.isToolLicensedForUser(externalTool, userId);
+		const isToolLicensedForSchool = await this.isToolLicensedForSchool(externalTool, user.schoolId);
+		const isToolLicensed = isToolLicensedForUser || isToolLicensedForSchool;
+
+		return isToolLicensed;
+	}
+
+	private async isToolLicensedForUser(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
 			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
 				userId
@@ -83,7 +96,30 @@ export class ToolConfigurationStatusService {
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium) {
-				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+				const isLicensed = this.mediaUserLicenseService.hasLicenseForExternalTool(
+					externalToolMedium,
+					mediaUserLicenses
+				);
+
+				return isLicensed;
+			}
+		}
+		return true;
+	}
+
+	private async isToolLicensedForSchool(externalTool: ExternalTool, schoolId: EntityId): Promise<boolean> {
+		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+			const mediaSchoolLicenses: MediaSchoolLicense[] =
+				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+			const externalToolMedium = externalTool.medium;
+			if (externalToolMedium) {
+				const isLicensed = this.mediaSchoolLicenseService.hasLicenseForExternalTool(
+					externalToolMedium,
+					mediaSchoolLicenses
+				);
+
+				return isLicensed;
 			}
 		}
 		return true;
