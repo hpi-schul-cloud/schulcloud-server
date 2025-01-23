@@ -102,22 +102,18 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
-	describe('findAllItemsToExecution', () => {
+	describe('findAllItems', () => {
 		describe('when there is no deletionRequest for execution', () => {
 			const setup = () => {
 				const limit = 1000;
-				const olderThan = new Date();
-				const newerThan = new Date();
 
 				return {
 					limit,
-					olderThan,
-					newerThan,
 				};
 			};
 			it('should return empty array', async () => {
-				const { limit, olderThan, newerThan } = setup();
-				const result = await repo.findAllItems(limit, olderThan, newerThan);
+				const { limit } = setup();
+				const result = await repo.findAllItems(limit);
 
 				expect(result).toEqual([]);
 			});
@@ -126,10 +122,6 @@ describe(DeletionRequestRepo.name, () => {
 		describe('when there are deletionRequests for execution', () => {
 			const setup = async () => {
 				const limit = 1000;
-				const olderThan = new Date();
-				olderThan.setDate(olderThan.getDate() + 1);
-				const newerThan = new Date();
-				newerThan.setDate(newerThan.getDate() - 1);
 
 				const dateInFuture = new Date();
 				dateInFuture.setDate(dateInFuture.getDate() + 30);
@@ -193,14 +185,13 @@ describe(DeletionRequestRepo.name, () => {
 					},
 				];
 
-				return { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit, olderThan, newerThan };
+				return { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit };
 			};
 
 			it('should find deletionRequests with deleteAfter smaller then today and status with value registered', async () => {
-				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit, olderThan, newerThan } =
-					await setup();
+				const { deletionRequestEntity1, deletionRequestEntity5, expectedArray, limit } = await setup();
 
-				const results = await repo.findAllItems(limit, olderThan, newerThan);
+				const results = await repo.findAllItems(limit);
 
 				expect(results.length).toEqual(2);
 
@@ -219,9 +210,9 @@ describe(DeletionRequestRepo.name, () => {
 			});
 
 			it('should find deletionRequests to execute with limit = 2', async () => {
-				const { expectedArray, olderThan, newerThan } = await setup();
+				const { expectedArray } = await setup();
 
-				const results = await repo.findAllItems(2, olderThan, newerThan);
+				const results = await repo.findAllItems(2);
 
 				expect(results.length).toEqual(2);
 

@@ -6,16 +6,17 @@ describe(TriggerDeletionExecutionOptionsBuilder.name, () => {
 		describe('when called with proper arguments', () => {
 			const setup = () => {
 				const limit = 1000;
+				const runFailed = false;
 
-				const expectedOutput: TriggerDeletionExecutionOptions = { limit };
+				const expectedOutput: TriggerDeletionExecutionOptions = { limit, runFailed };
 
-				return { limit, expectedOutput };
+				return { expectedOutput, limit, runFailed };
 			};
 
 			it('should return valid object with expected values', () => {
-				const { limit, expectedOutput } = setup();
+				const { expectedOutput, limit, runFailed } = setup();
 
-				const output = TriggerDeletionExecutionOptionsBuilder.build(limit);
+				const output = TriggerDeletionExecutionOptionsBuilder.build(limit, runFailed);
 
 				expect(output).toStrictEqual(expectedOutput);
 			});

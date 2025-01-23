@@ -34,38 +34,57 @@ describe(DeletionRequestScope.name, () => {
 
 	describe('byStatusAndDate', () => {
 		const setup = () => {
-			const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
-			const expectedQuery = {
-				$or: [
-					{ status: StatusModel.FAILED },
-					{
-						$and: [
-							{ status: [StatusModel.REGISTERED, StatusModel.PENDING] },
-							{ updatedAt: { $lt: fifteenMinutesAgo } },
-						],
-					},
-				],
+			const newerThan = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
+			const olderThan = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
+
+			const expectedQueryOlder = {
+				status: {
+					$in: [StatusModel.FAILED, StatusModel.PENDING],
+				},
+				updatedAt: {
+					$lt: olderThan,
+				},
+			};
+			const expectedQueryNewer = {
+				status: {
+					$in: [StatusModel.FAILED, StatusModel.PENDING],
+				},
+				updatedAt: {
+					$gte: newerThan,
+				},
 			};
 			return {
-				expectedQuery,
-				fifteenMinutesAgo,
+				expectedQueryOlder,
+				expectedQueryNewer,
+				olderThan,
+				newerThan,
 			};
 		};
-		describe('when fifteenMinutesAgo is set', () => {
+		describe('when olderThan is set', () => {
 			it('should add query', () => {
-				const { expectedQuery, fifteenMinutesAgo } = setup();
+				const { expectedQueryOlder, olderThan } = setup();
 
-				const result = scope.byStatusAndDate(StatusModel.FAILED, fifteenMinutesAgo);
+				const result = scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan);
 
 				expect(result).toBeInstanceOf(DeletionRequestScope);
-				expect(scope.query).toEqual(expectedQuery);
+				expect(scope.query).toEqual(expectedQueryOlder);
+			});
+		});
+		describe('when newerThan is set', () => {
+			it('should add query', () => {
+				const { expectedQueryNewer, newerThan } = setup();
+
+				const result = scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], undefined, newerThan);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQueryNewer);
 			});
 		});
 	});
 
 	describe('byStatusAndDate for Pending', () => {
 		const setup = () => {
-			const expectedQuery = { status: [StatusModel.PENDING] };
+			const expectedQuery = { status: { $in: [StatusModel.PENDING] } };
 
 			return { expectedQuery };
 		};
@@ -74,7 +93,7 @@ describe(DeletionRequestScope.name, () => {
 			it('should add query', () => {
 				const { expectedQuery } = setup();
 
-				const result = scope.byStatusAndDate(StatusModel.PENDING);
+				const result = scope.byStatusAndDate([StatusModel.PENDING]);
 
 				expect(result).toBeInstanceOf(DeletionRequestScope);
 				expect(scope.query).toEqual(expectedQuery);

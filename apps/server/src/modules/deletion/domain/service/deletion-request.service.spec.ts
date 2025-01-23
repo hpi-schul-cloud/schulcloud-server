@@ -139,8 +139,7 @@ describe(DeletionRequestService.name, () => {
 
 				await service.findAllItemsToExecute(limit);
 
-				// TODO fix date comparison
-				expect(deletionRequestRepo.findAllItems).toBeCalledWith(limit, expect.any(Date), expect.any(Date));
+				expect(deletionRequestRepo.findAllItems).toBeCalledWith(limit);
 			});
 
 			it('should return array of two deletionRequests to execute', async () => {

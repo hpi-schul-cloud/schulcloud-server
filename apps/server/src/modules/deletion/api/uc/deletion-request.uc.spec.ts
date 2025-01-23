@@ -61,9 +61,6 @@ describe(DeletionRequestUc.name, () => {
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
 		eventBus = module.get(EventBus);
-
-		jest.useFakeTimers();
-		jest.setSystemTime(new Date(Date.now()));
 	});
 
 	beforeEach(() => {
