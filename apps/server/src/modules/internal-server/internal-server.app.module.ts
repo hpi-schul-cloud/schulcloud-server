@@ -1,11 +1,11 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
+import { HealthApiModule, HealthEntities } from '@modules/health';
 import { serverConfig } from '@modules/server';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
-import { HealthApiModule, HealthEntities } from '@src/modules/health';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 
 @Module({
 	imports: [

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
@@ -9,8 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { UserRepo } from '@shared/repo/user';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { v1 } from 'uuid';
 import { Account, AccountSave } from '..';

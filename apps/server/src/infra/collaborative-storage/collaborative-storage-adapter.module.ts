@@ -5,7 +5,7 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module, Provider } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 import { CollaborativeStorageAdapterMapper } from './mapper';
 import { NextcloudClient } from './strategy/nextcloud/nextcloud.client';

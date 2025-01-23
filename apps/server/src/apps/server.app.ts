@@ -2,6 +2,7 @@
 import { Mail, MailService } from '@infra/mail';
 // application imports
 /* eslint-disable no-console */
+import { LegacyLogger, Logger } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';
@@ -17,7 +18,6 @@ import { TeamService } from '@modules/teams/service/team.service';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
 import express from 'express';
 import { join } from 'path';
 

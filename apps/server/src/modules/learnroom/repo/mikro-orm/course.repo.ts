@@ -4,8 +4,8 @@ import { Page } from '@shared/domain/domainobject';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseScope } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { CourseScope } from '@shared/repo/course';
 import { Course, CourseFilter, CourseRepo, CourseStatus } from '../../domain';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
 

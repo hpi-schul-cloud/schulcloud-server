@@ -1,9 +1,9 @@
+import { CoreModule } from '@core/core.module';
+import { LoggerModule } from '@core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { DynamicModule, Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { CoreModule } from '@src/core';
-import { LoggerModule } from '@src/core/logger';
 import { FileRecord } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.app.module';
 

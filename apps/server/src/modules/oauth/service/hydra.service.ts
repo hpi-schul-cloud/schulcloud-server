@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { AuthorizationParams } from '@modules/oauth/controller/dto/authorization.params';
@@ -8,8 +9,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, InternalServerErrorException } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { nanoid } from 'nanoid';
 import QueryString from 'qs';

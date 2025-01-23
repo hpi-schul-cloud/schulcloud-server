@@ -1,7 +1,7 @@
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
 import { validate } from 'class-validator';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {

@@ -1,10 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { CoursesClientModule } from '@infra/courses-client';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
-import { RabbitMQWrapperModule } from '@src/infra/rabbitmq';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
@@ -54,13 +54,13 @@ import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { User } from '@shared/domain/entity/user.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
-import { CommonCartridgeUc } from './uc/common-cartridge.uc';
-import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
-import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
-import { CourseRoomsModule } from './common-cartridge-client/room-client';
-import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
-import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { BoardClientModule } from './common-cartridge-client/board-client';
+import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
+import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
+import { CourseRoomsModule } from './common-cartridge-client/room-client';
+import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
+import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
+import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 
 export const ENTITIES = [
 	AccountEntity,

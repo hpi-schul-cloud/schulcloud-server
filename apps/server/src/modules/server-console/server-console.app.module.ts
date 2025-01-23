@@ -9,7 +9,7 @@ import { ManagementModule } from '@modules/management/management.module';
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common'; // TODO: Import Reihenfolge sieht falsch aus ...IDM prüfen.
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { ConsoleModule } from 'nestjs-console';
 import path from 'path';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';

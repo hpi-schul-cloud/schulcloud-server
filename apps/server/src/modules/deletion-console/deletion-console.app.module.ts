@@ -1,3 +1,4 @@
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
@@ -5,9 +6,8 @@ import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { ConsoleModule } from 'nestjs-console';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';

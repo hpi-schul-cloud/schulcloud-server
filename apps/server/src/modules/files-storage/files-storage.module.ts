@@ -1,13 +1,13 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AntivirusModule } from '@infra/antivirus';
 import { PreviewGeneratorProducerModule } from '@infra/preview-generator';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { LoggerModule } from '@src/core/logger';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions'; // TODO: Entfernen durch kopieren
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';

@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
+import { accountFactory } from '@modules/account/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { accountFactory } from '@src/modules/account/testing';
-import { ServerTestModule } from '@src/modules/server/server.app.module';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';

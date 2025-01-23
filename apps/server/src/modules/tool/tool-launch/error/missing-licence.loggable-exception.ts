@@ -1,8 +1,8 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class MissingMediaLicenseLoggableException extends BusinessError implements Loggable {

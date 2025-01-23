@@ -1,13 +1,13 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyLogger } from '@src/core/logger';
-import { BoardContextApiHelperService } from '@src/modules/board-context';
-import { RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -558,6 +558,42 @@ describe(BoardUc.name, () => {
 			await uc.updateVisibility(user.id, board.id, true);
 
 			expect(boardNodeService.updateVisibility).toHaveBeenCalledWith(board.id, true);
+		});
+	});
+
+	describe('updateLayout', () => {
+		describe('when updating the layout', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const board = columnBoardFactory.build();
+
+				return { user, board };
+			};
+
+			it('should call the service to find the board', async () => {
+				const { user, board } = setup();
+
+				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
+			});
+
+			it('should call the service to check the permissions', async () => {
+				const { user, board } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
+
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+			});
+
+			it('should call the service to update the board layout', async () => {
+				const { user, board } = setup();
+
+				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
+
+				expect(boardNodeService.updateLayout).toHaveBeenCalledWith(board.id, BoardLayout.LIST);
+			});
 		});
 	});
 });

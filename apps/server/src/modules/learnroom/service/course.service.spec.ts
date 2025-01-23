@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import {
@@ -11,8 +12,8 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity } from '@shared/domain/entity';
-import { CourseRepo as LegacyCourseRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { CourseRepo as LegacyCourseRepo } from '@shared/repo/course';
+import { UserRepo } from '@shared/repo/user';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';

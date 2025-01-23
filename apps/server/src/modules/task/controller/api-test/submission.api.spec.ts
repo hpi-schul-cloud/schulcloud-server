@@ -5,7 +5,7 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { Submission } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';

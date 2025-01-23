@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
@@ -11,8 +12,7 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { ValidationError } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
+import { ValidationError } from '@shared/common/error';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolRequestMapper, ContextExternalToolResponseMapper } from '../mapper';
 import { ContextExternalToolUc } from '../uc';

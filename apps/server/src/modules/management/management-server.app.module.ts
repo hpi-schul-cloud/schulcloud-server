@@ -1,9 +1,9 @@
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types'; // Fix me!!
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';

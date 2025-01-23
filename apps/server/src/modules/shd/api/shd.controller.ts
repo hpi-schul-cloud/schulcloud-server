@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, ForbiddenException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { TargetUserIdParams } from './dtos/target-user-id.params';
 import { ShdUc } from './shd.uc';
 

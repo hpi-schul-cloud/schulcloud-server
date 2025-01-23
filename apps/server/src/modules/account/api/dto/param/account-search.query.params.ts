@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller/dto';
+import { SanitizeHtml } from '@shared/controller/transformer';
 import { IsEnum, IsString } from 'class-validator';
-import { PaginationParams, SanitizeHtml } from '@shared/controller';
 import { AccountSearchType } from '../../../domain/type/account-search-type';
 
 export class AccountSearchQueryParams extends PaginationParams {
@@ -11,7 +12,7 @@ export class AccountSearchQueryParams extends PaginationParams {
 		required: true,
 		nullable: false,
 	})
-	type!: AccountSearchType;
+	public type!: AccountSearchType;
 
 	@IsString()
 	@SanitizeHtml()
@@ -20,5 +21,5 @@ export class AccountSearchQueryParams extends PaginationParams {
 		required: true,
 		nullable: false,
 	})
-	value!: string;
+	public value!: string;
 }

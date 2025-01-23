@@ -1,6 +1,6 @@
 import { IContentMetadata } from '@lumieducation/h5p-server';
 import { ApiProperty } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
+import { SanitizeHtml } from '@shared/controller/transformer';
 
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';

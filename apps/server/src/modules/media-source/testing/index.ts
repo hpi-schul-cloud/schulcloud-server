@@ -4,3 +4,5 @@ export { mediaSourceBasicAuthConfigFactory } from './media-source-basic-auth-con
 export { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
 export { mediaSourceBasicConfigEmbeddableFactory } from './media-source-basic-auth-config.embeddable.factory';
 export { mediaSourceOAuthConfigEmbeddableFactory } from './media-source-oauth-config.embeddable.factory';
+export { mediaSourceSyncReportFactory } from './media-source-sync-report.factory';
+export { mediaSourceSyncOperationReportFactory } from './media-source-sync-operation-report.factory';

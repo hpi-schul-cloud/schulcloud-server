@@ -1,13 +1,13 @@
+import { CoreModule } from '@core/core.module';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { CoreModule } from '@src/core';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
@@ -57,11 +57,12 @@ import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { User } from '@shared/domain/entity/user.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
-import { BoardModule } from './board.module';
-import { BoardWsApiModule } from './board-ws-api.module';
-import { config } from './board-collaboration.config';
-import { serverConfig } from '../server';
 import { AuthorizationModule } from '../authorization';
+import { serverConfig } from '../server';
+import { config } from './board-collaboration.config';
+import { BoardWsApiModule } from './board-ws-api.module';
+import { BoardModule } from './board.module';
+
 
 export const ENTITIES = [
 	AccountEntity,

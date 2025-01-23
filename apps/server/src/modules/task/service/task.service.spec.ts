@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import {
@@ -11,8 +12,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TaskRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { TaskRepo } from '@shared/repo/task';
 import { courseFactory } from '@testing/factory/course.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
