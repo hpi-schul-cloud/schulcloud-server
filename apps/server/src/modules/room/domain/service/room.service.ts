@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ValidationError } from '@shared/common';
 import { RoomRepo } from '../../repo';
 import { Room, RoomCreateProps, RoomProps, RoomUpdateProps } from '../do';
 

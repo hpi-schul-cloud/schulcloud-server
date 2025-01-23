@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { MongoPatterns } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 

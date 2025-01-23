@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { CourseInfoDataResponse } from './course-info-data-response';
 
 export class CourseInfoListResponse extends PaginationResponse<CourseInfoDataResponse[]> {

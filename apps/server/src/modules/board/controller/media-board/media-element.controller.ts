@@ -20,7 +20,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaExternalToolElement } from '../../domain';
 import { MediaElementUc } from '../../uc';
 import {

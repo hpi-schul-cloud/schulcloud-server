@@ -8,6 +8,9 @@ import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { BoardFeature } from '../board/domain';
 import { LegacySchoolService } from '../legacy-school';
 import { VideoConferenceConfig } from '../video-conference';
+import { ServerConfig } from '../server';
+
+type ServiceConfig = VideoConferenceConfig | Pick<ServerConfig, 'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'>;
 
 @Injectable()
 export class BoardContextApiHelperService {
@@ -16,7 +19,7 @@ export class BoardContextApiHelperService {
 		private readonly roomService: RoomService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly legacySchoolService: LegacySchoolService,
-		private readonly configService: ConfigService<VideoConferenceConfig, true>
+		private readonly configService: ConfigService<ServiceConfig, true>
 	) {}
 
 	public async getSchoolIdForBoardNode(nodeId: EntityId): Promise<EntityId> {
@@ -60,9 +63,9 @@ export class BoardContextApiHelperService {
 			const course = await this.courseService.findById(context.id);
 
 			if (
-				this.isVideoConferenceEnabledForConfig() &&
+				this.isVideoConferenceEnabledForCourse(course.features) &&
 				(await this.isVideoConferenceEnabledForSchool(course.school.id)) &&
-				this.isVideoConferenceEnabledForCourse(course.features)
+				this.isVideoConferenceEnabledForConfig()
 			) {
 				features.push(BoardFeature.VIDEOCONFERENCE);
 			}
@@ -73,7 +76,7 @@ export class BoardContextApiHelperService {
 		if (context.type === BoardExternalReferenceType.Room) {
 			const room = await this.roomService.getSingleRoom(context.id);
 
-			if (this.isVideoConferenceEnabledForConfig() && (await this.isVideoConferenceEnabledForSchool(room.schoolId))) {
+			if ((await this.isVideoConferenceEnabledForSchool(room.schoolId)) && this.isVideoConferenceEnabledForConfig()) {
 				features.push(BoardFeature.VIDEOCONFERENCE);
 			}
 
@@ -93,6 +96,9 @@ export class BoardContextApiHelperService {
 	}
 
 	private isVideoConferenceEnabledForConfig(): boolean {
-		return this.configService.get('FEATURE_VIDEOCONFERENCE_ENABLED');
+		return (
+			this.configService.get<boolean>('FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED') &&
+			this.configService.get<boolean>('FEATURE_VIDEOCONFERENCE_ENABLED')
+		);
 	}
 }

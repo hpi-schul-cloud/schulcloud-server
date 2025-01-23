@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams } from '@shared/controller/dto';
 import { NewsMapper } from '../mapper/news.mapper';
 import { NewsUc } from '../uc';
 import { FilterNewsParams, NewsListResponse, TeamUrlParams } from './dto';

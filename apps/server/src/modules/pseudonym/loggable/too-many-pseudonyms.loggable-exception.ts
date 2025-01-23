@@ -1,7 +1,7 @@
-import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
 import { Loggable } from '@core/logger/interfaces';
 import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger/types';
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 
 export class TooManyPseudonymsLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly pseudonym: string) {

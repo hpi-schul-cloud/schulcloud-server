@@ -1,5 +1,5 @@
 import { ValidationError } from '@nestjs/common';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { getMetadataStorage } from 'class-validator';
 import util from 'util';
 import { Loggable } from '../../logger/interfaces';
