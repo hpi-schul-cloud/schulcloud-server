@@ -25,7 +25,7 @@ import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserConfig } from '../interfaces';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';

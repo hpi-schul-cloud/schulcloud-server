@@ -21,7 +21,7 @@ import {
 	ApiOperation,
 	ApiTags,
 } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { MediaAvailableLine, MediaBoard, MediaLine } from '../../domain';
 import { MediaAvailableLineUc, MediaBoardUc } from '../../uc';
 import { BoardUrlParams } from '../dto';

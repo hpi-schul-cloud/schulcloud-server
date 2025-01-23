@@ -1,4 +1,4 @@
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';

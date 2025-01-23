@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';

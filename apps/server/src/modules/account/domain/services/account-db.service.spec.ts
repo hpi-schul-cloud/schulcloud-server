@@ -4,7 +4,7 @@ import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';

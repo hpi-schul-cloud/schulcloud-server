@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, InternalServerErrorException, Post, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { AuthorizationReferenceUc } from './authorization-reference.uc';
 import { AuthorizationBodyParams, AuthorizedReponse } from './dto';
 

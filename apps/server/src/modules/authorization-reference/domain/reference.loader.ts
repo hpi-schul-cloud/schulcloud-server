@@ -9,7 +9,12 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { CourseGroupRepo, CourseRepo, LegacySchoolRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
+import { LegacySchoolRepo } from '@shared/repo/school';
+import { SubmissionRepo } from '@shared/repo/submission';
+import { TaskRepo } from '@shared/repo/task';
+import { UserRepo } from '@shared/repo/user';
 
 @Injectable()
 export class ReferenceLoader {

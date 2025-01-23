@@ -4,7 +4,7 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
-import { IDashboardRepo } from '@shared/repo';
+import { IDashboardRepo } from '@shared/repo/dashboard';
 import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
