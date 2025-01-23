@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';

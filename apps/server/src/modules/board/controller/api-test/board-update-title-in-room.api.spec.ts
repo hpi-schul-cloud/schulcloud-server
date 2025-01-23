@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
-import { groupEntityFactory } from '@modules/group/testing/group-entity.factory';
+import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
