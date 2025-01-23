@@ -149,27 +149,6 @@ export class CommonCartridgeExportService {
 				);
 			})
 		);
-
-		// for await (const task of tasks) {
-		// 	const taskOrganization = tasksOrganization.createChild({
-		// 		title: task.name,
-		// 		identifier: createIdentifier(),
-		// 	});
-
-		// 	taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
-
-		// 	const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
-
-		// 	for await (const fileMetadata of filesMetadata) {
-		// 		const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-
-		// 		if (file) {
-		// 			const resource = this.mapper.mapFileToResource(fileMetadata, file);
-
-		// 			taskOrganization.addResource(resource);
-		// 		}
-		// 	}
-		// }
 	}
 
 	private async addColumnBoards(
@@ -214,10 +193,6 @@ export class CommonCartridgeExportService {
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 
 			await Promise.all(listOfCards.data.map((card) => this.addCardToOrganization(card, columnOrganization)));
-
-			// for await (const card of listOfCards.data) {
-			// 	await this.addCardToOrganization(card, columnOrganization);
-			// }
 		}
 	}
 
@@ -231,10 +206,6 @@ export class CommonCartridgeExportService {
 		});
 
 		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
-
-		// for await (const element of card.elements) {
-		// 	await this.addCardElementToOrganization(element, cardOrganization);
-		// }
 	}
 
 	private async addCardElementToOrganization(
@@ -267,16 +238,6 @@ export class CommonCartridgeExportService {
 					}
 				})
 			);
-
-			// for await (const fileMetadata of filesMetadata) {
-			// 	const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-
-			// 	if (file) {
-			// 		const resource = this.mapper.mapFileToResource(fileMetadata, file, element);
-
-			// 		cardOrganization.addResource(resource);
-			// 	}
-			// }
 		}
 	}
 
