@@ -466,7 +466,7 @@ describe(MediaSchoolLicenseService.name, () => {
 				const mediaSchoolLicenses = mediaSchoolLicenseFactory.buildList(5, {
 					type: SchoolLicenseType.MEDIA_LICENSE,
 					mediaSource,
-					school,
+					schoolId: school.id,
 					mediumId: '12345',
 				});
 
@@ -499,7 +499,7 @@ describe(MediaSchoolLicenseService.name, () => {
 									id: expect.any(String),
 									mediaSource,
 									mediumId: mediaSchoolLicenses[0].mediumId,
-									school,
+									schoolId: school.id,
 									type: SchoolLicenseType.MEDIA_LICENSE,
 								}),
 							})
