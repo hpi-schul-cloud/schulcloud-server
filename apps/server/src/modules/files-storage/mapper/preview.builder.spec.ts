@@ -1,5 +1,5 @@
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { PreviewOutputMimeTypes } from '../interface';
+import { fileRecordFactory } from '../testing';
 import { PreviewBuilder } from './preview.builder';
 
 describe('PreviewBuilder', () => {

@@ -3,12 +3,12 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenUC } from '../uc';
 import { ShareTokenInfoDto } from '../uc/dto';
 import { ShareTokenController } from './share-token.controller';
+import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 
 describe('ShareTokenController', () => {
 	let module: TestingModule;
@@ -42,7 +42,7 @@ describe('ShareTokenController', () => {
 	describe('creating a token', () => {
 		const setup = () => {
 			const currentUser = currentUserFactory.build();
-			const shareToken = shareTokenFactory.build({ token: 'ctuW1FG0RsTo' });
+			const shareToken = shareTokenDOFactory.build({ token: 'ctuW1FG0RsTo' });
 			uc.createShareToken.mockResolvedValue(shareToken);
 			const body = {
 				parentType: shareToken.payload.parentType,

@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
@@ -5,8 +6,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../controller/dto';
@@ -16,6 +15,7 @@ import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
