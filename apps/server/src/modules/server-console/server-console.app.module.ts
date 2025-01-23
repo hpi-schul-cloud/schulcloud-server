@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/imports-from-feathers';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
 import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { SyncModule } from '@infra/sync/sync.module';
