@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterService } from '@infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@infra/database';
@@ -5,14 +6,15 @@ import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
+import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common';
-import { LoggerModule } from '@core/logger';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
+import { MediaSourcesSeedDataService } from './service';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
 const baseImports = [
@@ -22,6 +24,7 @@ const baseImports = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	EncryptionModule,
 	FeathersModule,
+	MediaSourceModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
@@ -36,6 +39,7 @@ const providers = [
 	DatabaseManagementConsole,
 	// infra services
 	ConsoleWriterService,
+	MediaSourcesSeedDataService,
 ];
 
 const controllers = [DatabaseManagementController];
