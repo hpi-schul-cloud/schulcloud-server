@@ -1,5 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
-import { ErrorLogMessage } from '@shared/common';
+import { ErrorLogMessage } from '@shared/common/error';
 import { Loggable } from '@shared/common/loggable';
 
 export class CantChangeOwnersRoleLoggableException extends BadRequestException implements Loggable {
