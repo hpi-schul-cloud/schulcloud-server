@@ -851,6 +851,8 @@ describe('UserService', () => {
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
+				config.get.mockReturnValue(true);
+
 				return {
 					expectedResult,
 					user,
