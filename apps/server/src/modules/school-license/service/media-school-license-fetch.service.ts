@@ -2,9 +2,9 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { IDMBetreiberApiInterface, OfferDTO, PageOfferDTO, VidisClientFactory } from '@infra/vidis-client';
 import { Inject } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { AxiosErrorLoggable } from '@src/core/error/loggable';
-import { MediaSource, MediaSourceDataFormat } from '@src/modules/media-source';
-import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@src/modules/media-source/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
+import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 
 export class MediaSchoolLicenseFetchService {
 	constructor(

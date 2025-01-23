@@ -1,15 +1,21 @@
+import { NotFoundError } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { Logger } from '@src/core/logger';
-import { SchoolService } from '@src/modules/school';
-import { MediaSourceDataFormat, MediaSourceService } from '@src/modules/media-source';
-import { FederalStateEntityMapper } from '@src/modules/school/repo/mikro-orm/mapper';
-import { schoolFactory } from '../../school/testing';
+import { Logger } from '@core/logger';
+import { SchoolService } from '@modules/school';
+import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
+import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { schoolFactory } from '@modules/school/testing';
 import { SchoolLicenseType } from '../enum';
-import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
+import {
+	BuildMediaSchoolLicenseFailedLoggable,
+	SchoolNotFoundLoggableException,
+	SchoolNumberNotFoundLoggableException,
+} from '../loggable';
+import { FederalStateAbbreviationOfSchoolNotFoundLoggableException } from '../loggable/federal-state-abbreviation-of-school-not-found.loggable-exception';
 import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
 import { mediaSchoolLicenseFactory, vidisOfferFactory } from '../testing';
 import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
@@ -172,7 +178,28 @@ describe(MediaSchoolLicenseService.name, () => {
 			});
 		});
 
-		describe('when school with official school number was found ', () => {
+		describe('when school without federal state was found', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const school = schoolFactory.build({ id: schoolId, federalState: undefined, officialSchoolNumber: '00100' });
+
+				schoolService.getSchoolById.mockResolvedValue(school);
+
+				return {
+					school,
+				};
+			};
+
+			it('should throw FederalStateAbbreviationOfSchoolNotFoundLoggableException', async () => {
+				const { school } = setup();
+
+				await expect(mediaSchoolLicenseService.updateMediaSchoolLicenses(school.id)).rejects.toThrow(
+					new FederalStateAbbreviationOfSchoolNotFoundLoggableException(school.id)
+				);
+			});
+		});
+
+		describe('when school with federal state abbreviation and official school number was found ', () => {
 			const setup = () => {
 				const federalStateEntity = federalStateFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
@@ -201,20 +228,16 @@ describe(MediaSchoolLicenseService.name, () => {
 			});
 		});
 
-		describe('when school without official school number was found ', () => {
+		describe('when school with federal state abbreviation and without official school number was found ', () => {
 			const setup = () => {
-				const school = schoolFactory.build();
-				const mediaSource = mediaSourceFactory.build();
-				const offersFromMediaSource = vidisOfferFactory.buildList(3);
+				const federalStateEntity = federalStateFactory.build();
+				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
+				const school = schoolFactory.build({ officialSchoolNumber: undefined, federalState });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
-				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
 
 				return {
 					school,
-					mediaSource,
-					offersFromMediaSource,
 				};
 			};
 
@@ -229,22 +252,19 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when media source was found ', () => {
 			const setup = () => {
-				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
+				const federalStateEntity = federalStateFactory.build();
+				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
+				const school = schoolFactory.build({ officialSchoolNumber: '00100', federalState });
 				const mediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS });
-				const offersFromMediaSource = vidisOfferFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-				mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis.mockResolvedValue(offersFromMediaSource);
 
-				const schoolName = `${school.getProps().federalState.getProps().abbreviation}_${
-					school.officialSchoolNumber ?? ''
-				}`;
+				const schoolName = `${federalState.getProps().abbreviation}_${school.officialSchoolNumber ?? ''}`;
 
 				return {
 					school,
 					mediaSource,
-					offersFromMediaSource,
 					schoolName,
 				};
 			};

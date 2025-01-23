@@ -1,7 +1,7 @@
 import { EncryptionModule } from '@infra/encryption';
 import { VidisClientModule } from '@infra/vidis-client';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '../authorization';
 import { MediaSourceModule } from '../media-source/media-source.module';
 import { SchoolModule } from '../school';

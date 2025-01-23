@@ -1,14 +1,15 @@
+import { Logger } from '@core/logger';
 import { OfferDTO } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
 import { EntityId } from '@shared/domain/types';
-import { School, SchoolService } from '@src/modules/school';
-import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@src/modules/media-source';
+import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
+import { School, SchoolService } from '@modules/school';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import {
 	BuildMediaSchoolLicenseFailedLoggable,
+	FederalStateAbbreviationOfSchoolNotFoundLoggableException,
 	MediaSourceNotFoundLoggableException,
 	SchoolNumberNotFoundLoggableException,
 } from '../loggable';
@@ -46,16 +47,20 @@ export class MediaSchoolLicenseService {
 	}
 
 	public async updateMediaSchoolLicenses(schoolId: EntityId): Promise<void> {
-		const school = await this.schoolService.getSchoolById(schoolId);
+		const school: School = await this.schoolService.getSchoolById(schoolId);
 
-		const prefix: string = school.getProps().federalState.getProps().abbreviation;
+		const abbreviation: string | undefined = school.getProps().federalState?.getProps().abbreviation;
 		const { officialSchoolNumber } = school;
+
+		if (!abbreviation) {
+			throw new FederalStateAbbreviationOfSchoolNotFoundLoggableException(schoolId);
+		}
 
 		if (!officialSchoolNumber) {
 			throw new SchoolNumberNotFoundLoggableException(schoolId);
 		}
 
-		const schoolName = `${prefix}_${officialSchoolNumber}`;
+		const schoolName = `${abbreviation}_${officialSchoolNumber}`;
 
 		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
 
