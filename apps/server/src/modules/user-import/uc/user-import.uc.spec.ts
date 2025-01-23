@@ -6,7 +6,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
-import { systemFactory } from '@modules/system/testing';
+import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
@@ -22,9 +22,7 @@ import { Counted, SchoolFeature } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { importUserFactory } from '@testing/factory/import-user.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -37,6 +35,7 @@ import {
 } from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
+import { importUserFactory } from '../testing';
 import { UserImportConfig } from '../user-import-config';
 import {
 	LdapAlreadyPersistedException,

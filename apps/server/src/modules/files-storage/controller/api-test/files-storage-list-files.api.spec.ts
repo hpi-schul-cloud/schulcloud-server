@@ -6,7 +6,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -15,6 +14,7 @@ import NodeClam from 'clamscan';
 import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordParentType, StorageLocation } from '../../interface';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
