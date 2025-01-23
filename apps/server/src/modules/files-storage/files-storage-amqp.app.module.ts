@@ -2,7 +2,7 @@ import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { FilesStorageConsumer } from './controller';
 import { config } from './files-storage.config';
 import { FilesStorageModule } from './files-storage.module';

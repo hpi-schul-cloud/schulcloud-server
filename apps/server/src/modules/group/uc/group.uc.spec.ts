@@ -1,7 +1,9 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { roleDtoFactory } from '@modules/role/testing';
 import { School, SchoolService } from '@modules/school/domain';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
@@ -11,9 +13,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { Role, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
-import { groupFactory } from '@testing/factory/domainobject';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -22,6 +21,7 @@ import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
+import { groupFactory } from '../testing';
 import { ResolvedGroupDto } from './dto';
 import { GroupUc } from './group.uc';
 

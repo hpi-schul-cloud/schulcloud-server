@@ -5,8 +5,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
+import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenRepo } from './share-token.repo';
 
 describe('ShareTokenRepo', () => {
@@ -39,7 +39,7 @@ describe('ShareTokenRepo', () => {
 
 	describe('findOneByToken', () => {
 		it('should find a shareToken by its token', async () => {
-			const shareToken = shareTokenFactory.build();
+			const shareToken = shareTokenDOFactory.build();
 			await repo.save(shareToken);
 
 			const result = await repo.findOneByToken(shareToken.token);
@@ -51,7 +51,7 @@ describe('ShareTokenRepo', () => {
 		it('should include context id', async () => {
 			const school = schoolEntityFactory.build();
 			await em.persistAndFlush([school]);
-			const shareToken = shareTokenFactory.build({
+			const shareToken = shareTokenDOFactory.build({
 				context: { contextType: ShareTokenContextType.School, contextId: school.id },
 			});
 			await repo.save(shareToken);

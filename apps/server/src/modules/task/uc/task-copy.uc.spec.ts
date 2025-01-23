@@ -7,7 +7,9 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { TaskRepo } from '@shared/repo/task';
+import { UserRepo } from '@shared/repo/user';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';

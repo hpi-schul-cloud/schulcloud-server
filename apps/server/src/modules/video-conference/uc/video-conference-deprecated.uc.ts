@@ -12,7 +12,7 @@ import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/dom
 import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import {
 	BBBBaseMeetingConfig,
@@ -424,7 +424,7 @@ export class VideoConferenceDeprecatedUc {
 		}
 	}
 
-	private static sanitizeString(text: string) {
+	private static sanitizeString(text: string): string {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 }

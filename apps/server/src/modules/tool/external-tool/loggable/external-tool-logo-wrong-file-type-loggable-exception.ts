@@ -1,6 +1,6 @@
-import { BusinessError } from '@shared/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 
 export class ExternalToolLogoWrongFileTypeLoggableException extends BusinessError implements Loggable {
 	constructor() {

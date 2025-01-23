@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { CacheWrapperModule } from '@infra/cache';
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
@@ -8,8 +9,7 @@ import { UserModule } from '@modules/user';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo';
-import { LoggerModule } from '@core/logger';
+import { LtiToolRepo } from '@shared/repo/ltitool';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
 import { HydraSsoService, OauthAdapterService, OAuthService, OauthSessionTokenService } from './service';
 

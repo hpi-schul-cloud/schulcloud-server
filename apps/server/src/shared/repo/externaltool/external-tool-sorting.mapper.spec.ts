@@ -3,7 +3,7 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { LtiTool } from '@shared/domain/entity';
 import { SortOrder, SortOrderMap } from '@shared/domain/interface';
-import { ExternalToolSortingMapper } from '@shared/repo';
+import { ExternalToolSortingMapper } from '@shared/repo/externaltool';
 
 describe('ExternalToolSortingMapper', () => {
 	describe('mapDOSortOrderToQueryOrder', () => {

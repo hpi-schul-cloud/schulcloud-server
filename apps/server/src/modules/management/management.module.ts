@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterService } from '@infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@infra/database';
@@ -8,8 +9,7 @@ import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
-import { LoggerModule } from '@core/logger';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';

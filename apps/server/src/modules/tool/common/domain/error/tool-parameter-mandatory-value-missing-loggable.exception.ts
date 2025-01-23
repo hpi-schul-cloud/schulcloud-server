@@ -1,7 +1,7 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { BusinessError } from '@shared/common';
-import { EntityId } from '@shared/domain/types';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
+import { EntityId } from '@shared/domain/types';
 import { CustomParameter } from '../custom-parameter.do';
 
 export class ToolParameterMandatoryValueMissingLoggableException extends BusinessError implements Loggable {

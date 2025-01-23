@@ -14,7 +14,7 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
