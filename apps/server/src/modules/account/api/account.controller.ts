@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
 
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { AccountUc } from './account.uc';

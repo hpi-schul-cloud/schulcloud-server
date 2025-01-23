@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import {
@@ -12,8 +13,8 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@core/logger';
+import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
+import { UserRepo } from '@shared/repo/user';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';

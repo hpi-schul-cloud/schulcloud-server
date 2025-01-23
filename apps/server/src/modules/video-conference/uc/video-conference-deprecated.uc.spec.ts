@@ -13,7 +13,8 @@ import { RoleReference, UserDO, VideoConferenceDO } from '@shared/domain/domaino
 import { Course, Role, TeamEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
+import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';

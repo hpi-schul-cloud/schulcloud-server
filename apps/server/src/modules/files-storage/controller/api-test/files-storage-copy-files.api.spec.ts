@@ -5,7 +5,7 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
 import { fileRecordFactory } from '@testing/factory/filerecord.factory';

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
@@ -12,14 +13,13 @@ import { UserLoginMigrationService, UserMigrationService } from '@modules/user-l
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted, SchoolFeature } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
-import { Logger } from '@core/logger';
+import { UserRepo } from '@shared/repo/user';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { importUserFactory } from '@testing/factory/import-user.factory';

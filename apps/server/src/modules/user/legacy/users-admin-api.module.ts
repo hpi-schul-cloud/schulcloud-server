@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { UserRepo } from '@shared/repo';
-import { RoleModule } from '../../role';
+import { UserRepo } from '@shared/repo/user';
 import { AuthorizationModule } from '../../authorization';
+import { RoleModule } from '../../role';
 import { AdminApiStudentsController, AdminApiTeachersController } from './controller';
 import { UsersAdminApiUc } from './uc';
 import { UsersAdminModule } from './users-admin.module';

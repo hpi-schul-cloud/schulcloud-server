@@ -1,5 +1,5 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,

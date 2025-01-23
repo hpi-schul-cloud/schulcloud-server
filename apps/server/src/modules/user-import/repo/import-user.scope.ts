@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import { FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StringValidator } from '@shared/common';
+import { StringValidator } from '@shared/common/validator';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { MongoPatterns } from '@shared/repo';
+import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser } from '../entity';

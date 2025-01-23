@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SingleValueToArrayTransformer } from '@shared/controller';
+import { SingleValueToArrayTransformer } from '@shared/controller/transformer';
 import { IsArray, IsEnum, IsOptional } from 'class-validator';
 import { SystemType } from '../../domain';
 

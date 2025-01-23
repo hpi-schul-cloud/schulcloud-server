@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromHeader } from '@shared/common';
+import { extractJwtFromHeader } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import {

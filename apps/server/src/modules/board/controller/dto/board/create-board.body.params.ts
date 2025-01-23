@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
-import { IsEnum, IsMongoId, NotEquals, MaxLength, MinLength } from 'class-validator';
+import { SanitizeHtml } from '@shared/controller/transformer';
+import { IsEnum, IsMongoId, MaxLength, MinLength, NotEquals } from 'class-validator';
 import { BoardExternalReferenceType, BoardLayout } from '../../../domain';
 
 export class CreateBoardBodyParams {
