@@ -1,1 +1,3 @@
-export * from './crud-operation.enum';
+/** *************************************************
+ *   Do not re-export here! File should be empty!   *
+ ************************************************** */

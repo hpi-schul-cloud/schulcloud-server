@@ -1,4 +1,4 @@
-import { sanitizeRichText } from '@shared/controller';
+import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';

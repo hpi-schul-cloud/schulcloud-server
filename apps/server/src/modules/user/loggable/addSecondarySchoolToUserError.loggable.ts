@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, ValidationErrorLogMessage } from '@shared/common';
+import { ErrorLogMessage, ValidationErrorLogMessage } from '@shared/common/error';
 import { Loggable } from '@shared/common/loggable';
 import { RoleReference } from '@shared/domain/domainobject';
 import { LogMessage } from '@core/logger';

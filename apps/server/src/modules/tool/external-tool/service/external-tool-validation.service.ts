@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';

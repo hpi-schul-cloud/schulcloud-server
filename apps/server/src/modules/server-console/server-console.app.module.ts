@@ -8,7 +8,7 @@ import { ManagementModule } from '@modules/management/management.module';
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { ConsoleModule } from 'nestjs-console';
 import { mikroOrmCliConfig } from '../../config/mikro-orm-cli.config';
 import { ServerConsole } from './server.console';

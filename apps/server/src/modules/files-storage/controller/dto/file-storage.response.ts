@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { FileRecord, PreviewStatus, ScanStatus } from '../../entity';
 import { API_VERSION_PATH } from '../../files-storage.const';
 import { FileRecordParentType } from '../../interface';
