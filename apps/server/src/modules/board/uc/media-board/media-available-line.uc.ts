@@ -91,17 +91,17 @@ export class MediaAvailableLineUc {
 		let filteredTools = matchedTools;
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			filteredTools = await this.filterUnlicensedToolsForUser(userId, filteredTools);
+			filteredTools = await this.filterUnlicensedTools(userId, filteredTools);
 		}
 
 		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
-			filteredTools = await this.getUnlicensedToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
+			filteredTools = await this.getToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
 		}
 
 		return filteredTools;
 	}
 
-	private async filterUnlicensedToolsForUser(
+	private async filterUnlicensedTools(
 		userId: EntityId,
 		tools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
@@ -120,7 +120,7 @@ export class MediaAvailableLineUc {
 		return filteredTools;
 	}
 
-	private async getUnlicensedToolsForUserAndSchool(
+	private async getToolsForUserAndSchool(
 		schoolId: EntityId,
 		tools: [ExternalTool, SchoolExternalTool][],
 		userTools: [ExternalTool, SchoolExternalTool][]
