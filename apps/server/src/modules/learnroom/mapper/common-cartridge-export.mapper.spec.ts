@@ -147,7 +147,7 @@ describe('CommonCartridgeExportMapper', () => {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: createIdentifier(task.id),
 					title: task.name,
-					html: `<p></p>`,
+					html: `<p>${task.description}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
 				});
 			});
@@ -170,7 +170,7 @@ describe('CommonCartridgeExportMapper', () => {
 						type: CommonCartridgeResourceType.WEB_CONTENT,
 						identifier: createIdentifier(task.id),
 						title: task.name,
-						html: `<p></p>`,
+						html: `<p>${task.description}</p>`,
 						intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 					});
 				});
@@ -225,7 +225,7 @@ describe('CommonCartridgeExportMapper', () => {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: expect.any(String),
 					title: componentProps.title,
-					html: `<p>text</p>`,
+					html: `<p>${componentProps?.content.text}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				});
 			});

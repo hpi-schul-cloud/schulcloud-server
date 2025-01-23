@@ -1,4 +1,5 @@
 import { AnyElementContentBody, ContentElementType, LinkContentBody, RichTextContentBody } from '@modules/board';
+import { CardProps, ColumnProps } from '@modules/board/domain';
 import {
 	CommonCartridgeImportResourceProps,
 	CommonCartridgeImportWebContentResourceProps,
@@ -11,20 +12,18 @@ import { InputFormat } from '@shared/domain/types';
 
 @Injectable()
 export class CommonCartridgeImportMapper {
-	public mapOrganizationToColumn(
-		organization: CommonCartridgeOrganizationProps,
-		withTitle = true
-	): { title: string; height: number } {
-		return {
-			title: withTitle ? organization.title : '',
-			height: 150,
-		};
-	}
-
-	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps): { title: string } {
-		return {
+	public mapOrganizationToColumn(organization: CommonCartridgeOrganizationProps): Partial<ColumnProps> {
+		const column = {
 			title: organization.title,
 		};
+
+		return column;
+	}
+
+	public mapOrganizationToCard(organization: CommonCartridgeOrganizationProps, withTitle = true): Partial<CardProps> {
+		const card = { title: withTitle ? organization.title : '', height: 150 };
+
+		return card;
 	}
 
 	public mapOrganizationToTextElement(organization: CommonCartridgeOrganizationProps): AnyElementContentBody {

@@ -57,6 +57,20 @@ describe('CommonCartridgeImportMapper', () => {
 
 				expect(result).toEqual({
 					title: organization.title,
+				});
+			});
+		});
+
+		describe('when organization is provided and withTitle is false', () => {
+			const setup = () => setupOrganization();
+
+			it('should set the title to an empty string', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization, false);
+
+				expect(result).toEqual({
+					title: '',
 					height: 150,
 				});
 			});
@@ -74,6 +88,7 @@ describe('CommonCartridgeImportMapper', () => {
 
 				expect(result).toEqual({
 					title: organization.title,
+					height: 150,
 				});
 			});
 		});
