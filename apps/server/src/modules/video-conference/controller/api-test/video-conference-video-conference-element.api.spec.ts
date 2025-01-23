@@ -1,21 +1,21 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Role, TargetModels, User, VideoConference } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
-import { AccountEntity } from '@src/modules/account/domain/entity/account.entity';
-import { accountFactory } from '@src/modules/account/testing';
-import { BoardExternalReferenceType } from '@src/modules/board';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { accountFactory } from '@modules/account/testing';
+import { BoardExternalReferenceType } from '@modules/board';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	videoConferenceElementEntityFactory,
-} from '@src/modules/board/testing';
-import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing';
-import { roomEntityFactory } from '@src/modules/room/testing';
+} from '@modules/board/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { serverConfig, ServerTestModule } from '@modules/server';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Role, TargetModels, User, VideoConference } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -377,6 +377,10 @@ describe('VideoConferenceController (API)', () => {
 
 			describe('when user has the required permission in room scope', () => {
 				const setup = async () => {
+					const config = serverConfig();
+					config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+					config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 					const room = roomEntityFactory.build({
@@ -604,6 +608,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when user has the required permission', () => {
 					const setup = async () => {
+						const config = serverConfig();
+						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+						config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
 						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
@@ -681,6 +689,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when conference is not running', () => {
 					const setup = async () => {
+						const config = serverConfig();
+						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+						config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
 						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
@@ -841,6 +853,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when user has the required permission', () => {
 					const setup = async () => {
+						const config = serverConfig();
+						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+						config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
 						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
@@ -1002,6 +1018,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when conference is not running', () => {
 					const setup = async () => {
+						const config = serverConfig();
+						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+						config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
 						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({
@@ -1164,6 +1184,10 @@ describe('VideoConferenceController (API)', () => {
 
 				describe('when a user without required permission wants to end a conference', () => {
 					const setup = async () => {
+						const config = serverConfig();
+						config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+						config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+
 						const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
 						const room = roomEntityFactory.build({

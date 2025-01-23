@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -10,16 +11,11 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	DashboardElementRepo,
-	DashboardModelMapper,
-	DashboardRepo,
-	LegacyBoardRepo,
-	UserRepo,
-} from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
+import { CourseRepo } from '@shared/repo/course';
+import { CourseGroupRepo } from '@shared/repo/coursegroup';
+import { DashboardElementRepo, DashboardModelMapper, DashboardRepo } from '@shared/repo/dashboard';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
+import { UserRepo } from '@shared/repo/user';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeExportMapper } from './mapper/common-cartridge-export.mapper';

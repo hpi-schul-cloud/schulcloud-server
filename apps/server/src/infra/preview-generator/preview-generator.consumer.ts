@@ -1,7 +1,7 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { FilesPreviewEvents, FilesPreviewExchange } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { PreviewFileOptions } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 import { PreviewGeneratorService } from './preview-generator.service';

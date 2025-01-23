@@ -1,4 +1,4 @@
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
@@ -84,6 +84,9 @@ export class School extends DomainObject<SchoolProps> {
 		if (county) {
 			throw new ValidationError('County cannot be updated, once it is set.');
 		}
+		if (federalState === undefined) {
+			throw new ValidationError('County cannot be set without a federal state being assigned to the school.');
+		}
 		const { counties } = federalState.getProps();
 		const countyObject = counties?.find((item) => item.id === countyId);
 
@@ -148,7 +151,7 @@ export interface SchoolProps extends AuthorizableObject {
 	inMaintenanceSince?: Date;
 	inUserMigration?: boolean;
 	currentYear?: SchoolYear;
-	federalState: FederalState;
+	federalState?: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;

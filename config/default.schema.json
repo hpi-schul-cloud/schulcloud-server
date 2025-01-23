@@ -1184,6 +1184,11 @@
 			"default": "/login",
 			"description": "Determines the url to be redirected to when the user is not authenticated"
 		},
+		"SC_CONTACT_EMAIL": {
+			"type": "string",
+			"default": "ticketsystem@dbildungscloud.de",
+			"description": "Email address used for contacting"
+		},
 		"ACCESSIBILITY_REPORT_EMAIL": {
 			"type": "string",
 			"default": "dbildungscloud@dataport.de",
@@ -1668,8 +1673,13 @@
 		},
 		"FEATURE_ROOMS_ENABLED": {
 			"type": "boolean",
-			"default": "false",
+			"default": "true",
 			"description": "Enables the rooms feature"
+		},
+		"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the ability to change permissions of room members"
 		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
@@ -1685,6 +1695,11 @@
 			"type": "string",
 			"default": "",
 			"description": "The region for fetching activated offers from VIDIS"
+		},
+		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables VIDIS media activation synchronisation"
 		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
 			"type": "boolean",

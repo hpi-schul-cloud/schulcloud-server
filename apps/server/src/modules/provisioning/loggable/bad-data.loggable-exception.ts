@@ -1,6 +1,6 @@
+import { ErrorLogMessage, Loggable, LogMessage, LogMessageData, ValidationErrorLogMessage } from '@core/logger';
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable, LogMessage, LogMessageData, ValidationErrorLogMessage } from '@src/core/logger';
+import { BusinessError } from '@shared/common/error';
 
 export class BadDataLoggableException extends BusinessError implements Loggable {
 	constructor(message?: string, details?: Record<string, unknown>) {

@@ -7,7 +7,7 @@ import { MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
 import { MediaSchoolLicenseProps } from '@modules/school-license/domain';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeepPartial } from 'fishery';
@@ -76,7 +76,7 @@ describe(VidisSyncService.name, () => {
 							expect.objectContaining<DeepPartial<MediaSchoolLicenseProps>>({
 								type: SchoolLicenseType.MEDIA_LICENSE,
 								mediumId: `${item.offerId as number}`,
-								school,
+								schoolId: school.id,
 								mediaSource,
 							})
 						);

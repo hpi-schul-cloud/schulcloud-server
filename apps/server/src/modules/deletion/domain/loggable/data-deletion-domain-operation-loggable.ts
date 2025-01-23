@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@src/core/logger';
+import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@core/logger';
 import { DomainName } from '../types/domain-name.enum';
 import { StatusModel } from '../types';
 

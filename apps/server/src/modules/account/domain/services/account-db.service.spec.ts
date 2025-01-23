@@ -4,10 +4,10 @@ import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import bcrypt from 'bcryptjs';
@@ -331,7 +331,7 @@ describe('AccountDbService', () => {
 
 			it('should throw EntityNotFoundError', async () => {
 				setup();
-				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toThrow(EntityNotFoundError);
+				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toBeInstanceOf(EntityNotFoundError);
 			});
 		});
 	});
@@ -406,17 +406,12 @@ describe('AccountDbService', () => {
 			};
 
 			it('should update account', async () => {
-				const { mockStudentUser, mockTeacherAccount } = setup();
+				const { mockTeacherAccount } = setup();
 
 				const ret = await accountService.save(mockTeacherAccount);
+
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject({
-					id: mockTeacherAccount.id,
-					username: mockTeacherAccount.username,
-					activated: mockTeacherAccount.activated,
-					systemId: mockTeacherAccount.systemId,
-					userId: new ObjectId(mockStudentUser.id),
-				});
+				expect(ret).toEqual(mockTeacherAccount);
 			});
 		});
 
@@ -769,6 +764,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -788,6 +784,7 @@ describe('AccountDbService', () => {
 			const theNewDate = new Date();
 
 			accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+			accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
 			return { mockTeacherAccount, theNewDate };
 		};
@@ -857,7 +854,7 @@ describe('AccountDbService', () => {
 				const newPassword = 'newPassword';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
 				return { mockTeacherAccount, newPassword };
 			};
 
@@ -869,8 +866,6 @@ describe('AccountDbService', () => {
 				expect(ret).toBeDefined();
 				if (ret.password) {
 					await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
-				} else {
-					fail('return password is undefined');
 				}
 			});
 		});

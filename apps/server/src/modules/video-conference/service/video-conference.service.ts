@@ -1,19 +1,20 @@
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
+import { VideoConferenceElement } from '@modules/board/domain';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { Room, RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
 import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@src/modules/board';
-import { VideoConferenceElement } from '@src/modules/board/domain';
-import { Room, RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
+import { EntityId } from '@shared/domain/types';
+import { TeamsRepo } from '@shared/repo/teams';
+import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
@@ -176,7 +177,7 @@ export class VideoConferenceService {
 		return hasPermission;
 	}
 
-	async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
+	public async determineBbbRole(userId: EntityId, scopeId: EntityId, scope: VideoConferenceScope): Promise<BBBRole> {
 		// ressource loading need to be move to uc
 		const [authorizableUser, scopeResource]: [User, ConferenceResource | null] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
@@ -195,25 +196,19 @@ export class VideoConferenceService {
 		throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 	}
 
-	public async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
-		if (!this.isVideoConferenceFeatureEnabled) {
-			throw new ForbiddenException(
-				ErrorStatus.SCHOOL_FEATURE_DISABLED,
-				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'
-			);
-		}
-
-		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
-		if (!schoolFeatureEnabled) {
-			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
-		}
-	}
-
-	public sanitizeString(text: string) {
+	public sanitizeString(text: string): string {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 
 	public async getScopeInfo(userId: EntityId, scopeId: string, scope: VideoConferenceScope): Promise<ScopeInfo> {
+		const ensureMinTitleLength = (title: string): string => {
+			const trimmedTitle = title.trim();
+			if (trimmedTitle.length >= 2) {
+				return trimmedTitle;
+			}
+			return trimmedTitle.padEnd(2, '_');
+		};
+
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(scopeId);
@@ -222,7 +217,7 @@ export class VideoConferenceService {
 					scopeId,
 					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
-					title: course.name,
+					title: ensureMinTitleLength(course.name),
 				};
 			}
 			case VideoConferenceScope.EVENT: {
@@ -232,7 +227,7 @@ export class VideoConferenceService {
 					scopeId: event.teamId,
 					scopeName: VideoConferenceScope.EVENT,
 					logoutUrl: `${this.hostUrl}/teams/${event.teamId}?activeTab=events`,
-					title: event.title,
+					title: ensureMinTitleLength(event.title),
 				};
 			}
 			case VideoConferenceScope.ROOM: {
@@ -242,7 +237,7 @@ export class VideoConferenceService {
 					scopeId: room.id,
 					scopeName: VideoConferenceScope.ROOM,
 					logoutUrl: `${this.hostUrl}/rooms/${room.id}`,
-					title: room.name,
+					title: ensureMinTitleLength(room.name),
 				};
 			}
 			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
@@ -252,7 +247,7 @@ export class VideoConferenceService {
 					scopeId: element.id,
 					scopeName: VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT,
 					logoutUrl: `${this.hostUrl}/boards/${element.rootId}`,
-					title: element.title,
+					title: ensureMinTitleLength(element.title),
 				};
 			}
 			default:
@@ -308,7 +303,7 @@ export class VideoConferenceService {
 		return vcDo;
 	}
 
-	private async saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
+	private saveVideoConference(videoConference: VideoConferenceDO): Promise<VideoConferenceDO> {
 		return this.videoConferenceRepo.save(videoConference);
 	}
 }

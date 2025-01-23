@@ -1,10 +1,10 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createConfigModuleOptions } from '@shared/common';
-import { LegacyLogger } from '@src/core/logger';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';

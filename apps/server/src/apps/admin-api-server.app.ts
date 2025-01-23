@@ -1,9 +1,9 @@
 /* istanbul ignore file */
+import { LegacyLogger, Logger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { AdminApiServerModule } from '@modules/server/admin-api.server.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { LegacyLogger, Logger } from '@src/core/logger';
-import { AdminApiServerModule } from '@src/modules/server/admin-api.server.app.module';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import {

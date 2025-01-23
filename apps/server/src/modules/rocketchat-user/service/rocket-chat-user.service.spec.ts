@@ -14,7 +14,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RocketChatError, RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { RocketChatUser } from '../domain';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';

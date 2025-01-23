@@ -10,7 +10,7 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';
 

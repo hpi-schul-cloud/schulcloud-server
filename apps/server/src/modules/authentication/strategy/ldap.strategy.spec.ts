@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
 import { Account } from '@modules/account';
@@ -10,8 +11,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { LegacySchoolRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
+import { LegacySchoolRepo } from '@shared/repo/school';
+import { UserRepo } from '@shared/repo/user';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';

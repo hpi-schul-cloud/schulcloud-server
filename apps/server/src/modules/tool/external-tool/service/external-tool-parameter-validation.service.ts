@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { CustomParameter } from '../../common/domain';
 import { autoParameters, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { ToolParameterTypeValidationUtil } from '../../common/service';

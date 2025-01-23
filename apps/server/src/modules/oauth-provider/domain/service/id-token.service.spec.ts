@@ -6,7 +6,7 @@ import { UserService } from '@modules/user/service/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { teamFactory } from '@testing/factory/team.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';

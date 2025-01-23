@@ -25,7 +25,7 @@ import {
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller/';
+import { PaginationParams } from '@shared/controller/dto';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import {
@@ -119,7 +119,6 @@ export class CourseController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	@ApiUnprocessableEntityResponse({ description: 'Unsupported role.' })
 	@ApiCreatedResponse({
-		status: 200,
 		schema: { type: 'object', example: { userId: ['permission1', 'permission2'] } },
 	})
 	public async getUserPermissions(

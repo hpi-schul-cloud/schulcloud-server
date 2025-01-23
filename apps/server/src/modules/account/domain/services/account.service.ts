@@ -13,11 +13,16 @@ import {
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import {
+	AuthorizationError,
+	EntityNotFoundError,
+	ForbiddenOperationError,
+	ValidationError,
+} from '@shared/common/error';
 import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
@@ -245,31 +250,38 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	public findById(id: string): Promise<Account> {
-		return this.accountImpl.findById(id);
+		const account = this.accountImpl.findById(id);
+		return account;
 	}
 
 	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
-		return this.accountImpl.findMultipleByUserId(userIds);
+		const accounts = this.accountImpl.findMultipleByUserId(userIds);
+		return accounts;
 	}
 
 	public findByUserId(userId: string): Promise<Account | null> {
-		return this.accountImpl.findByUserId(userId);
+		const account = this.accountImpl.findByUserId(userId);
+		return account;
 	}
 
 	public findByUserIdOrFail(userId: string): Promise<Account> {
-		return this.accountImpl.findByUserIdOrFail(userId);
+		const account = this.accountImpl.findByUserIdOrFail(userId);
+		return account;
 	}
 
 	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
-		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
+		const account = this.accountImpl.findByUsernameAndSystemId(username, systemId);
+		return account;
 	}
 
 	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
-		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+		const result = this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+		return result;
 	}
 
 	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
-		return this.accountImpl.searchByUsernameExactMatch(userName);
+		const result = this.accountImpl.searchByUsernameExactMatch(userName);
+		return result;
 	}
 
 	public async save(accountSave: AccountSave): Promise<Account> {
@@ -406,7 +418,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
-		return this.accountImpl.validatePassword(account, comparePassword);
+		const result = this.accountImpl.validatePassword(account, comparePassword);
+		return result;
 	}
 
 	public async delete(accountId: string): Promise<void> {
@@ -447,7 +460,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	 * @deprecated For migration purpose only
 	 */
 	public findMany(offset = 0, limit = 100): Promise<Account[]> {
-		return this.accountDb.findMany(offset, limit);
+		const accounts = this.accountDb.findMany(offset, limit);
+		return accounts;
 	}
 
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {

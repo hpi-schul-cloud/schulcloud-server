@@ -1,6 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ErrorUtils } from '@src/core/error/utils';
+import { ErrorUtils } from '@core/error/utils';
 import { API_VERSION_PATH, FilesStorageInternalActions } from '@modules/files-storage/files-storage.const';
 import NodeClam from 'clamscan';
 import { Readable } from 'stream';
