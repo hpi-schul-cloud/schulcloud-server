@@ -76,7 +76,7 @@ describe(VidisSyncService.name, () => {
 							expect.objectContaining<DeepPartial<MediaSchoolLicenseProps>>({
 								type: SchoolLicenseType.MEDIA_LICENSE,
 								mediumId: `${item.offerId as number}`,
-								school,
+								schoolId: school.id,
 								mediaSource,
 							})
 						);
