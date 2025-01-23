@@ -10,7 +10,10 @@ import {
 	RobjExportSchule,
 } from '@infra/tsp-client';
 import {
+	robjExportKlasseFactory,
+	robjExportLehrerFactory,
 	robjExportLehrerMigrationFactory,
+	robjExportSchuelerFactory,
 	robjExportSchuelerMigrationFactory,
 	robjExportSchuleFactory,
 } from '@infra/tsp-client/testing';
@@ -169,28 +172,54 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
-				const oauthDataDto = oauthDataDtoFactory.build({
-					system: provisioningSystemDtoFactory.build({
-						systemId: faker.string.uuid(),
-						provisioningStrategy: SystemProvisioningStrategy.TSP,
-					}),
-					externalUser: externalUserDtoFactory.build({
-						externalId: faker.string.uuid(),
-						roles: [],
-					}),
-				});
-				const tspTeacher = robjExportLehrerMigrationFactory.build();
+				const system = systemFactory.build();
 
-				const tspStudent = robjExportSchuelerMigrationFactory.build();
+				const systemDto = provisioningSystemDtoFactory.build({
+					systemId: system.id,
+					provisioningStrategy: SystemProvisioningStrategy.TSP,
+				});
+
+				const externalUser = externalUserDtoFactory.build({
+					externalId: faker.string.uuid(),
+					roles: [],
+				});
+
+				const oauthDataDto = oauthDataDtoFactory.build({ system: systemDto, externalUser });
+
+				const tspTeacherMigration = robjExportLehrerMigrationFactory.build();
+
+				const tspStudentMigration = robjExportSchuelerMigrationFactory.build();
+
+				const school = schoolFactory.build();
+
+				const tspTeachers = robjExportLehrerFactory.build();
+
+				const tspStudents = robjExportSchuelerFactory.build();
+
+				const tspClasses = robjExportKlasseFactory.build();
 
 				setupMockServices({
-					fetchedStudentMigrations: [tspStudent],
-					fetchedTeacherMigrations: [tspTeacher],
+					fetchedClasses: [tspClasses],
+					fetchedTeachers: [tspTeachers],
+					fetchedStudents: [tspStudents],
+					fetchedStudentMigrations: [tspStudentMigration],
+					fetchedTeacherMigrations: [tspTeacherMigration],
 					mappedOauthDto: [oauthDataDto],
+					foundSystemSchools: [school],
+					foundSystem: system,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
 
-				return { oauthDataDto };
+				return {
+					oauthDataDto,
+					system,
+					school,
+					tspTeachers,
+					tspStudents,
+					tspClasses,
+					tspStudentMigration,
+					tspTeacherMigration,
+				};
 			};
 
 			it('should find the tsp system', async () => {
@@ -198,49 +227,66 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalled();
+				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalledTimes(1);
 			});
 
 			it('should migrate the legacy data', async () => {
-				setup();
+				const { oauthDataDto } = setup();
 
 				await sut.sync();
 
-				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalled();
+				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalledTimes(1);
+				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalledWith(
+					oauthDataDto.system.systemId
+				);
 			});
 
 			it('should fetch the schools', async () => {
-				setup();
+				const { system } = setup();
 
 				await sut.sync();
 
-				expect(tspFetchService.fetchTspSchools).toHaveBeenCalled();
+				expect(tspFetchService.fetchTspSchools).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspSchools).toHaveBeenCalledWith(system, 1);
 			});
 
 			it('should fetch the data', async () => {
-				setup();
+				const { system } = setup();
 
 				await sut.sync();
 
-				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalled();
-				expect(tspFetchService.fetchTspStudents).toHaveBeenCalled();
-				expect(tspFetchService.fetchTspClasses).toHaveBeenCalled();
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, 10);
+
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, 10);
+
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, 10);
 			});
 
 			it('should load all schools', async () => {
-				setup();
+				const { system } = setup();
 
 				await sut.sync();
 
-				expect(tspSyncService.findAllSchoolsForSystem).toHaveBeenCalled();
+				expect(tspSyncService.findAllSchoolsForSystem).toHaveBeenCalledTimes(1);
+				expect(tspSyncService.findAllSchoolsForSystem).toHaveBeenCalledWith(system);
 			});
 
 			it('should map to OauthDataDto', async () => {
-				setup();
+				const { system, school, tspTeachers, tspStudents, tspClasses } = setup();
 
 				await sut.sync();
 
-				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalled();
+				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalledTimes(1);
+				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalledWith(
+					system,
+					[school],
+					[tspTeachers],
+					[tspStudents],
+					[tspClasses]
+				);
 			});
 
 			it('should call provisioning service with mapped OauthDataDtos', async () => {
@@ -248,53 +294,69 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
+				expect(provisioningService.provisionData).toHaveBeenCalledTimes(1);
 				expect(provisioningService.provisionData).toHaveBeenCalledWith(oauthDataDto);
 			});
 
 			describe('when feature tsp migration is enabled', () => {
 				it('should fetch teacher migrations', async () => {
-					setup();
+					const { system } = setup();
 
 					await sut.sync();
 
-					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalled();
+					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalledTimes(1);
+					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalledWith(system);
 				});
 
 				it('should fetch student migrations', async () => {
-					setup();
+					const { system } = setup();
 
 					await sut.sync();
 
-					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalled();
+					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalledTimes(1);
+					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalledWith(system);
 				});
 
 				it('should call tspSyncMigrationService', async () => {
-					setup();
+					const { system, tspStudentMigration, tspTeacherMigration } = setup();
 
 					await sut.sync();
 
-					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalled();
+					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalledTimes(1);
+					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalledWith(
+						system,
+						new Map([
+							[tspStudentMigration.schuelerUidAlt, tspStudentMigration.schuelerUidNeu],
+							[tspTeacherMigration.lehrerUidAlt, tspTeacherMigration.lehrerUidNeu],
+						])
+					);
 				});
 			});
 		});
 
 		describe('when school does not exist', () => {
 			const setup = () => {
+				const system = systemFactory.build();
+
 				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
 					fetchedSchools: tspSchools,
+					foundSystem: system,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
+
+				return { system, tspSchool };
 			};
 
 			it('should create the school', async () => {
-				setup();
+				const { system, tspSchool } = setup();
 
 				await sut.sync();
 
-				expect(tspSyncService.createSchool).toHaveBeenCalled();
+				expect(tspSyncService.createSchool).toHaveBeenCalledTimes(1);
+				expect(tspSyncService.createSchool).toHaveBeenCalledWith(system, tspSchool.schuleNummer, tspSchool.schuleName);
 			});
 		});
 
@@ -309,14 +371,17 @@ describe(TspSyncStrategy.name, () => {
 					foundSchool: school,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
+
+				return { school, tspSchool };
 			};
 
 			it('should update the school', async () => {
-				setup();
+				const { school, tspSchool } = setup();
 
 				await sut.sync();
 
-				expect(tspSyncService.updateSchool).toHaveBeenCalled();
+				expect(tspSyncService.updateSchool).toHaveBeenCalledTimes(1);
+				expect(tspSyncService.updateSchool).toHaveBeenCalledWith(school, tspSchool.schuleName);
 			});
 		});
 
