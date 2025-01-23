@@ -1,20 +1,17 @@
-import { NotFoundError } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { Test, TestingModule } from '@nestjs/testing';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { Logger } from '@core/logger';
 import { SchoolService } from '@modules/school';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@modules/school/testing';
+import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
-import {
-	BuildMediaSchoolLicenseFailedLoggable,
-	SchoolNotFoundLoggableException,
-	SchoolNumberNotFoundLoggableException,
-} from '../loggable';
+import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
 import { FederalStateAbbreviationOfSchoolNotFoundLoggableException } from '../loggable/federal-state-abbreviation-of-school-not-found.loggable-exception';
 import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
 import { mediaSchoolLicenseFactory, vidisOfferFactory } from '../testing';
@@ -120,6 +117,158 @@ describe(MediaSchoolLicenseService.name, () => {
 				await mediaSchoolLicenseService.deleteAllByMediaSource(mediaSource.id);
 
 				expect(mediaSchoolLicenseRepo.deleteAllByMediaSource).toBeCalledWith(mediaSource.id);
+			});
+		});
+	});
+
+	describe('findMediaSchoolLicensesBySchoolId', () => {
+		describe('when media school licenses are found', () => {
+			const setup = () => {
+				const mediaSchooLicenses = mediaSchoolLicenseFactory.buildList(3);
+				const schoolId = new ObjectId().toHexString();
+
+				mediaSchoolLicenseRepo.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce(mediaSchooLicenses);
+
+				return {
+					mediaSchooLicenses,
+					schoolId,
+				};
+			};
+
+			it('should call the repo with the correct schholId', async () => {
+				const { schoolId } = setup();
+
+				await mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+				expect(mediaSchoolLicenseRepo.findMediaSchoolLicensesBySchoolId).toBeCalledWith(schoolId);
+			});
+
+			it('should return the found media school licenses', async () => {
+				const { mediaSchooLicenses, schoolId } = setup();
+
+				const result = await mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+				expect(result.length).toEqual(mediaSchooLicenses.length);
+				expect(result).toEqual(mediaSchooLicenses);
+			});
+		});
+
+		describe('when media school licenses are not found', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+
+				mediaSchoolLicenseRepo.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([]);
+
+				return {
+					schoolId,
+				};
+			};
+
+			it('should return 0 found media school licenses', async () => {
+				const { schoolId } = setup();
+
+				const result = await mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+				expect(result.length).toEqual(0);
+			});
+		});
+	});
+
+	describe('hasLicenseForExternalTool', () => {
+		describe('when school has license', () => {
+			const setup = () => {
+				const toolMedium: ExternalToolMedium = {
+					mediumId: 'mediumId',
+					mediaSourceId: 'mediaSourceId',
+				};
+				const medium = mediaSchoolLicenseFactory.build({
+					mediumId: toolMedium.mediumId,
+					mediaSource: mediaSourceFactory.build({
+						sourceId: toolMedium.mediaSourceId,
+					}),
+				});
+				const unusedMedium = mediaSchoolLicenseFactory.build();
+				const mediaUserLicenses: MediaSchoolLicense[] = [medium, unusedMedium];
+
+				return {
+					toolMedium,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return true', () => {
+				const { toolMedium, mediaUserLicenses } = setup();
+
+				const result = mediaSchoolLicenseService.hasLicenseForExternalTool(toolMedium, mediaUserLicenses);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when school has license without sourceId', () => {
+			const setup = () => {
+				const toolMedium: ExternalToolMedium = {
+					mediumId: 'mediumId',
+				};
+				const medium = mediaSchoolLicenseFactory.build({
+					mediumId: toolMedium.mediumId,
+					mediaSource: undefined,
+				});
+				const unusedMedium = mediaSchoolLicenseFactory.build();
+				const mediaUserLicenses: MediaSchoolLicense[] = [medium, unusedMedium];
+
+				return {
+					toolMedium,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return true', () => {
+				const { toolMedium, mediaUserLicenses } = setup();
+
+				const result = mediaSchoolLicenseService.hasLicenseForExternalTool(toolMedium, mediaUserLicenses);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when school has not the correct license', () => {
+			const setup = () => {
+				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const mediaUserLicenses: MediaSchoolLicense[] = mediaSchoolLicenseFactory.buildList(2);
+
+				return {
+					medium,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return false', () => {
+				const { medium, mediaUserLicenses } = setup();
+
+				const result = mediaSchoolLicenseService.hasLicenseForExternalTool(medium, mediaUserLicenses);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when school has no licenses', () => {
+			const setup = () => {
+				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const mediaUserLicenses: MediaSchoolLicense[] = [];
+
+				return {
+					medium,
+					mediaUserLicenses,
+				};
+			};
+
+			it('should return false', () => {
+				const { medium, mediaUserLicenses } = setup();
+
+				const result = mediaSchoolLicenseService.hasLicenseForExternalTool(medium, mediaUserLicenses);
+
+				expect(result).toEqual(false);
 			});
 		});
 	});

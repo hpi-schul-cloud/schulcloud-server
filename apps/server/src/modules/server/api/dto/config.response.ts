@@ -9,6 +9,9 @@ export class ConfigResponse {
 	ACCESSIBILITY_REPORT_EMAIL: string;
 
 	@ApiProperty()
+	SC_CONTACT_EMAIL: string;
+
+	@ApiProperty()
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -235,6 +238,7 @@ export class ConfigResponse {
 
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
+		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
 		this.ALERT_STATUS_URL = config.ALERT_STATUS_URL;
 		this.CALENDAR_SERVICE_ENABLED = config.CALENDAR_SERVICE_ENABLED;
