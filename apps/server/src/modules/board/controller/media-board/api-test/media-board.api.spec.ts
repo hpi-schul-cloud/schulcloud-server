@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { fileRecordFactory } from '@modules/files-storage/testing';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
@@ -9,7 +10,6 @@ import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DateToString } from '@testing/date-to-string';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
