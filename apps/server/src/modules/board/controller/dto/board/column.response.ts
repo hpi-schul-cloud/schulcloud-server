@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { TimestampsResponse } from '../timestamps.response';
 import { CardSkeletonResponse } from './card-skeleton.response';
 

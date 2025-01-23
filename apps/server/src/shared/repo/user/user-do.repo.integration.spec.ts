@@ -6,7 +6,7 @@ import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { SystemEntity } from '@modules/system/entity';
 import { UserDiscoverableQuery, UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';

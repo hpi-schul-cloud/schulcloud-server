@@ -1,7 +1,7 @@
+import { Loggable, LogMessage } from '@core/logger';
 import { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CrudOperation } from '@shared/types';
-import { Loggable, LogMessage } from '@core/logger';
+import { CrudOperation } from '@shared/types/crud-operation.enum';
 import { NewsMapper } from '../mapper/news.mapper';
 
 export class NewsCrudOperationLoggable implements Loggable {

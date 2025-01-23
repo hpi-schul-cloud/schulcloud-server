@@ -6,7 +6,7 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { UserLoginMigrationRepo } from '@shared/repo';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,

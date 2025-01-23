@@ -1,3 +1,3 @@
-export * from './dto';
-export * from './transformer';
-export * from './validator';
+/** *************************************************
+ *   Do not re-export here! File should be empty!   *
+ ************************************************** */

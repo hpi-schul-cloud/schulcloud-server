@@ -1,5 +1,5 @@
 import { HttpException, HttpExceptionOptions } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
+import { BusinessError } from '@shared/common/error';
 import { FeathersError } from '../interface';
 
 export class ErrorUtils {
