@@ -1,22 +1,22 @@
+import { LoggerModule } from '@core/logger';
 import { CalendarModule } from '@infra/calendar';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
+import { BoardModule } from '@modules/board';
+import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { RoleModule } from '@modules/role';
+import { RoomModule } from '@modules/room';
+import { RoomMembershipModule } from '@modules/room-membership';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { LoggerModule } from '@core/logger';
-import { BoardModule } from '../board';
-import { LearnroomModule } from '../learnroom';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
-import { RoleModule } from '../role';
-import { RoomMembershipModule } from '../room-membership';
-import { RoomModule } from '../room';
 
 @Module({
 	imports: [
