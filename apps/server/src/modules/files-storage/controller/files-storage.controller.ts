@@ -100,7 +100,6 @@ export class FilesStorageController {
 	})
 	@ApiResponse({
 		status: 206,
-		type: StreamableFile,
 		schema: { type: 'string', format: 'binary' },
 	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
