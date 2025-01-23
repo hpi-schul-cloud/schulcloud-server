@@ -12,7 +12,7 @@ import { StorageProviderEntity } from '@shared/domain/entity';
 import { setupEntities } from '@testing/setup-entities';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
-import { MediaSourcesSeedDataService } from '../service';
+import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
@@ -25,6 +25,7 @@ describe('DatabaseManagementService', () => {
 	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
+	let systemsSeedDataService: DeepMocked<SystemsSeedDataService>;
 	let bsonConverter: BsonConverter;
 	const configGetSpy = jest.spyOn(Configuration, 'get');
 	const configHasSpy = jest.spyOn(Configuration, 'has');
@@ -181,6 +182,7 @@ describe('DatabaseManagementService', () => {
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
 				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
+				{ provide: SystemsSeedDataService, useValue: createMock<SystemsSeedDataService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: createMock<FileSystemAdapter>({
@@ -256,6 +258,7 @@ describe('DatabaseManagementService', () => {
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
 		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
+		systemsSeedDataService = module.get(SystemsSeedDataService);
 		await setupEntities();
 	});
 
@@ -426,7 +429,8 @@ describe('DatabaseManagementService', () => {
 	describe('When import some collections from filesystem', () => {
 		beforeAll(() => {
 			configService.get.mockReturnValue(undefined);
-			mediaSourcesSeedDataService.import.mockResolvedValueOnce(1);
+			mediaSourcesSeedDataService.import.mockResolvedValue(1);
+			systemsSeedDataService.import.mockResolvedValue(1);
 		});
 		afterAll(() => {
 			configService.get.mockReset();
@@ -437,7 +441,7 @@ describe('DatabaseManagementService', () => {
 			expect(collections).toEqual([
 				'collectionName1:3',
 				'collectionName2:1',
-				'systems:3',
+				'systems:4',
 				'storageproviders:1',
 				'media-sources:1',
 			]);
@@ -501,7 +505,9 @@ describe('DatabaseManagementService', () => {
 					configGetSpy.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
 					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',

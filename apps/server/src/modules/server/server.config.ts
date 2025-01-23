@@ -15,6 +15,7 @@ import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
+import { ManagementMediaSourcesConfig, ManagementServerConfig } from '@modules/management';
 import { OauthConfig } from '@modules/oauth';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
@@ -73,7 +74,9 @@ export interface ServerConfig
 		AlertConfig,
 		ShdConfig,
 		OauthConfig,
-		EncryptionConfig {
+		EncryptionConfig,
+		ManagementMediaSourcesConfig,
+		ManagementServerConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -327,6 +330,16 @@ const config: ServerConfig = {
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
+	MEDIA_SOURCE_VIDIS_USERNAME: Configuration.has('MEDIA_SOURCE_VIDIS_USERNAME')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_USERNAME') as string)
+		: undefined,
+	MEDIA_SOURCE_VIDIS_PASSWORD: Configuration.has('MEDIA_SOURCE_VIDIS_PASSWORD')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_PASSWORD') as string)
+		: undefined,
+	SANIS_CLIENT_ID: Configuration.has('SANIS_CLIENT_ID') ? (Configuration.get('SANIS_CLIENT_ID') as string) : undefined,
+	SANIS_CLIENT_SECRET: Configuration.has('SANIS_CLIENT_SECRET')
+		? (Configuration.get('SANIS_CLIENT_SECRET') as string)
+		: undefined,
 };
 
 export const serverConfig = () => config;

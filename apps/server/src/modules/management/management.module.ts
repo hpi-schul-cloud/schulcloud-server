@@ -8,13 +8,14 @@ import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { serverConfig } from '@modules/server';
+import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
-import { MediaSourcesSeedDataService } from './service';
+import { MediaSourcesSeedDataService, SystemsSeedDataService } from './service';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
 const baseImports = [
@@ -25,6 +26,7 @@ const baseImports = [
 	EncryptionModule,
 	FeathersModule,
 	MediaSourceModule,
+	SystemModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
@@ -39,7 +41,9 @@ const providers = [
 	DatabaseManagementConsole,
 	// infra services
 	ConsoleWriterService,
+	// seed data services
 	MediaSourcesSeedDataService,
+	SystemsSeedDataService,
 ];
 
 const controllers = [DatabaseManagementController];

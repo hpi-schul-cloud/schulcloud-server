@@ -12,7 +12,7 @@ import { StorageProviderEntity } from '@shared/domain/entity';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
-import { MediaSourcesSeedDataService } from '../service';
+import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 
 export interface CollectionFilePath {
 	filePath: string;
@@ -40,7 +40,8 @@ export class DatabaseManagementUc {
 		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
-		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService
+		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
+		private readonly systemsSeedDataService: SystemsSeedDataService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -200,7 +201,7 @@ export class DatabaseManagementUc {
 			collections
 		);
 
-		const seededCollectionsWithAmount: string[] = [];
+		const seededCollectionsWithAmount: Map<string, number> = new Map();
 
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {
@@ -234,16 +235,28 @@ export class DatabaseManagementUc {
 					jsonDocuments
 				);
 				// keep collection name and number of imported documents
-				seededCollectionsWithAmount.push(`${collectionName}:${importedDocumentsAmount}`);
+				seededCollectionsWithAmount.set(collectionName, importedDocumentsAmount);
 			})
 		);
 
 		if (collections === undefined || collections.includes('media-sources')) {
 			const mediaSourcesCount: number = await this.mediaSourcesSeedDataService.import();
-			seededCollectionsWithAmount.push(`media-sources:${mediaSourcesCount}`);
+			seededCollectionsWithAmount.set(
+				'media-sources',
+				mediaSourcesCount + (seededCollectionsWithAmount.get('media-sources') ?? 0)
+			);
 		}
 
-		return seededCollectionsWithAmount;
+		if (collections === undefined || collections.includes('systems')) {
+			const systemsCount: number = await this.systemsSeedDataService.import();
+			seededCollectionsWithAmount.set('systems', systemsCount + (seededCollectionsWithAmount.get('systems') ?? 0));
+		}
+
+		const seededCollectionsWithAmountFormatted: string[] = Array.from(seededCollectionsWithAmount).map(
+			([key, value]) => `${key}:${value}`
+		);
+
+		return seededCollectionsWithAmountFormatted;
 	}
 
 	/**
