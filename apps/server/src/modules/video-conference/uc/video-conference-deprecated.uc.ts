@@ -424,7 +424,7 @@ export class VideoConferenceDeprecatedUc {
 		}
 	}
 
-	private static sanitizeString(text: string) {
+	private static sanitizeString(text: string): string {
 		return text.replace(/[^\dA-Za-zÀ-ÖØ-öø-ÿ.\-=_`´ ]/g, '');
 	}
 }
