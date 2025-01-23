@@ -30,13 +30,3 @@ export const extractJwtFromHeader = ExtractJwt.fromExtractors([
 	ExtractJwt.fromAuthHeaderAsBearerToken(),
 	JwtExtractor.fromCookie('jwt'),
 ]);
-
-export function extractJwtFromRequest(request: Request): string {
-	const jwt = extractJwtFromHeader(request);
-
-	if (!jwt) {
-		throw new UnauthorizedException();
-	}
-
-	return jwt;
-}

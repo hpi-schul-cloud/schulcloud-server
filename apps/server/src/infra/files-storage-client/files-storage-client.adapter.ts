@@ -2,7 +2,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromRequest } from '@shared/common/utils/jwt';
+import { JwtExtractor } from '@shared/common/utils/jwt';
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ErrorLogger, Logger } from '@core/logger';
 import { AxiosError } from 'axios';
@@ -34,7 +34,7 @@ export class FilesStorageClientAdapter {
 			// const response = await this.api.download(fileRecordId, fileName, undefined, {
 			// 	responseType: 'arraybuffer',
 			// });
-			const token = extractJwtFromRequest(this.req);
+			const token = JwtExtractor.extractJwtFromRequest(this.req);
 			const url = new URL(
 				`${this.configService.getOrThrow<string>(
 					'FILES_STORAGE__SERVICE_BASE_URL'
@@ -51,7 +51,7 @@ export class FilesStorageClientAdapter {
 
 			return data;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageRestClientAdapter.download'));
+			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.download'));
 
 			return null;
 		}

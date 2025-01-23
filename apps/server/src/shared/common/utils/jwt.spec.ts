@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtFromRequestFunction } from 'passport-jwt';
-import { extractJwtFromRequest, JwtExtractor } from './jwt';
+import { JwtExtractor } from './jwt';
 
 describe('JwtExtractor', () => {
 	let request: DeepMocked<Request>;
@@ -60,7 +60,7 @@ describe('JwtExtractor', () => {
 			it('should return the jwt', () => {
 				const token = setup();
 
-				const result = extractJwtFromRequest(request);
+				const result = JwtExtractor.extractJwtFromRequest(request);
 
 				expect(result).toEqual(token);
 			});
@@ -74,7 +74,7 @@ describe('JwtExtractor', () => {
 			it('should throw an UnauthorizedException', () => {
 				setup();
 
-				expect(() => extractJwtFromRequest(request)).toThrow(UnauthorizedException);
+				expect(() => JwtExtractor.extractJwtFromRequest(request)).toThrow(UnauthorizedException);
 			});
 		});
 	});

@@ -1,7 +1,7 @@
 import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromRequest } from '@shared/common/utils/jwt';
+import { JwtExtractor } from '@shared/common/utils/jwt';
 import { LoggerModule } from '@core/logger';
 import { Request } from 'express';
 import { HttpModule } from '@nestjs/axios';
@@ -20,7 +20,7 @@ import { Configuration, FileApi } from './generated';
 				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 
 				const config = new Configuration({
-					accessToken: extractJwtFromRequest(request),
+					accessToken: JwtExtractor.extractJwtFromRequest(request),
 					basePath: `${basePath}/api/v3`,
 				});
 
