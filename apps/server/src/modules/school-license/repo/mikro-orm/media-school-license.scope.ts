@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
-import { SchoolLicenseType } from '../../enum';
+import { Scope } from '@shared/repo/scope';
 import { MediaSchoolLicenseEntity } from '../../entity';
+import { SchoolLicenseType } from '../../enum';
 
 export class MediaSchoolLicenseScope extends Scope<MediaSchoolLicenseEntity> {
 	public bySchoolId(schoolId: EntityId | undefined): this {
