@@ -38,7 +38,7 @@ describe(DeletionExecutionConsole.name, () => {
 			const setup = () => {
 				const limit = 1000;
 
-				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
+				const options = TriggerDeletionExecutionOptionsBuilder.build(1000, false);
 
 				return { limit, options };
 			};
@@ -50,13 +50,13 @@ describe(DeletionExecutionConsole.name, () => {
 
 				await console.triggerDeletionExecution(options);
 
-				expect(spy).toBeCalledWith(limit);
+				expect(spy).toBeCalledWith(limit, false);
 			});
 		});
 
 		describe(`when ${DeletionExecutionUc.name}'s triggerDeletionExecution() method doesn't throw an exception`, () => {
 			const setup = () => {
-				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
+				const options = TriggerDeletionExecutionOptionsBuilder.build(1000, false);
 
 				deletionExecutionUc.triggerDeletionExecution.mockResolvedValueOnce(undefined);
 				const spy = jest.spyOn(DeletionExecutionTriggerResultBuilder, 'buildSuccess');
@@ -75,7 +75,7 @@ describe(DeletionExecutionConsole.name, () => {
 
 		describe(`when ${DeletionExecutionUc.name}'s triggerDeletionExecution() method throws an exception`, () => {
 			const setup = () => {
-				const options = TriggerDeletionExecutionOptionsBuilder.build(1000);
+				const options = TriggerDeletionExecutionOptionsBuilder.build(1000, false);
 				const err = new Error('some error occurred...');
 
 				deletionExecutionUc.triggerDeletionExecution.mockRejectedValueOnce(err);
