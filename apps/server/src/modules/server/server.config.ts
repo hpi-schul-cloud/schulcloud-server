@@ -1,3 +1,4 @@
+import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { EncryptionConfig } from '@infra/encryption/encryption.config';
@@ -5,9 +6,9 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { TspSyncConfig } from '@infra/sync';
+import { VidisSyncConfig } from '@infra/sync/media-licenses';
 import type { TspClientConfig } from '@infra/tsp-client';
 import { VidisClientConfig } from '@infra/vidis-client';
-import { VidisSyncConfig } from '@infra/sync/media-licenses';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -31,7 +32,6 @@ import type { VideoConferenceConfig } from '@modules/video-conference';
 import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
-import type { CoreModuleConfig } from '@src/core';
 import { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
@@ -125,6 +125,7 @@ export interface ServerConfig
 	BOARD_COLLABORATION_URI: string;
 	FEATURE_AI_TUTOR_ENABLED: boolean;
 	FEATURE_ROOMS_ENABLED: boolean;
+	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 }
@@ -308,6 +309,7 @@ const config: ServerConfig = {
 	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
+	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: Configuration.get('FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED') as boolean,
 	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,
 	TSP_API_CLIENT_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_CLIENT_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,

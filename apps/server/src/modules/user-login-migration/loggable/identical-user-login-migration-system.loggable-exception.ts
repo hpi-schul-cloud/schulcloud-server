@@ -1,7 +1,7 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { BusinessError } from '@shared/common';
-import { EntityId } from '@shared/domain/types';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
+import { EntityId } from '@shared/domain/types';
 
 export class IdenticalUserLoginMigrationSystemLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly schoolId: string | undefined, private readonly targetSystemId: EntityId | undefined) {

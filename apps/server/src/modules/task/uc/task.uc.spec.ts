@@ -3,11 +3,12 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams } from '@shared/controller/dto';
 
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
-import { CourseRepo, TaskRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { TaskRepo } from '@shared/repo/task';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { roleFactory } from '@testing/factory/role.factory';

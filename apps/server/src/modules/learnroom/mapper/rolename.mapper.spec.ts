@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { courseFactory } from '@src/testing/factory/course.factory';
+import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';

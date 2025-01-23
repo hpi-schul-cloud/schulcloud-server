@@ -1,7 +1,8 @@
-import { INestApplication } from '@nestjs/common';
-import supertest, { Response } from 'supertest';
 import type { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
+import { INestApplication } from '@nestjs/common';
+import type { Server } from 'node:net';
+import supertest, { Response } from 'supertest';
 
 interface AuthenticationResponse {
 	accessToken: string;
@@ -23,7 +24,7 @@ const testReqestConst = {
  * Note res.cookie is not supported atm, feel free to add this
  */
 export class TestApiClient {
-	private readonly app: INestApplication;
+	private readonly app: INestApplication<Server>;
 
 	private readonly baseRoute: string;
 
@@ -32,6 +33,7 @@ export class TestApiClient {
 	private readonly kindOfAuth: string;
 
 	constructor(app: INestApplication, baseRoute: string, authValue?: string, useAsApiKey = false) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
 		this.authHeader = useAsApiKey ? `${authValue || ''}` : `${testReqestConst.prefix} ${authValue || ''}`;

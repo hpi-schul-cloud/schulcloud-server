@@ -1,5 +1,5 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';

@@ -1,4 +1,4 @@
-import { LogMessage, Loggable } from '@src/core/logger';
+import { LogMessage, Loggable } from '@core/logger';
 import { PreviewFileOptions } from '../interface';
 
 export class PreviewActionsLoggable implements Loggable {

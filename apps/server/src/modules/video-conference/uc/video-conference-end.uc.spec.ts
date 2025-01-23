@@ -12,6 +12,7 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { BBBService, VideoConferenceService } from '../service';
 import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceEndUc } from './video-conference-end.uc';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
 describe('VideoConferenceEndUc', () => {
 	let module: TestingModule;
@@ -19,6 +20,7 @@ describe('VideoConferenceEndUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
+	let videoConferenceFeatureService: DeepMocked<VideoConferenceFeatureService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,6 +38,10 @@ describe('VideoConferenceEndUc', () => {
 					provide: VideoConferenceService,
 					useValue: createMock<VideoConferenceService>(),
 				},
+				{
+					provide: VideoConferenceFeatureService,
+					useValue: createMock<VideoConferenceFeatureService>(),
+				},
 			],
 		}).compile();
 
@@ -43,6 +49,7 @@ describe('VideoConferenceEndUc', () => {
 		bbbService = module.get(BBBService);
 		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
+		videoConferenceFeatureService = module.get(VideoConferenceFeatureService);
 	});
 
 	afterAll(async () => {
@@ -73,7 +80,7 @@ describe('VideoConferenceEndUc', () => {
 				};
 
 				userService.findById.mockResolvedValue(user);
-				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 				bbbService.end.mockResolvedValue(bbbEndResponse);
 				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.VIEWER);
@@ -109,7 +116,7 @@ describe('VideoConferenceEndUc', () => {
 				};
 
 				userService.findById.mockResolvedValue(user);
-				videoConferenceService.throwOnFeaturesDisabled.mockResolvedValue();
+				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 				bbbService.end.mockResolvedValue(bbbEndResponse);
 				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
@@ -117,20 +124,12 @@ describe('VideoConferenceEndUc', () => {
 				return { currentUserId, scope, bbbEndResponse };
 			};
 
-			it('should call userService.findById', async () => {
+			it('should call feature check service', async () => {
 				const { currentUserId, scope } = setup();
 
 				await uc.end(currentUserId, scope);
 
-				expect(userService.findById).toBeCalledWith(currentUserId);
-			});
-
-			it('should call videoConferenceService.throwOnFeaturesDisabled', async () => {
-				const { currentUserId, scope } = setup();
-
-				await uc.end(currentUserId, scope);
-
-				expect(videoConferenceService.throwOnFeaturesDisabled).toBeCalled();
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
 			});
 
 			it('should call videoConferenceService.getScopeInfo', async () => {
@@ -164,6 +163,44 @@ describe('VideoConferenceEndUc', () => {
 
 				expect(result.state).toBe(VideoConferenceState.FINISHED);
 				expect(result.bbbResponse).toBe(bbbEndResponse);
+			});
+		});
+
+		describe('feature check', () => {
+			const setup = (scopeName: VideoConferenceScope) => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const currentUserId: string = user.id as string;
+				const scope = { scope: scopeName, id: new ObjectId().toHexString() };
+				const scopeInfo: ScopeInfo = {
+					scopeId: scope.id,
+					scopeName,
+					title: 'title',
+					logoutUrl: 'logoutUrl',
+				};
+
+				const bbbEndResponse: BBBResponse<BBBBaseResponse> = {
+					response: {
+						returncode: BBBStatus.SUCCESS,
+					} as BBBBaseResponse,
+				};
+
+				userService.findById.mockResolvedValue(user);
+				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
+				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
+				bbbService.end.mockResolvedValue(bbbEndResponse);
+				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
+
+				return { user, currentUserId, scope };
+			};
+
+			it('should call the feature check service', async () => {
+				const { currentUserId, scope } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+
+				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
+
+				await uc.end(currentUserId, scope);
+
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
 			});
 		});
 	});

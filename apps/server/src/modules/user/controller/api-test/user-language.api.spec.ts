@@ -2,8 +2,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ServerTestModule } from '@modules/server/server.module';
-import { ApiValidationError } from '@shared/common';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { ApiValidationError } from '@shared/common/error';
 import { User } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

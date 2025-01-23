@@ -1,12 +1,13 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
+import { RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyLogger } from '@src/core/logger';
-import { RoomService } from '@src/modules/room';
-import { RoomMembershipService } from '@src/modules/room-membership';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -25,6 +26,7 @@ describe(BoardUc.name, () => {
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
+	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -63,6 +65,10 @@ describe(BoardUc.name, () => {
 					useValue: createMock<RoomMembershipService>(),
 				},
 				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
+				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
@@ -76,6 +82,7 @@ describe(BoardUc.name, () => {
 		columnBoardService = module.get(ColumnBoardService);
 		courseRepo = module.get(CourseRepo);
 		boardNodeFactory = module.get(BoardNodeFactory);
+		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 		await setupEntities();
 	});
 
@@ -234,13 +241,21 @@ describe(BoardUc.name, () => {
 			expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.read);
 		});
 
-		it('should return the column board object', async () => {
+		it('should call the board context api helper service to get features', async () => {
+			const { user, boardId } = globalSetup();
+
+			await uc.findBoard(user.id, boardId);
+
+			expect(boardContextApiHelperService.getFeaturesForBoardNode).toHaveBeenCalledWith(boardId);
+		});
+
+		it('should return the column board object + features', async () => {
 			const { user, board } = globalSetup();
 			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
 
 			const result = await uc.findBoard(user.id, board.id);
 
-			expect(result).toEqual(board);
+			expect(result).toEqual({ board, features: [] });
 		});
 	});
 
@@ -543,6 +558,42 @@ describe(BoardUc.name, () => {
 			await uc.updateVisibility(user.id, board.id, true);
 
 			expect(boardNodeService.updateVisibility).toHaveBeenCalledWith(board.id, true);
+		});
+	});
+
+	describe('updateLayout', () => {
+		describe('when updating the layout', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const board = columnBoardFactory.build();
+
+				return { user, board };
+			};
+
+			it('should call the service to find the board', async () => {
+				const { user, board } = setup();
+
+				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
+			});
+
+			it('should call the service to check the permissions', async () => {
+				const { user, board } = setup();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
+
+				expect(boardPermissionService.checkPermission).toHaveBeenCalledWith(user.id, board, Action.write);
+			});
+
+			it('should call the service to update the board layout', async () => {
+				const { user, board } = setup();
+
+				await uc.updateLayout(user.id, board.id, BoardLayout.LIST);
+
+				expect(boardNodeService.updateLayout).toHaveBeenCalledWith(board.id, BoardLayout.LIST);
+			});
 		});
 	});
 });

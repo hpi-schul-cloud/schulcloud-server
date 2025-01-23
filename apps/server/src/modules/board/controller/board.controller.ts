@@ -13,7 +13,8 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestTimeout } from '@shared/common';
+import { RequestTimeout } from '@shared/common/decorators';
+import { ApiValidationError } from '@shared/common/error';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -21,6 +22,7 @@ import {
 	ColumnResponse,
 	CreateBoardBodyParams,
 	CreateBoardResponse,
+	LayoutBodyParams,
 	UpdateBoardTitleParams,
 	VisibilityBodyParams,
 } from './dto';
@@ -60,9 +62,9 @@ export class BoardController {
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const board = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
+		const { board, features } = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
-		const response = BoardResponseMapper.mapToResponse(board);
+		const response = BoardResponseMapper.mapToResponse(board, features);
 
 		return response;
 	}
@@ -156,5 +158,20 @@ export class BoardController {
 		@CurrentUser() currentUser: ICurrentUser
 	) {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
+	}
+
+	@ApiOperation({ summary: 'Update the layout of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/layout')
+	public async updateLayout(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: LayoutBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateLayout(currentUser.userId, urlParams.boardId, bodyParams.layout);
 	}
 }

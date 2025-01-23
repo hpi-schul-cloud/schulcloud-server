@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { Submission } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';

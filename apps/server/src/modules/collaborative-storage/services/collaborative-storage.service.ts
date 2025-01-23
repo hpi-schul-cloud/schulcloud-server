@@ -1,11 +1,11 @@
+import { LegacyLogger } from '@core/logger';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role/service/role.service';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { TeamsRepo } from '@shared/repo/teams';
 import { TeamMapper } from '../mapper/team.mapper';
 import { TeamPermissionsDto } from './dto/team-permissions.dto';
 import { TeamDto } from './dto/team.dto';

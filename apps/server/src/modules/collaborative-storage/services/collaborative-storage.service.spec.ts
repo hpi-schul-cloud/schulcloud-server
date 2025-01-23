@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -10,8 +11,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { TeamsRepo } from '@shared/repo/teams';
 import { teamFactory } from '@testing/factory/team.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { TeamDto } from './dto/team.dto';
@@ -92,6 +92,7 @@ describe('Collaborative Storage Service', () => {
 
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the adapter', async () => {
+			mockId = 'mockId';
 			jest.spyOn(service, 'findTeamById').mockResolvedValue({
 				id: 'testId',
 				name: 'testTeam',
@@ -108,6 +109,7 @@ describe('Collaborative Storage Service', () => {
 		});
 
 		it('should throw a forbidden exception', async () => {
+			mockId = 'mockId';
 			authService.checkPermission.mockImplementation(() => {
 				throw new ForbiddenException();
 			});

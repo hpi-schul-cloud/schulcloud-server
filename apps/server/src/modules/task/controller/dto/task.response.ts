@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { DecodeHtmlEntities, PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { RichText } from '@shared/domain/types';
 import { TaskStatusResponse } from './task-status.response';
 

@@ -1,8 +1,10 @@
+import { ToolContextType } from '@modules/tool/common/enum';
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { EntityId } from '@shared/domain/types';
-import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
+import { ExternalToolRepo } from '@shared/repo/externaltool';
+import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool, ContextExternalToolDeletedEvent } from '../../context-external-tool/domain';
 import type { ExternalTool } from '../../external-tool/domain';
 import type { SchoolExternalTool } from '../../school-external-tool/domain';

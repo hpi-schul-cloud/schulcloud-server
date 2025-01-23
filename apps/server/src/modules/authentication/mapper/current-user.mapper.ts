@@ -1,5 +1,5 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, User } from '@shared/domain/entity';

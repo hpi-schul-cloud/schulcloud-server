@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20241209165812 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		// Add ROOM_OWNER role
 		await this.getCollection('roles').insertOne({
 			name: 'roomowner',
@@ -28,7 +28,7 @@ export class Migration20241209165812 extends Migration {
 		);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		// Remove ROOM_OWNER role
 		await this.getCollection('roles').deleteOne({ name: 'roomowner' });
 		console.info('Rollback: Removed ROOM_OWNER role');

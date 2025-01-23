@@ -1,6 +1,6 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError } from '@shared/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
+import { BusinessError } from '@shared/common/error';
 
 export class IdTokenUserNotFoundLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly uuid: string, private readonly additionalInfo?: string) {

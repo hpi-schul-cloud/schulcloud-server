@@ -9,7 +9,7 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@src/core/logger';
+import { Logger } from '@core/logger';
 import { SchoolExternalToolCreatedLoggable } from '../../../loggable';
 
 @Injectable()

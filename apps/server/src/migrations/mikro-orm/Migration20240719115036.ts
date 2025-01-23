@@ -1,7 +1,7 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20240719115036 extends Migration {
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		await this.driver.aggregate('groups', [
 			{ $match: { externalSource_externalId: { $exists: true } } },
 			{
@@ -42,7 +42,7 @@ export class Migration20240719115036 extends Migration {
 		console.info(`Updated nested document externalSource. Added nested field lastSyncedAt`);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		await this.driver.aggregate('groups', [
 			{ $match: { externalSource: { $exists: true } } },
 			{

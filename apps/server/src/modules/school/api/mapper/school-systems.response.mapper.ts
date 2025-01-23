@@ -1,4 +1,4 @@
-import { System } from '@src/modules/system';
+import { System } from '@modules/system';
 import { SystemForLdapLogin } from '../../domain';
 import { ProviderConfigResponse, SchoolSystemResponse, SystemForLdapLoginResponse } from '../dto/response';
 

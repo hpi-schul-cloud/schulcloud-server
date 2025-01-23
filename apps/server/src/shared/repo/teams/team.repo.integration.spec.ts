@@ -4,7 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';

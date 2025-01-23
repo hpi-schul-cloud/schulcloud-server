@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { AccountResponse } from './account.response';
 
 export class AccountSearchListResponse extends PaginationResponse<AccountResponse[]> {
@@ -9,5 +9,5 @@ export class AccountSearchListResponse extends PaginationResponse<AccountRespons
 	}
 
 	@ApiProperty({ type: [AccountResponse] })
-	data: AccountResponse[];
+	public data: AccountResponse[];
 }

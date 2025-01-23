@@ -1,7 +1,7 @@
 import { PreviewProducer } from '@infra/preview-generator';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { PreviewParams } from '../controller/dto';
 import { FileRecord, PreviewStatus } from '../entity';
 import { ErrorType } from '../error';

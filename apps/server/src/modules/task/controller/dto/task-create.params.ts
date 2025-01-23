@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
+import { SanitizeHtml } from '@shared/controller/transformer';
 import { InputFormat, TaskCreate } from '@shared/domain/types';
 import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
 

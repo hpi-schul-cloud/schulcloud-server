@@ -17,29 +17,32 @@ import {
 	ColumnResponseMapper,
 	ContentElementResponseFactory,
 } from '../controller/mapper';
-import { AnyBoardNode } from '../domain';
+import { AnyBoardNode, ColumnBoard } from '../domain';
 import { MetricsService } from '../metrics/metrics.service';
 import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
+import {
+	CreateCardMessageParams,
+	CreateColumnMessageParams,
+	CreateContentElementMessageParams,
+	DeleteBoardMessageParams,
+	DeleteCardMessageParams,
+	DeleteColumnMessageParams,
+	DeleteContentElementMessageParams,
+	FetchBoardMessageParams,
+	FetchCardsMessageParams,
+	MoveCardMessageParams,
+	MoveColumnMessageParams,
+	MoveContentElementMessageParams,
+	UpdateBoardLayoutMessageParams,
+	UpdateBoardTitleMessageParams,
+	UpdateBoardVisibilityMessageParams,
+	UpdateCardHeightMessageParams,
+	UpdateCardTitleMessageParams,
+	UpdateColumnTitleMessageParams,
+	UpdateContentElementMessageParams,
+} from './dto';
 import BoardCollaborationConfiguration from './dto/board-collaboration-config';
-import { CreateCardMessageParams } from './dto/create-card.message.param';
-import { CreateColumnMessageParams } from './dto/create-column.message.param';
-import { CreateContentElementMessageParams } from './dto/create-content-element.message.param';
-import { DeleteBoardMessageParams } from './dto/delete-board.message.param';
-import { DeleteCardMessageParams } from './dto/delete-card.message.param';
-import { DeleteColumnMessageParams } from './dto/delete-column.message.param';
-import { DeleteContentElementMessageParams } from './dto/delete-content-element.message.param';
-import { FetchBoardMessageParams } from './dto/fetch-board.message.param';
-import { FetchCardsMessageParams } from './dto/fetch-cards.message.param';
-import { MoveCardMessageParams } from './dto/move-card.message.param';
-import { MoveColumnMessageParams } from './dto/move-column.message.param';
-import { MoveContentElementMessageParams } from './dto/move-content-element.message.param';
-import { UpdateBoardTitleMessageParams } from './dto/update-board-title.message.param';
-import { UpdateBoardVisibilityMessageParams } from './dto/update-board-visibility.message.param';
-import { UpdateCardHeightMessageParams } from './dto/update-card-height.message.param';
-import { UpdateCardTitleMessageParams } from './dto/update-card-title.message.param';
-import { UpdateColumnTitleMessageParams } from './dto/update-column-title.message.param';
-import { UpdateContentElementMessageParams } from './dto/update-content-element.message.param';
 
 @UsePipes(new WsValidationPipe())
 @WebSocketGateway(BoardCollaborationConfiguration.websocket)
@@ -216,8 +219,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const board = await this.boardUc.findBoard(userId, data.boardId);
-			const responsePayload = BoardResponseMapper.mapToResponse(board);
+			const { board, features } = await this.boardUc.findBoard(userId, data.boardId);
+			const responsePayload = BoardResponseMapper.mapToResponse(board, features);
 			await emitter.joinRoom(board);
 			emitter.emitSuccess(responsePayload);
 		} catch (err) {
@@ -284,6 +287,21 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const board = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
+			emitter.emitToClientAndRoom(data, board);
+		} catch (err) {
+			emitter.emitFailure(data);
+		}
+		await this.updateRoomsAndUsersMetrics(socket);
+	}
+
+	@SubscribeMessage('update-board-layout-request')
+	@TrackExecutionTime()
+	@UseRequestContext()
+	public async updateBoardLayout(socket: Socket, data: UpdateBoardLayoutMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-board-layout' });
+		const { userId } = this.getCurrentUser(socket);
+		try {
+			const board: ColumnBoard = await this.boardUc.updateLayout(userId, data.boardId, data.layout);
 			emitter.emitToClientAndRoom(data, board);
 		} catch (err) {
 			emitter.emitFailure(data);

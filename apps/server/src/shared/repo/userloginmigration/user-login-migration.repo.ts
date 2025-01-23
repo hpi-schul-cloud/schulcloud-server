@@ -6,7 +6,7 @@ import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()

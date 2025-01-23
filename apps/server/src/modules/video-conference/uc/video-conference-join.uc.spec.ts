@@ -13,6 +13,7 @@ import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { VideoConferenceJoin, VideoConferenceState } from './dto';
+import { VideoConferenceFeatureService } from './video-conference-feature.service';
 import { VideoConferenceJoinUc } from './video-conference-join.uc';
 
 describe('VideoConferenceJoinUc', () => {
@@ -21,6 +22,7 @@ describe('VideoConferenceJoinUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceService: DeepMocked<VideoConferenceService>;
+	let videoConferenceFeatureService: DeepMocked<VideoConferenceFeatureService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,6 +40,10 @@ describe('VideoConferenceJoinUc', () => {
 					provide: VideoConferenceService,
 					useValue: createMock<VideoConferenceService>(),
 				},
+				{
+					provide: VideoConferenceFeatureService,
+					useValue: createMock<VideoConferenceFeatureService>(),
+				},
 			],
 		}).compile();
 
@@ -45,6 +51,7 @@ describe('VideoConferenceJoinUc', () => {
 		bbbService = module.get(BBBService);
 		userService = module.get(UserService);
 		videoConferenceService = module.get(VideoConferenceService);
+		videoConferenceFeatureService = module.get(VideoConferenceFeatureService);
 	});
 
 	afterAll(async () => {
@@ -328,6 +335,47 @@ describe('VideoConferenceJoinUc', () => {
 					role: BBBRole.MODERATOR,
 					userID: currentUserId,
 				});
+			});
+		});
+
+		describe('feature check', () => {
+			const setup = (scopeName: VideoConferenceScope) => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const currentUserId: string = user.id as string;
+				const scope = { scope: scopeName, id: new ObjectId().toHexString() };
+				const options: VideoConferenceOptions = {
+					everyAttendeeJoinsMuted: true,
+					everybodyJoinsAsModerator: true,
+					moderatorMustApproveJoinRequests: true,
+				};
+				const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
+
+				const bbbJoinResponse: BBBResponse<BBBJoinResponse> = {
+					response: {
+						url: 'url',
+					},
+				} as BBBResponse<BBBJoinResponse>;
+
+				userService.findById.mockResolvedValue(user);
+				videoConferenceService.getUserRoleAndGuestStatusByUserIdForBbb.mockResolvedValue({
+					role: BBBRole.VIEWER,
+					isGuest: false,
+				});
+				videoConferenceService.sanitizeString.mockReturnValue(`${user.firstName} ${user.lastName}`);
+				bbbService.join.mockResolvedValue(bbbJoinResponse.response.url);
+				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
+
+				return { user, currentUserId, scope };
+			};
+
+			it('should call the feature check service', async () => {
+				const { currentUserId, scope } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
+
+				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
+
+				await uc.join(currentUserId, scope);
+
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
 			});
 		});
 	});

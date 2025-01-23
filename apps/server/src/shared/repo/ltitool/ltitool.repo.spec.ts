@@ -7,7 +7,7 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiTool } from '@shared/domain/entity';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
-import { LegacyLogger } from '@src/core/logger';
+import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { ltiToolFactory } from '@testing/factory/ltitool.factory';
 

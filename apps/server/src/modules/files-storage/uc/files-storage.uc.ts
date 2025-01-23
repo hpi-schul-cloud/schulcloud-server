@@ -1,3 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
+import { LegacyLogger } from '@core/logger';
 import {
 	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
@@ -9,8 +11,6 @@ import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
-import { DomainErrorHandler } from '@src/core';
-import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';

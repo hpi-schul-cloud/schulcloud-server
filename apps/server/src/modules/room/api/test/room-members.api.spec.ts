@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
-import { roomMembershipEntityFactory } from '@src/modules/room-membership/testing/room-membership-entity.factory';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -14,7 +14,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { RoomMemberListResponse } from '../dto/response/room-member.response';
+import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -57,8 +57,10 @@ describe('Room Controller (API)', () => {
 				name: RoleName.ROOMVIEWER,
 				permissions: [Permission.ROOM_VIEW],
 			});
-			const students = userFactory.buildList(2, { school });
-			const teachers = userFactory.buildList(2, { school });
+			const teacherRole = teacherUser.roles[0];
+			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+			const students = userFactory.buildList(2, { school, roles: [studentRole] });
+			const teachers = userFactory.buildList(2, { school, roles: [teacherRole] });
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
 					{ role: editRole, user: teacherUser },
@@ -138,12 +140,30 @@ describe('Room Controller (API)', () => {
 				expect(response.status).toBe(HttpStatus.OK);
 				const body = response.body as RoomMemberListResponse;
 				expect(body.data.length).toEqual(5);
-				expect(body.data).toContainEqual(expect.objectContaining({ userId: teacherUser.id, roleName: editRole.name }));
+				expect(body.data).toContainEqual(
+					expect.objectContaining({
+						userId: teacherUser.id,
+						roomRoleName: editRole.name,
+						schoolRoleName: RoleName.TEACHER,
+					})
+				);
 				students.forEach((student) => {
-					expect(body.data).toContainEqual(expect.objectContaining({ userId: student.id, roleName: viewerRole.name }));
+					expect(body.data).toContainEqual(
+						expect.objectContaining({
+							userId: student.id,
+							roomRoleName: viewerRole.name,
+							schoolRoleName: RoleName.STUDENT,
+						})
+					);
 				});
 				teachers.forEach((teacher) => {
-					expect(body.data).toContainEqual(expect.objectContaining({ userId: teacher.id, roleName: editRole.name }));
+					expect(body.data).toContainEqual(
+						expect.objectContaining({
+							userId: teacher.id,
+							roomRoleName: editRole.name,
+							schoolRoleName: RoleName.TEACHER,
+						})
+					);
 				});
 			});
 		});

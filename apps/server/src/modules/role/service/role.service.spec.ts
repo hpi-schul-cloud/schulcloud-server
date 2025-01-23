@@ -3,7 +3,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { RoleRepo } from '@shared/repo';
+import { RoleRepo } from '@shared/repo/role';
 import { roleFactory } from '@testing/factory/role.factory';
 import { RoleDto } from './dto';
 import { RoleService } from './role.service';

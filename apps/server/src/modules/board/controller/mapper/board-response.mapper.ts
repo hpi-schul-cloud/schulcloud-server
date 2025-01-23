@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Column, ColumnBoard } from '../../domain';
+import { BoardFeature, Column, ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
 
 export class BoardResponseMapper {
-	static mapToResponse(board: ColumnBoard): BoardResponse {
+	static mapToResponse(board: ColumnBoard, features: BoardFeature[]): BoardResponse {
 		const result = new BoardResponse({
 			id: board.id,
 			title: board.title,
@@ -21,6 +21,7 @@ export class BoardResponseMapper {
 			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
 			isVisible: board.isVisible,
 			layout: board.layout,
+			features,
 		});
 		return result;
 	}

@@ -10,8 +10,8 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
+import { RequestTimeout } from '@shared/common/decorators';
+import { PaginationParams } from '@shared/controller/dto';
 import { User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { ImportUser } from '../entity';

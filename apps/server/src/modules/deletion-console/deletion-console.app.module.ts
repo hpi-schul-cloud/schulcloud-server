@@ -1,21 +1,22 @@
-import { Module } from '@nestjs/common';
-import { ConsoleModule } from 'nestjs-console';
-import { ConfigModule } from '@nestjs/config';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { HttpModule } from '@nestjs/axios';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
-import { UserModule } from '@modules/user';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
+import { UserModule } from '@modules/user';
+import { HttpModule } from '@nestjs/axios';
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { ConsoleModule } from 'nestjs-console';
 import { FileEntity } from '../files/entity';
 import { DeletionClient } from './deletion-client';
-import { DeletionQueueConsole } from './deletion-queue.console';
-import { BatchDeletionUc, DeletionExecutionUc } from './uc';
-import { BatchDeletionService } from './services';
 import { DeletionExecutionConsole } from './deletion-execution.console';
+import { DeletionQueueConsole } from './deletion-queue.console';
 import { deletionConsoleConfig } from './deletion.config';
+import { BatchDeletionService } from './services';
+import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 
 @Module({
 	imports: [

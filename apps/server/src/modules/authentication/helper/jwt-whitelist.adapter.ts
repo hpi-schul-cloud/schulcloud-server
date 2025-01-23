@@ -1,6 +1,6 @@
+import { createRedisIdentifierFromJwtData, getRedisData, JwtRedisData } from '@imports-from-feathers';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
-import { createRedisIdentifierFromJwtData, getRedisData, JwtRedisData } from '@src/imports-from-feathers';
 import { Cache } from 'cache-manager';
 
 @Injectable()

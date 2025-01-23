@@ -1,15 +1,15 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterService } from '@infra/console';
 import { DatabaseManagementModule, DatabaseManagementService } from '@infra/database';
 import { EncryptionModule } from '@infra/encryption';
+import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@src/config';
-import { LoggerModule } from '@src/core/logger';
-import { FeathersModule } from '@infra/feathers';
+import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';

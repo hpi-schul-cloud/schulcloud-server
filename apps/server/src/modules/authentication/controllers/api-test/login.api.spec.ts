@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
-import { ServerTestModule } from '@modules/server/server.module';
+import { ServerTestModule } from '@modules/server/server.app.module';
 import { SystemEntity } from '@modules/system/entity';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -17,6 +17,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
+import type { Server } from 'node:net';
 import request, { Response } from 'supertest';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 
@@ -71,7 +72,7 @@ jest.mock('jwks-rsa', () => () => {
 describe('Login Controller (api)', () => {
 	const basePath = '/authentication';
 
-	let app: INestApplication;
+	let app: INestApplication<Server>;
 	let em: EntityManager;
 
 	const defaultPassword = 'DummyPasswd!1';

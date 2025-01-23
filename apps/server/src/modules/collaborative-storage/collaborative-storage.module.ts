@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
+import { LoggerModule } from '@core/logger';
 import { CollaborativeStorageAdapterModule } from '@infra/collaborative-storage';
-import { TeamsRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { RoleModule } from '@modules/role';
-import { CollaborativeStorageService } from './services';
-import { TeamPermissionsMapper, TeamMapper } from './mapper';
+import { Module } from '@nestjs/common';
+import { TeamsRepo } from '@shared/repo/teams';
 import { CollaborativeStorageController } from './controller';
+import { TeamMapper, TeamPermissionsMapper } from './mapper';
+import { CollaborativeStorageService } from './services';
 import { CollaborativeStorageUc } from './uc';
 
 @Module({

@@ -23,8 +23,9 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
-import { PaginationParams } from '@shared/controller';
+import { ApiValidationError } from '@shared/common/error';
+import { RequestLoggingInterceptor } from '@shared/common/interceptor';
+import { PaginationParams } from '@shared/controller/dto';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../interface';
 import { FileRecordMapper, FilesStorageMapper } from '../mapper';

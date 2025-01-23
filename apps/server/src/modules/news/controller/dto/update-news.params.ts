@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
+import { SanitizeHtml } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import { IsDate, IsOptional, IsString } from 'class-validator';
 
