@@ -1,8 +1,7 @@
+import { MongoIoAdapter } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-
-import { MongoIoAdapter } from '@infra/socketio';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
@@ -12,7 +11,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { getSocketApiClient, waitForEvent } from '@testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
-import { BoardExternalReferenceType, CardProps, ContentElementType } from '../../domain';
+import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -356,6 +355,32 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'update-board-visibility-failure');
 
 				expect(failure).toEqual({ boardId, isVisible: false });
+			});
+		});
+	});
+
+	describe('update board layout', () => {
+		describe('when board exists', () => {
+			it('should answer with success', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				ioClient.emit('update-board-layout-request', { boardId, layout: BoardLayout.LIST });
+				const success = await waitForEvent(ioClient, 'update-board-layout-success');
+
+				expect(success).toEqual(expect.objectContaining({ boardId, layout: BoardLayout.LIST }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnBoardNode } = await setup();
+				const boardId = columnBoardNode.id;
+
+				unauthorizedIoClient.emit('update-board-layout-request', { boardId, layout: BoardLayout.LIST });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-board-layout-failure');
+
+				expect(failure).toEqual({ boardId, layout: BoardLayout.LIST });
 			});
 		});
 	});
