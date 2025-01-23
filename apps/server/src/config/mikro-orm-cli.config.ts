@@ -1,8 +1,5 @@
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
-import { FileRecord } from '@modules/files-storage/entity';
-import { FileEntity } from '@modules/files/entity';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import path from 'path';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
