@@ -128,6 +128,7 @@ export interface ServerConfig
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -335,6 +336,7 @@ const config: ServerConfig = {
 	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
 		? (Configuration.get('VIDIS_SYNC_REGION') as string)
 		: undefined,
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

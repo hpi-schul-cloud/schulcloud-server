@@ -22,7 +22,7 @@ describe(MediaSchoolLicenseEntityMapper.name, () => {
 					id: mediaSchoolLicenseEntity.id,
 					type: mediaSchoolLicenseEntity.type,
 					mediumId: mediaSchoolLicenseEntity.mediumId,
-					school,
+					schoolId: school.id,
 					mediaSource,
 				});
 

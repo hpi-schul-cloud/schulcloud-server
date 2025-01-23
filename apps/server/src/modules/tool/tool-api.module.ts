@@ -5,6 +5,7 @@ import { BoardModule } from '@modules/board';
 import { BoardContextApiHelperModule } from '@modules/board-context';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
@@ -38,6 +39,7 @@ import { ToolModule } from './tool.module';
 		BoardContextApiHelperModule,
 		SchoolModule,
 		UserLicenseModule,
+		SchoolLicenseModule,
 		EncryptionModule,
 	],
 	controllers: [
