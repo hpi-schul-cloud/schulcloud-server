@@ -5,7 +5,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -13,6 +12,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordParentType } from '../../interface';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordResponse } from '../dto';
 
 const baseRouteName = '/file/rename';

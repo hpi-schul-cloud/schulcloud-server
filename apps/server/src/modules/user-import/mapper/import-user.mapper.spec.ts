@@ -1,6 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
 import { RoleName, SortOrder } from '@shared/domain/interface';
-import { importUserFactory } from '@testing/factory/import-user.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -14,6 +13,7 @@ import {
 } from '../controller/dto';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
 import { MatchCreator } from '../entity';
+import { importUserFactory } from '../testing';
 import { ImportUserMapper } from './import-user.mapper';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';

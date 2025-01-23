@@ -3,12 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyBoard, LessonEntity, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { boardFactory } from '@testing/factory/board.factory';
-import { lessonBoardElementFactory, taskBoardElementFactory } from '@testing/factory/boardelement.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
 
+import { lessonBoardElementFactory, taskBoardElementFactory } from '@modules/learnroom/testing';
 import { LegacyBoardRepo } from './legacy-board.repo';
 
 describe('LegacyRoomBoardRepo', () => {
