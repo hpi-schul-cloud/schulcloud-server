@@ -3,7 +3,7 @@ import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-cli
 import { Injectable } from '@nestjs/common';
 import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { TaskRepo } from '@shared/repo';
+import { TaskRepo } from '@shared/repo/task';
 
 type TaskCopyParams = {
 	originalTaskId: EntityId;

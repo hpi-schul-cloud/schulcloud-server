@@ -4,7 +4,7 @@ import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common';
+import { ValidationError } from '@shared/common/error';
 import {
 	ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,

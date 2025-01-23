@@ -16,7 +16,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { ErrorResponse } from '@core/error/dto';
 import { Room } from '../domain';
@@ -30,9 +30,9 @@ import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
+import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
-import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 
 @ApiTags('Room')
 @JwtAuthentication()

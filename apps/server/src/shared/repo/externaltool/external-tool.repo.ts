@@ -7,7 +7,8 @@ import { ExternalToolEntity, ExternalToolEntityProps } from '@modules/tool/exter
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
-import { ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
+import { ExternalToolRepoMapper, ExternalToolSortingMapper } from '@shared/repo/externaltool';
+import { Scope } from '@shared/repo/scope';
 import { EntityId } from '../../domain/types';
 import { ExternalToolScope } from './external-tool.scope';
 

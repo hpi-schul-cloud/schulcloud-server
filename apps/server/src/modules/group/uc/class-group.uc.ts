@@ -9,7 +9,7 @@ import { School, SchoolService, SchoolYear } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SortHelper } from '@shared/common';
+import { SortHelper } from '@shared/common/utils';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';

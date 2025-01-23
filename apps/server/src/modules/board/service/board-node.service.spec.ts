@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/setup-entities';
-import { Card, ColumnBoard } from '../domain';
+import { BoardLayout, Card, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import {
 	cardFactory,
@@ -281,6 +281,34 @@ describe(BoardNodeService.name, () => {
 				const result = await service.findElementsByContextExternalToolId(contextExternalToolId);
 
 				expect(result).toEqual([node]);
+			});
+		});
+	});
+
+	describe('updateLayout', () => {
+		describe('when updating the layout', () => {
+			const setup = () => {
+				const node = columnBoardFactory.build({
+					layout: BoardLayout.COLUMNS,
+				});
+
+				const expected = new ColumnBoard({
+					...node.getProps(),
+					layout: BoardLayout.LIST,
+				});
+
+				return {
+					node,
+					expected,
+				};
+			};
+
+			it('should save the board with the updated layout', async () => {
+				const { node, expected } = setup();
+
+				await service.updateLayout(node, BoardLayout.LIST);
+
+				expect(boardNodeRepo.save).toHaveBeenCalledWith(expected);
 			});
 		});
 	});

@@ -25,7 +25,7 @@ import {
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller/';
+import { PaginationParams } from '@shared/controller/dto';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import {
