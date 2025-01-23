@@ -1696,6 +1696,11 @@
 			"default": "",
 			"description": "The region for fetching activated offers from VIDIS"
 		},
+		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables VIDIS media activation synchronisation"
+		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
 			"type": "boolean",
 			"default": "false",
