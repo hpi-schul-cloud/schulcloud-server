@@ -2,7 +2,7 @@ import { FileStorageType } from '@modules/school';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo';
+import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { FederalStateService } from './federal-state.service';
 import { SchoolYearService } from './school-year.service';

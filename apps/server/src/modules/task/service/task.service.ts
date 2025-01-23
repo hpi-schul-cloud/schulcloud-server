@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
@@ -18,8 +19,7 @@ import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Task } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { TaskRepo } from '@shared/repo';
-import { Logger } from '@core/logger';
+import { TaskRepo } from '@shared/repo/task';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

@@ -13,7 +13,8 @@ import { RoleReference, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } fr
 import { Course, TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
+import { TeamsRepo } from '@shared/repo/teams';
+import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';

@@ -4,7 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, DashboardEntity, GridElement } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { CourseRepo, IDashboardRepo } from '@shared/repo';
+import { CourseRepo } from '@shared/repo/course';
+import { IDashboardRepo } from '@shared/repo/dashboard';
 import { setupEntities } from '@testing/setup-entities';
 import { DashboardUc } from './dashboard.uc';
 

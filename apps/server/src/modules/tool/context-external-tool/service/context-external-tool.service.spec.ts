@@ -6,7 +6,7 @@ import { schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { ContextExternalToolRepo } from '@shared/repo';
+import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
