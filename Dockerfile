@@ -19,7 +19,7 @@ RUN npm ci && npm run build
 FROM docker.io/node:22-alpine
 
 ENV TZ=Europe/Berlin
-RUN apk add --no-cache git make python3 curl
+RUN apk add --no-cache python3 curl
 
 WORKDIR /schulcloud-server
 
