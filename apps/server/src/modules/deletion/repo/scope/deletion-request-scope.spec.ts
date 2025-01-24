@@ -41,21 +41,54 @@ describe(DeletionRequestScope.name, () => {
 				status: {
 					$in: [StatusModel.FAILED, StatusModel.PENDING],
 				},
-				updatedAt: {
-					$lt: olderThan,
-				},
+				$and: [
+					{
+						updatedAt: {
+							$lt: olderThan,
+						},
+					},
+				],
 			};
 			const expectedQueryNewer = {
 				status: {
 					$in: [StatusModel.FAILED, StatusModel.PENDING],
 				},
-				updatedAt: {
-					$gte: newerThan,
+				$and: [
+					{
+						updatedAt: {
+							$gte: newerThan,
+						},
+					},
+				],
+			};
+			const expectedQueryOlderAndNewer = {
+				status: {
+					$in: [StatusModel.FAILED, StatusModel.PENDING],
+				},
+				$and: [
+					{
+						updatedAt: {
+							$lt: olderThan,
+						},
+					},
+					{
+						updatedAt: {
+							$gte: newerThan,
+						},
+					},
+				],
+			};
+			const expectedQueryNoDates = {
+				status: {
+					$in: [StatusModel.FAILED, StatusModel.PENDING],
 				},
 			};
+
 			return {
 				expectedQueryOlder,
 				expectedQueryNewer,
+				expectedQueryOlderAndNewer,
+				expectedQueryNoDates,
 				olderThan,
 				newerThan,
 			};
@@ -78,6 +111,26 @@ describe(DeletionRequestScope.name, () => {
 
 				expect(result).toBeInstanceOf(DeletionRequestScope);
 				expect(scope.query).toEqual(expectedQueryNewer);
+			});
+		});
+		describe('when olderThan and newerThan are set', () => {
+			it('should add query', () => {
+				const { expectedQueryOlderAndNewer, olderThan, newerThan } = setup();
+
+				const result = scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan, newerThan);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQueryOlderAndNewer);
+			});
+		});
+		describe('when olderThan and newerThan are not set', () => {
+			it('should add query', () => {
+				const { expectedQueryNoDates } = setup();
+
+				const result = scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING]);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQueryNoDates);
 			});
 		});
 	});

@@ -15,14 +15,14 @@ export class DeletionExecutionConsole {
 			{
 				flags: '-l, --limit <value>',
 				/* istanbul ignore next */
-				fn: (value: string) => (value ? Number(value) : undefined),
+				fn: (value: string) => (value ? Number(value) : undefined), // NOSONAR
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},
 			{
 				flags: '-f, --runFailed <value>',
 				/* istanbul ignore next */
-				fn: (value: string) => /^(true|yes|1)$/i.test(value),
+				fn: (value: string) => /^(true|yes|1)$/i.test(value), // NOSONAR
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},

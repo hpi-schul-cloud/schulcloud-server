@@ -1,4 +1,5 @@
 import { Scope } from '@shared/repo/scope';
+import { FilterQuery } from '@mikro-orm/core';
 import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 
@@ -10,19 +11,21 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 	}
 
 	byStatusAndDate(status: StatusModel[], olderThan?: Date, newerThan?: Date): this {
-		let query = { status: { $in: status } };
+		const query: FilterQuery<DeletionRequestEntity> = { status: { $in: status } };
+
+		const dateConditions: FilterQuery<DeletionRequestEntity>[] = [];
 		if (olderThan) {
-			const olderThanQuery = { updatedAt: { $lt: olderThan } };
-			query = { ...query, ...olderThanQuery };
+			dateConditions.push({ updatedAt: { $lt: olderThan } });
+		}
+		if (newerThan) {
+			dateConditions.push({ updatedAt: { $gte: newerThan } });
 		}
 
-		if (newerThan) {
-			const newerThanQuery = { updatedAt: { $gte: newerThan } };
-			query = { ...query, ...newerThanQuery };
+		if (dateConditions.length > 0) {
+			query.$and = dateConditions;
 		}
 
 		this.addQuery(query);
-
 		return this;
 	}
 }
