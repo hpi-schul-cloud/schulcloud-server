@@ -492,9 +492,11 @@ describe(MediaSchoolLicenseService.name, () => {
 				expect(mediaSchoolLicenseRepo.saveAll).toHaveBeenCalledWith(
 					expect.arrayContaining(
 						mediaSchoolLicenses.map((license) =>
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 							expect.objectContaining({
 								...license,
 								id: expect.any(String),
+								// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 								props: expect.objectContaining({
 									id: expect.any(String),
 									mediaSource,

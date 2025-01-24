@@ -97,11 +97,11 @@ export class MediaSchoolLicenseService {
 		await this.createLicenses(offersFromMediaSource, mediaSource, school);
 	}
 
-	private async buildMediaSchoolLicense(
+	private buildMediaSchoolLicense(
 		school: School,
 		mediaSource: MediaSource,
 		mediumId: number | undefined
-	): Promise<MediaSchoolLicense | null> {
+	): MediaSchoolLicense | null {
 		if (!mediumId) {
 			this.logger.info(new BuildMediaSchoolLicenseFailedLoggable());
 
@@ -122,11 +122,7 @@ export class MediaSchoolLicenseService {
 	private async createLicenses(offers: OfferDTO[], mediaSource: MediaSource, school: School): Promise<void> {
 		const newLicensesPromises: Promise<MediaSchoolLicense | null>[] = offers.map(
 			async (offer): Promise<MediaSchoolLicense | null> => {
-				const newLicense: MediaSchoolLicense | null = await this.buildMediaSchoolLicense(
-					school,
-					mediaSource,
-					offer.offerId
-				);
+				const newLicense: MediaSchoolLicense | null = this.buildMediaSchoolLicense(school, mediaSource, offer.offerId);
 
 				return newLicense;
 			}
