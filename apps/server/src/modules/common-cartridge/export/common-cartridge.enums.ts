@@ -11,6 +11,7 @@ export enum CommonCartridgeResourceType {
 	MANIFEST = 'manifest',
 	WEB_CONTENT = 'webcontent',
 	WEB_LINK = 'weblink',
+	FILE = 'file',
 }
 
 export enum CommonCartridgeIntendedUseType {
