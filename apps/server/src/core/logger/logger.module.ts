@@ -19,11 +19,13 @@ import { Logger } from './logger';
 						new winston.transports.Console({
 							handleExceptions: true,
 							handleRejections: true,
-							format: winston.format.combine(
-								winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-								winston.format.ms(),
-								utilities.format.nestLike()
-							),
+							format: configService.get<boolean>('JSON_LOG_FORMAT')
+								? winston.format.json()
+								: winston.format.combine(
+										winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+										winston.format.ms(),
+										utilities.format.nestLike()
+								  ),
 						}),
 					],
 				};

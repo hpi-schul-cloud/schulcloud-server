@@ -1118,6 +1118,11 @@
 			"default": true,
 			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 		},
+		"JSON_LOG_FORMAT": {
+			"type": "boolean",
+			"default": false,
+			"description": "enables json logs on logger level"
+		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",

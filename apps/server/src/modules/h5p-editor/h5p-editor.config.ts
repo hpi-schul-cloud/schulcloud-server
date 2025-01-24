@@ -20,6 +20,7 @@ const h5pEditorConfig: H5PEditorConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('H5P_EDITOR__INCOMING_REQUEST_TIMEOUT') as number,
 	...authorizationClientConfig,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
+	JSON_LOG_FORMAT: Configuration.get('JSON_LOG_FORMAT') as boolean,
 
 	// Node's process.env escapes newlines. We need to reverse it for the keys to work.
 	// See: https://stackoverflow.com/questions/30400341/environment-variables-containing-newlines-in-node

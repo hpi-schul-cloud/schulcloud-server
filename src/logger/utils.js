@@ -1,4 +1,5 @@
 const winston = require('winston');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { format, transports } = winston;
 
@@ -14,17 +15,24 @@ const addType = format.printf((log) => {
 
 const getTestFormat = () => format.combine(format.prettyPrint({ depth: 1, colorize: true }));
 
-const getProductionFormat = () =>
-	format.combine(format.errors({ stack: true }), format.timestamp(), addType, format.json());
+const getProductionFormat = () => {
+	if (Configuration.get('JSON_LOG_FORMAT') === true) {
+		return format.json();
+	}
+	return format.combine(format.errors({ stack: true }), format.timestamp(), addType, format.json());
+};
 
-const getDevelopFormat = () =>
-	format.combine(
+const getDevelopFormat = () => {
+	if (Configuration.get('JSON_LOG_FORMAT') === true) {
+		return format.json();
+	}
+	return format.combine(
 		format.errors({ stack: true }),
 		format.timestamp(),
 		addType,
 		format.prettyPrint({ depth: 3, colorize: true })
 	);
-
+};
 const getConsoleTransport = (level) =>
 	new transports.Console({
 		level,
