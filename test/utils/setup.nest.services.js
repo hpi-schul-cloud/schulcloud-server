@@ -5,6 +5,7 @@ const { ConfigModule } = require('@nestjs/config');
 
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
+const { defineConfig } = require('@mikro-orm/mongodb');
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
@@ -102,15 +103,18 @@ const ENTITIES = {
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
 		imports: [
-			MikroOrmModule.forRoot({
-				type: 'mongo',
-				clientUrl: DB_URL,
-				password: DB_PASSWORD,
-				user: DB_USERNAME,
-				entities: ENTITIES,
-				allowGlobalContext: true,
-				debug: true, // use it for locally debugging of querys
-			}),
+			MikroOrmModule.forRoot(
+				defineConfig({
+					type: 'mongo',
+					clientUrl: DB_URL,
+					password: DB_PASSWORD,
+					user: DB_USERNAME,
+					entities: ['dist/apps/server/modules/**/*.entity.js', 'dist/apps/server/shared/domain/entity/*.entity.js'],
+					// entitiesTs: ['apps/server/src/modules/**/*.entity.ts', 'apps/server/src/shared/domain/entity/*.entity.ts'],
+					allowGlobalContext: true,
+					debug: false, // use it for locally debugging of querys
+				})
+			),
 			ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 			AccountApiModule,
 			TeamsApiModule,
@@ -134,16 +138,16 @@ const setupNestServices = async (app) => {
 	// app.services['nest-mail'] = ??
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
-	app.services['nest-account-uc'] = contextExternalToolService;
-	app.services['nest-account-uc'] = columnBoardService;
-	app.services['nest-account-uc'] = collaborativeStorageUc;
-	app.services['nest-account-uc'] = feathersRosterService;
-	app.services['nest-account-uc'] = groupService;
-	app.services['nest-account-uc'] = rocketChatService;
+	app.services['nest-context-external-tool-service'] = contextExternalToolService;
+	app.services['nest-column-board-service'] = columnBoardService;
+	app.services['nest-collaborative-storage-uc'] = collaborativeStorageUc;
+	app.services['nest-feathers-roster-service'] = feathersRosterService;
+	app.services['nest-group-service'] = groupService;
+	app.services['nest-rocket-chat'] = rocketChatService;
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-orm'] = orm;
-
+	console.log(nestApp);
 	return { nestApp, orm, accountUc, accountService };
 };
 
