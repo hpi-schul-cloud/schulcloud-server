@@ -21,7 +21,7 @@ export type ValidationErrorLogMessage = {
 
 export type LogMessageWithContext = {
 	message: any;
-	context: string | undefined;
+	context: any;
 };
 
 export type LogMessageData = LogMessageDataObject | string | number | boolean | undefined;
