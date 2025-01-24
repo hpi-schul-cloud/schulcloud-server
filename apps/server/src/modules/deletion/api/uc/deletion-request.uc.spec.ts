@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
@@ -17,6 +17,7 @@ import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
+import { DeletionConfig } from '../../deletion.config';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -24,6 +25,7 @@ describe(DeletionRequestUc.name, () => {
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
 	let eventBus: DeepMocked<EventBus>;
+	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
 
 	beforeAll(async () => {
 		const orm = await setupEntities();
@@ -54,6 +56,10 @@ describe(DeletionRequestUc.name, () => {
 					provide: MikroORM,
 					useValue: orm,
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -61,6 +67,7 @@ describe(DeletionRequestUc.name, () => {
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
 		eventBus = module.get(EventBus);
+		configService = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -182,6 +189,17 @@ describe(DeletionRequestUc.name, () => {
 				expect(eventBus.publish).toHaveBeenCalledWith(
 					new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId)
 				);
+			});
+
+			it('should work with a delay of 0', async () => {
+				const { deletionRequest } = setup();
+				configService.get.mockReturnValueOnce(0);
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
+
+				await uc.executeDeletionRequests();
+
+				expect(deletionRequestService.markDeletionRequestAsFailed).not.toHaveBeenCalled();
 			});
 		});
 

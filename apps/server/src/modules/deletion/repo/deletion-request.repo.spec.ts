@@ -224,6 +224,68 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
+	describe('findAllFailedItems', () => {
+		const setup = async () => {
+			const limit = 10;
+			const olderThan = new Date(2023, 11, 1);
+			const newerThan = new Date(2023, 8, 1);
+
+			const deletionRequestEntity1: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 7, 1),
+				updatedAt: new Date(2023, 8, 2),
+				deleteAfter: new Date(2023, 8, 1),
+				status: StatusModel.PENDING,
+			});
+			const deletionRequestEntity2: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 7, 1),
+				updatedAt: new Date(2023, 8, 2),
+				deleteAfter: new Date(2023, 8, 1),
+				status: StatusModel.FAILED,
+			});
+			const deletionRequestEntity3: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 8, 1),
+				updatedAt: new Date(2023, 7, 1),
+				deleteAfter: new Date(2023, 9, 1),
+				status: StatusModel.FAILED,
+			});
+			const deletionRequestEntity4: DeletionRequestEntity = deletionRequestEntityFactory.build({
+				createdAt: new Date(2023, 8, 1),
+				updatedAt: new Date(2023, 8, 1),
+				deleteAfter: new Date(2023, 9, 1),
+				status: StatusModel.REGISTERED,
+			});
+
+			await em.persistAndFlush([
+				deletionRequestEntity1,
+				deletionRequestEntity2,
+				deletionRequestEntity3,
+				deletionRequestEntity4,
+			]);
+			em.clear();
+
+			return { limit, olderThan, newerThan, deletionRequestEntity1, deletionRequestEntity2 };
+		};
+
+		it('should throw an error if olderThan is less than newerThan', async () => {
+			const { limit } = await setup();
+
+			const olderThan = new Date(2023, 10, 1);
+			const newerThan = new Date(2023, 11, 1);
+
+			await expect(repo.findAllFailedItems(limit, olderThan, newerThan)).rejects.toThrow();
+		});
+
+		it('should return failed deletion requests within the specified date range', async () => {
+			const { limit, olderThan, newerThan, deletionRequestEntity1, deletionRequestEntity2 } = await setup();
+
+			const results = await repo.findAllFailedItems(limit, olderThan, newerThan);
+
+			expect(results.length).toBe(2);
+			expect(results[0].id).toBe(deletionRequestEntity1.id);
+			expect(results[1].id).toBe(deletionRequestEntity2.id);
+		});
+	});
+
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = async () => {
