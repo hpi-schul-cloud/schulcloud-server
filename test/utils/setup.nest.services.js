@@ -48,6 +48,10 @@ const {
 const { UserParentsEntity } = require('../../dist/apps/server/shared/domain/entity/user-parents.entity');
 const { UserSourceOptionsEntity } = require('../../dist/apps/server/shared/domain/entity/user-source-options-entity');
 
+const {
+	DashboardModelEntity,
+	DashboardGridElementModel,
+} = require('../../dist/apps/server/shared/domain/entity/dashboard.model.entity');
 const { Course } = require('../../dist/apps/server/shared/domain/entity/course.entity');
 const { CourseGroup } = require('../../dist/apps/server/shared/domain/entity/coursegroup.entity');
 const { ClassEntity, ClassSourceOptionsEntity } = require('../../dist/apps/server/modules/class/entity');
@@ -109,7 +113,12 @@ const setupNestServices = async (app) => {
 					clientUrl: DB_URL,
 					password: DB_PASSWORD,
 					user: DB_USERNAME,
-					entities: ['dist/apps/server/modules/**/*.entity.js', 'dist/apps/server/shared/domain/entity/*.entity.js'],
+					entities: [
+						// DashboardModelEntity,
+						// DashboardGridElementModel,
+						'dist/apps/server/modules/**/*.entity.js',
+						'dist/apps/server/shared/domain/entity/*.entity.js',
+					],
 					// entitiesTs: ['apps/server/src/modules/**/*.entity.ts', 'apps/server/src/shared/domain/entity/*.entity.ts'],
 					allowGlobalContext: true,
 					debug: false, // use it for locally debugging of querys
@@ -126,28 +135,28 @@ const setupNestServices = async (app) => {
 	const orm = nestApp.get(MikroORM);
 	const accountUc = nestApp.get(AccountUc);
 	const accountService = nestApp.get(AccountService);
-	const contextExternalToolService = nestApp.get(ContextExternalToolService);
-	const columnBoardService = nestApp.get(ColumnBoardService);
-	const collaborativeStorageUc = nestApp.get(CollaborativeStorageUc);
-	const feathersRosterService = nestApp.get(FeathersRosterService);
-	const groupService = nestApp.get(GroupService);
-	const rocketChatService = nestApp.get(RocketChatService);
+	// const contextExternalToolService = nestApp.get(ContextExternalToolService);
+	// const columnBoardService = nestApp.get(ColumnBoardService);
+	// const collaborativeStorageUc = nestApp.get(CollaborativeStorageUc);
+	// const feathersRosterService = nestApp.get(FeathersRosterService);
+	// const groupService = nestApp.get(GroupService);
+	// const rocketChatService = nestApp.get(RocketChatService);
 	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
 
 	// app.services['nest-mail'] = ??
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
-	app.services['nest-context-external-tool-service'] = contextExternalToolService;
-	app.services['nest-column-board-service'] = columnBoardService;
-	app.services['nest-collaborative-storage-uc'] = collaborativeStorageUc;
-	app.services['nest-feathers-roster-service'] = feathersRosterService;
-	app.services['nest-group-service'] = groupService;
-	app.services['nest-rocket-chat'] = rocketChatService;
+	// app.services['nest-context-external-tool-service'] = contextExternalToolService;
+	// app.services['nest-column-board-service'] = columnBoardService;
+	// app.services['nest-collaborative-storage-uc'] = collaborativeStorageUc;
+	// app.services['nest-feathers-roster-service'] = feathersRosterService;
+	// app.services['nest-group-service'] = groupService;
+	// app.services['nest-rocket-chat'] = rocketChatService;
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-orm'] = orm;
-	console.log(nestApp);
+
 	return { nestApp, orm, accountUc, accountService };
 };
 

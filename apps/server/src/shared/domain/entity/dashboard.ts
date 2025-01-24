@@ -159,6 +159,7 @@ export type GridElementWithPosition = {
 
 export type DashboardProps = { colums?: number; grid: GridElementWithPosition[]; userId: EntityId };
 
+// TODO: is not marked as Entity and should not named as Entity
 export class DashboardEntity {
 	id: EntityId;
 
