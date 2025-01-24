@@ -2,12 +2,14 @@ import { Logger } from '@core/logger';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@infra/tsp-client';
 import { ProvisioningService } from '@modules/provisioning';
 import { School } from '@modules/school';
-import { System } from '@modules/system';
+import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import pLimit from 'p-limit';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { SyncStrategy } from '../sync-strategy';
+import { TspSystemNotFoundLoggableException } from './loggable';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
@@ -20,7 +22,7 @@ import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
-import { TspSyncService } from './tsp-sync.service';
+import { TspSchoolService } from './tsp-school.service';
 
 type TspSchoolData = {
 	tspTeachers: RobjExportLehrer[];
@@ -32,13 +34,14 @@ type TspSchoolData = {
 export class TspSyncStrategy extends SyncStrategy {
 	constructor(
 		private readonly logger: Logger,
-		private readonly tspSyncService: TspSyncService,
+		private readonly tspSyncService: TspSchoolService,
 		private readonly tspFetchService: TspFetchService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
 		private readonly provisioningService: ProvisioningService,
-		private readonly tspSyncMigrationService: TspSyncMigrationService
+		private readonly tspSyncMigrationService: TspSyncMigrationService,
+		private readonly systemService: SystemService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
@@ -50,7 +53,7 @@ export class TspSyncStrategy extends SyncStrategy {
 
 	public async sync(): Promise<void> {
 		// Please keep the order of this steps/methods as each relies on the data processed in the ones before.
-		const system = await this.tspSyncService.findTspSystemOrFail();
+		const system = await this.findTspSystemOrFail();
 
 		await this.tspLegacyMigrationService.prepareLegacySyncDataForNewSync(system.id);
 
@@ -170,5 +173,19 @@ export class TspSyncStrategy extends SyncStrategy {
 				migrationResult.totalAccounts
 			)
 		);
+	}
+
+	private async findTspSystemOrFail(): Promise<System> {
+		const systems = (
+			await this.systemService.find({
+				types: [SystemType.OAUTH, SystemType.OIDC],
+			})
+		).filter((system) => system.provisioningStrategy === SystemProvisioningStrategy.TSP);
+
+		if (systems.length === 0) {
+			throw new TspSystemNotFoundLoggableException();
+		}
+
+		return systems[0];
 	}
 }

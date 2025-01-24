@@ -5,18 +5,15 @@ import { School, SchoolService } from '@modules/school';
 import { FileStorageType, SchoolProps } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@modules/school/testing';
-import { SystemService, SystemType } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
-import { TspSyncService } from './tsp-sync.service';
+import { TspSchoolService } from './tsp-school.service';
 
-describe(TspSyncService.name, () => {
+describe(TspSchoolService.name, () => {
 	let module: TestingModule;
-	let sut: TspSyncService;
-	let systemService: DeepMocked<SystemService>;
+	let sut: TspSchoolService;
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -24,11 +21,7 @@ describe(TspSyncService.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				TspSyncService,
-				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
-				},
+				TspSchoolService,
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
@@ -44,8 +37,7 @@ describe(TspSyncService.name, () => {
 			],
 		}).compile();
 
-		sut = module.get(TspSyncService);
-		systemService = module.get(SystemService);
+		sut = module.get(TspSchoolService);
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
@@ -62,39 +54,6 @@ describe(TspSyncService.name, () => {
 	describe('when sync service is initialized', () => {
 		it('should be defined', () => {
 			expect(sut).toBeDefined();
-		});
-	});
-
-	describe('findTspSystemOrFail', () => {
-		describe('when tsp system is found', () => {
-			const setup = () => {
-				const system = systemFactory.build({
-					type: SystemType.OAUTH,
-					provisioningStrategy: SystemProvisioningStrategy.TSP,
-				});
-
-				systemService.find.mockResolvedValueOnce([system]);
-			};
-
-			it('should be returned', async () => {
-				setup();
-
-				const system = await sut.findTspSystemOrFail();
-
-				expect(system).toBeDefined();
-			});
-		});
-
-		describe('when tsp system is not found', () => {
-			const setup = () => {
-				systemService.find.mockResolvedValueOnce([]);
-			};
-
-			it('should throw a TspSystemNotFound exception', async () => {
-				setup();
-
-				await expect(sut.findTspSystemOrFail()).rejects.toThrow();
-			});
 		});
 	});
 

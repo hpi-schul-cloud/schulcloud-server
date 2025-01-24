@@ -23,7 +23,7 @@ import { TspFetchService } from './strategy/tsp/tsp-fetch.service';
 import { TspLegacyMigrationService } from './strategy/tsp/tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './strategy/tsp/tsp-oauth-data.mapper';
 import { TspSyncMigrationService } from './strategy/tsp/tsp-sync-migration.service';
-import { TspSyncService } from './strategy/tsp/tsp-sync.service';
+import { TspSchoolService } from './strategy/tsp/tsp-school.service';
 import { TspSyncStrategy } from './strategy/tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 
@@ -58,7 +58,7 @@ import { SyncUc } from './uc/sync.uc';
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspSyncStrategy,
-					TspSyncService,
+					TspSchoolService,
 					TspOauthDataMapper,
 					TspFetchService,
 					TspLegacyMigrationService,

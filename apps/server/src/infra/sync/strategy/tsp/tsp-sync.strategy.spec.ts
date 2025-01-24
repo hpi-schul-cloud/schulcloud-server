@@ -26,8 +26,8 @@ import {
 } from '@modules/provisioning/testing';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { System } from '@modules/system';
-import { systemFactory } from '@modules/system/testing';
+import { System, SystemService, SystemType } from '@modules/system';
+import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
@@ -38,27 +38,28 @@ import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
-import { TspSyncService } from './tsp-sync.service';
+import { TspSchoolService } from './tsp-school.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
 
 describe(TspSyncStrategy.name, () => {
 	let module: TestingModule;
 	let sut: TspSyncStrategy;
-	let tspSyncService: DeepMocked<TspSyncService>;
+	let tspSyncService: DeepMocked<TspSchoolService>;
 	let tspFetchService: DeepMocked<TspFetchService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
 	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
 	let configService: DeepMocked<ConfigService<TspSyncConfig, true>>;
+	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TspSyncStrategy,
 				{
-					provide: TspSyncService,
-					useValue: createMock<TspSyncService>(),
+					provide: TspSchoolService,
+					useValue: createMock<TspSchoolService>(),
 				},
 				{
 					provide: TspFetchService,
@@ -88,17 +89,22 @@ describe(TspSyncStrategy.name, () => {
 					provide: TspSyncMigrationService,
 					useValue: createMock<TspSyncMigrationService>(),
 				},
+				{
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspSyncStrategy);
-		tspSyncService = module.get(TspSyncService);
+		tspSyncService = module.get(TspSchoolService);
 		tspFetchService = module.get(TspFetchService);
 		provisioningService = module.get(ProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
 		tspSyncMigrationService = module.get(TspSyncMigrationService);
 		configService = module.get(ConfigService);
+		systemService = module.get(SystemService);
 	});
 
 	afterEach(() => {
@@ -154,7 +160,7 @@ describe(TspSyncStrategy.name, () => {
 
 		tspSyncService.findSchool.mockResolvedValueOnce(params.foundSchool ?? undefined);
 		tspSyncService.findAllSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
-		tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(params.foundSystem ?? systemFactory.build());
+		systemService.find.mockResolvedValueOnce(params.foundSystem ? [params.foundSystem] : []);
 
 		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
 
@@ -172,7 +178,11 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
-				const system = systemFactory.build();
+				const system = systemFactory.build({
+					type: SystemType.OIDC,
+					provisioningStrategy: SystemProvisioningStrategy.TSP,
+					oauthConfig: systemOauthConfigFactory.build(),
+				});
 
 				const systemDto = provisioningSystemDtoFactory.build({
 					systemId: system.id,
@@ -227,7 +237,7 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalledTimes(1);
+				expect(systemService.find).toHaveBeenCalledTimes(1);
 			});
 
 			it('should migrate the legacy data', async () => {
@@ -334,9 +344,25 @@ describe(TspSyncStrategy.name, () => {
 			});
 		});
 
+		describe('when tsp system is not found', () => {
+			const setup = () => {
+				systemService.find.mockResolvedValueOnce([]);
+			};
+
+			it('should throw a TspSystemNotFound exception', async () => {
+				setup();
+
+				await expect(sut.sync()).rejects.toThrow();
+			});
+		});
+
 		describe('when school does not exist', () => {
 			const setup = () => {
-				const system = systemFactory.build();
+				const system = systemFactory.build({
+					type: SystemType.OIDC,
+					provisioningStrategy: SystemProvisioningStrategy.TSP,
+					oauthConfig: systemOauthConfigFactory.build(),
+				});
 
 				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
@@ -367,6 +393,11 @@ describe(TspSyncStrategy.name, () => {
 				const school = schoolFactory.build();
 
 				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
 					fetchedSchools: tspSchools,
 					foundSchool: school,
 					configValues: [1, 10, true, 10, 1, 50],
@@ -392,6 +423,11 @@ describe(TspSyncStrategy.name, () => {
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
 					fetchedSchools: tspSchools,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
