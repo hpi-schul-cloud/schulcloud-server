@@ -234,7 +234,7 @@ export class ConfigResponse {
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: boolean;
 
 	@ApiProperty()
-	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
+	public FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
