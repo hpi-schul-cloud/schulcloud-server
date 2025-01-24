@@ -1,4 +1,4 @@
-type EnsureKeysAreSet<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+type EnsureKeysAreSet<T, K extends keyof T> = T & { [P in K]-?: NonNullable<T[P]> };
 
 export class TypeGuard {
 	public static isError(value: unknown): value is Error {
@@ -180,11 +180,23 @@ export class TypeGuard {
 		contextInfo = ''
 	): EnsureKeysAreSet<T, K> {
 		for (const key of keys) {
-			if (!(key in obj) || obj[key] === undefined) {
+			if (!(key in obj) || obj[key] === undefined || obj[key] === null) {
 				throw new Error(`Object lacks this property: ${String(key)}. ${contextInfo}`);
 			}
 		}
 		return obj as EnsureKeysAreSet<T, K>;
+	}
+
+	public static requireKeys<T extends object, K extends keyof T>(
+		obj: T,
+		keys: K[],
+		toThrow?: Error
+	): asserts obj is EnsureKeysAreSet<T, K> {
+		for (const key of keys) {
+			if (!(key in obj) || obj[key] === undefined || obj[key] === null) {
+				throw toThrow || new Error(`Object lacks this property: ${String(key)}.`);
+			}
+		}
 	}
 
 	public static checkNotNullOrUndefined<T>(value: T | null | undefined, toThrow?: Error): T {

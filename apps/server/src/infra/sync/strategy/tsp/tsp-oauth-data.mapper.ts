@@ -11,6 +11,7 @@ import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { School } from '@modules/school';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
@@ -49,9 +50,11 @@ export class TspOauthDataMapper {
 		const externalSchools = new Map<string, ExternalSchoolDto>();
 
 		schools.forEach((school) => {
-			if (!school.externalId) {
-				throw new BadDataLoggableException(`School ${school.id} has no externalId`);
-			}
+			TypeGuard.requireKeys(
+				school,
+				['externalId'],
+				new BadDataLoggableException(`School ${school.id} has no externalId`)
+			);
 
 			externalSchools.set(
 				school.externalId,
@@ -71,25 +74,24 @@ export class TspOauthDataMapper {
 		const externalClasses = new Map<string, ExternalClassDto>();
 		const teacherForClasses = new Map<string, Array<string>>();
 
-		tspClasses.forEach((tspClass) => {
-			if (!tspClass.klasseId) {
-				this.logger.info(new TspMissingExternalIdLoggable('class'));
-				return;
-			}
+		tspClasses
+			.filter((tspClass) => this.ensureExternalId(tspClass.klasseId, 'class'))
+			.forEach((tspClass) => {
+				TypeGuard.requireKeys(tspClass, ['klasseId']);
 
-			const externalClass = new ExternalClassDto({
-				externalId: tspClass.klasseId,
-				name: tspClass.klasseName,
+				const externalClass = new ExternalClassDto({
+					externalId: tspClass.klasseId,
+					name: tspClass.klasseName,
+				});
+
+				externalClasses.set(tspClass.klasseId, externalClass);
+
+				if (tspClass.lehrerUid) {
+					const classSet = teacherForClasses.get(tspClass.lehrerUid) ?? [];
+					classSet.push(tspClass.klasseId);
+					teacherForClasses.set(tspClass.lehrerUid, classSet);
+				}
 			});
-
-			externalClasses.set(tspClass.klasseId, externalClass);
-
-			if (tspClass.lehrerUid) {
-				const classSet = teacherForClasses.get(tspClass.lehrerUid) ?? [];
-				classSet.push(tspClass.klasseId);
-				teacherForClasses.set(tspClass.lehrerUid, classSet);
-			}
-		});
 
 		return { externalClasses, teacherForClasses };
 	}
@@ -102,11 +104,9 @@ export class TspOauthDataMapper {
 		teacherForClasses: Map<string, Array<string>>
 	): OauthDataDto[] {
 		const oauthDataDtos = tspTeachers
+			.filter((tspTeacher) => this.ensureExternalId(tspTeacher.lehrerUid, 'teacher'))
 			.map((tspTeacher) => {
-				if (!tspTeacher.lehrerUid) {
-					this.logger.info(new TspMissingExternalIdLoggable('teacher'));
-					return null;
-				}
+				TypeGuard.requireKeys(tspTeacher, ['lehrerUid']);
 
 				const externalUser = new ExternalUserDto({
 					externalId: tspTeacher.lehrerUid,
@@ -131,8 +131,7 @@ export class TspOauthDataMapper {
 				});
 
 				return oauthDataDto;
-			})
-			.filter((oauthDataDto) => oauthDataDto !== null);
+			});
 
 		return oauthDataDtos;
 	}
@@ -144,11 +143,9 @@ export class TspOauthDataMapper {
 		externalClasses: Map<string, ExternalClassDto>
 	): OauthDataDto[] {
 		const oauthDataDtos = tspStudents
+			.filter((tspStudent) => this.ensureExternalId(tspStudent.schuelerUid, 'student'))
 			.map((tspStudent) => {
-				if (!tspStudent.schuelerUid) {
-					this.logger.info(new TspMissingExternalIdLoggable('student'));
-					return null;
-				}
+				TypeGuard.requireKeys(tspStudent, ['schuelerUid']);
 
 				const externalUser = new ExternalUserDto({
 					externalId: tspStudent.schuelerUid,
@@ -170,9 +167,16 @@ export class TspOauthDataMapper {
 				});
 
 				return oauthDataDto;
-			})
-			.filter((oauthDataDto) => oauthDataDto !== null);
+			});
 
 		return oauthDataDtos;
+	}
+
+	private ensureExternalId(externalId: string | undefined, type: string): boolean {
+		if (!externalId) {
+			this.logger.info(new TspMissingExternalIdLoggable(type));
+			return false;
+		}
+		return true;
 	}
 }

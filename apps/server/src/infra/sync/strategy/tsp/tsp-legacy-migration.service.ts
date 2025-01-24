@@ -69,7 +69,7 @@ export class TspLegacyMigrationService {
 		this.logger.info(new TspLegacySchoolMigrationSuccessLoggable(schoolIds.length, successfulMigrations));
 	}
 
-	private async findLegacySystemId() {
+	private async findLegacySystemId(): Promise<ObjectId | undefined> {
 		const tspLegacySystem = await this.em.getCollection(SYSTEMS_COLLECTION).findOne({
 			type: TSP_LEGACY_SYSTEM_TYPE,
 		});
@@ -77,7 +77,7 @@ export class TspLegacyMigrationService {
 		return tspLegacySystem?._id;
 	}
 
-	private async findIdsOfLegacyTspSchools(legacySystemId: ObjectId) {
+	private async findIdsOfLegacyTspSchools(legacySystemId: ObjectId): Promise<number[]> {
 		const schools = await this.em
 			.getCollection<LegacyTspSchoolProperties>(SCHOOLS_COLLECTION)
 			.find({
