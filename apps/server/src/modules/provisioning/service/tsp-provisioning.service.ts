@@ -4,6 +4,7 @@ import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { Consent } from '@shared/domain/domainobject/consent';
@@ -59,11 +60,11 @@ export class TspProvisioningService {
 	}
 
 	private async updateClass(currentClass: Class, clazz: ExternalClassDto, school: School, user: UserDO): Promise<void> {
-		if (!user.id) {
-			throw new BadDataLoggableException('User ID is missing', {
-				externalId: user.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('User ID is missing', { externalId: user.externalId })
+		);
 
 		currentClass.schoolId = school.id;
 		currentClass.name = clazz.name ?? currentClass.name;
@@ -82,11 +83,11 @@ export class TspProvisioningService {
 	}
 
 	private async createClass(clazz: ExternalClassDto, school: School, user: UserDO): Promise<void> {
-		if (!user.id) {
-			throw new BadDataLoggableException('User ID is missing', {
-				externalId: user.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('User ID is missing', { externalId: user.externalId })
+		);
 
 		const newClass = ClassFactory.create({
 			name: clazz.name,
@@ -102,11 +103,11 @@ export class TspProvisioningService {
 	}
 
 	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDO> {
-		if (!data.externalSchool) {
-			throw new BadDataLoggableException('External school is missing for user', {
-				externalId: data.externalUser.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			data,
+			['externalSchool'],
+			new BadDataLoggableException('External school is missing for user', { externalId: data.externalUser.externalId })
+		);
 
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
@@ -145,11 +146,11 @@ export class TspProvisioningService {
 		roleRefs: RoleReference[],
 		schoolId: string
 	): Promise<UserDO> {
-		if (!externalUser.firstName || !externalUser.lastName) {
-			throw new BadDataLoggableException('User firstname or lastname is missing. TspUid:', {
-				externalId: externalUser.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			externalUser,
+			['firstName', 'lastName'],
+			new BadDataLoggableException('User firstname or lastname is missing', { externalId: externalUser.externalId })
+		);
 
 		const newUser = new UserDO({
 			roles: roleRefs,
@@ -170,10 +171,11 @@ export class TspProvisioningService {
 	}
 
 	private async createOrUpdateAccount(systemId: string, user: UserDO): Promise<void> {
-		if (!user.id)
-			throw new BadDataLoggableException('user ID is missing', {
-				externalId: user.externalId,
-			});
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('User ID is missing', { externalId: user.externalId })
+		);
 
 		const account = await this.accountService.findByUserId(user.id);
 
