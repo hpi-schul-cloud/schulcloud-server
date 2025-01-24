@@ -126,7 +126,7 @@ const controllers = [ServerController, ServerConfigController];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: Role,
+			entities: [Role],
 
 			// debug: true, // use it for locally debugging of queries
 		}),
