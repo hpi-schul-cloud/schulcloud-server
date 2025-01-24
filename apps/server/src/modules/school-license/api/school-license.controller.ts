@@ -1,6 +1,12 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Post } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+	ApiBadRequestResponse,
+	ApiCreatedResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { MediaSchoolLicenseUc } from '../uc';
 
 @ApiTags('School License')
@@ -10,6 +16,9 @@ export class SchoolLicenseController {
 	constructor(private readonly mediaSchoolLicenseUc: MediaSchoolLicenseUc) {}
 
 	@ApiOperation({ summary: 'Update media school licenses' })
+	@ApiCreatedResponse()
+	@ApiUnauthorizedResponse()
+	@ApiBadRequestResponse()
 	@Post()
 	async updateMediaSchoolLicenses(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.mediaSchoolLicenseUc.updateMediaSchoolLicenses(currentUser.userId, currentUser.schoolId);
