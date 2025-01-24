@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { pseudonymEntityFactory } from '@testing/factory/pseudonym.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { PseudonymEntity } from './pseudonym.entity';
+import { pseudonymEntityFactory } from '../testing';
 
 describe('Pseudonym Entity', () => {
 	beforeAll(async () => {

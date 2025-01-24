@@ -1,17 +1,17 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordRepo } from '../repo';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {

@@ -1,4 +1,4 @@
-import { groupFactory } from '@testing/factory/domainobject';
+import { groupFactory } from '@modules/group/testing';
 import { courseFactory } from '../../testing';
 import { CourseSynchronizationStoppedLoggable } from './course-synchronization-stopped.loggable';
 

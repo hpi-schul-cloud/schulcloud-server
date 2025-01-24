@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
 import { courseFactory } from '@testing/factory/course.factory';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
@@ -13,6 +12,7 @@ import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 import { CopyFilesOfParentPayload, FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
+import { fileRecordFactory } from '../testing';
 
 describe('FilesStorageConsumer', () => {
 	let module: TestingModule;

@@ -6,6 +6,7 @@ import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, 
 import { VideoConferenceElement } from '@modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
 import { GroupTypes } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { RoomService } from '@modules/room';
@@ -24,7 +25,6 @@ import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { courseFactory } from '@testing/factory/course.factory';
-import { groupFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
 import { teamUserFactory } from '@testing/factory/teamuser.factory';

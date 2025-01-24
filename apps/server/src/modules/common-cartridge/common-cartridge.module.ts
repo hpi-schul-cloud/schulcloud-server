@@ -1,7 +1,10 @@
+import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { CoursesClientModule } from '@infra/courses-client';
+import { FilesStorageClientModule } from '@infra/files-storage-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
+import { FilesStorageClientModule as FilesMetadataClientModule } from '../files-storage-client';
 import { BoardClientModule } from './common-cartridge-client/board-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
@@ -13,6 +16,9 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 @Module({
 	imports: [
 		RabbitMQWrapperModule,
+		FilesMetadataClientModule,
+		FilesStorageClientModule,
+		LoggerModule,
 		CoursesClientModule,
 		BoardClientModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
