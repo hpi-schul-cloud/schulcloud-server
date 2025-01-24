@@ -1,9 +1,9 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
-
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
-import { EntityWithSchool, Learnroom } from '@shared/domain/interface';
+import { Learnroom } from '../interface/learnroom';
+import { EntityWithSchool } from '../interface/entity';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -214,7 +214,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		return courseGroups;
 	}
 
-	getShortTitle(): string {
+	public getShortTitle(): string {
 		if (this.name.length === 1) {
 			return this.name;
 		}

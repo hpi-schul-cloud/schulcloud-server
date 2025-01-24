@@ -23,7 +23,8 @@ const {
 	OauthConfigEntity,
 	OidcConfigEntity,
 	LdapConfigEntity,
-} = require('../../dist/apps/server/modules/system/entity/system.entity');
+	ExternalSourceEmbeddable,
+} = require('../../dist/apps/server/modules/system/entity');
 const {
 	CountyEmbeddable,
 	FederalStateEntity,
@@ -46,32 +47,26 @@ const {
 const { UserParentsEntity } = require('../../dist/apps/server/shared/domain/entity/user-parents.entity');
 const { UserSourceOptionsEntity } = require('../../dist/apps/server/shared/domain/entity/user-source-options-entity');
 
-/**
- * List based on following dependencies from 2025-01-21:
- * (>>>) mean that it is already writen down
- * Role (),
- *	SchoolEntity (
- *		SchoolYearEntity (),
- *		SchoolRoles (SchoolRolePermission ()),
- *		UserLoginMigrationEntity (SystemEntity (>>>), SchoolEntity (>>>),
- *		SchoolSystemOptionsEntity (SchoolEntity (>>>), SystemEntity (>>>))
- *		FederalStateEntity (CountyEmbeddable ()),
- *		CountyEmbeddable (),
- *		SystemEntity (>>>)
- *		StorageProviderEntity ()
- *	)
- *	User (
- *		Role (),
- *		SchoolEntity (>>>),
- *		SchoolRoles (>>>),
- *		ConsentEntity (UserConsentEntity (), ParentConsentEntity ()),
- *		UserParentsEntity (),
- *		UserSourceOptionsEntity (),
- *		UserSchoolEmbeddable (SchoolEntity (>>>), Role ())
- *	),
- *	AccountEntity (),
- *	SystemEntity (OauthConfigEntity (), OidcConfigEntity (), LdapConfigEntity ())
- */
+const { Course } = require('../../dist/apps/server/shared/domain/entity/course.entity');
+const { CourseGroup } = require('../../dist/apps/server/shared/domain/entity/coursegroup.entity');
+const { ClassEntity, ClassSourceOptionsEntity } = require('../../dist/apps/server/modules/class/entity');
+const {
+	GroupEntity,
+	GroupUserEmbeddable,
+	GroupValidPeriodEmbeddable,
+} = require('../../dist/apps/server/modules/group/entity');
+
+const {
+	ContextExternalToolService,
+} = require('../../dist/apps/server/modules/tool/context-external-tool/service/context-external-tool.service');
+const { ColumnBoardService } = require('../../dist/apps/server/modules/board/service/column-board.service');
+const {
+	CollaborativeStorageUc,
+} = require('../../dist/apps/server/modules/collaborative-storage/uc/collaborative-storage.uc');
+const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
+const { GroupService } = require('../../dist/apps/server/modules/group/service/group.service');
+const { RocketChatService } = require('../../dist/apps/server/modules/rocketchat/rocket-chat.service');
+
 const ENTITIES = {
 	Role,
 	SchoolYearEntity,
@@ -94,6 +89,14 @@ const ENTITIES = {
 	OauthConfigEntity,
 	OidcConfigEntity,
 	LdapConfigEntity,
+	ExternalSourceEmbeddable,
+	Course,
+	CourseGroup,
+	ClassEntity,
+	ClassSourceOptionsEntity,
+	GroupEntity,
+	GroupUserEmbeddable,
+	GroupValidPeriodEmbeddable,
 };
 
 const setupNestServices = async (app) => {
@@ -106,7 +109,7 @@ const setupNestServices = async (app) => {
 				user: DB_USERNAME,
 				entities: ENTITIES,
 				allowGlobalContext: true,
-				// debug: true, // use it for locally debugging of querys
+				debug: true, // use it for locally debugging of querys
 			}),
 			ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 			AccountApiModule,
@@ -119,11 +122,24 @@ const setupNestServices = async (app) => {
 	const orm = nestApp.get(MikroORM);
 	const accountUc = nestApp.get(AccountUc);
 	const accountService = nestApp.get(AccountService);
+	const contextExternalToolService = nestApp.get(ContextExternalToolService);
+	const columnBoardService = nestApp.get(ColumnBoardService);
+	const collaborativeStorageUc = nestApp.get(CollaborativeStorageUc);
+	const feathersRosterService = nestApp.get(FeathersRosterService);
+	const groupService = nestApp.get(GroupService);
+	const rocketChatService = nestApp.get(RocketChatService);
 	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
 
+	// app.services['nest-mail'] = ??
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
+	app.services['nest-account-uc'] = contextExternalToolService;
+	app.services['nest-account-uc'] = columnBoardService;
+	app.services['nest-account-uc'] = collaborativeStorageUc;
+	app.services['nest-account-uc'] = feathersRosterService;
+	app.services['nest-account-uc'] = groupService;
+	app.services['nest-account-uc'] = rocketChatService;
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-orm'] = orm;
