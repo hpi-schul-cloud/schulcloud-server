@@ -39,7 +39,7 @@ export class DeletionRequestRepo {
 
 		const order = { createdAt: SortOrder.asc };
 
-		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query, {
 			limit,
 			orderBy: order,
 		});
@@ -59,7 +59,7 @@ export class DeletionRequestRepo {
 
 		const order = { createdAt: SortOrder.asc };
 
-		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query, {
 			limit,
 			orderBy: order,
 		});

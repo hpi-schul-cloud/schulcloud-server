@@ -48,8 +48,8 @@ export class DeletionRequestService {
 		return deletionRequest;
 	}
 
-	async findAllItemsToExecute(limit: number, failed = false): Promise<DeletionRequest[]> {
-		const deletionRequests = failed
+	async findAllItemsToExecute(limit: number, getFailed = false): Promise<DeletionRequest[]> {
+		const deletionRequests = getFailed
 			? await this.deletionRequestRepo.findAllFailedItems(limit, this.olderThan, this.newerThan)
 			: await this.deletionRequestRepo.findAllItems(limit);
 

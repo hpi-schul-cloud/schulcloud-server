@@ -1,10 +1,9 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
@@ -31,7 +30,6 @@ describe(DeletionRequestUc.name, () => {
 		const orm = await setupEntities();
 
 		module = await Test.createTestingModule({
-			imports: [ConfigModule.forRoot(createConfigModuleOptions(deletionTestConfig))],
 			providers: [
 				DeletionRequestUc,
 				{
@@ -161,9 +159,13 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 
+				configService.get.mockImplementation((key) => deletionTestConfig()[key]);
+
 				return { deletionRequest };
 			};
 			it('should call deletionRequestService.findAllItemsToExecute', async () => {
+				setup();
+
 				await uc.executeDeletionRequests();
 
 				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
@@ -192,8 +194,13 @@ describe(DeletionRequestUc.name, () => {
 			});
 
 			it('should work with a delay of 0', async () => {
-				const { deletionRequest } = setup();
-				configService.get.mockReturnValueOnce(0);
+				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
+				configService.get.mockImplementation((key) => {
+					if (key === 'ADMIN_API__DELETION_DELAY_MILLISECONDS') {
+						return 0;
+					}
+					return deletionTestConfig()[key];
+				});
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
 

@@ -55,7 +55,7 @@ export class DeletionClient {
 		const postDeletionExecutionsEndpoint = new URL(endpoint, baseUrl);
 
 		const params = new URLSearchParams(postDeletionExecutionsEndpoint.search);
-		if (limit && this.isLimitGeaterZero(limit)) {
+		if (limit && this.isLimitGreaterZero(limit)) {
 			params.append('limit', limit.toString());
 		}
 		if (runFailed) {
@@ -99,7 +99,7 @@ export class DeletionClient {
 		}
 	}
 
-	private isLimitGeaterZero(limit?: number): boolean {
+	private isLimitGreaterZero(limit?: number): boolean {
 		return typeof limit === 'number' && limit > 0;
 	}
 

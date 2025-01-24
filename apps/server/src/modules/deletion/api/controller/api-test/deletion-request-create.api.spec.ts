@@ -88,14 +88,14 @@ describe(`deletionRequest create (api)`, () => {
 					deleteAfterMinutes: 0,
 				};
 
-				const defaultdeleteAfterMinutes = 43200;
+				const defaultDeleteAfterMinutes = 43200;
 
 				const operationalTimeToleranceInSeconds = 30;
 
 				return {
 					deletionRequestToCreate,
 					deletionRequestToImmediateRemoval,
-					defaultdeleteAfterMinutes,
+					defaultDeleteAfterMinutes,
 					operationalTimeToleranceInSeconds,
 				};
 			};
@@ -119,7 +119,7 @@ describe(`deletionRequest create (api)`, () => {
 
 			describe('when the "delete after minutes" param has not been provided', () => {
 				it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
-					const { deletionRequestToCreate, defaultdeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
+					const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
 
 					const response = await testApiClient.post('', deletionRequestToCreate);
 
@@ -131,7 +131,7 @@ describe(`deletionRequest create (api)`, () => {
 					const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
 						createdItem.createdAt,
 						createdItem.deleteAfter,
-						defaultdeleteAfterMinutes,
+						defaultDeleteAfterMinutes,
 						operationalTimeToleranceInSeconds
 					);
 

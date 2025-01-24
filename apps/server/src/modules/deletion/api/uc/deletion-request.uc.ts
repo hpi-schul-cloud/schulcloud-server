@@ -17,7 +17,7 @@ import { DeletionConfig } from '../../deletion.config';
 @Injectable()
 @EventsHandler(DataDeletedEvent)
 export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
-	config: string[];
+	private config: string[];
 
 	constructor(
 		private readonly deletionRequestService: DeletionRequestService,
@@ -78,31 +78,31 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		return result;
 	}
 
-	async executeDeletionRequests(limit?: number, failed?: boolean): Promise<void> {
+	async executeDeletionRequests(limit?: number, getFailed?: boolean): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 
 		limit = limit ?? this.configService.get<number>('ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS');
 
 		let deletionRequests: DeletionRequest[] = [];
 
-		do {
-			// eslint-disable-next-line no-await-in-loop
-			if (limit > 0) {
+		if (limit > 0) {
+			do {
 				// eslint-disable-next-line no-await-in-loop
-				deletionRequests = await this.deletionRequestService.findAllItemsToExecute(limit, failed);
+				deletionRequests = await this.deletionRequestService.findAllItemsToExecute(limit, getFailed);
 
 				this.logger.debug({ action: 'processing deletion request', deletionRequests });
+
 				// eslint-disable-next-line no-await-in-loop
 				await Promise.all(
 					deletionRequests.map(async (req) => {
 						await this.executeDeletionRequest(req);
 					})
 				);
-			}
 
-			// eslint-disable-next-line no-await-in-loop
-			await this.sleep();
-		} while (deletionRequests.length > 0);
+				// eslint-disable-next-line no-await-in-loop
+				await this.delayForDeletion();
+			} while (deletionRequests.length > 0);
+		}
 
 		this.logger.debug({ action: 'deletion process completed' });
 	}
@@ -143,8 +143,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		}
 	}
 
-	// short sleep mode to give time for deletion process to do its work
-	private async sleep() {
+	private async delayForDeletion() {
 		const delay = this.configService.get<number>('ADMIN_API__DELETION_DELAY_MILLISECONDS');
 		if (delay > 0) {
 			return new Promise((resolve) => {

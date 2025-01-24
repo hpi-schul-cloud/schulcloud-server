@@ -1,4 +1,3 @@
-import { TriggerDeletionExecutionOptions } from '../interface';
 import { TriggerDeletionExecutionOptionsBuilder } from './trigger-deletion-execution-options.builder';
 
 describe(TriggerDeletionExecutionOptionsBuilder.name, () => {
@@ -8,17 +7,15 @@ describe(TriggerDeletionExecutionOptionsBuilder.name, () => {
 				const limit = 1000;
 				const runFailed = false;
 
-				const expectedOutput: TriggerDeletionExecutionOptions = { limit, runFailed };
-
-				return { expectedOutput, limit, runFailed };
+				return { limit, runFailed };
 			};
 
 			it('should return valid object with expected values', () => {
-				const { expectedOutput, limit, runFailed } = setup();
+				const { limit, runFailed } = setup();
 
 				const output = TriggerDeletionExecutionOptionsBuilder.build(limit, runFailed);
 
-				expect(output).toStrictEqual(expectedOutput);
+				expect(output).toStrictEqual({ limit, runFailed });
 			});
 		});
 	});

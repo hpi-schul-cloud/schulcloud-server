@@ -1395,7 +1395,7 @@
 				"DELETION_DELETE_AFTER_MINUTES": {
 					"type": "number",
 					"default": 43200,
-					"description": "threshold in minutes, after which a deletion requests can be processed"
+					"description": "threshold in minutes, after which a deletion request can be processed"
 				},
 				"DELETION_MODIFICATION_THRESHOLD_MS": {
 					"type": "number",
@@ -1415,7 +1415,7 @@
 				"DELETION_DELAY_MILLISECONDS": {
 					"type": "number",
 					"default": 5000,
-					"description": "delay in milliseconds to sleep before processing another batch of of deletion requests"
+					"description": "delay in milliseconds to sleep before processing another batch of deletion requests"
 				}
 			},
 			"default": {}
