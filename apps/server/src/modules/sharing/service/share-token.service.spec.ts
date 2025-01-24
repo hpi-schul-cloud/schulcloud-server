@@ -9,11 +9,11 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { shareTokenFactory } from '@testing/factory/share-token.do.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
+import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
 
@@ -127,7 +127,7 @@ describe('ShareTokenService', () => {
 
 	describe('lookup', () => {
 		it('should lookup a shareToken using a token', async () => {
-			const shareToken = shareTokenFactory.build();
+			const shareToken = shareTokenDOFactory.build();
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupToken(shareToken.token);
@@ -144,7 +144,7 @@ describe('ShareTokenService', () => {
 		});
 
 		it('should throw an error when shareToken is expired', async () => {
-			const shareToken = shareTokenFactory.build({ expiresAt: new Date(Date.now() - 10000) });
+			const shareToken = shareTokenDOFactory.build({ expiresAt: new Date(Date.now() - 10000) });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const lookupToken = async () => service.lookupToken(shareToken.token);
@@ -159,7 +159,7 @@ describe('ShareTokenService', () => {
 			courseService.findById.mockResolvedValue(course);
 
 			const payload = { parentId: course.id, parentType: ShareTokenParentType.Course };
-			const shareToken = shareTokenFactory.build({ payload });
+			const shareToken = shareTokenDOFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupTokenWithParentName(shareToken.token);
@@ -172,7 +172,7 @@ describe('ShareTokenService', () => {
 			lessonService.findById.mockResolvedValue(lesson);
 
 			const payload = { parentId: lesson.id, parentType: ShareTokenParentType.Lesson };
-			const shareToken = shareTokenFactory.build({ payload });
+			const shareToken = shareTokenDOFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupTokenWithParentName(shareToken.token);
@@ -185,7 +185,7 @@ describe('ShareTokenService', () => {
 			taskService.findById.mockResolvedValue(task);
 
 			const payload = { parentId: task.id, parentType: ShareTokenParentType.Task };
-			const shareToken = shareTokenFactory.build({ payload });
+			const shareToken = shareTokenDOFactory.build({ payload });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const result = await service.lookupTokenWithParentName(shareToken.token);
@@ -199,7 +199,7 @@ describe('ShareTokenService', () => {
 				columnBoardService.findById.mockResolvedValue(columnBoard);
 
 				const payload = { parentId: columnBoard.id, parentType: ShareTokenParentType.ColumnBoard };
-				const shareToken = shareTokenFactory.build({ payload });
+				const shareToken = shareTokenDOFactory.build({ payload });
 				repo.findOneByToken.mockResolvedValue(shareToken);
 
 				return { columnBoard, shareToken };
@@ -215,7 +215,7 @@ describe('ShareTokenService', () => {
 		it('should throw if parent type is not supported', async () => {
 			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			const shareToken = shareTokenFactory.build({ payload: { parentType: 'invalid' } });
+			const shareToken = shareTokenDOFactory.build({ payload: { parentType: 'invalid' } });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
 			const lookupToken = async () => service.lookupTokenWithParentName(shareToken.token);

@@ -9,7 +9,6 @@ import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { ApiValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -20,6 +19,7 @@ import { PreviewStatus } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordParentType } from '../../interface';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 

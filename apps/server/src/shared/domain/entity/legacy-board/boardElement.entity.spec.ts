@@ -1,4 +1,4 @@
-import { columnBoardNodeFactory } from '@testing/factory/column-board-node.factory';
+import { columnBoardNodeFactory } from '@modules/board/testing';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';

@@ -8,18 +8,22 @@ import {
 	CommonCartridgeWebContentResourcePropsV110,
 	CommonCartridgeWebLinkResourcePropsV110,
 } from './v1.1.0';
+import { CommonCartridgeFileResourcePropsV110 } from './v1.1.0/common-cartridge-file-resource';
 import {
 	CommonCartridgeManifestResourcePropsV130,
 	CommonCartridgeResourceFactoryV130,
 	CommonCartridgeWebContentResourcePropsV130,
 	CommonCartridgeWebLinkResourcePropsV130,
 } from './v1.3.0';
+import { CommonCartridgeFileResourcePropsV130 } from './v1.3.0/common-cartridge-file-resource';
 
 export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV110>
 	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV110>
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV130>
-	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV130>;
+	| OmitVersionAndFolder<CommonCartridgeWebLinkResourcePropsV130>
+	| OmitVersionAndFolder<CommonCartridgeFileResourcePropsV110>
+	| OmitVersionAndFolder<CommonCartridgeFileResourcePropsV130>;
 
 export type CommonCartridgeResourcePropsInternal =
 	| CommonCartridgeManifestResourcePropsV110
@@ -27,7 +31,9 @@ export type CommonCartridgeResourcePropsInternal =
 	| CommonCartridgeWebLinkResourcePropsV110
 	| CommonCartridgeManifestResourcePropsV130
 	| CommonCartridgeWebContentResourcePropsV130
-	| CommonCartridgeWebLinkResourcePropsV130;
+	| CommonCartridgeWebLinkResourcePropsV130
+	| CommonCartridgeFileResourcePropsV110
+	| CommonCartridgeFileResourcePropsV130;
 
 export class CommonCartridgeResourceFactory {
 	public static createResource(props: CommonCartridgeResourcePropsInternal): CommonCartridgeResource {
