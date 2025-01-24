@@ -92,7 +92,7 @@ export class RoomMembershipService {
 	public async removeMembersFromRoom(roomId: EntityId, userIds: EntityId[]): Promise<void> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			throw new BadRequestException('Room member not found');
+			throw new BadRequestException('Room membership not found');
 		}
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
@@ -101,6 +101,26 @@ export class RoomMembershipService {
 		await this.groupService.removeUsersFromGroup(group.id, userIds);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
+	}
+
+	public async changeRoleOfRoomMembers(roomId: EntityId, userIds: EntityId[], roleName: RoleName): Promise<void> {
+		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		if (roomMembership === null) {
+			throw new BadRequestException('Room membership not found');
+		}
+
+		const group = await this.groupService.findById(roomMembership.userGroupId);
+		const role = await this.roleService.findByName(roleName);
+
+		group.users.forEach((groupUser) => {
+			if (userIds.includes(groupUser.userId)) {
+				groupUser.roleId = role.id;
+			}
+		});
+
+		await this.groupService.save(group);
+
+		return Promise.resolve();
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
