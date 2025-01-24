@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Response } from 'express';
 import { StreamableFile } from '@nestjs/common';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
@@ -79,6 +80,27 @@ describe('CommonCartridgeController', () => {
 				'Content-Disposition': `attachment; filename=course_${params.courseId}.zip`,
 			});
 			expect(result).toBeInstanceOf(StreamableFile);
+		});
+	});
+
+	describe('importCourse', () => {
+		describe('when importing a course', () => {
+			const setup = () => {
+				const user = currentUserFactory.build();
+				const file: Express.Multer.File = new StreamableFile(
+					Buffer.from(faker.lorem.paragraphs(100)),
+					'file.zip'
+				) as unknown as Express.Multer.File;
+
+				return { user, file };
+			};
+			it('should call the uc with the correct parameters', async () => {
+				const { user, file } = setup();
+
+				await sut.importCourse(user, file);
+
+				expect(commonCartridgeUcMock.importCourse).toHaveBeenCalledTimes(1);
+			});
 		});
 	});
 });

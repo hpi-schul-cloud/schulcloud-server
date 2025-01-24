@@ -1,9 +1,10 @@
-import { Action, AuthorizationService } from '@modules/authorization';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
 import { MediaAvailableLine, MediaBoard } from '../../domain';
@@ -25,7 +26,8 @@ export class MediaAvailableLineUc {
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly configService: ConfigService<MediaBoardConfig, true>,
-		private readonly mediaUserLicenseService: MediaUserLicenseService
+		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -42,18 +44,16 @@ export class MediaAvailableLineUc {
 		const availableExternalTools: ExternalTool[] =
 			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);
 
-		let matchedTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
+		const matchedTools: [ExternalTool, SchoolExternalTool][] = this.mediaAvailableLineService.matchTools(
 			availableExternalTools,
 			schoolExternalToolsForAvailableMediaLine
 		);
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			matchedTools = await this.filterUnlicensedTools(userId, matchedTools);
-		}
+		const filteredTools = await this.getFilteredTools(userId, user.school.id, matchedTools);
 
 		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
 			mediaBoard,
-			matchedTools
+			filteredTools
 		);
 
 		return mediaAvailableLine;
@@ -83,21 +83,33 @@ export class MediaAvailableLineUc {
 		await this.mediaBoardService.updateCollapsed(board, mediaAvailableLineCollapsed);
 	}
 
-	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
-			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
+	private async getFilteredTools(
+		userId: EntityId,
+		schoolId: EntityId,
+		matchedTools: [ExternalTool, SchoolExternalTool][]
+	): Promise<[ExternalTool, SchoolExternalTool][]> {
+		let filteredTools = matchedTools;
+
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			filteredTools = await this.filterUnlicensedTools(userId, filteredTools);
 		}
+
+		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+			filteredTools = await this.getToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
+		}
+
+		return filteredTools;
 	}
 
 	private async filterUnlicensedTools(
 		userId: EntityId,
-		matchedTools: [ExternalTool, SchoolExternalTool][]
+		tools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
 		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
 			userId
 		);
 
-		matchedTools = matchedTools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
+		const filteredTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
 			if (externalToolMedium) {
 				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
@@ -105,6 +117,34 @@ export class MediaAvailableLineUc {
 			return true;
 		});
 
-		return matchedTools;
+		return filteredTools;
+	}
+
+	private async getToolsForUserAndSchool(
+		schoolId: EntityId,
+		tools: [ExternalTool, SchoolExternalTool][],
+		userTools: [ExternalTool, SchoolExternalTool][]
+	): Promise<[ExternalTool, SchoolExternalTool][]> {
+		const schoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(
+			schoolId
+		);
+
+		const schoolTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
+			const externalToolMedium = tool[0]?.medium;
+			if (externalToolMedium) {
+				return this.mediaSchoolLicenseService.hasLicenseForExternalTool(externalToolMedium, schoolLicenses);
+			}
+			return true;
+		});
+
+		const schoolAndUserTools = Array.from(new Set([...schoolTools, ...userTools]));
+
+		return schoolAndUserTools;
+	}
+
+	private checkFeatureEnabled(): void {
+		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
+		}
 	}
 }

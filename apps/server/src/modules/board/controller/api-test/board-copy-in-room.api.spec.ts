@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { ServerTestModule } from '@modules/server';
@@ -7,7 +8,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

@@ -5,10 +5,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
 import { SystemEntity } from '../../entity';
-import { systemLdapConfigFactory, systemOauthConfigFactory, systemOidcConfigFactory } from '../../testing';
+import {
+	systemEntityFactory,
+	systemLdapConfigFactory,
+	systemOauthConfigFactory,
+	systemOidcConfigFactory,
+} from '../../testing';
 import { SystemEntityMapper } from './mapper';
 import { SystemMikroOrmRepo } from './system.repo';
 

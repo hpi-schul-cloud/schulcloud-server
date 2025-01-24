@@ -74,6 +74,8 @@ const config: AdminApiServerConfig = {
 		'TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION'
 	) as string,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
+	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 };
 
 export const adminApiServerConfig = () => config;

@@ -2,6 +2,7 @@ import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { EncryptionConfig } from '@infra/encryption/encryption.config';
+import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -14,7 +15,7 @@ import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import { OauthConfig } from '@modules/oauth';
@@ -47,7 +48,7 @@ export enum NodeEnvType {
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
-		FilesStorageClientConfig,
+		FilesMetadataClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
 		SchoolConfig,
@@ -76,6 +77,7 @@ export interface ServerConfig
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
+		FilesStorageClientConfig,
 		VidisClientConfig,
 		VidisSyncConfig {
 	NODE_ENV: NodeEnvType;
@@ -128,6 +130,7 @@ export interface ServerConfig
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -335,6 +338,7 @@ const config: ServerConfig = {
 	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
 		? (Configuration.get('VIDIS_SYNC_REGION') as string)
 		: undefined,
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;
