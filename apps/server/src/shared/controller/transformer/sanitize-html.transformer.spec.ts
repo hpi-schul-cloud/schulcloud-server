@@ -25,7 +25,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		contentRichTextCk5Simple!: string;
 	}
 
-	describe('when fully sanitizing an input string', () => {
+	describe('when sanitizing plain text', () => {
 		it('should remove all html', () => {
 			const plainString = { title: '<b>html text</b>' };
 			const instance = plainToClass(WithHtmlDto, plainString);
@@ -34,6 +34,16 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			const plainString2 = { title2: '<b>html text</b>' };
 			const instance2 = plainToClass(WithHtmlDto, plainString2);
 			expect(instance2.title2).toEqual('html text');
+		});
+
+		it('should not encode html entities', () => {
+			const plainString = { title: 'X & Y > 5' };
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.title).toEqual('X & Y > 5');
+
+			const plainString2 = { title: 'X & Y > 5' };
+			const instance2 = plainToClass(WithHtmlDto, plainString2);
+			expect(instance2.title).toEqual('X & Y > 5');
 		});
 	});
 
