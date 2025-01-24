@@ -1,3 +1,4 @@
+import { MetaDataEntityType } from '../../types';
 import { AbstractUrlHandler } from './abstract-url-handler';
 
 class DummyHandler extends AbstractUrlHandler {
@@ -53,7 +54,7 @@ describe(AbstractUrlHandler.name, () => {
 
 			const result = handler.getDefaultMetaData(url);
 
-			expect(result).toEqual(expect.objectContaining({ type: 'unknown', url: url.toString() }));
+			expect(result).toEqual(expect.objectContaining({ type: MetaDataEntityType.UNKNOWN, url: url.toString() }));
 		});
 	});
 });

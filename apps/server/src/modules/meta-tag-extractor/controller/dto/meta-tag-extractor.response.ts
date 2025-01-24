@@ -26,33 +26,33 @@ export class MetaTagExtractorResponse {
 
 	@ApiProperty()
 	@IsUrl()
-	url!: string;
+	public url!: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title?: string;
+	public title?: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	description?: string;
+	public description?: string;
 
 	@ApiProperty()
 	@IsString()
-	originalImageUrl?: string;
+	public originalImageUrl?: string;
 
 	@ApiProperty()
 	@IsString()
-	imageUrl?: string;
+	public imageUrl?: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
 	@IsString()
-	type: MetaDataEntityType;
+	public type: MetaDataEntityType;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	parentTitle?: string;
+	public parentTitle?: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
 	@IsString()
-	parentType?: MetaDataEntityType;
+	public parentType?: MetaDataEntityType;
 }
