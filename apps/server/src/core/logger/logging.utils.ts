@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import util from 'util';
 import { Loggable } from './interfaces';
 import { LogMessageWithContext } from './types';
@@ -5,10 +6,11 @@ import { LogMessageWithContext } from './types';
 export class LoggingUtils {
 	static createMessageWithContext(loggable: Loggable, context?: string | undefined): LogMessageWithContext {
 		const message = loggable.getLogMessage();
-		const stringifiedMessage = this.stringifyMessage(message);
-		const messageWithContext = { message: stringifiedMessage, context };
 
-		return messageWithContext;
+		if (Configuration.get('JSON_LOG_FORMAT') !== true) {
+			return { message: this.stringifyMessage(message), context };
+		}
+		return { message, context };
 	}
 
 	private static stringifyMessage(message: unknown): string {
