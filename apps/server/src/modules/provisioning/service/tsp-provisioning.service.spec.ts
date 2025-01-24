@@ -4,6 +4,7 @@ import { AccountService } from '@modules/account';
 import { ClassService } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
 import { RoleService } from '@modules/role';
+import { roleDtoFactory } from '@modules/role/testing';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
@@ -11,7 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { roleDtoFactory } from '@testing/factory/role-dto.factory';
+
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';

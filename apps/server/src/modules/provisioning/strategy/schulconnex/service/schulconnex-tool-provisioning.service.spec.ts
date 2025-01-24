@@ -1,6 +1,8 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
+import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { customParameterFactory, externalToolFactory } from '@modules/tool/external-tool/testing';
@@ -10,8 +12,6 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
 import { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';
 
 describe(SchulconnexToolProvisioningService.name, () => {
