@@ -11,8 +11,11 @@ import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper'
 import { schoolFactory } from '@modules/school/testing';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
-import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
-import { FederalStateAbbreviationOfSchoolNotFoundLoggableException } from '../loggable/federal-state-abbreviation-of-school-not-found.loggable-exception';
+import {
+	BuildMediaSchoolLicenseFailedLoggable,
+	SchoolNumberNotFoundLoggableException,
+	FederalStateAbbreviationOfSchoolNotFoundLoggableException,
+} from '../loggable';
 import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
 import { mediaSchoolLicenseFactory, vidisOfferFactory } from '../testing';
 import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
