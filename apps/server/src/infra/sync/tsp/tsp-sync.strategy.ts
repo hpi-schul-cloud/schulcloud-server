@@ -1,5 +1,6 @@
 import { Logger } from '@core/logger';
-import { ProvisioningService } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning';
+import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import { School } from '@modules/school';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
@@ -11,7 +12,6 @@ import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
-import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable';
 import { TspFetchService } from './tsp-fetch.service';
@@ -30,7 +30,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
-		private readonly provisioningService: ProvisioningService,
+		private readonly provisioningService: TspProvisioningService,
 		private readonly tspSyncMigrationService: TspSyncMigrationService
 	) {
 		super();
@@ -118,16 +118,33 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
-		const dataLimit = this.configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
-		const dataLimitFn = pLimit(dataLimit);
+		const batchSize = this.configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
 
-		const dataPromises = oauthDataDtos.map((oauthDataDto) =>
-			dataLimitFn(() => this.provisioningService.provisionData(oauthDataDto))
-		);
+		const batchCount = Math.ceil(oauthDataDtos.length / batchSize);
+		const batches: OauthDataDto[][] = [];
+		for (let i = 0; i < batchCount; i += 1) {
+			const start = i * batchSize;
+			const end = Math.min((i + 1) * batchSize, oauthDataDtos.length);
+			batches.push(oauthDataDtos.slice(start, end));
+		}
 
-		const results = await Promise.allSettled(dataPromises);
+		let counter = 0;
+		for await (const batch of batches) {
+			counter += 1;
+			const batchIndex = counter;
+			await this.provisioningService.provisionBatch(batch);
+			this.logger.info({
+				getLogMessage() {
+					return {
+						message: `Finished batch ${batchIndex} of ${batchCount}`,
+					};
+				},
+			});
+		}
 
-		this.logger.info(new TspSyncedUsersLoggable(results.length));
+		// const results = await Promise.allSettled(dataPromises);
+
+		// this.logger.info(new TspSyncedUsersLoggable(results.length));
 	}
 
 	private async runMigration(system: System): Promise<void> {
