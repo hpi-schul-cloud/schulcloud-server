@@ -1,3 +1,4 @@
+// TODO: Rename file it is only used for migrations
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
 import path from 'path';
@@ -122,6 +123,11 @@ export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	password: DB_PASSWORD,
 	user: DB_USERNAME,
 	entities: [...ENTITIES],
+	// TODO: use regex instead https://github.com/mikro-orm/nestjs-realworld-example-app/blob/master/src/mikro-orm.config.ts.example
+	// metadataProvider: TsMorphMetadataProvider,
+	// entities: ['dist/apps/server/modules/**/*.entity.js', 'dist/apps/server/shared/domain/entity/*.entity.js'],
+	// entitiesTs: ['apps/server/src/modules/**/*.entity.ts', 'apps/server/src/shared/domain/entity/*.entity.ts'],
+	// extensions: [Migrator, EntityGenerator],
 	allowGlobalContext: true,
 	/*
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>

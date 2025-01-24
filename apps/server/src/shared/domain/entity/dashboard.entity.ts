@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Learnroom } from '@shared/domain/interface';
-import { EntityId, LearnroomMetadata } from '@shared/domain/types';
+import { Learnroom } from '../interface';
+import { EntityId, LearnroomMetadata } from '../types';
 
 const defaultColumns = 4;
 
@@ -40,7 +40,7 @@ export class GridElement implements IGridElement {
 
 	title?: string;
 
-	private sortReferences = (a: Learnroom, b: Learnroom) => {
+	private sortReferences = (a: Learnroom, b: Learnroom): 1 | -1 | 0 => {
 		const titleA = a.getMetadata().title;
 		const titleB = b.getMetadata().title;
 		if (titleA < titleB) {
@@ -58,37 +58,37 @@ export class GridElement implements IGridElement {
 		this.references = props.references.sort(this.sortReferences);
 	}
 
-	static FromPersistedReference(id: EntityId, reference: Learnroom): GridElement {
+	public static FromPersistedReference(id: EntityId, reference: Learnroom): GridElement {
 		return new GridElement({ id, references: [reference] });
 	}
 
-	static FromPersistedGroup(id: EntityId, title: string | undefined, group: Learnroom[]): GridElement {
+	public static FromPersistedGroup(id: EntityId, title: string | undefined, group: Learnroom[]): GridElement {
 		return new GridElement({ id, title, references: group });
 	}
 
-	static FromSingleReference(reference: Learnroom): GridElement {
+	public static FromSingleReference(reference: Learnroom): GridElement {
 		return new GridElement({ references: [reference] });
 	}
 
-	static FromGroup(title: string, references: Learnroom[]): GridElement {
+	public static FromGroup(title: string, references: Learnroom[]): GridElement {
 		return new GridElement({ title, references });
 	}
 
 	references: Learnroom[];
 
-	hasId(): boolean {
+	public hasId(): boolean {
 		return !!this.id;
 	}
 
-	getId(): EntityId | undefined {
+	public getId(): EntityId | undefined {
 		return this.id;
 	}
 
-	getReferences(): Learnroom[] {
+	public getReferences(): Learnroom[] {
 		return this.references;
 	}
 
-	removeReferenceByIndex(index: number): void {
+	public removeReferenceByIndex(index: number): void {
 		if (!this.isGroup()) {
 			throw new BadRequestException('this element is not a group.');
 		}
@@ -98,7 +98,7 @@ export class GridElement implements IGridElement {
 		this.references.splice(index, 1);
 	}
 
-	removeReference(reference: Learnroom): void {
+	public removeReference(reference: Learnroom): void {
 		const index = this.references.indexOf(reference);
 		if (index === -1) {
 			throw new BadRequestException('reference not found.');
@@ -106,7 +106,7 @@ export class GridElement implements IGridElement {
 		this.references.splice(index, 1);
 	}
 
-	addReferences(anotherReference: Learnroom[]): void {
+	public addReferences(anotherReference: Learnroom[]): void {
 		if (!this.isGroup()) {
 			this.references = this.references.concat(anotherReference).sort(this.sortReferences);
 			this.setGroupName('');
@@ -115,7 +115,7 @@ export class GridElement implements IGridElement {
 		}
 	}
 
-	getContent(): GridElementContent {
+	public getContent(): GridElementContent {
 		if (!this.isGroup()) {
 			const { id: referencedId, ...data } = this.references[0].getMetadata();
 			const metadata = {
@@ -137,11 +137,11 @@ export class GridElement implements IGridElement {
 		return groupMetadata;
 	}
 
-	isGroup(): boolean {
+	public isGroup(): boolean {
 		return this.references.length > 1;
 	}
 
-	setGroupName(newGroupName: string): void {
+	public setGroupName(newGroupName: string): void {
 		if (!this.isGroup()) {
 			return;
 		}
@@ -192,15 +192,15 @@ export class DashboardEntity {
 		Object.assign(this, {});
 	}
 
-	getId(): string {
+	public getId(): string {
 		return this.id;
 	}
 
-	getUserId(): EntityId {
+	public getUserId(): EntityId {
 		return this.userId;
 	}
 
-	getGrid(): GridElementWithPosition[] {
+	public getGrid(): GridElementWithPosition[] {
 		const result = [...this.grid.keys()].map((key) => {
 			const position = this.positionFromGridIndex(key);
 			const value = this.grid.get(key) as IGridElement;
@@ -212,7 +212,7 @@ export class DashboardEntity {
 		return result;
 	}
 
-	getElement(position: GridPosition): IGridElement {
+	public getElement(position: GridPosition): IGridElement {
 		const element = this.grid.get(this.gridIndexFromPosition(position));
 		if (!element) {
 			throw new NotFoundException('no element at grid position');
@@ -220,7 +220,7 @@ export class DashboardEntity {
 		return element;
 	}
 
-	moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
+	public moveElement(from: GridPositionWithGroupIndex, to: GridPositionWithGroupIndex): GridElementWithPosition {
 		const elementToMove = this.getReferencesFromPosition(from);
 		const resultElement = this.mergeElementIntoPosition(elementToMove, to);
 		this.removeFromPosition(from);
@@ -230,7 +230,7 @@ export class DashboardEntity {
 		};
 	}
 
-	setLearnRooms(rooms: Learnroom[]): void {
+	public setLearnRooms(rooms: Learnroom[]): void {
 		this.removeRoomsNotInList(rooms);
 		const newRooms = this.determineNewRoomsIn(rooms);
 

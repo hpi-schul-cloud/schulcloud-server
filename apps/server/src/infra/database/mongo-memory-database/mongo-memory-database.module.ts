@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import _ from 'lodash';
+
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
@@ -51,9 +52,12 @@ import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { User } from '@shared/domain/entity/user.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
+
+import { defineConfig } from '@mikro-orm/mongodb';
+// import { defaultOptions } from '@hpi-schul-cloud/commons/lib/configuration';
 import { MongoDatabaseModuleOptions } from './types';
 
-export const ENTITIES = [
+const ENTITIES = [
 	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
@@ -115,19 +119,21 @@ export const ENTITIES = [
 	LtiDeepLinkTokenEntity,
 ];
 
-const dbName = () => _.times(20, () => _.random(35).toString(36)).join('');
+const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
 
 const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModule => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
 		useFactory: () => {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, no-process-env
 			const clientUrl = `${process.env.MONGO_TEST_URI}/${dbName()}`;
-			return {
+			return defineConfig({
 				allowGlobalContext: true, // can be overridden by options
 				...options,
 				type: 'mongo',
 				clientUrl,
-			};
+				// entities: ['dist/apps/server/modules/**/*.entity.js', 'dist/apps/server/shared/domain/entity/*.entity.js'], // TODO: Check time
+				// entitiesTs: ['apps/server/src/modules/**/*.entity.ts', 'apps/server/src/shared/domain/entity/*.entity.ts'],
+			});
 		},
 	});
 
@@ -138,7 +144,7 @@ const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModul
 export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	constructor(@Inject(MikroORM) private orm: MikroORM) {}
 
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		const defaultOptions = {
 			entities: ENTITIES,
 		};
@@ -149,7 +155,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		};
 	}
 
-	async onModuleDestroy(): Promise<void> {
+	public async onModuleDestroy(): Promise<void> {
 		await this.orm.close();
 	}
 }
