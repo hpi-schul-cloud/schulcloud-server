@@ -349,7 +349,7 @@ describe(SystemMikroOrmRepo.name, () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 
-				const system = systemFactory.build({ id: systemId });
+				const system = systemFactory.withOauthConfig().withLdapConfig().withOidcConfig().build({ id: systemId });
 
 				return {
 					system,
