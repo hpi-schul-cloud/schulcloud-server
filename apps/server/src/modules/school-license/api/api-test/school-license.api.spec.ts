@@ -20,6 +20,7 @@ describe('SchoolLicenseController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -29,6 +30,8 @@ describe('SchoolLicenseController (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+
+		axiosMock = new MockAdapter(axios);
 
 		testApiClient = new TestApiClient(app, 'school-licenses');
 	});
@@ -67,10 +70,9 @@ describe('SchoolLicenseController (API)', () => {
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
 				const pageOfferDTO = vidisPageOfferFactory.build();
 
-				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).reply<PageOfferDTO>(200, {
+				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).replyOnce<PageOfferDTO>(200, {
 					...pageOfferDTO,
 				});
 
@@ -92,15 +94,15 @@ describe('SchoolLicenseController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.MEDIA_SCHOOL_LICENSE_ADMIN,
 				]);
+
 				await em.persistAndFlush([adminUser, adminAccount, school, mediaSource]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
 				const pageOfferDTO = vidisPageOfferFactory.build();
 
-				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).reply<PageOfferDTO>(200, {
+				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).replyOnce<PageOfferDTO>(200, {
 					...pageOfferDTO,
 				});
 
@@ -130,10 +132,9 @@ describe('SchoolLicenseController (API)', () => {
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
 				const pageOfferDTO = vidisPageOfferFactory.build();
 
-				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).reply<PageOfferDTO>(200, {
+				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).replyOnce<PageOfferDTO>(200, {
 					...pageOfferDTO,
 				});
 
@@ -160,10 +161,9 @@ describe('SchoolLicenseController (API)', () => {
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
 				const pageOfferDTO = vidisPageOfferFactory.build();
 
-				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).reply<PageOfferDTO>(200, {
+				axiosMock.onGet(/\/offers\/activated\/by-school\/[^/]+$/).replyOnce<PageOfferDTO>(200, {
 					...pageOfferDTO,
 				});
 
