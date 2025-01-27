@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/setup-entities';
+import { MetaDataEntityType } from '../types';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
@@ -77,7 +78,7 @@ describe(MetaTagExtractorService.name, () => {
 						url,
 						title: 'super.pdf',
 						description: '',
-						type: 'unknown',
+						type: MetaDataEntityType.UNKNOWN,
 					});
 				});
 			});
