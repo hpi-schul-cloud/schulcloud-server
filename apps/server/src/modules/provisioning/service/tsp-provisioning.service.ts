@@ -66,14 +66,16 @@ export class TspProvisioningService {
 
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 
-		await Promise.all(
-			oauthDataDtos.map((oauth, index) =>
-				this.provisionClasses(
-					schoolArrays[index][0],
-					oauth.externalClasses ?? [],
-					savedUsers.find((user) => user.id === oauth.externalUser.externalId)
-				)
-			)
+		await Promise.allSettled(
+			oauthDataDtos.map((oauth, index) => {
+				const userForClasses = savedUsers.find((user) => user.id === oauth.externalUser.externalId);
+				if (!userForClasses) {
+					return Promise.reject();
+				}
+
+				const promise = this.provisionClasses(schoolArrays[index][0], oauth.externalClasses ?? [], userForClasses);
+				return promise;
+			})
 		);
 
 		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
@@ -106,10 +108,7 @@ export class TspProvisioningService {
 		return schools[0];
 	}
 
-	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO | undefined): Promise<void> {
-		if (user === undefined) {
-			return;
-		}
+	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
 		if (!user.id)
 			throw new BadDataLoggableException('User ID is missing', {
 				externalId: user.externalId,
@@ -159,7 +158,9 @@ export class TspProvisioningService {
 
 		const user = this.createOrUpdateUser(data.externalUser, roleRefs, school.id, existingUser);
 		if (!user) {
-			throw new BadDataLoggableException(); // TODO
+			throw new BadDataLoggableException(`Couldn't process user`, {
+				externalId: data.externalUser.externalId,
+			});
 		}
 		const savedUser = await this.userService.save(user);
 
@@ -178,9 +179,6 @@ export class TspProvisioningService {
 	): UserDO | undefined {
 		if (!existingUser) {
 			if (!externalUser.firstName || !externalUser.lastName) {
-				// throw new BadDataLoggableException('User firstname or lastname is missing. TspUid:', {
-				// 	externalId: externalUser.externalId,
-				// });
 				return undefined;
 			}
 
