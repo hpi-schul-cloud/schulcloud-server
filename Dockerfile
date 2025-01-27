@@ -43,4 +43,4 @@ COPY --from=builder /app/node_modules/file-type-cjs node_modules/file-type-cjs
 ENV NODE_ENV=production
 ENV NO_COLOR="true"
 
-CMD npm start
+CMD npm run nest:start:prod
