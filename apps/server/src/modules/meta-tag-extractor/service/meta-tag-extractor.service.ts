@@ -3,6 +3,7 @@ import net from 'net';
 import { basename } from 'path';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import type { MetaData } from '../types';
+import { MetaDataEntityType } from '../types';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 
@@ -13,7 +14,7 @@ export class MetaTagExtractorService {
 		private readonly externalLinkMetaTagService: MetaTagExternalUrlService
 	) {}
 
-	async getMetaData(urlString: string): Promise<MetaData> {
+	public async getMetaData(urlString: string): Promise<MetaData> {
 		const url = this.parseValidUrl(urlString);
 
 		const metaData =
@@ -24,7 +25,7 @@ export class MetaTagExtractorService {
 		return metaData;
 	}
 
-	parseValidUrl(url: string): URL {
+	private parseValidUrl(url: string): URL {
 		const urlObject = new URL(url);
 
 		// enforce https
@@ -36,11 +37,11 @@ export class MetaTagExtractorService {
 		return urlObject;
 	}
 
-	private async tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
+	private tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
 		return this.internalLinkMataTagService.tryInternalLinkMetaTags(url);
 	}
 
-	private async tryExtractMetaTagsFromExternalUrl(url: URL): Promise<MetaData | undefined> {
+	private tryExtractMetaTagsFromExternalUrl(url: URL): Promise<MetaData | undefined> {
 		return this.externalLinkMetaTagService.tryExtractMetaTags(url);
 	}
 
@@ -49,7 +50,7 @@ export class MetaTagExtractorService {
 			title: basename(url.pathname),
 			description: '',
 			url: url.toString(),
-			type: 'unknown',
+			type: MetaDataEntityType.UNKNOWN,
 		};
 	}
 }
