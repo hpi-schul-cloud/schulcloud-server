@@ -1,37 +1,34 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { VidisClientFactory, IDMBetreiberApiInterface, PageOfferDTO, OfferDTO } from '@infra/vidis-client';
-import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
-import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/media-source/loggable';
-import { AxiosResponse, isAxiosError } from 'axios';
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { ConfigService } from '@nestjs/config';
-import { VidisSyncConfig } from '../vidis-sync-config';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from '@infra/vidis-client';
+import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceVidisConfigNotFoundLoggableException } from '@modules/media-source/loggable';
+import { Inject, Injectable } from '@nestjs/common';
+import { AxiosResponse, isAxiosError } from 'axios';
 
 @Injectable()
 export class VidisFetchService {
-	constructor(
-		private readonly vidisClientFactory: VidisClientFactory,
-		private readonly configService: ConfigService<VidisSyncConfig, true>,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
-	) {}
+	constructor(@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService) {}
 
 	public async getOfferItemsFromVidis(mediaSource: MediaSource): Promise<OfferDTO[]> {
-		if (!mediaSource.basicAuthConfig) {
-			throw new MediaSourceBasicAuthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
+		if (!mediaSource.vidisConfig) {
+			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
 		}
 
-		const vidisClient: IDMBetreiberApiInterface = this.vidisClientFactory.createVidisClient();
+		const { vidisConfig } = mediaSource;
+		const api = IDMBetreiberApiFactory(
+			new Configuration({
+				basePath: vidisConfig.baseUrl,
+			})
+		);
 
-		const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
-		const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
+		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
+		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
 		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
 
-		const region = this.configService.getOrThrow<string>('VIDIS_SYNC_REGION');
-
 		try {
-			const axiosResponse: AxiosResponse<PageOfferDTO> = await vidisClient.getActivatedOffersByRegion(
-				region,
+			const axiosResponse: AxiosResponse<PageOfferDTO> = await api.getActivatedOffersByRegion(
+				vidisConfig.region,
 				undefined,
 				undefined,
 				{
