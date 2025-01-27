@@ -29,8 +29,6 @@ export class TspProvisioningService {
 	) {}
 
 	public async provisionBatch(batch: OauthDataDto[]): Promise<void> {
-		const externalIds = batch.map((oauthDataDto) => oauthDataDto.externalUser.externalId);
-
 		const schoolArrays = await Promise.all(
 			batch.map((oauthData, index) =>
 				this.schoolService.getSchools({
@@ -52,9 +50,7 @@ export class TspProvisioningService {
 		});
 
 		const users = await Promise.all(
-			externalIds.map((externalId, index) =>
-				this.userService.findByExternalId(externalId, batch[index].system.systemId)
-			)
+			batch.map((oauth) => this.userService.findByExternalId(oauth.externalUser.externalId, oauth.system.systemId))
 		);
 
 		const roleRefs = await Promise.all(
@@ -68,8 +64,17 @@ export class TspProvisioningService {
 
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 
-		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
+		await Promise.all(
+			batch.map((oauth, index) =>
+				this.provisionClasses(
+					schoolArrays[index][0],
+					oauth.externalClasses ?? [],
+					savedUsers.find((u) => u.id === oauth.externalUser.externalId)
+				)
+			)
+		);
 
+		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
 		const accounts = await Promise.all(savedUserIds.map((userId) => this.accountService.findByUserId(userId ?? '')));
 
 		const accountsToSave = accounts.map((account, index) =>
@@ -95,7 +100,10 @@ export class TspProvisioningService {
 		return schools[0];
 	}
 
-	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
+	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO | undefined): Promise<void> {
+		if (user === undefined) {
+			return;
+		}
 		if (!user.id)
 			throw new BadDataLoggableException('User ID is missing', {
 				externalId: user.externalId,
@@ -167,7 +175,6 @@ export class TspProvisioningService {
 				// throw new BadDataLoggableException('User firstname or lastname is missing. TspUid:', {
 				// 	externalId: externalUser.externalId,
 				// });
-				console.log('skipping user');
 				return undefined;
 			}
 
