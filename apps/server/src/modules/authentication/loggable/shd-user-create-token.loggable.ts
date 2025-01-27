@@ -9,7 +9,7 @@ export class ShdUserCreateTokenLoggable implements Loggable {
 		const message: LogMessage = {
 			message: `The support employee with the Id ${
 				this.supportUserId
-			} has created  a short live JWT for the user with the Id ${this.targetUserId}. The JWT expires expires in ${
+			} has created a short live JWT for the user with the Id ${this.targetUserId}. The JWT expires expires in ${
 				this.expiredIn / 60
 			} minutes`,
 			data: {},

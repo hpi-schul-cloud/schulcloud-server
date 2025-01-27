@@ -21,5 +21,20 @@ describe('Logger', () => {
 			const logMessageWithContext = LoggingUtils.createMessageWithContext(loggable, 'someUselessContext');
 			console.log(logMessageWithContext);
 		});
+
+		it('undefined name', () => {
+			Configuration.set('JSON_LOG_FORMAT', true);
+			const news = News.createInstance(NewsTargetModel.School, {
+				displayAt: new Date(),
+				school: 'GhettoSchuleId',
+				creator: 'creatorMax',
+				target: 'fancyTargetId',
+				title: 'newsTitle',
+				content: 'newContent',
+			});
+			const loggable = new NewsCrudOperationLoggable(CrudOperation.CREATE, 'hans', news);
+			const logMessageWithContext = LoggingUtils.createMessageWithContext(loggable, undefined);
+			console.log(logMessageWithContext);
+		});
 	});
 });

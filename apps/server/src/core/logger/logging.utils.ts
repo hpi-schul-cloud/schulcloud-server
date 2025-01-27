@@ -20,7 +20,7 @@ export class LoggingUtils {
 		}
 
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		return { message: finalMessage, context: _.merge({}, { context }, finalMistratedLoggable) };
+		return { message: finalMessage, context: _.merge({}, { name: context }, finalMistratedLoggable) };
 	}
 
 	private static stringifyMessage(message: unknown): string {
