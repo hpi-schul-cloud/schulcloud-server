@@ -46,10 +46,20 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			expect(instance2.title).toEqual('X & Y > 5');
 		});
 
-		it('should not encode when html tag is not closed at the beginning of the string', () => {
-			const plainString = { title: '<XY' };
-			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.title).toEqual('<XY');
+		describe('when the text contains a "<" without the closing ">"', () => {
+			it('should remove all characters after the "<"', () => {
+				const plainString = { title: 'X<Y & A' };
+				const instance = plainToClass(WithHtmlDto, plainString);
+				expect(instance.title).toEqual('X');
+			});
+		});
+
+		describe('when the text contains both a "<" and ">"', () => {
+			it('should remove all characters between "<" and ">"', () => {
+				const plainString = { title: 'X<Y & A>B' };
+				const instance = plainToClass(WithHtmlDto, plainString);
+				expect(instance.title).toEqual('XB');
+			});
 		});
 	});
 
