@@ -26,7 +26,10 @@ const setupNestServices = async (app) => {
 					clientUrl: DB_URL,
 					password: DB_PASSWORD,
 					user: DB_USERNAME,
-					entities: ['dist/apps/server/modules/**/*.entity.js', 'dist/apps/server/shared/domain/entity/*.entity.js'],
+					entities: [
+						'./dist/apps/server/modules/**/*.entity.js',
+						'./dist/apps/server/shared/domain/entity/*.entity.js',
+					],
 					allowGlobalContext: true,
 					debug: false, // use it for locally debugging of querys
 				})
