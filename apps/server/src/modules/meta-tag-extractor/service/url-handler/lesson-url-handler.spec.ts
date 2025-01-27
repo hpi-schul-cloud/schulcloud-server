@@ -3,6 +3,7 @@ import { LessonService } from '@modules/lesson';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity } from '@shared/domain/entity';
 import { setupEntities } from '@testing/setup-entities';
+import { MetaDataEntityType } from '../../types';
 import { LessonUrlHandler } from './lesson-url-handler';
 
 describe(LessonUrlHandler.name, () => {
@@ -45,7 +46,7 @@ describe(LessonUrlHandler.name, () => {
 
 				const result = await lessonUrlHandler.getMetaData(url);
 
-				expect(result).toEqual(expect.objectContaining({ title: lessonName, type: 'lesson' }));
+				expect(result).toEqual(expect.objectContaining({ title: lessonName, type: MetaDataEntityType.LESSON }));
 			});
 		});
 
