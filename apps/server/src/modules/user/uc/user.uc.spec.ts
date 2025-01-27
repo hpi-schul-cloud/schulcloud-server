@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { LanguageType, Permission } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo';
+import { UserRepo } from '@shared/repo/user';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';

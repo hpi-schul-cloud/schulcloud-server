@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { groupFactory } from '@testing/factory/domainobject';
 import { Course, COURSE_REPO, CourseFilter, CourseRepo } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';

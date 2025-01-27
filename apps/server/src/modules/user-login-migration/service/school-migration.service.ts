@@ -1,9 +1,9 @@
+import { LegacyLogger, Logger } from '@core/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { LegacyLogger, Logger } from '@core/logger';
+import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import { performance } from 'perf_hooks';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
@@ -134,7 +134,7 @@ export class SchoolMigrationService {
 
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId: userLoginMigration.schoolId,
-			outdatedSince: userLoginMigration.finishedAt,
+			outdatedSince: userLoginMigration.closedAt,
 		});
 
 		migratedUsers.data.forEach((user: UserDO) => {

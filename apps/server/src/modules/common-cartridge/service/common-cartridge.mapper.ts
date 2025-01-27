@@ -1,4 +1,5 @@
 import sanitizeHtml from 'sanitize-html';
+import { FileDto } from '@modules/files-storage-client';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import {
 	LessonContentDto,
@@ -23,6 +24,7 @@ import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/
 import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
 import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
+import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -62,9 +64,7 @@ export class CommonCartridgeExportMapper {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: createIdentifier(lessonContent.id),
 					title: lessonContent.title,
-					html: `<h1>${lessonContent.title ?? ''}</h1><p>${
-						(lessonContent.content as ComponentTextPropsDto).text ?? ''
-					}</p>`,
+					html: `<p>${(lessonContent.content as ComponentTextPropsDto).text ?? ''}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				};
 			case LessonContentDtoComponentValues.GEO_GEBRA:
@@ -144,7 +144,7 @@ export class CommonCartridgeExportMapper {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(task.id),
 			title: task.name,
-			html: `<h1>${task.name}</h1><p>${task.description ?? ''}</p>`,
+			html: `<p>${task.description ?? ''}</p>`,
 			intendedUse,
 		};
 	}
@@ -189,6 +189,20 @@ export class CommonCartridgeExportMapper {
 			identifier: createIdentifier(element.id),
 			title: element.content.title,
 			url: element.content.url,
+		};
+	}
+
+	public mapFileToResource(
+		fileRecord: FileDto,
+		file: Buffer,
+		element?: FileElementResponseDto
+	): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.FILE,
+			identifier: createIdentifier(element?.id),
+			title: element?.content.caption?.trim() ? element.content.caption : fileRecord.name,
+			fileName: fileRecord.name,
+			fileContent: file,
 		};
 	}
 

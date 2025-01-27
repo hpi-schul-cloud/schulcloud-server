@@ -1,11 +1,10 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { PreviewProducer } from '@infra/preview-generator';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, ScanStatus } from '../entity';
@@ -16,6 +15,7 @@ import { TestHelper } from '../helper/test-helper';
 import { FileRecordParentType, PreviewWidth, StorageLocation } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FileResponseBuilder } from '../mapper';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
 

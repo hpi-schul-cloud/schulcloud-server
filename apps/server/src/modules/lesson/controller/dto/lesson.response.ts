@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { EntityId } from '@shared/domain/types';
-import { PaginationResponse } from '@shared/controller';
+import { PaginationResponse } from '@shared/controller/dto';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { MaterialResponse } from './material.response';
+import { EntityId } from '@shared/domain/types';
 import { LessonContentResponse } from './lesson-content.response';
+import { MaterialResponse } from './material.response';
 
 export class LessonMetadataResponse {
 	constructor({ _id, name }: LessonMetadataResponse) {

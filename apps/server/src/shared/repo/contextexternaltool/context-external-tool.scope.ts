@@ -1,8 +1,8 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '@shared/repo';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Scope } from '@shared/repo/scope';
 
 export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 	byId(id: EntityId | undefined): ContextExternalToolScope {

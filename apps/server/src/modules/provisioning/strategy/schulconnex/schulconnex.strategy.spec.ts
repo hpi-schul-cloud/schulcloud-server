@@ -1,15 +1,15 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@core/logger';
-import { groupFactory, legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { externalSchoolDtoFactory } from '@testing/factory/external-school-dto.factory';
+import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	ExternalGroupDto,
@@ -20,7 +20,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
-import { externalGroupDtoFactory, externalUserDtoFactory } from '../../testing';
+import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,

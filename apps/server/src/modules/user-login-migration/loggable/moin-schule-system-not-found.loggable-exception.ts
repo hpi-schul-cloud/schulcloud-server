@@ -1,6 +1,6 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { BusinessError } from '@shared/common';
 import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 
 export class MoinSchuleSystemNotFoundLoggableException extends BusinessError implements Loggable {
 	constructor() {

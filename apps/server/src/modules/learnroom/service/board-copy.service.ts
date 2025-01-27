@@ -22,7 +22,7 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { sortBy } from 'lodash';
 import { ColumnBoardNodeRepo } from '../repo';
 

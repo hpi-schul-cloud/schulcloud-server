@@ -1,6 +1,6 @@
-import { HttpStatus } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { BusinessError } from '@shared/common';
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common/error';
 
 export class ExternalToolLogoFetchFailedLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly logoUrl: string, private readonly httpStatus?: HttpStatus) {

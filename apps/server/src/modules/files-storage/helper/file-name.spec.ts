@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { fileRecordFactory } from '@testing/factory/filerecord.factory';
 import { setupEntities } from '@testing/setup-entities';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { FileRecord } from '../entity';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
+import { fileRecordFactory } from '../testing';
 
 describe('File Name Helper', () => {
 	const setupFileRecords = () => {

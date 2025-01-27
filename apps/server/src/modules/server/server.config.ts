@@ -2,21 +2,21 @@ import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { JwtAuthGuardConfig } from '@infra/auth-guard';
 import { EncryptionConfig } from '@infra/encryption/encryption.config';
+import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { TspSyncConfig } from '@infra/sync';
-import { VidisSyncConfig } from '@infra/sync/media-licenses';
 import type { TspClientConfig } from '@infra/tsp-client';
-import { VidisClientConfig } from '@infra/vidis-client';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
+import { ManagementMediaSourcesConfig, ManagementServerConfig } from '@modules/management';
 import { OauthConfig } from '@modules/oauth';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
@@ -47,7 +47,7 @@ export enum NodeEnvType {
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
-		FilesStorageClientConfig,
+		FilesMetadataClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
 		SchoolConfig,
@@ -76,12 +76,14 @@ export interface ServerConfig
 		ShdConfig,
 		OauthConfig,
 		EncryptionConfig,
-		VidisClientConfig,
-		VidisSyncConfig {
+		FilesStorageClientConfig,
+		ManagementMediaSourcesConfig,
+		ManagementServerConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
+	SC_CONTACT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
 	CALENDAR_SERVICE_ENABLED: boolean;
@@ -127,10 +129,12 @@ export interface ServerConfig
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
+	SC_CONTACT_EMAIL: Configuration.get('SC_CONTACT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
 		Configuration.get('ALERT_STATUS_URL') === null
@@ -327,11 +331,16 @@ const config: ServerConfig = {
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
-	VIDIS_API_CLIENT_BASE_URL: Configuration.has('VIDIS_API_CLIENT_BASE_URL')
-		? (Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string)
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
+	MEDIA_SOURCE_VIDIS_USERNAME: Configuration.has('MEDIA_SOURCE_VIDIS_USERNAME')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_USERNAME') as string)
 		: undefined,
-	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
-		? (Configuration.get('VIDIS_SYNC_REGION') as string)
+	MEDIA_SOURCE_VIDIS_PASSWORD: Configuration.has('MEDIA_SOURCE_VIDIS_PASSWORD')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_PASSWORD') as string)
+		: undefined,
+	SANIS_CLIENT_ID: Configuration.has('SANIS_CLIENT_ID') ? (Configuration.get('SANIS_CLIENT_ID') as string) : undefined,
+	SANIS_CLIENT_SECRET: Configuration.has('SANIS_CLIENT_SECRET')
+		? (Configuration.get('SANIS_CLIENT_SECRET') as string)
 		: undefined,
 };
 

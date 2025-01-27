@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { SanitizeHtml } from '@shared/controller';
+import { SanitizeHtml } from '@shared/controller/transformer';
 import { IsOptional, IsString } from 'class-validator';
 
 export class ShareTokenImportBodyParams {

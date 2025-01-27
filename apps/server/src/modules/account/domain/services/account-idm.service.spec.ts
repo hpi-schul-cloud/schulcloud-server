@@ -5,7 +5,7 @@ import { IdentityManagementOauthService, IdentityManagementService } from '@infr
 import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccount } from '@shared/domain/interface';
 import { Logger } from '@core/logger';
 import { Account, AccountSave } from '..';

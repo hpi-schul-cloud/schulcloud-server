@@ -1,11 +1,11 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
+import { MediaSourceForSyncNotFoundLoggableException } from '../loggable';
 import { VidisFetchService, VidisSyncService } from '../service';
 import { vidisOfferItemFactory } from '../testing';
-import { MediaSourceForSyncNotFoundLoggableException } from '../loggable';
 import { VidisSyncStrategy } from './vidis-sync.strategy';
 
 describe(VidisSyncService.name, () => {
@@ -62,7 +62,7 @@ describe(VidisSyncService.name, () => {
 		describe('when the vidis media source is found', () => {
 			const setup = () => {
 				const format = MediaSourceDataFormat.VIDIS;
-				const mediaSource = mediaSourceFactory.withBasicAuthConfig().build({ format });
+				const mediaSource = mediaSourceFactory.withVidis().build({ format });
 				const vidisOfferItems = vidisOfferItemFactory.buildList(3);
 
 				mediaSourceService.findByFormat.mockResolvedValueOnce(mediaSource);

@@ -2,18 +2,18 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { RequestTimeout } from '@shared/common';
+import { RequestTimeout } from '@shared/common/decorators';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { CourseCopyUC } from '../uc/course-copy.uc';
-import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import { CourseRoomsUc } from '../uc/course-rooms.uc';
+import { LessonCopyUC } from '../uc/lesson-copy.uc';
 import {
+	CourseRoomElementUrlParams,
+	CourseRoomUrlParams,
 	LessonCopyApiParams,
 	LessonUrlParams,
 	PatchOrderParams,
 	PatchVisibilityParams,
-	CourseRoomElementUrlParams,
-	CourseRoomUrlParams,
 	SingleColumnBoardResponse,
 } from './dto';
 

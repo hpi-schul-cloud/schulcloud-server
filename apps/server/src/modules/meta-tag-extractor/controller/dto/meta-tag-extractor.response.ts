@@ -1,6 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { DecodeHtmlEntities } from '@shared/controller';
-import { IsString, IsUrl } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { MetaDataEntityType } from '../../types';
 
 export class MetaTagExtractorResponse {
@@ -25,34 +24,29 @@ export class MetaTagExtractorResponse {
 	}
 
 	@ApiProperty()
-	@IsUrl()
-	url!: string;
+	public url: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title?: string;
+	public title: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	description?: string;
+	public description: string;
 
-	@ApiProperty()
-	@IsString()
-	originalImageUrl?: string;
+	@ApiPropertyOptional()
+	public originalImageUrl?: string;
 
-	@ApiProperty()
-	@IsString()
-	imageUrl?: string;
+	@ApiPropertyOptional()
+	public imageUrl?: string;
 
-	@ApiProperty()
-	@IsString()
-	type: MetaDataEntityType;
+	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
+	public type: MetaDataEntityType;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	parentTitle?: string;
+	public parentTitle?: string;
 
-	@ApiProperty()
-	@IsString()
-	parentType?: MetaDataEntityType;
+	@ApiPropertyOptional({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
+	public parentType?: MetaDataEntityType;
 }

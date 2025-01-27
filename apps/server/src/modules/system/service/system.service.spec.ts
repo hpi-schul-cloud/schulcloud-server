@@ -255,6 +255,36 @@ describe(SystemService.name, () => {
 		});
 	});
 
+	describe('save', () => {
+		describe('when saving a system', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+
+				systemRepo.save.mockResolvedValueOnce(system);
+
+				return {
+					system,
+				};
+			};
+
+			it('should save the system', async () => {
+				const { system } = setup();
+
+				await service.save(system);
+
+				expect(systemRepo.save).toHaveBeenCalledWith(system);
+			});
+
+			it('should return the system', async () => {
+				const { system } = setup();
+
+				const result = await service.save(system);
+
+				expect(result).toEqual(system);
+			});
+		});
+	});
+
 	describe('delete', () => {
 		describe('when the system was deleted', () => {
 			const setup = () => {

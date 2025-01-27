@@ -47,6 +47,12 @@ export class SystemService {
 		return system;
 	}
 
+	public async save(domainObject: System): Promise<System> {
+		const system: System = await this.systemRepo.save(domainObject);
+
+		return system;
+	}
+
 	public async delete(domainObject: System): Promise<boolean> {
 		await this.systemRepo.delete(domainObject);
 
