@@ -37,13 +37,19 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		});
 
 		it('should not encode html entities', () => {
-			const plainString = { title: 'X & Y > 5' };
+			const plainString = { title: 'X & Y < 5' };
 			const instance = plainToClass(WithHtmlDto, plainString);
-			expect(instance.title).toEqual('X & Y > 5');
+			expect(instance.title).toEqual('X & Y < 5');
 
 			const plainString2 = { title: 'X & Y > 5' };
 			const instance2 = plainToClass(WithHtmlDto, plainString2);
 			expect(instance2.title).toEqual('X & Y > 5');
+		});
+
+		it('should not encode when html tag is not closed at the beginning of the string', () => {
+			const plainString = { title: '<XY' };
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.title).toEqual('<XY');
 		});
 	});
 
