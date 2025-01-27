@@ -1,6 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
-import { IsString, IsUrl } from 'class-validator';
 import { MetaDataEntityType } from '../../types';
 
 export class MetaTagExtractorResponse {
@@ -25,34 +24,29 @@ export class MetaTagExtractorResponse {
 	}
 
 	@ApiProperty()
-	@IsUrl()
-	public url!: string;
+	public url: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	public title?: string;
+	public title: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	public description?: string;
+	public description: string;
 
-	@ApiProperty()
-	@IsString()
+	@ApiPropertyOptional()
 	public originalImageUrl?: string;
 
-	@ApiProperty()
-	@IsString()
+	@ApiPropertyOptional()
 	public imageUrl?: string;
 
 	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
-	@IsString()
 	public type: MetaDataEntityType;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
 	public parentTitle?: string;
 
-	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
-	@IsString()
+	@ApiPropertyOptional({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
 	public parentType?: MetaDataEntityType;
 }

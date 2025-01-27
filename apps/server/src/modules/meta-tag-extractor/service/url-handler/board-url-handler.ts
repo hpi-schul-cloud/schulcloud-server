@@ -66,7 +66,7 @@ export class BoardUrlHandler extends AbstractUrlHandler implements UrlHandler {
 					const card: Card = await this.boardNodeService.findByClassAndId(Card, hashId);
 
 					return {
-						title: card.title,
+						title: card.title ?? '-',
 						type: MetaDataEntityType.BOARD_CARD,
 					};
 				}

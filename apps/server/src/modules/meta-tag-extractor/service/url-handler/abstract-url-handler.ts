@@ -24,15 +24,15 @@ export abstract class AbstractUrlHandler {
 	}
 
 	public getDefaultMetaData(url: URL, partial: Partial<MetaData> = {}): MetaData {
-		const urlObject = new URL(url);
-		const title = basename(urlObject.pathname);
+		const urlObject: URL = new URL(url);
+		const title: string = basename(urlObject.pathname);
 
 		return {
-			title,
-			description: '',
-			url: url.toString(),
-			type: MetaDataEntityType.UNKNOWN,
 			...partial,
+			title: partial.title ?? title,
+			description: partial.description ?? '',
+			url: partial.url ?? url.toString(),
+			type: partial.type ?? MetaDataEntityType.UNKNOWN,
 		};
 	}
 }

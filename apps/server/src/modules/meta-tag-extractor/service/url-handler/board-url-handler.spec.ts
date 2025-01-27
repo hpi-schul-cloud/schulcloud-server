@@ -81,7 +81,7 @@ describe(BoardUrlHandler.name, () => {
 			});
 		});
 
-		describe('when the url has a hash to a card', () => {
+		describe('when the url has a hash to a card with a title', () => {
 			const setup = () => {
 				const board = columnBoardFactory.build({
 					title: 'My Board',
@@ -104,7 +104,7 @@ describe(BoardUrlHandler.name, () => {
 				};
 			};
 
-			it('should take the title from the board card', async () => {
+			it('should use the title from the board card', async () => {
 				const { cardTitle, url } = setup();
 
 				const result = await boardUrlHandler.getMetaData(url);
@@ -113,6 +113,41 @@ describe(BoardUrlHandler.name, () => {
 					url: url.toString(),
 					description: '',
 					title: cardTitle,
+					type: MetaDataEntityType.BOARD_CARD,
+				});
+			});
+		});
+
+		describe('when the url has a hash to a card without a title', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build({
+					title: 'My Board',
+					context: { type: BoardExternalReferenceType.User, id: new ObjectId().toHexString() },
+				});
+				const card = cardFactory.build({
+					title: undefined,
+				});
+				const url = new URL(`https://localhost/boards/${board.id}#card-${card.id}`);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+
+				return {
+					board,
+					card,
+					url,
+				};
+			};
+
+			it('should use "-" as the title', async () => {
+				const { url } = setup();
+
+				const result = await boardUrlHandler.getMetaData(url);
+
+				expect(result).toEqual<MetaData>({
+					url: url.toString(),
+					description: '',
+					title: '-',
 					type: MetaDataEntityType.BOARD_CARD,
 				});
 			});
