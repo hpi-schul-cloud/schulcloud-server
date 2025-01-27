@@ -11,8 +11,8 @@ export class MediaSourceMapper {
 			oauthConfig: entityDO.oauthConfig
 				? MediaSourceConfigMapper.mapOauthConfigToEmbeddable(entityDO.oauthConfig)
 				: undefined,
-			basicAuthConfig: entityDO.basicAuthConfig
-				? MediaSourceConfigMapper.mapBasicAuthConfigToEmbeddable(entityDO.basicAuthConfig)
+			vidisConfig: entityDO.vidisConfig
+				? MediaSourceConfigMapper.mapVidisConfigToEmbeddable(entityDO.vidisConfig)
 				: undefined,
 			format: entityDO.format,
 		};
@@ -26,9 +26,7 @@ export class MediaSourceMapper {
 			name: entity.name,
 			sourceId: entity.sourceId,
 			oauthConfig: entity.oauthConfig ? MediaSourceConfigMapper.mapOauthConfigToDo(entity.oauthConfig) : undefined,
-			basicAuthConfig: entity.basicAuthConfig
-				? MediaSourceConfigMapper.mapBasicAuthConfigToDo(entity.basicAuthConfig)
-				: undefined,
+			vidisConfig: entity.vidisConfig ? MediaSourceConfigMapper.mapVidisConfigToDo(entity.vidisConfig) : undefined,
 			format: entity.format,
 		});
 

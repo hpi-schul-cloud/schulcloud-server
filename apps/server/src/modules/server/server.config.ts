@@ -7,9 +7,7 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { TspSyncConfig } from '@infra/sync';
-import { VidisSyncConfig } from '@infra/sync/media-licenses';
 import type { TspClientConfig } from '@infra/tsp-client';
-import { VidisClientConfig } from '@infra/vidis-client';
 import type { AccountConfig } from '@modules/account';
 import { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
@@ -18,6 +16,7 @@ import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
+import { ManagementMediaSourcesConfig, ManagementServerConfig } from '@modules/management';
 import { OauthConfig } from '@modules/oauth';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
@@ -78,8 +77,8 @@ export interface ServerConfig
 		OauthConfig,
 		EncryptionConfig,
 		FilesStorageClientConfig,
-		VidisClientConfig,
-		VidisSyncConfig {
+		ManagementMediaSourcesConfig,
+		ManagementServerConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -332,13 +331,17 @@ const config: ServerConfig = {
 	FEATURE_OAUTH_LOGIN: Configuration.get('FEATURE_OAUTH_LOGIN') as boolean,
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: Configuration.get('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED') as boolean,
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
-	VIDIS_API_CLIENT_BASE_URL: Configuration.has('VIDIS_API_CLIENT_BASE_URL')
-		? (Configuration.get('VIDIS_API_CLIENT_BASE_URL') as string)
-		: undefined,
-	VIDIS_SYNC_REGION: Configuration.has('VIDIS_SYNC_REGION')
-		? (Configuration.get('VIDIS_SYNC_REGION') as string)
-		: undefined,
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
+	MEDIA_SOURCE_VIDIS_USERNAME: Configuration.has('MEDIA_SOURCE_VIDIS_USERNAME')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_USERNAME') as string)
+		: undefined,
+	MEDIA_SOURCE_VIDIS_PASSWORD: Configuration.has('MEDIA_SOURCE_VIDIS_PASSWORD')
+		? (Configuration.get('MEDIA_SOURCE_VIDIS_PASSWORD') as string)
+		: undefined,
+	SANIS_CLIENT_ID: Configuration.has('SANIS_CLIENT_ID') ? (Configuration.get('SANIS_CLIENT_ID') as string) : undefined,
+	SANIS_CLIENT_SECRET: Configuration.has('SANIS_CLIENT_SECRET')
+		? (Configuration.get('SANIS_CLIENT_SECRET') as string)
+		: undefined,
 };
 
 export const serverConfig = () => config;
