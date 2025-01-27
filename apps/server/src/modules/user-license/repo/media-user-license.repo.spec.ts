@@ -4,10 +4,10 @@ import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceConfigMapper } from '@modules/media-source/repo';
 import {
-	mediaSourceBasicConfigEmbeddableFactory,
 	mediaSourceEntityFactory,
 	mediaSourceFactory,
 	mediaSourceOAuthConfigEmbeddableFactory,
+	mediaSourceVidisConfigEmbeddableFactory,
 } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
@@ -45,9 +45,12 @@ describe(MediaUserLicenseRepo.name, () => {
 		describe('when searching for a users media licences', () => {
 			const setup = async () => {
 				const user: UserEntity = userFactory.build();
-				const basicAuthConfig = mediaSourceBasicConfigEmbeddableFactory.build();
+				const vidisConfig = mediaSourceVidisConfigEmbeddableFactory.build();
 				const oauthConfig = mediaSourceOAuthConfigEmbeddableFactory.build();
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({ basicAuthConfig, oauthConfig });
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({
+					vidisConfig,
+					oauthConfig,
+				});
 				const mediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build({ user, mediaSource });
 				const otherMediaUserLicense: MediaUserLicenseEntity = mediaUserLicenseEntityFactory.build();
 
@@ -59,13 +62,13 @@ describe(MediaUserLicenseRepo.name, () => {
 					user,
 					mediaUserLicense,
 					mediaSource,
-					basicAuthConfig,
+					vidisConfig,
 					oauthConfig,
 				};
 			};
 
 			it('should return user licenses for user', async () => {
-				const { user, mediaUserLicense, mediaSource, basicAuthConfig, oauthConfig } = await setup();
+				const { user, mediaUserLicense, mediaSource, vidisConfig, oauthConfig } = await setup();
 
 				const result: MediaUserLicense[] = await repo.findMediaUserLicensesForUser(user.id);
 
@@ -81,7 +84,7 @@ describe(MediaUserLicenseRepo.name, () => {
 							sourceId: mediaSource.sourceId,
 							format: mediaSource.format,
 							oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(oauthConfig),
-							basicAuthConfig: MediaSourceConfigMapper.mapBasicAuthConfigToDo(basicAuthConfig),
+							vidisConfig: MediaSourceConfigMapper.mapVidisConfigToDo(vidisConfig),
 						}),
 					}),
 				]);
@@ -92,7 +95,7 @@ describe(MediaUserLicenseRepo.name, () => {
 	describe('save', () => {
 		describe('when saving a media user license', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.build();
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
 				const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({ mediaSource });
 
 				return {
