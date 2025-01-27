@@ -412,7 +412,7 @@ describe(MediaSchoolLicenseService.name, () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
 
-				const schoolName = `${federalState.getProps().abbreviation}_${school.officialSchoolNumber ?? ''}`;
+				const schoolName = `${federalState.abbreviation}_${school.officialSchoolNumber ?? ''}`;
 
 				return {
 					school,
