@@ -1,3 +1,4 @@
+import { LegacyLogger, Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -5,7 +6,6 @@ import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { LegacyLogger, Logger } from '@core/logger';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -302,14 +302,14 @@ describe(SchoolMigrationService.name, () => {
 	describe('markUnmigratedUsersAsOutdated', () => {
 		describe('when admin completes the migration', () => {
 			const setup = () => {
-				const closedAt: Date = new Date('2023-05-01');
+				const closedAt: Date = new Date('2023-05-02');
 
 				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId: new ObjectId().toHexString(),
 					targetSystemId: new ObjectId().toHexString(),
 					startedAt: new Date('2023-05-01'),
 					closedAt,
-					finishedAt: new Date('2023-05-01'),
+					finishedAt: new Date('2023-05-03'),
 				});
 
 				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
@@ -343,8 +343,8 @@ describe(SchoolMigrationService.name, () => {
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date('2023-05-01'),
-					closedAt: new Date('2023-05-01'),
-					finishedAt: new Date('2023-05-01'),
+					closedAt: new Date('2023-05-02'),
+					finishedAt: new Date('2023-05-03'),
 				});
 
 				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
