@@ -1,7 +1,7 @@
 import { Embeddable, Property } from '@mikro-orm/core';
 
 @Embeddable()
-export class MediaSourceBasicAuthConfigEmbeddable {
+export class MediaSourceVidisConfigEmbeddable {
 	@Property()
 	public username: string;
 
@@ -9,11 +9,15 @@ export class MediaSourceBasicAuthConfigEmbeddable {
 	public password: string;
 
 	@Property()
-	public authEndpoint: string;
+	public baseUrl: string;
 
-	constructor(props: MediaSourceBasicAuthConfigEmbeddable) {
+	@Property()
+	public region: string;
+
+	constructor(props: MediaSourceVidisConfigEmbeddable) {
 		this.username = props.username;
 		this.password = props.password;
-		this.authEndpoint = props.authEndpoint;
+		this.baseUrl = props.baseUrl;
+		this.region = props.region;
 	}
 }

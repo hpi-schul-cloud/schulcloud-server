@@ -1,14 +1,15 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaSourceBasicAuthConfigEmbeddable } from '../entity';
+import { MediaSourceVidisConfigEmbeddable } from '../entity';
 
-export const mediaSourceBasicConfigEmbeddableFactory = BaseFactory.define<
-	MediaSourceBasicAuthConfigEmbeddable,
-	MediaSourceBasicAuthConfigEmbeddable
->(MediaSourceBasicAuthConfigEmbeddable, ({ sequence }) => {
-	const embeddable: MediaSourceBasicAuthConfigEmbeddable = {
+export const mediaSourceVidisConfigEmbeddableFactory = BaseFactory.define<
+	MediaSourceVidisConfigEmbeddable,
+	MediaSourceVidisConfigEmbeddable
+>(MediaSourceVidisConfigEmbeddable, ({ sequence }) => {
+	const embeddable: MediaSourceVidisConfigEmbeddable = {
 		username: `media-source-client-id-${sequence}`,
 		password: `media-source-client-secret-${sequence}`,
-		authEndpoint: `media-source-auth-endpoint-${sequence}`,
+		baseUrl: 'https://media-source-endpoint.com',
+		region: 'test-region',
 	};
 
 	return embeddable;

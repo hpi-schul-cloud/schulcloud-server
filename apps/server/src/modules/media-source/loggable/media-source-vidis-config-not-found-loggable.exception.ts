@@ -1,7 +1,7 @@
-import { NotFoundException } from '@nestjs/common';
 import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { NotFoundException } from '@nestjs/common';
 
-export class MediaSourceBasicAuthConfigNotFoundLoggableException extends NotFoundException {
+export class MediaSourceVidisConfigNotFoundLoggableException extends NotFoundException {
 	constructor(private readonly mediaSourceId: string, private readonly mediaSourceName: string) {
 		super();
 	}

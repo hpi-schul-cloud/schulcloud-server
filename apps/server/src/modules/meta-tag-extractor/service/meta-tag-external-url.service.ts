@@ -3,7 +3,7 @@ import axios from 'axios';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/types/lib/types';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
-import { MetaData } from '../types';
+import { MetaData, MetaDataEntityType } from '../types';
 
 @Injectable()
 export class MetaTagExternalUrlService {
@@ -21,7 +21,7 @@ export class MetaTagExternalUrlService {
 			description: ogDescription ?? '',
 			originalImageUrl: this.getImageUrl(ogImage, url),
 			url: url.toString(),
-			type: 'external',
+			type: MetaDataEntityType.EXTERNAL,
 		};
 	}
 
