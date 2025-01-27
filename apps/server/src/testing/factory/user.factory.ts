@@ -106,7 +106,7 @@ export const userFactory = UserFactory.define(User, ({ sequence }) => {
 		lastName: `Doe ${sequence}`,
 		email: `user-${sequence}@example.com`,
 		roles: [],
-		school: schoolEntityFactory.build(),
+		school: schoolEntityFactory.buildWithId(),
 		consent: consentFactory.build(),
 		secondarySchools: [],
 	};

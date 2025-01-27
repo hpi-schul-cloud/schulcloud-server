@@ -32,7 +32,7 @@ export class UserAndAccountTestFactory {
 
 	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
-		const account = accountFactory.withUser(user).build(accountParams);
+		const account = accountFactory.withUser(user).buildWithId(accountParams);
 		return account;
 	}
 
