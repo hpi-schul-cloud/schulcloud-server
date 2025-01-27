@@ -14,25 +14,33 @@ export class DeletionExecutionConsole {
 		options: [
 			{
 				flags: '-l, --limit <value>',
-				/* istanbul ignore next */
-				fn: (value: string) => (value ? Number(value) : undefined), // NOSONAR
+				// TODO implemnt fn with proper command testing
+				// fn: (value: string) => (value ? Number(value) : undefined),
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},
 			{
 				flags: '-f, --runFailed <value>',
-				/* istanbul ignore next */
-				fn: (value: string) => /^(true|yes|1)$/i.test(value), // NOSONAR
+				// TODO implemnt fn with proper command testing
+				// fn: (value: string) => /^(true|yes|1)$/i.test(value),
 				description: 'Limit of the requested deletion executions that should be performed.',
 				required: false,
 			},
 		],
 	})
-	async triggerDeletionExecution(options: TriggerDeletionExecutionOptions): Promise<void> {
+	public async triggerDeletionExecution(options: TriggerDeletionExecutionOptions): Promise<void> {
 		// Try to trigger the deletion execution(s) via Deletion API client,
 		// return successful status in case of a success, otherwise return
 		// a result with a failure status and a proper error message.
 		let result: DeletionExecutionTriggerResult;
+
+		if (typeof options.limit === 'string') {
+			options.limit = Number(options.limit);
+		}
+
+		if (typeof options.runFailed === 'string') {
+			options.runFailed = /^(true|yes|1)$/i.test(options.runFailed);
+		}
 
 		try {
 			await this.deletionExecutionUc.triggerDeletionExecution(options.limit, options.runFailed);

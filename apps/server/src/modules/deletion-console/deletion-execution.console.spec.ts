@@ -6,6 +6,7 @@ import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 import { DeletionExecutionUc } from './uc';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { TriggerDeletionExecutionOptions } from './interface';
 
 describe(DeletionExecutionConsole.name, () => {
 	let module: TestingModule;
@@ -90,6 +91,30 @@ describe(DeletionExecutionConsole.name, () => {
 				await console.triggerDeletionExecution(options);
 
 				expect(spy).toHaveBeenCalledWith(err);
+			});
+		});
+
+		describe('when runFailed is given as string "true"', () => {
+			it('should convert runFailed to boolean', async () => {
+				const options = { limit: 1000, runFailed: 'true' } as unknown as TriggerDeletionExecutionOptions;
+
+				const spy = jest.spyOn(deletionExecutionUc, 'triggerDeletionExecution').mockResolvedValueOnce(undefined);
+
+				await console.triggerDeletionExecution(options);
+
+				expect(spy).toHaveBeenCalledWith(1000, true);
+			});
+		});
+
+		describe('when limit is a string "5"', () => {
+			it('should convert limit to number', async () => {
+				const options = { limit: '5', runFailed: false } as unknown as TriggerDeletionExecutionOptions;
+
+				const spy = jest.spyOn(deletionExecutionUc, 'triggerDeletionExecution').mockResolvedValueOnce(undefined);
+
+				await console.triggerDeletionExecution(options);
+
+				expect(spy).toHaveBeenCalledWith(5, false);
 			});
 		});
 	});
