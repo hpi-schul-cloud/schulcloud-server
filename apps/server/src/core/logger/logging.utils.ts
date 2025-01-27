@@ -19,8 +19,9 @@ export class LoggingUtils {
 			finalMistratedLoggable = loggableMessageWithoutMessage;
 		}
 
+		const finalContext = context || 'Unknown';
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		return { message: finalMessage, context: _.merge({}, { name: context }, finalMistratedLoggable) };
+		return { message: finalMessage, context: _.merge({}, { name: finalContext }, finalMistratedLoggable) };
 	}
 
 	private static stringifyMessage(message: unknown): string {
