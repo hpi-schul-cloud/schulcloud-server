@@ -9,9 +9,11 @@ import pLimit from 'p-limit';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
+import { TspDataSyncBatchFinishedLoggable } from './loggable/tsp-data-sync-batch-finished.loggable';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
+import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable';
 import { TspFetchService } from './tsp-fetch.service';
@@ -128,23 +130,17 @@ export class TspSyncStrategy extends SyncStrategy {
 			batches.push(oauthDataDtos.slice(start, end));
 		}
 
-		let counter = 0;
+		let batchIndex = 0;
+		let total = 0;
 		for await (const batch of batches) {
-			counter += 1;
-			const batchIndex = counter;
-			await this.provisioningService.provisionBatch(batch);
-			this.logger.info({
-				getLogMessage() {
-					return {
-						message: `Finished batch ${batchIndex} of ${batchCount}`,
-					};
-				},
-			});
+			batchIndex += 1;
+			const proccessed = await this.provisioningService.provisionBatch(batch);
+			total += proccessed;
+
+			this.logger.info(new TspDataSyncBatchFinishedLoggable(proccessed, batchSize, batchCount, batchIndex));
 		}
 
-		// const results = await Promise.allSettled(dataPromises);
-
-		// this.logger.info(new TspSyncedUsersLoggable(results.length));
+		this.logger.info(new TspSyncedUsersLoggable(total));
 	}
 
 	private async runMigration(system: System): Promise<void> {

@@ -28,11 +28,11 @@ export class TspProvisioningService {
 		private readonly accountService: AccountService
 	) {}
 
-	public async provisionBatch(batch: OauthDataDto[]): Promise<void> {
+	public async provisionBatch(oauthDataDtos: OauthDataDto[]): Promise<number> {
 		const schoolArrays = await Promise.all(
-			batch.map((oauthData, index) =>
+			oauthDataDtos.map((oauthData, index) =>
 				this.schoolService.getSchools({
-					systemId: batch[index].system.systemId,
+					systemId: oauthDataDtos[index].system.systemId,
 					externalId: oauthData.externalSchool?.externalId,
 				})
 			)
@@ -41,8 +41,8 @@ export class TspProvisioningService {
 		const schoolIds = schoolArrays.map((schools, index) => {
 			if (schools.length !== 1) {
 				throw new NotFoundLoggableException(School.name, {
-					systemId: batch[index].system.systemId,
-					externalId: batch[index].externalSchool?.externalId ?? '',
+					systemId: oauthDataDtos[index].system.systemId,
+					externalId: oauthDataDtos[index].externalSchool?.externalId ?? '',
 				});
 			}
 
@@ -50,38 +50,44 @@ export class TspProvisioningService {
 		});
 
 		const users = await Promise.all(
-			batch.map((oauth) => this.userService.findByExternalId(oauth.externalUser.externalId, oauth.system.systemId))
+			oauthDataDtos.map((oauth) =>
+				this.userService.findByExternalId(oauth.externalUser.externalId, oauth.system.systemId)
+			)
 		);
 
 		const roleRefs = await Promise.all(
-			batch.map((oauthDataDto) => this.getRoleReferencesForUser(oauthDataDto.externalUser))
+			oauthDataDtos.map((oauthDataDto) => this.getRoleReferencesForUser(oauthDataDto.externalUser))
 		);
 
 		const updatedUsers = users.map((user, index) => {
-			const oauthDataDto = batch[index];
+			const oauthDataDto = oauthDataDtos[index];
 			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], schoolIds[index], user);
 		});
 
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 
 		await Promise.all(
-			batch.map((oauth, index) =>
+			oauthDataDtos.map((oauth, index) =>
 				this.provisionClasses(
 					schoolArrays[index][0],
 					oauth.externalClasses ?? [],
-					savedUsers.find((u) => u.id === oauth.externalUser.externalId)
+					savedUsers.find((user) => user.id === oauth.externalUser.externalId)
 				)
 			)
 		);
 
 		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
-		const accounts = await Promise.all(savedUserIds.map((userId) => this.accountService.findByUserId(userId ?? '')));
-
-		const accountsToSave = accounts.map((account, index) =>
-			this.createOrUpdateAccount(batch[index].system.systemId, savedUsers[index], account)
+		const foundAccounts = await Promise.all(
+			savedUserIds.map((userId) => this.accountService.findByUserId(userId ?? ''))
 		);
 
-		await this.accountService.saveAll(accountsToSave);
+		const accountsToSave = foundAccounts.map((account, index) =>
+			this.createOrUpdateAccount(oauthDataDtos[index].system.systemId, savedUsers[index], account)
+		);
+
+		const savedAccounts = await this.accountService.saveAll(accountsToSave);
+
+		return savedAccounts.length;
 	}
 
 	public async findSchoolOrFail(system: ProvisioningSystemDto, school: ExternalSchoolDto): Promise<School> {

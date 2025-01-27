@@ -134,6 +134,7 @@ describe(TspSyncStrategy.name, () => {
 			totalUsers: number;
 			totalAccounts: number;
 		};
+		processBatchSize?: number;
 	}) => {
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
@@ -157,6 +158,8 @@ describe(TspSyncStrategy.name, () => {
 				totalUsers: faker.number.int(),
 			}
 		);
+
+		provisioningService.provisionBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
 	};
 
 	describe('sync', () => {
