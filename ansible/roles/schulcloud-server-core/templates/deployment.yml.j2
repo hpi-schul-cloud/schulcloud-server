@@ -65,6 +65,7 @@ spec:
             name: api-secret
         - secretRef:
             name: api-files-secret
+        command: ['npm', 'run', 'nest:start:prod']
         readinessProbe:
           httpGet:
             path: /internal/health
