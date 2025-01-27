@@ -21,7 +21,9 @@ export class MetaTagExtractorController {
 		@Body() bodyParams: GetMetaTagDataBody
 	): Promise<MetaTagExtractorResponse> {
 		const result = await this.metaTagExtractorUc.getMetaData(currentUser.userId, bodyParams.url);
+
 		const response = new MetaTagExtractorResponse({ ...result });
+
 		return response;
 	}
 }
