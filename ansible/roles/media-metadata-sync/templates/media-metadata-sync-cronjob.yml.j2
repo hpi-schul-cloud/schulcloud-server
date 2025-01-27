@@ -40,7 +40,7 @@ spec:
             - configMapRef:
                 name: media-metadata-sync-cronjob-configmap
             command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync:media-metadata']
+            args: ['npm run nest:start:sync:media-metadata:prod']
             resources:
               limits:
                 cpu: {{ MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}
