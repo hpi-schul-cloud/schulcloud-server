@@ -155,10 +155,10 @@ export class TspProvisioningService {
 		if (!user) {
 			throw new BadDataLoggableException(); // TODO
 		}
-		await this.userService.save(user);
+		const savedUser = await this.userService.save(user);
 
-		const account = await this.accountService.findByUserId(user.id ?? '');
-		const updated = this.createOrUpdateAccount(data.system.systemId, user, account);
+		const account = await this.accountService.findByUserId(savedUser.id ?? '');
+		const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
 		await this.accountService.save(updated);
 
 		return user;

@@ -274,7 +274,7 @@ describe('TspProvisioningService', () => {
 				await sut.provisionUser(data, school);
 
 				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
-				expect(accountServiceMock.saveWithValidation).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -339,7 +339,7 @@ describe('TspProvisioningService', () => {
 				await sut.provisionUser(data, school);
 
 				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
-				expect(accountServiceMock.saveWithValidation).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
 
