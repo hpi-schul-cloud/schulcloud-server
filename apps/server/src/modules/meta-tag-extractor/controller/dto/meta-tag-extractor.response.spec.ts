@@ -1,3 +1,4 @@
+import { MetaDataEntityType } from '../../types';
 import { MetaTagExtractorResponse } from './meta-tag-extractor.response';
 
 describe(MetaTagExtractorResponse.name, () => {
@@ -8,9 +9,9 @@ describe(MetaTagExtractorResponse.name, () => {
 				title: 'Testbild',
 				description: 'Here we describe what this page is about.',
 				imageUrl: 'https://www.abc.de/test.png',
-				type: 'unknown',
+				type: MetaDataEntityType.UNKNOWN,
 				parentTitle: 'Math',
-				parentType: 'course',
+				parentType: MetaDataEntityType.COURSE,
 			};
 
 			const response = new MetaTagExtractorResponse(properties);
