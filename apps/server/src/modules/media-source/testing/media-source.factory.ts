@@ -3,18 +3,26 @@ import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { MediaSource, MediaSourceProps } from '../domain';
 import { MediaSourceDataFormat } from '../enum';
-import { mediaSourceBasicAuthConfigFactory } from './media-source-basic-auth-config.factory';
 import { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
+import { mediaSourceVidisConfigFactory } from './media-source-vidis-config.factory';
 
 class MediaSourceFactory extends BaseFactory<MediaSource, MediaSourceProps> {
-	public withBasicAuthConfig(): this {
-		const params: DeepPartial<MediaSourceProps> = { basicAuthConfig: mediaSourceBasicAuthConfigFactory.build() };
+	public withVidis(): this {
+		const params: DeepPartial<MediaSourceProps> = {
+			format: MediaSourceDataFormat.VIDIS,
+			vidisConfig: mediaSourceVidisConfigFactory.build(),
+			oauthConfig: undefined,
+		};
 
 		return this.params(params);
 	}
 
-	public withOauthConfig(): this {
-		const params: DeepPartial<MediaSourceProps> = { oauthConfig: mediaSourceOauthConfigFactory.build() };
+	public withBildungslogin(): this {
+		const params: DeepPartial<MediaSourceProps> = {
+			format: MediaSourceDataFormat.BILDUNGSLOGIN,
+			oauthConfig: mediaSourceOauthConfigFactory.build(),
+			vidisConfig: undefined,
+		};
 
 		return this.params(params);
 	}
@@ -25,7 +33,5 @@ export const mediaSourceFactory = MediaSourceFactory.define(MediaSource, ({ sequ
 		id: new ObjectId().toHexString(),
 		name: `media-source-${sequence}`,
 		sourceId: `source-id-${sequence}`,
-		format: MediaSourceDataFormat.BILDUNGSLOGIN,
-		oauthConfig: mediaSourceOauthConfigFactory.build(),
 	};
 });

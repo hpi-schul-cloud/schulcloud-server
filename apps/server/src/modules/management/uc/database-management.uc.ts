@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
@@ -8,10 +9,10 @@ import { SystemEntity } from '@modules/system/entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { LegacyLogger } from '@core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
+import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 
 export interface CollectionFilePath {
 	filePath: string;
@@ -38,7 +39,9 @@ export class DatabaseManagementUc {
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService
+		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
+		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
+		private readonly systemsSeedDataService: SystemsSeedDataService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -189,7 +192,7 @@ export class DatabaseManagementUc {
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
-	async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
+	public async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
 		// detect collections to seed based on filesystem data
 		const setupPath = this.getSeedFolder();
 		const collectionsToSeed = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
@@ -198,7 +201,7 @@ export class DatabaseManagementUc {
 			collections
 		);
 
-		const seededCollectionsWithAmount: string[] = [];
+		const seededCollectionsWithAmount: Map<string, number> = new Map();
 
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {
@@ -210,7 +213,7 @@ export class DatabaseManagementUc {
 				}
 
 				// create bson-objects from text
-				const bsonDocuments = JSON.parse(fileContent) as unknown[];
+				const bsonDocuments = JSON.parse(fileContent) as object[];
 				// deserialize bson (format of mongoexport) to json documents we can import to mongo
 				const jsonDocuments = this.bsonConverter.deserialize(bsonDocuments);
 
@@ -232,10 +235,28 @@ export class DatabaseManagementUc {
 					jsonDocuments
 				);
 				// keep collection name and number of imported documents
-				seededCollectionsWithAmount.push(`${collectionName}:${importedDocumentsAmount}`);
+				seededCollectionsWithAmount.set(collectionName, importedDocumentsAmount);
 			})
 		);
-		return seededCollectionsWithAmount;
+
+		if (collections === undefined || collections.includes('media-sources')) {
+			const mediaSourcesCount: number = await this.mediaSourcesSeedDataService.import();
+			seededCollectionsWithAmount.set(
+				'media-sources',
+				mediaSourcesCount + (seededCollectionsWithAmount.get('media-sources') ?? 0)
+			);
+		}
+
+		if (collections === undefined || collections.includes('systems')) {
+			const systemsCount: number = await this.systemsSeedDataService.import();
+			seededCollectionsWithAmount.set('systems', systemsCount + (seededCollectionsWithAmount.get('systems') ?? 0));
+		}
+
+		const seededCollectionsWithAmountFormatted: string[] = Array.from(seededCollectionsWithAmount).map(
+			([key, value]) => `${key}:${value}`
+		);
+
+		return seededCollectionsWithAmountFormatted;
 	}
 
 	/**
