@@ -2,12 +2,11 @@ import { createMock } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -87,13 +86,12 @@ describe(`${baseRouteName} (api)`, () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent, account]);
+				await em.persistAndFlush([user, school, account]);
 				em.clear();
 
 				const validId = user.school.id;
-				const targetParentId = targetParent.id;
+				const targetParentId = new ObjectId().toHexString();
 
 				const copyFilesParams = {
 					target: {
@@ -184,13 +182,12 @@ describe(`${baseRouteName} (api)`, () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent, account]);
+				await em.persistAndFlush([user, school, account]);
 				em.clear();
 
 				const validId = user.school.id;
-				const targetParentId = targetParent.id;
+				const targetParentId = new ObjectId().toHexString();
 
 				const copyFilesParams = {
 					target: {
@@ -271,12 +268,11 @@ describe(`${baseRouteName} (api)`, () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent, account]);
+				await em.persistAndFlush([user, school, account]);
 				em.clear();
 
-				const targetParentId = targetParent.id;
+				const targetParentId = new ObjectId().toHexString();
 
 				const validId = user.school.id;
 				const copyFileParams = {
@@ -323,12 +319,11 @@ describe(`${baseRouteName} (api)`, () => {
 				await cleanupCollections(em);
 				const school = schoolEntityFactory.build();
 				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-				const targetParent = courseFactory.build({ teachers: [user] });
 
-				await em.persistAndFlush([user, school, targetParent, account]);
+				await em.persistAndFlush([user, school, account]);
 				em.clear();
 
-				const targetParentId = targetParent.id;
+				const targetParentId = new ObjectId().toHexString();
 
 				const validId = user.school.id;
 				const copyFileParams = {
