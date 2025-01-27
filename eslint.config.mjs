@@ -101,7 +101,7 @@ export default [
 			'arrow-parens': ['error', 'always'],
 			'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 			'no-only-tests/no-only-tests': 'error',
-			'max-classes-per-file': ['warn', 1],
+			'max-classes-per-file': 'off',
 		},
 		settings: {
 			'import/resolver': {
@@ -161,21 +161,6 @@ export default [
 					allowSingleExtends: true,
 				},
 			],
-			'@typescript-eslint/no-restricted-imports': [
-				'warn',
-				{
-					patterns: [
-						{
-							group: ['@src/apps/**', '@src/core/**', '@src/modules/*/*', '@src/shared/**'],
-							message: 'Remove src/ from import path',
-						},
-						{
-							group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
-							message: 'Do not deep import from a module',
-						},
-					],
-				},
-			],
 		},
 	},
 	{
@@ -189,7 +174,6 @@ export default [
 			'jest/prefer-spy-on': 'warn',
 			'jest/unbound-method': 'error',
 			'@typescript-eslint/explicit-function-return-type': 'off',
-			'max-classes-per-file': 'off',
 			'@typescript-eslint/explicit-member-accessibility': 'off',
 		},
 	},
@@ -201,8 +185,8 @@ export default [
 				{
 					patterns: [
 						{
-							group: ['@apps/**', '@infra/**', '@shared/**', 'apps/server/src/migrations/**'],
-							message: 'apps/server/src/migrations may NOT import from @apps, @infra, @shared, or migrations',
+							group: ['**/apps/**', '@infra/**', '@shared/**', '**/migrations/**'],
+							message: 'apps/server/src/migrations may NOT import from apps, @infra, @shared, or migrations',
 						},
 					],
 				},
@@ -219,8 +203,12 @@ export default [
 				{
 					patterns: [
 						{
-							group: ['@apps/**', '@infra/**', '@shared/**', 'apps/server/src/migrations/**'],
-							message: 'apps-modules may NOT import from @apps, @infra, @shared, or migrations',
+							group: ['**/apps/**', '@infra/**', '@shared/**', '**/migrations/**'],
+							message: 'apps-modules may NOT import from apps, @infra, @shared, or migrations',
+						},
+						{
+							group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+							message: 'Do not deep import from a module',
 						},
 					],
 				},
@@ -235,8 +223,12 @@ export default [
 				{
 					patterns: [
 						{
-							group: ['@apps/**', '@core/**', '@infra/**', '@modules/**'],
-							message: 'core-modules may NOT import from @apps, @core, @infra, or @modules',
+							group: ['**/apps/**', '@core/**', '@infra/**', '@modules/**'],
+							message: 'core-modules may NOT import from apps, @core, @infra, or @modules',
+						},
+						{
+							group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+							message: 'Do not deep import from a module',
 						},
 					],
 				},
@@ -252,8 +244,12 @@ export default [
 				{
 					patterns: [
 						{
-							group: ['@apps/**', '@core/**', '@modules/**', 'apps/server/src/migrations/**'],
-							message: 'infra-modules may NOT import from @apps, @core, @modules, or migrations',
+							group: ['**/apps/**', '@core/**', '@modules/**', '**/migrations/**'],
+							message: 'infra-modules may NOT import from apps, @core, @modules, or migrations',
+						},
+						{
+							group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+							message: 'Do not deep import from a module',
 						},
 					],
 				},
@@ -268,8 +264,12 @@ export default [
 				{
 					patterns: [
 						{
-							group: ['@apps/**'],
-							message: 'modules-modules may NOT import from @apps',
+							group: ['**/apps/**'],
+							message: 'modules-modules may NOT import from apps',
+						},
+						{
+							group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+							message: 'Do not deep import from a module',
 						},
 					],
 				},
@@ -284,15 +284,28 @@ export default [
 				{
 					patterns: [
 						{
-							group: [
-								'@apps/**',
-								'@core/**',
-								'@infra/**',
-								'@modules/**',
-								'@shared/**',
-								'apps/server/src/migrations/**',
-							],
-							message: 'shared modules may NOT import from @apps, @core, @infra, @modules, @shared, or migrations',
+							group: ['**/apps/**', '@core/**', '@infra/**', '@modules/**', '@shared/**', '**/migrations/**'],
+							message: 'shared modules may NOT import from apps, @core, @infra, @modules, @shared, or migrations',
+						},
+						{
+							group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
+							message: 'Do not deep import from a module',
+						},
+					],
+				},
+			],
+		},
+	},
+	{
+		files: ['apps/server/src/testing/**/*.ts'],
+		rules: {
+			'@typescript-eslint/no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['@modules/*', '!@modules/account'],
+							message: 'testing may NOT import from @modules',
 						},
 					],
 				},
@@ -315,6 +328,17 @@ export default [
 					},
 				},
 			],
+		},
+	},
+	{
+		files: [
+			'apps/server/src/**/*.repo.ts',
+			'apps/server/src/**/*.service.ts',
+			'apps/server/src/**/*.controller.ts',
+			'apps/server/src/**/*.uc.ts',
+		],
+		rules: {
+			'max-classes-per-file': ['warn', 1],
 		},
 	},
 ];
