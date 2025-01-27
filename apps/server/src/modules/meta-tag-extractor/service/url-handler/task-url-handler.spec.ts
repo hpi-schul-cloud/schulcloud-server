@@ -3,6 +3,7 @@ import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/setup-entities';
+import { MetaDataEntityType } from '../../types';
 import { TaskUrlHandler } from './task-url-handler';
 
 describe(TaskUrlHandler.name, () => {
@@ -45,7 +46,7 @@ describe(TaskUrlHandler.name, () => {
 
 				const result = await taskUrlHandler.getMetaData(url);
 
-				expect(result).toEqual(expect.objectContaining({ title: taskName, type: 'task' }));
+				expect(result).toEqual(expect.objectContaining({ title: taskName, type: MetaDataEntityType.TASK }));
 			});
 		});
 

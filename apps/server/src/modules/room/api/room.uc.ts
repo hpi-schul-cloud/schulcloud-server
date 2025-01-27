@@ -6,13 +6,14 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
-import { IFindOptions, Permission } from '@shared/domain/interface';
+import { IFindOptions, Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
+import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
 
 @Injectable()
 export class RoomUc {
@@ -125,12 +126,6 @@ export class RoomUc {
 		return memberResponses;
 	}
 
-	public async addMembersToRoom(currentUserId: EntityId, roomId: EntityId, userIds: Array<EntityId>): Promise<void> {
-		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
-		await this.roomMembershipService.addMembersToRoom(roomId, userIds);
-	}
-
 	private mapToMember(member: UserWithRoomRoles, user: UserDO): RoomMemberResponse {
 		return new RoomMemberResponse({
 			userId: member.userId,
@@ -140,6 +135,40 @@ export class RoomUc {
 			schoolRoleName: user.roles[0].name,
 			schoolName: user.schoolName ?? '',
 		});
+	}
+
+	public async addMembersToRoom(currentUserId: EntityId, roomId: EntityId, userIds: Array<EntityId>): Promise<void> {
+		this.checkFeatureEnabled();
+		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.roomMembershipService.addMembersToRoom(roomId, userIds);
+	}
+
+	public async changeRolesOfMembers(
+		currentUserId: EntityId,
+		roomId: EntityId,
+		userIds: Array<EntityId>,
+		roleName: RoleName
+	): Promise<void> {
+		this.checkFeatureEnabled();
+		const roomAuthorizable = await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [
+			Permission.ROOM_MEMBERS_CHANGE_ROLE,
+		]);
+		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
+		return Promise.resolve();
+	}
+
+	private preventChangingOwnersRole(
+		roomAuthorizable: RoomMembershipAuthorizable,
+		userIdsToChange: EntityId[],
+		currentUserId: EntityId
+	): void {
+		const owner = roomAuthorizable.members.find((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+		if (owner && userIdsToChange.includes(owner.userId)) {
+			throw new CantChangeOwnersRoleLoggableException(roomAuthorizable.roomId, currentUserId);
+		}
 	}
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
