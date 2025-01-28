@@ -27,7 +27,6 @@ export type CommonCartridgeOrganizationProps = {
 
 export type CommonCartridgeWebContentResourceProps = {
 	type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
-	title: string;
 	html: string;
 };
 
