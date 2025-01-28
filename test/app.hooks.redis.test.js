@@ -1,25 +1,56 @@
 const { expect } = require('chai');
-const mockery = require('mockery');
 const commons = require('@hpi-schul-cloud/commons');
-const redisMock = require('./utils/redis/redisMock');
 const whitelist = require('../src/services/authentication/logic/whitelist');
 const appPromise = require('../src/app');
-const testObjects = require('./services/helpers/testObjects')(appPromise());
+const testHelper = require('./services/helpers/testObjects');
+const redisHelper = require('../src/utils/redis');
+const fut = require('../src/app.hooks').handleAutoLogout;
 
 const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
 
 const { Configuration } = commons; // separated from require, mocked in tests
 
+const valueDict = {};
+const ttlDict = {};
+class RedisClientMock {
+	get(key) {
+		const value = valueDict[key];
+		return Promise.resolve(value);
+	}
+
+	set(key, value, ...args) {
+		valueDict[key] = value;
+		const ex = args.indexOf('EX');
+		if (ex >= 0) {
+			ttlDict[key] = args[ex + 1];
+		}
+		return Promise.resolve(true);
+	}
+
+	del(key) {
+		delete valueDict[key];
+		delete ttlDict[key];
+		return Promise.resolve(true);
+	}
+
+	ttl(key) {
+		const ttl = ttlDict[key];
+		return Promise.resolve(ttl);
+	}
+
+	on(_key, _func) {}
+}
+
 describe('handleAutoLogout hook', () => {
-	let fut;
-	let redisHelper;
 	let configBefore;
 	let app;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
+		testObjects = testHelper(app);
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 
@@ -27,30 +58,13 @@ describe('handleAutoLogout hook', () => {
 		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('ioredis', redisMock);
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
-
-		delete require.cache[require.resolve('../src/utils/redis')];
-		/* eslint-disable global-require */
-		redisHelper = require('../src/utils/redis');
-		fut = require('../src/app.hooks').handleAutoLogout;
-		/* eslint-enable global-require */
-		redisHelper.initializeRedisClient();
+		const redisClientMock = new RedisClientMock();
+		redisHelper.initializeRedisClient(redisClientMock);
 	});
 
 	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
 		await testObjects.cleanup();
-		delete require.cache[require.resolve('../src/utils/redis')];
-		delete require.cache[require.resolve('../src/app')];
-		delete require.cache[require.resolve('./services/helpers/testObjects')];
-		delete require.cache[require.resolve('../src/app.hooks')];
+		delete require.cache[require.resolve('../../../../src/utils/redis')];
 		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);

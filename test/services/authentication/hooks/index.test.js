@@ -1,14 +1,45 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
 const commons = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../../src/app');
+const testHelper = require('../../helpers/testObjects');
+const redisHelper = require('../../../../src/utils/redis');
 
 const { Configuration } = commons;
-const redisMock = require('../../../utils/redis/redisMock');
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
+const valueDict = {};
+const ttlDict = {};
+class RedisClientMock {
+	get(key) {
+		const value = valueDict[key];
+		return Promise.resolve(value);
+	}
+
+	set(key, value, ...args) {
+		valueDict[key] = value;
+		const ex = args.indexOf('EX');
+		if (ex >= 0) {
+			ttlDict[key] = args[ex + 1];
+		}
+		return Promise.resolve(true);
+	}
+
+	del(key) {
+		delete valueDict[key];
+		delete ttlDict[key];
+		return Promise.resolve(true);
+	}
+
+	ttl(key) {
+		const ttl = ttlDict[key];
+		return Promise.resolve(ttl);
+	}
+
+	on(_key, _func) {}
+}
+
 describe('authentication hooks', () => {
-	let redisHelper;
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;
 	let configBefore = null;
@@ -18,46 +49,32 @@ describe('authentication hooks', () => {
 	let testObjects;
 
 	before(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
+		app = await appPromise();
 
-		/* eslint-disable global-require */
-		app = await require('../../../../src/app')();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
-		testObjects = require('../../helpers/testObjects')(app);
-		/* eslint-enable global-require */
-
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('ioredis', redisMock);
-		mockery.registerMock('@hpi-schul-cloud/commons', commons);
+		testObjects = testHelper(app);
 
 		delete require.cache[require.resolve('../../../../src/app')];
-		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
 		delete require.cache[require.resolve('../../../services/helpers/services/login')];
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
-		/* eslint-disable global-require */
-		redisHelper = require('../../../../src/utils/redis');
-		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
-		/* eslint-enable global-require */
 
+		// eslint-disable-next-line global-require
+		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
+
+		// we need clean file that no redis instance is saved from any test before
+		delete require.cache[require.resolve('../../../../src/utils/redis')];
+		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('REDIS_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
-		redisHelper.initializeRedisClient();
+		const redisMock = new RedisClientMock();
+		redisHelper.initializeRedisClient(redisMock);
 	});
 
 	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
 		await testObjects.cleanup();
 
-		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../../src/utils/redis')];
-		delete require.cache[require.resolve('../../../services/helpers/testObjects')];
 		delete require.cache[require.resolve('../../../services/helpers/services/login')];
 		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 
