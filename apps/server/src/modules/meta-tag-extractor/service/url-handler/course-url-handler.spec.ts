@@ -3,6 +3,7 @@ import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { setupEntities } from '@testing/setup-entities';
+import { MetaDataEntityType } from '../../types';
 import { CourseUrlHandler } from './course-url-handler';
 
 describe(CourseUrlHandler.name, () => {
@@ -45,7 +46,7 @@ describe(CourseUrlHandler.name, () => {
 
 				const result = await courseUrlHandler.getMetaData(url);
 
-				expect(result).toEqual(expect.objectContaining({ title: courseName, type: 'course' }));
+				expect(result).toEqual(expect.objectContaining({ title: courseName, type: MetaDataEntityType.COURSE }));
 			});
 		});
 

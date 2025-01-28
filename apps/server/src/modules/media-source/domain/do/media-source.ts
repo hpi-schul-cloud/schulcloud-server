@@ -1,7 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { MediaSourceBasicAuthConfig } from './media-source-basic-auth-config';
-import { MediaSourceOauthConfig } from './media-source-oauth-config';
 import { MediaSourceDataFormat } from '../../enum';
+import { MediaSourceOauthConfig } from './media-source-oauth-config';
+import { MediaSourceVidisConfig } from './media-source-vidis-config';
 
 export interface MediaSourceProps extends AuthorizableObject {
 	id: string;
@@ -12,7 +12,7 @@ export interface MediaSourceProps extends AuthorizableObject {
 
 	oauthConfig?: MediaSourceOauthConfig;
 
-	basicAuthConfig?: MediaSourceBasicAuthConfig;
+	vidisConfig?: MediaSourceVidisConfig;
 
 	format?: MediaSourceDataFormat;
 }
@@ -34,7 +34,7 @@ export class MediaSource extends DomainObject<MediaSourceProps> {
 		return this.props.oauthConfig;
 	}
 
-	get basicAuthConfig(): MediaSourceBasicAuthConfig | undefined {
-		return this.props.basicAuthConfig;
+	get vidisConfig(): MediaSourceVidisConfig | undefined {
+		return this.props.vidisConfig;
 	}
 }
