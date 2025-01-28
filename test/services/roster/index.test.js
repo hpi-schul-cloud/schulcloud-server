@@ -1,15 +1,15 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-
-const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const sinon = require('sinon');
 const appPromise = require('../../../src/app');
+const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const { FeathersRosterService } = require('../../../dist/apps/server/modules/roster/service/feathers-roster.service');
 
 chai.use(chaiHttp);
 
-describe('roster service', function oauth() {
+describe('roster service', () => {
 	let app;
 	let metadataService;
 	let userGroupsService;
@@ -18,8 +18,8 @@ describe('roster service', function oauth() {
 	let toolService;
 	let courseService;
 
-	this.timeout(10000);
 	let server;
+	let nestServices;
 
 	let testUser1;
 	let testToolTemplate;
@@ -27,8 +27,12 @@ describe('roster service', function oauth() {
 	let testCourse;
 
 	let pseudonym1 = null;
+	let configBefore;
 
 	before(async () => {
+		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
+		Configuration.set('FILES_STORAGE__SERVICE_BASE_URL', 'http://validHost:3333');
+
 		app = await appPromise();
 		metadataService = app.service('roster/users/:user/metadata');
 		userGroupsService = app.service('roster/users/:user/groups');
@@ -37,6 +41,7 @@ describe('roster service', function oauth() {
 		toolService = app.service('ltiTools');
 		courseService = app.service('courseModel');
 		server = await app.listen(0);
+		nestServices = await setupNestServices(app);
 
 		testUser1 = { _id: '0000d231816abba584714c9e' }; // cord carl
 		testToolTemplate = {
@@ -94,14 +99,17 @@ describe('roster service', function oauth() {
 		sinon.restore();
 	});
 
-	after(() =>
-		Promise.all([
+	after(async () => {
+		Configuration.reset(configBefore);
+		await Promise.all([
 			pseudonymService.remove(null, { query: {}, adapter: { multi: ['remove'] } }),
 			toolService.remove(testTool1),
 			toolService.remove(testToolTemplate),
 			courseService.remove(testCourse._id),
-		]).then(server.close())
-	);
+		]);
+		await server.close();
+		await closeNestServices(nestServices);
+	});
 
 	it('is registered', () => {
 		assert.ok(metadataService);
@@ -120,14 +128,14 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should call nest feathers roster service', () => {
+			it('should call nest feathers roster service', async () => {
 				const { nestGetUsersMetadataStub } = setup();
 
-				metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
-					assert.strictEqual(pseudonym1, metadata.data.user_id);
-					assert.strictEqual('teacher', metadata.data.type);
-					assert.ok(nestGetUsersMetadataStub.calledOnce);
-				});
+				const metadata = await metadataService.find({ route: { user: pseudonym1 } });
+
+				assert.strictEqual(pseudonym1, metadata.data.user_id);
+				assert.strictEqual('teacher', metadata.data.type);
+				assert.ok(nestGetUsersMetadataStub.calledOnce);
 			});
 		});
 
@@ -142,21 +150,21 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should not call nest feathers roster service', () => {
+			it('should not call nest feathers roster service', async () => {
 				const { nestGetUsersMetadataStub } = setup();
 
-				metadataService.find({ route: { user: pseudonym1 } }).then(() => {
-					assert.ok(nestGetUsersMetadataStub.notCalled);
-				});
+				await metadataService.find({ route: { user: pseudonym1 } });
+
+				assert.ok(nestGetUsersMetadataStub.notCalled);
 			});
 
-			it('GET metadata', () => {
+			it('GET metadata', async () => {
 				setup();
 
-				metadataService.find({ route: { user: pseudonym1 } }).then((metadata) => {
-					assert.strictEqual(pseudonym1, metadata.data.user_id);
-					assert.strictEqual('teacher', metadata.data.type);
-				});
+				const metadata = await metadataService.find({ route: { user: pseudonym1 } });
+
+				assert.strictEqual(pseudonym1, metadata.data.user_id);
+				assert.strictEqual('teacher', metadata.data.type);
 			});
 		});
 	});
@@ -173,17 +181,15 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should call nest feathers roster service', () => {
+			it('should call nest feathers roster service', async () => {
 				const { nestGetUserGroupsStub } = setup();
 
-				userGroupsService
-					.find({
-						route: { user: pseudonym1 },
-						tokenInfo: { client_id: testToolTemplate.oAuthClientId },
-					})
-					.then(() => {
-						assert.ok(nestGetUserGroupsStub.calledOnce);
-					});
+				await userGroupsService.find({
+					route: { user: pseudonym1 },
+					tokenInfo: { client_id: testToolTemplate.oAuthClientId },
+				});
+
+				assert.ok(nestGetUserGroupsStub.calledOnce);
 			});
 		});
 
@@ -198,34 +204,29 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should not call nest feathers roster service', () => {
+			it('should not call nest feathers roster service', async () => {
 				const { nestGetUserGroupsStub } = setup();
 
-				userGroupsService
-					.find({
-						route: { user: pseudonym1 },
-						tokenInfo: { client_id: testToolTemplate.oAuthClientId },
-					})
-					.then(() => {
-						assert.ok(nestGetUserGroupsStub.notCalled);
-					});
+				await userGroupsService.find({
+					route: { user: pseudonym1 },
+					tokenInfo: { client_id: testToolTemplate.oAuthClientId },
+				});
+
+				assert.ok(nestGetUserGroupsStub.notCalled);
 			});
 
-			it('GET user groups', (done) => {
+			it('GET user groups', async () => {
 				setup();
 
-				userGroupsService
-					.find({
-						route: { user: pseudonym1 },
-						tokenInfo: { client_id: testToolTemplate.oAuthClientId },
-					})
-					.then((groups) => {
-						const group1 = groups.data.groups[0];
-						assert.strictEqual(testCourse._id, group1.group_id);
-						assert.strictEqual(testCourse.name, group1.name);
-						assert.strictEqual(testCourse.userIds.length, group1.student_count);
-						done();
-					});
+				const groups = await userGroupsService.find({
+					route: { user: pseudonym1 },
+					tokenInfo: { client_id: testToolTemplate.oAuthClientId },
+				});
+
+				const group1 = groups.data.groups[0];
+				assert.strictEqual(testCourse._id, group1.group_id);
+				assert.strictEqual(testCourse.name, group1.name);
+				assert.strictEqual(testCourse.userIds.length, group1.student_count);
 			});
 		});
 	});
@@ -242,19 +243,17 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should call nest feathers roster service', () => {
+			it('should call nest feathers roster service', async () => {
 				const { nestGroupStub } = setup();
 
-				groupsService
-					.get(testCourse._id, {
-						tokenInfo: {
-							client_id: testToolTemplate.oAuthClientId,
-							obfuscated_subject: pseudonym1,
-						},
-					})
-					.then(() => {
-						assert.ok(nestGroupStub.calledOnce);
-					});
+				await groupsService.get(testCourse._id, {
+					tokenInfo: {
+						client_id: testToolTemplate.oAuthClientId,
+						obfuscated_subject: pseudonym1,
+					},
+				});
+
+				assert.ok(nestGroupStub.calledOnce);
 			});
 		});
 
@@ -269,38 +268,32 @@ describe('roster service', function oauth() {
 				};
 			};
 
-			it('should not call nest feathers roster service', () => {
+			it('should not call nest feathers roster service', async () => {
 				const { nestGroupStub } = setup();
 
-				groupsService
-					.get(testCourse._id, {
-						tokenInfo: {
-							client_id: testToolTemplate.oAuthClientId,
-							obfuscated_subject: pseudonym1,
-						},
-					})
-					.then(() => {
-						assert.ok(nestGroupStub.notCalled);
-					});
+				await groupsService.get(testCourse._id, {
+					tokenInfo: {
+						client_id: testToolTemplate.oAuthClientId,
+						obfuscated_subject: pseudonym1,
+					},
+				});
+				assert.ok(nestGroupStub.notCalled);
 			});
 
-			it('GET group', (done) => {
+			it('GET group', async () => {
 				setup();
 
-				groupsService
-					.get(testCourse._id, {
-						tokenInfo: {
-							client_id: testToolTemplate.oAuthClientId,
-							obfuscated_subject: pseudonym1,
-						},
-					})
-					.then((group) => {
-						assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
-						const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
-						const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
-						assert.strictEqual(iframe, group.data.teachers[0].username);
-						done();
-					});
+				const group = await groupsService.get(testCourse._id, {
+					tokenInfo: {
+						client_id: testToolTemplate.oAuthClientId,
+						obfuscated_subject: pseudonym1,
+					},
+				});
+
+				assert.strictEqual(pseudonym1, group.data.teachers[0].user_id);
+				const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
+				const iframe = `<iframe src="http://localhost:3100/oauth2/username/${pseudonym1}" ${properties}></iframe>`;
+				assert.strictEqual(iframe, group.data.teachers[0].username);
 			});
 		});
 	});
