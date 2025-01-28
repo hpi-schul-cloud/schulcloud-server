@@ -130,15 +130,17 @@ export class TspSyncStrategy extends SyncStrategy {
 			batches.push(oauthDataDtos.slice(start, end));
 		}
 
-		let batchIndex = 0;
-		let total = 0;
-		for await (const batch of batches) {
-			batchIndex += 1;
-			const proccessed = await this.provisioningService.provisionBatch(batch);
-			total += proccessed;
+		const batchLimit = pLimit(1);
+		const batchPromises = batches.map((batch, index) =>
+			batchLimit(async () => {
+				const processed = await this.provisioningService.provisionBatch(batch);
+				this.logger.info(new TspDataSyncBatchFinishedLoggable(processed, batchSize, batchCount, index));
+				return processed;
+			})
+		);
 
-			this.logger.info(new TspDataSyncBatchFinishedLoggable(proccessed, batchSize, batchCount, batchIndex));
-		}
+		const results = await Promise.all(batchPromises);
+		const total = results.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 
 		this.logger.info(new TspSyncedUsersLoggable(total));
 	}

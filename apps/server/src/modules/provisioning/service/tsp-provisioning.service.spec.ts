@@ -120,12 +120,19 @@ describe('TspProvisioningService', () => {
 				return { oauthDataDtos };
 			};
 
-			it('should return number of provisioned users', async () => {
+			it('should return number of provisioned users and call services with available data', async () => {
 				const { oauthDataDtos } = setup();
 
 				const result = await sut.provisionBatch(oauthDataDtos);
 
 				expect(result).toBe(1);
+				expect(schoolServiceMock.getSchools).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.findByExternalId).toHaveBeenCalledTimes(1);
+				expect(roleServiceMock.findByNames).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.findByUserId).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(0);
 			});
 		});
 
