@@ -6,9 +6,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
@@ -31,6 +28,7 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -49,6 +47,7 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -67,30 +66,25 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
-				const apiClient = new TestApiClient(app, baseRouteName);
-
-				return { apiClient, copyFilesParams };
+				return { copyFilesParams };
 			};
 
 			it('should return status 401', async () => {
-				const { apiClient, copyFilesParams } = setup();
+				const { copyFilesParams } = setup();
 
-				const result = await apiClient.post(`/copy/school/123/users/123`, copyFilesParams);
+				const result = await testApiClient.post(`/copy/school/123/users/123`, copyFilesParams);
 
 				expect(result.status).toEqual(401);
 			});
 		});
 
 		describe('with bad request data', () => {
-			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user, school, account]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				const validId = user.school.id;
+				const validId = new ObjectId().toHexString();
 				const targetParentId = new ObjectId().toHexString();
 
 				const copyFilesParams = {
@@ -102,23 +96,13 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-				return { apiClient, validId, copyFilesParams };
+				return { loggedInClient, validId, copyFilesParams };
 			};
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const { apiClient, validId, copyFilesParams } = await setup();
+				const { loggedInClient, validId, copyFilesParams } = setup();
 
-				const result = await apiClient.post(`/copy/school/123/users/${validId}`, copyFilesParams);
+				const result = await loggedInClient.post(`/copy/school/123/users/${validId}`, copyFilesParams);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -131,9 +115,9 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const { apiClient, validId, copyFilesParams } = await setup();
+				const { loggedInClient, validId, copyFilesParams } = setup();
 
-				const result = await apiClient.post(`/copy/school/${validId}/users/123`, copyFilesParams);
+				const result = await loggedInClient.post(`/copy/school/${validId}/users/123`, copyFilesParams);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -146,9 +130,9 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const { apiClient, validId, copyFilesParams } = await setup();
+				const { loggedInClient, validId, copyFilesParams } = setup();
 
-				const result = await apiClient.post(`/copy/school/${validId}/cookies/${validId}`, copyFilesParams);
+				const result = await loggedInClient.post(`/copy/school/${validId}/cookies/${validId}`, copyFilesParams);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -161,7 +145,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const { apiClient, validId } = await setup();
+				const { loggedInClient, validId } = setup();
 				const params = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
@@ -171,22 +155,19 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
-				const response = await apiClient.post(`/copy/school/${validId}/users/${validId}`, params);
+				const response = await loggedInClient.post(`/copy/school/${validId}/users/${validId}`, params);
 
 				expect(response.status).toEqual(400);
 			});
 		});
 
 		describe(`with valid request data`, () => {
-			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user, school, account]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				const validId = user.school.id;
+				const validId = new ObjectId().toHexString();
 				const targetParentId = new ObjectId().toHexString();
 
 				const copyFilesParams = {
@@ -198,30 +179,20 @@ describe(`${baseRouteName} (api)`, () => {
 					},
 				};
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-				return { validId, copyFilesParams, apiClient };
+				return { validId, copyFilesParams, loggedInClient };
 			};
 
 			it('should return right type of data', async () => {
-				const { validId, copyFilesParams, apiClient } = await setup();
+				const { validId, copyFilesParams, loggedInClient } = setup();
 
-				await apiClient
+				await loggedInClient
 					.post(`/upload/school/${validId}/schools/${validId}`)
 					.attach('file', Buffer.from('abcd'), 'test1.txt')
 					.set('connection', 'keep-alive')
 					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-				const result = await apiClient.post(`/copy/school/${validId}/schools/${validId}`, copyFilesParams);
+				const result = await loggedInClient.post(`/copy/school/${validId}/schools/${validId}`, copyFilesParams);
 				const response = result.body as FileRecordListResponse;
 
 				expect(result.status).toEqual(201);
@@ -249,32 +220,27 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const apiClient = new TestApiClient(app, baseRouteName);
-
-				return { copyFileParams, apiClient };
+				return { copyFileParams };
 			};
 
 			it('should return status 401', async () => {
-				const { apiClient, copyFileParams } = setup();
+				const { copyFileParams } = setup();
 
-				const response = await apiClient.post(`/copy/123`, copyFileParams);
+				const response = await testApiClient.post(`/copy/123`, copyFileParams);
 
 				expect(response.status).toEqual(401);
 			});
 		});
 
 		describe('with bad request data', () => {
-			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user, school, account]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
+				const validId = new ObjectId().toHexString();
 				const targetParentId = new ObjectId().toHexString();
 
-				const validId = user.school.id;
 				const copyFileParams = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
@@ -285,23 +251,13 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-				return { validId, copyFileParams, apiClient };
+				return { validId, copyFileParams, loggedInClient };
 			};
 
 			it('should return status 400 for invalid fileRecordId', async () => {
-				const { apiClient, copyFileParams } = await setup();
+				const { loggedInClient, copyFileParams } = setup();
 
-				const response = await apiClient.post(`/copy/123`, copyFileParams);
+				const response = await loggedInClient.post(`/copy/123`, copyFileParams);
 				const { validationErrors } = response.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -316,16 +272,13 @@ describe(`${baseRouteName} (api)`, () => {
 
 		describe(`with valid request data`, () => {
 			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user, school, account]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
+				const validId = new ObjectId().toHexString();
 				const targetParentId = new ObjectId().toHexString();
 
-				const validId = user.school.id;
 				const copyFileParams = {
 					target: {
 						storageLocation: StorageLocation.SCHOOL,
@@ -336,18 +289,8 @@ describe(`${baseRouteName} (api)`, () => {
 					fileNamePrefix: 'copy from',
 				};
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-				const result = await apiClient
-					.post(`/upload/school/${school.id}/schools/${school.id}`)
+				const result = await loggedInClient
+					.post(`/upload/school/${validId}/schools/${validId}`)
 					.attach('file', Buffer.from('abcd'), 'test1.txt')
 					.set('connection', 'keep-alive')
 					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
@@ -355,21 +298,21 @@ describe(`${baseRouteName} (api)`, () => {
 
 				const fileRecordId = response.id;
 
-				return { validId, copyFileParams, apiClient, fileRecordId };
+				return { validId, copyFileParams, loggedInClient, fileRecordId };
 			};
 
 			it('should return status 200 for successful request', async () => {
-				const { fileRecordId, copyFileParams, apiClient } = await setup();
+				const { fileRecordId, copyFileParams, loggedInClient } = await setup();
 
-				const response = await apiClient.post(`/copy/${fileRecordId}`, copyFileParams);
+				const response = await loggedInClient.post(`/copy/${fileRecordId}`, copyFileParams);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				const { fileRecordId, copyFileParams, apiClient } = await setup();
+				const { fileRecordId, copyFileParams, loggedInClient } = await setup();
 
-				const result = await apiClient.post(`/copy/${fileRecordId}`, copyFileParams);
+				const result = await loggedInClient.post(`/copy/${fileRecordId}`, copyFileParams);
 				const response = result.body as FileRecordResponse;
 
 				expect(response).toStrictEqual({
@@ -380,7 +323,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements not equal of requested scope', async () => {
-				const { fileRecordId, copyFileParams, apiClient } = await setup();
+				const { fileRecordId, copyFileParams, loggedInClient } = await setup();
 
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					parentType: FileRecordParentType.School,
@@ -388,7 +331,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 				await em.persistAndFlush(otherFileRecords);
 				em.clear();
-				const result = await apiClient.post(`/copy/${fileRecordId}`, copyFileParams);
+				const result = await loggedInClient.post(`/copy/${fileRecordId}`, copyFileParams);
 				const response = result.body as FileRecordResponse;
 
 				expect(response.id).not.toEqual(fileRecordId);

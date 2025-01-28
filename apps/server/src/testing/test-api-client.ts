@@ -145,6 +145,10 @@ export class TestApiClient {
 		);
 	}
 
+	public getAuthHeader(): string {
+		return this.authHeader;
+	}
+
 	private isSlash(inputPath: string, pos: number): boolean {
 		const isSlash = inputPath.charAt(pos) === '/';
 

@@ -9,8 +9,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
@@ -37,12 +35,15 @@ const defaultQueryParameters = {
 	outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
 };
 
+const baseRouteName = '/file';
+
 describe('File Controller (API) - preview', () => {
 	let module: TestingModule;
 	let app: INestApplication;
 	let em: EntityManager;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
 	let antivirusService: DeepMocked<AntivirusService>;
+	let testApiClient: TestApiClient;
 	let uploadPath: string;
 
 	beforeAll(async () => {
@@ -70,6 +71,7 @@ describe('File Controller (API) - preview', () => {
 		em = module.get(EntityManager);
 		s3ClientAdapter = module.get(FILES_STORAGE_S3_CONNECTION);
 		antivirusService = module.get(AntivirusService);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -88,34 +90,23 @@ describe('File Controller (API) - preview', () => {
 		await em.flush();
 	};
 
-	const setupApiClient = async () => {
-		const school = schoolEntityFactory.build();
-		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+	const setupApiClient = () => {
+		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-		await em.persistAndFlush([school, user, account]);
-		em.clear();
+		const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-		const authValue = JwtAuthenticationFactory.createJwt({
-			accountId: account.id,
-			userId: user.id,
-			schoolId: user.school.id,
-			roles: [user.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
-		const apiClient = new TestApiClient(app, '/file', authValue);
+		const validId = new ObjectId().toHexString();
 
-		const schoolId = school.id;
-		uploadPath = `/upload/school/${schoolId}/schools/${schoolId}`;
+		uploadPath = `/upload/school/${validId}/schools/${validId}`;
 
 		jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 		antivirusService.checkStream.mockResolvedValueOnce({ virus_detected: false });
 
-		return apiClient;
+		return loggedInClient;
 	};
 
-	const uploadFile = async (apiClient: TestApiClient) => {
-		const uploadResponse = await apiClient
+	const uploadFile = async (loggedInClient: TestApiClient) => {
+		const uploadResponse = await loggedInClient
 			.post(uploadPath)
 			.attach('file', Buffer.from('abcd'), 'test.png')
 			.set('connection', 'keep-alive')
@@ -129,9 +120,7 @@ describe('File Controller (API) - preview', () => {
 	describe('preview', () => {
 		describe('with not authenticated user', () => {
 			it('should return status 401', async () => {
-				const apiClient = new TestApiClient(app, '/file');
-
-				const response = await apiClient.get('/preview/123/test.png').query(defaultQueryParameters);
+				const response = await testApiClient.get('/preview/123/test.png').query(defaultQueryParameters);
 
 				expect(response.status).toEqual(401);
 			});
@@ -140,8 +129,8 @@ describe('File Controller (API) - preview', () => {
 		describe('with bad request data', () => {
 			describe('WHEN recordId is invalid', () => {
 				it('should return status 400', async () => {
-					const apiClient = await setupApiClient();
-					const response = await apiClient.get('/preview/123/test.png').query(defaultQueryParameters);
+					const loggedInClient = setupApiClient();
+					const response = await loggedInClient.get('/preview/123/test.png').query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
 
 					expect(result.validationErrors).toEqual([
@@ -156,14 +145,14 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN width is other than PreviewWidth Enum', () => {
 				it('should return status 400', async () => {
-					const apiClient = await setupApiClient();
-					const uploadedFile = await uploadFile(apiClient);
+					const loggedInClient = setupApiClient();
+					const uploadedFile = await uploadFile(loggedInClient);
 
 					const query = {
 						...defaultQueryParameters,
 						width: 2000,
 					};
-					const response = await apiClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
+					const response = await loggedInClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
 					const result = response.body as ApiValidationError;
 
 					expect(result.validationErrors).toEqual([
@@ -178,11 +167,11 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN output format is wrong', () => {
 				it('should return status 400', async () => {
-					const apiClient = await setupApiClient();
-					const uploadedFile = await uploadFile(apiClient);
+					const loggedInClient = setupApiClient();
+					const uploadedFile = await uploadFile(loggedInClient);
 
 					const query = { ...defaultQueryParameters, outputFormat: 'image/txt' };
-					const response = await apiClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
+					const response = await loggedInClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
 					const result = response.body as ApiValidationError;
 
 					expect(result.validationErrors).toEqual([
@@ -197,11 +186,11 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN file does not exist', () => {
 				it('should return status 404', async () => {
-					const apiClient = await setupApiClient();
-					const uploadedFile = await uploadFile(apiClient);
+					const loggedInClient = setupApiClient();
+					const uploadedFile = await uploadFile(loggedInClient);
 
 					const wrongId = new ObjectId().toString();
-					const response = await apiClient
+					const response = await loggedInClient
 						.get(`/preview/${wrongId}/${uploadedFile.name}`)
 						.query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
@@ -213,14 +202,14 @@ describe('File Controller (API) - preview', () => {
 
 			describe('WHEN filename is wrong', () => {
 				it('should return status 404', async () => {
-					const apiClient = await setupApiClient();
-					const uploadedFile = await uploadFile(apiClient);
+					const loggedInClient = setupApiClient();
+					const uploadedFile = await uploadFile(loggedInClient);
 					await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 					const error = new NotFoundException();
 					s3ClientAdapter.get.mockRejectedValueOnce(error);
 
-					const response = await apiClient
+					const response = await loggedInClient
 						.get(`/preview/${uploadedFile.id}/wrong-name.txt`)
 						.query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
@@ -235,21 +224,21 @@ describe('File Controller (API) - preview', () => {
 			describe('WHEN preview does already exist', () => {
 				describe('WHEN forceUpdate is undefined', () => {
 					const setup = async () => {
-						const apiClient = await setupApiClient();
-						const uploadedFile = await uploadFile(apiClient);
+						const loggedInClient = setupApiClient();
+						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-						return { apiClient, uploadedFile };
+						return { loggedInClient, uploadedFile };
 					};
 
 					it('should return status 200 for successful download', async () => {
-						const { apiClient, uploadedFile } = await setup();
+						const { loggedInClient, uploadedFile } = await setup();
 						const buffer = Buffer.from('testText');
 
-						const response = await apiClient
+						const response = await loggedInClient
 							.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 							.query(defaultQueryParameters);
 						const result = response.body as StreamableFile;
@@ -259,9 +248,9 @@ describe('File Controller (API) - preview', () => {
 					});
 
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {
-						const { apiClient, uploadedFile } = await setup();
+						const { loggedInClient, uploadedFile } = await setup();
 
-						const response = await apiClient
+						const response = await loggedInClient
 							.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 							.set('Range', 'bytes=0-')
 							.query(defaultQueryParameters);
@@ -275,37 +264,39 @@ describe('File Controller (API) - preview', () => {
 
 				describe('WHEN forceUpdate is false', () => {
 					const setup = async () => {
-						const apiClient = await setupApiClient();
-						const uploadedFile = await uploadFile(apiClient);
+						const loggedInClient = setupApiClient();
+						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-						return { apiClient, uploadedFile };
+						return { loggedInClient, uploadedFile };
 					};
 
 					describe('WHEN header contains no etag', () => {
 						it('should return status 200 for successful download', async () => {
-							const { apiClient, uploadedFile } = await setup();
+							const { loggedInClient, uploadedFile } = await setup();
 							const query = {
 								...defaultQueryParameters,
 								forceUpdate: false,
 							};
 
-							const response = await apiClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
+							const response = await loggedInClient
+								.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
+								.query(query);
 
 							expect(response.status).toEqual(200);
 						});
 
 						it('should return status 206 and required headers for the successful partial file stream download', async () => {
-							const { apiClient, uploadedFile } = await setup();
+							const { loggedInClient, uploadedFile } = await setup();
 							const query = {
 								...defaultQueryParameters,
 								forceUpdate: false,
 							};
 
-							const response = await apiClient
+							const response = await loggedInClient
 								.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 								.set('Range', 'bytes=0-')
 								.query(query);
@@ -320,14 +311,14 @@ describe('File Controller (API) - preview', () => {
 
 					describe('WHEN header contains not matching etag', () => {
 						it('should return status 200 for successful download', async () => {
-							const { apiClient, uploadedFile } = await setup();
+							const { loggedInClient, uploadedFile } = await setup();
 							const query = {
 								...defaultQueryParameters,
 								forceUpdate: false,
 							};
 							const etag = 'otherTag';
 
-							const response = await apiClient
+							const response = await loggedInClient
 								.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 								.query(query)
 								.set('If-None-Match', etag);
@@ -338,14 +329,14 @@ describe('File Controller (API) - preview', () => {
 
 					describe('WHEN header contains matching etag', () => {
 						it('should return status 304', async () => {
-							const { apiClient, uploadedFile } = await setup();
+							const { loggedInClient, uploadedFile } = await setup();
 							const query = {
 								...defaultQueryParameters,
 								forceUpdate: false,
 							};
 							const etag = 'testTag';
 
-							const response = await apiClient
+							const response = await loggedInClient
 								.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 								.query(query)
 								.set('If-None-Match', etag);
@@ -357,36 +348,36 @@ describe('File Controller (API) - preview', () => {
 
 				describe('WHEN forceUpdate is true', () => {
 					const setup = async () => {
-						const apiClient = await setupApiClient();
-						const uploadedFile = await uploadFile(apiClient);
+						const loggedInClient = setupApiClient();
+						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-						return { apiClient, uploadedFile };
+						return { loggedInClient, uploadedFile };
 					};
 
 					it('should return status 200 for successful download', async () => {
-						const { apiClient, uploadedFile } = await setup();
+						const { loggedInClient, uploadedFile } = await setup();
 						const query = {
 							...defaultQueryParameters,
 							forceUpdate: true,
 						};
 
-						const response = await apiClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
+						const response = await loggedInClient.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`).query(query);
 
 						expect(response.status).toEqual(200);
 					});
 
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {
-						const { apiClient, uploadedFile } = await setup();
+						const { loggedInClient, uploadedFile } = await setup();
 						const query = {
 							...defaultQueryParameters,
 							forceUpdate: true,
 						};
 
-						const response = await apiClient
+						const response = await loggedInClient
 							.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 							.set('Range', 'bytes=0-')
 							.query(query);
@@ -401,21 +392,21 @@ describe('File Controller (API) - preview', () => {
 
 				describe('WHEN preview does not already exist', () => {
 					const setup = async () => {
-						const apiClient = await setupApiClient();
-						const uploadedFile = await uploadFile(apiClient);
+						const loggedInClient = setupApiClient();
+						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const error = new NotFoundException();
 						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
-						return { apiClient, uploadedFile };
+						return { loggedInClient, uploadedFile };
 					};
 
 					it('should return status 200 for successful download', async () => {
-						const { apiClient, uploadedFile } = await setup();
+						const { loggedInClient, uploadedFile } = await setup();
 
-						const response = await apiClient
+						const response = await loggedInClient
 							.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 							.query(defaultQueryParameters);
 
@@ -423,9 +414,9 @@ describe('File Controller (API) - preview', () => {
 					});
 
 					it('should return status 206 and required headers for the successful partial file stream download', async () => {
-						const { apiClient, uploadedFile } = await setup();
+						const { loggedInClient, uploadedFile } = await setup();
 
-						const response = await apiClient
+						const response = await loggedInClient
 							.get(`/preview/${uploadedFile.id}/${uploadedFile.name}`)
 							.set('Range', 'bytes=0-')
 							.query(defaultQueryParameters);
