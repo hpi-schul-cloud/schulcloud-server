@@ -68,7 +68,7 @@ export class TspProvisioningService {
 
 		await Promise.allSettled(
 			oauthDataDtos.map((oauth, index) => {
-				const userForClasses = savedUsers.find((user) => user.id === oauth.externalUser.externalId);
+				const userForClasses = savedUsers.find((user) => user.externalId === oauth.externalUser.externalId);
 				if (!userForClasses) {
 					return Promise.reject();
 				}

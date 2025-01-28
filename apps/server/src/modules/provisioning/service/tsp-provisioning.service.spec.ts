@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
 import { ClassService } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
 import { RoleService } from '@modules/role';
@@ -12,7 +13,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
@@ -90,10 +90,102 @@ describe('TspProvisioningService', () => {
 
 	beforeEach(() => {
 		jest.resetAllMocks();
+		jest.restoreAllMocks();
+		jest.clearAllMocks();
 	});
 
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
+	});
+
+	describe('provisionBatch', () => {
+		describe('when batch is provisioned', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser();
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				userServiceMock.findByExternalId.mockResolvedValueOnce(userDoFactory.build());
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
+				userServiceMock.saveAll.mockResolvedValueOnce(userDoFactory.buildListWithId(1));
+				accountServiceMock.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
+				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
+
+				return { oauthDataDtos };
+			};
+
+			it('should return number of provisioned users', async () => {
+				const { oauthDataDtos } = setup();
+
+				const result = await sut.provisionBatch(oauthDataDtos);
+
+				expect(result).toBe(1);
+			});
+		});
+
+		describe('when school is not found for an external id', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser();
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+
+				return { oauthDataDtos };
+			};
+
+			it('should throw NotFoundLoggableException', async () => {
+				const { oauthDataDtos } = setup();
+
+				await expect(sut.provisionBatch(oauthDataDtos)).rejects.toThrow(NotFoundLoggableException);
+			});
+		});
+
+		describe('when user has classes', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser();
+				const externalClasses = [setupExternalClass()];
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+						externalClasses,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				userServiceMock.findByExternalId.mockResolvedValueOnce(userDoFactory.build());
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
+				userServiceMock.saveAll.mockResolvedValueOnce([
+					userDoFactory.buildWithId({
+						externalId: externalUser.externalId,
+					}),
+				]);
+				accountServiceMock.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
+				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
+
+				return { oauthDataDtos };
+			};
+
+			it('should provision the classes', async () => {
+				const { oauthDataDtos } = setup();
+
+				await expect(sut.provisionBatch(oauthDataDtos)).resolves.not.toThrow();
+				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(1);
+			});
+		});
 	});
 
 	describe('findSchoolOrFail', () => {
@@ -232,6 +324,7 @@ describe('TspProvisioningService', () => {
 				userServiceMock.findByExternalId.mockResolvedValue(user);
 				userServiceMock.save.mockResolvedValue(user);
 				schoolServiceMock.getSchools.mockResolvedValue([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
 
 				return { data, school };
 			};
