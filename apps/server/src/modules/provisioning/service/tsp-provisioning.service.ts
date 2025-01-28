@@ -1,4 +1,4 @@
-import { AccountSave, AccountService } from '@modules/account';
+import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
@@ -28,6 +28,70 @@ export class TspProvisioningService {
 		private readonly userService: UserService,
 		private readonly accountService: AccountService
 	) {}
+
+	public async provisionBatch(oauthDataDtos: OauthDataDto[]): Promise<number> {
+		const schoolArrays = await Promise.all(
+			oauthDataDtos.map((oauthData, index) =>
+				this.schoolService.getSchools({
+					systemId: oauthDataDtos[index].system.systemId,
+					externalId: oauthData.externalSchool?.externalId,
+				})
+			)
+		);
+
+		const schoolIds = schoolArrays.map((schools, index) => {
+			if (schools.length !== 1) {
+				throw new NotFoundLoggableException(School.name, {
+					systemId: oauthDataDtos[index].system.systemId,
+					externalId: oauthDataDtos[index].externalSchool?.externalId ?? '',
+				});
+			}
+
+			return schools[0].id;
+		});
+
+		const users = await Promise.all(
+			oauthDataDtos.map((oauth) =>
+				this.userService.findByExternalId(oauth.externalUser.externalId, oauth.system.systemId)
+			)
+		);
+
+		const roleRefs = await Promise.all(
+			oauthDataDtos.map((oauthDataDto) => this.getRoleReferencesForUser(oauthDataDto.externalUser))
+		);
+
+		const updatedUsers = users.map((user, index) => {
+			const oauthDataDto = oauthDataDtos[index];
+			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], schoolIds[index], user);
+		});
+
+		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
+
+		await Promise.allSettled(
+			oauthDataDtos.map((oauth, index) => {
+				const userForClasses = savedUsers.find((user) => user.externalId === oauth.externalUser.externalId);
+				if (!userForClasses) {
+					return Promise.reject();
+				}
+
+				const promise = this.provisionClasses(schoolArrays[index][0], oauth.externalClasses ?? [], userForClasses);
+				return promise;
+			})
+		);
+
+		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
+		const foundAccounts = await Promise.all(
+			savedUserIds.map((userId) => this.accountService.findByUserId(userId ?? ''))
+		);
+
+		const accountsToSave = foundAccounts.map((account, index) =>
+			this.createOrUpdateAccount(oauthDataDtos[index].system.systemId, savedUsers[index], account)
+		);
+
+		const savedAccounts = await this.accountService.saveAll(accountsToSave);
+
+		return savedAccounts.length;
+	}
 
 	public async findSchoolOrFail(system: ProvisioningSystemDto, school: ExternalSchoolDto): Promise<School> {
 		const schools = await this.schoolService.getSchools({
@@ -112,88 +176,85 @@ export class TspProvisioningService {
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
 
-		let user: UserDO;
-		if (existingUser) {
-			user = await this.updateUser(existingUser, data.externalUser, roleRefs, school.id);
-		} else {
-			user = await this.createUser(data.externalUser, roleRefs, school.id);
+		const user = this.createOrUpdateUser(data.externalUser, roleRefs, school.id, existingUser);
+		if (!user) {
+			throw new BadDataLoggableException(`Couldn't process user`, {
+				externalId: data.externalUser.externalId,
+			});
 		}
+		const savedUser = await this.userService.save(user);
 
-		await this.createOrUpdateAccount(data.system.systemId, user);
+		const account = await this.accountService.findByUserId(savedUser.id ?? '');
+		const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
+		await this.accountService.save(updated);
 
 		return user;
 	}
 
-	private async updateUser(
-		existingUser: UserDO,
+	private createOrUpdateUser(
 		externalUser: ExternalUserDto,
 		roleRefs: RoleReference[],
-		schoolId: string
-	): Promise<UserDO> {
+		schoolId: string,
+		existingUser?: UserDO | null
+	): UserDO | undefined {
+		if (!existingUser) {
+			if (!externalUser.firstName || !externalUser.lastName) {
+				return undefined;
+			}
+
+			const newUser = new UserDO({
+				roles: roleRefs,
+				schoolId,
+				firstName: externalUser.firstName,
+				lastName: externalUser.lastName,
+				email: this.createTspEmail(externalUser.externalId),
+				birthday: externalUser.birthday,
+				externalId: externalUser.externalId,
+				secondarySchools: [],
+			});
+
+			this.createTspConsent(newUser);
+
+			return newUser;
+		}
+
 		existingUser.roles = roleRefs;
 		existingUser.schoolId = schoolId;
 		existingUser.firstName = externalUser.firstName || existingUser.firstName;
 		existingUser.lastName = externalUser.lastName || existingUser.lastName;
 		existingUser.email = externalUser.email || existingUser.email;
 		existingUser.birthday = externalUser.birthday;
-		const updatedUser = await this.userService.save(existingUser);
 
-		return updatedUser;
+		return existingUser;
 	}
 
-	private async createUser(
-		externalUser: ExternalUserDto,
-		roleRefs: RoleReference[],
-		schoolId: string
-	): Promise<UserDO> {
-		TypeGuard.requireKeys(
-			externalUser,
-			['firstName', 'lastName'],
-			new BadDataLoggableException('User firstname or lastname is missing', { externalId: externalUser.externalId })
-		);
-
-		const newUser = new UserDO({
-			roles: roleRefs,
-			schoolId,
-			firstName: externalUser.firstName,
-			lastName: externalUser.lastName,
-			email: this.createTspEmail(externalUser.externalId),
-			birthday: externalUser.birthday,
-			externalId: externalUser.externalId,
-			secondarySchools: [],
-		});
-
-		this.createTspConsent(newUser);
-
-		const savedUser = await this.userService.save(newUser);
-
-		return savedUser;
-	}
-
-	private async createOrUpdateAccount(systemId: string, user: UserDO): Promise<void> {
-		TypeGuard.requireKeys(
-			user,
-			['id'],
-			new BadDataLoggableException('User ID is missing', { externalId: user.externalId })
-		);
-
-		const account = await this.accountService.findByUserId(user.id);
+	private createOrUpdateAccount(systemId: string, user: UserDO, account: Account | null): AccountSave {
+		if (!user.id) {
+			throw new BadDataLoggableException('user ID is missing', {
+				externalId: user.externalId,
+			});
+		}
 
 		if (account) {
-			// Updates account with new systemId and username
-			await account.update(new AccountSave({ userId: user.id, systemId, username: user.email, activated: true }));
-			await this.accountService.save(account);
-		} else {
-			// Creates new account for user
-			await this.accountService.saveWithValidation(
-				new AccountSave({
-					userId: user.id,
-					username: user.email,
-					systemId,
-					activated: true,
-				})
-			);
+			const updated = new AccountSave({
+				userId: user.id,
+				username: user.email,
+				activated: true,
+				systemId: account.systemId,
+				id: account.id,
+			});
+
+			return updated;
 		}
+
+		const newAccount = new AccountSave({
+			userId: user.id,
+			username: user.email,
+			systemId,
+			activated: true,
+		});
+
+		return newAccount;
 	}
 
 	private async getRoleReferencesForUser(externalUser: ExternalUserDto): Promise<RoleReference[]> {

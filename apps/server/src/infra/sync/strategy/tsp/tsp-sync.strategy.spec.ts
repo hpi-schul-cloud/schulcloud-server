@@ -18,7 +18,8 @@ import {
 	robjExportSchuleFactory,
 } from '@infra/tsp-client/testing';
 import { Account } from '@modules/account';
-import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning';
+import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import {
 	externalUserDtoFactory,
 	oauthDataDtoFactory,
@@ -36,9 +37,9 @@ import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSchoolService } from './tsp-school.service';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
-import { TspSchoolService } from './tsp-school.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
 
 describe(TspSyncStrategy.name, () => {
@@ -46,7 +47,7 @@ describe(TspSyncStrategy.name, () => {
 	let sut: TspSyncStrategy;
 	let tspSyncService: DeepMocked<TspSchoolService>;
 	let tspFetchService: DeepMocked<TspFetchService>;
-	let provisioningService: DeepMocked<ProvisioningService>;
+	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
 	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
@@ -74,8 +75,8 @@ describe(TspSyncStrategy.name, () => {
 					useValue: createMock<ConfigService<TspSyncConfig, true>>(),
 				},
 				{
-					provide: ProvisioningService,
-					useValue: createMock<ProvisioningService>(),
+					provide: TspProvisioningService,
+					useValue: createMock<TspProvisioningService>(),
 				},
 				{
 					provide: TspOauthDataMapper,
@@ -99,7 +100,7 @@ describe(TspSyncStrategy.name, () => {
 		sut = module.get(TspSyncStrategy);
 		tspSyncService = module.get(TspSchoolService);
 		tspFetchService = module.get(TspFetchService);
-		provisioningService = module.get(ProvisioningService);
+		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
 		tspSyncMigrationService = module.get(TspSyncMigrationService);
@@ -150,6 +151,7 @@ describe(TspSyncStrategy.name, () => {
 			totalUsers: number;
 			totalAccounts: number;
 		};
+		processBatchSize?: number;
 	}) => {
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
@@ -173,6 +175,8 @@ describe(TspSyncStrategy.name, () => {
 				totalUsers: faker.number.int(),
 			}
 		);
+
+		provisioningService.provisionBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
 	};
 
 	describe('sync', () => {
@@ -304,8 +308,7 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(provisioningService.provisionData).toHaveBeenCalledTimes(1);
-				expect(provisioningService.provisionData).toHaveBeenCalledWith(oauthDataDto);
+				expect(provisioningService.provisionBatch).toHaveBeenCalledWith([oauthDataDto]);
 			});
 
 			describe('when feature tsp migration is enabled', () => {

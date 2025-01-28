@@ -5,7 +5,7 @@ const maxDeep = 12;
 // enable html for all current editors
 const keys = ['content', 'text', 'comment', 'gradeComment', 'description'];
 const paths = ['lessons', 'news', 'homework', 'submissions', 'topics'];
-const saveKeys = ['password', 'secret'];
+const saveKeys = ['password', 'password_1', 'password_2', 'secret'];
 const allowedTags = [
 	'h1',
 	'h2',

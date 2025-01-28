@@ -161,49 +161,6 @@ data:
                                        "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
                                      } );'
 
-    # Sanis configuration (stored in the 'systems' collection + some related documents in other collections).
-    SANIS_CLIENT_SECRET=$(get_secret $SANIS_CLIENT_SECRET)
-    SANIS_SYSTEM_ID=0000d186816abba584714c93
-    if [[ $SC_THEME == "n21" ]]; then
-      mongosh $DATABASE__URL --quiet --eval 'db.schools.updateMany(
-          {
-              "_id": {
-                  $in: [
-                      ObjectId("5f2987e020834114b8efd6f8"),
-                      ObjectId("5fa2c5ccb229544f2c69666c")
-                  ]
-              }
-          },
-          {
-            $set: { "systems" : [ ObjectId("'$SANIS_SYSTEM_ID'") ] }
-          }
-      );'
-      mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
-          {
-            "_id": ObjectId("'$SANIS_SYSTEM_ID'"),
-            "alias" : "SANIS",
-            "displayName" : "moin.schule",
-            "type" : "oauth",
-            "provisioningStrategy": "sanis",
-            "provisioningUrl": "https://api-dienste.stage.niedersachsen-login.schule/v1/person-info",
-            "oauthConfig": {
-              "clientId": "'$SANIS_CLIENT_ID'",
-              "clientSecret": "'$SANIS_CLIENT_SECRET'",
-              "tokenEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/token",
-              "grantType": "authorization_code",
-              "scope": "openid",
-              "responseType": "code",
-              "redirectUri": "https://{{ NAMESPACE }}.nbc.dbildungscloud.dev/api/v3/sso/oauth",
-              "authEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
-              "provider": "sanis",
-              "jwksEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
-              "issuer": "https://auth.stage.niedersachsen-login.schule/realms/SANIS",
-              "endSessionEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout",
-            }
-          }
-      );'
-    fi
-
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
     NS=$K8S_NAMESPACE
 
@@ -553,30 +510,3 @@ data:
       echo "Successfully added TSP system"
     fi
     # ========== End of TSP system creation
-
-    # ========== Start of inserting VIDIS media source section.
-    if [ -n "$MEDIA_SOURCE_VIDIS_USERNAME" ] && [ -n "$MEDIA_SOURCE_VIDIS_PASSWORD" ]; then
-         echo "Inserting VIDIS media source to the DB..."
-         # Encrypt the credentials for accessing the VIDIS media source
-         MEDIA_SOURCE_VIDIS_ID=675b0b71553441da9a893bf9
-         MEDIA_SOURCE_VIDIS_USERNAME=$(get_secret $MEDIA_SOURCE_VIDIS_USERNAME)
-         MEDIA_SOURCE_VIDIS_PASSWORD=$(get_secret $MEDIA_SOURCE_VIDIS_PASSWORD)
-         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("media-sources").insertOne(
-             {
-                "_id": ObjectId("'$MEDIA_SOURCE_VIDIS_ID'"),
-                "format" : "VIDIS",
-                "name" : "vidis",
-                "sourceId" : "vidis.fwu.de",
-                "createdAt": new Date(),
-                "updatedAt": new Date(),
-                "basicAuthConfig" : {
-                   "username" : "'$MEDIA_SOURCE_VIDIS_USERNAME'",
-                   "password" : "'$MEDIA_SOURCE_VIDIS_PASSWORD'",
-                   "authEndpoint" : "https://service-stage.vidis.schule/o/vidis-rest/v1.0/offers/activated/by-region/test-region"
-                }
-             }
-         );'
-         echo "Inserted VIDIS media source to the DB."
-    fi
-
-    # ========== End of inserting VIDIS media source section.

@@ -1,6 +1,7 @@
 import { Logger } from '@core/logger';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@infra/tsp-client';
-import { ProvisioningService } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning';
+import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import { School } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
@@ -11,6 +12,7 @@ import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { SyncStrategy } from '../sync-strategy';
 import { TspSystemNotFoundLoggableException } from './loggable';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
+import { TspDataSyncBatchFinishedLoggable } from './loggable/tsp-data-sync-batch-finished.loggable';
 import { TspSchoolsFetchedLoggable } from './loggable/tsp-schools-fetched.loggable';
 import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable';
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
@@ -20,9 +22,9 @@ import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSchoolService } from './tsp-school.service';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
-import { TspSchoolService } from './tsp-school.service';
 
 type TspSchoolData = {
 	tspTeachers: RobjExportLehrer[];
@@ -39,9 +41,9 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
-		private readonly provisioningService: ProvisioningService,
-		private readonly tspSyncMigrationService: TspSyncMigrationService,
-		private readonly systemService: SystemService
+		private readonly systemService: SystemService,
+		private readonly provisioningService: TspProvisioningService,
+		private readonly tspSyncMigrationService: TspSyncMigrationService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
@@ -123,14 +125,29 @@ export class TspSyncStrategy extends SyncStrategy {
 
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
-		const dataLimit = this.configService.getOrThrow('TSP_SYNC_DATA_LIMIT', { infer: true });
-		const dataLimitFn = pLimit(dataLimit);
-		const dataPromises = oauthDataDtos.map((oauthDataDto) =>
-			dataLimitFn(() => this.provisioningService.provisionData(oauthDataDto))
-		);
-		const results = await Promise.allSettled(dataPromises);
+		const batchSize = this.configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
 
-		this.logger.info(new TspSyncedUsersLoggable(results.length));
+		const batchCount = Math.ceil(oauthDataDtos.length / batchSize);
+		const batches: OauthDataDto[][] = [];
+		for (let i = 0; i < batchCount; i += 1) {
+			const start = i * batchSize;
+			const end = Math.min((i + 1) * batchSize, oauthDataDtos.length);
+			batches.push(oauthDataDtos.slice(start, end));
+		}
+
+		const batchLimit = pLimit(1);
+		const batchPromises = batches.map((batch, index) =>
+			batchLimit(async () => {
+				const processed = await this.provisioningService.provisionBatch(batch);
+				this.logger.info(new TspDataSyncBatchFinishedLoggable(processed, batchSize, batchCount, index));
+				return processed;
+			})
+		);
+
+		const results = await Promise.all(batchPromises);
+		const total = results.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
+
+		this.logger.info(new TspSyncedUsersLoggable(total));
 	}
 
 	private async fetchSchoolData(system: System): Promise<TspSchoolData> {

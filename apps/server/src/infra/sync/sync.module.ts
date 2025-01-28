@@ -5,7 +5,6 @@ import { ConsoleWriterModule } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
-import { VidisClientModule } from '@infra/vidis-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -37,7 +36,6 @@ import { SyncUc } from './uc/sync.uc';
 		MediaSourceModule,
 		SchoolLicenseModule,
 		EncryptionModule,
-		VidisClientModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspClientModule,

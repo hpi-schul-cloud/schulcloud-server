@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../interface/url-handler';
-import { MetaData } from '../types';
+import { MetaData, MetaDataEntityType } from '../types';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 
 @Injectable()
@@ -17,14 +17,14 @@ export class MetaTagInternalUrlService {
 		this.handlers = [this.taskUrlHandler, this.lessonUrlHandler, this.courseUrlHandler, this.boardUrlHandler];
 	}
 
-	async tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
+	public tryInternalLinkMetaTags(url: URL): Promise<MetaData | undefined> {
 		if (this.isInternalUrl(url)) {
 			return this.composeMetaTags(url);
 		}
 		return Promise.resolve(undefined);
 	}
 
-	isInternalUrl(url: URL) {
+	public isInternalUrl(url: URL): boolean {
 		let domain = Configuration.get('SC_DOMAIN') as string;
 		domain = domain === '' ? 'nothing-configured-for-internal-url.de' : domain;
 		const isInternal = url.hostname.toLowerCase() === domain.toLowerCase();
@@ -33,8 +33,10 @@ export class MetaTagInternalUrlService {
 
 	private async composeMetaTags(url: URL): Promise<MetaData | undefined> {
 		const handler = this.handlers.find((h) => h.doesUrlMatch(url));
+
 		if (handler) {
 			const result = await handler.getMetaData(url);
+
 			return result;
 		}
 
@@ -42,7 +44,7 @@ export class MetaTagInternalUrlService {
 			title: url.pathname,
 			description: '',
 			url: url.toString(),
-			type: 'unknown',
+			type: MetaDataEntityType.UNKNOWN,
 		});
 	}
 }

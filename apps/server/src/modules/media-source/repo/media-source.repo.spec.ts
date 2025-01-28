@@ -40,7 +40,7 @@ describe(MediaSourceRepo.name, () => {
 
 				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({
 					oauthConfig: config,
-					basicAuthConfig: undefined,
+					vidisConfig: undefined,
 				});
 
 				await em.persistAndFlush([mediaSource]);

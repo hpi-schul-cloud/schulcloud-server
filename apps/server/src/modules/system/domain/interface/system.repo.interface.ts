@@ -13,6 +13,8 @@ export interface SystemRepo {
 
 	findAllForLdapLogin(): Promise<System[]>;
 
+	save(domainObject: System): Promise<System>;
+
 	delete(domainObject: System): Promise<void>;
 }
 

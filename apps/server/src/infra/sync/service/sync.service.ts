@@ -19,10 +19,11 @@ export class SyncService {
 	) {
 		this.logger.setContext(SyncService.name);
 		this.registerStrategy(tspSyncStrategy);
+		this.registerStrategy(vidisSyncStrategy);
 		this.registerStrategy(mediaMetadataSyncStrategy);
 	}
 
-	protected registerStrategy(strategy?: SyncStrategy) {
+	protected registerStrategy(strategy?: SyncStrategy): void {
 		if (strategy) {
 			this.strategies.set(strategy.getType(), strategy);
 		}
