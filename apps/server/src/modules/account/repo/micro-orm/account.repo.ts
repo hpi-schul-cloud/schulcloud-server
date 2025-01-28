@@ -43,6 +43,8 @@ export class AccountRepo extends BaseDomainObjectRepo<Account, AccountEntity> {
 	}
 
 	public async saveAll(accounts: Account[]): Promise<Account[]> {
+		// Testing showed that there are significant performance gains after clearing the entity manager here
+		this.em.clear();
 		const savedAccounts = await Promise.all(accounts.map((account) => this.saveWithoutFlush(account)));
 		await this.flush();
 
