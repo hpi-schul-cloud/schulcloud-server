@@ -64,7 +64,7 @@ describe('handleAutoLogout hook', () => {
 
 	after(async () => {
 		await testObjects.cleanup();
-		delete require.cache[require.resolve('../../../../src/utils/redis')];
+		delete require.cache[require.resolve('../src/utils/')];
 		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
