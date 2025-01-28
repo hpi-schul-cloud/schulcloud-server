@@ -105,9 +105,12 @@ export default [
 		},
 		settings: {
 			'import/resolver': {
-				node: {
-					extensions: ['.js', '.ts'],
+				typescript: {
+					project: './',
 				},
+			},
+			'import/parsers': {
+				'@typescript-eslint/parser': ['.ts', '.tsx'],
 			},
 		},
 	},
@@ -130,7 +133,7 @@ export default [
 		},
 		rules: {
 			'import/no-unresolved': 'off', // better handled by ts resolver
-			'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
+			'import/no-extraneous-dependencies': 'off', // better handled by ts resolver
 			'import/prefer-default-export': 'off',
 			'no-void': ['error', { allowAsStatement: true }],
 			'class-methods-use-this': 'off',
