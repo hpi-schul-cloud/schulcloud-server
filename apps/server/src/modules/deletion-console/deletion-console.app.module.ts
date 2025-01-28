@@ -2,12 +2,14 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
+import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { User } from '@shared/domain/entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { ConsoleModule } from 'nestjs-console';
 import { FileEntity } from '../files/entity';
@@ -31,7 +33,7 @@ import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			allowGlobalContext: true,
-			entities: [Role, FileEntity],
+			entities: [Role, FileEntity, User, AccountEntity],
 			// debug: true, // use it for locally debugging of queries
 		}),
 		AccountModule,
