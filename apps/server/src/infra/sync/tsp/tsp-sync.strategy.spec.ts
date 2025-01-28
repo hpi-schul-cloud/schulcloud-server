@@ -10,7 +10,8 @@ import {
 	RobjExportSchule,
 } from '@infra/tsp-client';
 import { Account } from '@modules/account';
-import { ExternalUserDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning';
+import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { System } from '@modules/system';
@@ -33,7 +34,7 @@ describe(TspSyncStrategy.name, () => {
 	let sut: TspSyncStrategy;
 	let tspSyncService: DeepMocked<TspSyncService>;
 	let tspFetchService: DeepMocked<TspFetchService>;
-	let provisioningService: DeepMocked<ProvisioningService>;
+	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
 	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
@@ -60,8 +61,8 @@ describe(TspSyncStrategy.name, () => {
 					useValue: createMock<ConfigService<TspSyncConfig, true>>(),
 				},
 				{
-					provide: ProvisioningService,
-					useValue: createMock<ProvisioningService>(),
+					provide: TspProvisioningService,
+					useValue: createMock<TspProvisioningService>(),
 				},
 				{
 					provide: TspOauthDataMapper,
@@ -81,7 +82,7 @@ describe(TspSyncStrategy.name, () => {
 		sut = module.get(TspSyncStrategy);
 		tspSyncService = module.get(TspSyncService);
 		tspFetchService = module.get(TspFetchService);
-		provisioningService = module.get(ProvisioningService);
+		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
 		tspSyncMigrationService = module.get(TspSyncMigrationService);
@@ -133,6 +134,7 @@ describe(TspSyncStrategy.name, () => {
 			totalUsers: number;
 			totalAccounts: number;
 		};
+		processBatchSize?: number;
 	}) => {
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
@@ -156,6 +158,8 @@ describe(TspSyncStrategy.name, () => {
 				totalUsers: faker.number.int(),
 			}
 		);
+
+		provisioningService.provisionBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
 	};
 
 	describe('sync', () => {
@@ -246,7 +250,7 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(provisioningService.provisionData).toHaveBeenCalledWith(oauthDataDto);
+				expect(provisioningService.provisionBatch).toHaveBeenCalledWith([oauthDataDto]);
 			});
 
 			describe('when feature tsp migration is enabled', () => {
