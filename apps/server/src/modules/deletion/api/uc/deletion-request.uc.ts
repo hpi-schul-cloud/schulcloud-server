@@ -81,14 +81,18 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	async executeDeletionRequests(limit?: number, getFailed?: boolean): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 
-		limit = limit ?? this.configService.get<number>('ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS');
+		const inProgress = await this.deletionRequestService.findInProgressCount();
+
+		const max = limit
+			? limit - inProgress
+			: this.configService.get<number>('ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS') - inProgress;
 
 		let deletionRequests: DeletionRequest[] = [];
 
-		if (limit > 0) {
+		if (max > 0) {
 			do {
 				// eslint-disable-next-line no-await-in-loop
-				deletionRequests = await this.deletionRequestService.findAllItemsToExecute(limit, getFailed);
+				deletionRequests = await this.deletionRequestService.findAllItemsToExecute(max, getFailed);
 
 				this.logger.debug({ action: 'processing deletion request', deletionRequests });
 

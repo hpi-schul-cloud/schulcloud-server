@@ -160,15 +160,23 @@ describe(DeletionRequestUc.name, () => {
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 
 				configService.get.mockImplementation((key) => deletionTestConfig()[key]);
+				deletionRequestService.findInProgressCount.mockResolvedValueOnce(1);
 
 				return { deletionRequest };
 			};
+			it('should call deletionRequestService.findInProgressCount', async () => {
+				setup();
+
+				await uc.executeDeletionRequests();
+
+				expect(deletionRequestService.findInProgressCount).toHaveBeenCalled();
+			});
 			it('should call deletionRequestService.findAllItemsToExecute', async () => {
 				setup();
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalled();
+				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(1, undefined);
 			});
 
 			it('should call deletionRequestService.markDeletionRequestAsPending to update status of deletionRequests', async () => {
@@ -203,6 +211,7 @@ describe(DeletionRequestUc.name, () => {
 				});
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
+				deletionRequestService.findInProgressCount.mockResolvedValueOnce(0);
 
 				await uc.executeDeletionRequests();
 
@@ -215,6 +224,7 @@ describe(DeletionRequestUc.name, () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				deletionRequestService.findInProgressCount.mockResolvedValueOnce(1);
 				eventBus.publish.mockRejectedValueOnce(new Error());
 
 				return {
