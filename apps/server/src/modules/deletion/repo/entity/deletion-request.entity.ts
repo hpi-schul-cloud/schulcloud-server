@@ -2,6 +2,7 @@ import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { DomainName, StatusModel } from '../../domain/types';
+import { EntityManager } from '@mikro-orm/core';
 
 const SECONDS_OF_90_DAYS = 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {

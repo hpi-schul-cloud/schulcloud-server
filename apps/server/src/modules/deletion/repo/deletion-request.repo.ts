@@ -104,4 +104,12 @@ export class DeletionRequestRepo {
 
 		return true;
 	}
+
+	async findByIds(ids: EntityId[]): Promise<(DeletionRequest | null)[]> {
+		const entities = await this.em.find(DeletionRequestEntity, { id: { $in: ids } });
+
+		const entityMap = new Map(entities.map(entity => [entity.id, DeletionRequestMapper.mapToDO(entity)]));
+
+		return ids.map(id => entityMap.get(id) || null);
+	}
 }

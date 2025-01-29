@@ -425,4 +425,57 @@ describe(DeletionRequestRepo.name, () => {
 			});
 		});
 	});
+
+	describe('findByIds', () => {
+		describe('when searching for multiple IDs', () => {
+			const setup = async () => {
+				const userId1 = new ObjectId().toHexString();
+				const userId2 = new ObjectId().toHexString();
+				const userId3 = new ObjectId().toHexString();
+
+				const entity1: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId1 });
+				const entity2: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId2 });
+
+				await em.persistAndFlush([entity1, entity2]);
+				em.clear();
+
+				return {
+					ids: [entity1.id, entity2.id, userId3], // userId3 does not exist
+					expectedResults: [
+						{
+							id: entity1.id,
+							targetRefDomain: entity1.targetRefDomain,
+							deleteAfter: entity1.deleteAfter,
+							targetRefId: entity1.targetRefId,
+							status: entity1.status,
+							createdAt: entity1.createdAt,
+							updatedAt: entity1.updatedAt,
+						},
+						{
+							id: entity2.id,
+							targetRefDomain: entity2.targetRefDomain,
+							deleteAfter: entity2.deleteAfter,
+							targetRefId: entity2.targetRefId,
+							status: entity2.status,
+							createdAt: entity2.createdAt,
+							updatedAt: entity2.updatedAt,
+						},
+						null, // for userId3 which does not exist
+					],
+				};
+			};
+
+			it('should return the correct deletionRequests and null for missing IDs', async () => {
+				const { ids, expectedResults } = await setup();
+
+				const results = await repo.findByIds(ids);
+
+				expect(results).toEqual([
+					expect.objectContaining(expectedResults[0]),
+					expect.objectContaining(expectedResults[1]),
+					null,
+				]);
+			});
+		});
+	});
 });

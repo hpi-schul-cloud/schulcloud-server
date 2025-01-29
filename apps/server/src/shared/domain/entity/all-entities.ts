@@ -1,8 +1,7 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
-import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
-import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
+import { DeletionLogEntity, DeletionBatchEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
@@ -58,6 +57,7 @@ export const ALL_ENTITIES = [
 	ClassEntity,
 	DeletionRequestEntity,
 	DeletionLogEntity,
+	DeletionBatchEntity,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,

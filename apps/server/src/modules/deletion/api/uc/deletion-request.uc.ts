@@ -8,11 +8,15 @@ import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { DeletionLogService, DeletionRequestService, DeletionBatchService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionConfig } from '../../deletion.config';
+import { DeletionBatch } from '../../domain/do';
+import { DomainName } from '@modules/deletion/domain/types';
+import { DeletionBatchBodyProps } from '../controller/dto/deletion-batch.body.props';
+import { DeletionBatchResponse } from '../controller/dto/deletion-batch.response';
 
 @Injectable()
 @EventsHandler(DataDeletedEvent)
@@ -22,6 +26,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	constructor(
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService,
+		private readonly deletionBatchService: DeletionBatchService,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM,
@@ -149,5 +154,26 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
+	}
+
+	// TODO: tests missing
+	async createBatch(batchProps: DeletionBatchBodyProps): Promise<DeletionBatchResponse> {
+		this.logger.debug({ action: 'createBatch', batchProps });
+
+		// Create deletion requests for each request in the batch
+		const deletionRequestIds = await Promise.all(
+			batchProps.deletionRequests.map(async (request) => {
+				const result = await this.deletionRequestService.createDeletionRequest(
+					request.targetRef.id,
+					request.targetRef.domain,
+					request.deleteInMinutes
+				);
+				return result.requestId;
+			})
+		);
+
+		const batch = await this.deletionBatchService.create(deletionRequestIds);
+
+		return { batchId: batch.id }
 	}
 }

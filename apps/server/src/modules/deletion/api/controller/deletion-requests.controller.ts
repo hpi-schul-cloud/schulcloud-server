@@ -3,6 +3,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/co
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestUc } from '../uc';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from './dto';
+import { DeletionBatchBodyProps, DeletionBatchResponse } from './dto';
 
 @ApiTags('DeletionRequests')
 @XApiKeyAuthentication()
@@ -50,5 +51,22 @@ export class DeletionRequestsController {
 	})
 	async cancelDeletionRequest(@Param('requestId') requestId: string) {
 		return this.deletionRequestUc.deleteDeletionRequestById(requestId);
+	}
+
+	// TODO: test is missing
+	@Post('batch')
+	@HttpCode(202)
+	@ApiOperation({
+		summary: 'Create a batch of deletion requests',
+	})
+	@ApiResponse({
+		status: 202,
+		type: DeletionBatchResponse,
+		description: 'Returns identifier of the created batch',
+	})
+	async createDeletionBatch(
+		@Body() batchProps: DeletionBatchBodyProps
+	): Promise<DeletionBatchResponse> {
+		return this.deletionRequestUc.createBatch(batchProps);
 	}
 }
