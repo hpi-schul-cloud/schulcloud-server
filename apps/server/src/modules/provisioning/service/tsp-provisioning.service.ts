@@ -94,16 +94,10 @@ export class TspProvisioningService {
 	}
 
 	public async findSchoolOrFail(system: ProvisioningSystemDto, school: ExternalSchoolDto): Promise<School> {
-		const schools = await this.schoolService.getSchools({
-			systemId: system.systemId,
-			externalId: school.externalId,
-		});
+		const schools = await this.schoolService.getSchools({ systemId: system.systemId, externalId: school.externalId });
 
 		if (schools.length !== 1) {
-			throw new NotFoundLoggableException(School.name, {
-				systemId: system.systemId,
-				externalId: school.externalId,
-			});
+			throw new NotFoundLoggableException(School.name, { systemId: system.systemId, externalId: school.externalId });
 		}
 
 		return schools[0];
@@ -178,9 +172,7 @@ export class TspProvisioningService {
 
 		const user = this.createOrUpdateUser(data.externalUser, roleRefs, school.id, existingUser);
 		if (!user) {
-			throw new BadDataLoggableException(`Couldn't process user`, {
-				externalId: data.externalUser.externalId,
-			});
+			throw new BadDataLoggableException(`Couldn't process user`, { externalId: data.externalUser.externalId });
 		}
 		const savedUser = await this.userService.save(user);
 
@@ -229,11 +221,11 @@ export class TspProvisioningService {
 	}
 
 	private createOrUpdateAccount(systemId: string, user: UserDO, account: Account | null): AccountSave {
-		if (!user.id) {
-			throw new BadDataLoggableException('user ID is missing', {
-				externalId: user.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('user ID is missing', { externalId: user.externalId })
+		);
 
 		if (account) {
 			const updated = new AccountSave({
