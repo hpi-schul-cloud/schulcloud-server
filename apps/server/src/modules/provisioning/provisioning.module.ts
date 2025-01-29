@@ -20,8 +20,10 @@ import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
-	SanisProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
+	SchulconnexProvisioningStrategy,
 	SchulconnexResponseMapper,
+	TspProvisioningStrategy,
 } from './strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -31,7 +33,6 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
-import { TspProvisioningStrategy } from './strategy/tsp';
 
 @Module({
 	imports: [
@@ -60,7 +61,8 @@ import { TspProvisioningStrategy } from './strategy/tsp';
 		SchulconnexCourseSyncService,
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
-		SanisProvisioningStrategy,
+		SchulconnexProvisioningStrategy,
+		SchulconnexAsyncProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,

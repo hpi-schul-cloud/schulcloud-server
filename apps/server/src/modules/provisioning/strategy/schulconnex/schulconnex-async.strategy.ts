@@ -1,13 +1,16 @@
 import { Logger } from '@core/logger';
+import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Group, GroupService } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
-import { ProvisioningStrategy } from '../base.strategy';
+import { SchulconnexFetchStrategy } from './schulconnex-fetch.strategy';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import {
 	SchulconnexGroupProvisioningService,
 	SchulconnexSchoolProvisioningService,
@@ -15,18 +18,24 @@ import {
 } from './service';
 
 @Injectable()
-export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrategy {
+export class SchulconnexAsyncProvisioningStrategy extends SchulconnexFetchStrategy {
 	constructor(
-		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
-		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
-		protected readonly schulconnexGroupProvisioningProducer: SchulconnexGroupProvisioningProducer,
-		protected readonly schulconnexLicenseProvisioningProducer: SchulconnexLicenseProvisioningProducer,
-		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
-		protected readonly groupService: GroupService,
+		private readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
+		private readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
+		private readonly schulconnexGroupProvisioningProducer: SchulconnexGroupProvisioningProducer,
+		private readonly schulconnexLicenseProvisioningProducer: SchulconnexLicenseProvisioningProducer,
+		private readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
+		private readonly groupService: GroupService,
+		protected readonly responseMapper: SchulconnexResponseMapper,
+		protected readonly schulconnexRestClient: SchulconnexRestClient,
 		protected readonly configService: ConfigService<ProvisioningConfig, true>,
 		protected readonly logger: Logger
 	) {
-		super();
+		super(responseMapper, schulconnexRestClient, configService, logger);
+	}
+
+	public getType(): SystemProvisioningStrategy {
+		return SystemProvisioningStrategy.SCHULCONNEX_ASYNC;
 	}
 
 	public override async apply(data: OauthDataDto): Promise<ProvisioningDto> {

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	SchulconnexGruppenResponse,
@@ -21,7 +22,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@core/logger';
 import * as classValidator from 'class-validator';
 import {
 	ExternalGroupDto,
@@ -35,7 +35,7 @@ import {
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalUserDtoFactory } from '../../testing';
-import { SanisProvisioningStrategy } from './sanis.strategy';
+import { SchulconnexFetchStrategy } from './sanis.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import {
 	SchulconnexCourseSyncService,
@@ -48,9 +48,9 @@ import {
 import ArgsType = jest.ArgsType;
 import SpyInstance = jest.SpyInstance;
 
-describe(SanisProvisioningStrategy.name, () => {
+describe(SchulconnexFetchStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: SanisProvisioningStrategy;
+	let strategy: SchulconnexFetchStrategy;
 
 	let mapper: DeepMocked<SchulconnexResponseMapper>;
 	let logger: DeepMocked<Logger>;
@@ -66,7 +66,7 @@ describe(SanisProvisioningStrategy.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SanisProvisioningStrategy,
+				SchulconnexFetchStrategy,
 				{
 					provide: SchulconnexResponseMapper,
 					useValue: createMock<SchulconnexResponseMapper>(),
@@ -116,7 +116,7 @@ describe(SanisProvisioningStrategy.name, () => {
 			],
 		}).compile();
 
-		strategy = module.get(SanisProvisioningStrategy);
+		strategy = module.get(SchulconnexFetchStrategy);
 		mapper = module.get(SchulconnexResponseMapper);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
 		logger = module.get(Logger);
