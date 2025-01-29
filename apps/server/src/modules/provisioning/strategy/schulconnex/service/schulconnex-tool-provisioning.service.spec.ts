@@ -9,7 +9,8 @@ import { customParameterFactory, externalToolFactory } from '@modules/tool/exter
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, mediaUserLicenseFactory, MediaUserLicenseService } from '@modules/user-license';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';
 
