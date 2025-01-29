@@ -126,7 +126,13 @@ export class TspSyncStrategy extends SyncStrategy {
 		this.logger.info(new TspSyncingUsersLoggable(oauthDataDtos.length));
 
 		const batchSize = this.configService.getOrThrow<number>('TSP_SYNC_DATA_LIMIT');
+		const batches = this.createOauthDataBatches(batchSize, oauthDataDtos);
 
+		const total = await this.runSyncOfOauthDataBatches(batchSize, batches);
+		this.logger.info(new TspSyncedUsersLoggable(total));
+	}
+
+	private createOauthDataBatches(batchSize: number, oauthDataDtos: OauthDataDto[]): OauthDataDto[][] {
 		const batchCount = Math.ceil(oauthDataDtos.length / batchSize);
 		const batches: OauthDataDto[][] = [];
 		for (let i = 0; i < batchCount; i += 1) {
@@ -134,12 +140,15 @@ export class TspSyncStrategy extends SyncStrategy {
 			const end = Math.min((i + 1) * batchSize, oauthDataDtos.length);
 			batches.push(oauthDataDtos.slice(start, end));
 		}
+		return batches;
+	}
 
+	private async runSyncOfOauthDataBatches(batchSize: number, batches: OauthDataDto[][]): Promise<number> {
 		const batchLimit = pLimit(1);
 		const batchPromises = batches.map((batch, index) =>
 			batchLimit(async () => {
 				const processed = await this.provisioningService.provisionBatch(batch);
-				this.logger.info(new TspDataSyncBatchFinishedLoggable(processed, batchSize, batchCount, index + 1));
+				this.logger.info(new TspDataSyncBatchFinishedLoggable(processed, batchSize, batches.length, index + 1));
 				return processed;
 			})
 		);
@@ -147,7 +156,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const results = await Promise.all(batchPromises);
 		const total = results.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
 
-		this.logger.info(new TspSyncedUsersLoggable(total));
+		return total;
 	}
 
 	private async fetchSchoolData(system: System): Promise<TspSchoolData> {
