@@ -148,8 +148,8 @@
 		}
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.731.1",
-		"@aws-sdk/lib-storage": "^3.731.1",
+		"@aws-sdk/client-s3": "3.617.0",
+		"@aws-sdk/lib-storage": "3.617.0",
 		"@feathersjs/adapter-commons": "^5.0.31",
 		"@feathersjs/authentication": "^5.0.31",
 		"@feathersjs/authentication-local": "^5.0.31",
