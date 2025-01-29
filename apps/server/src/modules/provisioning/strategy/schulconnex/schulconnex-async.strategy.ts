@@ -55,12 +55,12 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexFetchStrate
 			await this.provisionGroups(data, user, school);
 		}
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id && data.externalLicenses) {
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
 			await this.schulconnexLicenseProvisioningProducer.provisonLicenses({
 				userId: user.id,
 				schoolId: user.schoolId,
 				systemId,
-				externalLicenses: data.externalLicenses,
+				externalLicenses: data.externalLicenses ?? [],
 			});
 		}
 
