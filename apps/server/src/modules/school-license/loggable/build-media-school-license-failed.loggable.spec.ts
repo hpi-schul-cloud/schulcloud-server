@@ -3,17 +3,17 @@ import { BuildMediaSchoolLicenseFailedLoggable } from './build-media-school-lice
 describe(BuildMediaSchoolLicenseFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new BuildMediaSchoolLicenseFailedLoggable();
+			const loggable = new BuildMediaSchoolLicenseFailedLoggable();
 
 			return {
-				exception,
+				loggable,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { exception } = setup();
+			const { loggable } = setup();
 
-			const logMessage = exception.getLogMessage();
+			const logMessage = loggable.getLogMessage();
 
 			expect(logMessage).toEqual({
 				message: 'Unable to build media school license, because mediumId is missing.',
