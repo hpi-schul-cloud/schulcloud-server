@@ -156,7 +156,6 @@ describe('CommonCartridgeImportMapper', () => {
 			it('should return rich text content element body', () => {
 				const resource: CommonCartridgeImportResourceProps = {
 					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					title: faker.lorem.words(3),
 					html: faker.lorem.paragraph(),
 				};
 
