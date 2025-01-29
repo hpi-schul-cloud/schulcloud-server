@@ -139,7 +139,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const batchPromises = batches.map((batch, index) =>
 			batchLimit(async () => {
 				const processed = await this.provisioningService.provisionBatch(batch);
-				this.logger.info(new TspDataSyncBatchFinishedLoggable(processed, batchSize, batchCount, index));
+				this.logger.info(new TspDataSyncBatchFinishedLoggable(processed, batchSize, batchCount, index + 1));
 				return processed;
 			})
 		);
