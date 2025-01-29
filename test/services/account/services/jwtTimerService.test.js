@@ -5,7 +5,7 @@ const { Configuration } = commons;
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 const appPromise = require('../../../../src/app');
 const testHelper = require('../../helpers/testObjects');
-const redisHelper = require('../../../../src/utils/redis');
+const redisHelpers = require('../../../../src/utils/redis');
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
@@ -64,16 +64,16 @@ describe('jwtTimer service', () => {
 				/* eslint-enable global-require */
 
 				// we need clean file that no redis instance is saved from any test before
-				delete require.cache[require.resolve('../../../../src/utils/redis')];
+				redisHelpers.clearRedis();
 				Configuration.set('REDIS_URI', '//validHost:4444');
 				const redisMock = new RedisClientMock();
-				redisHelper.initializeRedisClient(redisMock);
+				redisHelpers.initializeRedisClient(redisMock);
 			});
 
 			after(async () => {
 				await testObjects.cleanup();
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
-				delete require.cache[require.resolve('../../../../src/utils/redis')];
+				redisHelpers.clearRedis();
 				Configuration.reset(configBefore);
 				await server.close();
 				await closeNestServices(nestServices);
@@ -83,7 +83,7 @@ describe('jwtTimer service', () => {
 				const user = await testObjects.createTestUser();
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
-				await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
+				await redisHelpers.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 
 				const result = await app.service('/accounts/jwtTimer').find(params);
 				expect(result.ttl).to.equal(1000);
@@ -94,10 +94,10 @@ describe('jwtTimer service', () => {
 				const params = await testObjects.generateRequestParamsFromUser(user);
 				const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 				const ttl = Configuration.get('JWT_TIMEOUT_SECONDS');
-				await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', ttl - 5);
+				await redisHelpers.redisSetAsync(redisIdentifier, 'value', 'EX', ttl - 5);
 
 				await app.service('/accounts/jwtTimer').create({}, params);
-				const currentTtl = await redisHelper.redisTtlAsync(redisIdentifier);
+				const currentTtl = await redisHelpers.redisTtlAsync(redisIdentifier);
 				expect(currentTtl).to.equal(ttl);
 			});
 		});
@@ -122,7 +122,7 @@ describe('jwtTimer service', () => {
 				app.unuse('/accounts/jwtTimer');
 				app.configure(jwtTimerServiceSetup);
 
-				redisHelper.initializeRedisClient();
+				redisHelpers.initializeRedisClient();
 			});
 
 			after(async () => {

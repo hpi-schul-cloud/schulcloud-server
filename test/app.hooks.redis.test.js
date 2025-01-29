@@ -3,7 +3,7 @@ const commons = require('@hpi-schul-cloud/commons');
 const whitelist = require('../src/services/authentication/logic/whitelist');
 const appPromise = require('../src/app');
 const testHelper = require('./services/helpers/testObjects');
-const redisHelper = require('../src/utils/redis');
+const redisHelpers = require('../src/utils/redis');
 const fut = require('../src/app.hooks').handleAutoLogout;
 
 const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
@@ -58,13 +58,14 @@ describe('handleAutoLogout hook', () => {
 		Configuration.set('REDIS_URI', '//validHost:3333');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 
+		redisHelpers.clearRedis();
 		const redisClientMock = new RedisClientMock();
-		redisHelper.initializeRedisClient(redisClientMock);
+		redisHelpers.initializeRedisClient(redisClientMock);
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
-		delete require.cache[require.resolve('../src/utils/')];
+		redisHelpers.clearRedis();
 		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
@@ -74,10 +75,10 @@ describe('handleAutoLogout hook', () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
-		await redisHelper.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
+		await redisHelpers.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
 		const result = await fut({ params });
 		expect(result).to.not.equal(undefined);
-		const ttl = await redisHelper.redisTtlAsync(redisIdentifier);
+		const ttl = await redisHelpers.redisTtlAsync(redisIdentifier);
 		expect(ttl).to.be.greaterThan(7000);
 	});
 
@@ -85,7 +86,7 @@ describe('handleAutoLogout hook', () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
-		await redisHelper.redisDelAsync(redisIdentifier);
+		await redisHelpers.redisDelAsync(redisIdentifier);
 		try {
 			await fut({ params });
 			throw new Error('should have failed');

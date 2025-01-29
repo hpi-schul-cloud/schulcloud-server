@@ -22,6 +22,10 @@ async function initializeRedisClient(optionalRedisInstance) {
 	}
 }
 
+function clearRedis() {
+	redisClient = false;
+}
+
 function getRedisClient() {
 	return redisClient;
 }
@@ -48,6 +52,7 @@ const redisTtlAsync = (...args) => {
 };
 
 module.exports = {
+	clearRedis,
 	initializeRedisClient,
 	setRedisClient,
 	getRedisClient,

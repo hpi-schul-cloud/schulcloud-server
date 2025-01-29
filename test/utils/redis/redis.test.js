@@ -38,7 +38,7 @@ class RedisClientMock {
 describe('redis helpers', () => {
 	describe('without a redis server', () => {
 		before(async () => {
-			delete require.cache[require.resolve('../../../src/utils/redis')];
+			redisHelpers.clearRedis();
 			redisHelpers.initializeRedisClient();
 		});
 
@@ -87,14 +87,14 @@ describe('redis helpers', () => {
 
 		before(async () => {
 			configBefore = Configuration.toObject({ plainSecrets: true });
-			delete require.cache[require.resolve('../../../src/utils/redis')];
 			Configuration.set('REDIS_URI', '//validHost:6666');
+			redisHelpers.clearRedis();
 			const redisMock = new RedisClientMock();
 			redisHelpers.initializeRedisClient(redisMock);
 		});
 
 		after(async () => {
-			delete require.cache[require.resolve('../../../src/utils/redis')];
+			redisHelpers.clearRedis();
 			Configuration.reset(configBefore);
 		});
 
