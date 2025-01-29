@@ -14,6 +14,7 @@ import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
+import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
@@ -64,6 +65,8 @@ import { TspProvisioningStrategy } from './strategy/tsp';
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
+		SchulconnexGroupProvisioningProducer,
+		SchulconnexLicenseProvisioningProducer,
 	],
 	exports: [ProvisioningService, TspProvisioningService],
 })

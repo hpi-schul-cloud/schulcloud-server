@@ -6,8 +6,7 @@ export {
 	FilesStorageExchange,
 	MailSendExchange,
 	AntivirusExchange,
-	SchulconnexGroupProvisioningExchange,
-	SchulconnexLicenseProvisioningExchange,
+	SchulconnexProvisioningExchange,
 	RabbitMqURI,
 } from './rabbitmq.config';
 export * from './rabbitmq.module';

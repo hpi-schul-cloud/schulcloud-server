@@ -6,8 +6,7 @@ import {
 	FilesStorageExchange,
 	MailSendExchange,
 	RabbitMqURI,
-	SchulconnexGroupProvisioningExchange,
-	SchulconnexLicenseProvisioningExchange,
+	SchulconnexProvisioningExchange,
 } from './rabbitmq.config';
 
 /**
@@ -40,11 +39,7 @@ const imports = [
 				type: 'direct',
 			},
 			{
-				name: SchulconnexGroupProvisioningExchange,
-				type: 'direct',
-			},
-			{
-				name: SchulconnexLicenseProvisioningExchange,
+				name: SchulconnexProvisioningExchange,
 				type: 'direct',
 			},
 		],

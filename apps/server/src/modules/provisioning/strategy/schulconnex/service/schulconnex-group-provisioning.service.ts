@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupFilter, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import { CourseDoService } from '@modules/learnroom';
@@ -13,7 +14,6 @@ import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, Page, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
@@ -177,11 +177,12 @@ export class SchulconnexGroupProvisioningService {
 	): Promise<Group[]> {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
-		if (!user) {
+		if (!user?.id) {
 			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
 		}
+		const userId: string = user.id;
 
-		const filter: GroupFilter = { userId: user.id };
+		const filter: GroupFilter = { userId };
 		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups(filter);
 
 		const groupsFromSystem: Group[] = existingGroupsOfUser.data.filter(
@@ -199,7 +200,7 @@ export class SchulconnexGroupProvisioningService {
 
 		const groupRemovePromises: Promise<Group | null>[] = groupsWithoutUser.map(
 			async (group: Group): Promise<Group | null> => {
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				if (group.isEmpty()) {
 					const courses: Course[] = await this.courseService.findBySyncedGroup(group);
@@ -218,5 +219,27 @@ export class SchulconnexGroupProvisioningService {
 		const remainingGroups: Group[] = deletedAndModifiedGroups.filter((group: Group | null): group is Group => !!group);
 
 		return remainingGroups;
+	}
+
+	public async removeUserFromGroup(userId: EntityId, groupId: EntityId): Promise<boolean> {
+		const group: Group = await this.groupService.findById(groupId);
+
+		if (!group.isMember(userId)) {
+			return false;
+		}
+
+		group.removeUser(userId);
+
+		if (group.isEmpty()) {
+			const courses: Course[] = await this.courseService.findBySyncedGroup(group);
+
+			if (!courses.length) {
+				await this.groupService.delete(group);
+				return true;
+			}
+		}
+
+		await this.groupService.save(group);
+		return false;
 	}
 }

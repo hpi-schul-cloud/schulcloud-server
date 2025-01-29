@@ -634,7 +634,7 @@ describe('GroupService', () => {
 
 				await service.removeUsersFromGroup('groupId', [userId]);
 
-				expect(group.removeUser).toHaveBeenCalledWith(expect.objectContaining({ id: userDo.id }));
+				expect(group.removeUser).toHaveBeenCalledWith(userDo.id);
 			});
 
 			it('should call groupRepo.save', async () => {
