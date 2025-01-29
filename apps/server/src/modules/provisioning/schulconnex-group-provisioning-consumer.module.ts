@@ -1,10 +1,26 @@
 import { LoggerModule } from '@core/logger';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { GroupModule } from '@modules/group';
+import { LearnroomModule } from '@modules/learnroom';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { RoleModule } from '@modules/role';
+import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { SchulconnexGroupProvisioningConsumer } from './consumer';
+import { SchulconnexGroupProvisioningConsumer } from './amqp';
+import { SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
 
 @Module({
-	imports: [LoggerModule, RabbitMQWrapperModule],
-	providers: [SchulconnexGroupProvisioningConsumer],
+	imports: [
+		LoggerModule,
+		RabbitMQWrapperModule,
+		LegacySchoolModule,
+		UserModule,
+		RoleModule,
+		SystemModule,
+		GroupModule,
+		LearnroomModule,
+	],
+	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService],
 })
 export class SchulconnexGroupProvisioningConsumerModule {}
