@@ -1,14 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
-import { RoomService } from '@modules/room/domain';
+import { RoomService } from '@modules/room';
 import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
+import { RoomMembershipConfig } from '../room-membership-config';
 
 @Injectable()
 export class RoomMembershipService {
@@ -17,7 +19,8 @@ export class RoomMembershipService {
 		private readonly roomMembershipRepo: RoomMembershipRepo,
 		private readonly roleService: RoleService,
 		private readonly roomService: RoomService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly configService: ConfigService<RoomMembershipConfig, true>
 	) {}
 
 	public async createNewRoomMembership(roomId: EntityId, ownerUserId: EntityId): Promise<RoomMembership> {
@@ -79,8 +82,12 @@ export class RoomMembershipService {
 			throw new Error('Room membership not found');
 		}
 
+		const roleName = this.configService.get('FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED')
+			? RoleName.ROOMVIEWER
+			: RoleName.ROOMADMIN;
+
 		const userIdsAndRoles = userIds.map((userId) => {
-			return { userId, roleName: RoleName.ROOMADMIN };
+			return { userId, roleName };
 		});
 		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
 
