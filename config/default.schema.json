@@ -1656,6 +1656,16 @@
 			"type": "number",
 			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
 		},
+		"PROVISIONING_SCHULCONNEX_GROUP_EXCHANGE": {
+			"type": "string",
+			"default": "schulconnex-group-provisioning",
+			"description": "rabbitmq exchange name for schulconnex group provisioning"
+		},
+		"PROVISIONING_SCHULCONNEX_LICENSE_EXCHANGE": {
+			"type": "string",
+			"default": "schulconnex-license-provisioning",
+			"description": "rabbitmq exchange name for schulconnex license provisioning"
+		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
 			"default": "ws://localhost:4450",

@@ -99,6 +99,24 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"schulconnex-group-provisioning-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/schulconnex-group-provisioning-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"schulconnex-license-provisioning-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/schulconnex-license-provisioning-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"fwu-learning-contents": {
 			"type": "application",
 			"root": "apps/server",
