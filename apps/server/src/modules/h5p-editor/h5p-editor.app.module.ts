@@ -12,8 +12,8 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { H5PEditorController } from './controller/h5p-editor.controller';
-import { H5PContent, InstalledLibrary } from './entity';
 import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
@@ -32,7 +32,7 @@ const imports = [
 		password: DB_PASSWORD,
 		user: DB_USERNAME,
 		allowGlobalContext: true,
-		entities: [H5PContent, InstalledLibrary],
+		entities: ENTITIES,
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
