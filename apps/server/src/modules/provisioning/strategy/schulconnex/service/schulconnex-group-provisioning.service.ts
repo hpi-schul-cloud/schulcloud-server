@@ -221,11 +221,11 @@ export class SchulconnexGroupProvisioningService {
 		return remainingGroups;
 	}
 
-	public async removeUserFromGroup(userId: EntityId, groupId: EntityId): Promise<boolean> {
+	public async removeUserFromGroup(userId: EntityId, groupId: EntityId): Promise<Group | null> {
 		const group: Group = await this.groupService.findById(groupId);
 
 		if (!group.isMember(userId)) {
-			return false;
+			return null;
 		}
 
 		group.removeUser(userId);
@@ -235,11 +235,12 @@ export class SchulconnexGroupProvisioningService {
 
 			if (!courses.length) {
 				await this.groupService.delete(group);
-				return true;
+				return null;
 			}
 		}
 
-		await this.groupService.save(group);
-		return false;
+		const savedGroup: Group = await this.groupService.save(group);
+
+		return savedGroup;
 	}
 }

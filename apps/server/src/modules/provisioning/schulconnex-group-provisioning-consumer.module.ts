@@ -8,7 +8,7 @@ import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SchulconnexGroupProvisioningConsumer } from './amqp';
-import { SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
+import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
 
 @Module({
 	imports: [
@@ -21,6 +21,6 @@ import { SchulconnexGroupProvisioningService } from './strategy/schulconnex/serv
 		GroupModule,
 		LearnroomModule,
 	],
-	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService],
+	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })
 export class SchulconnexGroupProvisioningConsumerModule {}
