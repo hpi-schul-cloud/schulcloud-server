@@ -8,6 +8,7 @@ import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import type { TaskParent } from './task.entity';
 import { Task } from './task.entity';
+import { LessonResources } from '@src/modules/lesson/controller/dto/lesson-resources.model';
 
 export interface LessonProperties {
 	name: string;
@@ -37,13 +38,7 @@ export interface ComponentGeogebraProperties {
 }
 
 export interface ComponentLernstoreProperties {
-	resources: {
-		client: string;
-		description: string;
-		merlinReference?: string;
-		title: string;
-		url: string;
-	}[];
+	resources: Array<LessonResources>;
 }
 
 export interface ComponentEtherpadProperties {

@@ -11,6 +11,7 @@ import {
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
 import { LessonResources } from './lesson-resources.model';
+import { Type } from 'class-transformer';
 
 // eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
@@ -54,7 +55,7 @@ class ComponentInternalPropsImpl implements ComponentInternalProperties {
 }
 
 class ComponentLernstorePropsImpl implements ComponentLernstoreProperties {
-	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component' })
+	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component', type: [LessonResources] })
 	resources!: LessonResources[];
 }
 @ApiExtraModels(

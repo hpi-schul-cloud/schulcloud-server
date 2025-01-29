@@ -46,14 +46,20 @@
 			"svs-lesson-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
-				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/new-lesson-api-client",
+				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/lessons-api-client",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
 					"FILTER": "operationId:LessonController_getLesson|LessonController_getLessonTasks"
 				},
+				"additionalProperties": {
+					"withSeparateModelsAndApi": true,
+					"skipUnusedModels": false,
+					"apiPackage": "api",
+					"modelPackage": "models"
+				},
 				"globalProperty": {
-					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentNexboardPropsImpl",
+					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentNexboardPropsImpl:LessonResources:MaterialResponse",
 					"apis": "",
 					"supportingFiles": ""
 				}

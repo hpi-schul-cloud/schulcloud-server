@@ -13,7 +13,7 @@ import {
 	ComponentNexboardPropsImpl,
 	ComponentTextPropsImpl,
 	LessonContentResponse,
-	LessonContentResponseComponent,
+	LessonContentResponseComponentEnum,
 	LessonLinkedTaskResponse,
 	LessonResponse,
 	MaterialResponse,
@@ -73,7 +73,7 @@ export class LessonDtoMapper {
 
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
 		switch (lessonContentResponse.component) {
-			case LessonContentResponseComponent.TEXT:
+			case LessonContentResponseComponentEnum.Text:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -81,7 +81,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentTextPropsDto(lessonContentResponse.content as ComponentTextPropsImpl),
 				});
-			case LessonContentResponseComponent.ETHERPAD:
+			case LessonContentResponseComponentEnum.Etherpad:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -89,7 +89,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentEtherpadPropsDto(lessonContentResponse.content as ComponentEtherpadPropsImpl),
 				});
-			case LessonContentResponseComponent.GEO_GEBRA:
+			case LessonContentResponseComponentEnum.GeoGebra:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -97,7 +97,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentGeogebraPropsDto(lessonContentResponse.content as ComponentGeogebraPropsImpl),
 				});
-			case LessonContentResponseComponent.INTERNAL:
+			case LessonContentResponseComponentEnum.Internal:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -105,7 +105,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentInternalPropsDto(lessonContentResponse.content as ComponentInternalPropsImpl),
 				});
-			case LessonContentResponseComponent.RESOURCES:
+			case LessonContentResponseComponentEnum.Resources:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -113,7 +113,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl),
 				});
-			case LessonContentResponseComponent.NEX_BOARD:
+			case LessonContentResponseComponentEnum.NeXboard:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
