@@ -1,22 +1,22 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { SchoolService } from '@modules/school';
+import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { schoolFactory } from '@modules/school/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { Logger } from '@core/logger';
-import { SchoolService } from '@modules/school';
-import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
-import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
-import { schoolFactory } from '@modules/school/testing';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import {
 	BuildMediaSchoolLicenseFailedLoggable,
-	SchoolNumberNotFoundLoggableException,
 	FederalStateAbbreviationOfSchoolNotFoundLoggableException,
+	SchoolNumberNotFoundLoggableException,
 } from '../loggable';
-import { MediaSchoolLicenseRepo, MEDIA_SCHOOL_LICENSE_REPO } from '../repo';
+import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 import { mediaSchoolLicenseFactory, vidisOfferFactory } from '../testing';
 import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
 import { MediaSchoolLicenseService } from './media-school-license.service';
@@ -412,7 +412,7 @@ describe(MediaSchoolLicenseService.name, () => {
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
 
-				const schoolName = `${federalState.getProps().abbreviation}_${school.officialSchoolNumber ?? ''}`;
+				const schoolName = `${federalState.abbreviation}_${school.officialSchoolNumber ?? ''}`;
 
 				return {
 					school,
@@ -464,7 +464,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		describe('when fetching offers from media source was successful and offers have an offerId', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceFactory.withBasicAuthConfig().build({ format: MediaSourceDataFormat.VIDIS });
+				const mediaSource = mediaSourceFactory.withVidis().build({ format: MediaSourceDataFormat.VIDIS });
 				const offersFromMediaSource = vidisOfferFactory.buildList(5, { offerId: 12345 });
 				const mediaSchoolLicenses = mediaSchoolLicenseFactory.buildList(5, {
 					type: SchoolLicenseType.MEDIA_LICENSE,

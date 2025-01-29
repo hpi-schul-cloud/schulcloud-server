@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DatabaseManagementService } from '@infra/database';
@@ -8,10 +9,10 @@ import { SystemEntity } from '@modules/system/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { LegacyLogger } from '@core/logger';
 import { setupEntities } from '@testing/setup-entities';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
+import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {
@@ -23,6 +24,8 @@ describe('DatabaseManagementService', () => {
 	let logger: DeepMocked<LegacyLogger>;
 	let defaultEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 	let ldapEncryptionService: DeepMocked<SymmetricKeyEncryptionService>;
+	let mediaSourcesSeedDataService: DeepMocked<MediaSourcesSeedDataService>;
+	let systemsSeedDataService: DeepMocked<SystemsSeedDataService>;
 	let bsonConverter: BsonConverter;
 	const configGetSpy = jest.spyOn(Configuration, 'get');
 	const configHasSpy = jest.spyOn(Configuration, 'has');
@@ -178,6 +181,8 @@ describe('DatabaseManagementService', () => {
 				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: LdapEncryptionService, useValue: createMock<SymmetricKeyEncryptionService>() },
+				{ provide: MediaSourcesSeedDataService, useValue: createMock<MediaSourcesSeedDataService>() },
+				{ provide: SystemsSeedDataService, useValue: createMock<SystemsSeedDataService>() },
 				{
 					provide: FileSystemAdapter,
 					useValue: createMock<FileSystemAdapter>({
@@ -252,6 +257,8 @@ describe('DatabaseManagementService', () => {
 		logger = module.get(LegacyLogger);
 		defaultEncryptionService = module.get(DefaultEncryptionService);
 		ldapEncryptionService = module.get(LdapEncryptionService);
+		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
+		systemsSeedDataService = module.get(SystemsSeedDataService);
 		await setupEntities();
 	});
 
@@ -422,6 +429,8 @@ describe('DatabaseManagementService', () => {
 	describe('When import some collections from filesystem', () => {
 		beforeAll(() => {
 			configService.get.mockReturnValue(undefined);
+			mediaSourcesSeedDataService.import.mockResolvedValue(1);
+			systemsSeedDataService.import.mockResolvedValue(1);
 		});
 		afterAll(() => {
 			configService.get.mockReset();
@@ -429,7 +438,13 @@ describe('DatabaseManagementService', () => {
 
 		it('should seed all collections from filesystem and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem();
-			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
+			expect(collections).toEqual([
+				'collectionName1:3',
+				'collectionName2:1',
+				'systems:4',
+				'storageproviders:1',
+				'media-sources:1',
+			]);
 		});
 		it('should seed all collections from filesystem for empty filter and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem([]);
@@ -490,7 +505,9 @@ describe('DatabaseManagementService', () => {
 					configGetSpy.mockImplementation((data) => (data === 'AES_KEY' ? null : data));
 					configHasSpy.mockImplementation((data) => data !== 'AES_KEY');
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
+
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
+
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
@@ -621,7 +638,7 @@ describe('DatabaseManagementService', () => {
 
 	describe('DatabaseManagementService', () => {
 		it('should call syncIndexes()', async () => {
-			dbService.syncIndexes = jest.fn();
+			jest.spyOn(dbService, 'syncIndexes').mockImplementation();
 			await uc.syncIndexes();
 			expect(dbService.syncIndexes).toHaveBeenCalled();
 		});
@@ -660,27 +677,27 @@ describe('DatabaseManagementService', () => {
 
 	describe('migration', () => {
 		it('should call migrationUp', async () => {
-			dbService.migrationUp = jest.fn();
+			jest.spyOn(dbService, 'migrationUp').mockImplementation();
 			await uc.migrationUp();
 			expect(dbService.migrationUp).toHaveBeenCalled();
 		});
 		it('should call migrationUp with params', async () => {
-			dbService.migrationUp = jest.fn();
+			jest.spyOn(dbService, 'migrationUp').mockImplementation();
 			await uc.migrationUp('foo', 'bar', 'baz');
 			expect(dbService.migrationUp).toHaveBeenCalledWith('foo', 'bar', 'baz');
 		});
 		it('should call migrationDown', async () => {
-			dbService.migrationDown = jest.fn();
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
 			await uc.migrationDown();
 			expect(dbService.migrationDown).toHaveBeenCalled();
 		});
 		it('should call migrationDown with params', async () => {
-			dbService.migrationDown = jest.fn();
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
 			await uc.migrationDown('foo', 'bar', 'baz');
 			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
 		});
 		it('should call migrationPending', async () => {
-			dbService.migrationDown = jest.fn();
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
 			await uc.migrationPending();
 			expect(dbService.migrationPending).toHaveBeenCalled();
 		});

@@ -1,11 +1,11 @@
-import { ExternalToolMedium } from '@modules/tool/external-tool/domain/';
 import { Logger } from '@core/logger';
 import { OfferDTO } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Inject } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { School, SchoolService } from '@modules/school';
+import { ExternalToolMedium } from '@modules/tool/external-tool/domain/';
+import { Inject } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import {
@@ -68,7 +68,7 @@ export class MediaSchoolLicenseService {
 	public async updateMediaSchoolLicenses(schoolId: EntityId): Promise<void> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
-		const abbreviation: string | undefined = school.getProps().federalState?.getProps().abbreviation;
+		const abbreviation: string | undefined = school.federalState?.abbreviation;
 		const { officialSchoolNumber } = school;
 
 		if (!abbreviation) {

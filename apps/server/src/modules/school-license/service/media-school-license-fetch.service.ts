@@ -1,30 +1,32 @@
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { IDMBetreiberApiInterface, OfferDTO, PageOfferDTO, VidisClientFactory } from '@infra/vidis-client';
+import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from '@infra/vidis-client';
+import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceVidisConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 import { Inject } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { AxiosErrorLoggable } from '@core/error/loggable';
-import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
-import { MediaSourceBasicAuthConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 
 export class MediaSchoolLicenseFetchService {
-	constructor(
-		private readonly vidisClientFactory: VidisClientFactory,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
-	) {}
+	constructor(@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService) {}
 
 	public async fetchOffersForSchoolFromVidis(mediaSource: MediaSource, schoolName: string): Promise<OfferDTO[]> {
-		if (!mediaSource.basicAuthConfig) {
-			throw new MediaSourceBasicAuthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
+		if (!mediaSource.vidisConfig) {
+			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
 		}
 
-		const vidisClient: IDMBetreiberApiInterface = this.vidisClientFactory.createVidisClient();
+		const { vidisConfig } = mediaSource;
+		const api = IDMBetreiberApiFactory(
+			new Configuration({
+				basePath: vidisConfig.baseUrl,
+			})
+		);
 
-		const decryptedUsername = this.encryptionService.decrypt(mediaSource.basicAuthConfig.username);
-		const decryptedPassword = this.encryptionService.decrypt(mediaSource.basicAuthConfig.password);
+		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
+		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
 		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
 
 		try {
-			const axiosResponse: AxiosResponse<PageOfferDTO> = await vidisClient.getActivatedOffersBySchool(
+			const axiosResponse: AxiosResponse<PageOfferDTO> = await api.getActivatedOffersBySchool(
 				schoolName,
 				undefined,
 				undefined,

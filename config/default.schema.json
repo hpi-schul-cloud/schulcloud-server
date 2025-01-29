@@ -1688,21 +1688,6 @@
 		},
 		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
 			"type": "boolean",
-			"default": "false",
-			"description": "Enables the Vidis media activations feature"
-		},
-		"VIDIS_API_CLIENT_BASE_URL": {
-			"type": "string",
-			"default": "",
-			"description": "The VIDIS API base URL"
-		},
-		"VIDIS_SYNC_REGION": {
-			"type": "string",
-			"default": "",
-			"description": "The region for fetching activated offers from VIDIS"
-		},
-		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
-			"type": "boolean",
 			"default": false,
 			"description": "Enables VIDIS media activation synchronisation"
 		},
