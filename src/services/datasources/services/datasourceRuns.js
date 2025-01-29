@@ -1,13 +1,11 @@
 const Ajv = require('ajv');
 const { Writable } = require('stream');
-
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
 const { Forbidden, GeneralError } = require('../../../errors');
+const logger = require('../../../logger');
 const { hasPermission } = require('../../../hooks');
 const { getDatasource, restrictToDatasourceSchool } = require('../hooks');
-// const { datasourcesDocs } = require('../docs');
-
 const { datasourceRunCreateSchema } = require('../schemas');
 const { datasourceRunModel } = require('../model');
 const { SUCCESS, ERROR, PENDING } = require('../constants');
@@ -15,6 +13,15 @@ const { SUCCESS, ERROR, PENDING } = require('../constants');
 class DatasourceRuns {
 	constructor(options) {
 		this.options = options || {};
+		this.eventCallback = async () => {};
+	}
+
+	addEventCallback(callback) {
+		this.eventCallback = callback;
+	}
+
+	clearEventCallback() {
+		this.eventCallback = async () => {};
 	}
 
 	registerEventListeners() {}
@@ -145,15 +152,17 @@ class DatasourceRuns {
 		};
 
 		try {
-			await Promise.all([
+			const response = await Promise.all([
 				datasourceRunModel.updateOne({ _id: datasourceRunId }, updateData),
 				this.app.service('datasources').patch(datasourceId, {
 					lastRun: endTime,
 					lastStatus: status,
 				}),
 			]);
+			this.eventCallback(undefined, response);
 		} catch (err) {
-			throw new GeneralError('error while updating datasourcerun', err);
+			logger.error(new GeneralError('error while updating datasourcerun', err));
+			await this.eventCallback(err);
 		}
 	}
 
@@ -178,6 +187,14 @@ class DatasourceRuns {
 				lastStatus: ERROR,
 			}),
 		]);
+	}
+
+	async handleError(err, startTime, datasourceRunId, datasourceId) {
+		await this.updateAfterFail(err.message, startTime, datasourceRunId, datasourceId);
+		logger.error(
+			new GeneralError('datasourceRun encountered an error after invoking sync. This is most likely a user error.', err)
+		);
+		await this.eventCallback(err);
 	}
 
 	/**
@@ -209,18 +226,15 @@ class DatasourceRuns {
 		};
 
 		// we intentionally do not await the sync, and instead return the pending run.
-		const promise = this.app.service('sync').create(data, syncParams);
-
-		promise.then(async (result) => {
-			await this.updateAfterSuccess(result, logString, startTime, datasourceRun._id, params.datasource._id);
-		});
-		promise.catch(async (err) => {
-			await this.updateAfterFail(err.message, startTime, datasourceRun._id, params.datasource._id);
-			throw new GeneralError(
-				'datasourceRun encountered an error after invoking sync. This is most likely a user error.',
-				err
-			);
-		});
+		this.app
+			.service('sync')
+			.create(data, syncParams)
+			.then(async (result) =>
+				this.updateAfterSuccess(result, logString, startTime, datasourceRun._id, params.datasource._id)
+			)
+			.catch(async (err) => {
+				await this.handleError(err, startTime, datasourceRun._id, params.datasource._id);
+			});
 
 		return Promise.resolve(datasourceRun);
 	}
