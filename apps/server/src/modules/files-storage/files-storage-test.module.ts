@@ -1,19 +1,14 @@
-import { CoreModule } from '@core/core.module';
-import { LoggerModule } from '@core/logger';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { DynamicModule, Module } from '@nestjs/common';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { Module } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
-import { FileRecord } from './entity';
 import { FilesStorageApiModule } from './files-storage-api.app.module';
+import { ENTITIES } from './files-storage.entity.imports';
 
 const imports = [
 	FilesStorageApiModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [FileRecord, User] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: [...ENTITIES, User] }),
 	RabbitMQWrapperTestModule,
-	CoreModule,
-	LoggerModule,
 ];
 const controllers = [];
 const providers = [];
@@ -22,13 +17,4 @@ const providers = [];
 	controllers,
 	providers,
 })
-export class FilesStorageTestModule {
-	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: FilesStorageTestModule,
-			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options })],
-			controllers,
-			providers,
-		};
-	}
-}
+export class FilesStorageTestModule {}
