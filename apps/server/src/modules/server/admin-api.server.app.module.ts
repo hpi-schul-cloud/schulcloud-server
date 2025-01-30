@@ -2,7 +2,7 @@ import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EtherpadClientModule } from '@infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -11,13 +11,13 @@ import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school
 import { AdminApiRegistrationPinModule } from '@modules/registration-pin/admin-api-registration-pin.module';
 import { ToolAdminApiModule } from '@modules/tool/tool-admin-api.module';
 import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { Role } from '@shared/domain/entity/role.entity';
 import { adminApiServerConfig } from './admin-api-server.config';
+import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
@@ -43,7 +43,7 @@ const serverModules = [
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [Role],
+			entities: ENTITIES,
 			// debug: true, // use it for locally debugging of queries
 		}),
 		CqrsModule,
@@ -55,20 +55,9 @@ export class AdminApiServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 })
-export class AdminApiServerTestModule {
-	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: AdminApiServerTestModule,
-			imports: [
-				...serverModules,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
-				RabbitMQWrapperTestModule,
-			],
-		};
-	}
-}
+export class AdminApiServerTestModule {}
