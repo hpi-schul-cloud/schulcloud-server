@@ -192,8 +192,14 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result[0]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
-					title: (lessonContent.content as any).title,
-					url: (lessonContent.content as any).url,
+					title: (lessonContent.content as any).resources[0].title,
+					url: (lessonContent.content as any).resources[0].url,
+				});
+				expect(result[1]).toEqual({
+					type: CommonCartridgeResourceType.WEB_LINK,
+					identifier: `i${lessonContent.id ?? ''}`,
+					title: (lessonContent.content as any).resources[1].title,
+					url: (lessonContent.content as any).resources[1].url,
 				});
 			});
 		});
