@@ -168,7 +168,6 @@ describe('CommonCartridgeResourceFactory', () => {
 
 				expect(result).toStrictEqual({
 					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					title: organizationProps.title,
 					html: '<p>Content</p>',
 				});
 			});
@@ -191,7 +190,6 @@ describe('CommonCartridgeResourceFactory', () => {
 
 				expect(result).toStrictEqual({
 					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					title: organizationProps.title,
 					html: '',
 				});
 			});
