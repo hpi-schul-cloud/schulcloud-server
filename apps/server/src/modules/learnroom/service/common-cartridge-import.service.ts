@@ -50,7 +50,7 @@ export class CommonCartridgeImportService {
 		boardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {
-		const counter = 0;
+		const columnsTitleCounter = 0;
 		const columnBoard = this.boardNodeFactory.buildColumnBoard({
 			context: {
 				type: BoardExternalReferenceType.Course,
@@ -61,7 +61,7 @@ export class CommonCartridgeImportService {
 		});
 		await this.boardNodeService.addRoot(columnBoard);
 
-		await this.createColumns(parser, columnBoard, boardProps, organizations, counter);
+		await this.createColumns(parser, columnBoard, boardProps, organizations, columnsTitleCounter);
 	}
 
 	private async createColumns(
