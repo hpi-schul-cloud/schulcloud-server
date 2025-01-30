@@ -1,4 +1,4 @@
-import { LegacyBoard, BoardProps } from '@shared/domain/entity';
+import { BoardProps, LegacyBoard } from '@modules/learnroom/repo';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 

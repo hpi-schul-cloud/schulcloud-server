@@ -3,7 +3,6 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
 	Course,
-	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
 	LessonEntity,
@@ -13,7 +12,7 @@ import {
 } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
-import { ColumnBoardBoardElement, ColumnBoardNode } from '../repo';
+import { ColumnBoardBoardElement, ColumnBoardNode, LegacyBoard } from '../repo';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,

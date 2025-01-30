@@ -1,6 +1,6 @@
-import { ColumnBoardBoardElement } from '@modules/learnroom/repo';
+import { ColumnBoardBoardElement, LegacyBoard } from '@modules/learnroom/repo';
 import { Injectable } from '@nestjs/common';
-import { Course, LegacyBoard, LessonBoardElement, TaskBoardElement } from '@shared/domain/entity';
+import { Course, LessonBoardElement, TaskBoardElement } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 

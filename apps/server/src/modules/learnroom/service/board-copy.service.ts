@@ -10,7 +10,6 @@ import {
 	Course,
 	isLesson,
 	isTask,
-	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
 	LessonBoardElement,
@@ -22,7 +21,7 @@ import {
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { sortBy } from 'lodash';
-import { ColumnBoardBoardElement, ColumnBoardNode, ColumnBoardNodeRepo } from '../repo';
+import { ColumnBoardBoardElement, ColumnBoardNode, ColumnBoardNodeRepo, LegacyBoard } from '../repo';
 
 export type BoardCopyParams = {
 	originalBoard: LegacyBoard;
