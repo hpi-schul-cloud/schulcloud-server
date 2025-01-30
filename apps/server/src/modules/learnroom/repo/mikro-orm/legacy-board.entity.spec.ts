@@ -1,16 +1,16 @@
 import { columnBoardFactory } from '@modules/board/testing';
-import {
-	boardFactory,
-	columnboardBoardElementFactory,
-	lessonBoardElementFactory,
-	taskBoardElementFactory,
-} from '@modules/learnroom/testing';
 import { BadRequestException } from '@nestjs/common';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
-import { columnBoardNodeFactory } from '../../testing';
+import {
+	boardFactory,
+	columnboardBoardElementFactory,
+	columnBoardNodeFactory,
+	lessonBoardElementFactory,
+	taskBoardElementFactory,
+} from '../../testing';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {
