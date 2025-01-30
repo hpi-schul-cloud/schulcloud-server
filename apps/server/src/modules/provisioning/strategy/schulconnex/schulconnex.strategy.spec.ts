@@ -1,9 +1,9 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
@@ -11,16 +11,10 @@ import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import {
-	ExternalGroupDto,
-	ExternalSchoolDto,
-	OauthDataDto,
-	OauthDataStrategyInputDto,
-	ProvisioningDto,
-	ProvisioningSystemDto,
-} from '../../dto';
+import { ExternalGroupDto, ExternalSchoolDto, OauthDataDto, ProvisioningDto, ProvisioningSystemDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
+import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -31,20 +25,9 @@ import {
 	SchulconnexUserProvisioningService,
 } from './service';
 
-class TestSchulconnexStrategy extends SchulconnexProvisioningStrategy {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		throw new NotImplementedException();
-	}
-
-	getType(): SystemProvisioningStrategy {
-		throw new NotImplementedException();
-	}
-}
-
 describe(SchulconnexProvisioningStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: TestSchulconnexStrategy;
+	let strategy: SchulconnexProvisioningStrategy;
 
 	let schulconnexSchoolProvisioningService: DeepMocked<SchulconnexSchoolProvisioningService>;
 	let schulconnexUserProvisioningService: DeepMocked<SchulconnexUserProvisioningService>;
@@ -60,7 +43,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				TestSchulconnexStrategy,
+				SchulconnexProvisioningStrategy,
 				{
 					provide: SchulconnexSchoolProvisioningService,
 					useValue: createMock<SchulconnexSchoolProvisioningService>(),
@@ -90,6 +73,14 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 					useValue: createMock<SchulconnexToolProvisioningService>(),
 				},
 				{
+					provide: SchulconnexResponseMapper,
+					useValue: createMock<SchulconnexResponseMapper>(),
+				},
+				{
+					provide: SchulconnexRestClient,
+					useValue: createMock<SchulconnexRestClient>(),
+				},
+				{
 					provide: ConfigService,
 					useValue: {
 						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
@@ -102,7 +93,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 			],
 		}).compile();
 
-		strategy = module.get(TestSchulconnexStrategy);
+		strategy = module.get(SchulconnexProvisioningStrategy);
 		schulconnexSchoolProvisioningService = module.get(SchulconnexSchoolProvisioningService);
 		schulconnexUserProvisioningService = module.get(SchulconnexUserProvisioningService);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
@@ -125,6 +116,16 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+	});
+
+	describe('getType', () => {
+		describe('when it is called', () => {
+			it('should return type SANIS', () => {
+				const result: SystemProvisioningStrategy = strategy.getType();
+
+				expect(result).toEqual(SystemProvisioningStrategy.SANIS);
+			});
+		});
 	});
 
 	describe('apply is called', () => {

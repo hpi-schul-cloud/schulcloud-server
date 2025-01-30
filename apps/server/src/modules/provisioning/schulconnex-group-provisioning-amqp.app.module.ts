@@ -1,5 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -24,6 +25,7 @@ import { SchulconnexGroupProvisioningConsumerModule } from './schulconnex-group-
 
 			// debug: true, // use it for locally debugging of querys
 		}),
+		RabbitMQWrapperModule,
 		SchulconnexGroupProvisioningConsumerModule,
 	],
 })

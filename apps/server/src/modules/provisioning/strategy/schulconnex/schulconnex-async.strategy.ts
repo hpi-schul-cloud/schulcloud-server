@@ -22,9 +22,9 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexFetchStrate
 	constructor(
 		private readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		private readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
+		private readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		private readonly schulconnexGroupProvisioningProducer: SchulconnexGroupProvisioningProducer,
 		private readonly schulconnexLicenseProvisioningProducer: SchulconnexLicenseProvisioningProducer,
-		private readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		private readonly groupService: GroupService,
 		protected readonly responseMapper: SchulconnexResponseMapper,
 		protected readonly schulconnexRestClient: SchulconnexRestClient,
@@ -64,7 +64,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexFetchStrate
 			});
 		}
 
-		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
+		return new ProvisioningDto({ externalUserId: data.externalUser.externalId });
 	}
 
 	private async provisionGroups(data: OauthDataDto, user: UserDO, school?: LegacySchoolDo): Promise<void> {
@@ -84,6 +84,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexFetchStrate
 		}
 
 		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups({ userId, systemId });
+
 		const groupsWithoutUser: Group[] = existingGroupsOfUser.data.filter((existingGroupFromSystem: Group) => {
 			const isUserInGroup: boolean = externalGroups.some(
 				(externalGroup: ExternalGroupDto) =>

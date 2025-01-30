@@ -1,5 +1,4 @@
 import { LoggerModule } from '@core/logger';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { GroupModule } from '@modules/group';
 import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -11,16 +10,7 @@ import { SchulconnexGroupProvisioningConsumer } from './amqp';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
 
 @Module({
-	imports: [
-		LoggerModule,
-		RabbitMQWrapperModule,
-		LegacySchoolModule,
-		UserModule,
-		RoleModule,
-		SystemModule,
-		GroupModule,
-		LearnroomModule,
-	],
+	imports: [LoggerModule, LegacySchoolModule, UserModule, RoleModule, SystemModule, GroupModule, LearnroomModule],
 	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })
 export class SchulconnexGroupProvisioningConsumerModule {}

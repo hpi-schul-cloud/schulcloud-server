@@ -1,5 +1,4 @@
 import { LoggerModule } from '@core/logger';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
 import { LegacySchoolModule } from '../legacy-school';
 import { MediaSourceModule } from '../media-source/media-source.module';
@@ -12,7 +11,7 @@ import {
 } from './strategy/schulconnex/service';
 
 @Module({
-	imports: [LoggerModule, RabbitMQWrapperModule, UserLicenseModule, MediaSourceModule, ToolModule, LegacySchoolModule],
+	imports: [LoggerModule, UserLicenseModule, MediaSourceModule, ToolModule, LegacySchoolModule],
 	providers: [
 		SchulconnexLicenseProvisioningConsumer,
 		SchulconnexLicenseProvisioningService,
