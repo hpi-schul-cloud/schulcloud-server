@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { MediaSourceVidisConfig } from '@modules/media-source/domain';
+import { MediaSourceAuthMethod } from '@modules/media-source/enum';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourcesSeedDataService } from './media-sources-seed-data.service';
@@ -115,6 +116,122 @@ describe(MediaSourcesSeedDataService.name, () => {
 				const result = await service.import();
 
 				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when the bilo secrets are defined', () => {
+			const setup = () => {
+				const biloClientId = 'test-client-id';
+				const biloClientSecret = 'test-client-secret';
+
+				configService.get.mockImplementation((key: string) => {
+					switch (key) {
+						case 'MEDIA_SOURCE_BILO_CLIENT_ID':
+							return biloClientId;
+						case 'MEDIA_SOURCE_BILO_CLIENT_SECRET':
+							return biloClientSecret;
+						default:
+							return undefined;
+					}
+				});
+
+				const encryptedClientSecret = 'encrypted-test-client-secret';
+				encryptionService.encrypt.mockReturnValueOnce(encryptedClientSecret);
+
+				return { biloClientId, biloClientSecret, encryptedClientSecret };
+			};
+
+			it('should encrypt the client secret', async () => {
+				const { biloClientSecret } = setup();
+
+				await service.import();
+
+				expect(encryptionService.encrypt).toHaveBeenCalledWith(biloClientSecret);
+			});
+
+			it('should import bilo media source', async () => {
+				const { biloClientId, encryptedClientSecret } = setup();
+
+				await service.import();
+
+				expect(mediaSourceService.save).toHaveBeenCalledWith<[MediaSource]>(
+					new MediaSource({
+						id: '679b870e987d8f9a40c1bcbb',
+						name: 'Bildungslogin',
+						sourceId: 'BiloTestMediaCatalog-00001',
+						format: MediaSourceDataFormat.BILDUNGSLOGIN,
+						oauthConfig: {
+							clientId: biloClientId,
+							clientSecret: encryptedClientSecret,
+							authEndpoint: 'https://login.test.sso.bildungslogin.de/realms/BiLo-Broker/protocol/openid-connect/token',
+							method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
+						},
+					})
+				);
+			});
+
+			it('should return 1', async () => {
+				setup();
+
+				const result = await service.import();
+
+				expect(result).toEqual(1);
+			});
+		});
+
+		describe('when the bilo secrets are not defined', () => {
+			const setup = () => {
+				configService.get.mockImplementation((key: string) => {
+					switch (key) {
+						case 'MEDIA_SOURCE_BILO_CLIENT_ID':
+						case 'MEDIA_SOURCE_BILO_CLIENT_SECRET':
+						default:
+							return undefined;
+					}
+				});
+			};
+
+			it('should not import bilo media source', async () => {
+				setup();
+
+				await service.import();
+
+				expect(mediaSourceService.save).not.toHaveBeenCalled();
+			});
+
+			it('should return 0', async () => {
+				setup();
+
+				const result = await service.import();
+
+				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when more than one secrets are defined', () => {
+			const setup = () => {
+				configService.get.mockImplementation((key: string) => {
+					switch (key) {
+						case 'MEDIA_SOURCE_VIDIS_USERNAME':
+							return 'test-vidis-username';
+						case 'MEDIA_SOURCE_VIDIS_PASSWORD':
+							return 'test-vidis-password';
+						case 'MEDIA_SOURCE_BILO_CLIENT_ID':
+							return 'test-bilo-client-id';
+						case 'MEDIA_SOURCE_BILO_CLIENT_SECRET':
+							return 'test-bilo-client-secret';
+						default:
+							return undefined;
+					}
+				});
+			};
+
+			it('should return the number of media source imported', async () => {
+				setup();
+
+				const result = await service.import();
+
+				expect(result).toEqual(2);
 			});
 		});
 	});

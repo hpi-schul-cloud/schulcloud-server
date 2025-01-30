@@ -1,6 +1,6 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { MediaSource, MediaSourceService } from '@modules/media-source';
-import { MediaSourceDataFormat } from '@modules/media-source/enum';
+import { MediaSourceAuthMethod, MediaSourceDataFormat } from '@modules/media-source/enum';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
@@ -13,6 +13,8 @@ export class MediaSourcesSeedDataService {
 	) {}
 
 	public async import(): Promise<number> {
+		let mediaSourcesCount = 0;
+
 		const vidisUserName: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_USERNAME');
 		const vidisPassword: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_PASSWORD');
 
@@ -35,9 +37,33 @@ export class MediaSourcesSeedDataService {
 				})
 			);
 
-			return 1;
+			mediaSourcesCount += 1;
 		}
 
-		return 0;
+		const biloClientId: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_ID');
+		const biloClientSecret: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_SECRET');
+
+		if (biloClientId && biloClientSecret) {
+			const encryptedBiloClientSecret: string = this.defaultEncryptionService.encrypt(biloClientSecret);
+
+			await this.mediaSourceService.save(
+				new MediaSource({
+					id: '679b870e987d8f9a40c1bcbb',
+					name: 'Bildungslogin',
+					sourceId: 'BiloTestMediaCatalog-00001',
+					format: MediaSourceDataFormat.BILDUNGSLOGIN,
+					oauthConfig: {
+						clientId: biloClientId,
+						clientSecret: encryptedBiloClientSecret,
+						authEndpoint: 'https://login.test.sso.bildungslogin.de/realms/BiLo-Broker/protocol/openid-connect/token',
+						method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
+					},
+				})
+			);
+
+			mediaSourcesCount += 1;
+		}
+
+		return mediaSourcesCount;
 	}
 }
