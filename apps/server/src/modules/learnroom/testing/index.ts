@@ -1,3 +1,4 @@
+export { boardFactory } from './board.factory';
 export {
 	columnboardBoardElementFactory,
 	lessonBoardElementFactory,

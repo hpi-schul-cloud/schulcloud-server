@@ -2,14 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
 
 import { LegacyBoard } from '@modules/learnroom/repo';
-import { lessonBoardElementFactory, taskBoardElementFactory } from '@modules/learnroom/testing';
+import { boardFactory, lessonBoardElementFactory, taskBoardElementFactory } from '@modules/learnroom/testing';
 import { LegacyBoardRepo } from './legacy-board.repo';
 
 describe('LegacyRoomBoardRepo', () => {
