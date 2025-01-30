@@ -28,7 +28,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, title, inputFormat);
+				return this.createWebContentResource(content, inputFormat);
 			default:
 				return undefined;
 		}
@@ -59,7 +59,6 @@ export class CommonCartridgeResourceFactory {
 
 	private createWebContentResource(
 		content: string,
-		title: string,
 		inputFormat: InputFormat
 	): CommonCartridgeWebContentResourceProps | undefined {
 		const document = this.tryCreateDocument(content, 'text/html');
@@ -72,7 +71,6 @@ export class CommonCartridgeResourceFactory {
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			title,
 			html,
 		};
 	}
