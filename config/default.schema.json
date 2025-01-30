@@ -215,7 +215,7 @@
 		},
 		"TSP_SYNC_MIGRATION_LIMIT": {
 			"type": "number",
-			"default": "500",
+			"default": "50",
 			"description": "The amount of users the sync migrates at once."
 		},
 		"FEATURE_TSP_MIGRATION_ENABLED": {
