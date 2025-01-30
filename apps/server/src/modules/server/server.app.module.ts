@@ -20,6 +20,14 @@ import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-ed
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
+import {
+	ColumnBoardBoardElement,
+	ColumnBoardNode,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonBoardElement,
+	TaskBoardElement,
+} from '@modules/learnroom/repo';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MeApiModule } from '@modules/me/me-api.module';
@@ -126,7 +134,15 @@ const controllers = [ServerController, ServerConfigController];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: [
+				...ALL_ENTITIES,
+				ColumnBoardBoardElement,
+				ColumnBoardNode,
+				LegacyBoard,
+				LegacyBoardElement,
+				LessonBoardElement,
+				TaskBoardElement,
+			],
 
 			// debug: true, // use it for locally debugging of queries
 		}),

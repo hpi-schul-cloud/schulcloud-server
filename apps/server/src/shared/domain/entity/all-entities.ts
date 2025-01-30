@@ -5,14 +5,6 @@ import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.en
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
-import {
-	ColumnBoardBoardElement,
-	ColumnBoardNode,
-	LegacyBoard,
-	LegacyBoardElement,
-	LessonBoardElement,
-	TaskBoardElement,
-} from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
@@ -50,11 +42,7 @@ import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
 	AccountEntity,
-	LegacyBoard,
-	LegacyBoardElement,
 	BoardNodeEntity,
-	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	ClassEntity,
 	DeletionRequestEntity,
 	DeletionLogEntity,
@@ -69,7 +57,6 @@ export const ALL_ENTITIES = [
 	FederalStateEntity,
 	ImportUser,
 	LessonEntity,
-	LessonBoardElement,
 	LtiTool,
 	Material,
 	News,
@@ -91,7 +78,6 @@ export const ALL_ENTITIES = [
 	Submission,
 	SystemEntity,
 	Task,
-	TaskBoardElement,
 	TeamEntity,
 	TeamNews,
 	TeamUserEntity,
