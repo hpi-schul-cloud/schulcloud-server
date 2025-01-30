@@ -95,7 +95,7 @@ export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ seque
 	return {
 		id: sequence.toString(),
 		type: 'lernstore',
-		content: { resources: [faker.internet.url(), faker.internet.url(), faker.internet.url()] },
+		content: { resources: [{ url: faker.internet.url(), client: faker.company.name(), description: faker.lorem.sentence(), merlinReference: faker.string.uuid(), title: faker.lorem.sentence() }, { url: faker.internet.url(), client: faker.company.name(), description: faker.lorem.sentence(), merlinReference: faker.string.uuid(), title: faker.lorem.sentence() }, { url: faker.internet.url(), client: faker.company.name(), description: faker.lorem.sentence(), merlinReference: faker.string.uuid(), title: faker.lorem.sentence() }] },
 		title: faker.lorem.sentence(),
 		component: 'lernstore',
 		hidden: faker.datatype.boolean(),
@@ -121,7 +121,7 @@ export const lessonFactory = Factory.define<LessonDto>(({ sequence }) => {
 		courseGroupId: faker.string.uuid(),
 		hidden: faker.datatype.boolean(),
 		position: faker.number.int(),
-		contents: [lessonContentFactory.build(), lernstoreContentFactory.build()],
+		contents: [lessonContentFactory.build()],
 		materials: [],
 		linkedTasks: [lessonLinkedTaskFactory.build(), lessonLinkedTaskFactory.build()],
 	};

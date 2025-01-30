@@ -4,14 +4,14 @@ import {
 	LessonContentResponse,
 	LessonResponse,
 	LessonLinkedTaskResponse,
-	LessonLinkedTaskResponseDescriptionInputFormat,
+	LessonLinkedTaskResponseDescriptionInputFormatEnum,
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
 	ComponentInternalPropsImpl,
 	ComponentTextPropsImpl,
 	ComponentLernstorePropsImpl,
 	ComponentNexboardPropsImpl,
-	LessonContentResponseComponent,
+	LessonContentResponseComponentEnum,
 } from '../lessons-api-client';
 import { LessonDtoMapper } from './lesson-dto.mapper';
 import { LessonDto } from '../dto';
@@ -183,7 +183,7 @@ describe('LessonDtoMapper', () => {
 		describe('when mapping LessonResponse to lesson DTO with lernstore content', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
-					content: { resources: [faker.internet.url(), faker.lorem.text()] } as ComponentLernstorePropsImpl,
+					content: { resources: [faker.internet.url(), faker.lorem.text()] } as unknown as ComponentLernstorePropsImpl,
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
@@ -271,7 +271,7 @@ describe('LessonDtoMapper', () => {
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['unknown']) as unknown as LessonContentResponseComponent,
+					component: faker.helpers.arrayElement(['unknown']) as unknown as LessonContentResponseComponentEnum,
 					hidden: faker.datatype.boolean(),
 				};
 
@@ -306,7 +306,7 @@ describe('LessonDtoMapper', () => {
 				const lessonLinkedTaskResponse: LessonLinkedTaskResponse = {
 					name: faker.lorem.sentence(),
 					description: faker.lorem.sentence(),
-					descriptionInputFormat: LessonLinkedTaskResponseDescriptionInputFormat.PLAIN_TEXT,
+					descriptionInputFormat: LessonLinkedTaskResponseDescriptionInputFormatEnum.PlainText,
 					availableDate: faker.date.recent().toString(),
 					dueDate: faker.date.future().toString(),
 					private: faker.datatype.boolean(),

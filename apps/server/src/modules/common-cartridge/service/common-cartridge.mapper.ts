@@ -23,6 +23,7 @@ import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/
 import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
 import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
+import { LessonResourcesDto } from '../common-cartridge-client/lesson-client/dto/lesson-resources.dto';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -87,9 +88,8 @@ export class CommonCartridgeExportMapper {
 				};
 			case LessonContentDtoComponentValues.LERNSTORE: {
 				const { resources } = lessonContent.content as ComponentLernstorePropsDto;
-				const extractedResources = this.extractResources(resources);
 				return (
-					extractedResources.map((resource) => {
+					resources.map((resource) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
 							identifier: createIdentifier(lessonContent.id),
@@ -102,23 +102,6 @@ export class CommonCartridgeExportMapper {
 			default:
 				return [];
 		}
-	}
-
-	// should be removed after fixing the issue with the Lernstore component
-	private extractResources(resources: string[]): { title: string; url: string }[] {
-		return resources.map((resource) => {
-			const fields = resource.split(',').map((field) => field.trim());
-			let title = '';
-			let url = '';
-
-			fields.forEach((field) => {
-				const [key, value] = field.split('=').map((part) => part.trim());
-				if (key === 'title') title = value;
-				if (key === 'url') url = value;
-			});
-
-			return { title, url };
-		});
 	}
 
 	public mapContentToOrganization(content: LessonContentDto): CommonCartridgeOrganizationProps {
