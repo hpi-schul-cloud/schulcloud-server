@@ -47,6 +47,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: preview-generator
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:file-preview-{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

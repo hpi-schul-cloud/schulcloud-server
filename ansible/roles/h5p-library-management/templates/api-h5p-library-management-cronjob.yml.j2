@@ -35,6 +35,8 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             runAsNonRoot: true
+          os:
+            name: linux
           volumes:
             - name: libraries-list
               configMap:
