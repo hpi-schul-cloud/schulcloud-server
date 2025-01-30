@@ -6,16 +6,14 @@ import { SyncModule } from '@infra/sync/sync.module';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { FilesModule } from '@modules/files';
 import { ManagementModule } from '@modules/management/management.module';
-import { MediaSourceEntity } from '@modules/media-source/entity';
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common'; // TODO: Import Reihenfolge sieht falsch aus ...IDM prüfen.
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { ConsoleModule } from 'nestjs-console';
 import path from 'path';
+import { ENTITIES } from './migrations.entity.imports';
 import { ServerConsole } from './server.console';
-
-export const ENTITIES = [MediaSourceEntity];
 
 const migrationsPath = path.resolve(__dirname, '..', 'migrations', 'mikro-orm'); // TODO: Warum ist das hier überhaupt relevant?
 
@@ -25,14 +23,8 @@ const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	clientUrl: DB_URL,
 	password: DB_PASSWORD,
 	user: DB_USERNAME,
-	entities: [...ENTITIES],
+	entities: ENTITIES,
 	allowGlobalContext: true,
-	// TODO: Warum kann das raus? Das sollte doch nicht auskommentiert sein. Warum ist das überhaupt hier alles seperiert?
-	/*
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		new NotFoundException(`The requested ${entityName}: ${JSON.stringify(where)} has not been found.`),
-	*/
-	// TODO: Warum kann das raus?
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
 		path: migrationsPath, // path to the folder with migrations
