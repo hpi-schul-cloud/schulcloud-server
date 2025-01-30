@@ -8,7 +8,7 @@ import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import type { TaskParent } from './task.entity';
 import { Task } from './task.entity';
-import { LessonResources } from '@src/modules/lesson/controller/dto/lesson-resources.model';
+import { LessonResources } from '@modules/lesson/controller/dto/lesson-resources.model';
 
 export interface LessonProperties {
 	name: string;
