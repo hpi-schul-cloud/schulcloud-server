@@ -1,5 +1,5 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { ColumnBoardNode } from '../column-board-node.entity';
+import { ColumnBoardNode } from '@modules/learnroom/repo';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-boardelement.entity';
 
 @Entity({ discriminatorValue: LegacyBoardElementType.ColumnBoard })

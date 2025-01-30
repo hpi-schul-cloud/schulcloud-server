@@ -5,8 +5,8 @@ import {
 	BoardExternalReferenceType,
 } from '@modules/board/domain/types/board-external-reference';
 import { BoardLayout } from '@modules/board/domain/types/board-layout.enum';
-import { LearnroomElement } from '../interface';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '../../../../shared/domain/entity/base.entity';
+import { LearnroomElement } from '../../../../shared/domain/interface';
 
 // TODO comment
 /**
