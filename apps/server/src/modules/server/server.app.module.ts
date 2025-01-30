@@ -3,7 +3,7 @@ import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
@@ -45,13 +45,13 @@ import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { Role } from '@shared/domain/entity/role.entity';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { ENTITIES } from './server.entity.imports';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -126,7 +126,7 @@ const controllers = [ServerController, ServerConfigController];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [Role],
+			entities: ENTITIES,
 
 			// debug: true, // use it for locally debugging of queries
 		}),
@@ -148,24 +148,11 @@ export class ServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: ENTITIES }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 	providers,
 	controllers,
 })
-export class ServerTestModule {
-	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: ServerTestModule,
-			imports: [
-				...serverModules,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
-				RabbitMQWrapperTestModule,
-			],
-			providers,
-			controllers,
-		};
-	}
-}
+export class ServerTestModule {}
