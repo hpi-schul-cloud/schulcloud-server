@@ -1,4 +1,4 @@
-import { columnBoardFactory, columnBoardNodeFactory } from '@modules/board/testing';
+import { columnBoardFactory } from '@modules/board/testing';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -10,6 +10,7 @@ import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
+import { columnBoardNodeFactory } from '../../testing';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {

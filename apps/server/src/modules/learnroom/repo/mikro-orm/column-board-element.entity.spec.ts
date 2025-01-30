@@ -1,6 +1,6 @@
-import { columnBoardNodeFactory } from '@modules/board/testing';
 import { LegacyBoardElementType } from '@shared/domain/entity';
 import { setupEntities } from '@testing/setup-entities';
+import { columnBoardNodeFactory } from '../../testing';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
 
 describe('ColumnBoardBoardElementEntity', () => {

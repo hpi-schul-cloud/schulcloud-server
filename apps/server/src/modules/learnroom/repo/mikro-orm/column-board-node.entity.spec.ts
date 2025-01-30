@@ -1,4 +1,4 @@
-import { columnBoardNodeFactory } from '@modules/board/testing';
+import { columnBoardNodeFactory } from '../../testing';
 import { ColumnBoardNode } from './column-board-node.entity';
 
 describe(ColumnBoardNode.name, () => {

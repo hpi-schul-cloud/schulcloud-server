@@ -1,9 +1,9 @@
-import { columnBoardNodeFactory } from '@modules/board/testing';
 import { ColumnBoardNode, LessonBoardElement, LessonEntity, Task, TaskBoardElement } from '@shared/domain/entity';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { ColumnBoardBoardElement } from '../repo';
+import { columnBoardNodeFactory } from './column-board-node.factory';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
 	return {

@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
-import { columnBoardFactory, columnBoardNodeFactory } from '@modules/board/testing';
+import { columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
@@ -20,6 +20,7 @@ import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardRepo } from '../repo';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
+	columnBoardNodeFactory,
 	lessonBoardElementFactory,
 	taskBoardElementFactory,
 } from '../testing';

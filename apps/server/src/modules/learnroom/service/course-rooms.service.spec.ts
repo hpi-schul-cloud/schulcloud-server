@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { columnBoardNodeFactory } from '@modules/board/testing';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,7 +10,7 @@ import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ColumnBoardNodeRepo, LegacyBoardRepo } from '../repo';
-import { boardFactory } from '../testing';
+import { boardFactory, columnBoardNodeFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
 
 describe('rooms service', () => {
