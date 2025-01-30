@@ -109,3 +109,5 @@ export const ENTITIES = [
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
 ];
+
+export const TEST_ENTITIES = [...ENTITIES];

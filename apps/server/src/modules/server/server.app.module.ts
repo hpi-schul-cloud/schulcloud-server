@@ -51,7 +51,7 @@ import { createConfigModuleOptions } from '@shared/common/config-module-options'
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
-import { ENTITIES } from './server.entity.imports';
+import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -148,7 +148,7 @@ export class ServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: ENTITIES }),
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
