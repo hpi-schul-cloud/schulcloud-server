@@ -1,10 +1,10 @@
-import { MediaSourceForSyncNotFoundLoggableException } from './media-source-for-sync-not-found-loggable.exception';
+import { MediaSourceNotFoundLoggableException } from './media-source-not-found-loggable.exception';
 
-describe(MediaSourceForSyncNotFoundLoggableException.name, () => {
+describe(MediaSourceNotFoundLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const mediaSourceName = 'test-media-source';
-			const exception = new MediaSourceForSyncNotFoundLoggableException(mediaSourceName);
+			const exception = new MediaSourceNotFoundLoggableException(mediaSourceName);
 
 			return {
 				exception,
@@ -18,7 +18,7 @@ describe(MediaSourceForSyncNotFoundLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				message: 'Unable to sync media school license, because media source cannot be found.',
+				message: 'Media source could not be found.',
 				data: {
 					mediaSourceName,
 				},
