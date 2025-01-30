@@ -5,9 +5,9 @@ import { LearnroomElement } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
-import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boardelement.entity';
-import { LessonBoardElement } from './lesson-boardelement.entity';
-import { TaskBoardElement } from './task-boardelement.entity';
+import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-board-element.entity';
+import { LessonBoardElement } from './lesson-board-element.entity';
+import { TaskBoardElement } from './task-board-element.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];

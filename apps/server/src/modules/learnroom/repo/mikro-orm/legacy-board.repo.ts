@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { LessonBoardElement } from './lesson-boardelement.entity';
-import { TaskBoardElement } from './task-boardelement.entity';
+import { LessonBoardElement } from './lesson-board-element.entity';
+import { TaskBoardElement } from './task-board-element.entity';
 
 @Injectable()
 export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {

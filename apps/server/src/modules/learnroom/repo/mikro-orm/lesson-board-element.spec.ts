@@ -1,7 +1,7 @@
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { setupEntities } from '@testing/setup-entities';
-import { LegacyBoardElementType } from './legacy-boardelement.entity';
-import { LessonBoardElement } from './lesson-boardelement.entity';
+import { LegacyBoardElementType } from './legacy-board-element.entity';
+import { LessonBoardElement } from './lesson-board-element.entity';
 
 describe('LessonBoardElementEntity', () => {
 	beforeAll(async () => {
