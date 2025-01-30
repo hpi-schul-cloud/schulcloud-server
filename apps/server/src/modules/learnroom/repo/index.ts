@@ -3,3 +3,4 @@ export { ColumnBoardNode, ColumnBoardNodeProps } from './mikro-orm/column-board-
 export { ColumnBoardNodeRepo } from './mikro-orm/column-board-node.repo';
 export { CourseMikroOrmRepo } from './mikro-orm/course.repo';
 export { BoardProps, LegacyBoard } from './mikro-orm/legacy-board.entity';
+export { LegacyBoardRepo } from './mikro-orm/legacy-board.repo';

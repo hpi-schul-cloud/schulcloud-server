@@ -3,8 +3,7 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
-import { ColumnBoardNodeRepo, LegacyBoard } from '../repo';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardRepo } from '../repo';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
