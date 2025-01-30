@@ -11,12 +11,12 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
-import { ENTITIES } from './fwu.entity.imports';
+import { TEST_ENTITIES } from './fwu.entity.imports';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({
-		entities: ENTITIES,
+		entities: TEST_ENTITIES,
 	}),
 	AuthorizationModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
