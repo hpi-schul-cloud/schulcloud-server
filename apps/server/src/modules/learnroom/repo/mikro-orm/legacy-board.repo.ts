@@ -1,8 +1,10 @@
 import { ColumnBoardBoardElement, LegacyBoard } from '@modules/learnroom/repo';
 import { Injectable } from '@nestjs/common';
-import { Course, LessonBoardElement, TaskBoardElement } from '@shared/domain/entity';
+import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { LessonBoardElement } from './lesson-boardelement.entity';
+import { TaskBoardElement } from './task-boardelement.entity';
 
 @Injectable()
 export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {

@@ -5,7 +5,14 @@ import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.en
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
-import { ColumnBoardBoardElement, ColumnBoardNode, LegacyBoard, LegacyBoardElement } from '@modules/learnroom/repo';
+import {
+	ColumnBoardBoardElement,
+	ColumnBoardNode,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonBoardElement,
+	TaskBoardElement,
+} from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
@@ -26,7 +33,6 @@ import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
-import { LessonBoardElement, TaskBoardElement } from './legacy-board';
 import { LessonEntity } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';

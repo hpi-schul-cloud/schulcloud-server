@@ -1,6 +1,6 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { LegacyBoardElement, LegacyBoardElementType } from '@modules/learnroom/repo';
-import { Task } from '../task.entity';
+import { Task } from '@shared/domain/entity';
+import { LegacyBoardElementType, LegacyBoardElement } from './legacy-boardelement.entity';
 
 @Entity({ discriminatorValue: LegacyBoardElementType.Task })
 export class TaskBoardElement extends LegacyBoardElement {

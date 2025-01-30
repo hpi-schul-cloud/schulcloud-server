@@ -6,7 +6,6 @@ export * from './coursegroup.entity';
 export * from './dashboard.entity';
 export * from './dashboard.model.entity';
 export * from './federal-state.entity';
-export * from './legacy-board';
 export * from './lesson.entity';
 export * from './ltitool.entity';
 export * from './materials.entity';
@@ -21,4 +20,3 @@ export * from './team.entity';
 export * from './user-login-migration.entity';
 export * from './user.entity';
 export * from './video-conference.entity';
-

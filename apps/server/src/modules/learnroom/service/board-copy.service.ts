@@ -6,16 +6,7 @@ import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
-import {
-	Course,
-	isLesson,
-	isTask,
-	LessonBoardElement,
-	LessonEntity,
-	Task,
-	TaskBoardElement,
-	User,
-} from '@shared/domain/entity';
+import { Course, isLesson, isTask, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { sortBy } from 'lodash';
 import {
@@ -26,6 +17,8 @@ import {
 	LegacyBoardElement,
 	LegacyBoardElementType,
 	LegacyBoardRepo,
+	LessonBoardElement,
+	TaskBoardElement,
 } from '../repo';
 
 export type BoardCopyParams = {
