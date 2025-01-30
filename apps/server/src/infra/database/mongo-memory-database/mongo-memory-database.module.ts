@@ -1,5 +1,13 @@
 import { MikroORM } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
+import {
+	ColumnBoardBoardElement,
+	ColumnBoardNode,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonBoardElement,
+	TaskBoardElement,
+} from '@modules/learnroom/repo';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import _ from 'lodash';
@@ -30,7 +38,15 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		const defaultOptions = {
-			entities: ALL_ENTITIES,
+			entities: [
+				...ALL_ENTITIES,
+				ColumnBoardBoardElement,
+				ColumnBoardNode,
+				LegacyBoard,
+				LegacyBoardElement,
+				LessonBoardElement,
+				TaskBoardElement,
+			],
 		};
 		return {
 			module: MongoMemoryDatabaseModule,
