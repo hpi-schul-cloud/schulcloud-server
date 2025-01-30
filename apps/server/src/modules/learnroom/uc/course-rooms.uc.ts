@@ -55,7 +55,7 @@ export class CourseRoomsUc {
 		// TODO if the element is a columnboard, then the visibility must be in sync with it
 		// TODO call columnBoard service to update the visibility of the columnboard, based on reference
 
-		// if (element instanceof ColumnboardBoardElement) {
+		// if (element instanceof ColumnBoardBoardElement) {
 		// await this.updateColumnBoardVisibility(element.target._columnBoardId, visibility);
 		// }
 	}

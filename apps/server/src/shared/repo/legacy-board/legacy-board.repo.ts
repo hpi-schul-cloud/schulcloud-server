@@ -1,11 +1,6 @@
+import { ColumnBoardBoardElement } from '@modules/learnroom/repo';
 import { Injectable } from '@nestjs/common';
-import {
-	ColumnboardBoardElement,
-	Course,
-	LegacyBoard,
-	LessonBoardElement,
-	TaskBoardElement,
-} from '@shared/domain/entity';
+import { Course, LegacyBoard, LessonBoardElement, TaskBoardElement } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 
@@ -50,7 +45,7 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 		await this._em.populate(taskElements, ['target']);
 		const lessonElements = elements.filter((el) => el instanceof LessonBoardElement);
 		await this._em.populate(lessonElements, ['target']);
-		const columnBoardElements = elements.filter((el) => el instanceof ColumnboardBoardElement);
+		const columnBoardElements = elements.filter((el) => el instanceof ColumnBoardBoardElement);
 		await this._em.populate(columnBoardElements, ['target']);
 		return board;
 	}

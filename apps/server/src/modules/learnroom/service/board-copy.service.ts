@@ -7,7 +7,6 @@ import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
 import {
-	ColumnboardBoardElement,
 	ColumnBoardNode,
 	Course,
 	isLesson,
@@ -24,7 +23,7 @@ import {
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { sortBy } from 'lodash';
-import { ColumnBoardNodeRepo } from '../repo';
+import { ColumnBoardBoardElement, ColumnBoardNodeRepo } from '../repo';
 
 export type BoardCopyParams = {
 	originalBoard: LegacyBoard;
@@ -173,7 +172,7 @@ export class BoardCopyService {
 				// TODO comment this, legacy!
 				// eslint-disable-next-line no-await-in-loop
 				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copyEntity.id);
-				const columnBoardElement = new ColumnboardBoardElement({
+				const columnBoardElement = new ColumnBoardBoardElement({
 					target: columnBoardNode,
 				});
 				references.push(columnBoardElement);
