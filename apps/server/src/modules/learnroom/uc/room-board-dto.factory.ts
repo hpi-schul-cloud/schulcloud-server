@@ -2,7 +2,6 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
-	ColumnBoardNode,
 	Course,
 	LegacyBoard,
 	LegacyBoardElement,
@@ -14,7 +13,7 @@ import {
 } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
-import { ColumnBoardBoardElement } from '../repo';
+import { ColumnBoardBoardElement, ColumnBoardNode } from '../repo';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
