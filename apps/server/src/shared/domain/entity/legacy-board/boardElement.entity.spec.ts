@@ -1,7 +1,7 @@
+import { LegacyBoardElementType } from '@modules/learnroom/repo';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
-import { LegacyBoardElementType } from './legacy-boardelement.entity';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
 

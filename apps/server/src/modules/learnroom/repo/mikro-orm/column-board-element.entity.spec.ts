@@ -1,7 +1,7 @@
-import { LegacyBoardElementType } from '@shared/domain/entity';
 import { setupEntities } from '@testing/setup-entities';
 import { columnBoardNodeFactory } from '../../testing';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
+import { LegacyBoardElementType } from './legacy-boardelement.entity';
 
 describe('ColumnBoardBoardElementEntity', () => {
 	beforeAll(async () => {
