@@ -399,13 +399,13 @@ describe(BBBService.name, () => {
 			const { callName, createConfig, createHashMock } = setup();
 			const urlSearchParams = service.superToParams(createConfig);
 			const queryString = urlSearchParams.toString();
-			const sha = crypto.createHash('sha1');
+			const sha = crypto.createHash('sha512');
 			const expectedChecksum = sha.update(callName + queryString + service.getSalt()).digest('hex');
 
 			const checksum = service.superGenerateChecksum(callName, urlSearchParams);
 
 			expect(checksum).toEqual(expectedChecksum);
-			expect(createHashMock).toBeCalledWith('sha1');
+			expect(createHashMock).toBeCalledWith('sha512');
 		});
 
 		it('getUrl: should return composed url', () => {
