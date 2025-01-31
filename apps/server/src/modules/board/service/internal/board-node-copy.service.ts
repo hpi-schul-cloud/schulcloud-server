@@ -416,7 +416,11 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copyMediaExternalToolElement(original: MediaExternalToolElement, context: CopyContext): Promise<CopyStatus> {
+	public async copyMediaExternalToolElement(
+		original: MediaExternalToolElement,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		context: CopyContext
+	): Promise<CopyStatus> {
 		const result: CopyStatus = {
 			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
 			status: CopyStatusEnum.NOT_DOING,
