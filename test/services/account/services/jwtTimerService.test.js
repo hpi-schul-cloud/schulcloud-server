@@ -63,7 +63,6 @@ describe('jwtTimer service', () => {
 				app.configure(jwtTimerServiceSetup);
 				/* eslint-enable global-require */
 
-				// we need clean file that no redis instance is saved from any test before
 				redisHelpers.clearRedis();
 				Configuration.set('REDIS_URI', '//validHost:4444');
 				const redisMock = new RedisClientMock();
@@ -114,8 +113,7 @@ describe('jwtTimer service', () => {
 				server = await app.listen(0);
 				nestServices = await setupNestServices(app);
 
-				// we need clean file that no redis instance is saved from any test before
-				delete require.cache[require.resolve('../../../../src/utils/redis')];
+				redisHelpers.clearRedis();
 
 				/* eslint-disable global-require */
 				const { jwtTimerServiceSetup } = require('../../../../src/services/account/services/jwtTimerService');
@@ -128,7 +126,7 @@ describe('jwtTimer service', () => {
 			after(async () => {
 				await testObjects.cleanup();
 				delete require.cache[require.resolve('../../../../src/services/account/services/jwtTimerService')];
-				delete require.cache[require.resolve('../../../../src/utils/redis')];
+				redisHelpers.clearRedis();
 				await server.close();
 				await closeNestServices(nestServices);
 			});
