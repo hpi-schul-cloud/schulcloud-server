@@ -1,4 +1,5 @@
 import { AnyEntity, EntityClass, MikroORM } from '@mikro-orm/core';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import {
 	ColumnBoardBoardElement,
 	ColumnBoardNode,
