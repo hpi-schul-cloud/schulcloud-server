@@ -10,7 +10,7 @@ export type CommonCartridgeFileParserOptions = {
 export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
 	maxSearchDepth: 5,
 	pathSeparator: '/',
-	inputFormat: InputFormat.RICH_TEXT_CK5,
+	inputFormat: InputFormat.RICH_TEXT_CK4,
 };
 
 export type CommonCartridgeOrganizationProps = {
@@ -27,7 +27,6 @@ export type CommonCartridgeOrganizationProps = {
 
 export type CommonCartridgeWebContentResourceProps = {
 	type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
-	title: string;
 	html: string;
 };
 

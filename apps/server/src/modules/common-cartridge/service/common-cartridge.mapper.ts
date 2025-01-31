@@ -64,9 +64,7 @@ export class CommonCartridgeExportMapper {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: createIdentifier(lessonContent.id),
 					title: lessonContent.title,
-					html: `<h1>${lessonContent.title ?? ''}</h1><p>${
-						(lessonContent.content as ComponentTextPropsDto).text ?? ''
-					}</p>`,
+					html: `<p>${(lessonContent.content as ComponentTextPropsDto).text ?? ''}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				};
 			case LessonContentDtoComponentValues.GEO_GEBRA:
@@ -146,7 +144,7 @@ export class CommonCartridgeExportMapper {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(task.id),
 			title: task.name,
-			html: `<h1>${task.name}</h1><p>${task.description ?? ''}</p>`,
+			html: `<p>${task.description ?? ''}</p>`,
 			intendedUse,
 		};
 	}

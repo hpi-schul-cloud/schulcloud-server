@@ -44,6 +44,8 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             runAsNonRoot: true
+          os:
+            name: linux
           containers:
           - name: api-tsp-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
