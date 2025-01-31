@@ -53,7 +53,7 @@ describe('KeycloakConfigurationService Integration', () => {
 			imports: [
 				KeycloakConfigurationModule,
 				LoggerModule,
-				MongoMemoryDatabaseModule.forRoot(),
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,
