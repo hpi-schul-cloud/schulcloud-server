@@ -1,28 +1,35 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
-import { lastValueFrom, Observable } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { MediaSource, MediaSourceSyncReport } from '../../../domain';
-import { MediaSourceDataFormat } from '../../../enum';
-import { BiloMediaQueryResponse } from '@modules/media-source/domain/response/bilo-media-query.response';
-import { MediaSourceService } from '../../media-source.service';
-import { MediaSourceNotFoundLoggableException } from '@modules/media-source';
+// TODO: optimize imports
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
-import { BiloMediaQueryParams } from '@modules/media-source/domain/request';
+import { ExternalToolService } from '@modules/tool';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { lastValueFrom, Observable } from 'rxjs';
+import { AxiosResponse } from 'axios';
+import { MediaSource, MediaSourceSyncOperationReport, MediaSourceSyncReport } from '../../../domain';
+import { MediaSourceDataFormat, MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../../enum';
+import { MediaSourceNotFoundLoggableException } from '../../../loggable';
+import { BiloMediaQueryParams } from '../../../domain/request';
+import { BiloMediaQueryResponse } from '../../../domain/response';
+import { MediaSourceService } from '../../media-source.service';
 
-@Injectable()
+// TODO: resolve circular imports
+// @Injectable()
 export class BiloSyncStrategy {
 	constructor(
 		private readonly mediaSourceService: MediaSourceService,
 		private readonly httpService: HttpService,
-		private readonly oauthAdapterService: OauthAdapterService
+		private readonly oauthAdapterService: OauthAdapterService,
+		private readonly externalToolService: ExternalToolService
 	) {}
 
-	public async syncAllMediaMetadata(): Promise<MediaSourceSyncReport> {
-		const mediaSource = this.getMediaSource();
+	public getMediaSourceFormat(): MediaSourceDataFormat {
+		return MediaSourceDataFormat.BILDUNGSLOGIN;
+	}
 
+	public async syncAllMediaMetadata(): Promise<MediaSourceSyncReport> {
 		const report: MediaSourceSyncReport = {
 			totalCount: 0,
 			successCount: 0,
@@ -30,6 +37,18 @@ export class BiloSyncStrategy {
 			undeliveredCount: 0,
 			operations: [],
 		};
+
+		const mediaSource = await this.getMediaSource();
+
+		const externalTools: ExternalTool[] = await this.getAllToolsWithBiloMedium(mediaSource);
+		const mediumIds = externalTools
+			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
+			.filter((mediumId: string | undefined): mediumId is string => !!mediumId);
+		report.totalCount = mediumIds.length;
+
+		const token = await this.fetchAccessToken(mediaSource);
+
+		const metadata: BiloMediaQueryResponse = await this.fetchMediaMetadata(mediumIds, token);
 
 		return report;
 	}
@@ -46,17 +65,30 @@ export class BiloSyncStrategy {
 		return mediaSource;
 	}
 
-	private async fetchModifiedMediaList(): Promise<void> {}
+	private async getAllToolsWithBiloMedium(mediaSource: MediaSource): Promise<ExternalTool[]> {
+		const externalTools: ExternalTool[] = await this.externalToolService.findExternalToolsByMediaSource(
+			mediaSource.sourceId
+		);
 
-	private async fetchMediaMetadata(): Promise<BiloMediaQueryResponse> {
+		return externalTools;
+	}
+
+	private async fetchMediaMetadata(mediumIds: string[], token: OAuthTokenDto): Promise<BiloMediaQueryResponse> {
 		// TODO: think about where to put this (env var, db?)
 		const url = new URL('https://www.bildungslogin-test.de/api/external/univention/media/query');
 
 		const body = [new BiloMediaQueryParams({ id: 'test' })];
 
-		const response = await this.postBiloMediaRequest<BiloMediaQueryResponse>(url, body, 'test');
+		const observable: Observable<AxiosResponse<BiloMediaQueryResponse>> = this.httpService.post(url.toString(), body, {
+			headers: {
+				Authorization: `Bearer ${token.accessToken}`,
+				'Content-Type': 'application/vnd.de.bildungslogin.mediaquery+json',
+			},
+		});
 
-		return response;
+		const responseToken: AxiosResponse<BiloMediaQueryResponse> = await lastValueFrom(observable);
+
+		return responseToken.data;
 	}
 
 	private async fetchAccessToken(mediaSource: MediaSource): Promise<OAuthTokenDto> {
@@ -78,20 +110,14 @@ export class BiloSyncStrategy {
 		return accessToken;
 	}
 
-	private async postBiloMediaRequest<T>(url: URL, body: object, accessToken: string): Promise<T> {
-		const observable: Observable<AxiosResponse<T>> = this.httpService.post(url.toString(), body, {
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-				'Content-Type': 'application/vnd.de.bildungslogin.mediaquery+json',
-			},
-		});
-
-		const responseToken: AxiosResponse<T> = await lastValueFrom(observable);
-
-		return responseToken.data;
-	}
-
-	public getMediaSourceFormat(): MediaSourceDataFormat {
-		return MediaSourceDataFormat.BILDUNGSLOGIN;
+	private async syncExternalToolMediaMetadata(
+		externalTool: ExternalTool,
+		metadata: BiloMediaQueryResponse
+	): Promise<MediaSourceSyncOperationReport> {
+		return {
+			operation: MediaSourceSyncOperation.ANY,
+			status: MediaSourceSyncStatus.UNDELIVERED,
+			count: 1,
+		};
 	}
 }

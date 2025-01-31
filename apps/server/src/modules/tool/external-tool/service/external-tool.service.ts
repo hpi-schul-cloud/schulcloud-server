@@ -102,6 +102,11 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findExternalToolsByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
+		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByMediaSource(mediaSourceId);
+		return externalTools;
+	}
+
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
 	}
