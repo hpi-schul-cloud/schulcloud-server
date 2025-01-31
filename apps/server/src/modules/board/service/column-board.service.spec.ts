@@ -4,7 +4,7 @@ import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
-import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard } from '../domain';
+import { BoardExternalReference, BoardExternalReferenceType, ColumnBoard, ColumnBoardProps } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory } from '../testing';
 import { BoardNodeService } from './board-node.service';
@@ -130,5 +130,25 @@ describe('ColumnBoardService', () => {
 		const result = await service.swapLinkedIds('1', idMap);
 
 		expect(result).toEqual(columnBoard);
+	});
+
+	describe('createColumnBoard', () => {
+		describe('when creating new ColumnBoard', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build() as unknown as ColumnBoardProps;
+
+				repo.save.mockResolvedValue();
+
+				return { columnBoard };
+			};
+
+			it('should call BoardNodeRepo', async () => {
+				const { columnBoard } = setup();
+
+				await service.createColumnBoard(columnBoard);
+
+				expect(repo.save).toHaveBeenCalledTimes(1);
+			});
+		});
 	});
 });

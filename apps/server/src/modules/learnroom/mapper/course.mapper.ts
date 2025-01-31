@@ -1,9 +1,9 @@
 import { Course } from '@shared/domain/entity';
-import { CourseMetadataResponse } from '../controller/dto';
+import { CourseMetadataResponse, CreateCourseResponse } from '../controller/dto';
 import { CourseCommonCartridgeMetadataResponse } from '../controller/dto/course-cc-metadata.response';
 
 export class CourseMapper {
-	static mapToMetadataResponse(course: Course): CourseMetadataResponse {
+	public static mapToMetadataResponse(course: Course): CourseMetadataResponse {
 		const courseMetadata = course.getMetadata();
 		const dto = new CourseMetadataResponse(
 			courseMetadata.id,
@@ -17,7 +17,7 @@ export class CourseMapper {
 		return dto;
 	}
 
-	static mapToCommonCartridgeMetadataResponse(course: Course): CourseCommonCartridgeMetadataResponse {
+	public static mapToCommonCartridgeMetadataResponse(course: Course): CourseCommonCartridgeMetadataResponse {
 		const courseMetadata = course.getMetadata();
 		const teachers = course.teachers.toArray().map((teacher) => `${teacher.firstName} ${teacher.lastName}`);
 		const courseCCMetadataResopne: CourseCommonCartridgeMetadataResponse = new CourseCommonCartridgeMetadataResponse(
@@ -28,5 +28,11 @@ export class CourseMapper {
 		);
 
 		return courseCCMetadataResopne;
+	}
+
+	public static mapToCreateCourseResponse(course: Course): CreateCourseResponse {
+		const response = new CreateCourseResponse({ courseId: course.id });
+
+		return response;
 	}
 }
