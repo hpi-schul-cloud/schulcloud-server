@@ -14,31 +14,38 @@ import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
-import { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps, ContentElementType } from './types';
+import {
+	AnyContentElement,
+	BoardExternalReference,
+	BoardLayout,
+	BoardNodeProps,
+	ColumnProps,
+	ContentElementType,
+} from './types';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()
 export class BoardNodeFactory {
-	buildColumnBoard(props: { context: BoardExternalReference; title: string; layout: BoardLayout }): ColumnBoard {
+	public buildColumnBoard(props: { context: BoardExternalReference; title: string; layout: BoardLayout }): ColumnBoard {
 		const columnBoard = new ColumnBoard({ ...this.getBaseProps(), isVisible: false, ...props });
 
 		return columnBoard;
 	}
 
-	buildColumn(): Column {
-		const column = new Column({ ...this.getBaseProps() });
+	public buildColumn(props?: Partial<ColumnProps>): Column {
+		const column = new Column({ ...this.getBaseProps(), ...props });
 
 		return column;
 	}
 
-	buildCard(children: AnyContentElement[] = []): Card {
+	public buildCard(children: AnyContentElement[] = []): Card {
 		// TODO right way to specify default card height?
 		const card = new Card({ ...this.getBaseProps(), height: 150, children });
 
 		return card;
 	}
 
-	buildContentElement(type: ContentElementType): AnyContentElement {
+	public buildContentElement(type: ContentElementType): AnyContentElement {
 		let element!: AnyContentElement;
 
 		switch (type) {
@@ -104,7 +111,7 @@ export class BoardNodeFactory {
 		return element;
 	}
 
-	buildSubmissionItem(props: { completed: boolean; userId: EntityId }): SubmissionItem {
+	public buildSubmissionItem(props: { completed: boolean; userId: EntityId }): SubmissionItem {
 		const submissionItem = new SubmissionItem({ ...this.getBaseProps(), ...props });
 
 		return submissionItem;

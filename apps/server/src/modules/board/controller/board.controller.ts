@@ -7,6 +7,7 @@ import {
 	ForbiddenException,
 	Get,
 	HttpCode,
+	HttpStatus,
 	NotFoundException,
 	Param,
 	Patch,
@@ -22,6 +23,7 @@ import {
 	ColumnResponse,
 	CreateBoardBodyParams,
 	CreateBoardResponse,
+	CreateColumnBodyParams,
 	LayoutBodyParams,
 	UpdateBoardTitleParams,
 	VisibilityBodyParams,
@@ -128,6 +130,25 @@ export class BoardController {
 		const column = await this.boardUc.createColumn(currentUser.userId, urlParams.boardId);
 
 		const response = ColumnResponseMapper.mapToResponse(column);
+
+		return response;
+	}
+
+	@ApiOperation({ summary: 'Create multiple columns on a board.' })
+	@ApiResponse({ status: 201, type: [ColumnResponse] })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(HttpStatus.CREATED)
+	@Post(':boardId/columns/bulk')
+	public async createColumns(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: CreateColumnBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<ColumnResponse[]> {
+		const columns = await this.boardUc.createColumns(currentUser.userId, urlParams.boardId, bodyParams.titles);
+
+		const response = columns.map((column) => ColumnResponseMapper.mapToResponse(column));
 
 		return response;
 	}
