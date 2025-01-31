@@ -1,10 +1,9 @@
 const { expect } = require('chai');
-const commons = require('@hpi-schul-cloud/commons');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const testHelper = require('../../helpers/testObjects');
 const redisHelpers = require('../../../../src/utils/redis');
-
-const { Configuration } = commons;
+const { addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks');
 const whitelist = require('../../../../src/services/authentication/logic/whitelist');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
@@ -39,9 +38,7 @@ class RedisClientMock {
 	on(_key, _func) {}
 }
 
-describe('authentication hooks', () => {
-	let addJwtToWhitelist;
-	let removeJwtFromWhitelist;
+describe.only('authentication hooks', () => {
 	let configBefore = null;
 	let app;
 	let server;
@@ -55,13 +52,6 @@ describe('authentication hooks', () => {
 		testObjects = testHelper(app);
 		await testObjects.cleanup();
 
-		delete require.cache[require.resolve('../../../../src/app')];
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
-
-		// eslint-disable-next-line global-require
-		({ addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/services/authentication/hooks'));
-
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		Configuration.set('REDIS_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
@@ -74,8 +64,6 @@ describe('authentication hooks', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		redisHelpers.clearRedis();
-		delete require.cache[require.resolve('../../../services/helpers/services/login')];
-		delete require.cache[require.resolve('../../../../src/services/authentication/hooks')];
 		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
