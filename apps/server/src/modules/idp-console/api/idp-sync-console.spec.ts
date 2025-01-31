@@ -1,12 +1,13 @@
-import { ObjectId } from 'bson';
-import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { User } from '@shared/domain/entity';
+import { ObjectId } from 'bson';
+import { IdpConsoleModule } from '../idp-console.app.module';
+import { UsersSyncOptionsBuilder } from '../testing';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
-import { UsersSyncOptionsBuilder } from '../testing';
 import { SynchronizationUc } from './synchronization.uc';
-import { IdpConsoleModule } from '../idp-console.app.module';
 
 // Sorry but in the end this test do test neraly nothing..
 describe(IdpSyncConsole.name, () => {
@@ -16,7 +17,7 @@ describe(IdpSyncConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [IdpConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+			imports: [IdpConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: [User] })],
 		}).compile();
 
 		console = module.get(IdpSyncConsole);
