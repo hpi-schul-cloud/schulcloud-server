@@ -1,11 +1,7 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MediaSource } from '@modules/media-source';
-import {
-	MediaSourceEntity,
-	MediaSourceOauthConfigEmbeddable,
-	MediaSourceVidisConfigEmbeddable,
-} from '@modules/media-source/entity';
+import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceConfigMapper } from '@modules/media-source/repo';
 import {
 	mediaSourceEntityFactory,
@@ -31,14 +27,7 @@ describe(MediaUserLicenseRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						MediaUserLicenseEntity,
-						UserLicenseEntity,
-						MediaSourceEntity,
-						User,
-						MediaSourceOauthConfigEmbeddable,
-						MediaSourceVidisConfigEmbeddable,
-					],
+					entities: [MediaUserLicenseEntity, UserLicenseEntity, MediaSourceEntity, User],
 				}),
 			],
 			providers: [MediaUserLicenseRepo],
