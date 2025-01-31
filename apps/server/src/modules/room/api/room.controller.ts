@@ -34,6 +34,7 @@ import { RoomMemberListResponse } from './dto/response/room-member-list.response
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
+import { RoomRoleResponse } from './dto/response/room-role.response';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -152,7 +153,7 @@ export class RoomController {
 
 	@Patch(':roomId/members/add')
 	@ApiOperation({ summary: 'Add members to a room' })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: String })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: RoomRoleResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -161,8 +162,10 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
 		@Body() bodyParams: AddRoomMembersBodyParams
-	): Promise<void> {
-		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+	): Promise<RoomRoleResponse> {
+		const roomRole = await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+		const response = new RoomRoleResponse(roomRole);
+		return response;
 	}
 
 	@Patch(':roomId/members/roles')

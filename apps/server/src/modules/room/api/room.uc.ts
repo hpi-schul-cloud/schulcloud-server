@@ -6,7 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
-import { IFindOptions, Permission, RoleName } from '@shared/domain/interface';
+import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
@@ -137,10 +137,15 @@ export class RoomUc {
 		});
 	}
 
-	public async addMembersToRoom(currentUserId: EntityId, roomId: EntityId, userIds: Array<EntityId>): Promise<void> {
+	public async addMembersToRoom(
+		currentUserId: EntityId,
+		roomId: EntityId,
+		userIds: Array<EntityId>
+	): Promise<RoomRole> {
 		this.checkFeatureEnabled();
 		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
-		await this.roomMembershipService.addMembersToRoom(roomId, userIds);
+		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
+		return roleName;
 	}
 
 	public async changeRolesOfMembers(

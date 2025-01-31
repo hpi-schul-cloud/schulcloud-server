@@ -5,7 +5,7 @@ import { RoomService } from '@modules/room';
 import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoleName } from '@shared/domain/interface';
+import { RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
@@ -76,7 +76,7 @@ export class RoomMembershipService {
 		await this.roomMembershipRepo.delete(roomMembership);
 	}
 
-	public async addMembersToRoom(roomId: EntityId, userIds: Array<EntityId>): Promise<EntityId> {
+	public async addMembersToRoom(roomId: EntityId, userIds: Array<EntityId>): Promise<RoomRole> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
 			throw new Error('Room membership not found');
@@ -93,7 +93,7 @@ export class RoomMembershipService {
 
 		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
 
-		return roomMembership.id;
+		return roleName;
 	}
 
 	public async removeMembersFromRoom(roomId: EntityId, userIds: EntityId[]): Promise<void> {
