@@ -38,7 +38,7 @@ class RedisClientMock {
 	on(_key, _func) {}
 }
 
-describe.only('authentication hooks', () => {
+describe('authentication hooks', () => {
 	let configBefore = null;
 	let app;
 	let server;
