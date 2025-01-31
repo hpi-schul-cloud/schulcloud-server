@@ -4,10 +4,12 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course,
+	CourseGroup,
 	DashboardEntity,
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	GridElement,
+	User,
 } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { courseFactory } from '@testing/factory/course.factory';
@@ -21,7 +23,11 @@ describe('dashboard model mapper', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [DashboardModelEntity, DashboardGridElementModel, User, Course, CourseGroup],
+				}),
+			],
 			providers: [DashboardModelMapper],
 		}).compile();
 
