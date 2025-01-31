@@ -13,7 +13,7 @@ describe('FederalStateRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FederalStateEntity] })],
 			providers: [FederalStateRepo],
 		}).compile();
 		repo = module.get(FederalStateRepo);

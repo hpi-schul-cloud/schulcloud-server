@@ -16,7 +16,7 @@ describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [LtiDeepLinkTokenEntity] })],
 			providers: [{ provide: LTI_DEEP_LINK_TOKEN_REPO, useClass: LtiDeepLinkTokenMikroOrmRepo }],
 		}).compile();
 

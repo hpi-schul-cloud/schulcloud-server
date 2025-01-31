@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, NotFoundError } from '@mikro-orm/core';
@@ -7,7 +8,6 @@ import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiTool } from '@shared/domain/entity';
 import { LtiPrivacyPermission, LtiRoleType } from '@shared/domain/entity/ltitool.entity';
 import { LtiToolRepo } from '@shared/repo/ltitool/ltitool.repo';
-import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { ltiToolFactory } from '@testing/factory/ltitool.factory';
 
@@ -28,7 +28,7 @@ describe('LtiTool Repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [LtiTool] })],
 			providers: [
 				LtiToolRepoSpec,
 				{

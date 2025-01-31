@@ -1,17 +1,16 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym } from '@shared/domain/domainobject';
-import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { pseudonymFactory } from '@testing/factory/domainobject';
-import { userFactory } from '@testing/factory/user.factory';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymEntity } from '../entity';
-import { PseudonymsRepo } from './pseudonyms.repo';
 import { pseudonymEntityFactory } from '../testing';
+import { PseudonymsRepo } from './pseudonyms.repo';
 
 describe('PseudonymRepo', () => {
 	let module: TestingModule;
@@ -20,7 +19,7 @@ describe('PseudonymRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [PseudonymEntity] })],
 			providers: [
 				PseudonymsRepo,
 				{
@@ -123,26 +122,26 @@ describe('PseudonymRepo', () => {
 	describe('findPseudonymsByUserId', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
-				const user1 = userFactory.buildWithId();
-				const user2 = userFactory.buildWithId();
-				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
-				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
-				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
-				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+				const userId1 = new ObjectId().toHexString();
+				const userId2 = new ObjectId().toHexString();
+				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId1 });
+				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId1 });
+				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId2 });
+				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId2 });
 
 				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
 
 				return {
-					user1,
+					userId1,
 					pseudonym1,
 					pseudonym2,
 				};
 			};
 
 			it('should return array of pseudonyms', async () => {
-				const { user1, pseudonym1, pseudonym2 } = await setup();
+				const { userId1, pseudonym1, pseudonym2 } = await setup();
 
-				const result: Pseudonym[] = await repo.findByUserId(user1.id);
+				const result: Pseudonym[] = await repo.findByUserId(userId1);
 
 				const expectedArray = [
 					{
@@ -234,29 +233,29 @@ describe('PseudonymRepo', () => {
 	describe('deletePseudonymsByUserId', () => {
 		describe('when pseudonyms are not existing', () => {
 			const setup = () => {
-				const user = userFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
 
 				return {
-					user,
+					userId,
 				};
 			};
 
 			it('should return empty array', async () => {
-				const { user } = setup();
+				const { userId } = setup();
 
-				const result = await repo.deletePseudonymsByUserId(user.id);
+				const result = await repo.deletePseudonymsByUserId(userId);
 
 				expect(result).toEqual([]);
 			});
 		});
 		describe('when pseudonyms are existing', () => {
 			const setup = async () => {
-				const user1 = userFactory.buildWithId();
-				const user2 = userFactory.buildWithId();
-				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
-				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user1.id });
-				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
-				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: user2.id });
+				const userId1 = new ObjectId().toHexString();
+				const userId2 = new ObjectId().toHexString();
+				const pseudonym1: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId1 });
+				const pseudonym2: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId1 });
+				const pseudonym3: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId2 });
+				const pseudonym4: PseudonymEntity = pseudonymEntityFactory.buildWithId({ userId: userId2 });
 
 				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
 
@@ -264,14 +263,14 @@ describe('PseudonymRepo', () => {
 
 				return {
 					expectedResult,
-					user1,
+					userId1,
 				};
 			};
 
 			it('should delete all pseudonyms for userId', async () => {
-				const { expectedResult, user1 } = await setup();
+				const { expectedResult, userId1 } = await setup();
 
-				const result = await repo.deletePseudonymsByUserId(user1.id);
+				const result = await repo.deletePseudonymsByUserId(userId1);
 
 				expect(result).toEqual(expectedResult);
 			});

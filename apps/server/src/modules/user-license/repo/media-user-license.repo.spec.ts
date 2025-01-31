@@ -1,7 +1,11 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MediaSource } from '@modules/media-source';
-import { MediaSourceEntity } from '@modules/media-source/entity';
+import {
+	MediaSourceEntity,
+	MediaSourceOauthConfigEmbeddable,
+	MediaSourceVidisConfigEmbeddable,
+} from '@modules/media-source/entity';
 import { MediaSourceConfigMapper } from '@modules/media-source/repo';
 import {
 	mediaSourceEntityFactory,
@@ -10,11 +14,11 @@ import {
 	mediaSourceVidisConfigEmbeddableFactory,
 } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User as UserEntity } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { userFactory } from '@testing/factory/user.factory';
 import { MediaUserLicense } from '../domain';
-import { MediaUserLicenseEntity } from '../entity';
+import { MediaUserLicenseEntity, UserLicenseEntity } from '../entity';
 import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseRepo } from './media-user-license.repo';
 
@@ -25,7 +29,18 @@ describe(MediaUserLicenseRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [
+						MediaUserLicenseEntity,
+						UserLicenseEntity,
+						MediaSourceEntity,
+						User,
+						MediaSourceOauthConfigEmbeddable,
+						MediaSourceVidisConfigEmbeddable,
+					],
+				}),
+			],
 			providers: [MediaUserLicenseRepo],
 		}).compile();
 
@@ -44,10 +59,10 @@ describe(MediaUserLicenseRepo.name, () => {
 	describe('findMediaUserLicensesForUser', () => {
 		describe('when searching for a users media licences', () => {
 			const setup = async () => {
-				const user: UserEntity = userFactory.build();
+				const user = userFactory.build();
 				const vidisConfig = mediaSourceVidisConfigEmbeddableFactory.build();
 				const oauthConfig = mediaSourceOAuthConfigEmbeddableFactory.build();
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({
+				const mediaSource = mediaSourceEntityFactory.build({
 					vidisConfig,
 					oauthConfig,
 				});

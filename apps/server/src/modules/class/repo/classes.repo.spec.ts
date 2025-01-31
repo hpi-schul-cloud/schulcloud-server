@@ -20,7 +20,7 @@ describe(ClassesRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ClassEntity] })],
 			providers: [ClassesRepo, ClassMapper],
 		}).compile();
 

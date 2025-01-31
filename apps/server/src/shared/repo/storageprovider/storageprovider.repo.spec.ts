@@ -13,7 +13,7 @@ describe('StorageProviderRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [StorageProviderEntity] })],
 			providers: [StorageProviderRepo],
 		}).compile();
 

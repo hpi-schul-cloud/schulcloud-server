@@ -19,7 +19,9 @@ describe(SchoolSystemOptionsRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolSystemOptionsEntity, SchoolEntity, SystemEntity] }),
+			],
 			providers: [SchoolSystemOptionsRepo],
 		}).compile();
 
