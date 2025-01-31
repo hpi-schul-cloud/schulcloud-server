@@ -209,7 +209,7 @@ describe.only('consentVersionService tests', () => {
 			const base64FilesResult = await app.service('base64Files').find({ query: { _id: base64File._id } });
 
 			expect(consentResult).to.not.equal(undefined);
-			expect(base64FilesResult.data).to.equal([]);
+			expect(base64FilesResult.data).to.have.lengthOf(0);
 		});
 
 		it('Administrator user of a school should be able to remove a consent version', async () => {
@@ -228,7 +228,7 @@ describe.only('consentVersionService tests', () => {
 			const base64FilesResult = await app.service('base64Files').find({ query: { _id: base64File._id } });
 
 			expect(consentResult).to.not.equal(undefined);
-			expect(base64FilesResult.data).to.equal([]);
+			expect(base64FilesResult.data).to.have.lengthOf(0);
 		});
 
 		it('Teacher user of a school should NOT be able to remove a consent version', async () => {
@@ -292,7 +292,7 @@ describe.only('consentVersionService tests', () => {
 			const base64FilesResult = await app.service('base64Files').find({ query: { _id: base64File._id } });
 
 			expect(consentResult).to.not.equal(undefined);
-			expect(base64FilesResult.data).to.equal([]);
+			expect(base64FilesResult.data).to.have.lengthOf(0);
 		});
 
 		it('Administrator of a different school should NOT be able to remove a consent version', async () => {
