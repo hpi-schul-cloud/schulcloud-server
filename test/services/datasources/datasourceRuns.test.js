@@ -103,20 +103,15 @@ describe('datasourceRuns service', () => {
 			name: 'cool datasource',
 		});
 
-		const eventCallback = async (err, result) => {
-			const updatedRun = await datasourceRunsService.get(datasourceRunIds[0]);
-			expect(updatedRun.status).to.equal('Error');
-			expect(err).to.not.equal(undefined);
-			expect(err.message).to.equal('No syncer responds to target "errormock"');
-		};
-		datasourceRunsService.addEventCallback(eventCallback);
-
 		const result = await datasourceRunsService.create({ datasourceId: datasource._id });
 		datasourceRunIds = [result._id];
 		expect(result).to.not.equal(undefined);
 		expect(result.status).to.equal('Pending');
 
-		await sleep(150);
+		await sleep(250);
+
+		const updatedRun = await datasourceRunsService.get(datasourceRunIds[0]);
+		expect(updatedRun.status).to.equal('Error');
 	});
 
 	it('CREATE starts a datasource run with data', async () => {

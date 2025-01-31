@@ -13,15 +13,6 @@ const { SUCCESS, ERROR, PENDING } = require('../constants');
 class DatasourceRuns {
 	constructor(options) {
 		this.options = options || {};
-		this.eventCallback = async () => {};
-	}
-
-	addEventCallback(callback) {
-		this.eventCallback = callback;
-	}
-
-	clearEventCallback() {
-		this.eventCallback = async () => {};
 	}
 
 	registerEventListeners() {}
