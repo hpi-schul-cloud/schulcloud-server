@@ -1,4 +1,3 @@
-const assert = require('assert');
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ObjectId } = require('mongoose').Types;
@@ -9,7 +8,7 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
-describe('user service', () => {
+describe.only('user service', () => {
 	let userService;
 	let classesService;
 	let coursesService;
@@ -29,37 +28,28 @@ describe('user service', () => {
 	});
 
 	after(async () => {
+		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
 	});
 
-	it('registered the users service', () => {
-		assert.ok(userService);
-		assert.ok(classesService);
-		assert.ok(coursesService);
-	});
-
 	it('resolves permissions and attributes correctly', async () => {
-		const testBase = await app.service('roles').create({
+		const testRole = await testObjects.createTestRole({
 			name: 'test_base',
 			roles: [],
 			permissions: ['TEST_BASE', 'TEST_BASE_2'],
 		});
 
-		const testSubrole = app.service('roles').create({
+		const testSubrole = await testObjects.createTestRole({
 			name: 'test_subrole',
-			roles: [testBase._id],
+			roles: [testRole._id],
 			permissions: ['TEST_SUB'],
 		});
 
-		const user = testObjects.createTestUser({
-			accounts: [],
-			schoolId: '5f2987e020834114b8efd6f8',
-			email: 'user1246@testusers.net',
+		const user = await testObjects.createTestUser({
+			roles: [testSubrole._id],
 			firstName: 'Max',
 			lastName: 'Tester',
-			roles: [testSubrole._id],
-			manualCleanup: true,
 		});
 
 		const userFromDb = await userService.get(user._id);
@@ -345,17 +335,15 @@ describe('user service', () => {
 
 			await app.service('schools').patch(student.schoolId, { enableStudentTeamCreation: false });
 
-			try {
-				await app.service('users').find(studentParams);
-				assert.fail('students who maynot create a team are not allowed to list other users');
-			} catch (error) {
-				expect(error.code).to.equal(403);
-				expect(error.message).to.equal('The current user is not allowed to list other users!');
-			}
+			await expect(app.service('users').find(studentParams)).to.be.rejectedWith(
+				Error,
+				'The current user is not allowed to list other users!'
+			);
 		});
 
 		it('allows students who may create teams list other users', async () => {
-			const student = await testObjects.createTestUser({ roles: ['student'] });
+			const school = await testObjects.createTestSchool();
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId: school._id });
 			const studentParams = await testObjects.generateRequestParamsFromUser(student);
 			studentParams.query = {};
 			Configuration.set('STUDENT_TEAM_CREATION', 'enabled');
@@ -363,7 +351,7 @@ describe('user service', () => {
 			await app.service('schools').patch(student.schoolId, { enableStudentTeamCreation: true });
 
 			const studentResults = await app.service('users').find(studentParams);
-			expect(studentResults.data).to.be.not.empty;
+			expect(studentResults.data).to.have.lengthOf(1);
 		});
 	});
 
@@ -731,19 +719,11 @@ describe('user service', () => {
 				schoolId: '5f2987e020834114b8efd6f8',
 			};
 
-			await new Promise((resolve, reject) => {
-				testObjects
-					.createTestUser(newUser)
-					.then(() => {
-						// eslint-disable-next-line max-len
-						reject(new Error('This call should fail because of an already existing user with the same email'));
-					})
-					.catch((err) => {
-						// eslint-disable-next-line max-len
-						expect(err.message).to.equal(`Die E-Mail Adresse ist bereits in Verwendung!`);
-						resolve();
-					});
-			});
+			// This should use the user service and not the test helper
+			await expect(testObjects.createTestUser(newUser)).to.be.rejectedWith(
+				Error,
+				'Die E-Mail Adresse ist bereits in Verwendung!'
+			);
 		});
 	});
 
