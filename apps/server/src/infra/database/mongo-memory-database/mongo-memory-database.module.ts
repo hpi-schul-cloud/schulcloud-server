@@ -4,8 +4,6 @@ import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import _ from 'lodash';
 
 import { defineConfig } from '@mikro-orm/mongodb';
-// Will be removed by https://ticketsystem.dbildungscloud.de/browse/BC-8880
-import { TEST_ENTITIES } from '@modules/server/server.entity.imports';
 import { MongoDatabaseModuleOptions } from './types';
 
 const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
@@ -32,12 +30,9 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	constructor(@Inject(MikroORM) private orm: MikroORM) {}
 
 	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		const defaultOptions = {
-			entities: TEST_ENTITIES,
-		};
 		return {
 			module: MongoMemoryDatabaseModule,
-			imports: [createMikroOrmModule({ ...defaultOptions, ...options })],
+			imports: [createMikroOrmModule({ ...options })],
 			exports: [MikroOrmModule],
 		};
 	}
