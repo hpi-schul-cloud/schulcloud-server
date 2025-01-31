@@ -4,8 +4,9 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@core/logger';
+import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
@@ -22,7 +23,7 @@ describe('ExternalToolPseudonymRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User] })],
 			providers: [
 				ExternalToolPseudonymRepo,
 				{

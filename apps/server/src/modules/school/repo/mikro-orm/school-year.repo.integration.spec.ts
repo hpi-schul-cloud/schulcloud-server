@@ -15,7 +15,7 @@ describe('SchoolYearMikroOrmRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolYearEntity] })],
 			providers: [{ provide: SCHOOL_YEAR_REPO, useClass: SchoolYearMikroOrmRepo }],
 		}).compile();
 
