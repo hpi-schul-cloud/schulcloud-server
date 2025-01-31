@@ -1,13 +1,14 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Test, TestingModule } from '@nestjs/testing';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { User } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import fs from 'fs';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { DeletionQueueConsole } from './deletion-queue.console';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
-import { BatchDeletionUc } from './uc';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DeletionQueueConsole } from './deletion-queue.console';
+import { BatchDeletionUc } from './uc';
 
 describe(DeletionQueueConsole.name, () => {
 	let module: TestingModule;
@@ -16,7 +17,10 @@ describe(DeletionQueueConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [DeletionConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+			imports: [
+				DeletionConsoleModule,
+				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: [User] }),
+			],
 		}).compile();
 
 		console = module.get(DeletionQueueConsole);
