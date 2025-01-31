@@ -34,6 +34,7 @@ import {
 	CourseSyncBodyParams,
 	CourseUrlParams,
 	CreateCourseBodyParams,
+	CreateCourseResponse,
 } from './dto';
 import { CourseCommonCartridgeMetadataResponse } from './dto/course-cc-metadata.response';
 
@@ -64,11 +65,17 @@ export class CourseController {
 	@ApiOperation({ summary: 'Create a new course.' })
 	@ApiConsumes('application/json')
 	@ApiProduces('application/json')
-	@ApiCreatedResponse({ description: 'Course was successfully created.' })
+	@ApiCreatedResponse({ description: 'Course was successfully created.', type: CreateCourseResponse })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-	public async createCourse(@CurrentUser() user: ICurrentUser, @Body() body: CreateCourseBodyParams): Promise<void> {
-		await this.courseUc.createCourse(user, body.title);
+	public async createCourse(
+		@CurrentUser() user: ICurrentUser,
+		@Body() body: CreateCourseBodyParams
+	): Promise<CreateCourseResponse> {
+		const course = await this.courseUc.createCourse(user, body.title);
+		const response = CourseMapper.mapToCreateCourseResponse(course);
+
+		return response;
 	}
 
 	@Post('import')
