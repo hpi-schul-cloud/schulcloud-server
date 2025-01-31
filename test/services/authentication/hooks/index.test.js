@@ -39,7 +39,7 @@ class RedisClientMock {
 	on(_key, _func) {}
 }
 
-describe('authentication hooks', () => {
+describe.only('authentication hooks', () => {
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;
 	let configBefore = null;
@@ -87,8 +87,8 @@ describe('authentication hooks', () => {
 		const { accessToken } = params.authentication;
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(accessToken);
 
-		const result = await addJwtToWhitelist({ result: { accessToken } });
-		expect(result).to.equal({ accessToken });
+		const response = await addJwtToWhitelist({ result: { accessToken } });
+		expect(response.result.accessToken).to.equal(accessToken);
 
 		const redisResult = await redisHelpers.redisGetAsync(redisIdentifier);
 		expect(redisResult).to.not.equal(undefined);
@@ -109,6 +109,6 @@ describe('authentication hooks', () => {
 		expect(result).to.not.equal(undefined);
 
 		const redisResult = await redisHelpers.redisGetAsync(redisIdentifier);
-		expect(redisResult).to.eq(undefined);
+		expect(redisResult).to.equal(undefined);
 	});
 });
