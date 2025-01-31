@@ -15,7 +15,7 @@ const { expect } = chai;
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe.only('EduSharingV6 FIND', () => {
+describe('EduSharingV6 FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
