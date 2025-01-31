@@ -30,13 +30,6 @@ describe('Merlin Token Generator', () => {
 		MerlinTokenGenerator.post = mockPostRequest;
 
 		configBefore = Configuration.toObject({ plainSecrets: true });
-
-		Configuration.set(
-			'SECRET_ES_MERLIN_COUNTIES_CREDENTIALS',
-			'[{"countyId":3256,"merlinUser":"dummy","secretMerlinKey":"dummy"}]'
-		);
-		Configuration.set('SECRET_ES_MERLIN_USERNAME', 'merlin-username');
-		Configuration.set('SECRET_ES_MERLIN_PW', 'merlin-pass');
 	});
 
 	after(async () => {
@@ -49,8 +42,18 @@ describe('Merlin Token Generator', () => {
 		Configuration.reset(configBefore);
 	});
 
-	it('should thrown an error when not giving the correct query', async () => {
+	const setupConfig = () => {
 		Configuration.set('FEATURE_ES_MERLIN_ENABLED', true);
+		Configuration.set(
+			'SECRET_ES_MERLIN_COUNTIES_CREDENTIALS',
+			'[{"countyId":3256,"merlinUser":"dummy","secretMerlinKey":"dummy"}]'
+		);
+		Configuration.set('SECRET_ES_MERLIN_USERNAME', 'merlin-username');
+		Configuration.set('SECRET_ES_MERLIN_PW', 'merlin-pass');
+	};
+
+	it('should thrown an error when not giving the correct query', async () => {
+		setupConfig();
 
 		const params = { query: { foo: 'baz' } };
 
@@ -58,7 +61,7 @@ describe('Merlin Token Generator', () => {
 	});
 
 	it('should use county credentials', async () => {
-		Configuration.set('FEATURE_ES_MERLIN_ENABLED', true);
+		setupConfig();
 		const schoolId = '5fcfb0bc685b9af4d4abf899';
 		const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(user);
@@ -71,6 +74,7 @@ describe('Merlin Token Generator', () => {
 	});
 
 	it('should return a string when requesting a url', async () => {
+		setupConfig();
 		Configuration.set('FEATURE_ES_MERLIN_ENABLED', false);
 		ES_MERLIN_AUTH_URL = 'https://validHost:4444.de';
 		Configuration.set('ES_MERLIN_AUTH_URL', ES_MERLIN_AUTH_URL);
@@ -83,7 +87,7 @@ describe('Merlin Token Generator', () => {
 	});
 
 	it('should use state credentials', async () => {
-		Configuration.set('FEATURE_ES_MERLIN_ENABLED', true);
+		setupConfig();
 
 		const schoolId = '5fcfb0bc685b9af4d4abf899';
 		const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });

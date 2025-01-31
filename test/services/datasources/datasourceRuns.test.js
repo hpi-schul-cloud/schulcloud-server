@@ -68,7 +68,6 @@ describe('datasourceRuns service', () => {
 	});
 
 	afterEach(async () => {
-		datasourceRunsService.clearEventCallback();
 		if (!datasourceRunIds) {
 			await datasourceRunModel
 				.remove({ _id: { $in: datasourceRunIds } })

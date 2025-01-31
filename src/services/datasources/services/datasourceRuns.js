@@ -143,17 +143,15 @@ class DatasourceRuns {
 		};
 
 		try {
-			const response = await Promise.all([
+			await Promise.all([
 				datasourceRunModel.updateOne({ _id: datasourceRunId }, updateData),
 				this.app.service('datasources').patch(datasourceId, {
 					lastRun: endTime,
 					lastStatus: status,
 				}),
 			]);
-			this.eventCallback(undefined, response);
 		} catch (err) {
 			logger.error(new GeneralError('error while updating datasourcerun', err));
-			await this.eventCallback(err);
 		}
 	}
 
@@ -185,7 +183,6 @@ class DatasourceRuns {
 		logger.error(
 			new GeneralError('datasourceRun encountered an error after invoking sync. This is most likely a user error.', err)
 		);
-		await this.eventCallback(err);
 	}
 
 	/**
