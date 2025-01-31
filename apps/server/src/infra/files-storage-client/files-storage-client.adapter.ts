@@ -1,15 +1,15 @@
+import { AxiosErrorLoggable } from '@core/error/loggable';
+import { ErrorLogger, Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils/jwt';
-import { AxiosErrorLoggable } from '@core/error/loggable';
-import { ErrorLogger, Logger } from '@core/logger';
-import { AxiosError } from 'axios';
+import { AxiosError, RawAxiosRequestConfig } from 'axios';
 import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { FilesStorageClientConfig } from './files-storage-client.config';
-import { FileApi } from './generated';
+import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
 
 @Injectable()
 export class FilesStorageClientAdapter {
@@ -55,5 +55,42 @@ export class FilesStorageClientAdapter {
 
 			return null;
 		}
+	}
+
+	public async upload(
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType,
+		file: File,
+		options?: RawAxiosRequestConfig
+	): Promise<FileRecordResponse | null> {
+		try {
+			const response = await this.api.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+
+			return response.data;
+		} catch (error: unknown) {
+			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
+
+			return null;
+		}
+		// const token = JwtExtractor.extractJwtFromRequest(this.req);
+		// const url = new URL(
+		// 	`${this.configService.getOrThrow<string>(
+		// 		'FILES_STORAGE__SERVICE_BASE_URL'
+		// 	)}/api/v3/file/upload/${storageLocationId}/${parentType}/${parentId}`
+		// );
+		// const formData = new FormData();
+		// formData.append('file', file);
+		// formData.append('parentId', parentId);
+		// formData.append('parentType', parentType);
+		// const observable = this.httpService.post(url.toString(), formData, {
+		// 	headers: {
+		// 		Authorization: `Bearer ${token}`,
+		// 	},
+		// 	...options,
+		// });
+		// const response = await lastValueFrom(observable);
+		// const fileRecordId: string = (response.data as { fileRecordId: string })?.fileRecordId;
 	}
 }

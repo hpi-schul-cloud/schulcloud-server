@@ -1,15 +1,15 @@
+import { ErrorLogger, Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorLogger, Logger } from '@core/logger';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import type { Request } from 'express';
 import { from, throwError } from 'rxjs';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FileApi } from './generated';
+import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
@@ -123,6 +123,44 @@ describe(FilesStorageClientAdapter.name, () => {
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalled();
+			});
+		});
+	});
+
+	describe('upload', () => {
+		describe('when upload succeeds', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = faker.helpers.arrayElement(Object.values(StorageLocation.SCHOOL)) as StorageLocation;
+				const parentId = 'parent-id';
+				const parentType = faker.helpers.arrayElement(Object.values(FileRecordParentType));
+				const file = new File([], 'test.txt', { type: 'text/plain', lastModified: Date.now() });
+				const options = { headers: { 'Content-Type': 'multipart/form-data' } };
+
+				const response = axiosResponseFactory.build({
+					data: { success: true },
+				});
+
+				const resolvedPromise = Promise.resolve(response);
+				httpServiceMock.post.mockReturnValue(from(resolvedPromise));
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file,
+					options,
+					resolvedPromise,
+				};
+			};
+
+			it('should return the response data', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, file, options } = setup();
+
+				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+
+				expect(result).toBeDefined();
 			});
 		});
 	});

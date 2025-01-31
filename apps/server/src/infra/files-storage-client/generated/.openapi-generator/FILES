@@ -8,5 +8,7 @@ common.ts
 configuration.ts
 git_push.sh
 index.ts
+models/file-record-parent-type.ts
 models/file-record-response.ts
 models/index.ts
+models/storage-location.ts
