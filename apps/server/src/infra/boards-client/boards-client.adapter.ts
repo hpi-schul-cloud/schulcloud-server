@@ -1,5 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { BoardApi, BoardResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
+import {
+	BoardApi,
+	BoardResponse,
+	ColumnResponse,
+	CreateBoardBodyParams,
+	CreateBoardResponse,
+	CreateColumnBodyParams,
+} from './generated';
 
 @Injectable()
 export class BoardsClientAdapter {
@@ -7,6 +14,12 @@ export class BoardsClientAdapter {
 
 	public async createBoard(params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
 		const response = await this.boardApi.boardControllerCreateBoard(params);
+
+		return response.data;
+	}
+
+	public async createBoardColumns(boardId: string, params: CreateColumnBodyParams): Promise<ColumnResponse[]> {
+		const response = await this.boardApi.boardControllerCreateColumns(boardId, params);
 
 		return response.data;
 	}

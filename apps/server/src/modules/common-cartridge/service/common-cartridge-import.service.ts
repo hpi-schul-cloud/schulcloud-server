@@ -2,7 +2,7 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
 import { BoardsClientAdapter } from '@infra/boards-client';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
+import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 
 @Injectable()
 export class CommonCartridgeImportService {
@@ -22,24 +22,33 @@ export class CommonCartridgeImportService {
 		await this.createBoards(course.courseId, parser);
 	}
 
-	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<string[]> {
-		const titles = parser
-			.getOrganizations()
-			.filter((organization) => organization.pathDepth === 0)
-			.map((organization) => organization.title);
-		const ids = new Array<string>();
-
-		for await (const title of titles) {
+	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<void> {
+		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === 0);
+		const promises = boards.map(async (board) => {
 			const response = await this.boardsClient.createBoard({
-				title,
+				title: board.title,
 				layout: 'columns',
 				parentId,
 				parentType: 'course',
 			});
 
-			ids.push(response.id);
-		}
+			await this.createColumns(response.id, board, parser);
+		});
 
-		return ids;
+		await Promise.all(promises);
+	}
+
+	private async createColumns(
+		boardId: string,
+		board: CommonCartridgeOrganizationProps,
+		parser: CommonCartridgeFileParser
+	): Promise<void> {
+		const columns = parser
+			.getOrganizations()
+			.filter((org) => org.path.startsWith(board.path) && org.pathDepth === board.pathDepth + 1)
+			.filter((org) => org.isResource === false)
+			.map((org) => org.title);
+
+		await this.boardsClient.createBoardColumns(boardId, { titles: columns });
 	}
 }
