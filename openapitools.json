@@ -138,7 +138,7 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:getActivatedOffersByRegion"
+					"FILTER": "operationId:getActivatedOffersByRegion|operationId:getActivatedOffersBySchool"
 				},
 				"additionalProperties": {
 					"apiPackage": "api",
