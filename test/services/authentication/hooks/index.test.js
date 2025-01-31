@@ -39,7 +39,7 @@ class RedisClientMock {
 	on(_key, _func) {}
 }
 
-describe.only('authentication hooks', () => {
+describe('authentication hooks', () => {
 	let addJwtToWhitelist;
 	let removeJwtFromWhitelist;
 	let configBefore = null;
