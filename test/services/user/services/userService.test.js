@@ -53,7 +53,6 @@ describe('user service', () => {
 		});
 
 		const user = testObjects.createTestUser({
-			id: '0000d231816abba584714d01',
 			accounts: [],
 			schoolId: '5f2987e020834114b8efd6f8',
 			email: 'user1246@testusers.net',
