@@ -141,4 +141,38 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 			});
 		});
 	});
+
+	describe('deleteAllBySchoolAndMediaSource', () => {
+		describe('when a school id and media source id is provided', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const mediaSource = mediaSourceEntityFactory.build();
+				const mediaSchoolLicenseEntities: MediaSchoolLicenseEntity[] = mediaSchoolLicenseEntityFactory.buildList(3, {
+					mediaSource,
+					school,
+				});
+
+				const otherMediaSource = mediaSourceEntityFactory.build();
+				const otherEntity = mediaSchoolLicenseEntityFactory.build({
+					mediaSource: otherMediaSource,
+					school,
+				});
+
+				await em.persistAndFlush([...mediaSchoolLicenseEntities, otherEntity, school]);
+				em.clear();
+
+				return { mediaSource, otherEntity, school };
+			};
+
+			it('should delete the media school license', async () => {
+				const { mediaSource, otherEntity, school } = await setup();
+
+				await repo.deleteAllBySchoolAndMediaSource(school.id, mediaSource.id);
+
+				const savedMediaSchoolLicenses: MediaSchoolLicenseEntity[] = await em.find(MediaSchoolLicenseEntity, {});
+				expect(savedMediaSchoolLicenses.length).toEqual(1);
+				expect(savedMediaSchoolLicenses[0]._id.toHexString()).toEqual(otherEntity._id.toHexString());
+			});
+		});
+	});
 });
