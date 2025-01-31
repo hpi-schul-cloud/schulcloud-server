@@ -16,6 +16,7 @@ const { AuthorizationModule } = require('../../dist/apps/server/modules/authoriz
 const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
 const { createConfigModuleOptions } = require('../../dist/apps/server/shared/common/config-module-options');
 const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
+const { TEST_ENTITIES } = require('../../dist/apps/server/modules/server/server.entity.imports');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
@@ -26,10 +27,7 @@ const setupNestServices = async (app) => {
 					clientUrl: DB_URL,
 					password: DB_PASSWORD,
 					user: DB_USERNAME,
-					entities: [
-						'./dist/apps/server/modules/**/*.entity.js',
-						'./dist/apps/server/shared/domain/entity/*.entity.js',
-					],
+					entities: TEST_ENTITIES,
 					allowGlobalContext: true,
 					debug: false, // use it for locally debugging of querys
 				})
