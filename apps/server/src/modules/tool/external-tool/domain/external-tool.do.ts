@@ -40,6 +40,8 @@ export interface ExternalToolProps extends AuthorizableObject {
 	isPreferred: boolean;
 
 	iconName?: string;
+
+	metadataModified?: Date;
 }
 
 export class ExternalTool extends DomainObject<ExternalToolProps> {
