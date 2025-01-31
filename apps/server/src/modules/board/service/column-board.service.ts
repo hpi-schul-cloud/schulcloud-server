@@ -2,6 +2,7 @@ import { CopyStatus } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
+	AnyBoardNode,
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	ColumnBoard,
@@ -28,9 +29,9 @@ export class ColumnBoardService {
 	}
 
 	public async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<ColumnBoard[]> {
-		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference, depth);
+		const boardNodes: AnyBoardNode[] = await this.boardNodeRepo.findByExternalReference(reference, depth);
 
-		const boards = boardNodes.filter((bn) => isColumnBoard(bn));
+		const boards: ColumnBoard[] = boardNodes.filter((bn: AnyBoardNode): bn is ColumnBoard => isColumnBoard(bn));
 
 		return boards;
 	}

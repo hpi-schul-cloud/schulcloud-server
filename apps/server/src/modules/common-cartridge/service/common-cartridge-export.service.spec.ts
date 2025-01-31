@@ -1,12 +1,14 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { CoursesClientAdapter } from '@infra/courses-client';
-import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { BoardsClientAdapter, BoardResponse } from '@infra/boards-client';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { faker } from '@faker-js/faker';
+import { FileRecordParentType } from '@modules/files-storage/interface';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import {
 	CardListResponseDto,
@@ -41,6 +43,8 @@ describe('CommonCartridgeExportService', () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let boardClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
+	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
+	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
@@ -52,7 +56,7 @@ describe('CommonCartridgeExportService', () => {
 		exportTasks: boolean,
 		exportColumnBoards: boolean
 	) => {
-		const courseMetadata: CourseCommonCartridgeMetadataDto = courseMetadataFactory.build();
+		const courseMetadata = courseMetadataFactory.build();
 		const lessons = lessonFactory.buildList(2);
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
@@ -101,6 +105,22 @@ describe('CommonCartridgeExportService', () => {
 			linkElement: listOfCardsResponse.data[0].elements[1].content as LinkElementContentDto,
 		};
 	};
+	const setupFile = () => {
+		const fileRecord: FileDto = new FileDto({
+			id: faker.string.uuid(),
+			name: faker.system.fileName(),
+			parentId: faker.string.uuid(),
+			parentType: FileRecordParentType.Course,
+			createdAt: faker.date.past(),
+			updatedAt: faker.date.recent(),
+		});
+		const file = Buffer.from(faker.lorem.paragraphs(100));
+
+		filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileRecord]);
+		filesStorageClientAdapterMock.download.mockResolvedValue(file);
+
+		return { fileRecord, file };
+	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -131,6 +151,14 @@ describe('CommonCartridgeExportService', () => {
 					provide: LessonClientAdapter,
 					useValue: createMock<LessonClientAdapter>(),
 				},
+				{
+					provide: FilesStorageClientAdapter,
+					useValue: createMock<FilesStorageClientAdapter>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
 
@@ -140,6 +168,8 @@ describe('CommonCartridgeExportService', () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		boardClientAdapterMock = module.get(BoardsClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
+		filesMetadataClientAdapterMock = module.get(FilesStorageClientAdapterService);
+		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 	});
 
 	afterAll(async () => {
@@ -152,7 +182,12 @@ describe('CommonCartridgeExportService', () => {
 
 	describe('exportCourse', () => {
 		describe('when using version 1.1', () => {
-			const setup = () => setupParams(CommonCartridgeVersion.V_1_1_0, true, true, true);
+			const setup = async () => {
+				const fileSetup = setupFile();
+				const paramsSetup = await setupParams(CommonCartridgeVersion.V_1_1_0, true, true, true);
+
+				return { ...fileSetup, ...paramsSetup };
+			};
 
 			it('should use schema version 1.1.0', async () => {
 				const { archive } = await setup();
@@ -174,12 +209,14 @@ describe('CommonCartridgeExportService', () => {
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
 			});
 
-			it('should add task', async () => {
-				const { archive, boardTask } = await setup();
+			it('should add task with file', async () => {
+				const { archive, boardTask, fileRecord } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', boardTask.name));
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="i${boardTask.id}"`);
+
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`${fileRecord.name}"`);
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {

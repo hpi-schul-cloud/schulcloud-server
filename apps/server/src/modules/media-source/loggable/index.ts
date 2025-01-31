@@ -1,1 +1,1 @@
-export { MediaSourceBasicAuthConfigNotFoundLoggableException } from './media-source-basic-auth-config-not-found-loggable.exception';
+export { MediaSourceVidisConfigNotFoundLoggableException } from './media-source-vidis-config-not-found-loggable.exception';

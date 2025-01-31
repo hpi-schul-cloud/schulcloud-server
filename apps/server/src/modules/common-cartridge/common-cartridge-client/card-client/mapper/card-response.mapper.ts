@@ -126,12 +126,12 @@ export class CardResponseMapper {
 				case ContentElementType.FILE: {
 					const content: FileElementContent = element.content as FileElementContent;
 					elements.push(
-						new FileElementResponseDto(
-							element.id,
-							ContentElementType.FILE,
-							new FileElementContentDto(content.caption, content.alternativeText),
-							this.mapToTimestampDto(element.timestamps)
-						)
+						new FileElementResponseDto({
+							id: element.id,
+							type: ContentElementType.FILE,
+							content: new FileElementContentDto(content.caption, content.alternativeText),
+							timestamps: this.mapToTimestampDto(element.timestamps),
+						})
 					);
 					break;
 				}

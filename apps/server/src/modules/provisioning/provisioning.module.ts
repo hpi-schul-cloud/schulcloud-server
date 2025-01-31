@@ -65,6 +65,6 @@ import { TspProvisioningStrategy } from './strategy/tsp';
 		TspProvisioningStrategy,
 		TspProvisioningService,
 	],
-	exports: [ProvisioningService],
+	exports: [ProvisioningService, TspProvisioningService],
 })
 export class ProvisioningModule {}

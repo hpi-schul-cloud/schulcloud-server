@@ -1,33 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { createMock } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
-import { CoursesApi } from '@infra/courses-client/generated';
 import { INestApplication } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import type { Server } from 'node:net';
 import supertest from 'supertest';
 import { CommonCartridgeApiModule } from '../common-cartridge-api.app.module';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../export/common-cartridge.enums';
 
-jest.mock('../../../infra/courses-client/generated/api/courses-api', () => {
-	const coursesApiMock = createMock<CoursesApi>();
-
-	coursesApiMock.courseControllerCreateCourse.mockResolvedValue(axiosResponseFactory.build({ status: 201 }));
-
-	return {
-		CoursesApi: jest.fn(() => coursesApiMock),
-	};
-});
-jest.mock('../../../infra/auth-guard/decorator/jwt-auth.decorator', () => {
-	return {
-		CurrentUser: () => jest.fn(() => createMock<ICurrentUser>()),
-		JwtAuthentication: () => jest.fn(),
-	};
-});
-
+// NOTICE: Currently there is no way to write an integrative api test for the CommonCartridgeController
+// because we are not able to ensure a correct environment for the tests to run with other microservices.
 describe.skip('CommonCartridgeController (API)', () => {
 	let module: TestingModule;
 	let app: INestApplication<Server>;
@@ -38,19 +20,6 @@ describe.skip('CommonCartridgeController (API)', () => {
 				CommonCartridgeApiModule,
 				ConfigModule.forRoot({
 					isGlobal: true,
-					load: [
-						() => {
-							return {
-								SC_DOMAIN: faker.internet.url(),
-								API_HOST: faker.internet.url(),
-								JWT_PUBLIC_KEY: faker.string.alphanumeric(42),
-								JWT_SIGNING_ALGORITHM: 'RS256',
-								INCOMING_REQUEST_TIMEOUT: 10_000,
-								NEST_LOG_LEVEL: 'error',
-								FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000,
-							};
-						},
-					],
 				}),
 			],
 		}).compile();

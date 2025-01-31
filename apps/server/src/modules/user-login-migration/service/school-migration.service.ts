@@ -134,7 +134,7 @@ export class SchoolMigrationService {
 
 		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
 			schoolId: userLoginMigration.schoolId,
-			outdatedSince: userLoginMigration.finishedAt,
+			outdatedSince: userLoginMigration.closedAt,
 		});
 
 		migratedUsers.data.forEach((user: UserDO) => {
