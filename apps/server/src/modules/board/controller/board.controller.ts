@@ -41,7 +41,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post()
-	async createBoard(
+	public async createBoard(
 		@Body() bodyParams: CreateBoardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CreateBoardResponse> {
@@ -58,7 +58,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':boardId')
-	async getBoardSkeleton(
+	public async getBoardSkeleton(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
@@ -75,7 +75,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':boardId/context')
-	async getBoardContext(
+	public async getBoardContext(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardContextResponse> {
@@ -93,7 +93,7 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':boardId/title')
-	async updateBoardTitle(
+	public async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: UpdateBoardTitleParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -108,7 +108,10 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':boardId')
-	async deleteBoard(@Param() urlParams: BoardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteBoard(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
 		await this.boardUc.deleteBoard(currentUser.userId, urlParams.boardId);
 	}
 
@@ -118,7 +121,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/columns')
-	async createColumn(
+	public async createColumn(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ColumnResponse> {
@@ -136,7 +139,7 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyBoard(
+	public async copyBoard(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CopyApiResponse> {
@@ -152,11 +155,11 @@ export class BoardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':boardId/visibility')
-	async updateVisibility(
+	public async updateVisibility(
 		@Param() urlParams: BoardUrlParams,
 		@Body() bodyParams: VisibilityBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	) {
+	): Promise<void> {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
 	}
 

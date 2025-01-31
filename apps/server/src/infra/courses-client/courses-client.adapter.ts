@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { CourseCommonCartridgeMetadataResponse, CoursesApi, CreateCourseBodyParams } from './generated';
+import {
+	CourseCommonCartridgeMetadataResponse,
+	CoursesApi,
+	CreateCourseBodyParams,
+	CreateCourseResponse,
+} from './generated';
 
 @Injectable()
 export class CoursesClientAdapter {
@@ -11,7 +16,9 @@ export class CoursesClientAdapter {
 		return response.data;
 	}
 
-	public async createCourse(params: CreateCourseBodyParams): Promise<void> {
-		await this.coursesApi.courseControllerCreateCourse(params);
+	public async createCourse(params: CreateCourseBodyParams): Promise<CreateCourseResponse> {
+		const response = await this.coursesApi.courseControllerCreateCourse(params);
+
+		return response.data;
 	}
 }

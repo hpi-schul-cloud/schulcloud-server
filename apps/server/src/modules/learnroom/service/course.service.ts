@@ -36,8 +36,10 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	async findById(courseId: EntityId): Promise<CourseEntity> {
-		return this.repo.findById(courseId);
+	public findById(courseId: EntityId): Promise<CourseEntity> {
+		const course = this.repo.findById(courseId);
+
+		return course;
 	}
 
 	public async findAllCoursesByUserId(userId: EntityId): Promise<Counted<CourseEntity[]>> {
@@ -79,22 +81,25 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		return result;
 	}
 
-	async findAllByUserId(userId: EntityId): Promise<CourseEntity[]> {
+	public async findAllByUserId(userId: EntityId): Promise<CourseEntity[]> {
 		const [courses] = await this.repo.findAllByUserId(userId);
 
 		return courses;
 	}
 
-	async create(course: CourseEntity): Promise<void> {
-		await this.repo.createCourse(course);
+	public async create(course: CourseEntity): Promise<CourseEntity> {
+		const result = await this.repo.createCourse(course);
+
+		return result;
 	}
 
 	private getCoursesId(courses: CourseEntity[]): EntityId[] {
 		return courses.map((course) => course.id);
 	}
 
-	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<CourseEntity> {
+	public async findOneForUser(courseId: EntityId, userId: EntityId): Promise<CourseEntity> {
 		const course = await this.repo.findOne(courseId, userId);
+
 		return course;
 	}
 }

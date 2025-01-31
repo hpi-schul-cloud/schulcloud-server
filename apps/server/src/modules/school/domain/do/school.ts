@@ -40,6 +40,10 @@ export class School extends DomainObject<SchoolProps> {
 		return this.props.officialSchoolNumber;
 	}
 
+	get federalState(): FederalState | undefined {
+		return this.props.federalState;
+	}
+
 	set ldapLastSync(ldapLastSync: string | undefined) {
 		this.props.ldapLastSync = ldapLastSync;
 	}
