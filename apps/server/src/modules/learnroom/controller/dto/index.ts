@@ -21,3 +21,4 @@ export {
 	BoardTaskStatusResponse,
 	SingleColumnBoardResponse,
 } from './single-column-board';
+export { CreateCourseResponse } from './create-course.response';

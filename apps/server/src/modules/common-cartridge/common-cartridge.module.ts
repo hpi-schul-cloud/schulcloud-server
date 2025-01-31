@@ -8,7 +8,7 @@ import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { LoggerModule } from '@core/logger';
-import { BoardClientModule } from './common-cartridge-client/board-client';
+import { BoardsClientModule } from '@infra/boards-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
@@ -24,6 +24,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		FilesStorageClientModule,
 		LoggerModule,
 		CoursesClientModule,
+		BoardsClientModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -31,9 +32,6 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: ALL_ENTITIES,
-		}),
-		BoardClientModule.register({
-			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
 		CourseRoomsModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,

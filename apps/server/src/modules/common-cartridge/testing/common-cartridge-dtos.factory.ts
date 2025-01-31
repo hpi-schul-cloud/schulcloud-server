@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { Factory } from 'fishery';
 import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
+import { BoardResponse, ColumnResponse, CardSkeletonResponse } from '@infra/boards-client';
 import { LessonContentDto, LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
-import { BoardSkeletonDto, CardSkeletonDto, ColumnSkeletonDto } from '../common-cartridge-client/board-client';
 import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
 import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
 import {
@@ -27,28 +27,36 @@ export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadat
 	};
 });
 
-export const cardFactory = Factory.define<CardSkeletonDto>(({ sequence }) => {
+export const cardFactory = Factory.define<CardSkeletonResponse>(({ sequence }) => {
 	return {
 		cardId: sequence.toString(),
 		height: faker.number.int(),
 	};
 });
 
-export const columnFactory = Factory.define<ColumnSkeletonDto>(({ sequence }) => {
+export const columnFactory = Factory.define<ColumnResponse>(({ sequence }) => {
 	return {
-		columnId: sequence.toString(),
+		id: sequence.toString(),
 		title: faker.lorem.sentence(),
 		cards: [cardFactory.build(), cardFactory.build()],
+		timestamps: {
+			createdAt: faker.date.recent().toISOString(),
+			lastUpdatedAt: faker.date.recent().toISOString(),
+		},
 	};
 });
 
-export const columnBoardFactory = Factory.define<BoardSkeletonDto>(({ sequence }) => {
+export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) => {
 	return {
-		boardId: sequence.toString(),
+		id: sequence.toString(),
 		title: faker.lorem.sentence(),
 		columns: [columnFactory.build(), columnFactory.build()],
 		isVisible: faker.datatype.boolean(),
 		layout: faker.lorem.word(),
+		timestamps: {
+			createdAt: faker.date.recent().toISOString(),
+			lastUpdatedAt: faker.date.recent().toISOString(),
+		},
 	};
 });
 
