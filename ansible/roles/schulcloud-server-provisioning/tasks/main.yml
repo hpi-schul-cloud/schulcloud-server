@@ -1,0 +1,17 @@
+  - name: Schulconnex group provisioning deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-provisioning-deployment.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - deployment
+
+  - name: Schulconnex license provisioning deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-license-provisioning-deployment.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - deployment
