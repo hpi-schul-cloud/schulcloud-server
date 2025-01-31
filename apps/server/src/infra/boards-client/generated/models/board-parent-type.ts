@@ -22,6 +22,7 @@
 
 export const BoardParentType = {
     COURSE: 'course',
+    ROOM: 'room',
     USER: 'user'
 } as const;
 

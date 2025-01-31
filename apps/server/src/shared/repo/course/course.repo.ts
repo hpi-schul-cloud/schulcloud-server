@@ -1,6 +1,5 @@
 import { QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-
 import { Course } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -9,15 +8,17 @@ import { CourseScope } from './course.scope';
 
 @Injectable()
 export class CourseRepo extends BaseRepo<Course> {
-	get entityName() {
+	get entityName(): typeof Course {
 		return Course;
 	}
 
-	async createCourse(course: Course): Promise<void> {
-		return this.save(this.create(course));
+	public async createCourse(course: Course): Promise<Course> {
+		await this.save(this.create(course));
+
+		return course;
 	}
 
-	async findById(id: EntityId, populate = true): Promise<Course> {
+	public async findById(id: EntityId, populate = true): Promise<Course> {
 		const course = await super.findById(id);
 		if (populate) {
 			await this._em.populate(course, ['courseGroups', 'teachers', 'substitutionTeachers', 'students']);
@@ -25,7 +26,7 @@ export class CourseRepo extends BaseRepo<Course> {
 		return course;
 	}
 
-	async findAllByUserId(
+	public async findAllByUserId(
 		userId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
 		options?: IFindOptions<Course>
@@ -49,7 +50,7 @@ export class CourseRepo extends BaseRepo<Course> {
 		return [courses, count];
 	}
 
-	async findAllForTeacher(
+	public async findAllForTeacher(
 		userId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
 		options?: IFindOptions<Course>
@@ -74,7 +75,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	}
 
 	// not tested in repo.integration.spec
-	async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
+	public async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<Counted<Course[]>> {
 		const scope = new CourseScope();
 		scope.forTeacherOrSubstituteTeacher(userId);
 
@@ -83,7 +84,7 @@ export class CourseRepo extends BaseRepo<Course> {
 		return [courses, count];
 	}
 
-	async findOne(courseId: EntityId, userId?: EntityId): Promise<Course> {
+	public async findOne(courseId: EntityId, userId?: EntityId): Promise<Course> {
 		const scope = new CourseScope();
 		scope.forCourseId(courseId);
 		if (userId) scope.forAllGroupTypes(userId);
