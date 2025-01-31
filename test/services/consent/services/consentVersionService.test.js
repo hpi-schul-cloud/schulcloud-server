@@ -4,7 +4,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 const { generateRequestParamsFromUser } = require('../../helpers/services/login')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe.only('consentVersionService tests', () => {
+describe('consentVersionService tests', () => {
 	let app;
 	let server;
 	let nestServices;
