@@ -1,4 +1,3 @@
-const assert = require('assert');
 const chai = require('chai');
 const sinon = require('sinon');
 const request = require('request-promise-native');
@@ -10,16 +9,19 @@ const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
 const MockAuth = require('../mock/response-auth.json');
 const EduSharingConnectorV6 = require('../../../../src/services/edusharing/services/EduSharingConnectorV6');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
-const testObjects = require('../../helpers/testObjects')(appPromise());
+const testHelper = require('../../helpers/testObjects');
+
+const { expect } = chai;
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe('EduSharingV6 FIND', () => {
+describe.only('EduSharingV6 FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		Configuration.set('ES_API_V7', false);
@@ -28,6 +30,7 @@ describe('EduSharingV6 FIND', () => {
 		eduSharingService.connector = EduSharingConnectorV6;
 		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
@@ -39,10 +42,6 @@ describe('EduSharingV6 FIND', () => {
 
 	afterEach(async () => {
 		sinon.verifyAndRestore();
-	});
-
-	it('registered the service', async () => {
-		assert.ok(eduSharingService);
 	});
 
 	it('search with an empty query', async () => {
@@ -179,21 +178,20 @@ describe('EduSharingV6 FIND', () => {
 	});
 
 	it('should fail to get a restricted node', async () => {
-		try {
-			const user = await testObjects.createTestUser({ roles: ['teacher'] });
-			const params = await testObjects.generateRequestParamsFromUser(user);
+		const configBefore = Configuration.toObject({ plainSecrets: true });
+		Configuration.set('FEATURE_ES_MERLIN_ENABLED', true);
+		const user = await testObjects.createTestUser({ roles: ['teacher'] });
+		const params = await testObjects.generateRequestParamsFromUser(user);
 
-			sinon.stub(request, 'get').returns(MockAuth);
-			const postStub = sinon.stub(request, 'post');
-			postStub.onCall(0).returns(MockNodeRestricted);
+		sinon.stub(request, 'get').returns(MockAuth);
+		const postStub = sinon.stub(request, 'post');
+		postStub.onCall(0).returns(MockNodeRestricted);
 
-			await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
-			throw new Error('should have failed');
-		} catch (err) {
-			chai.expect(err.message).to.not.equal('should have failed');
-			chai.expect(err.code).to.equal(403);
-			chai.expect(err.message).to.equal('This content is not available for your school');
-		}
+		await expect(eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params)).to.be.rejectedWith(
+			Error,
+			'This content is not available for your school'
+		);
+		Configuration.reset(configBefore);
 	});
 });
 
@@ -203,12 +201,14 @@ describe('EduSharingV6 config flags', () => {
 	let server;
 	let nestServices;
 	let originalConfiguration;
+	let testObjects;
 
 	before(async () => {
 		originalConfiguration = Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED');
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
