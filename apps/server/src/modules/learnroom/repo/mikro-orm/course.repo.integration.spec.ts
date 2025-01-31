@@ -33,7 +33,7 @@ describe(CourseMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroup, User] })],
 			providers: [{ provide: COURSE_REPO, useClass: CourseMikroOrmRepo }],
 		}).compile();
 

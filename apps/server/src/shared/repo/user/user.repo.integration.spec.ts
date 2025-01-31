@@ -20,7 +20,7 @@ describe('user repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [UserRepo],
 		}).compile();
 		repo = module.get(UserRepo);

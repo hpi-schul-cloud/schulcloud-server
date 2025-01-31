@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, EntityManager } from '@mikro-orm/core';
@@ -15,7 +16,6 @@ import {
 	SchoolYearEntity,
 	UserLoginMigrationEntity,
 } from '@shared/domain/entity';
-import { LegacyLogger } from '@core/logger';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
@@ -28,7 +28,11 @@ describe('LegacySchoolRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [SchoolEntity],
+				}),
+			],
 			providers: [
 				LegacySchoolRepo,
 				{
