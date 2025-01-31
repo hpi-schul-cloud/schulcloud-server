@@ -8,7 +8,7 @@ const { equal: equalIds } = require('../../../../src/helper/compare').ObjectId;
 
 const testGenericErrorMessage = 'Der angefragte Nutzer ist unbekannt!';
 
-describe.only('user service', () => {
+describe('user service', () => {
 	let userService;
 	let classesService;
 	let coursesService;
