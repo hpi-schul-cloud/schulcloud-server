@@ -4,7 +4,7 @@ const whitelist = require('../src/services/authentication/logic/whitelist');
 const appPromise = require('../src/app');
 const testHelper = require('./services/helpers/testObjects');
 const redisHelpers = require('../src/utils/redis');
-const fut = require('../src/app.hooks').handleAutoLogout;
+const { handleAutoLogout } = require('../src/app.hooks');
 
 const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
 
@@ -53,6 +53,7 @@ describe('handleAutoLogout hook', () => {
 		testObjects = testHelper(app);
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
+		await testObjects.cleanup();
 
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('REDIS_URI', '//validHost:3333');
@@ -75,9 +76,11 @@ describe('handleAutoLogout hook', () => {
 		const user = await testObjects.createTestUser();
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
+
 		await redisHelpers.redisSetAsync(redisIdentifier, 'value', 'EX', 1000);
-		const result = await fut({ params });
+		const result = await handleAutoLogout({ params });
 		expect(result).to.not.equal(undefined);
+
 		const ttl = await redisHelpers.redisTtlAsync(redisIdentifier);
 		expect(ttl).to.be.greaterThan(7000);
 	});
@@ -88,7 +91,7 @@ describe('handleAutoLogout hook', () => {
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 		await redisHelpers.redisDelAsync(redisIdentifier);
 		try {
-			await fut({ params });
+			await handleAutoLogout({ params });
 			throw new Error('should have failed');
 		} catch (err) {
 			expect(err.message).to.not.equal('should have failed');
@@ -98,7 +101,7 @@ describe('handleAutoLogout hook', () => {
 	});
 
 	it('passes through requests without authorisation', async () => {
-		const response = await fut({ params: {} });
+		const response = await handleAutoLogout({ params: {} });
 		expect(response).to.not.eq(undefined);
 	});
 });

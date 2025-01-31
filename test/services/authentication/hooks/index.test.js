@@ -50,10 +50,10 @@ describe('authentication hooks', () => {
 
 	before(async () => {
 		app = await appPromise();
-
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 		testObjects = testHelper(app);
+		await testObjects.cleanup();
 
 		delete require.cache[require.resolve('../../../../src/app')];
 		delete require.cache[require.resolve('../../../services/helpers/services/login')];
@@ -86,11 +86,14 @@ describe('authentication hooks', () => {
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const { accessToken } = params.authentication;
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(accessToken);
+
 		const result = await addJwtToWhitelist({ result: { accessToken } });
-		expect(result).to.not.equal(undefined);
+		expect(result).to.equal({ accessToken });
+
 		const redisResult = await redisHelpers.redisGetAsync(redisIdentifier);
+		expect(redisResult).to.not.equal(undefined);
+
 		const redisTtl = await redisHelpers.redisTtlAsync(redisIdentifier);
-		expect(redisResult).to.not.eq(undefined);
 		expect(redisTtl).to.be.greaterThan(7000);
 	});
 
@@ -99,10 +102,12 @@ describe('authentication hooks', () => {
 		const params = await testObjects.generateRequestParamsFromUser(user);
 		const redisIdentifier = whitelist.createRedisIdentifierFromJwtToken(params.authentication.accessToken);
 		await redisHelpers.redisSetAsync(redisIdentifier, 'value', 'EX', 7200);
+
 		const result = await removeJwtFromWhitelist({
 			params,
 		});
 		expect(result).to.not.equal(undefined);
+
 		const redisResult = await redisHelpers.redisGetAsync(redisIdentifier);
 		expect(redisResult).to.eq(undefined);
 	});
