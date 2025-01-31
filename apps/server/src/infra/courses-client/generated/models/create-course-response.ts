@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @interface VisibilityBodyParams
+ * @interface CreateCourseResponse
  */
-export interface VisibilityBodyParams {
+export interface CreateCourseResponse {
     /**
-     * 
-     * @type {boolean}
-     * @memberof VisibilityBodyParams
+     * The id of the created course
+     * @type {string}
+     * @memberof CreateCourseResponse
      */
-    'isVisible': boolean;
+    'courseId': string;
 }
 
