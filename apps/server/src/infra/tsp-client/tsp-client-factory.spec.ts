@@ -2,7 +2,7 @@ import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { TspAccessTokenLoggableError } from '@infra/sync/strategy/tsp/loggable/tsp-access-token.loggable-error';
+import { TspAccessTokenLoggableError } from '@infra/tsp-client/loggable/tsp-access-token.loggable-error';
 import { OauthAdapterService } from '@modules/oauth';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';

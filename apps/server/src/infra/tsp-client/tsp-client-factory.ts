@@ -1,6 +1,5 @@
 import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
-import { TspAccessTokenLoggableError } from '@infra/sync/strategy/tsp/loggable/tsp-access-token.loggable-error';
 import { OauthAdapterService } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
@@ -10,6 +9,7 @@ import { AxiosError } from 'axios';
 import * as jwt from 'jsonwebtoken';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
+import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
 import { TspClientConfig } from './tsp-client-config';
 
 type FactoryParams = {
