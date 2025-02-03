@@ -209,7 +209,7 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(Card);
 		});
 
-		it('should copy the node', async () => {
+		it('should copy the original node', async () => {
 			const { copyContext, card } = setup();
 
 			const result = await service.copyCard(card, copyContext);
