@@ -112,18 +112,6 @@ export class BoardUc {
 		return column;
 	}
 
-	public async createColumns(userId: EntityId, boardId: EntityId, titles: string[]): Promise<Column[]> {
-		this.logger.debug({ action: 'createColumns', userId, boardId, count: titles.length });
-
-		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
-
-		const columns = titles.map((title) => this.boardNodeFactory.buildColumn({ title }));
-		await this.boardNodeService.addToParent(board, columns);
-
-		return columns;
-	}
-
 	public async moveColumn(
 		userId: EntityId,
 		columnId: EntityId,

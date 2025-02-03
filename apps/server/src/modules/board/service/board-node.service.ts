@@ -32,16 +32,8 @@ export class BoardNodeService {
 		await this.boardNodeRepo.save(boardNode);
 	}
 
-	public async addToParent(
-		parent: AnyBoardNode,
-		child: AnyBoardNode | AnyBoardNode[],
-		position?: number
-	): Promise<void> {
-		if (Array.isArray(child)) {
-			child.forEach((c) => parent.addChild(c, position));
-		} else {
-			parent.addChild(child, position);
-		}
+	public async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position?: number): Promise<void> {
+		parent.addChild(child, position);
 
 		await this.boardNodeRepo.save(parent);
 	}

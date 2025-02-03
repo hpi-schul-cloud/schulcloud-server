@@ -14,14 +14,7 @@ import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
-import {
-	AnyContentElement,
-	BoardExternalReference,
-	BoardLayout,
-	BoardNodeProps,
-	ColumnProps,
-	ContentElementType,
-} from './types';
+import { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps, ContentElementType } from './types';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()
@@ -32,8 +25,8 @@ export class BoardNodeFactory {
 		return columnBoard;
 	}
 
-	public buildColumn(props?: Partial<ColumnProps>): Column {
-		const column = new Column({ ...this.getBaseProps(), ...props });
+	public buildColumn(): Column {
+		const column = new Column({ ...this.getBaseProps() });
 
 		return column;
 	}
