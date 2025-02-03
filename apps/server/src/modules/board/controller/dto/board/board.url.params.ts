@@ -8,9 +8,5 @@ export class BoardUrlParams {
 		required: true,
 		nullable: false,
 	})
-	public boardId: string;
-
-	constructor(props: Readonly<BoardUrlParams>) {
-		this.boardId = props.boardId;
-	}
+	public boardId!: string;
 }

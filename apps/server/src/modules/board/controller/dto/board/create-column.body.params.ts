@@ -10,9 +10,5 @@ export class CreateColumnBodyParams {
 		required: true,
 		nullable: false,
 	})
-	public titles: string[];
-
-	constructor(props: Readonly<CreateColumnBodyParams>) {
-		this.titles = props.titles;
-	}
+	public titles!: string[];
 }
