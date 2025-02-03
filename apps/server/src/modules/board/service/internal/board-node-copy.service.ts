@@ -120,6 +120,7 @@ export class BoardNodeCopyService {
 			type: CopyElementType.COLUMNBOARD,
 			status: childrenCopyStatus,
 			elements: childrenResults,
+			originalEntity: original,
 		};
 
 		return result;
@@ -184,7 +185,6 @@ export class BoardNodeCopyService {
 			type: CopyElementType.FILE_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 			elements: fileCopyStatus,
-			originalEntity: original,
 		};
 
 		return result;
@@ -241,7 +241,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.RICHTEXT_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -258,7 +257,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -280,7 +278,6 @@ export class BoardNodeCopyService {
 			type: CopyElementType.SUBMISSION_CONTAINER_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 			elements: childrenResults,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -291,7 +288,6 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			type: CopyElementType.SUBMISSION_ITEM,
 			status: CopyStatusEnum.NOT_DOING,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -309,7 +305,6 @@ export class BoardNodeCopyService {
 				copyEntity: copy,
 				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 				status: CopyStatusEnum.SUCCESS,
-				originalEntity: original,
 			};
 
 			return Promise.resolve(copyStatus);
@@ -321,7 +316,6 @@ export class BoardNodeCopyService {
 				copyEntity: copy,
 				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 				status: CopyStatusEnum.FAIL,
-				originalEntity: original,
 			};
 
 			return copyStatus;
@@ -353,7 +347,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 			status: copyStatus,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -373,7 +366,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
-			originalEntity: original,
 		};
 		return Promise.resolve(result);
 	}
@@ -383,7 +375,6 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
 			status: CopyStatusEnum.NOT_DOING,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -396,7 +387,6 @@ export class BoardNodeCopyService {
 			type: CopyElementType.MEDIA_BOARD,
 			status: CopyStatusEnum.NOT_DOING,
 			elements: childrenResults,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -409,7 +399,6 @@ export class BoardNodeCopyService {
 			type: CopyElementType.MEDIA_LINE,
 			status: CopyStatusEnum.NOT_DOING,
 			elements: childrenResults,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -417,6 +406,7 @@ export class BoardNodeCopyService {
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async copyMediaExternalToolElement(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		original: MediaExternalToolElement,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		context: CopyContext
@@ -424,7 +414,6 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			type: CopyElementType.MEDIA_EXTERNAL_TOOL_ELEMENT,
 			status: CopyStatusEnum.NOT_DOING,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
@@ -441,7 +430,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.DELETED_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-			originalEntity: original,
 		};
 
 		return Promise.resolve(result);
