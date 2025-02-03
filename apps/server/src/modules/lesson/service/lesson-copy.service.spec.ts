@@ -10,7 +10,6 @@ import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
-	ComponentNexboardProperties,
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
@@ -27,7 +26,6 @@ import { setupEntities } from '@testing/setup-entities';
 import { LessonRepo } from '../repository';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
-import { NexboardService } from './nexboard.service';
 
 describe('lesson copy service', () => {
 	let module: TestingModule;
@@ -36,7 +34,6 @@ describe('lesson copy service', () => {
 	let taskCopyService: DeepMocked<TaskCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
-	let nexboardService: DeepMocked<NexboardService>;
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let configurationSpy: jest.SpyInstance;
 
@@ -62,10 +59,6 @@ describe('lesson copy service', () => {
 					useValue: createMock<EtherpadService>(),
 				},
 				{
-					provide: NexboardService,
-					useValue: createMock<NexboardService>(),
-				},
-				{
 					provide: CopyFilesService,
 					useValue: createMock<CopyFilesService>(),
 				},
@@ -87,7 +80,6 @@ describe('lesson copy service', () => {
 		const map: Map<EntityId, AuthorizableObject> = new Map();
 		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
-		nexboardService = module.get(NexboardService);
 		lessonRepo = module.get(LessonRepo);
 	});
 
@@ -1000,137 +992,6 @@ describe('lesson copy service', () => {
 			expect(contentsStatus).toBeDefined();
 			if (contentsStatus?.elements) {
 				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_TASK);
-			}
-		});
-	});
-
-	describe('when lesson contains neXboard content element', () => {
-		const setup = () => {
-			const nexboardContent: ComponentProperties = {
-				title: 'text',
-				hidden: false,
-				component: ComponentType.NEXBOARD,
-				content: {
-					board: '123',
-					description: 'foo',
-					title: 'bar',
-					url: 'baz',
-				},
-			};
-			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
-			const originalLesson = lessonFactory.build({
-				course: originalCourse,
-				contents: [nexboardContent],
-			});
-			lessonRepo.findById.mockResolvedValueOnce(originalLesson);
-
-			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
-
-			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_NEXBOARD_ENABLED') {
-					return true;
-				}
-				if (config === 'FEATURE_NEXBOARD_COPY_ENABLED') {
-					return true;
-				}
-				return null;
-			});
-
-			return { user, originalCourse, destinationCourse, originalLesson };
-		};
-
-		it('should not call neXboard service, if copy feature flag is false', async () => {
-			const { user, destinationCourse, originalLesson } = setup();
-			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_NEXBOARD_ENABLED') {
-					return true;
-				}
-				if (config === 'FEATURE_NEXBOARD_COPY_ENABLED') {
-					return false;
-				}
-				return null;
-			});
-
-			const status = await copyService.copyLesson({
-				originalLessonId: originalLesson.id,
-				destinationCourse,
-				user,
-			});
-
-			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
-			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_COPY_ENABLED');
-			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
-			expect(lessonContents).toEqual([]);
-
-			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
-		});
-
-		it('should call neXboard service to create new neXboard', async () => {
-			const { user, destinationCourse, originalLesson } = setup();
-
-			await copyService.copyLesson({
-				originalLessonId: originalLesson.id,
-				destinationCourse,
-				user,
-			});
-
-			expect(nexboardService.createNexboard).toHaveBeenCalled();
-		});
-
-		it('should not copy the neXboard content, if neXboard creation fails', async () => {
-			const { user, destinationCourse, originalLesson } = setup();
-
-			nexboardService.createNexboard.mockResolvedValue(false);
-
-			const status = await copyService.copyLesson({
-				originalLessonId: originalLesson.id,
-				destinationCourse,
-				user,
-			});
-
-			let contentStatus = CopyStatusEnum.SUCCESS;
-			const group = status.elements?.filter((element) => element.type === CopyElementType.LESSON_CONTENT_GROUP)[0];
-			if (group && group.elements) {
-				contentStatus = group.elements[0].status;
-			}
-			expect(contentStatus).toEqual(CopyStatusEnum.FAIL);
-
-			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
-			expect(lessonContents.length).toEqual(0);
-		});
-
-		it('should copy neXboard correctly', async () => {
-			const { user, destinationCourse, originalLesson } = setup();
-
-			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
-
-			const status = await copyService.copyLesson({
-				originalLessonId: originalLesson.id,
-				destinationCourse,
-				user,
-			});
-			const copiedLessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
-			const copiedNexboard = copiedLessonContents[0].content as ComponentNexboardProperties;
-			expect(copiedNexboard.url).toEqual('abc');
-			expect(copiedNexboard.board).toEqual('123');
-		});
-
-		it('should set content type to LESSON_CONTENT_NEXBOARD', async () => {
-			const { user, destinationCourse, originalLesson } = setup();
-
-			nexboardService.createNexboard.mockResolvedValue({ board: '123', url: 'abc' });
-
-			const status = await copyService.copyLesson({
-				originalLessonId: originalLesson.id,
-				destinationCourse,
-				user,
-			});
-			const contentsStatus = status.elements?.find((el) => el.type === CopyElementType.LESSON_CONTENT_GROUP);
-			expect(contentsStatus).toBeDefined();
-			if (contentsStatus?.elements) {
-				expect(contentsStatus.elements[0].type).toEqual(CopyElementType.LESSON_CONTENT_NEXBOARD);
 			}
 		});
 	});
