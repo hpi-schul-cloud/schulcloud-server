@@ -38,6 +38,7 @@ import { Configuration, BoardApi, BoardColumnApi } from './generated';
 
 				return new BoardColumnApi(configuration);
 			},
+			inject: [ConfigService, REQUEST],
 		},
 	],
 	exports: [BoardsClientAdapter],
