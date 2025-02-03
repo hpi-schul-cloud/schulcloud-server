@@ -1,9 +1,9 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { User } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { IdpConsoleModule } from '../idp-console.app.module';
+import { TEST_ENTITIES } from '../idp.entity.imports';
 import { UsersSyncOptionsBuilder } from '../testing';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
@@ -17,7 +17,10 @@ describe(IdpSyncConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [IdpConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: [User] })],
+			imports: [
+				IdpConsoleModule,
+				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+			],
 		}).compile();
 
 		console = module.get(IdpSyncConsole);
