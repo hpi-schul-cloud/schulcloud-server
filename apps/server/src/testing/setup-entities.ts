@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-restricted-imports */
+// Remove the eslint-disable line after fixing the import issue in BC-8880
 import { AnyEntity, EntityClass, MikroORM } from '@mikro-orm/core';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
