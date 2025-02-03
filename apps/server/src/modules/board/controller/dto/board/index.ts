@@ -12,4 +12,3 @@ export * from './rename.body.params';
 export * from './update-board-title.body.params';
 export * from './visibility.body.params';
 export * from './layout.body.params';
-export * from './create-column.body.params';
