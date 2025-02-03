@@ -5,6 +5,9 @@ export class ComponentLernstorePropsDto {
 	public resources: LessonResourcesDto[];
 
 	constructor(lernstoreContent: ComponentLernstorePropsImpl) {
-		this.resources = lernstoreContent.resources;
+		this.resources = [];
+		for (const resource of lernstoreContent.resources) {
+			this.resources.push(new LessonResourcesDto(resource));
+		}
 	}
 }
