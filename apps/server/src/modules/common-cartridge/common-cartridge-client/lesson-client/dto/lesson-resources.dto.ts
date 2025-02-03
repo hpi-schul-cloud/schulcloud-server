@@ -1,9 +1,14 @@
 import { LessonResources } from '../lessons-api-client';
 export class LessonResourcesDto {
+    
     client: string;
+    
     description: string;
+    
     merlinReference: string;
+    
     title: string;
+    
     url: string;
 
     constructor(lessonResources: LessonResources) {
