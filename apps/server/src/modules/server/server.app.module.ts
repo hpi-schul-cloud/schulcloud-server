@@ -31,7 +31,6 @@ import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { RosterModule } from '@modules/roster/roster.module';
-import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
@@ -49,6 +48,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
@@ -103,7 +103,7 @@ const serverModules = [
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,
-	SchoolLicenseModule,
+	SchoolLicenseApiModule,
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
