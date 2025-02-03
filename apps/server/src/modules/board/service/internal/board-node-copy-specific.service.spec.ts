@@ -135,6 +135,14 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(ColumnBoard);
 		});
 
+		it('should copy the original node', async () => {
+			const { copyContext, columnBoard } = setup();
+
+			const result = await service.copyColumnBoard(columnBoard, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(ColumnBoard);
+		});
+
 		it('should copy the children', async () => {
 			const { copyContext, columnBoard } = setup();
 
@@ -168,6 +176,14 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(Column);
 		});
 
+		it('should copy the original node', async () => {
+			const { copyContext, column } = setup();
+
+			const result = await service.copyColumn(column, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(Column);
+		});
+
 		it('should copy the children', async () => {
 			const { copyContext, column } = setup();
 
@@ -193,6 +209,13 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(Card);
 		});
 
+		it('should copy the node', async () => {
+			const { copyContext, card } = setup();
+
+			const result = await service.copyCard(card, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(Card);
+		});
 		it('should copy the children', async () => {
 			const { copyContext, card } = setup();
 
@@ -262,6 +285,14 @@ describe(BoardNodeCopyService.name, () => {
 			const result = await service.copyLinkElement(linkElement, copyContext);
 
 			expect(result.copyEntity).toBeInstanceOf(LinkElement);
+		});
+
+		it('should copy the original node', async () => {
+			const { copyContext, linkElement } = setup();
+
+			const result = await service.copyLinkElement(linkElement, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(LinkElement);
 		});
 
 		it('should copy the files', async () => {
