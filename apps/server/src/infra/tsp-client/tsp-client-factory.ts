@@ -1,5 +1,4 @@
-import { DomainErrorHandler } from '@core/error';
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { OauthAdapterService } from '@modules/oauth';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
@@ -7,6 +6,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';
 import * as jwt from 'jsonwebtoken';
+import util from 'util';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
 import { Configuration, ExportApiFactory, ExportApiInterface } from './generated';
 import { TspAccessTokenLoggableError } from './loggable/tsp-access-token.loggable-error';
@@ -31,8 +31,7 @@ export class TspClientFactory {
 	constructor(
 		private readonly oauthAdapterService: OauthAdapterService,
 		configService: ConfigService<TspClientConfig, true>,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		private readonly domainErrorHandler: DomainErrorHandler
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {
 		this.baseUrl = configService.getOrThrow<string>('TSP_API_CLIENT_BASE_URL');
 		this.tokenLifetime = configService.getOrThrow<number>('TSP_API_CLIENT_TOKEN_LIFETIME_MS');
@@ -73,13 +72,17 @@ export class TspClientFactory {
 
 			// We need the Bearer prefix for the generated client, because OAS 2 does not support Bearer token type
 			return `Bearer ${this.cachedToken}`;
-		} catch (e) {
-			if (e instanceof AxiosError) {
-				this.domainErrorHandler.exec(new AxiosErrorLoggable(e, 'TSP_OAUTH_ERROR'));
+		} catch (rawError) {
+			let error: Error;
+			if (rawError instanceof AxiosError) {
+				error = new AxiosErrorLoggable(rawError, 'TSP_OAUTH_ERROR');
+			} else if (rawError instanceof Error) {
+				error = rawError;
 			} else {
-				this.domainErrorHandler.exec(new ErrorLoggable(e));
+				error = new Error(util.inspect(rawError));
 			}
-			return Promise.reject(new TspAccessTokenLoggableError());
+
+			throw new TspAccessTokenLoggableError(error);
 		}
 	}
 

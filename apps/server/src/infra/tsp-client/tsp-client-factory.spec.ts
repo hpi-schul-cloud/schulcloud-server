@@ -1,5 +1,3 @@
-import { DomainErrorHandler } from '@core/error';
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { TspAccessTokenLoggableError } from '@infra/tsp-client/loggable/tsp-access-token.loggable-error';
@@ -17,7 +15,6 @@ describe('TspClientFactory', () => {
 	let configServiceMock: DeepMocked<ConfigService<ServerConfig, true>>;
 	let oauthAdapterServiceMock: DeepMocked<OauthAdapterService>;
 	let encryptionService: DeepMocked<EncryptionService>;
-	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,10 +43,6 @@ describe('TspClientFactory', () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
-				{
-					provide: DomainErrorHandler,
-					useValue: createMock<DomainErrorHandler>(),
-				},
 			],
 		}).compile();
 
@@ -57,7 +50,6 @@ describe('TspClientFactory', () => {
 		configServiceMock = module.get(ConfigService);
 		oauthAdapterServiceMock = module.get(OauthAdapterService);
 		encryptionService = module.get(DefaultEncryptionService);
-		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
@@ -165,14 +157,10 @@ describe('TspClientFactory', () => {
 				};
 			};
 
-			it('should log an AxiosErrorLoggable as warning and reject', async () => {
+			it('should throw TspAccessTokenLoggableError', async () => {
 				const params = setup();
 
 				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
-					new AxiosErrorLoggable(new AxiosError(), 'TSP_OAUTH_ERROR')
-				);
 			});
 		});
 
@@ -195,12 +183,37 @@ describe('TspClientFactory', () => {
 				};
 			};
 
-			it('should log an ErrorLoggable as warning and reject', async () => {
+			it('should throw TspAccessTokenLoggableError', async () => {
 				const params = setup();
 
 				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
+			});
+		});
 
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
+		describe('when a non-error type is thrown', () => {
+			const setup = () => {
+				const clientId = faker.string.uuid();
+				const clientSecret = faker.string.alphanumeric(40);
+				const tokenEndpoint = faker.internet.url();
+
+				oauthAdapterServiceMock.sendTokenRequest.mockImplementation(() => {
+					// eslint-disable-next-line @typescript-eslint/no-throw-literal
+					throw 'error';
+				});
+
+				Reflect.set(sut, 'cachedToken', undefined);
+
+				return {
+					clientId,
+					clientSecret,
+					tokenEndpoint,
+				};
+			};
+
+			it('should throw TspAccessTokenLoggableError', async () => {
+				const params = setup();
+
+				await expect(() => sut.getAccessToken(params)).rejects.toThrow(TspAccessTokenLoggableError);
 			});
 		});
 	});

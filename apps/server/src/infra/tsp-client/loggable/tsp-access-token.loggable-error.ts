@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError, ErrorLogMessage } from '@shared/common/error';
 
 export class TspAccessTokenLoggableError extends BusinessError implements Loggable {
-	constructor() {
+	constructor(private readonly error: Error) {
 		super(
 			{
 				type: 'TSP_ACCESS_TOKEN_ERROR',
@@ -19,6 +19,7 @@ export class TspAccessTokenLoggableError extends BusinessError implements Loggab
 			message: this.message,
 			type: this.type,
 			stack: this.stack,
+			error: this.error,
 		};
 
 		return message;
