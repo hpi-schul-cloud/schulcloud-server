@@ -1,7 +1,9 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { ExternalLicenseDto } from '../dto';
 import { LicenseProvisioningSuccessfulLoggable } from '../loggable';
 import {
@@ -33,6 +35,10 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 				{
 					provide: SchulconnexToolProvisioningService,
 					useValue: createMock<SchulconnexToolProvisioningService>(),
+				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
 				},
 			],
 		}).compile();

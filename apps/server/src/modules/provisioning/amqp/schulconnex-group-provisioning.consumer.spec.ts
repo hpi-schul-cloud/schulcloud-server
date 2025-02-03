@@ -1,9 +1,11 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { groupFactory } from '../../group/testing';
 import { GroupProvisioningSuccessfulLoggable, GroupRemovalSuccessfulLoggable } from '../loggable';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
@@ -43,6 +45,10 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: MikroORM,
+					useValue: await setupEntities(),
 				},
 			],
 		}).compile();
