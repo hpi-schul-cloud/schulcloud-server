@@ -18,10 +18,12 @@ const { createConfigModuleOptions } = require('../../dist/apps/server/shared/com
 const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
 const { RosterModule } = require('../../dist/apps/server/modules/roster/roster.module');
 const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
+const { RabbitMQWrapperTestModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
 		imports: [
+			RabbitMQWrapperTestModule,
 			MikroOrmModule.forRoot({
 				type: 'mongo',
 				clientUrl: DB_URL,
