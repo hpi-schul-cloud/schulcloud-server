@@ -1,9 +1,9 @@
+import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
+import { forwardRef, Module } from '@nestjs/common';
 import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
@@ -22,7 +22,7 @@ import {
 
 @Module({
 	imports: [
-		CommonToolModule,
+		forwardRef(() => CommonToolModule),
 		LoggerModule,
 		OauthProviderServiceModule,
 		EncryptionModule,

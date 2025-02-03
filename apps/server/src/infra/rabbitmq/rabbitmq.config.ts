@@ -8,5 +8,6 @@ export const AntivirusExchange = Configuration.get('ANTIVIRUS_EXCHANGE') as stri
 export const SchulconnexProvisioningExchange = Configuration.get('PROVISIONING_SCHULCONNEX_EXCHANGE') as string;
 export const RabbitMqURI = Configuration.get('RABBITMQ_URI') as string;
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface RabbitMqConfig {}
+export interface RabbitMqConfig {
+	RABBITMQ_URI: string;
+}

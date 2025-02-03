@@ -1,26 +1,26 @@
 import type { CoreModuleConfig } from '@core/core.config';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { JwtAuthGuardConfig } from '@infra/auth-guard';
-import { EncryptionConfig } from '@infra/encryption/encryption.config';
+import type { JwtAuthGuardConfig } from '@infra/auth-guard';
+import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
-import { TspSyncConfig } from '@infra/sync';
+import type { TspSyncConfig } from '@infra/sync';
 import type { TspClientConfig } from '@infra/tsp-client';
 import type { AccountConfig } from '@modules/account';
-import { AlertConfig } from '@modules/alert';
+import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
-import { ManagementMediaSourcesConfig, ManagementServerConfig } from '@modules/management';
-import { OauthConfig } from '@modules/oauth';
-import { ProvisioningConfig } from '@modules/provisioning';
-import { RocketChatUserConfig } from '@modules/rocketchat-user';
-import { RoomConfig } from '@modules/room';
+import type { ManagementMediaSourcesConfig, ManagementServerConfig } from '@modules/management';
+import type { OauthConfig } from '@modules/oauth';
+import type { ProvisioningConfig } from '@modules/provisioning';
+import type { RocketChatUserConfig } from '@modules/rocketchat-user';
+import type { RoomConfig } from '@modules/room';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
@@ -31,8 +31,8 @@ import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { VideoConferenceConfig } from '@modules/video-conference';
 import type { BbbConfig } from '@modules/video-conference/bbb';
 import type { LanguageType } from '@shared/domain/interface';
-import { SchulcloudTheme } from '@shared/domain/types';
-import { Algorithm } from 'jsonwebtoken';
+import type { SchulcloudTheme } from '@shared/domain/types';
+import type { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
 
 export enum NodeEnvType {
@@ -215,7 +215,6 @@ const config: ServerConfig = {
 	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
 	) as boolean,
-	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
@@ -238,9 +237,6 @@ const config: ServerConfig = {
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'
 	) as boolean,
-	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
-		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE'
-	) as number,
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,

@@ -7,12 +7,12 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { serverConfig } from '../server';
 import { SchulconnexGroupProvisioningConsumerModule } from './schulconnex-group-provisioning-consumer.module';
+import { schulconnexProvisioningConfig } from './schulconnex-provisioning.config';
 
 @Module({
 	imports: [
-		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+		ConfigModule.forRoot(createConfigModuleOptions(schulconnexProvisioningConfig)),
 		CoreModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,

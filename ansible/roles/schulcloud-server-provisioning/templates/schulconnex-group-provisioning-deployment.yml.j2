@@ -47,17 +47,17 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: schulconnex-group-provisioning
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: api-configmap
+            name: schulconnex-provisioning-configmap
         - secretRef:
-            name: api-secret
-        - secretRef:
-            name: api-files-secret
+            name: schulconnex-provisioning-secret
         command: ['npm', 'run', 'nest:start:schulconnex-group-provisioning-amqp:prod']
         resources:
           limits:
