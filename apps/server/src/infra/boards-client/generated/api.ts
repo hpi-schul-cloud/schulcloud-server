@@ -15,4 +15,5 @@
 
 
 export * from './api/board-api';
+export * from './api/board-column-api';
 

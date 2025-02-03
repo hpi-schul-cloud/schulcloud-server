@@ -17,14 +17,14 @@
 /**
  * 
  * @export
- * @interface CreateColumnBodyParams
+ * @interface RenameBodyParams
  */
-export interface CreateColumnBodyParams {
+export interface RenameBodyParams {
     /**
-     * The title of the column.
-     * @type {Array<string>}
-     * @memberof CreateColumnBodyParams
+     * 
+     * @type {string}
+     * @memberof RenameBodyParams
      */
-    'titles': Array<string>;
+    'title': string;
 }
 

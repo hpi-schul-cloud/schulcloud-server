@@ -31,8 +31,6 @@ import type { ColumnResponse } from '../models';
 import type { CreateBoardBodyParams } from '../models';
 // @ts-ignore
 import type { CreateBoardResponse } from '../models';
-// @ts-ignore
-import type { CreateColumnBodyParams } from '../models';
 /**
  * BoardApi - axios parameter creator
  * @export
@@ -81,18 +79,15 @@ export const BoardApiAxiosParamCreator = function (configuration?: Configuration
         },
         /**
          * 
-         * @summary Create multiple columns on a board.
+         * @summary Create a new column on a board.
          * @param {string} boardId The id of the board.
-         * @param {CreateColumnBodyParams} createColumnBodyParams 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        boardControllerCreateColumns: async (boardId: string, createColumnBodyParams: CreateColumnBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+        boardControllerCreateColumn: async (boardId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'boardId' is not null or undefined
-            assertParamExists('boardControllerCreateColumns', 'boardId', boardId)
-            // verify required parameter 'createColumnBodyParams' is not null or undefined
-            assertParamExists('boardControllerCreateColumns', 'createColumnBodyParams', createColumnBodyParams)
-            const localVarPath = `/boards/{boardId}/columns/bulk`
+            assertParamExists('boardControllerCreateColumn', 'boardId', boardId)
+            const localVarPath = `/boards/{boardId}/columns`
                 .replace(`{${"boardId"}}`, encodeURIComponent(String(boardId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -111,12 +106,9 @@ export const BoardApiAxiosParamCreator = function (configuration?: Configuration
 
 
     
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createColumnBodyParams, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -186,16 +178,15 @@ export const BoardApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
-         * @summary Create multiple columns on a board.
+         * @summary Create a new column on a board.
          * @param {string} boardId The id of the board.
-         * @param {CreateColumnBodyParams} createColumnBodyParams 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async boardControllerCreateColumns(boardId: string, createColumnBodyParams: CreateColumnBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ColumnResponse>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.boardControllerCreateColumns(boardId, createColumnBodyParams, options);
+        async boardControllerCreateColumn(boardId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ColumnResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.boardControllerCreateColumn(boardId, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BoardApi.boardControllerCreateColumns']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['BoardApi.boardControllerCreateColumn']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -233,14 +224,13 @@ export const BoardApiFactory = function (configuration?: Configuration, basePath
         },
         /**
          * 
-         * @summary Create multiple columns on a board.
+         * @summary Create a new column on a board.
          * @param {string} boardId The id of the board.
-         * @param {CreateColumnBodyParams} createColumnBodyParams 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        boardControllerCreateColumns(boardId: string, createColumnBodyParams: CreateColumnBodyParams, options?: any): AxiosPromise<Array<ColumnResponse>> {
-            return localVarFp.boardControllerCreateColumns(boardId, createColumnBodyParams, options).then((request) => request(axios, basePath));
+        boardControllerCreateColumn(boardId: string, options?: any): AxiosPromise<ColumnResponse> {
+            return localVarFp.boardControllerCreateColumn(boardId, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -273,14 +263,13 @@ export interface BoardApiInterface {
 
     /**
      * 
-     * @summary Create multiple columns on a board.
+     * @summary Create a new column on a board.
      * @param {string} boardId The id of the board.
-     * @param {CreateColumnBodyParams} createColumnBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof BoardApiInterface
      */
-    boardControllerCreateColumns(boardId: string, createColumnBodyParams: CreateColumnBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<Array<ColumnResponse>>;
+    boardControllerCreateColumn(boardId: string, options?: RawAxiosRequestConfig): AxiosPromise<ColumnResponse>;
 
     /**
      * 
@@ -315,15 +304,14 @@ export class BoardApi extends BaseAPI implements BoardApiInterface {
 
     /**
      * 
-     * @summary Create multiple columns on a board.
+     * @summary Create a new column on a board.
      * @param {string} boardId The id of the board.
-     * @param {CreateColumnBodyParams} createColumnBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof BoardApi
      */
-    public boardControllerCreateColumns(boardId: string, createColumnBodyParams: CreateColumnBodyParams, options?: RawAxiosRequestConfig) {
-        return BoardApiFp(this.configuration).boardControllerCreateColumns(boardId, createColumnBodyParams, options).then((request) => request(this.axios, this.basePath));
+    public boardControllerCreateColumn(boardId: string, options?: RawAxiosRequestConfig) {
+        return BoardApiFp(this.configuration).boardControllerCreateColumn(boardId, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

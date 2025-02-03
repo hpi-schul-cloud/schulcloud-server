@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
 import { BoardsClientAdapter } from '@infra/boards-client';
@@ -43,12 +44,16 @@ export class CommonCartridgeImportService {
 		board: CommonCartridgeOrganizationProps,
 		parser: CommonCartridgeFileParser
 	): Promise<void> {
-		const columns = parser
+		const promises = parser
 			.getOrganizations()
 			.filter((org) => org.path.startsWith(board.path) && org.pathDepth === board.pathDepth + 1)
 			.filter((org) => org.isResource === false)
-			.map((org) => org.title);
+			.map(async (org) => {
+				const response = await this.boardsClient.createBoardColumn(boardId);
 
-		await this.boardsClient.createBoardColumns(boardId, { titles: columns });
+				await this.boardsClient.updateBoardColumnTitle(response.id, { title: org.title });
+			});
+
+		await Promise.all(promises);
 	}
 }
