@@ -18,7 +18,8 @@ export class CommonCartridgeUc {
 		columnBoards: string[]
 	): Promise<Buffer> {
 		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
-
+		
+		
 		return exportedCourse;
 	}
 
