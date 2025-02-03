@@ -14,12 +14,12 @@ export class DatabaseManagementService {
 		return connection;
 	}
 
-	getDatabaseCollection(collectionName: string): Collection {
+	public getDatabaseCollection(collectionName: string): Collection {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
 
-	async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
+	public async importCollection(collectionName: string, jsonDocuments: unknown[]): Promise<number> {
 		if (jsonDocuments.length === 0) {
 			return 0;
 		}
@@ -31,19 +31,19 @@ export class DatabaseManagementService {
 		return insertedCount;
 	}
 
-	async findDocumentsOfCollection(collectionName: string): Promise<unknown[]> {
+	public async findDocumentsOfCollection(collectionName: string): Promise<unknown[]> {
 		const collection = this.getDatabaseCollection(collectionName);
 		const documents = (await collection.find({}).toArray()) as unknown[];
 		return documents;
 	}
 
-	async clearCollection(collectionName: string): Promise<number> {
+	public async clearCollection(collectionName: string): Promise<number> {
 		const collection = this.getDatabaseCollection(collectionName);
 		const { deletedCount } = await collection.deleteMany({});
 		return deletedCount || 0;
 	}
 
-	async getCollectionNames(): Promise<string[]> {
+	public async getCollectionNames(): Promise<string[]> {
 		const collections = (await this.db.listCollections(undefined, { nameOnly: true }).toArray()) as unknown[] as {
 			name: string;
 		}[];
@@ -51,38 +51,38 @@ export class DatabaseManagementService {
 		return collectionNames;
 	}
 
-	async collectionExists(collectionName: string): Promise<boolean> {
+	public async collectionExists(collectionName: string): Promise<boolean> {
 		const collections = await this.getCollectionNames();
 		const result = collections.includes(collectionName);
 		return result;
 	}
 
-	async createCollection(collectionName: string): Promise<void> {
+	public async createCollection(collectionName: string): Promise<void> {
 		await this.db.createCollection(collectionName);
 	}
 
-	async dropCollection(collectionName: string): Promise<void> {
+	public async dropCollection(collectionName: string): Promise<void> {
 		await this.db.dropCollection(collectionName);
 	}
 
-	async syncIndexes(): Promise<void> {
+	public async syncIndexes(): Promise<void> {
 		return this.orm.getSchemaGenerator().ensureIndexes();
 	}
 
-	async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
+	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
 		const migrator = this.orm.getMigrator();
 		const params = this.migrationParams(only, from, to);
 		await migrator.up(params);
 	}
 
-	async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
+	public async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
 		const migrator = this.orm.getMigrator();
 		const params = this.migrationParams(only, from, to);
 
 		await migrator.down(params);
 	}
 
-	async migrationPending(): Promise<UmzugMigration[]> {
+	public async migrationPending(): Promise<UmzugMigration[]> {
 		const migrator = this.orm.getMigrator();
 		const pendingMigrations = await migrator.getPendingMigrations();
 		return pendingMigrations;
