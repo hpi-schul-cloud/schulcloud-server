@@ -84,6 +84,41 @@ describe(MetaTagExtractorService.name, () => {
 			});
 		});
 
+		describe('when it is an external url', () => {
+			describe('when no meta tags were found', () => {
+				it('should return a MetaData object with type unknown', async () => {
+					const url = 'https://docs.dbildungscloud.de/display/DBH/Arc+Weekly+Meetings';
+
+					const result = await service.getMetaData(url);
+
+					expect(result).toEqual({
+						url,
+						title: 'Arc+Weekly+Meetings',
+						description: '',
+						type: MetaDataEntityType.UNKNOWN,
+					});
+				});
+			});
+
+			describe('when meta tags were found', () => {
+				it('should return a MetaData object with type external', async () => {
+					const url = 'https://www.test.de/super.pdf';
+					const metaData = {
+						url,
+						title: 'Super Title',
+						description: 'Super Description',
+						originalImageUrl: 'https://www.test.de/super.jpg',
+						type: MetaDataEntityType.EXTERNAL,
+					};
+					metaTagExternalUrlService.tryExtractMetaTags.mockResolvedValue(metaData);
+
+					const result = await service.getMetaData(url);
+
+					expect(result).toEqual(metaData);
+				});
+			});
+		});
+
 		describe('when url hostname contains IP-Adress', () => {
 			it.each([
 				{ url: 'https://127.0.0.1' },
