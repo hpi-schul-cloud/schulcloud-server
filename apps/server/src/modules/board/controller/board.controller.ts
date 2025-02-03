@@ -134,24 +134,24 @@ export class BoardController {
 		return response;
 	}
 
-	@ApiOperation({ summary: 'Create multiple columns on a board.' })
-	@ApiResponse({ status: 201, type: [ColumnResponse] })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(HttpStatus.CREATED)
-	@Post(':boardId/columns/bulk')
-	public async createColumns(
-		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: CreateColumnBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<ColumnResponse[]> {
-		const columns = await this.boardUc.createColumns(currentUser.userId, urlParams.boardId, bodyParams.titles);
+	// @ApiOperation({ summary: 'Create multiple columns on a board.' })
+	// @ApiResponse({ status: 201, type: [ColumnResponse] })
+	// @ApiResponse({ status: 400, type: ApiValidationError })
+	// @ApiResponse({ status: 403, type: ForbiddenException })
+	// @ApiResponse({ status: 404, type: NotFoundException })
+	// @HttpCode(HttpStatus.CREATED)
+	// @Post(':boardId/columns/bulk')
+	// public async createColumns(
+	// 	@Param() urlParams: BoardUrlParams,
+	// 	@Body() bodyParams: CreateColumnBodyParams,
+	// 	@CurrentUser() currentUser: ICurrentUser
+	// ): Promise<ColumnResponse[]> {
+	// 	const columns = await this.boardUc.createColumns(currentUser.userId, urlParams.boardId, bodyParams.titles);
 
-		const response = columns.map((column) => ColumnResponseMapper.mapToResponse(column));
+	// 	const response = columns.map((column) => ColumnResponseMapper.mapToResponse(column));
 
-		return response;
-	}
+	// 	return response;
+	// }
 
 	@ApiOperation({ summary: 'Create a board copy.' })
 	@ApiResponse({ status: 201, type: CopyApiResponse })
