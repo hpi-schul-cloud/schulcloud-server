@@ -87,7 +87,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		const errors = await validate(payload);
 
 		if (errors.length > 0) {
-			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property).join(', '));
+			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property));
 		}
 
 		return payload;
@@ -108,7 +108,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 				.filter(Boolean) as RoleName[],
 		});
 
-		if (externalUserDto.roles && externalUserDto.roles.length < 1) {
+		if (Array.isArray(externalUserDto.roles) && externalUserDto.roles.length < 1) {
 			throw new IdTokenExtractionFailureLoggableException('ptscListRolle');
 		}
 

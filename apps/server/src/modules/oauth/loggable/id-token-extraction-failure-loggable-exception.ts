@@ -3,7 +3,7 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 
 export class IdTokenExtractionFailureLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly fieldName: string) {
+	constructor(private readonly fieldName: string | string[]) {
 		super(
 			{
 				type: 'ID_TOKEN_EXTRACTION_FAILURE',
@@ -14,13 +14,14 @@ export class IdTokenExtractionFailureLoggableException extends BusinessError imp
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		const fieldName = Array.isArray(this.fieldName) ? this.fieldName.join(', ') : this.fieldName;
 		return {
 			type: this.type,
 			message: this.message,
 			stack: this.stack,
 			data: {
-				fieldName: this.fieldName,
+				fieldName,
 			},
 		};
 	}
