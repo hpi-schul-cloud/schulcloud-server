@@ -177,13 +177,19 @@ export class TypeGuard {
 	public static checkKeysInInstance<T extends object, K extends keyof T>(
 		obj: T,
 		keys: K[],
-		contextInfo = ''
+		toThrow?: Error
 	): EnsureKeysAreSet<T, K> {
+		const missingKeys: K[] = [];
 		for (const key of keys) {
 			if (!(key in obj) || obj[key] === undefined || obj[key] === null) {
-				throw new Error(`Object lacks this property: ${String(key)}. ${contextInfo}`);
+				missingKeys.push(key);
 			}
 		}
+
+		if (missingKeys.length > 0) {
+			throw toThrow || new Error(`Object lacks these properties: ${String(keys)}.`);
+		}
+
 		return obj as EnsureKeysAreSet<T, K>;
 	}
 
@@ -192,11 +198,7 @@ export class TypeGuard {
 		keys: K[],
 		toThrow?: Error
 	): asserts obj is EnsureKeysAreSet<T, K> {
-		for (const key of keys) {
-			if (!(key in obj) || obj[key] === undefined || obj[key] === null) {
-				throw toThrow || new Error(`Object lacks this property: ${String(key)}.`);
-			}
-		}
+		this.checkKeysInInstance(obj, keys, toThrow);
 	}
 
 	public static checkNotNullOrUndefined<T>(value: T | null | undefined, toThrow?: Error): T {
