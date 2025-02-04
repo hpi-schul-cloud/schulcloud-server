@@ -1,9 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
 const logger = require('../../../src/logger');
 
-module.exports = function MockServer(url = 'http://localhost:58372', uri = '/', resolver) {
+module.exports = function NexboardMockServer(resolver, url = 'http://localhost:58372', uri = '/') {
 	const app = express();
 	app.use(bodyParser.json()); // for parsing application/json
 	app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies

@@ -4,7 +4,7 @@ const freeport = require('freeport');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const jsonwebtoken = require('jsonwebtoken');
 const logger = require('../../../src/logger');
-const MockServer = require('./MockServer');
+const EtherpadMockServer = require('./EtherpadMockServer');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
@@ -27,7 +27,7 @@ const request = async ({ server, method = 'get', endpoint, data, accessToken }) 
 };
 
 describe('Etherpad Permission Check: Students', () => {
-	let mockServer;
+	let etherpadMockServer;
 	let server;
 	let app;
 	let nestServices;
@@ -49,13 +49,13 @@ describe('Etherpad Permission Check: Students', () => {
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
 
-			const mock = MockServer(mockUrl, ethPath, done);
-			mockServer = mock.server;
+			const mock = EtherpadMockServer(done, mockUrl, ethPath);
+			etherpadMockServer = mock.server;
 		});
 	});
 
 	after(async () => {
-		await mockServer.close();
+		await etherpadMockServer.close();
 		await server.close();
 		await testObjects.cleanup();
 		await closeNestServices(nestServices);
