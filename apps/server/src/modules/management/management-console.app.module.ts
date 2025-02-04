@@ -14,7 +14,7 @@ import { ConsoleModule } from 'nestjs-console';
 import path from 'path';
 import { ENTITIES } from './management.entity.imports';
 
-const migrationsPath = path.resolve(__dirname, '..', 'migrations', 'mikro-orm'); // TODO: Warum ist das hier überhaupt relevant?
+const migrationsPath = path.resolve(__dirname, '..', '..', 'migrations', 'mikro-orm'); // TODO: Warum ist das hier überhaupt relevant?
 
 const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	// TODO repeats server module definitions

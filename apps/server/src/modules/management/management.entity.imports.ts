@@ -3,6 +3,7 @@ import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
 import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
+import { FileRecord } from '@modules/files-storage/entity';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
@@ -68,6 +69,7 @@ export const ENTITIES = [
 	DashboardModelEntity,
 	ExternalToolEntity,
 	FileEntity,
+	FileRecord,
 	FederalStateEntity,
 	ImportUser,
 	LessonEntity,
