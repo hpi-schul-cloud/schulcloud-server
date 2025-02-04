@@ -67,7 +67,7 @@ describe(ExternalToolService.name, () => {
 	});
 
 	const createTools = () => {
-		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).buildWithId();
+		const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).withMedium().buildWithId();
 		const oauth2ToolConfig: Oauth2ToolConfig = oauth2ToolConfigFactory.withExternalData().build();
 		const oauth2ToolConfigWithoutExternalData: Oauth2ToolConfig = oauth2ToolConfigFactory.build();
 		const lti11ToolConfig: Lti11ToolConfig = lti11ToolConfigFactory.build();
@@ -652,6 +652,23 @@ describe(ExternalToolService.name, () => {
 
 				expect(externalToolRepo.save).toHaveBeenCalled();
 			});
+		});
+	});
+
+	describe('findExternalToolsByMediaSource', () => {
+		const setup = () => {
+			const { externalTool } = createTools();
+			externalToolRepo.findAllByMediaSource.mockResolvedValue([externalTool]);
+
+			return { externalTool };
+		};
+
+		it('should get domain object', async () => {
+			const { externalTool } = setup();
+
+			const result: ExternalTool[] = await service.findExternalToolsByMediaSource('mediaSourceId');
+
+			expect(result).toEqual([externalTool]);
 		});
 	});
 });
