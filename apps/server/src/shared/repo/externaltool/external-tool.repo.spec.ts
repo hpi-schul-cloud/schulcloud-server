@@ -425,4 +425,61 @@ describe(ExternalToolRepo.name, () => {
 			await expect(repo.findById(externalToolEntity.id)).rejects.toThrowError();
 		});
 	});
+
+	describe('findAllByMediaSource', () => {
+		describe('when external tools are found', () => {
+			const localSetup = async () => {
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+						mediaSourceId: 'mediaSourceId',
+					},
+				});
+
+				const otherExternalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+					},
+				});
+
+				await em.persistAndFlush([externalToolEntity, otherExternalToolEntity]);
+				em.clear();
+
+				return {
+					externalToolEntity,
+					otherExternalToolEntity,
+				};
+			};
+
+			it('should find externals tool by mediaSourceId', async () => {
+				const { externalToolEntity } = await localSetup();
+
+				const result: ExternalTool[] | null = await repo.findAllByMediaSource('mediaSourceId');
+
+				expect(result[0]?.name).toEqual(externalToolEntity.name);
+			});
+		});
+
+		describe('when external tools are not found', () => {
+			const localSetup = async () => {
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+					medium: {
+						mediumId: 'mediumId',
+						mediaSourceId: 'mediaSourceId',
+					},
+				});
+
+				await em.persistAndFlush(externalToolEntity);
+				em.clear();
+			};
+
+			it('should return empty array', async () => {
+				await localSetup();
+
+				const result: ExternalTool[] = await repo.findAllByMediaSource('notExisting');
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
 });
