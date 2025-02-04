@@ -6,9 +6,7 @@ const material = require('./material-model');
 
 const materialsHooks = require('./hooks/materials');
 
-module.exports = function () {
-	const app = this;
-
+module.exports = (app) => {
 	app.use('/content/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
 	const options = {
