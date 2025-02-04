@@ -2,11 +2,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   namespace: {{ NAMESPACE }}
-  name: schulconnex-provisioning-configmap
+  name: schulconnex-license-provisioning-configmap
   labels:
-    app: schulconnex-provisioning
+    app: schulconnex-license-provisioning
 data:
-  NODE_OPTIONS: "--max-old-space-size=2048"
+  NODE_OPTIONS: "--max-old-space-size=1536"
   EXIT_ON_ERROR: "true"
   NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
   FEATURE_COLUMN_BOARD_ENABLED: "{{ FEATURE_COLUMN_BOARD_ENABLED }}"

@@ -55,10 +55,32 @@ spec:
         imagePullPolicy: IfNotPresent
         envFrom:
         - configMapRef:
-            name: schulconnex-provisioning-configmap
+            name: schulconnex-license-provisioning-configmap
         - secretRef:
             name: schulconnex-provisioning-secret
         command: ['npm', 'run', 'nest:start:schulconnex-license-provisioning-amqp:prod']
+        readinessProbe:
+          httpGet:
+            path: /internal/health
+            port: 4452
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        # liveless if unsatisfactory reply
+        livenessProbe:
+          httpGet:
+            path: /internal/health
+            port: 4452
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: /internal/health
+            port: 4452
+          timeoutSeconds: 4
+          failureThreshold:  36
+          periodSeconds: 5
         resources:
           limits:
             cpu: {{ SCHULCONNEX_LICENSE_PROVISIONING_CPU_LIMITS }}
