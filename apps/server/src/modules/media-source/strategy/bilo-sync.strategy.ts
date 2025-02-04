@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaSource, MediaSourceSyncOperationReport, MediaSourceSyncReport, BiloMediaQueryResponse } from '../domain';
-import { MediaSourceDataFormat, MediaSourceSyncOperation, MediaSourceSyncStatus } from '../enum';
+import { MediaSource, MediaSourceSyncReport, BiloMediaQueryResponse } from '../domain';
+import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../domain/factory';
+import { MediaSourceDataFormat, MediaSourceSyncOperation } from '../enum';
 import { MediaSourceNotFoundLoggableException } from '../loggable';
 import { MediaSourceService, BiloMediaFetchService } from '../service';
 
@@ -62,7 +63,14 @@ export class BiloSyncStrategy {
 		externalTools: ExternalTool[],
 		metadataItems: BiloMediaQueryResponse[]
 	): Promise<MediaSourceSyncReport> {
-		const { createSuccessReport, updateSuccessReport, undeliveredReport, failureReport } = this.initializeReports();
+		const createSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
+			MediaSourceSyncOperation.CREATE
+		);
+		const updateSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
+			MediaSourceSyncOperation.UPDATE
+		);
+		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
+		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
 
 		const syncPromises: Promise<void>[] = externalTools.map(async (externalTool: ExternalTool) => {
 			const targetMetadata = metadataItems.find(
@@ -74,9 +82,14 @@ export class BiloSyncStrategy {
 				return;
 			}
 
+			if (this.isMetadataInToolUpToDate(externalTool, targetMetadata)) {
+				updateSuccessReport.count += 1;
+				return;
+			}
+
 			await this.updateMediaMetadata(externalTool, targetMetadata);
 
-			if (this.isMetadataNeverSynced(externalTool, targetMetadata)) {
+			if (this.isMetadataNeverSynced(externalTool)) {
 				createSuccessReport.count += 1;
 			} else {
 				updateSuccessReport.count += 1;
@@ -87,54 +100,28 @@ export class BiloSyncStrategy {
 			failureReport.count += 1;
 		});
 
-		// FIXME rename total count to expected total count
-		const report: MediaSourceSyncReport = {
-			totalCount: externalTools.length,
-			successCount: createSuccessReport.count + updateSuccessReport.count,
-			failedCount: failureReport.count,
-			undeliveredCount: undeliveredReport.count,
-			operations: [createSuccessReport, updateSuccessReport, undeliveredReport, failureReport],
-		};
+		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
+			createSuccessReport,
+			updateSuccessReport,
+			failureReport,
+			undeliveredReport,
+		]);
 
 		return report;
 	}
 
-	// FIXME maybe better name?
-	private isMetadataNeverSynced(externalTool: ExternalTool, metadata: BiloMediaQueryResponse): boolean {
-		const isMetadataNeverSynced =
-			externalTool.medium?.metadataModifiedAt &&
-			Math.trunc(externalTool.medium.metadataModifiedAt.getTime() / 1000) === metadata.modified;
+	private isMetadataNeverSynced(externalTool: ExternalTool): boolean {
+		const isMetadataNeverSynced = externalTool.medium?.metadataModifiedAt;
 
 		return !!isMetadataNeverSynced;
 	}
 
-	private initializeReports() {
-		// TODO create and use builder/factory
-		const createSuccessReport: MediaSourceSyncOperationReport = {
-			operation: MediaSourceSyncOperation.CREATE,
-			status: MediaSourceSyncStatus.SUCCESS,
-			count: 0,
-		};
+	private isMetadataInToolUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryResponse): boolean {
+		const isOutdated =
+			externalTool.medium?.metadataModifiedAt &&
+			Math.trunc(externalTool.medium.metadataModifiedAt.getTime() / 1000) === metadata.modified;
 
-		const updateSuccessReport: MediaSourceSyncOperationReport = {
-			operation: MediaSourceSyncOperation.UPDATE,
-			status: MediaSourceSyncStatus.SUCCESS,
-			count: 0,
-		};
-
-		const undeliveredReport: MediaSourceSyncOperationReport = {
-			operation: MediaSourceSyncOperation.ANY,
-			status: MediaSourceSyncStatus.UNDELIVERED,
-			count: 0,
-		};
-
-		const failureReport: MediaSourceSyncOperationReport = {
-			operation: MediaSourceSyncOperation.ANY,
-			status: MediaSourceSyncStatus.FAILED,
-			count: 0,
-		};
-
-		return { createSuccessReport, updateSuccessReport, undeliveredReport, failureReport };
+		return !!isOutdated;
 	}
 
 	private async updateMediaMetadata(externalTool: ExternalTool, metadataItem: BiloMediaQueryResponse): Promise<void> {

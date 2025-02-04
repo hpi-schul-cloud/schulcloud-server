@@ -20,7 +20,7 @@ describe(MediaSourceVidisConfigNotFoundLoggableException.name, () => {
 
 			const mediaSourceName = mediaSource.name as string;
 			expect(logMessage).toEqual({
-				message: `Required basic auth config of media source ${mediaSourceName} is missing.`,
+				message: `Required vidis config of media source ${mediaSourceName} is missing.`,
 				data: {
 					mediaSourceId: mediaSource.id,
 					mediaSourceName,

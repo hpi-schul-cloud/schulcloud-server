@@ -3,10 +3,11 @@ import { HttpService } from '@nestjs/axios';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
 import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
-import { MediaSource } from '@modules/media-source';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { BiloMediaQueryParams, BiloMediaQueryResponse } from '../domain';
+import { MediaSource, BiloMediaQueryParams, BiloMediaQueryResponse } from '../domain';
+import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceOauthConfigNotFoundLoggableException } from '../loggable';
 
 // TODO: resolve circular imports (oauthModule)
 @Injectable()
@@ -40,8 +41,7 @@ export class BiloMediaFetchService {
 		const oauthConfig = mediaSource.oauthConfig;
 
 		if (!oauthConfig) {
-			// 	TODO exception loggable for oauthConfig
-			throw new Error();
+			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
 		}
 
 		const credentials = new ClientCredentialsGrantTokenRequest({
