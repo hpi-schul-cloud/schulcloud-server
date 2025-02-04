@@ -17,10 +17,14 @@ const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server
 const { createConfigModuleOptions } = require('../../dist/apps/server/shared/common/config-module-options');
 const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
 const { TEST_ENTITIES } = require('../../dist/apps/server/modules/server/server.entity.imports');
+const { RosterModule } = require('../../dist/apps/server/modules/roster/roster.module');
+const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
+const { RabbitMQWrapperTestModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
 		imports: [
+			RabbitMQWrapperTestModule,
 			MikroOrmModule.forRoot(
 				defineConfig({
 					type: 'mongo',
@@ -29,7 +33,7 @@ const setupNestServices = async (app) => {
 					user: DB_USERNAME,
 					entities: TEST_ENTITIES,
 					allowGlobalContext: true,
-					debug: false, // use it for locally debugging of querys
+					// debug: true, // use it for locally debugging of querys
 				})
 			),
 			ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -37,32 +41,22 @@ const setupNestServices = async (app) => {
 			TeamsApiModule,
 			AuthorizationModule,
 			AuthorizationRulesModule,
+			RosterModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
 	const orm = nestApp.get(MikroORM);
 	const accountUc = nestApp.get(AccountUc);
 	const accountService = nestApp.get(AccountService);
-	// const contextExternalToolService = nestApp.get(ContextExternalToolService);
-	// const columnBoardService = nestApp.get(ColumnBoardService);
-	// const collaborativeStorageUc = nestApp.get(CollaborativeStorageUc);
-	// const feathersRosterService = nestApp.get(FeathersRosterService);
-	// const groupService = nestApp.get(GroupService);
-	// const rocketChatService = nestApp.get(RocketChatService);
 	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
+	const feathersRosterService = nestApp.get(FeathersRosterService);
 
-	// app.services['nest-mail'] = ??
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
-	// app.services['nest-context-external-tool-service'] = contextExternalToolService;
-	// app.services['nest-column-board-service'] = columnBoardService;
-	// app.services['nest-collaborative-storage-uc'] = collaborativeStorageUc;
-	// app.services['nest-feathers-roster-service'] = feathersRosterService;
-	// app.services['nest-group-service'] = groupService;
-	// app.services['nest-rocket-chat'] = rocketChatService;
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
+	app.services['nest-feathers-roster-service'] = feathersRosterService;
 	app.services['nest-orm'] = orm;
 
 	return { nestApp, orm, accountUc, accountService };
