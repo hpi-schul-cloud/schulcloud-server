@@ -25,7 +25,7 @@ jest.mock('../import/common-cartridge-file-parser', () => {
 		{
 			pathDepth: 1,
 			title: faker.lorem.words(),
-			path: `${rootId}/faker.system.filePath()`,
+			path: `${rootId}/${faker.system.filePath()}`,
 			identifier: faker.string.uuid(),
 			isInlined: true,
 			isResource: false,
