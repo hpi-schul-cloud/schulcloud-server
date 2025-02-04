@@ -39,8 +39,6 @@ export interface ExternalToolEntityProps {
 	isPreferred: boolean;
 
 	iconName?: string;
-
-	metadataModified?: Date;
 }
 
 @Entity({ tableName: 'external-tools' })
@@ -90,9 +88,6 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	iconName?: string;
-
-	@Property({ nullable: true })
-	metadataModified?: Date;
 
 	constructor(props: ExternalToolEntityProps) {
 		super();
