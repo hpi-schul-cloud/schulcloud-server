@@ -3,7 +3,7 @@ import { UsersByRoleResponse } from './users-by-role.response';
 
 export class DeletionBatchItemResponse {
 	@ApiProperty()
-	batchId: string;
+	id: string;
 
 	@ApiProperty()
 	status: string;
@@ -18,7 +18,7 @@ export class DeletionBatchItemResponse {
 	updatedAt: Date;
 
 	constructor(item: DeletionBatchItemResponse) {
-		this.batchId = item.batchId;
+		this.id = item.id;
 		this.status = item.status;
 		this.usersByRole = item.usersByRole;
 		this.createdAt = item.createdAt;

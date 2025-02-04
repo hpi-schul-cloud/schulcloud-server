@@ -11,7 +11,7 @@ import {
 	MinLength,
 	ValidateNested,
 } from 'class-validator';
-import { DomainName } from '../../../domain/types';
+import { DomainName } from '../../../../domain/types';
 import { DeletionRequestBodyParams } from './deletion-request.body.params';
 
 export class CreateDeletionBatchBodyParams {

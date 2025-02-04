@@ -1,11 +1,14 @@
 import { XApiKeyAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { IFindOptions } from '@shared/domain/interface';
+import { DeletionBatchSummary } from '../../domain/service';
+import { DeletionBatchMapper } from '../uc/deletion-batch.mapper';
 import { DeletionBatchUc } from '../uc/deletion-batch.uc';
 import { CreateDeletionBatchBodyParams } from './dto';
-import { DeletionBatchItemResponse } from './dto/deletion-batch-item.response';
-import { DeletionBatchListResponse } from './dto/deletion-batch-list.response';
-import { UsersByRoleResponse } from './dto/users-by-role.response';
+import { DeletionBatchPaginationParams } from './dto/request/deletion-batch-pagination.params';
+import { DeletionBatchItemResponse } from './dto/response/deletion-batch-item.response';
+import { DeletionBatchListResponse } from './dto/response/deletion-batch-list.response';
 
 @ApiTags('DeletionBatch')
 @XApiKeyAuthentication()
@@ -16,24 +19,12 @@ export class DeletionBatchController {
 	@Get('')
 	@ApiOperation({ summary: 'Get a list of deletion batches' })
 	@HttpCode(200)
-	public async getBatches(): Promise<DeletionBatchListResponse> {
-		const summaries = await this.deletionBatchUc.getDeletionBatches();
+	public async getBatches(@Query() pagination: DeletionBatchPaginationParams): Promise<DeletionBatchListResponse> {
+		const findOptions: IFindOptions<DeletionBatchSummary> = { pagination };
 
-		const items = summaries.data.map((obj) => {
-			const item = new DeletionBatchItemResponse({
-				batchId: obj.id,
-				status: obj.status,
-				usersByRole: obj.usersByRole.map(
-					(u) => new UsersByRoleResponse({ roleName: u.roleName, userCount: u.userCount })
-				),
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
+		const summaries = await this.deletionBatchUc.getDeletionBatchSummaries(findOptions);
 
-			return item;
-		});
-
-		const response = new DeletionBatchListResponse(items, items.length);
+		const response = DeletionBatchMapper.mapToDeletionBatchListResponse(summaries, pagination);
 
 		return response;
 	}
@@ -41,9 +32,11 @@ export class DeletionBatchController {
 	@Post('')
 	@HttpCode(201)
 	@ApiOperation({ summary: 'Create a new deletion batch' })
-	public async createBatch(@Body() params: CreateDeletionBatchBodyParams): Promise<CreateDeletionBatchBodyParams> {
-		await this.deletionBatchUc.createDeletionBatch(params);
+	public async createBatch(@Body() params: CreateDeletionBatchBodyParams): Promise<DeletionBatchItemResponse> {
+		const summary = await this.deletionBatchUc.createDeletionBatch(params);
 
-		return Promise.resolve(params);
+		const response = DeletionBatchMapper.mapToDeletionBatchItemResponse(summary);
+
+		return response;
 	}
 }

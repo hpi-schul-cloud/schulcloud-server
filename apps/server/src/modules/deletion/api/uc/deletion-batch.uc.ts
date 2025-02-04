@@ -8,21 +8,15 @@ import { CreateDeletionBatchParams, DeletionBatchService, DeletionBatchSummary }
 export class DeletionBatchUc {
 	constructor(private readonly deletionBatchService: DeletionBatchService) {}
 
-	public async getDeletionBatches(
+	public async getDeletionBatchSummaries(
 		findOptions: IFindOptions<DeletionBatchSummary> = {}
 	): Promise<Page<DeletionBatchSummary>> {
-		const deletionBatches = await this.deletionBatchService.getDeletionBatches(findOptions);
+		const deletionBatches = await this.deletionBatchService.getDeletionBatchSummaries(findOptions);
 
 		return deletionBatches;
 	}
 
-	// public async getSummary(): Promise<UsersByRole[]> {
-	// 	const usersByRole = await this.deletionBatchService.getSummary();
-
-	// 	return usersByRole;
-	// }
-
-	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatch> {
+	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
 		const deletionBatch = await this.deletionBatchService.createDeletionBatch(params);
 
 		return deletionBatch;

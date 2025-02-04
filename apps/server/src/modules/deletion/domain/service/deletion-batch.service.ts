@@ -19,6 +19,8 @@ export type DeletionBatchSummary = {
 	name: string;
 	status: string;
 	usersByRole: UsersByRole[];
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 // TODO: tests missing
@@ -29,7 +31,7 @@ export class DeletionBatchService {
 		private readonly deletionBatchSummaryRepo: DeletionBatchSummaryRepo
 	) {}
 
-	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatch> {
+	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
 		const newBatch = new DeletionBatch({
 			id: new ObjectId().toHexString(),
 			name: params.name,
@@ -41,22 +43,20 @@ export class DeletionBatchService {
 
 		await this.deletionBatchRepo.save(newBatch);
 
-		return newBatch;
+		const summary = await this.buildSummary(newBatch);
+
+		return summary;
 	}
 
-	public async getDeletionBatches(
+	public async getDeletionBatchSummaries(
 		findOptions: IFindOptions<DeletionBatchSummary>
 	): Promise<Page<DeletionBatchSummary>> {
 		const deletionBatches: Page<DeletionBatch> = await this.deletionBatchRepo.findDeletionBatches(findOptions);
 
 		const summaries: DeletionBatchSummary[] = await Promise.all(
 			deletionBatches.data.map(async (batch) => {
-				return {
-					id: batch.id,
-					name: batch.name,
-					status: 'created', // TODO implement status
-					usersByRole: await this.getSummary(batch.targetRefIds),
-				};
+				const summary = await this.buildSummary(batch);
+				return summary;
 			})
 		);
 
@@ -69,9 +69,22 @@ export class DeletionBatchService {
 	}
 
 	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
-	public async getSummary(userIds: EntityId[]): Promise<UsersByRole[]> {
+	public async getUsersByRoles(userIds: EntityId[]): Promise<UsersByRole[]> {
 		const usersByRole = await this.deletionBatchSummaryRepo.countUsersByRole(userIds);
 
 		return usersByRole;
+	}
+
+	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {
+		const summary = {
+			id: batch.id,
+			name: batch.name,
+			status: 'created', // TODO implement status
+			usersByRole: await this.getUsersByRoles(batch.targetRefIds),
+			createdAt: batch.createdAt,
+			updatedAt: batch.updatedAt,
+		};
+
+		return summary;
 	}
 }

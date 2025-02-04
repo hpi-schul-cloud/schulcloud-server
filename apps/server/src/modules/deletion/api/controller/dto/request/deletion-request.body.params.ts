@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, Min } from 'class-validator';
-import { DeletionTargetRef } from '../../../domain/interface';
+import { DeletionTargetRef } from '../../../../domain/interface';
 
 const MINUTES_OF_30_DAYS = 30 * 24 * 60;
 export class DeletionRequestBodyParams {

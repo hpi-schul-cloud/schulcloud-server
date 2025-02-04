@@ -13,8 +13,6 @@ import { DeletionBatchService, DeletionLogService, DeletionRequestService } from
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
-import { CreateDeletionBatchBodyParams } from '../controller/dto/create-deletion-batch.body.params';
-import { DeletionBatchResponse } from '../controller/dto/deletion-batch.response';
 
 @Injectable()
 @EventsHandler(DataDeletedEvent)
