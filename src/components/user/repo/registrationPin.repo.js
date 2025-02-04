@@ -2,7 +2,9 @@ const { registrationPinModel } = require('../../../services/user/model');
 const { deleteManyResult } = require('../../helper/repo.helper');
 const { validateNotEmptyString } = require('../../helper/validation.helper');
 
-const byEmailFilter = (email) => ({ email });
+const byEmailFilter = (email) => {
+	return { email };
+};
 
 /**
  * Return pseudonyms for email
