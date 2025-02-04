@@ -8,6 +8,7 @@ import { CommonCartridgeImportService } from './common-cartridge-import.service'
 
 jest.mock('../import/common-cartridge-file-parser', () => {
 	const fileParserMock = createMock<CommonCartridgeFileParser>();
+	const rootId = faker.string.uuid();
 
 	fileParserMock.getTitle.mockReturnValue(faker.lorem.words());
 	fileParserMock.getOrganizations.mockReturnValue([
@@ -15,6 +16,16 @@ jest.mock('../import/common-cartridge-file-parser', () => {
 			pathDepth: 0,
 			title: faker.lorem.words(),
 			path: faker.system.filePath(),
+			identifier: rootId,
+			isInlined: true,
+			isResource: false,
+			resourcePath: faker.system.filePath(),
+			resourceType: faker.lorem.word(),
+		},
+		{
+			pathDepth: 1,
+			title: faker.lorem.words(),
+			path: `${rootId}/faker.system.filePath()`,
 			identifier: faker.string.uuid(),
 			isInlined: true,
 			isResource: false,
@@ -88,6 +99,15 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file);
 
 				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create columns', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(1);
+				expect(boardsClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
