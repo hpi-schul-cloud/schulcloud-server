@@ -90,32 +90,34 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 				return err;
 			});
 
-	const info = () => ({
-		accounts: accounts.info,
-		activation: activation.info,
-		base64Files: base64Files.info,
-		classes: classes.info,
-		courseGroups: courseGroups.info,
-		courses: courses.info,
-		datasources: datasources.info,
-		files: files.info,
-		homeworks: homeworks.info,
-		lessons: lessons.info,
-		registrationPins: registrationPins.info,
-		ltiTools: ltiTools.info,
-		problems: problems.info,
-		pseudonyms: pseudonyms.info,
-		schoolGroups: schoolGroups.info,
-		schools: schools.info,
-		storageProviders: storageProviders.info,
-		submissions: submissions.info,
-		teams: teams.info,
-		tempPins: users.tempPinIds,
-		testSystem: testSystem.info,
-		users: users.info,
-		years: years.info,
-		importUsers: importUsers.info,
-	});
+	const info = () => {
+		return {
+			accounts: accounts.info,
+			activation: activation.info,
+			base64Files: base64Files.info,
+			classes: classes.info,
+			courseGroups: courseGroups.info,
+			courses: courses.info,
+			datasources: datasources.info,
+			files: files.info,
+			homeworks: homeworks.info,
+			lessons: lessons.info,
+			registrationPins: registrationPins.info,
+			ltiTools: ltiTools.info,
+			problems: problems.info,
+			pseudonyms: pseudonyms.info,
+			schoolGroups: schoolGroups.info,
+			schools: schools.info,
+			storageProviders: storageProviders.info,
+			submissions: submissions.info,
+			teams: teams.info,
+			tempPins: users.tempPinIds,
+			testSystem: testSystem.info,
+			users: users.info,
+			years: years.info,
+			importUsers: importUsers.info,
+		};
+	};
 
 	const createTestTeamWithOwner = async (userData) => {
 		const user = await users.create(userData);
@@ -183,6 +185,7 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		schools,
 		years,
 		users,
+		registrationPins,
 		createTestTeamWithOwner,
 		info,
 		setupUser,

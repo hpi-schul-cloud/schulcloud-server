@@ -7,6 +7,10 @@ class MerlinTokenGenerator {
 		this.app = app;
 	}
 
+	async post(options) {
+		return request.post(options);
+	}
+
 	async getMerlinCredentials(county = null) {
 		if (county) {
 			const countyCredentials = JSON.parse(Configuration.get('SECRET_ES_MERLIN_COUNTIES_CREDENTIALS')).find(
@@ -25,12 +29,16 @@ class MerlinTokenGenerator {
 		};
 	}
 
-	async FIND(data) {
-		const { merlinReference } = data.query;
+	async FIND(params) {
+		const { merlinReference } = params.query;
 		if (!Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
 			return Configuration.get('ES_MERLIN_AUTH_URL');
 		}
-		const { schoolId } = data.authentication.payload;
+		if ((params.authentication || {}).payload === undefined) {
+			throw new Error('No authentication payload in data for MerlinTokenGenerator.find exists.');
+		}
+
+		const { schoolId } = params.authentication.payload;
 		const county = await getCounty(schoolId);
 
 		const url = await this.getMerlinUrl(merlinReference, county);
@@ -56,11 +64,11 @@ class MerlinTokenGenerator {
 			},
 		};
 		try {
-			const merlinUrl = await request.post(options);
+			const merlinUrl = await this.post(options);
 			const checkedUrl = new URL(merlinUrl);
 			return checkedUrl.href;
-		} catch (e) {
-			throw Error(`Failed to obtain Merlin url.`);
+		} catch (err) {
+			throw Error(`Failed to obtain Merlin url.`, err);
 		}
 	}
 }
