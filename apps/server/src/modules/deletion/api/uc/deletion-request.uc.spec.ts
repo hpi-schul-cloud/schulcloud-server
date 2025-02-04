@@ -66,17 +66,18 @@ describe(DeletionRequestUc.name, () => {
 		deletionLogService = module.get(DeletionLogService);
 		eventBus = module.get(EventBus);
 		configService = module.get(ConfigService);
-
-		jest.useFakeTimers();
 	});
 
-	beforeEach(() => {
+	afterEach(() => {
 		jest.clearAllMocks();
+		jest.useRealTimers();
 	});
 
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
+				jest.useFakeTimers().setSystemTime(new Date());
+
 				const deleteAfterMinutes = 1;
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
@@ -158,7 +159,7 @@ describe(DeletionRequestUc.name, () => {
 
 	describe('executeDeletionRequests', () => {
 		describe('when deletionRequests to execute exists', () => {
-			const setup = () => {
+			const setup = (noDelay = false) => {
 				deletionRequestService.findInProgressCount.mockResolvedValue(1);
 
 				configService.get.mockImplementation((key) => {
@@ -175,8 +176,9 @@ describe(DeletionRequestUc.name, () => {
 						return 2;
 					}
 					if (key === 'ADMIN_API__DELETION_DELAY_MILLISECONDS') {
-						return 100;
+						return noDelay ? 0 : 100;
 					}
+					return deletionTestConfig()[key];
 				});
 
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
@@ -249,24 +251,13 @@ describe(DeletionRequestUc.name, () => {
 				);
 			});
 
-			/*
 			it('should work with a delay of 0', async () => {
-				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
-				configService.get.mockImplementation((key) => {
-					if (key === 'ADMIN_API__DELETION_DELAY_MILLISECONDS') {
-						return 0;
-					}
-					return deletionTestConfig()[key];
-				});
-
-				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
-				deletionRequestService.findInProgressCount.mockResolvedValueOnce(0);
+				setup(true);
 
 				await uc.executeDeletionRequests();
 
 				expect(deletionRequestService.markDeletionRequestAsFailed).not.toHaveBeenCalled();
 			});
-			 */
 		});
 
 		describe('when an error occurred', () => {

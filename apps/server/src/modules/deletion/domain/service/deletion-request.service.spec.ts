@@ -33,8 +33,7 @@ describe(DeletionRequestService.name, () => {
 
 		await setupEntities();
 
-		jest.useFakeTimers();
-		jest.setSystemTime(new Date());
+		jest.useFakeTimers().setSystemTime(new Date());
 	});
 
 	beforeEach(() => {

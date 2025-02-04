@@ -9,19 +9,17 @@ import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 export class DeletionRequestService {
-	private olderThan: Date;
+	private thresholdOlder: number;
 
-	private newerThan: Date;
+	private thresholdNewer: number;
 
 	constructor(
 		private readonly deletionRequestRepo: DeletionRequestRepo,
 		private readonly configService: ConfigService<DeletionConfig, true>
 	) {
-		const thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
-		this.olderThan = new Date(Date.now() - thresholdOlder);
+		this.thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
 
-		const thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
-		this.newerThan = new Date(Date.now() - thresholdNewer);
+		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
 	}
 
 	async createDeletionRequest(
@@ -49,15 +47,18 @@ export class DeletionRequestService {
 	}
 
 	public async findAllItemsToExecute(limit: number, getFailed = false): Promise<DeletionRequest[]> {
+		const newerThan = new Date(Date.now() - this.thresholdNewer);
+		const olderThan = new Date(Date.now() - this.thresholdOlder);
 		const deletionRequests = getFailed
-			? await this.deletionRequestRepo.findAllFailedItems(limit, this.olderThan, this.newerThan)
+			? await this.deletionRequestRepo.findAllFailedItems(limit, olderThan, newerThan)
 			: await this.deletionRequestRepo.findAllItems(limit);
 
 		return deletionRequests;
 	}
 
 	public async findInProgressCount(): Promise<number> {
-		const count = await this.deletionRequestRepo.findInProgressCount(this.newerThan);
+		const newerThan = new Date(Date.now() - this.thresholdNewer);
+		const count = await this.deletionRequestRepo.findInProgressCount(newerThan);
 		return count;
 	}
 
