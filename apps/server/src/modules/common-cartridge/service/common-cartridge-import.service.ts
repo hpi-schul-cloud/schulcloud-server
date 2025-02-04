@@ -25,7 +25,10 @@ export class CommonCartridgeImportService {
 
 	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<void> {
 		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === 0);
-		const promises = boards.map(async (board) => {
+
+		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
+		// with Promise.all, the order of the boards would be random
+		for await (const board of boards) {
 			const response = await this.boardsClient.createBoard({
 				title: board.title,
 				layout: 'columns',
@@ -34,20 +37,7 @@ export class CommonCartridgeImportService {
 			});
 
 			await this.createColumns(response.id, board, parser);
-		});
-
-		await Promise.all(promises);
-
-		// for await (const board of boards) {
-		// 	const response = await this.boardsClient.createBoard({
-		// 		title: board.title,
-		// 		layout: 'columns',
-		// 		parentId,
-		// 		parentType: 'course',
-		// 	});
-
-		// 	await this.createColumns(response.id, board, parser);
-		// }
+		}
 	}
 
 	private async createColumns(
@@ -58,18 +48,13 @@ export class CommonCartridgeImportService {
 		const columns = parser
 			.getOrganizations()
 			.filter((organization) => organization.path.startsWith(board.identifier) && organization.pathDepth === 1);
-		const promises = columns.map(async (column) => {
+
+		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
+		// with Promise.all, the order of the columns would be random
+		for await (const column of columns) {
 			const response = await this.boardsClient.createBoardColumn(boardId);
 
 			await this.boardsClient.updateBoardColumnTitle(response.id, { title: column.title });
-		});
-
-		await Promise.all(promises);
-
-		// for await (const column of columns) {
-		// 	const response = await this.boardsClient.createBoardColumn(boardId);
-
-		// 	await this.boardsClient.updateBoardColumnTitle(response.id, { title: column.title });
-		// }
+		}
 	}
 }
