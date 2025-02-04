@@ -3,7 +3,7 @@ const chaiHttp = require('chai-http');
 const freeport = require('freeport');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../src/logger');
-const MockServer = require('./MockServer');
+const NexboardMockServer = require('./NexboardMockServer');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
@@ -13,7 +13,7 @@ const { expect } = chai;
 chai.use(chaiHttp);
 
 function request({ server, method = 'get', endpoint, data, accessToken }) {
-	return new Promise((resolve, reject) =>
+	return new Promise((resolve, reject) => {
 		chai
 			.request(server)
 			[method](endpoint)
@@ -29,19 +29,19 @@ function request({ server, method = 'get', endpoint, data, accessToken }) {
 					return;
 				}
 				resolve(res);
-			})
-	);
+			});
+	});
 }
 
 describe('Nexboard services', () => {
-	let mockServer;
+	let nexboardMockServer;
 	let server;
 	let app;
 	let nestServices;
 	let testHelpers;
 	let configBefore;
 
-	before(() => {
+	before((done) => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		freeport(async (err, port) => {
 			if (err) {
@@ -58,8 +58,8 @@ describe('Nexboard services', () => {
 			server = await app.listen(0);
 			nestServices = await setupNestServices(app);
 
-			const mock = await MockServer(mockUrl, Configuration.get('NEXBOARD_URI'));
-			mockServer = mock.server;
+			const mock = await NexboardMockServer(done, mockUrl, Configuration.get('NEXBOARD_URI'));
+			nexboardMockServer = mock.server;
 		});
 	});
 
@@ -68,7 +68,7 @@ describe('Nexboard services', () => {
 	});
 
 	after(async () => {
-		await mockServer.close();
+		await nexboardMockServer.close();
 		await server.close();
 		await closeNestServices(nestServices);
 		Configuration.reset(configBefore);
