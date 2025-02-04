@@ -1,13 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { externalToolPseudonymEntityFactory, pseudonymEntityFactory } from '@modules/pseudonym/testing';
+import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { ServerTestModule } from '@modules/server';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { ltiToolFactory } from '@testing/factory/ltitool.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -342,7 +341,6 @@ describe(OauthProviderController.name, () => {
 					challenge,
 				});
 				const redirectResponse: ProviderRedirectResponse = { redirect_to: 'redirect' };
-				const ltiTool = ltiToolFactory.buildWithId({ oAuthClientId: loginResponse.client.client_id });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				axiosMock
@@ -351,7 +349,7 @@ describe(OauthProviderController.name, () => {
 					.onPut(`${hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser, ltiTool]);
+				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -485,11 +483,6 @@ describe(OauthProviderController.name, () => {
 					subject: studentUser.id,
 				});
 				const redirectResponse: ProviderRedirectResponse = { redirect_to: 'redirect' };
-				const ltiTool = ltiToolFactory.buildWithId({ oAuthClientId: consentResponse.client.client_id });
-				const pseudonym = pseudonymEntityFactory.buildWithId({
-					toolId: ltiTool.id,
-					userId: studentUser.id,
-				});
 
 				axiosMock
 					.onGet(`${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`)
@@ -497,7 +490,7 @@ describe(OauthProviderController.name, () => {
 					.onPut(`${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser, ltiTool, pseudonym]);
+				await em.persistAndFlush([studentAccount, studentUser]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

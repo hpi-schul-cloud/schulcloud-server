@@ -52,7 +52,6 @@ const courseSchema = getUserGroupSchema({
 	groupIds: [{ type: Schema.Types.ObjectId }],
 	teacherIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
 	substitutionIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'user' }],
-	ltiToolIds: [{ type: Schema.Types.ObjectId, required: true, ref: 'ltiTool' }],
 	color: { type: String, required: true, default: '#ACACAC' },
 	startDate: { type: Date },
 	untilDate: { type: Date },

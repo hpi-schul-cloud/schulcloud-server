@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
@@ -15,7 +16,6 @@ import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -687,7 +687,7 @@ describe('UserRepo', () => {
 			});
 
 			describe(' when pagination has a limit of 1', () => {
-				it('should return one ltiTool', async () => {
+				it('should return one user', async () => {
 					const { query, options } = await setupFind();
 					options.pagination = { limit: 1 };
 
@@ -698,7 +698,7 @@ describe('UserRepo', () => {
 			});
 
 			describe('pagination has a limit of 1 and skip is set to 2', () => {
-				it('should return no ltiTool when ', async () => {
+				it('should return no user', async () => {
 					const { query, options } = await setupFind();
 					options.pagination = { limit: 1, skip: 3 };
 
