@@ -20,6 +20,13 @@
 		"node": "22",
 		"npm": ">=9"
 	},
+	"mikro-orm": {
+		"useTsNode": true,
+		"configPaths": [
+			"./apps/server/src/modules/management/mikro-orm-cli.config.ts",
+			"./dist/server/modules/management/mikro-orm-cli.config.js"
+		]
+	},
 	"scripts": {
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
