@@ -1,6 +1,8 @@
 .gitignore
 .npmignore
 api.ts
+api/default-api.ts
+api/education-provider-api.ts
 api/idmbetreiber-api.ts
 base.ts
 common.ts
