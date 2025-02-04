@@ -1,12 +1,12 @@
-import { DeletionBatchBodyProps } from './deletion-batch.body.props';
-import { DeletionRequestBodyProps } from './deletion-request.body.props';
+import { CreateDeletionBatchBodyParams } from './create-deletion-batch.body.params';
+import { DeletionRequestBodyParams } from './deletion-request.body.params';
 
-describe(DeletionBatchBodyProps.name, () => {
+describe(CreateDeletionBatchBodyParams.name, () => {
 	describe('constructor', () => {
 		describe('when passed properties', () => {
 			const setup = () => {
-				const deletionBatchBodyProps = new DeletionBatchBodyProps();
-				const sampleDeletionRequest = new DeletionRequestBodyProps();
+				const deletionBatchBodyProps = new CreateDeletionBatchBodyParams();
+				const sampleDeletionRequest = new DeletionRequestBodyParams();
 
 				return { deletionBatchBodyProps, sampleDeletionRequest };
 			};
@@ -28,18 +28,18 @@ describe(DeletionBatchBodyProps.name, () => {
 				deletionBatchBodyProps.deletionRequests = [sampleDeletionRequest];
 
 				expect(deletionBatchBodyProps.deletionRequests).toHaveLength(1);
-				expect(deletionBatchBodyProps.deletionRequests[0]).toBeInstanceOf(DeletionRequestBodyProps);
+				expect(deletionBatchBodyProps.deletionRequests[0]).toBeInstanceOf(DeletionRequestBodyParams);
 			});
 
 			it('should handle multiple deletion requests', () => {
 				const { deletionBatchBodyProps, sampleDeletionRequest } = setup();
-				const anotherDeletionRequest = new DeletionRequestBodyProps();
+				const anotherDeletionRequest = new DeletionRequestBodyParams();
 
 				deletionBatchBodyProps.deletionRequests = [sampleDeletionRequest, anotherDeletionRequest];
 
 				expect(deletionBatchBodyProps.deletionRequests).toHaveLength(2);
-				expect(deletionBatchBodyProps.deletionRequests[0]).toBeInstanceOf(DeletionRequestBodyProps);
-				expect(deletionBatchBodyProps.deletionRequests[1]).toBeInstanceOf(DeletionRequestBodyProps);
+				expect(deletionBatchBodyProps.deletionRequests[0]).toBeInstanceOf(DeletionRequestBodyParams);
+				expect(deletionBatchBodyProps.deletionRequests[1]).toBeInstanceOf(DeletionRequestBodyParams);
 			});
 		});
 	});

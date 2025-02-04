@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
-import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
+import { DeletionRequestBodyParams, DeletionRequestResponse } from '../dto';
 
 const baseRouteName = '/deletionRequests';
 
@@ -73,14 +73,14 @@ describe(`deletionRequest create (api)`, () => {
 	describe('createDeletionRequests', () => {
 		describe('when called', () => {
 			const setup = () => {
-				const deletionRequestToCreate: DeletionRequestBodyProps = {
+				const deletionRequestToCreate: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',
 					},
 				};
 
-				const deletionRequestToImmediateRemoval: DeletionRequestBodyProps = {
+				const deletionRequestToImmediateRemoval: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',

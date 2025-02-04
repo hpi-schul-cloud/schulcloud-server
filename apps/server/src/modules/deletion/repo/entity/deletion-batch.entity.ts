@@ -1,33 +1,20 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-
-export interface DeletionBatchEntityProps {
-  id?: EntityId;
-  deletionRequestIds: EntityId[];
-  createdAt?: Date;
-  updatedAt?: Date;
-}
+import { DomainName } from '../../domain/types';
+import { DeletionBatch, DeletionBatchProps } from '../../domain/do';
 
 @Entity({ tableName: 'deletionbatches' })
-export class DeletionBatchEntity extends BaseEntityWithTimestamps {
-  @Property()
-  deletionRequestIds: EntityId[];
+export class DeletionBatchEntity extends BaseEntityWithTimestamps implements DeletionBatchProps {
+	@Property({ nullable: false })
+	name!: string;
 
-  constructor(props: DeletionBatchEntityProps) {
-    super();
-    if (props.id !== undefined) {
-      this.id = props.id;
-    }
+	@Enum({ nullable: false })
+	targetRefDomain!: DomainName;
 
-    this.deletionRequestIds = props.deletionRequestIds;
+	@Property({ nullable: false })
+	targetRefIds!: EntityId[];
 
-    if (props.createdAt !== undefined) {
-      this.createdAt = props.createdAt;
-    }
-
-    if (props.updatedAt !== undefined) {
-      this.updatedAt = props.updatedAt;
-    }
-  }
+	@Property({ persist: false })
+	domainObject: DeletionBatch | undefined;
 }

@@ -2,13 +2,18 @@ import { XApiKeyAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestUc } from '../uc';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from './dto';
-import { DeletionBatchBodyProps, DeletionBatchResponse } from './dto';
+import {
+	CreateDeletionBatchBodyParams,
+	DeletionBatchResponse,
+	DeletionRequestBodyParams,
+	DeletionRequestLogResponse,
+	DeletionRequestResponse,
+} from './dto';
 
-@ApiTags('DeletionRequests')
+@ApiTags('DeletionRequest')
 @XApiKeyAuthentication()
 @Controller('deletionRequests')
-export class DeletionRequestsController {
+export class DeletionRequestController {
 	constructor(private readonly deletionRequestUc: DeletionRequestUc) {}
 
 	@Post()
@@ -21,8 +26,8 @@ export class DeletionRequestsController {
 		type: DeletionRequestResponse,
 		description: 'Returns identifier of the deletion request and when deletion is planned at',
 	})
-	async createDeletionRequests(
-		@Body() deletionRequestBody: DeletionRequestBodyProps
+	public createDeletionRequests(
+		@Body() deletionRequestBody: DeletionRequestBodyParams
 	): Promise<DeletionRequestResponse> {
 		return this.deletionRequestUc.createDeletionRequest(deletionRequestBody);
 	}
@@ -37,7 +42,7 @@ export class DeletionRequestsController {
 		type: DeletionRequestLogResponse,
 		description: 'Return details of performed or planned deletion',
 	})
-	async getPerformedDeletionDetails(@Param('requestId') requestId: string): Promise<DeletionRequestLogResponse> {
+	public getPerformedDeletionDetails(@Param('requestId') requestId: string): Promise<DeletionRequestLogResponse> {
 		return this.deletionRequestUc.findById(requestId);
 	}
 
@@ -49,24 +54,7 @@ export class DeletionRequestsController {
 	@ApiResponse({
 		status: 204,
 	})
-	async cancelDeletionRequest(@Param('requestId') requestId: string) {
+	public cancelDeletionRequest(@Param('requestId') requestId: string): Promise<void> {
 		return this.deletionRequestUc.deleteDeletionRequestById(requestId);
-	}
-
-	// TODO: test is missing
-	@Post('batch')
-	@HttpCode(202)
-	@ApiOperation({
-		summary: 'Create a batch of deletion requests',
-	})
-	@ApiResponse({
-		status: 202,
-		type: DeletionBatchResponse,
-		description: 'Returns identifier of the created batch',
-	})
-	async createDeletionBatch(
-		@Body() batchProps: DeletionBatchBodyProps
-	): Promise<DeletionBatchResponse> {
-		return this.deletionRequestUc.createBatch(batchProps);
 	}
 }

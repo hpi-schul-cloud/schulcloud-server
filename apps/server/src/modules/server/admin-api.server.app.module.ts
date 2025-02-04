@@ -62,7 +62,7 @@ export class AdminApiServerModule {}
 	],
 })
 export class AdminApiServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		return {
 			module: AdminApiServerTestModule,
 			imports: [
