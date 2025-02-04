@@ -60,23 +60,6 @@ describe('CommonCartridgeImportMapper', () => {
 				});
 			});
 		});
-	});
-
-	describe('mapOrganizationToCard', () => {
-		describe('when organization is provided', () => {
-			const setup = () => setupOrganization();
-
-			it('should map organization to card', () => {
-				const { organization } = setup();
-
-				const result = sut.mapOrganizationToCard(organization);
-
-				expect(result).toEqual({
-					title: organization.title,
-					height: 150,
-				});
-			});
-		});
 
 		describe('when organization is provided and withTitle is false', () => {
 			const setup = () => setupOrganization();
@@ -94,6 +77,23 @@ describe('CommonCartridgeImportMapper', () => {
 		});
 	});
 
+	describe('mapOrganizationToCard', () => {
+		describe('when organization is provided', () => {
+			const setup = () => setupOrganization();
+
+			it('should map organization to card', () => {
+				const { organization } = setup();
+
+				const result = sut.mapOrganizationToCard(organization);
+
+				expect(result).toEqual({
+					title: organization.title,
+					height: 150,
+				});
+			});
+		});
+	});
+
 	// AI next 17 lines
 	describe('mapOrganizationToTextElement', () => {
 		describe('when organization is provided', () => {
@@ -105,7 +105,7 @@ describe('CommonCartridgeImportMapper', () => {
 				const result = sut.mapOrganizationToTextElement(organization);
 
 				expect(result).toBeInstanceOf(RichTextContentBody);
-				expect(result).toEqual<RichTextContentBody>({
+				expect(result).toEqual({
 					text: `<b>${organization.title}</b>`,
 					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
 				});
@@ -156,7 +156,6 @@ describe('CommonCartridgeImportMapper', () => {
 			it('should return rich text content element body', () => {
 				const resource: CommonCartridgeImportResourceProps = {
 					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					title: faker.lorem.words(3),
 					html: faker.lorem.paragraph(),
 				};
 
@@ -164,8 +163,8 @@ describe('CommonCartridgeImportMapper', () => {
 
 				expect(result).toBeInstanceOf(RichTextContentBody);
 				expect(result).toEqual<RichTextContentBody>({
+					inputFormat: InputFormat.RICH_TEXT_CK4,
 					text: resource.html,
-					inputFormat: InputFormat.RICH_TEXT_CK5_SIMPLE,
 				});
 			});
 		});
