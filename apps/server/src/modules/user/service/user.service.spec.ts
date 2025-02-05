@@ -855,6 +855,8 @@ describe('UserService', () => {
 					if (key === 'CALENDAR_SERVICE_ENABLED') {
 						return true;
 					}
+
+					return false;
 				});
 
 				return {
