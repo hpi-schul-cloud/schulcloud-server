@@ -1,3 +1,4 @@
 export interface TriggerDeletionExecutionOptions {
-	limit: number;
+	limit: string | number;
+	runFailed: string | boolean;
 }
