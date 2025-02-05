@@ -8,13 +8,13 @@ describe(MediaSourceOauthConfigNotFoundLoggableException.name, () => {
 			const exception = new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, mediaSource.name as string);
 
 			return {
-				mediaSource,
 				exception,
+				mediaSource,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { mediaSource, exception } = setup();
+			const { exception, mediaSource } = setup();
 
 			const logMessage = exception.getLogMessage();
 

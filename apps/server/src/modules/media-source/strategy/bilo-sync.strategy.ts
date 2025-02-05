@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaSource, MediaSourceSyncReport, BiloMediaQueryResponse } from '../domain';
+import { MediaSourceSyncStrategy, MediaSource, MediaSourceSyncReport, BiloMediaQueryResponse } from '../domain';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../domain/factory';
 import { MediaSourceDataFormat, MediaSourceSyncOperation } from '../enum';
 import { MediaSourceNotFoundLoggableException } from '../loggable';
@@ -9,7 +9,7 @@ import { MediaSourceService, BiloMediaFetchService } from '../service';
 
 // TODO: resolve circular imports (externalToolModule)
 @Injectable()
-export class BiloSyncStrategy {
+export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly mediaSourceService: MediaSourceService,
 		private readonly externalToolService: ExternalToolService,

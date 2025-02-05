@@ -1,21 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { MediaSourceSyncReport } from '../domain';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../domain';
+import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
+import { BiloSyncStrategy } from '../strategy';
 
 @Injectable()
 export class MediaSourceSyncService {
-	public async syncAllMediaMetadata(): Promise<MediaSourceSyncReport> {
-		// TODO register & call strategy (now only bilo)
+	private syncStrategyMap: Map<MediaSourceDataFormat, MediaSourceSyncStrategy>;
 
-		const dummyReport: MediaSourceSyncReport = {
-			totalCount: 0,
-			successCount: 0,
-			failedCount: 0,
-			undeliveredCount: 0,
-			operations: [],
-		};
+	constructor(private readonly biloSyncStrategy: BiloSyncStrategy) {
+		this.syncStrategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
+		this.syncStrategyMap.set(biloSyncStrategy.getMediaSourceFormat(), this.biloSyncStrategy);
+	}
 
-		await Promise.resolve();
+	public async syncAllMediaMetadata(dataFormat: MediaSourceDataFormat): Promise<MediaSourceSyncReport> {
+		const strategy = this.syncStrategyMap.get(dataFormat);
 
-		return dummyReport;
+		if (!strategy) {
+			throw new MediaSourceSyncStrategyNotImplementedLoggableException(dataFormat);
+		}
+
+		const report: MediaSourceSyncReport = await strategy.syncAllMediaMetadata();
+
+		return report;
 	}
 }

@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSourceSyncService } from '@modules/media-source/service';
+import { MediaSourceSyncService, MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceSyncReportFactory } from '@modules/media-source/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { MediaMetadataSyncReportLoggable } from '../loggable';
@@ -53,20 +53,21 @@ describe(MediaMetadataSyncStrategy.name, () => {
 				return { report };
 			};
 
-			it('should start the sync for media metadata', async () => {
+			it('should start the sync for media metadata for only bilo', async () => {
 				setup();
 
 				await strategy.sync();
 
-				expect(syncService.syncAllMediaMetadata).toBeCalled();
+				expect(syncService.syncAllMediaMetadata).toBeCalledWith(MediaSourceDataFormat.BILDUNGSLOGIN);
+				expect(syncService.syncAllMediaMetadata).toBeCalledTimes(1);
 			});
 
-			it('should log the report after sync', async () => {
+			it('should log the report after the bilo media metadata sync', async () => {
 				const { report } = setup();
 
 				await strategy.sync();
 
-				const loggable = new MediaMetadataSyncReportLoggable(report);
+				const loggable = new MediaMetadataSyncReportLoggable(report, MediaSourceDataFormat.BILDUNGSLOGIN);
 				expect(logger.info).toBeCalledWith(loggable);
 			});
 		});

@@ -1,4 +1,4 @@
-import { MediaSourceSyncOperationReport } from '@modules/media-source/domain';
+import { MediaSourceSyncOperationReport, MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceSyncReportFactory } from '@modules/media-source/testing';
 import { MediaMetadataSyncReportLoggable } from './media-metadata-sync-report.loggable';
 
@@ -6,11 +6,12 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const report = mediaSourceSyncReportFactory.build();
+			const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
 
-			const loggable = new MediaMetadataSyncReportLoggable(report);
+			const loggable = new MediaMetadataSyncReportLoggable(report, mediaSourceDataFormat);
 
 			let expectedMessage =
-				'Media metadata sync had finished\n' +
+				`Media metadata sync for ${mediaSourceDataFormat} had finished.\n` +
 				`Total media processed: ${report.totalCount}\n` +
 				`Total successful sync: ${report.successCount}\n` +
 				`Total failed sync: ${report.failedCount}\n` +
@@ -27,19 +28,21 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 
 			return {
 				loggable,
-				report,
 				expectedMessage,
+				report,
+				mediaSourceDataFormat,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { loggable, report, expectedMessage } = setup();
+			const { loggable, expectedMessage, report, mediaSourceDataFormat } = setup();
 
 			const logMessage = loggable.getLogMessage();
 
 			expect(logMessage).toEqual({
 				message: expectedMessage,
 				data: {
+					mediaSourceDataFormat,
 					report: JSON.stringify(report),
 				},
 			});
