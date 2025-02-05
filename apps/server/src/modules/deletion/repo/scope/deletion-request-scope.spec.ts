@@ -34,8 +34,8 @@ describe(DeletionRequestScope.name, () => {
 
 	describe('byStatusAndDate', () => {
 		const setup = () => {
-			const newerThan = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
-			const olderThan = new Date(Date.now() - 5 * 60 * 1000); // 5 minutes ago
+			const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+			const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
 
 			const expectedQueryOlder = {
 				status: {
@@ -44,7 +44,7 @@ describe(DeletionRequestScope.name, () => {
 				$and: [
 					{
 						updatedAt: {
-							$lt: olderThan,
+							$lt: fiveMinutesAgo,
 						},
 					},
 				],
@@ -56,7 +56,7 @@ describe(DeletionRequestScope.name, () => {
 				$and: [
 					{
 						updatedAt: {
-							$gte: newerThan,
+							$gte: fifteenMinutesAgo,
 						},
 					},
 				],
@@ -68,12 +68,12 @@ describe(DeletionRequestScope.name, () => {
 				$and: [
 					{
 						updatedAt: {
-							$lt: olderThan,
+							$lt: fiveMinutesAgo,
 						},
 					},
 					{
 						updatedAt: {
-							$gte: newerThan,
+							$gte: fifteenMinutesAgo,
 						},
 					},
 				],
@@ -89,8 +89,8 @@ describe(DeletionRequestScope.name, () => {
 				expectedQueryNewer,
 				expectedQueryOlderAndNewer,
 				expectedQueryNoDates,
-				olderThan,
-				newerThan,
+				olderThan: fiveMinutesAgo,
+				newerThan: fifteenMinutesAgo,
 			};
 		};
 		describe('when olderThan is set', () => {
