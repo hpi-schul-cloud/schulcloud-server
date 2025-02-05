@@ -12,6 +12,8 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { fileRecordFactory } from '@modules/files-storage/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
@@ -45,6 +47,7 @@ describe('UserService', () => {
 	let registrationPinService: DeepMocked<RegistrationPinService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let eventBus: DeepMocked<EventBus>;
+	let filesStorageService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
 		const orm = await setupEntities();
@@ -94,6 +97,10 @@ describe('UserService', () => {
 					provide: MikroORM,
 					useValue: orm,
 				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -105,6 +112,7 @@ describe('UserService', () => {
 		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 		calendarService = module.get(CalendarService);
+		filesStorageService = module.get(FilesStorageClientAdapterService);
 	});
 
 	afterAll(async () => {
@@ -830,6 +838,7 @@ describe('UserService', () => {
 		describe('when user exists', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
+				const fileRecords = fileRecordFactory.buildListWithId(2);
 
 				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
@@ -839,14 +848,19 @@ describe('UserService', () => {
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
 				]);
 
+				const fileRecordsEventsDeleted = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [fileRecords[0].id, fileRecords[1].id]),
+				]);
+
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.USER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id])],
-					[registrationPinDeleted, calendarEventsDeleted]
+					[registrationPinDeleted, calendarEventsDeleted, fileRecordsEventsDeleted]
 				);
 
 				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
 				jest.spyOn(service, 'removeCalendarEvents').mockResolvedValueOnce(calendarEventsDeleted);
+				filesStorageService.removeCreatorIdFromFileRecords.mockResolvedValue(fileRecords);
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
@@ -893,12 +907,15 @@ describe('UserService', () => {
 		describe('when user exists but userRepo.deleteUser return 0', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
+				const fileRecords = fileRecordFactory.buildListWithId(2);
 
 				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
 				]);
 
 				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
+				filesStorageService.removeCreatorIdFromFileRecords.mockResolvedValue(fileRecords);
+
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(0);
 
