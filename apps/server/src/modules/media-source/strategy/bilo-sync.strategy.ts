@@ -25,7 +25,7 @@ export class BiloSyncStrategy {
 
 		const externalTools: ExternalTool[] = await this.getAllToolsWithBiloMedium(mediaSource);
 
-		const mediumIds = externalTools
+		const mediumIds: string[] = externalTools
 			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
 			.filter((mediumId: string | undefined): mediumId is string => !!mediumId);
 
@@ -127,8 +127,9 @@ export class BiloSyncStrategy {
 	private async updateMediaMetadata(externalTool: ExternalTool, metadataItem: BiloMediaQueryResponse): Promise<void> {
 		externalTool.name = metadataItem.title;
 		externalTool.description = metadataItem.id;
-		externalTool.logoUrl = metadataItem.id;
-		externalTool.logo = metadataItem.id;
+		externalTool.logoUrl = metadataItem.cover.href;
+		// TODO is preview logo or thumbnail?
+		externalTool.logo = metadataItem.coverSmall.href;
 
 		const medium = externalTool.medium as ExternalToolMedium;
 		medium.publisher = metadataItem.publisher;

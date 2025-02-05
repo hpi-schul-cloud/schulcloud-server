@@ -12,6 +12,7 @@ import { SystemService } from '@modules/system/service';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
+import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -21,13 +22,11 @@ import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
-import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
 	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
 jest.mock('jwks-rsa', () => () => {

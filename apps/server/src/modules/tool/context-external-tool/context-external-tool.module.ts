@@ -2,7 +2,7 @@ import { AuthorizationModule } from '@modules/authorization';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@core/logger';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';

@@ -1,9 +1,9 @@
 import { OauthConfigEntity } from '@modules/system/entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacyLogger } from '@core/logger';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { AuthorizationParams } from '../controller/dto';
-import { OAuthTokenDto } from '../interface';
 import { AuthCodeFailureLoggableException } from '../loggable';
 import { HydraSsoService, OAuthService } from '../service';
 import { HydraRedirectDto } from '../service/dto';

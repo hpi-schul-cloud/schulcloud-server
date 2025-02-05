@@ -1,12 +1,12 @@
+import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common/decorators';
-import { AxiosResponse, isAxiosError } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthTokenDto } from '../interface';
+import { AxiosResponse, isAxiosError } from 'axios';
 import { TokenRequestLoggableException } from '../loggable';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
+import { TokenRequestMapper } from '../mapper';
+import { OAuthTokenDto } from '../domain';
 import { AuthenticationCodeGrantTokenRequest, ClientCredentialsGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()

@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
-import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
-import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import {
+	OAuthTokenDto,
+	OauthAdapterService,
+	OAuthGrantType,
+	ClientCredentialsGrantTokenRequest,
+} from '@modules/oauth-adapter';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { MediaSource, BiloMediaQueryParams, BiloMediaQueryResponse } from '../domain';
+import { MediaSource, BiloMediaQueryRequest, BiloMediaQueryResponse } from '../domain';
 import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceOauthConfigNotFoundLoggableException } from '../loggable';
 
@@ -17,7 +21,7 @@ export class BiloMediaFetchService {
 	public async fetchMediaMetadata(mediumIds: string[], mediaSource: MediaSource): Promise<BiloMediaQueryResponse[]> {
 		const url = new URL(mediaSource.sourceId);
 
-		const body: BiloMediaQueryParams[] = mediumIds.map((id: string) => new BiloMediaQueryParams({ id }));
+		const body: BiloMediaQueryRequest[] = mediumIds.map((id: string) => new BiloMediaQueryRequest({ id }));
 
 		const token: OAuthTokenDto = await this.fetchAccessToken(mediaSource);
 

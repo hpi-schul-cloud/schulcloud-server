@@ -2,8 +2,8 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Controller, Get, Param, Query, Req, UnauthorizedException } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LegacyLogger } from '@core/logger';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { Request } from 'express';
-import { OAuthTokenDto } from '../interface';
 import { HydraOauthUc } from '../uc';
 import { AuthorizationParams } from './dto';
 import { StatelessAuthorizationParams } from './dto/stateless-authorization.params';

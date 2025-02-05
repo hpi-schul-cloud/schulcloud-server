@@ -1,1 +1,1 @@
-export { BiloMediaQueryParams } from './bilo-media-query.params';
+export { BiloMediaQueryRequest } from './bilo-media-query.request';

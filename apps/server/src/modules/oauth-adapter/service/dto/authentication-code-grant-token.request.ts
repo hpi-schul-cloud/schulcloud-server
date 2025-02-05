@@ -1,15 +1,15 @@
-import { OAuthGrantType } from '../../interface/oauth-grant-type.enum';
+import { OAuthGrantType } from '../../domain';
 
 export class AuthenticationCodeGrantTokenRequest {
-	client_id: string;
+	public client_id: string;
 
-	client_secret: string;
+	public client_secret: string;
 
-	redirect_uri: string;
+	public redirect_uri: string;
 
-	grant_type: OAuthGrantType.AUTHORIZATION_CODE_GRANT;
+	public grant_type: OAuthGrantType.AUTHORIZATION_CODE_GRANT;
 
-	code: string;
+	public code: string;
 
 	constructor(props: AuthenticationCodeGrantTokenRequest) {
 		this.client_id = props.client_id;

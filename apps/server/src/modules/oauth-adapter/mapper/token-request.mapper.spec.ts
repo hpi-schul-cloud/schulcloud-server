@@ -1,5 +1,4 @@
-import { OAuthTokenDto } from '../interface';
-import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
+import { OAuthTokenDto, OAuthGrantType } from '../domain';
 import { AuthenticationCodeGrantTokenRequest } from '../service/dto';
 import { TokenRequestMapper } from './token-request.mapper';
 

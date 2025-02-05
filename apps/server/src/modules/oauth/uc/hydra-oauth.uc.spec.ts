@@ -3,6 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HydraSsoService, OAuthService } from '@modules/oauth';
 import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { OauthConfigEntity } from '@modules/system/entity';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,7 +13,6 @@ import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
-import { OAuthTokenDto } from '../interface';
 import { AuthCodeFailureLoggableException } from '../loggable';
 
 class HydraOauthUcSpec extends HydraOauthUc {

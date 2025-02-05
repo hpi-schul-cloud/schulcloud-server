@@ -6,6 +6,12 @@ import { System, SystemService } from '@modules/system';
 import { OauthConfigEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
+import {
+	OAuthTokenDto,
+	OauthAdapterService,
+	AuthenticationCodeGrantTokenRequest,
+	TokenRequestMapper,
+} from '@modules/oauth-adapter';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { isObject } from '@nestjs/common/utils/shared.utils';
@@ -13,15 +19,11 @@ import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
 	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { AuthenticationCodeGrantTokenRequest } from './dto';
-import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
 export class OAuthService {

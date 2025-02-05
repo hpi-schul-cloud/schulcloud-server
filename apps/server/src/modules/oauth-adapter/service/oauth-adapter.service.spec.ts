@@ -5,9 +5,8 @@ import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
-import { OAuthTokenDto } from '../interface';
-import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
 import { TokenRequestLoggableException } from '../loggable';
+import { OAuthTokenDto, OAuthGrantType } from '../domain';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
