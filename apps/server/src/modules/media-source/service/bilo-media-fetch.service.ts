@@ -22,7 +22,7 @@ export class BiloMediaFetchService {
 	) {}
 
 	public async fetchMediaMetadata(mediumIds: string[], mediaSource: MediaSource): Promise<BiloMediaQueryResponse[]> {
-		const url = new URL(`${mediaSource.sourceId}/query}`);
+		const url = new URL(`${mediaSource.sourceId}/query`);
 
 		const body: BiloMediaQueryRequest[] = mediumIds.map((id: string) => new BiloMediaQueryRequest({ id }));
 
