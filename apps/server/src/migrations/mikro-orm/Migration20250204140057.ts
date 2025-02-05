@@ -7,7 +7,7 @@ export class Migration20250204140057 extends Migration {
 				ltiToolIds: { $exists: true },
 			},
 			{
-				ltiToolIds: { $unset: '' },
+				$unset: { ltiToolIds: '' },
 			}
 		);
 		await this.getCollection('teams').updateMany(
@@ -15,7 +15,7 @@ export class Migration20250204140057 extends Migration {
 				ltiToolIds: { $exists: true },
 			},
 			{
-				ltiToolIds: { $unset: '' },
+				$unset: { ltiToolIds: '' },
 			}
 		);
 
