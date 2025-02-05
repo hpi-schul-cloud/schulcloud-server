@@ -337,9 +337,12 @@ describe(OauthProviderController.name, () => {
 		describe('when accepting a login request', () => {
 			const setup = async () => {
 				const challenge = 'challenge';
+				const clientId = 'clientId';
 				const loginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+					client: providerOauthClientFactory.build({ client_id: clientId }),
 					challenge,
 				});
+				const externalTool = externalToolEntityFactory.withOauth2Config({ clientId }).build();
 				const redirectResponse: ProviderRedirectResponse = { redirect_to: 'redirect' };
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -349,7 +352,7 @@ describe(OauthProviderController.name, () => {
 					.onPut(`${hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persistAndFlush([studentAccount, studentUser, externalTool]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -477,8 +480,12 @@ describe(OauthProviderController.name, () => {
 		describe('when accepting a consent request', () => {
 			const setup = async () => {
 				const challenge = 'challenge';
+				const clientId = 'clientId';
+				const externalTool = externalToolEntityFactory.withOauth2Config({ clientId }).build();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const pseudonym = externalToolPseudonymEntityFactory.build({ toolId: externalTool.id, userId: studentUser.id });
 				const consentResponse: ProviderConsentResponse = providerConsentResponseFactory.build({
+					client: providerOauthClientFactory.build({ client_id: clientId }),
 					challenge,
 					subject: studentUser.id,
 				});
@@ -490,7 +497,7 @@ describe(OauthProviderController.name, () => {
 					.onPut(`${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persistAndFlush([studentAccount, studentUser, externalTool, pseudonym]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
