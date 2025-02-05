@@ -14,6 +14,17 @@
 
 
 
-export * from './api/board-api';
-export * from './api/board-column-api';
+/**
+ * 
+ * @export
+ * @interface RenameBodyParams
+ */
+export interface RenameBodyParams {
+    /**
+     * 
+     * @type {string}
+     * @memberof RenameBodyParams
+     */
+    'title': string;
+}
 
