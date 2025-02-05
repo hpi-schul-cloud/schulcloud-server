@@ -2,7 +2,7 @@ import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../enum';
 import { MediaSourceSyncOperationReport } from '../interface';
 
 export class MediaSourceSyncOperationReportFactory {
-	static build(
+	public static build(
 		operation: MediaSourceSyncOperation,
 		status: MediaSourceSyncStatus,
 		count?: number
@@ -16,7 +16,10 @@ export class MediaSourceSyncOperationReportFactory {
 		return operationReport;
 	}
 
-	static buildWithSuccessStatus(operation: MediaSourceSyncOperation, count?: number): MediaSourceSyncOperationReport {
+	public static buildWithSuccessStatus(
+		operation: MediaSourceSyncOperation,
+		count?: number
+	): MediaSourceSyncOperationReport {
 		const operationReport: MediaSourceSyncOperationReport = {
 			operation,
 			status: MediaSourceSyncStatus.SUCCESS,
@@ -26,7 +29,10 @@ export class MediaSourceSyncOperationReportFactory {
 		return operationReport;
 	}
 
-	static buildWithFailedStatus(operation: MediaSourceSyncOperation, count?: number): MediaSourceSyncOperationReport {
+	public static buildWithFailedStatus(
+		operation: MediaSourceSyncOperation,
+		count?: number
+	): MediaSourceSyncOperationReport {
 		const operationReport: MediaSourceSyncOperationReport = {
 			operation,
 			status: MediaSourceSyncStatus.FAILED,
@@ -36,7 +42,7 @@ export class MediaSourceSyncOperationReportFactory {
 		return operationReport;
 	}
 
-	static buildUndeliveredReport(count?: number): MediaSourceSyncOperationReport {
+	public static buildUndeliveredReport(count?: number): MediaSourceSyncOperationReport {
 		const operationReport: MediaSourceSyncOperationReport = {
 			operation: MediaSourceSyncOperation.ANY,
 			status: MediaSourceSyncStatus.UNDELIVERED,

@@ -1,0 +1,65 @@
+import { mediaSourceSyncOperationReportFactory } from '../../testing';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../enum';
+import { MediaSourceSyncReport } from '../interface';
+import { MediaSourceSyncReportFactory } from './media-source-sync-report.factory';
+
+describe(MediaSourceSyncReportFactory.name, () => {
+	describe('buildFromOperations', () => {
+		const setup = () => {
+			const createSuccessCount = 10;
+			const updateSuccessCount = 5;
+			const createFailedCount = 8;
+			const updateFailedCount = 7;
+			const undeliveredCount = 3;
+
+			const operations = [
+				mediaSourceSyncOperationReportFactory.build({
+					operation: MediaSourceSyncOperation.CREATE,
+					status: MediaSourceSyncStatus.SUCCESS,
+					count: createSuccessCount,
+				}),
+				mediaSourceSyncOperationReportFactory.build({
+					operation: MediaSourceSyncOperation.UPDATE,
+					status: MediaSourceSyncStatus.SUCCESS,
+					count: updateSuccessCount,
+				}),
+				mediaSourceSyncOperationReportFactory.build({
+					operation: MediaSourceSyncOperation.CREATE,
+					status: MediaSourceSyncStatus.FAILED,
+					count: createFailedCount,
+				}),
+				mediaSourceSyncOperationReportFactory.build({
+					operation: MediaSourceSyncOperation.UPDATE,
+					status: MediaSourceSyncStatus.FAILED,
+					count: updateFailedCount,
+				}),
+				mediaSourceSyncOperationReportFactory.build({
+					operation: MediaSourceSyncOperation.ANY,
+					status: MediaSourceSyncStatus.UNDELIVERED,
+					count: undeliveredCount,
+				}),
+			];
+
+			const successCount = createSuccessCount + updateSuccessCount;
+			const failedCount = createFailedCount + updateFailedCount;
+
+			const totalCount = successCount + failedCount + undeliveredCount;
+
+			return { operations, totalCount, successCount, failedCount, undeliveredCount };
+		};
+
+		it('should return the correct sync report', () => {
+			const { operations, totalCount, successCount, failedCount, undeliveredCount } = setup();
+
+			const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations(operations);
+
+			expect(report).toMatchObject({
+				totalCount,
+				successCount,
+				failedCount,
+				undeliveredCount,
+				operations,
+			} as MediaSourceSyncReport);
+		});
+	});
+});
