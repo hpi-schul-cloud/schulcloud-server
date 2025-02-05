@@ -4,9 +4,8 @@ const assert = require('assert');
 
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
-const testObjects = require('../../helpers/testObjects')(appPromise());
+const testHelper = require('../../helpers/testObjects');
 const { enforceRoleHierarchyOnCreate, checkUniqueEmail } = require('../../../../src/services/user/hooks/userService');
-const { generateRequestParams } = require('../../helpers/services/login')(appPromise());
 
 const {
 	removeStudentFromCourses,
@@ -19,10 +18,12 @@ describe('removeStudentFromCourses', () => {
 	let app;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
@@ -77,10 +78,12 @@ describe('removeStudentFromClasses', () => {
 	let app;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
@@ -135,10 +138,12 @@ describe('generateRegistrationLink', () => {
 	let app;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
@@ -211,7 +216,7 @@ describe('generateRegistrationLink', () => {
 		const username = user.email;
 		const password = 'Schulcloud1!';
 		await testObjects.createTestAccount({ username, password }, 'local', user);
-		await generateRequestParams({ username, password });
+		await testObjects.generateRequestParams({ username, password });
 		try {
 			await registrationLinkService.create({ toHash: user.email });
 			expect.fail('Should have failed with BadRequest');
@@ -282,10 +287,6 @@ describe('enforceRoleHierarchyOnCreate', () => {
 
 	after(async () => {
 		await server.close();
-	});
-
-	afterEach(async () => {
-		await testObjects.cleanup();
 	});
 
 	const expectedErrorMessageForbidden = 'Your are not allowed to create a user with the given role';
@@ -423,10 +424,12 @@ describe('checkUniqueEmail', () => {
 	let app;
 	let server;
 	let nestServices;
+	let testObjects;
 
 	before(async () => {
 		app = await appPromise();
 		server = await app.listen(0);
+		testObjects = testHelper(app);
 		nestServices = await setupNestServices(app);
 	});
 
