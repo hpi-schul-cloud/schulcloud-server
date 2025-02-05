@@ -57,7 +57,7 @@ export class DeletionRequestService {
 	}
 
 	public async findInProgressCount(): Promise<number> {
-		const newerThan = new Date(Date.now() - this.thresholdNewer);
+		const newerThan = new Date(Date.now() - this.thresholdOlder);
 		const count = await this.deletionRequestRepo.findInProgressCount(newerThan);
 		return count;
 	}

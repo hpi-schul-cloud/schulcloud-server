@@ -154,7 +154,7 @@ describe(DeletionRequestService.name, () => {
 	describe('findInProgressCount', () => {
 		describe('when finding in progress deletionRequests', () => {
 			const setup = () => {
-				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') ?? 1000;
+				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 1000;
 				const newerThan = new Date(Date.now() - thresholdNewerMs);
 
 				const count = 2;
