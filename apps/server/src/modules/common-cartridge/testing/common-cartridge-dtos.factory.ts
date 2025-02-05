@@ -53,6 +53,7 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 		columns: [columnFactory.build(), columnFactory.build()],
 		isVisible: faker.datatype.boolean(),
 		layout: faker.lorem.word(),
+		features: [],
 		timestamps: {
 			createdAt: faker.date.recent().toISOString(),
 			lastUpdatedAt: faker.date.recent().toISOString(),
