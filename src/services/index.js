@@ -27,6 +27,7 @@ const statistic = require('./statistic');
 const statisticMails = require('./statisticMail');
 const wopi = require('./wopi');
 const consent = require('./consent');
+const oauth2 = require('./oauth2');
 const roster = require('./roster');
 const ldap = require('./ldap');
 const ldapConfig = require('./ldap-config');
@@ -84,6 +85,7 @@ module.exports = function initializeServices() {
 	app.configure(me);
 	app.configure(help);
 	app.configure(rocketChat);
+	app.configure(oauth2);
 	app.configure(roster);
 	app.configure(datasources);
 	app.configure(edusharing);

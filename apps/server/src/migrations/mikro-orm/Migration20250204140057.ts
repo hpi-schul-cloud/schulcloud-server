@@ -2,7 +2,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 
 export class Migration20250204140057 extends Migration {
 	public async up(): Promise<void> {
-		const courses = await this.getCollection('courses').updateMany(
+		await this.getCollection('courses').updateMany(
 			{
 				ltiToolIds: { $exists: true },
 			},
@@ -10,7 +10,7 @@ export class Migration20250204140057 extends Migration {
 				ltiToolIds: { $unset: '' },
 			}
 		);
-		const teams = await this.getCollection('teams').updateMany(
+		await this.getCollection('teams').updateMany(
 			{
 				ltiToolIds: { $exists: true },
 			},
@@ -19,9 +19,7 @@ export class Migration20250204140057 extends Migration {
 			}
 		);
 
-		console.info(
-			`Removed references to ltitools from ${courses.modifiedCount} courses and ${teams.modifiedCount} teams`
-		);
+		console.info('Removed references to ltitools from courses and teams');
 
 		await this.getCollection('ltitools').drop();
 		await this.getCollection('pseudonyms').drop();

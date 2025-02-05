@@ -6,7 +6,7 @@ const appPromise = require('../../../src/app');
 
 chai.use(chaiHttp);
 
-describe('oauth2 service', function oauthTest() {
+describe('hydra service', function oauthTest() {
 	let app;
 	let clientsService;
 	let introspectService;
