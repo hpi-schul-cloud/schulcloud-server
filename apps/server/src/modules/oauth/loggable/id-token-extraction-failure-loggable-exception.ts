@@ -15,13 +15,13 @@ export class IdTokenExtractionFailureLoggableException extends BusinessError imp
 	}
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		const fieldName = Array.isArray(this.fieldName) ? this.fieldName.join(', ') : this.fieldName;
+		const logData = Array.isArray(this.fieldName) ? this.fieldName.join(', ') : this.fieldName;
 		return {
 			type: this.type,
 			message: this.message,
 			stack: this.stack,
 			data: {
-				fieldName,
+				fieldName: logData,
 			},
 		};
 	}

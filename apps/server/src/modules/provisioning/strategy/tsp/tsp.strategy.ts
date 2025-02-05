@@ -108,7 +108,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 				.filter(Boolean) as RoleName[],
 		});
 
-		if (Array.isArray(externalUserDto.roles) && externalUserDto.roles.length < 1) {
+		if (externalUserDto.roles.length < 1) {
 			throw new IdTokenExtractionFailureLoggableException('ptscListRolle');
 		}
 

@@ -72,14 +72,14 @@ export class TspClientFactory {
 
 			// We need the Bearer prefix for the generated client, because OAS 2 does not support Bearer token type
 			return `Bearer ${this.cachedToken}`;
-		} catch (rawError) {
+		} catch (oauthAdapeterError) {
 			let error: Error;
-			if (rawError instanceof AxiosError) {
-				error = new AxiosErrorLoggable(rawError, 'TSP_OAUTH_ERROR');
-			} else if (rawError instanceof Error) {
-				error = rawError;
+			if (oauthAdapeterError instanceof AxiosError) {
+				error = new AxiosErrorLoggable(oauthAdapeterError, 'TSP_OAUTH_ERROR');
+			} else if (oauthAdapeterError instanceof Error) {
+				error = oauthAdapeterError;
 			} else {
-				error = new Error(util.inspect(rawError));
+				error = new Error(util.inspect(oauthAdapeterError));
 			}
 
 			throw new TspAccessTokenLoggableError(error);
