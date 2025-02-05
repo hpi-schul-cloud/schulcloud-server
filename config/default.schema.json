@@ -626,41 +626,11 @@
 			"default": 1,
 			"description": "Time between updating alerts (in minutes)"
 		},
-		"NEXBOARD_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://nexboard.nexenio.com",
-			"pattern": ".*(?<!/)$",
-			"description": "The nexboard url."
-		},
-		"NEXBOARD_URI": {
-			"type": "string",
-			"default": "/portal/api/v1/public/",
-			"description": "The nexboard api version uri."
-		},
-		"NEXBOARD_API_KEY": {
-			"type": "string",
-			"description": "The nexboard api key for sending requests."
-		},
-		"NEXBOARD_USER_ID": {
-			"type": "string",
-			"description": "The nexboard 'schul-cloud' userId."
-		},
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
 			"default": "http://localhost:9001",
 			"description": "The hydra url."
-		},
-		"FEATURE_NEXBOARD_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable nexboard"
-		},
-		"FEATURE_NEXBOARD_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable nexboard copying when copying course or lesson"
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
