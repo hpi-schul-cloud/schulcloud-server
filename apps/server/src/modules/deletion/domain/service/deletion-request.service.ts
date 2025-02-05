@@ -9,23 +9,28 @@ import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 export class DeletionRequestService {
+	private thresholdOlder: number;
+
+	private thresholdNewer: number;
+
 	constructor(
 		private readonly deletionRequestRepo: DeletionRequestRepo,
 		private readonly configService: ConfigService<DeletionConfig, true>
-	) {}
+	) {
+		this.thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
+
+		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
+	}
 
 	public async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DomainName,
-		deleteInMinutes = 43200
+		deleteAfter: Date
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
-		const dateOfDeletion = new Date();
-		dateOfDeletion.setMinutes(dateOfDeletion.getMinutes() + deleteInMinutes);
-
 		const newDeletionRequest = new DeletionRequest({
 			id: new ObjectId().toHexString(),
 			targetRefDomain,
-			deleteAfter: dateOfDeletion,
+			deleteAfter,
 			targetRefId,
 			status: StatusModel.REGISTERED,
 		});
@@ -41,17 +46,20 @@ export class DeletionRequestService {
 		return deletionRequest;
 	}
 
-	public async findAllItemsToExecute(limit?: number): Promise<DeletionRequest[]> {
-		const threshold = this.configService.get<number>('ADMIN_API__MODIFICATION_THRESHOLD_MS');
-		const itemsToDelete: DeletionRequest[] = await this.deletionRequestRepo.findAllItemsToExecution(threshold, limit);
+	public async findAllItemsToExecute(limit: number, getFailed = false): Promise<DeletionRequest[]> {
+		const newerThan = new Date(Date.now() - this.thresholdNewer);
+		const olderThan = new Date(Date.now() - this.thresholdOlder);
+		const deletionRequests = getFailed
+			? await this.deletionRequestRepo.findAllFailedItems(limit, olderThan, newerThan)
+			: await this.deletionRequestRepo.findAllItems(limit);
 
-		return itemsToDelete;
+		return deletionRequests;
 	}
 
-	public async countPendingDeletionRequests(): Promise<number> {
-		const numberItemsWithStatusPending: number = await this.deletionRequestRepo.countPendingDeletionRequests();
-
-		return numberItemsWithStatusPending;
+	public async findInProgressCount(): Promise<number> {
+		const newerThan = new Date(Date.now() - this.thresholdOlder);
+		const count = await this.deletionRequestRepo.findInProgressCount(newerThan);
+		return count;
 	}
 
 	public async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {

@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsBoolean, IsInt, IsOptional, Min } from 'class-validator';
 
 export class DeletionExecutionParams {
 	@IsInt()
@@ -7,4 +7,8 @@ export class DeletionExecutionParams {
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'Page limit, defaults to 100.', minimum: 1 })
 	limit?: number = 100;
+
+	@IsBoolean()
+	@IsOptional()
+	runFailed?: boolean = false;
 }

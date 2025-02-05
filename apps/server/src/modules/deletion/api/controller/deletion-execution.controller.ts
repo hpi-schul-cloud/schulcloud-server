@@ -19,6 +19,9 @@ export class DeletionExecutionController {
 		status: 204,
 	})
 	public executeDeletions(@Query() deletionExecutionQuery: DeletionExecutionParams): Promise<void> {
-		return this.deletionRequestUc.executeDeletionRequests(deletionExecutionQuery.limit);
+		return this.deletionRequestUc.executeDeletionRequests(
+			deletionExecutionQuery.limit,
+			deletionExecutionQuery.runFailed
+		);
 	}
 }
