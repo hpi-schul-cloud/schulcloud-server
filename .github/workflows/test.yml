@@ -17,6 +17,11 @@ jobs:
   feathers_tests_cov:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      rabbitmq:
+        image: rabbitmq:3
+        ports:
+          - 5672:5672
     steps:
       - name: checkout
         uses: actions/checkout@v4
