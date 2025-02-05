@@ -2,13 +2,7 @@ import { XApiKeyAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Delete, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestUc } from '../uc';
-import {
-	CreateDeletionBatchBodyParams,
-	DeletionBatchResponse,
-	DeletionRequestBodyParams,
-	DeletionRequestLogResponse,
-	DeletionRequestResponse,
-} from './dto';
+import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from './dto';
 
 @ApiTags('DeletionRequest')
 @XApiKeyAuthentication()
