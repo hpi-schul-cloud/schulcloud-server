@@ -1,8 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
-import { MediaSourceVidisConfig } from '@modules/media-source/domain';
-import { MediaSourceAuthMethod } from '@modules/media-source/enum';
+import {
+	MediaSource,
+	MediaSourceDataFormat,
+	MediaSourceService,
+	MediaSourceAuthMethod,
+	MediaSourceVidisConfig,
+} from '@modules/media-source';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourcesSeedDataService } from './media-sources-seed-data.service';
@@ -158,7 +162,7 @@ describe(MediaSourcesSeedDataService.name, () => {
 					new MediaSource({
 						id: '679b870e987d8f9a40c1bcbb',
 						name: 'Bildungslogin',
-						sourceId: 'BiloTestMediaCatalog-00001',
+						sourceId: 'https://www.bildungslogin-test.de/api/external/univention/media',
 						format: MediaSourceDataFormat.BILDUNGSLOGIN,
 						oauthConfig: {
 							clientId: biloClientId,
