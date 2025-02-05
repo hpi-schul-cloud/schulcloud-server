@@ -8,7 +8,7 @@ import { MediaSourceRepo } from './repo';
 import { BiloSyncStrategy } from './strategy';
 
 @Module({
-	imports: [OauthModule, ExternalToolModule],
+	imports: [HttpModule, OauthAdapterModule, EncryptionModule, ExternalToolModule],
 	providers: [MediaSourceService, MediaSourceSyncService, MediaSourceRepo, BiloMediaFetchService, BiloSyncStrategy],
 	exports: [MediaSourceService, MediaSourceSyncService, MediaSourceRepo],
 })

@@ -50,7 +50,7 @@ export class MediaSourcesSeedDataService {
 				new MediaSource({
 					id: '679b870e987d8f9a40c1bcbb',
 					name: 'Bildungslogin',
-					sourceId: 'BiloTestMediaCatalog-00001',
+					sourceId: 'https://www.bildungslogin-test.de/api/external/univention/media',
 					format: MediaSourceDataFormat.BILDUNGSLOGIN,
 					oauthConfig: {
 						clientId: biloClientId,

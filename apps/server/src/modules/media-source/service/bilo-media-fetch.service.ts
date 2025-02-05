@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
@@ -13,13 +13,16 @@ import { MediaSource, BiloMediaQueryRequest, BiloMediaQueryResponse } from '../d
 import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceOauthConfigNotFoundLoggableException } from '../loggable';
 
-// TODO: resolve circular imports (oauthModule)
 @Injectable()
 export class BiloMediaFetchService {
-	constructor(private readonly httpService: HttpService, private readonly oauthAdapterService: OauthAdapterService) {}
+	constructor(
+		private readonly httpService: HttpService,
+		private readonly oauthAdapterService: OauthAdapterService,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+	) {}
 
 	public async fetchMediaMetadata(mediumIds: string[], mediaSource: MediaSource): Promise<BiloMediaQueryResponse[]> {
-		const url = new URL(mediaSource.sourceId);
+		const url = new URL(`${mediaSource.sourceId}/query}`);
 
 		const body: BiloMediaQueryRequest[] = mediumIds.map((id: string) => new BiloMediaQueryRequest({ id }));
 
@@ -42,19 +45,20 @@ export class BiloMediaFetchService {
 	}
 
 	private async fetchAccessToken(mediaSource: MediaSource): Promise<OAuthTokenDto> {
-		const oauthConfig = mediaSource.oauthConfig;
-
-		if (!oauthConfig) {
+		if (!mediaSource.oauthConfig) {
 			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
 		}
 
 		const credentials = new ClientCredentialsGrantTokenRequest({
-			client_id: oauthConfig.clientId,
-			client_secret: oauthConfig.clientSecret,
+			client_id: mediaSource.oauthConfig.clientId,
+			client_secret: this.encryptionService.decrypt(mediaSource.oauthConfig.clientSecret),
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
-		const accessToken = await this.oauthAdapterService.sendTokenRequest(oauthConfig.authEndpoint, credentials);
+		const accessToken: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(
+			mediaSource.oauthConfig.authEndpoint,
+			credentials
+		);
 
 		return accessToken;
 	}
