@@ -39,13 +39,13 @@ export interface CreateBoardBodyParams {
      */
     'parentId': string;
     /**
-     * 
+     * The type of the parent
      * @type {BoardParentType}
      * @memberof CreateBoardBodyParams
      */
     'parentType': BoardParentType;
     /**
-     * 
+     * The layout of the board
      * @type {BoardLayout}
      * @memberof CreateBoardBodyParams
      */
