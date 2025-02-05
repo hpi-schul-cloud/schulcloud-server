@@ -6,7 +6,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { FilesModule } from '@modules/files';
 import { ManagementModule } from '@modules/management/management.module';
 import { serverConfig } from '@modules/server';
-import { Module } from '@nestjs/common'; // TODO: Import Reihenfolge sieht falsch aus ...IDM prüfen.
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { ConsoleModule } from 'nestjs-console';
@@ -17,11 +17,11 @@ import mikroOrmCliConfig from './mikro-orm-cli.config';
 		ManagementModule,
 		ConsoleModule,
 		ConsoleWriterModule,
-		FilesModule, // TODO: Warum brauchen wir das hier?
+		FilesModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []), // TODO: Was macht das KeycloakModule hier?
 		MikroOrmModule.forRoot(mikroOrmCliConfig),
-		SyncModule, // TODO: Warum brauchen wir das hier?
+		SyncModule,
 	],
 	providers: [],
 })
