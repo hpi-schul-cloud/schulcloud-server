@@ -16,6 +16,7 @@ import {
 	StatusModel,
 	UserDeletedEvent,
 } from '@modules/deletion';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
@@ -45,6 +46,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
+		private readonly fileStorageClientService: FilesStorageClientAdapterService,
 		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(UserService.name);
@@ -250,11 +252,13 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			return result;
 		}
 
-		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
-
-		const calendarEventsDeleted = await this.removeCalendarEvents(userId);
-
-		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
+		const [registrationPinDeleted, calendarEventsDeleted, numberOfDeletedUsers, fileStorageCreatorDeleted] =
+			await Promise.all([
+				this.removeUserRegistrationPin(userId),
+				this.removeCalendarEvents(userId),
+				this.userRepo.deleteUser(userId),
+				this.removeCreatorFromFileRecords(userId),
+			]);
 
 		if (numberOfDeletedUsers === 0) {
 			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
@@ -263,7 +267,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const result = DomainDeletionReportBuilder.build(
 			DomainName.USER,
 			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-			[registrationPinDeleted, calendarEventsDeleted]
+			[registrationPinDeleted, calendarEventsDeleted, fileStorageCreatorDeleted]
 		);
 
 		this.logger.info(
@@ -276,6 +280,17 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 				numberOfDeletedUsers
 			)
 		);
+
+		return result;
+	}
+
+	private async removeCreatorFromFileRecords(userId: EntityId): Promise<DomainDeletionReport> {
+		const response = await this.fileStorageClientService.removeCreatorIdFromFileRecords(userId);
+		const fileRecordIds = response.map((file) => file.id);
+
+		const result = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, fileRecordIds.length, fileRecordIds),
+		]);
 
 		return result;
 	}
