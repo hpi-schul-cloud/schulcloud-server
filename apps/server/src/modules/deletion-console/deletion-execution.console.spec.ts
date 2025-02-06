@@ -1,6 +1,5 @@
 import { DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
@@ -19,7 +18,6 @@ describe(DeletionExecutionConsole.name, () => {
 			imports: [
 				DeletionConsoleModule,
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
-				RabbitMQWrapperTestModule,
 			],
 		}).compile();
 

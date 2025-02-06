@@ -1,6 +1,5 @@
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { ConsoleWriterModule } from '@infra/console';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { AccountModule } from '@modules/account';
 import { UserModule } from '@modules/user';
@@ -34,7 +33,6 @@ import { BatchDeletionUc, DeletionExecutionUc } from './uc';
 			entities: ENTITIES,
 			// debug: true, // use it for locally debugging of queries
 		}),
-		RabbitMQWrapperModule,
 		AccountModule,
 		HttpModule,
 	],
