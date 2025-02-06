@@ -9,10 +9,13 @@ export class MediaSourceOauthConfig {
 
 	public method: MediaSourceAuthMethod;
 
+	public baseUrl: string;
+
 	constructor(props: MediaSourceOauthConfig) {
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;
 		this.authEndpoint = props.authEndpoint;
 		this.method = props.method;
+		this.baseUrl = props.baseUrl;
 	}
 }

@@ -8,6 +8,7 @@ export class MediaSourceConfigMapper {
 			clientSecret: config.clientSecret,
 			authEndpoint: config.authEndpoint,
 			method: config.method,
+			baseUrl: config.baseUrl,
 		});
 
 		return configEmbeddable;
@@ -30,6 +31,7 @@ export class MediaSourceConfigMapper {
 			clientSecret: embeddable.clientSecret,
 			method: embeddable.method,
 			authEndpoint: embeddable.authEndpoint,
+			baseUrl: embeddable.baseUrl,
 		});
 
 		return config;

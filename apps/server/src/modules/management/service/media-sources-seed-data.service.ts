@@ -57,6 +57,7 @@ export class MediaSourcesSeedDataService {
 						clientSecret: encryptedBiloClientSecret,
 						authEndpoint: 'https://login.test.sso.bildungslogin.de/realms/BiLo-Broker/protocol/openid-connect/token',
 						method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
+						baseUrl: 'https://www.bildungslogin-test.de/api/external/univention/media',
 					},
 				})
 			);

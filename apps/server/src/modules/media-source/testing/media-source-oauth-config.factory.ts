@@ -8,8 +8,9 @@ export const mediaSourceOauthConfigFactory = BaseFactory.define<MediaSourceOauth
 		const config: MediaSourceOauthConfig = {
 			clientId: `media-source-client-id-${sequence}`,
 			clientSecret: `media-source-client-secret-${sequence}`,
-			authEndpoint: `media-source-auth-endpoint-${sequence}`,
+			authEndpoint: `https://oauth-token-url.com/test-${sequence}`,
 			method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
+			baseUrl: `https://oauth-base-url.com/test-${sequence}`,
 		};
 
 		return config;
