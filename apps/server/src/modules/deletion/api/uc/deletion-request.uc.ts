@@ -9,7 +9,7 @@ import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionBatchService, DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
@@ -22,7 +22,6 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	constructor(
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService,
-		private readonly deletionBatchService: DeletionBatchService,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM,
