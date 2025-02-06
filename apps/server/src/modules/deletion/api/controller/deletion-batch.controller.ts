@@ -53,4 +53,13 @@ export class DeletionBatchController {
 
 		return response;
 	}
+
+	@Post(':batchId/execute')
+	@HttpCode(202)
+	@ApiOperation({
+		summary: '"Queueing" a deletion request for specific batch',
+	})
+	public async createDeletionRequestsForBatch(@Param('batchId') batchId: string): Promise<void> {
+		await this.deletionBatchUc.createDeletionRequestForBatch(batchId);
+	}
 }
