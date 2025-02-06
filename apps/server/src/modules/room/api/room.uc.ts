@@ -178,7 +178,12 @@ export class RoomUc {
 
 	public async removeMembersFromRoom(currentUserId: EntityId, roomId: EntityId, userIds: EntityId[]): Promise<void> {
 		this.checkFeatureEnabled();
-		await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_REMOVE]);
+		const doesCurrentUserWantToLeave = userIds.length === 1 && userIds.includes(currentUserId);
+		if (doesCurrentUserWantToLeave) {
+			await this.checkRoomAuthorization(currentUserId, roomId, Action.read, [Permission.ROOM_LEAVE]);
+		} else {
+			await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_REMOVE]);
+		}
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
 
