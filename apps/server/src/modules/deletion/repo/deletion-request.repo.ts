@@ -131,8 +131,41 @@ export class DeletionRequestRepo {
 	async findByIds(ids: EntityId[]): Promise<(DeletionRequest | null)[]> {
 		const entities = await this.em.find(DeletionRequestEntity, { id: { $in: ids } });
 
-		const entityMap = new Map(entities.map(entity => [entity.id, DeletionRequestMapper.mapToDO(entity)]));
+		const entityMap = new Map(entities.map((entity) => [entity.id, DeletionRequestMapper.mapToDO(entity)]));
 
-		return ids.map(id => entityMap.get(id) || null);
+		return ids.map((id) => entityMap.get(id) || null);
+	}
+
+	async findFailedByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndFailed(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
+	async findPendingByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndPending(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
+	async findSuccessfulByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndSuccess(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
 	}
 }

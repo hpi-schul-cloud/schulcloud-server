@@ -1,5 +1,5 @@
 import { XApiKeyAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { IFindOptions } from '@shared/domain/interface';
 import { DeletionBatchSummary } from '../../domain/service';
@@ -9,6 +9,7 @@ import { CreateDeletionBatchBodyParams } from './dto';
 import { DeletionBatchPaginationParams } from './dto/request/deletion-batch-pagination.params';
 import { DeletionBatchItemResponse } from './dto/response/deletion-batch-item.response';
 import { DeletionBatchListResponse } from './dto/response/deletion-batch-list.response';
+import { DeletionBatchDetailsResponse } from './dto/response/deletion-batch-details.response';
 
 @ApiTags('DeletionBatch')
 @XApiKeyAuthentication()
@@ -25,6 +26,19 @@ export class DeletionBatchController {
 		const summaries = await this.deletionBatchUc.getDeletionBatchSummaries(findOptions);
 
 		const response = DeletionBatchMapper.mapToDeletionBatchListResponse(summaries, pagination);
+
+		return response;
+	}
+
+	@Get(':batchId')
+	@ApiOperation({
+		summary: 'Retrieving details of performed or planned deletion batch',
+	})
+	@HttpCode(200)
+	public async getBatchDetails(@Param('batchId') batchId: string): Promise<DeletionBatchDetailsResponse> {
+		const details = await this.deletionBatchUc.getDeletionBatchDetails(batchId);
+
+		const response = DeletionBatchMapper.mapToDeletionBatchDetailsResponse(details);
 
 		return response;
 	}

@@ -3,15 +3,23 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DeletionBatchSummaryRepo, UsersByRole } from '../../repo';
+import { DeletionBatchSummaryRepo, DeletionRequestRepo, UsersByRole } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
-import { DeletionBatch } from '../do';
+import { DeletionBatch, DeletionRequest } from '../do';
 import { DomainName } from '../types';
 
 export type CreateDeletionBatchParams = {
 	name: string;
 	targetRefDomain: DomainName;
 	targetRefIds: EntityId[];
+};
+
+export type DeletionBatchDetails = {
+	id: EntityId;
+	status: string;
+	pendingDeletions: EntityId[];
+	failedDeletions: EntityId[];
+	successfulDeletions: EntityId[];
 };
 
 export type DeletionBatchSummary = {
@@ -28,7 +36,8 @@ export type DeletionBatchSummary = {
 export class DeletionBatchService {
 	constructor(
 		private readonly deletionBatchRepo: DeletionBatchRepo,
-		private readonly deletionBatchSummaryRepo: DeletionBatchSummaryRepo
+		private readonly deletionBatchSummaryRepo: DeletionBatchSummaryRepo,
+		private readonly deletionRequestRepo: DeletionRequestRepo
 	) {}
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
@@ -44,6 +53,47 @@ export class DeletionBatchService {
 		await this.deletionBatchRepo.save(newBatch);
 
 		const summary = await this.buildSummary(newBatch);
+
+		return summary;
+	}
+
+	public async getDeletionBatchDetails(batchId: EntityId): Promise<DeletionBatchDetails> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		const failedDeletions: DeletionRequest[] = await this.deletionRequestRepo.findFailedByTargetRefId(
+			deletionBatch.targetRefIds
+		);
+		const failedDeletionUserIds: EntityId[] = failedDeletions.map((deletionRequest) => deletionRequest.targetRefId);
+
+		const pendingDeletions: DeletionRequest[] = await this.deletionRequestRepo.findPendingByTargetRefId(
+			deletionBatch.targetRefIds
+		);
+		const pendingDeletionUserIds: EntityId[] = pendingDeletions.map((deletionRequest) => deletionRequest.targetRefId);
+
+		const successfulDeletions: DeletionRequest[] = await this.deletionRequestRepo.findSuccessfulByTargetRefId(
+			deletionBatch.targetRefIds
+		);
+		const successfulDeletionUserIds: EntityId[] = successfulDeletions.map(
+			(deletionRequest) => deletionRequest.targetRefId
+		);
+
+		const determineStatusForBatch = () => {
+			if (pendingDeletions.length > 0) {
+				return 'pending';
+			}
+			if (failedDeletions.length > 0) {
+				return 'failed';
+			}
+			return 'successful';
+		};
+
+		const summary: DeletionBatchDetails = {
+			id: deletionBatch.id,
+			status: determineStatusForBatch(),
+			pendingDeletions: pendingDeletionUserIds,
+			failedDeletions: failedDeletionUserIds,
+			successfulDeletions: successfulDeletionUserIds,
+		};
 
 		return summary;
 	}
