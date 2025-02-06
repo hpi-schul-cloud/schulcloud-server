@@ -1,6 +1,6 @@
-import { BiloLinkResponse } from '@modules/media-source/domain/response/bilo-link.response';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { BiloLinkResponse } from './bilo-link.response';
 
 export class BiloMediaQueryResponse {
 	@IsString()

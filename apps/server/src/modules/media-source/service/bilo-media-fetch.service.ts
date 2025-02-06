@@ -9,7 +9,9 @@ import {
 } from '@modules/oauth-adapter';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { MediaSource, BiloMediaQueryBodyParams, BiloMediaQueryResponse } from '../domain';
+import { MediaSource } from '../domain';
+import { BiloMediaQueryBodyParams } from '../domain/request';
+import { BiloMediaQueryResponse } from '../domain/response';
 import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceOauthConfigNotFoundLoggableException } from '../loggable';
 

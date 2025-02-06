@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { BiloMediaQueryResponse } from '../domain';
+import { BiloMediaQueryResponse } from '../domain/response';
 
 export const biloMediaQueryResponseFactory = Factory.define<BiloMediaQueryResponse>(({ sequence }) => {
 	const request: BiloMediaQueryResponse = {
