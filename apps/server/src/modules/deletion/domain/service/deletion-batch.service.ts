@@ -7,6 +7,7 @@ import { DeletionBatchSummaryRepo, DeletionRequestRepo, UsersByRole } from '../.
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { DomainName } from '../types';
+import { DeletionRequestService } from './deletion-request.service';
 
 export type CreateDeletionBatchParams = {
 	name: string;
@@ -37,7 +38,8 @@ export class DeletionBatchService {
 	constructor(
 		private readonly deletionBatchRepo: DeletionBatchRepo,
 		private readonly deletionBatchSummaryRepo: DeletionBatchSummaryRepo,
-		private readonly deletionRequestRepo: DeletionRequestRepo
+		private readonly deletionRequestRepo: DeletionRequestRepo,
+		private readonly deletionRequestService: DeletionRequestService
 	) {}
 
 	public async createDeletionBatch(
@@ -111,6 +113,17 @@ export class DeletionBatchService {
 		return page;
 	}
 
+	public async requestDeletionForBatch(batch: DeletionBatch): Promise<DeletionBatchSummary> {
+		for (const targetRefId of batch.targetRefIds) {
+			const deleteNow = new Date(Date.now());
+			await this.deletionRequestService.createDeletionRequest(targetRefId, DomainName.USER, deleteNow);
+		}
+
+		const summary = await this.buildSummary(batch, undefined, 'deletion requested');
+
+		return summary;
+	}
+
 	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
 	public async getUsersByRoles(userIds: EntityId[]): Promise<UsersByRole[]> {
 		const usersByRole = await this.deletionBatchSummaryRepo.countUsersByRole(userIds);
@@ -118,11 +131,15 @@ export class DeletionBatchService {
 		return usersByRole;
 	}
 
-	private async buildSummary(batch: DeletionBatch, invalidUsers?: EntityId[]): Promise<DeletionBatchSummary> {
+	private async buildSummary(
+		batch: DeletionBatch,
+		invalidUsers?: EntityId[],
+		newStatus?: string
+	): Promise<DeletionBatchSummary> {
 		const summary = {
 			id: batch.id,
 			name: batch.name,
-			status: 'created', // TODO implement status
+			status: newStatus ?? 'created', // TODO implement status
 			usersByRole: await this.getUsersByRoles(batch.targetRefIds),
 			invalidUsers,
 			createdAt: batch.createdAt,

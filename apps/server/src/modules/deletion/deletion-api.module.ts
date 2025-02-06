@@ -14,6 +14,7 @@ import { DeletionRequestController } from './api/controller/deletion-request.con
 import { DeletionRequestUc } from './api/uc';
 import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
 import { DeletionBatchController } from './api/controller/deletion-batch.controller';
+import { UserModule } from '@modules/user';
 
 // The most of this imports should not be part of the api module.
 @Module({
@@ -28,6 +29,7 @@ import { DeletionBatchController } from './api/controller/deletion-batch.control
 		PseudonymModule,
 		FilesModule,
 		RocketChatUserModule,
+		UserModule,
 	],
 	controllers: [DeletionRequestController, DeletionExecutionController, DeletionBatchController],
 	providers: [DeletionRequestUc, DeletionBatchUc],

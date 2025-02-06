@@ -6,18 +6,15 @@ import {
 	DeletionBatchDetails,
 	DeletionBatchService,
 	DeletionBatchSummary,
-	DeletionRequestService,
 } from '../../domain/service';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { DeletionBatchRepo } from '@modules/deletion/repo';
-import { DomainName } from '@modules/deletion/domain/types';
 
 @Injectable()
 export class DeletionBatchUc {
 	constructor(
 		private readonly deletionBatchService: DeletionBatchService,
-		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionBatchRepo: DeletionBatchRepo,
 		private readonly userRepo: UserRepo
 	) {}
@@ -43,12 +40,11 @@ export class DeletionBatchUc {
 		return deletionBatches;
 	}
 
-	public async createDeletionRequestForBatch(batchId: EntityId): Promise<void> {
+	public async createDeletionRequestForBatch(batchId: EntityId): Promise<DeletionBatchSummary> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
-		for (const targetRefId of deletionBatch.targetRefIds) {
-			const deleteNow = new Date(Date.now());
-			await this.deletionRequestService.createDeletionRequest(targetRefId, DomainName.USER, deleteNow);
-		}
+		const requestedDeletionBatch = await this.deletionBatchService.requestDeletionForBatch(deletionBatch);
+
+		return requestedDeletionBatch;
 	}
 
 	private async validateAndFilterUserIds(

@@ -59,7 +59,11 @@ export class DeletionBatchController {
 	@ApiOperation({
 		summary: '"Queueing" a deletion request for specific batch',
 	})
-	public async createDeletionRequestsForBatch(@Param('batchId') batchId: string): Promise<void> {
-		await this.deletionBatchUc.createDeletionRequestForBatch(batchId);
+	public async createDeletionRequestsForBatch(@Param('batchId') batchId: string): Promise<DeletionBatchItemResponse> {
+		const summary = await this.deletionBatchUc.createDeletionRequestForBatch(batchId);
+
+		const response = DeletionBatchMapper.mapToDeletionBatchItemResponse(summary);
+
+		return response;
 	}
 }
