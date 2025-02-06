@@ -66,7 +66,7 @@ export const LessonContentResponseComponentEnum = {
     Etherpad: 'Etherpad',
     GeoGebra: 'geoGebra',
     Internal: 'internal',
-    Resources: 'resources',
+    Lernstore: 'lernstore',
     Text: 'text',
     NeXboard: 'neXboard'
 } as const;

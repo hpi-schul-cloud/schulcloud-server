@@ -105,7 +105,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentInternalPropsDto(lessonContentResponse.content as ComponentInternalPropsImpl),
 				});
-			case LessonContentResponseComponentEnum.Resources:
+			case LessonContentResponseComponentEnum.Lernstore:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
