@@ -7,6 +7,8 @@ export interface MediaSchoolLicenseRepo {
 	deleteAllByMediaSource(mediaSourceId: EntityId): Promise<number>;
 
 	findMediaSchoolLicensesBySchoolId(schoolId: string): Promise<MediaSchoolLicense[]>;
+
+	deleteAllBySchoolAndMediaSource(schoolId: EntityId, mediaSourceId: EntityId): Promise<number>;
 }
 
 export const MEDIA_SCHOOL_LICENSE_REPO = 'MEDIA_SCHOOL_LICENSE_REPO';

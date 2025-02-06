@@ -29,6 +29,8 @@ spec:
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
+          os:
+            name: linux
           containers:
           - name: vidis-sync-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}

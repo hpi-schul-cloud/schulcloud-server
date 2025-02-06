@@ -1,15 +1,14 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { EntityId } from '@shared/domain/types';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
 	ComponentLernstoreProperties,
-	ComponentNexboardProperties,
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
+import { EntityId } from '@shared/domain/types';
 
 // eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
@@ -25,20 +24,6 @@ class ComponentEtherpadPropsImpl implements ComponentEtherpadProperties {
 	title!: string;
 
 	@ApiProperty({ nullable: false, description: 'url of a Etherpad component' })
-	url!: string;
-}
-
-class ComponentNexboardPropsImpl implements ComponentNexboardProperties {
-	@ApiProperty({ nullable: false, description: 'board of a Nexboard component' })
-	board!: string;
-
-	@ApiProperty({ nullable: false, description: 'description of a Nexboard component' })
-	description!: string;
-
-	@ApiProperty({ nullable: false, description: 'title of a Nexboard component' })
-	title!: string;
-
-	@ApiProperty({ nullable: false, description: 'url of a Nexboard component' })
 	url!: string;
 }
 
@@ -67,8 +52,7 @@ class ComponentLernstorePropsImpl implements ComponentLernstoreProperties {
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
 	ComponentInternalPropsImpl,
-	ComponentLernstorePropsImpl,
-	ComponentNexboardPropsImpl
+	ComponentLernstorePropsImpl
 )
 export class LessonContentResponse {
 	constructor(lessonContent: ComponentProperties) {
@@ -88,7 +72,6 @@ export class LessonContentResponse {
 			{ $ref: getSchemaPath(ComponentGeogebraPropsImpl) },
 			{ $ref: getSchemaPath(ComponentInternalPropsImpl) },
 			{ $ref: getSchemaPath(ComponentLernstorePropsImpl) },
-			{ $ref: getSchemaPath(ComponentNexboardPropsImpl) },
 		],
 	})
 	content?:
@@ -96,8 +79,7 @@ export class LessonContentResponse {
 		| ComponentEtherpadPropsImpl
 		| ComponentGeogebraPropsImpl
 		| ComponentInternalPropsImpl
-		| ComponentLernstorePropsImpl
-		| ComponentNexboardPropsImpl;
+		| ComponentLernstorePropsImpl;
 
 	@ApiProperty({
 		description: 'The id of the Material entity',
