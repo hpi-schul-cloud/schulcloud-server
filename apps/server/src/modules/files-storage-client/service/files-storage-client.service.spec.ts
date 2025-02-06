@@ -1,9 +1,19 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import {
+	DataDeletedEvent,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LegacyLogger } from '@core/logger';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -16,9 +26,12 @@ describe('FilesStorageClientAdapterService', () => {
 	let module: TestingModule;
 	let service: FilesStorageClientAdapterService;
 	let client: DeepMocked<FilesStorageProducer>;
+	let eventBus: DeepMocked<EventBus>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		const orm = await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageClientAdapterService,
@@ -30,11 +43,23 @@ describe('FilesStorageClientAdapterService', () => {
 					provide: FilesStorageProducer,
 					useValue: createMock<FilesStorageProducer>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
+				{
+					provide: MikroORM,
+					useValue: orm,
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageClientAdapterService);
 		client = module.get(FilesStorageProducer);
+		eventBus = module.get(EventBus);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterAll(async () => {
@@ -212,7 +237,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call client.removeCreatorIdFromFileRecords', async () => {
 				const { creatorId } = setup();
 
-				await service.removeCreatorIdFromFileRecords(creatorId);
+				await service.deleteUserData(creatorId);
 
 				expect(client.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(creatorId);
 			});
@@ -230,7 +255,64 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { creatorId } = setup();
 
-				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrowError();
+				await expect(service.deleteUserData(creatorId)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
+		});
+
+		describe('when an error occurred', () => {
+			it('should log this error', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+				eventBus.publish.mockRejectedValueOnce(new Error());
+
+				await service.handle({ deletionRequestId, targetRefId });
+
+				expect(logger.error).toHaveBeenCalled();
 			});
 		});
 	});
