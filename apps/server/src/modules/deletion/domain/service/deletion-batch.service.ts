@@ -16,7 +16,6 @@ export type CreateDeletionBatchParams = {
 
 export type DeletionBatchDetails = {
 	id: EntityId;
-	status: string;
 	pendingDeletions: EntityId[];
 	failedDeletions: EntityId[];
 	successfulDeletions: EntityId[];
@@ -27,6 +26,7 @@ export type DeletionBatchSummary = {
 	name: string;
 	status: string;
 	usersByRole: UsersByRole[];
+	invalidUsers?: EntityId[];
 	createdAt: Date;
 	updatedAt: Date;
 };
@@ -40,19 +40,23 @@ export class DeletionBatchService {
 		private readonly deletionRequestRepo: DeletionRequestRepo
 	) {}
 
-	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
+	public async createDeletionBatch(
+		params: CreateDeletionBatchParams,
+		validUserIds: EntityId[],
+		invalidUserIds: EntityId[] | undefined
+	): Promise<DeletionBatchSummary> {
 		const newBatch = new DeletionBatch({
 			id: new ObjectId().toHexString(),
 			name: params.name,
 			targetRefDomain: params.targetRefDomain,
-			targetRefIds: params.targetRefIds,
+			targetRefIds: validUserIds,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 
 		await this.deletionBatchRepo.save(newBatch);
 
-		const summary = await this.buildSummary(newBatch);
+		const summary = await this.buildSummary(newBatch, invalidUserIds);
 
 		return summary;
 	}
@@ -77,19 +81,8 @@ export class DeletionBatchService {
 			(deletionRequest) => deletionRequest.targetRefId
 		);
 
-		const determineStatusForBatch = () => {
-			if (pendingDeletions.length > 0) {
-				return 'pending';
-			}
-			if (failedDeletions.length > 0) {
-				return 'failed';
-			}
-			return 'successful';
-		};
-
 		const summary: DeletionBatchDetails = {
 			id: deletionBatch.id,
-			status: determineStatusForBatch(),
 			pendingDeletions: pendingDeletionUserIds,
 			failedDeletions: failedDeletionUserIds,
 			successfulDeletions: successfulDeletionUserIds,
@@ -125,12 +118,13 @@ export class DeletionBatchService {
 		return usersByRole;
 	}
 
-	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {
+	private async buildSummary(batch: DeletionBatch, invalidUsers?: EntityId[]): Promise<DeletionBatchSummary> {
 		const summary = {
 			id: batch.id,
 			name: batch.name,
 			status: 'created', // TODO implement status
 			usersByRole: await this.getUsersByRoles(batch.targetRefIds),
+			invalidUsers,
 			createdAt: batch.createdAt,
 			updatedAt: batch.updatedAt,
 		};

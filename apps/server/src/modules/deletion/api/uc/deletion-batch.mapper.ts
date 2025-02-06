@@ -15,6 +15,7 @@ export class DeletionBatchMapper {
 			usersByRole: summary.usersByRole.map(
 				(u) => new UsersByRoleResponse({ roleName: u.roleName, userCount: u.userCount })
 			),
+			invalidUsers: summary.invalidUsers,
 			createdAt: summary.createdAt,
 			updatedAt: summary.updatedAt,
 		});
@@ -37,7 +38,6 @@ export class DeletionBatchMapper {
 	public static mapToDeletionBatchDetailsResponse(details: DeletionBatchDetails): DeletionBatchDetailsResponse {
 		const response = new DeletionBatchDetailsResponse({
 			id: details.id,
-			status: details.status,
 			pendingDeletions: details.pendingDeletions,
 			failedDeletions: details.failedDeletions,
 			successfulDeletions: details.successfulDeletions,

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { UsersByRoleResponse } from './users-by-role.response';
 
 export class DeletionBatchItemResponse {
@@ -14,6 +14,9 @@ export class DeletionBatchItemResponse {
 	@ApiProperty({ type: [UsersByRoleResponse] })
 	usersByRole: UsersByRoleResponse[];
 
+	@ApiPropertyOptional()
+	invalidUsers?: string[];
+
 	@ApiProperty({ type: Date })
 	createdAt: Date;
 
@@ -25,6 +28,7 @@ export class DeletionBatchItemResponse {
 		this.status = item.status;
 		this.name = item.name;
 		this.usersByRole = item.usersByRole;
+		this.invalidUsers = item.invalidUsers;
 		this.createdAt = item.createdAt;
 		this.updatedAt = item.updatedAt;
 	}
