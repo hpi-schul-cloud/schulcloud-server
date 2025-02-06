@@ -187,7 +187,7 @@ describe('LessonDtoMapper', () => {
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['resources']),
+					component: faker.helpers.arrayElement(['lernstore']),
 					hidden: faker.datatype.boolean(),
 				};
 
