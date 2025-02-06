@@ -53,6 +53,10 @@ spec:
       - name: schulconnex-license-provisioning
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4452
+          name: http-health
+          protocol: TCP
         envFrom:
         - configMapRef:
             name: schulconnex-license-provisioning-configmap
