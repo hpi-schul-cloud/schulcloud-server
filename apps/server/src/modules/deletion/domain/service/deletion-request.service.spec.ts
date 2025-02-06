@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { setupEntities } from '@testing/setup-entities';
@@ -13,6 +13,7 @@ describe(DeletionRequestService.name, () => {
 	let module: TestingModule;
 	let service: DeletionRequestService;
 	let deletionRequestRepo: DeepMocked<DeletionRequestRepo>;
+	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,8 +29,11 @@ describe(DeletionRequestService.name, () => {
 
 		service = module.get(DeletionRequestService);
 		deletionRequestRepo = module.get(DeletionRequestRepo);
+		configService = module.get(ConfigService);
 
 		await setupEntities();
+
+		jest.useFakeTimers().setSystemTime(new Date());
 	});
 
 	beforeEach(() => {
@@ -51,20 +55,23 @@ describe(DeletionRequestService.name, () => {
 			const setup = () => {
 				const targetRefId = '653e4833cc39e5907a1e18d2';
 				const targetRefDomain = DomainName.USER;
+				const deleteAfter = new Date();
+				const minutes = 60;
+				deleteAfter.setMinutes(deleteAfter.getMinutes() + minutes);
 
-				return { targetRefId, targetRefDomain };
+				return { targetRefId, targetRefDomain, deleteAfter };
 			};
 
 			it('should call deletionRequestRepo.create', async () => {
-				const { targetRefId, targetRefDomain } = setup();
+				const { targetRefId, targetRefDomain, deleteAfter } = setup();
 
-				await service.createDeletionRequest(targetRefId, targetRefDomain);
+				await service.createDeletionRequest(targetRefId, targetRefDomain, deleteAfter);
 
 				expect(deletionRequestRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
 						id: expect.any(String),
 						targetRefDomain,
-						deleteAfter: expect.any(Date),
+						deleteAfter,
 						targetRefId,
 						status: StatusModel.REGISTERED,
 					})
@@ -105,30 +112,38 @@ describe(DeletionRequestService.name, () => {
 	describe('findAllItemsToExecute', () => {
 		describe('when finding all deletionRequests for execution', () => {
 			const setup = () => {
+				const limit = 100;
+
 				const dateInPast = new Date();
-				const threshold = 1000;
-				const limit = undefined;
 				dateInPast.setDate(dateInPast.getDate() - 1);
+
+				const thresholdOlderMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 100;
+				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') ?? 1000;
+
+				const olderThan = new Date(Date.now() - thresholdOlderMs);
+				const newerThan = new Date(Date.now() - thresholdNewerMs);
+
 				const deletionRequest1 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 				const deletionRequest2 = deletionRequestFactory.build({ deleteAfter: dateInPast });
 
-				deletionRequestRepo.findAllItemsToExecution.mockResolvedValue([deletionRequest1, deletionRequest2]);
+				deletionRequestRepo.findAllItems.mockResolvedValue([deletionRequest1, deletionRequest2]);
 
 				const deletionRequests = [deletionRequest1, deletionRequest2];
-				return { deletionRequests, limit, threshold };
+
+				return { deletionRequests, limit, olderThan, newerThan };
 			};
 
-			it('should call deletionRequestRepo.findAllItemsByDeletionDate with required parameter', async () => {
-				const { limit, threshold } = setup();
+			it('should call deletionRequestRepo.findAllItemsToExecution with required parameter', async () => {
+				const { limit } = setup();
 
-				await service.findAllItemsToExecute();
+				await service.findAllItemsToExecute(limit);
 
-				expect(deletionRequestRepo.findAllItemsToExecution).toBeCalledWith(threshold, limit);
+				expect(deletionRequestRepo.findAllItems).toBeCalledWith(limit);
 			});
 
 			it('should return array of two deletionRequests to execute', async () => {
-				const { deletionRequests } = setup();
-				const result = await service.findAllItemsToExecute();
+				const { deletionRequests, limit } = setup();
+				const result = await service.findAllItemsToExecute(limit);
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(deletionRequests);
@@ -136,33 +151,36 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
-	describe('countPendingDeletionRequests', () => {
-		describe('when counting all deletionRequests with status pending', () => {
+	describe('findInProgressCount', () => {
+		describe('when finding in progress deletionRequests', () => {
 			const setup = () => {
-				const deletionRequestWithStatusPending = deletionRequestFactory.buildListWithId(5, {
-					status: StatusModel.PENDING,
-				});
+				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 1000;
+				const newerThan = new Date(Date.now() - thresholdNewerMs);
 
-				deletionRequestRepo.countPendingDeletionRequests.mockResolvedValue(deletionRequestWithStatusPending.length);
+				const count = 2;
 
-				const numberDeletionRequestsWithStatusPending = deletionRequestWithStatusPending.length;
-				return { numberDeletionRequestsWithStatusPending };
+				deletionRequestRepo.findInProgressCount.mockResolvedValue(count);
+
+				return { count, newerThan };
 			};
 
-			it('should call deletionRequestRepo.countPendingDeletionRequests', async () => {
-				await service.countPendingDeletionRequests();
+			it('should call deletionRequestRepo.findInProgressCount', async () => {
+				const { newerThan } = setup();
 
-				expect(deletionRequestRepo.countPendingDeletionRequests).toBeCalled();
+				await service.findInProgressCount();
+
+				expect(deletionRequestRepo.findInProgressCount).toBeCalledWith(newerThan);
 			});
 
-			it('should return number of deletionRequests with status pending', async () => {
-				const { numberDeletionRequestsWithStatusPending } = setup();
-				const result = await service.countPendingDeletionRequests();
+			it('should return count of in progress deletionRequests', async () => {
+				const { count } = setup();
+				const result = await service.findInProgressCount();
 
-				expect(result).toEqual(numberDeletionRequestsWithStatusPending);
+				expect(result).toEqual(count);
 			});
 		});
 	});
+
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = () => {

@@ -2,20 +2,17 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
-
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../errors');
-
 const { hasPermission } = require('../../hooks');
-
 const Syncer = require('./strategies/Syncer');
 const syncers = require('./strategies');
 const getSyncLogger = require('./logger');
 const { consumer } = require('./strategies/LDAPSyncerConsumer');
 const UserAccountService = require('./services/UserAccountService');
 
-module.exports = function setup() {
-	const app = this;
+module.exports = function setup(app) {
+	app.set('syncersStrategies', syncers);
 
 	class SyncService {
 		find(params) {
@@ -33,7 +30,9 @@ module.exports = function setup() {
 			const { target } = params.query;
 			const logger = getSyncLogger(params.logStream);
 			const instances = [];
-			syncers.forEach((StrategySyncer) => {
+			const stategies = app.get('syncersStrategies');
+
+			stategies.forEach((StrategySyncer) => {
 				if (StrategySyncer.respondsTo(target)) {
 					const args = StrategySyncer.params(params, data);
 					if (args) {
@@ -43,6 +42,7 @@ module.exports = function setup() {
 					}
 				}
 			});
+
 			if (instances.length === 0) {
 				throw new Error(`No syncer responds to target "${target}"`);
 			} else {

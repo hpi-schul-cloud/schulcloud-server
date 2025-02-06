@@ -26,7 +26,6 @@ export enum ComponentType {
 	INTERNAL = 'internal',
 	LERNSTORE = 'lernstore',
 	TEXT = 'text',
-	NEXBOARD = 'neXboard',
 }
 
 export interface ComponentTextProperties {
@@ -47,13 +46,6 @@ export interface ComponentEtherpadProperties {
 	url: string;
 }
 
-export interface ComponentNexboardProperties {
-	board: string;
-	description: string;
-	title: string;
-	url: string;
-}
-
 export interface ComponentInternalProperties {
 	url: string;
 }
@@ -69,7 +61,6 @@ export type ComponentProperties = {
 	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: ComponentInternalProperties }
 	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
-	| { component: ComponentType.NEXBOARD; content: ComponentNexboardProperties }
 );
 
 export interface LessonParent {

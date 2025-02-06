@@ -16,10 +16,14 @@ const { AuthorizationModule } = require('../../dist/apps/server/modules/authoriz
 const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
 const { createConfigModuleOptions } = require('../../dist/apps/server/shared/common/config-module-options');
 const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
+const { RosterModule } = require('../../dist/apps/server/modules/roster/roster.module');
+const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
+const { RabbitMQWrapperTestModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
 		imports: [
+			RabbitMQWrapperTestModule,
 			MikroOrmModule.forRoot({
 				type: 'mongo',
 				clientUrl: DB_URL,
@@ -34,6 +38,7 @@ const setupNestServices = async (app) => {
 			TeamsApiModule,
 			AuthorizationModule,
 			AuthorizationRulesModule,
+			RosterModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
@@ -42,11 +47,13 @@ const setupNestServices = async (app) => {
 	const accountService = nestApp.get(AccountService);
 	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
+	const feathersRosterService = nestApp.get(FeathersRosterService);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
+	app.services['nest-feathers-roster-service'] = feathersRosterService;
 	app.services['nest-orm'] = orm;
 
 	return { nestApp, orm, accountUc, accountService };

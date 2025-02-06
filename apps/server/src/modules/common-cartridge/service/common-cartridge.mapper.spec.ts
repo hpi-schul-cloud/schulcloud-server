@@ -258,7 +258,7 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result).toEqual({
 					identifier: `i${task.id}`,
 					title: task.name,
-					html: `<h1>${task.name}</h1><p>${task.description ?? ''}</p>`,
+					html: `<p>${task.description ?? ''}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 				});
@@ -273,7 +273,7 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result).toEqual({
 					identifier: `i${task.id}`,
 					title: task.name,
-					html: `<h1>${task.name}</h1><p>${task.description ?? ''}</p>`,
+					html: `<p>${task.description ?? ''}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.ASSIGNMENT,
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 				});
@@ -288,7 +288,7 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result).toEqual({
 					identifier: `i${task.id}`,
 					title: task.name,
-					html: `<h1>${task.name}</h1><p>${task.description ?? ''}</p>`,
+					html: `<p>${task.description ?? ''}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 				});

@@ -1,7 +1,7 @@
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { Entity, Property, Index } from '@mikro-orm/core';
+import { Entity, Property, Index, Unique } from '@mikro-orm/core';
 import { DomainOperationReport, DomainDeletionReport } from '../../domain/interface';
 import { DomainName } from '../../domain/types';
 
@@ -17,6 +17,7 @@ export interface DeletionLogEntityProps {
 }
 
 @Entity({ tableName: 'deletionlogs' })
+@Unique({ properties: ['domain', 'deletionRequestId'] }) // TODO check if this is correct, if we want to try to delete multiple times, it should not create a new log entry, but update it. Or first remove it
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()

@@ -40,7 +40,6 @@ const webuntis = require('./webuntis');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
-const nexboard = require('./nexboard');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
 const activation = require('./activation');
@@ -94,7 +93,6 @@ module.exports = function initializeServices() {
 	app.configure(datasources);
 	app.configure(edusharing);
 	app.configure(webuntis);
-	app.configure(nexboard);
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);
