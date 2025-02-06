@@ -1,4 +1,5 @@
 import { Scope } from '@shared/repo/scope';
+import { FilterQuery } from '@mikro-orm/core';
 import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 
@@ -9,22 +10,22 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byStatus(fifteenMinutesAgo: Date): this {
-		this.addQuery({
-			$or: [
-				{ status: StatusModel.FAILED },
-				{
-					$and: [{ status: [StatusModel.REGISTERED, StatusModel.PENDING] }, { updatedAt: { $lt: fifteenMinutesAgo } }],
-				},
-			],
-		});
+	byStatusAndDate(status: StatusModel[], olderThan?: Date, newerThan?: Date): this {
+		const query: FilterQuery<DeletionRequestEntity> = { status: { $in: status } };
 
-		return this;
-	}
+		const dateConditions: FilterQuery<DeletionRequestEntity>[] = [];
+		if (olderThan) {
+			dateConditions.push({ updatedAt: { $lt: olderThan } });
+		}
+		if (newerThan) {
+			dateConditions.push({ updatedAt: { $gte: newerThan } });
+		}
 
-	byStatusPending(): this {
-		this.addQuery({ status: [StatusModel.PENDING] });
+		if (dateConditions.length > 0) {
+			query.$and = dateConditions;
+		}
 
+		this.addQuery(query);
 		return this;
 	}
 }
