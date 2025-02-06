@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolService } from '@modules/tool';
+import { ExternalToolService } from '@modules/tool/external-tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaSourceSyncStrategy, MediaSource, MediaSourceSyncReport, BiloMediaQueryResponse } from '../../domain';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../domain/factory';
@@ -76,9 +76,11 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 				return;
 			}
 
+			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
+
 			await this.updateMediaMetadata(externalTool, targetMetadata);
 
-			if (this.isMetadataNeverSynced(externalTool)) {
+			if (isMetadataFirstSync) {
 				createSuccessReport.count += 1;
 			} else {
 				updateSuccessReport.count += 1;
@@ -86,6 +88,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		});
 
 		await Promise.all(syncPromises).catch(() => {
+			// FIXME
 			failureReport.count += 1;
 		});
 
@@ -99,23 +102,17 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		return report;
 	}
 
-	private isMetadataNeverSynced(externalTool: ExternalTool): boolean {
-		const isMetadataNeverSynced = externalTool.medium?.metadataModifiedAt;
-
-		return !!isMetadataNeverSynced;
-	}
-
 	private isMetadataInToolUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryResponse): boolean {
-		const isOutdated =
+		const isUpToDate =
 			externalTool.medium?.metadataModifiedAt &&
 			Math.trunc(externalTool.medium.metadataModifiedAt.getTime() / 1000) === metadata.modified;
 
-		return !!isOutdated;
+		return !!isUpToDate;
 	}
 
 	private async updateMediaMetadata(externalTool: ExternalTool, metadataItem: BiloMediaQueryResponse): Promise<void> {
 		externalTool.name = metadataItem.title;
-		externalTool.description = metadataItem.id;
+		externalTool.description = metadataItem.description;
 		externalTool.logoUrl = metadataItem.cover.href;
 		// TODO updating thumbnail requires jwt (not possible for now)
 		// externalTool.thumbnail = metadataItem.coverSmall.href;

@@ -7,7 +7,7 @@ import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { OauthAdapterService, OAuthTokenDto } from '../../oauth-adapter';
-import { BiloMediaQueryRequest, BiloMediaQueryResponse } from '../domain';
+import { BiloMediaQueryBodyParams, BiloMediaQueryResponse } from '../domain';
 import { BiloLinkResponse } from '../domain/response/bilo-link.response';
 import { mediaSourceFactory } from '../testing';
 import { BiloMediaFetchService } from './bilo-media-fetch.service';
@@ -133,7 +133,7 @@ describe('BiloMediaFetchService', () => {
 			await service.fetchMediaMetadata(mediumIds, mediaSource);
 			expect(httpService.post).toHaveBeenCalledWith(
 				new URL(`${mediaSource.sourceId}/query`).toString(),
-				expect.arrayContaining([expect.any(BiloMediaQueryRequest)]),
+				expect.arrayContaining([expect.any(BiloMediaQueryBodyParams)]),
 				expect.objectContaining({
 					headers: {
 						Authorization: `Bearer mockAccessToken`,

@@ -26,12 +26,14 @@ export class MediaSourceSyncReportFactory {
 
 		const totalCount: number = failedCount + successCount + undeliveredCount;
 
+		const filteredOperations = operations.filter((report: MediaSourceSyncOperationReport) => report.count > 0);
+
 		const report: MediaSourceSyncReport = {
 			totalCount,
 			successCount,
 			failedCount,
 			undeliveredCount,
-			operations,
+			operations: filteredOperations,
 		};
 
 		return report;

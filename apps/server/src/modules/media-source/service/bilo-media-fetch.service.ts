@@ -9,7 +9,7 @@ import {
 } from '@modules/oauth-adapter';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { MediaSource, BiloMediaQueryRequest, BiloMediaQueryResponse } from '../domain';
+import { MediaSource, BiloMediaQueryBodyParams, BiloMediaQueryResponse } from '../domain';
 import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceOauthConfigNotFoundLoggableException } from '../loggable';
 
@@ -24,7 +24,7 @@ export class BiloMediaFetchService {
 	public async fetchMediaMetadata(mediumIds: string[], mediaSource: MediaSource): Promise<BiloMediaQueryResponse[]> {
 		const url = new URL(`${mediaSource.sourceId}/query`);
 
-		const body: BiloMediaQueryRequest[] = mediumIds.map((id: string) => new BiloMediaQueryRequest({ id }));
+		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string) => new BiloMediaQueryBodyParams({ id }));
 
 		const token: OAuthTokenDto = await this.fetchAccessToken(mediaSource);
 

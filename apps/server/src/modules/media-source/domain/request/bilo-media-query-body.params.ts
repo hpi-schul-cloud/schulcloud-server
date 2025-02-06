@@ -1,10 +1,10 @@
 import { IsString } from 'class-validator';
 
-export class BiloMediaQueryRequest {
+export class BiloMediaQueryBodyParams {
 	@IsString()
 	public id!: string;
 
-	constructor(props: BiloMediaQueryRequest) {
+	constructor(props: BiloMediaQueryBodyParams) {
 		this.id = props.id;
 	}
 }
