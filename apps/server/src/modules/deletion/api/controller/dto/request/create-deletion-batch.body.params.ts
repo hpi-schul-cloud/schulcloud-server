@@ -12,7 +12,6 @@ import {
 	ValidateNested,
 } from 'class-validator';
 import { DomainName } from '../../../../domain/types';
-import { DeletionRequestBodyParams } from './deletion-request.body.params';
 
 export class CreateDeletionBatchBodyParams {
 	@ApiProperty({
@@ -42,15 +41,4 @@ export class CreateDeletionBatchBodyParams {
 	@IsNotEmpty()
 	@IsMongoId({ each: true })
 	targetRefIds: string[] = [];
-
-	@ApiProperty({
-		description: 'Array of deletion requests to process in batch',
-		required: true,
-		type: () => [DeletionRequestBodyParams],
-	})
-	@IsArray()
-	@IsNotEmpty()
-	@ValidateNested({ each: true })
-	@Type(() => DeletionRequestBodyParams)
-	deletionRequests: DeletionRequestBodyParams[] = [];
 }
