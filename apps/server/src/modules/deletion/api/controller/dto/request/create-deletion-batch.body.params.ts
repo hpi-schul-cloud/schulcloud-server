@@ -1,16 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
-import { Type } from 'class-transformer';
-import {
-	IsArray,
-	IsEnum,
-	IsMongoId,
-	IsNotEmpty,
-	IsString,
-	MaxLength,
-	MinLength,
-	ValidateNested,
-} from 'class-validator';
+import { IsArray, IsEnum, IsMongoId, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { DomainName } from '../../../../domain/types';
 
 export class CreateDeletionBatchBodyParams {
