@@ -53,8 +53,8 @@ export class CopyHelperService {
 		status.elements?.forEach((elementStatus: CopyStatus) => {
 			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
 		});
-		if (status.originalEntity && status.copyEntity) {
-			map.set(status.originalEntity.id, status.copyEntity);
+		if (status.original && status.copy) {
+			map.set(status.original.id, status.copy);
 		}
 		return map;
 	}

@@ -91,15 +91,15 @@ export class LessonCopyService {
 			title: lessonCopy.name,
 			type: CopyElementType.LESSON,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copyEntity: lessonCopy,
-			originalEntity: originalLesson,
+			copy: lessonCopy,
+			original: originalLesson,
 			elements,
 		};
 		return { status, elements };
 	}
 
 	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
-		const copiedLesson = lessonStatus.copyEntity as LessonEntity;
+		const copiedLesson = lessonStatus.copy as LessonEntity;
 
 		if (copiedLesson?.contents === undefined) {
 			return lessonStatus;
@@ -109,7 +109,7 @@ export class LessonCopyService {
 			this.updateCopiedEmbeddedTaskId(value, copyDict)
 		);
 
-		lessonStatus.copyEntity = copiedLesson;
+		lessonStatus.copy = copiedLesson;
 
 		return lessonStatus;
 	}
@@ -334,7 +334,7 @@ export class LessonCopyService {
 					title: element.title,
 					type: CopyElementType.LERNSTORE_MATERIAL,
 					status: CopyStatusEnum.SUCCESS,
-					copyEntity: material,
+					copy: material,
 				};
 				elementsStatus.push(status);
 			});

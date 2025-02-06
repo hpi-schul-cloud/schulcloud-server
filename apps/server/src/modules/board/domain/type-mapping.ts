@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
-import { ColumnBoard } from './colum-board.do';
+import { ColumnBoard } from './column-board.do';
 import { Column } from './column.do';
 import { DeletedElement } from './deleted-element.do';
 import { DrawingElement } from './drawing-element.do';

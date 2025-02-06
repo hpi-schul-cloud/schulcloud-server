@@ -84,7 +84,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.creator).toEqual(user);
 			});
 
@@ -98,7 +98,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.school).toEqual(school);
 			});
 
@@ -112,7 +112,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.private).toEqual(true);
 				expect(task.availableDate).not.toBeDefined();
 			});
@@ -128,7 +128,7 @@ describe('task copy service', () => {
 					copyName,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.name).toEqual(copyName);
 			});
 
@@ -141,7 +141,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.name).toEqual(originalTask.name);
 			});
 
@@ -155,7 +155,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.course).toEqual(destinationCourse);
 			});
 
@@ -169,7 +169,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.lesson).toEqual(destinationLesson);
 			});
 
@@ -183,7 +183,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.description).toEqual(originalTask.description);
 			});
 
@@ -198,7 +198,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.teamSubmissions).toEqual(originalTask.teamSubmissions);
 			});
 
@@ -212,7 +212,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(status.title).toEqual(task.name);
 			});
 
@@ -239,7 +239,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				expect(status.originalEntity).toEqual(originalTask);
+				expect(status.original).toEqual(originalTask);
 			});
 
 			it('should set status of metadata', async () => {
@@ -310,7 +310,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.school).toEqual(destinationSchool);
 			});
 		});
@@ -336,7 +336,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.course).toEqual(destinationCourse);
 			});
 
@@ -350,7 +350,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task.lesson).toEqual(destinationLesson);
 			});
 		});
@@ -365,7 +365,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const task = status.copyEntity as Task;
+				const task = status.copy as Task;
 				expect(task).toBeDefined();
 				expect(task.course).toBeUndefined();
 				expect(task.lesson).toBeUndefined();
@@ -448,7 +448,7 @@ describe('task copy service', () => {
 					user,
 				});
 
-				const { description } = status.copyEntity as Task;
+				const { description } = status.copy as Task;
 				expect(description).not.toContain(file1.id);
 				expect(description).not.toContain(file2.id);
 				expect(description).toContain(replacement1);

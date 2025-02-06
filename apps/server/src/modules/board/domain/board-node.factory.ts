@@ -3,7 +3,7 @@ import { Injectable, NotImplementedException, UnprocessableEntityException } fro
 import { EntityId, InputFormat } from '@shared/domain/types';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
-import { ColumnBoard } from './colum-board.do';
+import { ColumnBoard } from './column-board.do';
 import { Column } from './column.do';
 import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
