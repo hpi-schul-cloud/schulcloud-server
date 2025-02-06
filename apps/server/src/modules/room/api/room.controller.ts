@@ -188,6 +188,17 @@ export class RoomController {
 		);
 	}
 
+	@Patch(':roomId/leave')
+	@ApiOperation({ summary: 'Leaving a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async leaveRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
+		await this.roomUc.leaveRoom(currentUser.userId, urlParams.roomId);
+	}
+
 	@Patch(':roomId/members/remove')
 	@ApiOperation({ summary: 'Remove members from a room' })
 	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
