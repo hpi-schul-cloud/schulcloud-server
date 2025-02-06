@@ -246,7 +246,6 @@ const config: ServerConfig = {
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
-	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
 	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
 	ETHERPAD__COOKIE_EXPIRES_SECONDS: Configuration.get('ETHERPAD__COOKIE_EXPIRES_SECONDS') as number,
