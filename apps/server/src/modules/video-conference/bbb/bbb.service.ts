@@ -137,7 +137,7 @@ export class BBBService {
 	 */
 	protected generateChecksum(callName: string, queryParams: URLSearchParams): string {
 		const queryString: string = queryParams.toString();
-		const sha = crypto.createHash('sha1');
+		const sha = crypto.createHash('sha512');
 		sha.update(callName + queryString + this.salt);
 		const checksum: string = sha.digest('hex');
 

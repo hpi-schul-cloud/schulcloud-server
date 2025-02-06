@@ -3,10 +3,10 @@ import { DeletionRequestBodyProps } from '../controller/dto';
 import { DomainName } from '../../domain/types';
 
 export class DeletionRequestBodyPropsBuilder {
-	static build(domain: DomainName, id: EntityId, deleteInMinutes?: number): DeletionRequestBodyProps {
+	static build(domain: DomainName, id: EntityId, deleteAfterMinutes?: number): DeletionRequestBodyProps {
 		const deletionRequestItem = {
 			targetRef: { domain, id },
-			deleteInMinutes,
+			deleteAfterMinutes,
 		};
 
 		return deletionRequestItem;
