@@ -6,9 +6,6 @@ export class DeletionBatchDetailsResponse {
 	id: string;
 
 	@ApiProperty()
-	status: string;
-
-	@ApiProperty()
 	pendingDeletions: EntityId[];
 
 	@ApiProperty()
@@ -19,7 +16,6 @@ export class DeletionBatchDetailsResponse {
 
 	constructor(item: DeletionBatchDetailsResponse) {
 		this.id = item.id;
-		this.status = item.status;
 		this.pendingDeletions = item.pendingDeletions;
 		this.failedDeletions = item.failedDeletions;
 		this.successfulDeletions = item.successfulDeletions;
