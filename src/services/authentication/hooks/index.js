@@ -10,14 +10,12 @@ const {
 
 const globalHooks = require('../../../hooks');
 
-const disabledBruteForceCheck = Configuration.get('DISABLED_BRUTE_FORCE_CHECK');
-
 /**
  *
  * @deprecated Remove when TSP strategy is removed
  */
 const bruteForceCheck = async (context) => {
-	if (disabledBruteForceCheck) {
+	if (Configuration.get('DISABLED_BRUTE_FORCE_CHECK')) {
 		return context;
 	}
 	const { systemId, strategy } = context.data;
@@ -34,7 +32,7 @@ const bruteForceCheck = async (context) => {
  */
 // Invalid Login will not call this function
 const bruteForceReset = async (context) => {
-	if (disabledBruteForceCheck) {
+	if (Configuration.get('DISABLED_BRUTE_FORCE_CHECK')) {
 		return context;
 	}
 	// if successful login enable next login try directly

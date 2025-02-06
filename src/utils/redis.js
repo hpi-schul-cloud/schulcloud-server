@@ -6,10 +6,10 @@ const logger = require('../logger');
 
 let redisClient = false;
 
-async function initializeRedisClient() {
+async function initializeRedisClient(optionalRedisInstance) {
 	if (Configuration.has('REDIS_URI')) {
 		try {
-			redisClient = new Redis(Configuration.get('REDIS_URI'));
+			redisClient = optionalRedisInstance || new Redis(Configuration.get('REDIS_URI'));
 
 			// The error event must be handled, otherwise the app crashes on redis connection errors.
 			// This is due to basic NodeJS behavior: https://nodejs.org/api/events.html#error-events
@@ -20,6 +20,10 @@ async function initializeRedisClient() {
 			throw new GeneralError('Redis connection failed!', err);
 		}
 	}
+}
+
+function clearRedis() {
+	redisClient = false;
 }
 
 function getRedisClient() {
@@ -48,6 +52,7 @@ const redisTtlAsync = (...args) => {
 };
 
 module.exports = {
+	clearRedis,
 	initializeRedisClient,
 	setRedisClient,
 	getRedisClient,
