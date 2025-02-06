@@ -10,6 +10,7 @@ export class DeletionBatchMapper {
 		const response = new DeletionBatchItemResponse({
 			id: summary.id,
 			status: summary.status,
+			name: summary.name,
 			usersByRole: summary.usersByRole.map(
 				(u) => new UsersByRoleResponse({ roleName: u.roleName, userCount: u.userCount })
 			),

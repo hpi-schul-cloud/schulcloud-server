@@ -8,6 +8,9 @@ export class DeletionBatchItemResponse {
 	@ApiProperty()
 	status: string;
 
+	@ApiProperty()
+	name: string;
+
 	@ApiProperty({ type: [UsersByRoleResponse] })
 	usersByRole: UsersByRoleResponse[];
 
@@ -20,6 +23,7 @@ export class DeletionBatchItemResponse {
 	constructor(item: DeletionBatchItemResponse) {
 		this.id = item.id;
 		this.status = item.status;
+		this.name = item.name;
 		this.usersByRole = item.usersByRole;
 		this.createdAt = item.createdAt;
 		this.updatedAt = item.updatedAt;
