@@ -36,4 +36,16 @@ export class MediaSourceSyncReportFactory {
 
 		return report;
 	}
+
+	public static buildEmptyReport(): MediaSourceSyncReport {
+		const report: MediaSourceSyncReport = {
+			totalCount: 0,
+			successCount: 0,
+			undeliveredCount: 0,
+			failedCount: 0,
+			operations: [],
+		};
+
+		return report;
+	}
 }

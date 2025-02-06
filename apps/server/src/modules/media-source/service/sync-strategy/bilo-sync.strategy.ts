@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaSourceSyncStrategy, MediaSource, MediaSourceSyncReport, BiloMediaQueryResponse } from '../domain';
-import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../domain/factory';
-import { MediaSourceDataFormat, MediaSourceSyncOperation } from '../enum';
-import { MediaSourceNotFoundLoggableException } from '../loggable';
-import { MediaSourceService, BiloMediaFetchService } from '../service';
+import { MediaSourceSyncStrategy, MediaSource, MediaSourceSyncReport, BiloMediaQueryResponse } from '../../domain';
+import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../domain/factory';
+import { MediaSourceDataFormat, MediaSourceSyncOperation } from '../../enum';
+import { BiloMediaFetchService } from '../bilo-media-fetch.service';
 
 // TODO: resolve circular imports (externalToolModule)
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
-		private readonly mediaSourceService: MediaSourceService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly biloMediaFetchService: BiloMediaFetchService
 	) {}
@@ -20,10 +18,13 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		return MediaSourceDataFormat.BILDUNGSLOGIN;
 	}
 
-	public async syncAllMediaMetadata(): Promise<MediaSourceSyncReport> {
-		const mediaSource = await this.getMediaSource();
-
+	public async syncAllMediaMetadata(mediaSource: MediaSource): Promise<MediaSourceSyncReport> {
 		const externalTools: ExternalTool[] = await this.getAllToolsWithBiloMedium(mediaSource);
+
+		if (!externalTools.length) {
+			const emptyReport = MediaSourceSyncReportFactory.buildEmptyReport();
+			return emptyReport;
+		}
 
 		const mediumIds: string[] = externalTools
 			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
@@ -37,18 +38,6 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
 
 		return report;
-	}
-
-	private async getMediaSource(): Promise<MediaSource> {
-		const format = this.getMediaSourceFormat();
-
-		const mediaSource = await this.mediaSourceService.findByFormat(format);
-
-		if (!mediaSource) {
-			throw new MediaSourceNotFoundLoggableException(format);
-		}
-
-		return mediaSource;
 	}
 
 	private async getAllToolsWithBiloMedium(mediaSource: MediaSource): Promise<ExternalTool[]> {
@@ -128,8 +117,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		externalTool.name = metadataItem.title;
 		externalTool.description = metadataItem.id;
 		externalTool.logoUrl = metadataItem.cover.href;
-		// TODO is preview logo or thumbnail?
-		externalTool.logo = metadataItem.coverSmall.href;
+		// TODO updating thumbnail requires jwt (not possible for now)
+		// externalTool.thumbnail = metadataItem.coverSmall.href;
 
 		const medium = externalTool.medium as ExternalToolMedium;
 		medium.publisher = metadataItem.publisher;

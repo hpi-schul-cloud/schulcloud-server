@@ -1,16 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../domain';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport, MediaSource } from '../domain';
 import { MediaSourceDataFormat } from '../enum';
-import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
-import { BiloSyncStrategy } from '../strategy';
+import {
+	MediaSourceNotFoundLoggableException,
+	MediaSourceSyncStrategyNotImplementedLoggableException,
+} from '../loggable';
+import { BiloSyncStrategy } from './sync-strategy';
+import { MediaSourceService } from './media-source.service';
 
 @Injectable()
 export class MediaSourceSyncService {
 	private syncStrategyMap: Map<MediaSourceDataFormat, MediaSourceSyncStrategy>;
 
-	constructor(private readonly biloSyncStrategy: BiloSyncStrategy) {
+	constructor(
+		private readonly mediaSourceService: MediaSourceService,
+		private readonly biloSyncStrategy: BiloSyncStrategy
+	) {
 		this.syncStrategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
-		this.syncStrategyMap.set(biloSyncStrategy.getMediaSourceFormat(), this.biloSyncStrategy);
+		this.syncStrategyMap.set(this.biloSyncStrategy.getMediaSourceFormat(), this.biloSyncStrategy);
 	}
 
 	public async syncAllMediaMetadata(dataFormat: MediaSourceDataFormat): Promise<MediaSourceSyncReport> {
@@ -20,8 +27,22 @@ export class MediaSourceSyncService {
 			throw new MediaSourceSyncStrategyNotImplementedLoggableException(dataFormat);
 		}
 
-		const report: MediaSourceSyncReport = await strategy.syncAllMediaMetadata();
+		const mediaSource = await this.getMediaSource(strategy);
+
+		const report: MediaSourceSyncReport = await strategy.syncAllMediaMetadata(mediaSource);
 
 		return report;
+	}
+
+	private async getMediaSource(strategy: MediaSourceSyncStrategy): Promise<MediaSource> {
+		const format: MediaSourceDataFormat = strategy.getMediaSourceFormat();
+
+		const mediaSource = await this.mediaSourceService.findByFormat(format);
+
+		if (!mediaSource) {
+			throw new MediaSourceNotFoundLoggableException(format);
+		}
+
+		return mediaSource;
 	}
 }

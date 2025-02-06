@@ -1,20 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MediaSourceSyncStrategy } from '../domain';
 import { MediaSourceDataFormat } from '../enum';
-import { mediaSourceSyncReportFactory } from '../testing';
-import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
-import { BiloSyncStrategy } from '../strategy';
+import { mediaSourceFactory, mediaSourceSyncReportFactory } from '../testing';
+import {
+	MediaSourceNotFoundLoggableException,
+	MediaSourceSyncStrategyNotImplementedLoggableException,
+} from '../loggable';
+import { BiloSyncStrategy } from './sync-strategy';
 import { MediaSourceSyncService } from './media-source-sync.service';
+import { MediaSourceService } from './media-source.service';
 
 describe(MediaSourceSyncService.name, () => {
 	let module: TestingModule;
 	let service: MediaSourceSyncService;
+	let mediaSourceService: DeepMocked<MediaSourceService>;
 	let biloSyncStrategy: DeepMocked<BiloSyncStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				MediaSourceSyncService,
+				{
+					provide: MediaSourceService,
+					useValue: createMock<MediaSourceService>(),
+				},
 				{
 					provide: BiloSyncStrategy,
 					useValue: createMock<BiloSyncStrategy>(),
@@ -23,6 +33,7 @@ describe(MediaSourceSyncService.name, () => {
 		}).compile();
 
 		service = module.get(MediaSourceSyncService);
+		mediaSourceService = module.get(MediaSourceService);
 		biloSyncStrategy = module.get(BiloSyncStrategy);
 	});
 
@@ -36,35 +47,79 @@ describe(MediaSourceSyncService.name, () => {
 
 	describe('syncAllMediaMetadata', () => {
 		describe('when a media source data format with sync strategy is passed', () => {
-			const setup = () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+			describe('when the media source can be found', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.withBildungslogin().build();
+					const report = mediaSourceSyncReportFactory.build();
 
-				const report = mediaSourceSyncReportFactory.build();
-				biloSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
+					biloSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
+					mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
 
-				return { mediaSourceDataFormat, report };
-			};
+					const mediaSourceDataFormat = mediaSource.format as MediaSourceDataFormat;
 
-			it('should sync the media metadata using the sync strategy', async () => {
-				const { mediaSourceDataFormat } = setup();
+					const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
+						[mediaSourceDataFormat, biloSyncStrategy],
+					]);
+					Reflect.set(service, 'syncStrategyMap', strategyMap);
 
-				await service.syncAllMediaMetadata(mediaSourceDataFormat);
+					return { mediaSourceDataFormat, report };
+				};
 
-				expect(biloSyncStrategy.syncAllMediaMetadata).toBeCalled();
+				it('should sync the media metadata using the sync strategy', async () => {
+					const { mediaSourceDataFormat } = setup();
+
+					await service.syncAllMediaMetadata(mediaSourceDataFormat);
+
+					expect(biloSyncStrategy.syncAllMediaMetadata).toBeCalled();
+				});
+
+				it('should return a sync report', async () => {
+					const { mediaSourceDataFormat, report } = setup();
+
+					const result = await service.syncAllMediaMetadata(mediaSourceDataFormat);
+
+					expect(result).toEqual(report);
+				});
 			});
 
-			it('should return a sync report', async () => {
-				const { mediaSourceDataFormat, report } = setup();
+			describe('when the media source cannot be found', () => {
+				const setup = () => {
+					const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+					const report = mediaSourceSyncReportFactory.build();
 
-				const result = await service.syncAllMediaMetadata(mediaSourceDataFormat);
+					biloSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
+					mediaSourceService.findByFormat.mockResolvedValue(null);
 
-				expect(result).toEqual(report);
+					const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
+						[mediaSourceDataFormat, biloSyncStrategy],
+					]);
+					Reflect.set(service, 'syncStrategyMap', strategyMap);
+
+					return { mediaSourceDataFormat, report };
+				};
+
+				it('should throw an MediaSourceNotFoundLoggableException', async () => {
+					const { mediaSourceDataFormat } = setup();
+
+					const promise = service.syncAllMediaMetadata(mediaSourceDataFormat);
+
+					await expect(promise).rejects.toThrow(new MediaSourceNotFoundLoggableException(mediaSourceDataFormat));
+				});
 			});
 		});
 
 		describe('when a media source data format without sync strategy is passed', () => {
+			const setup = () => {
+				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
+				Reflect.set(service, 'syncStrategyMap', strategyMap);
+
+				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+
+				return { mediaSourceDataFormat };
+			};
+
 			it('should throw an MediaSourceSyncStrategyNotImplementedLoggableException', async () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.VIDIS;
+				const { mediaSourceDataFormat } = setup();
 
 				const promise = service.syncAllMediaMetadata(mediaSourceDataFormat);
 
