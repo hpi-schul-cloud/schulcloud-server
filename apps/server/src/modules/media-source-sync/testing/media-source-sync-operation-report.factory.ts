@@ -1,6 +1,6 @@
 import { Factory } from 'fishery';
-import { MediaSourceSyncOperationReport } from '../domain';
-import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../enum';
+import { MediaSourceSyncOperationReport } from '../interface';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../types';
 
 export const mediaSourceSyncOperationReportFactory = Factory.define<MediaSourceSyncOperationReport>(() => {
 	const syncOperationReportProps: MediaSourceSyncOperationReport = {

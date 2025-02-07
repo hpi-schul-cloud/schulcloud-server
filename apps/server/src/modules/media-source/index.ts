@@ -1,5 +1,5 @@
-export * from './domain/do';
-export * from './domain/interface';
+export * from './do';
 export * from './enum';
-export { MediaSourceService, MediaSourceSyncService } from './service';
-export { MediaSourceNotFoundLoggableException } from './loggable';
+export * from './loggable';
+export { MediaSourceService } from './service';
+export { MediaSourceModule } from './media-source.module';

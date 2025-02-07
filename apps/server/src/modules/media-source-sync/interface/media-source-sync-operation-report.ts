@@ -1,4 +1,4 @@
-import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../enum';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../types';
 
 export interface MediaSourceSyncOperationReport {
 	operation: MediaSourceSyncOperation;

@@ -1,4 +1,4 @@
-import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../domain';
+import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../do';
 import { MediaSourceOauthConfigEmbeddable, MediaSourceVidisConfigEmbeddable } from '../entity';
 
 export class MediaSourceConfigMapper {

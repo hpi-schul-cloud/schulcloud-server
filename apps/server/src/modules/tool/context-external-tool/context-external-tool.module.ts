@@ -22,7 +22,7 @@ import { ContextExternalToolValidationService } from './service/context-external
 @Module({
 	imports: [
 		CommonToolModule,
-		ExternalToolModule,
+		forwardRef(() => ExternalToolModule),
 		SchoolExternalToolModule,
 		LoggerModule,
 		UserLicenseModule,

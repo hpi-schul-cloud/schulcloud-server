@@ -1,5 +1,6 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { MediaSourceDataFormat, MediaSourceSyncOperationReport, MediaSourceSyncReport } from '@modules/media-source';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncOperationReport, MediaSourceSyncReport } from '@modules/media-source-sync';
 
 export class MediaMetadataSyncReportLoggable implements Loggable {
 	constructor(

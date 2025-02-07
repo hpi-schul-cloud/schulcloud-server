@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaSourceOauthConfig } from '../domain';
+import { MediaSourceOauthConfig } from '../do';
 import { MediaSourceAuthMethod } from '../enum';
 
 export const mediaSourceOauthConfigFactory = BaseFactory.define<MediaSourceOauthConfig, MediaSourceOauthConfig>(

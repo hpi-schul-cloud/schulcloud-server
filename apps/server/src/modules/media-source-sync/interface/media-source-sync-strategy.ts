@@ -1,5 +1,4 @@
-import { MediaSourceDataFormat } from '../../enum';
-import { MediaSource } from '../do';
+import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncReport } from './media-source-sync-report';
 
 export interface MediaSourceSyncStrategy {

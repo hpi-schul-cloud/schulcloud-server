@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport, MediaSource } from '../domain';
-import { MediaSourceDataFormat } from '../enum';
 import {
+	MediaSource,
+	MediaSourceDataFormat,
+	MediaSourceService,
 	MediaSourceNotFoundLoggableException,
-	MediaSourceSyncStrategyNotImplementedLoggableException,
-} from '../loggable';
-import { BiloSyncStrategy } from './sync-strategy';
-import { MediaSourceService } from './media-source.service';
+} from '@modules/media-source';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../interface';
+import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
+import { BiloSyncStrategy } from './strategy';
 
 @Injectable()
 export class MediaSourceSyncService {

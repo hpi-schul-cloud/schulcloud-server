@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { mediaSourceFactory } from '@modules/media-source/testing';
+import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { ExternalToolService } from '@modules/tool/external-tool/service/external-tool.service';
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
 import { MediaSourceDataFormat, MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../enum';
 import {

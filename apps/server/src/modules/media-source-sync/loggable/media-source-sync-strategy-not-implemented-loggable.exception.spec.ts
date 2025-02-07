@@ -1,4 +1,4 @@
-import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceDataFormat } from '../../media-source/enum';
 import { MediaSourceSyncStrategyNotImplementedLoggableException } from './media-source-sync-strategy-not-implemented-loggable.exception';
 
 describe(MediaSourceSyncStrategyNotImplementedLoggableException.name, () => {

@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { ExternalToolService } from '@modules/tool/external-tool';
-import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaSourceSyncStrategy, MediaSource, MediaSourceSyncReport } from '../../domain';
-import { BiloMediaQueryResponse } from '../../domain/response';
-import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../domain/factory';
-import { MediaSourceDataFormat, MediaSourceSyncOperation } from '../../enum';
+import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
+import { ExternalToolService } from '@modules/tool';
+import { ExternalTool, ExternalToolMedium, FileRecordRef } from '@modules/tool/external-tool/domain';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
+import { BiloMediaQueryResponse } from '../../response';
+import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
+import { MediaSourceSyncOperation } from '../../types';
 import { BiloMediaFetchService } from '../bilo-media-fetch.service';
 
 @Injectable()

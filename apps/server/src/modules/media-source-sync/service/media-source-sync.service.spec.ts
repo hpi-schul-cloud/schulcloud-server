@@ -1,15 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSourceSyncStrategy } from '../domain';
-import { MediaSourceDataFormat } from '../enum';
-import { mediaSourceFactory, mediaSourceSyncReportFactory } from '../testing';
-import {
-	MediaSourceNotFoundLoggableException,
-	MediaSourceSyncStrategyNotImplementedLoggableException,
-} from '../loggable';
-import { BiloSyncStrategy } from './sync-strategy';
+import { MediaSourceService, MediaSourceDataFormat, MediaSourceNotFoundLoggableException } from '@modules/media-source';
+import { mediaSourceFactory } from '@modules/media-source/testing';
+import { MediaSourceSyncStrategy } from '../interface';
+import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
+import { mediaSourceSyncReportFactory } from '../testing';
+import { BiloSyncStrategy } from './strategy';
 import { MediaSourceSyncService } from './media-source-sync.service';
-import { MediaSourceService } from './media-source.service';
 
 describe(MediaSourceSyncService.name, () => {
 	let module: TestingModule;

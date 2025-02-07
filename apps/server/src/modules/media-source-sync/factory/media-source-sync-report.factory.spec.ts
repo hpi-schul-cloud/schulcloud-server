@@ -1,5 +1,5 @@
-import { mediaSourceSyncOperationReportFactory } from '../../testing';
-import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../enum';
+import { mediaSourceSyncOperationReportFactory } from '../testing';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../types';
 import { MediaSourceSyncReport } from '../interface';
 import { MediaSourceSyncReportFactory } from './media-source-sync-report.factory';
 

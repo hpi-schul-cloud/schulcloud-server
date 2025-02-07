@@ -1,4 +1,4 @@
-import { MediaSourceSyncStatus } from '../../enum';
+import { MediaSourceSyncStatus } from '../types';
 import { MediaSourceSyncOperationReport, MediaSourceSyncReport } from '../interface';
 
 export class MediaSourceSyncReportFactory {

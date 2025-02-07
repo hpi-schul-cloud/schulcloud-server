@@ -6,7 +6,8 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { MediaSourceModule } from '@modules/media-source/media-source.module';
+import { MediaSourceModule } from '@modules/media-source';
+import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { ProvisioningModule } from '@modules/provisioning';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license/school-license.module';
@@ -34,6 +35,7 @@ import { SyncUc } from './uc/sync.uc';
 		MediaSourceModule,
 		SchoolLicenseModule,
 		EncryptionModule,
+		MediaSourceSyncModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspClientModule,

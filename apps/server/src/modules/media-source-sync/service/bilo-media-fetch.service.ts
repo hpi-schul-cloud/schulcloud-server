@@ -2,6 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
+	MediaSource,
+	MediaSourceDataFormat,
+	MediaSourceOauthConfig,
+	MediaSourceOauthConfigNotFoundLoggableException,
+} from '@modules/media-source';
+import {
 	OAuthTokenDto,
 	OauthAdapterService,
 	OAuthGrantType,
@@ -9,11 +15,8 @@ import {
 } from '@modules/oauth-adapter';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { MediaSource } from '../domain';
-import { BiloMediaQueryBodyParams } from '../domain/request';
-import { BiloMediaQueryResponse } from '../domain/response';
-import { MediaSourceDataFormat } from '../enum';
-import { MediaSourceOauthConfigNotFoundLoggableException } from '../loggable';
+import { BiloMediaQueryBodyParams } from '../request';
+import { BiloMediaQueryResponse } from '../response';
 
 @Injectable()
 export class BiloMediaFetchService {

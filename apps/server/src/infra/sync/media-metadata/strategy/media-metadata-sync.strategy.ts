@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@core/logger';
-import { MediaSourceSyncService, MediaSourceDataFormat, MediaSourceSyncReport } from '@modules/media-source';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncService, MediaSourceSyncReport } from '@modules/media-source-sync';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { MediaMetadataSyncReportLoggable } from '../loggable';

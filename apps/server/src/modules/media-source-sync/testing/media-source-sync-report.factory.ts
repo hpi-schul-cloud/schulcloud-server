@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { MediaSourceSyncReport } from '../domain';
+import { MediaSourceSyncReport } from '../interface';
 import { mediaSourceSyncOperationReportFactory } from './media-source-sync-operation-report.factory';
 
 export const mediaSourceSyncReportFactory = Factory.define<MediaSourceSyncReport>(() => {
