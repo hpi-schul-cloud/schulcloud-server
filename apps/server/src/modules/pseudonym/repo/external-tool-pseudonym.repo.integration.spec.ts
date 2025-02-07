@@ -1,6 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, Pseudonym } from '@shared/domain/domainobject';

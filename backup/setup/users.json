@@ -6587,5 +6587,234 @@
 			"tio",
 			"ion"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "67a3a93c5d5d9cb7f26eb630"
+		},
+		"__v": 0,
+		"firstName": "Carlo",
+		"lastName": "Smith",
+		"email": "carlo.teacher.ext.qa@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c98"
+			}
+		],
+		"emailSearchValues": [
+			"carlo",
+			"teacher",
+			"ext",
+			"qa",
+			"schul",
+			"cloud",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"Car",
+			"lo"
+		],
+		"lastNameSearchValues": [
+			"Smi",
+			"th"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "67a3a9735d5d9cb7f26eb69e"
+		},
+		"__v": 0,
+		"firstName": "Emma",
+		"lastName": "Jayson",
+		"email": "emma.teacher.ext.qa@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c98"
+			}
+		],
+		"emailSearchValues": [
+			"emma",
+			"teacher",
+			"ext",
+			"qa",
+			"schul",
+			"cloud",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"Em",
+			"ma"
+		],
+		"lastNameSearchValues": [
+			"Jay",
+			"son"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "67a3a9a35d5d9cb7f26eb70c"
+		},
+		"__v": 0,
+		"firstName": "Alex",
+		"lastName": "Johnson",
+		"email": "alex.student.ext.qa@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"emailSearchValues": [
+			"alex",
+			"student",
+			"ext",
+			"qa",
+			"schul",
+			"cloud",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"Al",
+			"ex"
+		],
+		"lastNameSearchValues": [
+			"John",
+			"son"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "67a3a9c85d5d9cb7f26eb77a"
+		},
+		"__v": 0,
+		"firstName": "Sophia",
+		"lastName": "Miller",
+		"email": "sophia.student.ext.qa@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c99"
+			}
+		],
+		"emailSearchValues": [
+			"sophia",
+			"student",
+			"ext",
+			"qa",
+			"schul",
+			"cloud",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"Sop",
+			"hia"
+		],
+		"lastNameSearchValues": [
+			"Mil",
+			"ler"
+		]
+	},
+	{
+		"_id": {
+			"$oid": "67a3a9f05d5d9cb7f26eb7e8"
+		},
+		"__v": 0,
+		"firstName": "Alice",
+		"lastName": "Brown",
+		"email": "admin.ext.qa@schul-cloud.org",
+		"updatedAt": {
+			"$date": "2020-10-21T15:47:29.456Z"
+		},
+		"birthday": {
+			"$date": "1977-01-01T11:25:43.556Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"preferences": {
+			"firstLogin": true
+		},
+		"schoolId": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"roles": [
+			{
+				"$oid": "0000d186816abba584714c96"
+			}
+		],
+		"emailSearchValues": [
+			"admin",
+			"ext",
+			"qa",
+			"schul",
+			"cloud",
+			"org"
+		],
+		"firstNameSearchValues": [
+			"Ali",
+			"ce"
+		],
+		"lastNameSearchValues": [
+			"Bro",
+			"wn"
+		]
 	}
 ]

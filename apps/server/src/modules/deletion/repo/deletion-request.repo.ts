@@ -6,6 +6,7 @@ import { DeletionRequest } from '../domain/do';
 import { DeletionRequestEntity } from './entity';
 import { DeletionRequestMapper } from './mapper';
 import { DeletionRequestScope } from './scope';
+import { StatusModel } from '../domain/types';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -31,13 +32,14 @@ export class DeletionRequestRepo {
 		await this.em.flush();
 	}
 
-	async findAllItemsToExecution(threshold: number, limit?: number): Promise<DeletionRequest[]> {
-		const currentDate = new Date();
-		const modificationThreshold = new Date(Date.now() - threshold);
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(modificationThreshold);
-		const order = { createdAt: SortOrder.desc };
+	async findAllItems(limit: number): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byDeleteAfter(new Date());
+		scope.byStatusAndDate([StatusModel.REGISTERED]);
 
-		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
+		const order = { createdAt: SortOrder.asc };
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query, {
 			limit,
 			orderBy: order,
 		});
@@ -47,12 +49,33 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	async countPendingDeletionRequests(): Promise<number> {
-		const scope = new DeletionRequestScope().byStatusPending();
+	async findAllFailedItems(limit: number, olderThan: Date, newerThan: Date): Promise<DeletionRequest[]> {
+		if (olderThan < newerThan) {
+			throw new Error('olderThan must be greater than newerThan');
+		}
+		const scope = new DeletionRequestScope();
+		scope.byDeleteAfter(new Date());
+		scope.byStatusAndDate([StatusModel.FAILED, StatusModel.PENDING], olderThan, newerThan);
 
-		const numberItemsWithStatusPending: number = await this.em.count(DeletionRequestEntity, scope.query);
+		const order = { createdAt: SortOrder.asc };
 
-		return numberItemsWithStatusPending;
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query, {
+			limit,
+			orderBy: order,
+		});
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
+	public async findInProgressCount(newerThan: Date): Promise<number> {
+		const scope = new DeletionRequestScope();
+		scope.byStatusAndDate([StatusModel.PENDING, StatusModel.FAILED], undefined, newerThan);
+
+		const count = await this.em.count(DeletionRequestEntity, scope.query);
+
+		return count;
 	}
 
 	async update(deletionRequest: DeletionRequest): Promise<void> {
