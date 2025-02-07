@@ -2,13 +2,13 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ExternalToolMediumResponse {
 	@ApiProperty({ type: String, description: 'Id of the medium' })
-	mediumId!: string;
+	public mediumId!: string;
 
 	@ApiPropertyOptional({ type: String, description: 'Publisher of the medium' })
-	publisher?: string;
+	public publisher?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The id of the media source' })
-	mediaSourceId?: string;
+	public mediaSourceId?: string;
 
 	constructor(props: ExternalToolMediumResponse) {
 		this.mediumId = props.mediumId;
