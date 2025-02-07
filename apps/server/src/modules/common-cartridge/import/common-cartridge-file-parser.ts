@@ -1,6 +1,10 @@
+import { FileRecordParentType, StorageLocation } from '@infra/files-storage-client/generated';
+import { ICurrentUser } from '@infra/auth-guard';
 import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';
+import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
@@ -18,7 +22,7 @@ export class CommonCartridgeFileParser {
 
 	private readonly resourceFactory: CommonCartridgeResourceFactory;
 
-	public constructor(file: Buffer, private readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
+	constructor(file: Buffer, private readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
 		this.archive = new AdmZip(file);
 		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestAsDocument(), this.options);
 		this.resourceFactory = new CommonCartridgeResourceFactory(this.archive);
@@ -54,6 +58,38 @@ export class CommonCartridgeFileParser {
 		const resource = this.resourceFactory.create(organization, this.options.inputFormat);
 
 		return resource;
+	}
+
+	public getFilesResource(
+		organization: CommonCartridgeOrganizationProps,
+		currentUser: ICurrentUser
+	): CommonCartridgeFileResourceProps | undefined {
+		this.checkOrganization(organization);
+
+		const resource = this.resourceFactory.create(organization, this.options.inputFormat);
+
+		if (
+			resource &&
+			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
+			organization.path.endsWith('.html')
+		) {
+			return undefined;
+		}
+
+		if (resource && organization.resourceType === CommonCartridgeResourceTypeV1P1.WEB_CONTENT) {
+			const commonCartridgeFileResource: CommonCartridgeFileResourceProps = {
+				type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+				storageLocationId: currentUser.userId,
+				storageLocation: StorageLocation.SCHOOL,
+				parentId: organization.identifier,
+				parentType: FileRecordParentType.BOARDNODES,
+				file: new File([(<CommonCartridgeFileResourceProps>resource).html as BlobPart], organization.title),
+				html: (<CommonCartridgeFileResourceProps>resource).html,
+			};
+			return commonCartridgeFileResource;
+		}
+
+		return undefined;
 	}
 
 	public getResourceAsString(organization: CommonCartridgeOrganizationProps): string {

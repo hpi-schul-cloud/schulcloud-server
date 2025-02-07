@@ -66,31 +66,33 @@ export class FilesStorageClientAdapter {
 		options?: RawAxiosRequestConfig
 	): Promise<FileRecordResponse | null> {
 		try {
-			const response = await this.api.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+			// INFO: we need to upload the file to the files storage service without using the generated client,
+			// because the generated client does not support uploading files as FormData.
+			// const response = await this.api.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+			const token = JwtExtractor.extractJwtFromRequest(this.req);
+			const url = new URL(
+				`${this.configService.getOrThrow<string>(
+					'FILES_STORAGE__SERVICE_BASE_URL'
+				)}/api/v3/file/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`
+			);
+			const formData = new FormData();
+			formData.append('file', file);
+			formData.append('parentId', parentId);
+			formData.append('parentType', parentType);
+			const observable = this.httpService.post(url.toString(), formData, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				...options,
+			});
+			const response = await lastValueFrom(observable);
+			const data = response.data as FileRecordResponse;
 
-			return response.data;
+			return data;
 		} catch (error: unknown) {
 			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
 
 			return null;
 		}
-		// const token = JwtExtractor.extractJwtFromRequest(this.req);
-		// const url = new URL(
-		// 	`${this.configService.getOrThrow<string>(
-		// 		'FILES_STORAGE__SERVICE_BASE_URL'
-		// 	)}/api/v3/file/upload/${storageLocationId}/${parentType}/${parentId}`
-		// );
-		// const formData = new FormData();
-		// formData.append('file', file);
-		// formData.append('parentId', parentId);
-		// formData.append('parentType', parentType);
-		// const observable = this.httpService.post(url.toString(), formData, {
-		// 	headers: {
-		// 		Authorization: `Bearer ${token}`,
-		// 	},
-		// 	...options,
-		// });
-		// const response = await lastValueFrom(observable);
-		// const fileRecordId: string = (response.data as { fileRecordId: string })?.fileRecordId;
 	}
 }

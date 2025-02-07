@@ -135,14 +135,12 @@ describe(FilesStorageClientAdapter.name, () => {
 				const parentId = 'parent-id';
 				const parentType = faker.helpers.arrayElement(Object.values(FileRecordParentType));
 				const file = new File([], 'test.txt', { type: 'text/plain', lastModified: Date.now() });
-				const options = { headers: { 'Content-Type': 'multipart/form-data' } };
+				const options = { headers: { Authorization: `Bearer ${faker.string.alphanumeric(42)}` } };
 
-				const response = axiosResponseFactory.build({
-					data: { success: true },
-				});
+				const response = axiosResponseFactory.build({ data: { parentId } });
 
-				const resolvedPromise = Promise.resolve(response);
-				httpServiceMock.post.mockReturnValue(from(resolvedPromise));
+				httpServiceMock.post.mockReturnValue(from([response]));
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
 
 				return {
 					storageLocationId,
@@ -151,7 +149,6 @@ describe(FilesStorageClientAdapter.name, () => {
 					parentType,
 					file,
 					options,
-					resolvedPromise,
 				};
 			};
 
@@ -161,6 +158,12 @@ describe(FilesStorageClientAdapter.name, () => {
 				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
 
 				expect(result).toBeDefined();
+				expect(httpServiceMock.post).toBeCalledWith(expect.any(String), expect.any(FormData), {
+					headers: {
+						Authorization: expect.any(String),
+					},
+				});
+				expect(result?.parentId).toEqual(parentId);
 			});
 		});
 	});

@@ -80,7 +80,7 @@ describe('CommonCartridgeUc', () => {
 
 			await sut.importCourse(file);
 
-			expect(commonCartridgeImportServiceMock.importFile).toHaveBeenCalledWith(file);
+			expect(commonCartridgeImportServiceMock.importManifestFile).toHaveBeenCalledWith(file);
 		});
 	});
 });

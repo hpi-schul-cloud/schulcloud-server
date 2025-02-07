@@ -50,7 +50,7 @@ describe(CommonCartridgeImportService.name, () => {
 	describe('importFile', () => {
 		describe('when importing a file', () => {
 			it('should create a course', async () => {
-				await sut.importFile(Buffer.from(''));
+				await sut.importManifestFile(Buffer.from(''));
 
 				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: expect.any(String) });
 			});

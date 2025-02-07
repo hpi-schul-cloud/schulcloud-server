@@ -1,3 +1,4 @@
+import { FileRecordParentType, StorageLocation } from '@infra/files-storage-client/generated/models';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 
@@ -36,9 +37,20 @@ export type CommonCartridgeWebLinkResourceProps = {
 	url: string;
 };
 
+export type CommonCartridgeFileResourceProps = {
+	type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT;
+	storageLocationId: string;
+	storageLocation: StorageLocation;
+	parentId: string;
+	parentType: FileRecordParentType;
+	file: File;
+	html: string;
+};
+
 export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
 
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps
-	| CommonCartridgeUnknownResourceProps;
+	| CommonCartridgeUnknownResourceProps
+	| CommonCartridgeFileResourceProps;
