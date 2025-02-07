@@ -5,7 +5,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import _ from 'lodash';
 import { MongoDatabaseModuleOptions } from './types';
 
-const dbName = () => _.times(20, () => _.random(35).toString(36)).join('');
+const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
 
 const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModule => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
@@ -28,7 +28,7 @@ const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): DynamicModul
 export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	constructor(@Inject(MikroORM) private orm: MikroORM) {}
 
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
+	public static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
 		const defaultOptions = {
 			entities: ALL_ENTITIES,
 		};
@@ -39,7 +39,7 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 		};
 	}
 
-	async onModuleDestroy(): Promise<void> {
+	public async onModuleDestroy(): Promise<void> {
 		await this.orm.close();
 	}
 }

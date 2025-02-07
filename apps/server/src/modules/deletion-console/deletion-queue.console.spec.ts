@@ -1,13 +1,13 @@
+import { Test, TestingModule } from '@nestjs/testing';
+import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from 'bson';
 import fs from 'fs';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { DeletionQueueConsole } from './deletion-queue.console';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
-import { BatchDeletionUc } from './uc';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DeletionQueueConsole } from './deletion-queue.console';
+import { BatchDeletionUc } from './uc';
 
 describe(DeletionQueueConsole.name, () => {
 	let module: TestingModule;
