@@ -10,6 +10,8 @@ import {
 	DeletionBatchService,
 	DeletionBatchSummary,
 } from '../../domain/service';
+import { BatchStatus } from '../../domain/types';
+import { CantCreateDeletionRequestsForBatchErrorLoggable } from '../loggable/cant-create-deletion-requests-for-batch-error.loggable';
 
 @Injectable()
 export class DeletionBatchUc {
@@ -49,9 +51,12 @@ export class DeletionBatchUc {
 		return deletionBatches;
 	}
 
-	public async createDeletionRequestForBatch(batchId: EntityId): Promise<DeletionBatchSummary> {
+	public async createDeletionRequestForBatch(batchId: EntityId, deleteAfter: Date): Promise<DeletionBatchSummary> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
-		const requestedDeletionBatch = await this.deletionBatchService.requestDeletionForBatch(deletionBatch);
+		if (deletionBatch.status !== BatchStatus.CREATED) {
+			throw new CantCreateDeletionRequestsForBatchErrorLoggable(batchId, deletionBatch.status);
+		}
+		const requestedDeletionBatch = await this.deletionBatchService.requestDeletionForBatch(deletionBatch, deleteAfter);
 
 		return requestedDeletionBatch;
 	}
