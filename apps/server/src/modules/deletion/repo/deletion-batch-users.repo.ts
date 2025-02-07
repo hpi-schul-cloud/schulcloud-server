@@ -13,7 +13,7 @@ export type UsersCountByRole = {
 };
 
 @Injectable()
-export class DeletionBatchSummaryRepo {
+export class DeletionBatchUsersRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {

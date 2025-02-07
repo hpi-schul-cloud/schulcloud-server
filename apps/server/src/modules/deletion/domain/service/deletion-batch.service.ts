@@ -3,7 +3,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DeletionBatchSummaryRepo, DeletionRequestRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
+import { DeletionBatchUsersRepo, DeletionRequestRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { DomainName, BatchStatus } from '../types';
@@ -39,7 +39,7 @@ export type DeletionBatchSummary = {
 export class DeletionBatchService {
 	constructor(
 		private readonly deletionBatchRepo: DeletionBatchRepo,
-		private readonly deletionBatchSummaryRepo: DeletionBatchSummaryRepo,
+		private readonly deletionBatchSummaryRepo: DeletionBatchUsersRepo,
 		private readonly deletionRequestRepo: DeletionRequestRepo,
 		private readonly deletionRequestService: DeletionRequestService
 	) {}
