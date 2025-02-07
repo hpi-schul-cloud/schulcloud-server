@@ -1,18 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { BiloMediaRestClient, BiloMediaQueryResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium, FileRecordRef } from '@modules/tool/external-tool/domain';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
-import { BiloMediaQueryResponse } from '../../response';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
 import { MediaSourceSyncOperation } from '../../types';
-import { BiloMediaFetchService } from '../bilo-media-fetch.service';
 
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly biloMediaFetchService: BiloMediaFetchService
+		private readonly biloMediaFetchService: BiloMediaRestClient
 	) {}
 
 	public getMediaSourceFormat(): MediaSourceDataFormat {

@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import {
 	MediaSource,
@@ -15,25 +17,24 @@ import {
 	OAuthGrantType,
 	OAuthTokenDto,
 } from '@modules/oauth-adapter';
-
 import { AxiosResponse } from 'axios';
-import { of } from 'rxjs';
-import { BiloMediaQueryBodyParams } from '../request';
-import { BiloMediaQueryResponse } from '../response';
-import { biloMediaQueryResponseFactory } from '../testing';
-import { BiloMediaFetchService } from './bilo-media-fetch.service';
+import { of, throwError } from 'rxjs';
+import { BiloMediaQueryBodyParams } from './request';
+import { BiloMediaQueryResponse } from './response';
+import { biloMediaQueryResponseFactory } from './testing';
+import { BiloMediaRestClient } from './bilo-media-rest-client';
 
 describe('BiloMediaFetchService', () => {
 	let module: TestingModule;
-	let service: BiloMediaFetchService;
-	let httpService: HttpService;
+	let service: BiloMediaRestClient;
+	let httpService: DeepMocked<HttpService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let encryptionService: DeepMocked<SymmetricKeyEncryptionService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				BiloMediaFetchService,
+				BiloMediaRestClient,
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
@@ -49,7 +50,7 @@ describe('BiloMediaFetchService', () => {
 			],
 		}).compile();
 
-		service = module.get(BiloMediaFetchService);
+		service = module.get(BiloMediaRestClient);
 		httpService = module.get(HttpService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		encryptionService = module.get(DefaultEncryptionService);
@@ -164,6 +165,48 @@ describe('BiloMediaFetchService', () => {
 				await expect(promise).rejects.toThrow(
 					new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN)
 				);
+			});
+		});
+
+		describe('when an axios error is thrown when fetching the metadata', () => {
+			const setup = () => {
+				const mediumIds = ['123'];
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const axiosError = axiosErrorFactory.build();
+
+				httpService.post.mockReturnValueOnce(throwError(() => axiosError));
+
+				return { mediumIds, mediaSource, axiosError };
+			};
+
+			it('should throw an AxiosErrorLoggable', async () => {
+				const { mediumIds, mediaSource, axiosError } = setup();
+
+				const promise = service.fetchMediaMetadata(mediumIds, mediaSource);
+
+				await expect(promise).rejects.toThrow(new AxiosErrorLoggable(axiosError, 'BILO_GET_MEDIA_METADATA_FAILED'));
+			});
+		});
+
+		describe('when an unknown error is thrown when fetching the metadata', () => {
+			const setup = () => {
+				const mediumIds = ['123'];
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const unknownError = new Error();
+
+				httpService.post.mockReturnValueOnce(throwError(() => unknownError));
+
+				return { mediumIds, mediaSource, unknownError };
+			};
+
+			it('should throw the unknown error', async () => {
+				const { mediumIds, mediaSource, unknownError } = setup();
+
+				const promise = service.fetchMediaMetadata(mediumIds, mediaSource);
+
+				await expect(promise).rejects.toThrow(unknownError);
 			});
 		});
 	});

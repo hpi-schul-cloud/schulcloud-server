@@ -1,5 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { BiloMediaRestClient, BiloMediaQueryResponse, BiloLinkResponse } from '@infra/bilo-client';
+import { biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolService } from '@modules/tool';
@@ -7,16 +9,14 @@ import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/do
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { MediaSourceSyncReport } from '../../interface';
-import { BiloMediaQueryResponse, BiloLinkResponse } from '../../response';
-import { biloMediaQueryResponseFactory, mediaSourceSyncOperationReportFactory } from '../../testing';
-import { BiloMediaFetchService } from '../bilo-media-fetch.service';
+import { mediaSourceSyncOperationReportFactory } from '../../testing';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
 
 describe(BiloSyncStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: BiloSyncStrategy;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let biloMediaFetchService: DeepMocked<BiloMediaFetchService>;
+	let biloMediaFetchService: DeepMocked<BiloMediaRestClient>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,15 +27,15 @@ describe(BiloSyncStrategy.name, () => {
 					useValue: createMock<ExternalToolService>(),
 				},
 				{
-					provide: BiloMediaFetchService,
-					useValue: createMock<BiloMediaFetchService>(),
+					provide: BiloMediaRestClient,
+					useValue: createMock<BiloMediaRestClient>(),
 				},
 			],
 		}).compile();
 
 		strategy = module.get(BiloSyncStrategy);
 		externalToolService = module.get(ExternalToolService);
-		biloMediaFetchService = module.get(BiloMediaFetchService);
+		biloMediaFetchService = module.get(BiloMediaRestClient);
 	});
 
 	afterAll(async () => {

@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
 	MediaSource,
@@ -14,28 +15,34 @@ import {
 	ClientCredentialsGrantTokenRequest,
 } from '@modules/oauth-adapter';
 import { lastValueFrom, Observable } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { BiloMediaQueryBodyParams } from '../request';
-import { BiloMediaQueryResponse } from '../response';
+import { AxiosResponse, isAxiosError } from 'axios';
+import { BiloMediaQueryBodyParams } from './request';
+import { BiloMediaQueryResponse } from './response';
 
 @Injectable()
-export class BiloMediaFetchService {
+export class BiloMediaRestClient {
 	constructor(
 		private readonly httpService: HttpService,
 		private readonly oauthAdapterService: OauthAdapterService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
-	public async fetchMediaMetadata(mediumIds: string[], mediaSource: MediaSource): Promise<BiloMediaQueryResponse[]> {
-		if (!mediaSource.oauthConfig) {
-			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
+	public async fetchMediaMetadata(
+		mediumIds: string[],
+		biloMediaSource: MediaSource
+	): Promise<BiloMediaQueryResponse[]> {
+		if (!biloMediaSource.oauthConfig) {
+			throw new MediaSourceOauthConfigNotFoundLoggableException(
+				biloMediaSource.id,
+				MediaSourceDataFormat.BILDUNGSLOGIN
+			);
 		}
 
-		const url = new URL(`${mediaSource.oauthConfig.baseUrl}/query`);
+		const url = new URL(`${biloMediaSource.oauthConfig.baseUrl}/query`);
 
 		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string) => new BiloMediaQueryBodyParams({ id }));
 
-		const token: OAuthTokenDto = await this.fetchAccessToken(mediaSource);
+		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource);
 
 		const observable: Observable<AxiosResponse<BiloMediaQueryResponse[]>> = this.httpService.post(
 			url.toString(),
@@ -48,9 +55,16 @@ export class BiloMediaFetchService {
 			}
 		);
 
-		const response: AxiosResponse<BiloMediaQueryResponse[]> = await lastValueFrom(observable);
-
-		return response.data;
+		try {
+			const response: AxiosResponse<BiloMediaQueryResponse[]> = await lastValueFrom(observable);
+			return response.data;
+		} catch (error: unknown) {
+			if (isAxiosError(error)) {
+				throw new AxiosErrorLoggable(error, 'BILO_GET_MEDIA_METADATA_FAILED');
+			} else {
+				throw error;
+			}
+		}
 	}
 
 	private async fetchAccessToken(mediaSource: MediaSource): Promise<OAuthTokenDto> {

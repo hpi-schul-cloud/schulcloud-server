@@ -1,14 +1,15 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
+import { BiloClientModule } from '@infra/bilo-client';
 import { EncryptionModule } from '@infra/encryption';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { ExternalToolModule } from '@modules/tool';
-import { BiloMediaFetchService, MediaSourceSyncService } from './service';
+import { MediaSourceSyncService } from './service';
 import { BiloSyncStrategy } from './service/strategy';
 
 @Module({
-	imports: [HttpModule, OauthAdapterModule, EncryptionModule, ExternalToolModule],
-	providers: [MediaSourceSyncService, BiloMediaFetchService, BiloSyncStrategy],
+	imports: [HttpModule, OauthAdapterModule, EncryptionModule, ExternalToolModule, BiloClientModule],
+	providers: [MediaSourceSyncService, BiloSyncStrategy],
 	exports: [MediaSourceSyncService],
 })
 export class MediaSourceSyncModule {}
