@@ -13,7 +13,7 @@ import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { TspLegacyMigrationSystemMissingLoggable } from './loggable/tsp-legacy-migration-system-missing.loggable';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 
-describe('account repo', () => {
+describe(TspLegacyMigrationService.name, () => {
 	let module: TestingModule;
 	let em: EntityManager;
 	let sut: TspLegacyMigrationService;
