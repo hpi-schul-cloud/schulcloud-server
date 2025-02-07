@@ -22,7 +22,7 @@ export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
 		path: migrationsPath, // path to the folder with migrations
-		pathTs: migrationsPath, // path to the folder with TS migrations (if used, we should put path to compiled files in `path`)
+		pathTs: migrationsPath.replace('/dist/apps/server/migrations/mikro-orm', '/apps/server/src/migrations/mikro-orm'), // path to the folder with TS migrations (if used, we should put path to compiled files in `path`)
 		glob: '!(*.d).{js,ts}', // how to match migration files (all .js and .ts files, but not .d.ts)
 		transactional: false, // wrap each migration in a transaction
 		disableForeignKeys: true, // wrap statements with `set foreign_key_checks = 0` or equivalent

@@ -1,4 +1,5 @@
-import { MikroORM } from '@mikro-orm/core';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { IMigrator, MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createCollections } from '@testing/create-collections';
@@ -166,6 +167,17 @@ describe('DatabaseManagementService', () => {
 			const spy = jest.spyOn(orm.getMigrator(), 'getPendingMigrations');
 			await service.migrationPending();
 			expect(spy).toHaveBeenCalled();
+		});
+	});
+
+	describe('When call migrationCreate()', () => {
+		it('should call migrator.createInitialMigration()', async () => {
+			const spyGetMigrator = jest.spyOn(orm, 'getMigrator');
+			const spyMigrator: DeepMocked<IMigrator> = createMock<IMigrator>();
+			spyGetMigrator.mockReturnValue(spyMigrator);
+
+			await service.migrationCreate();
+			expect(spyMigrator.createInitialMigration).toHaveBeenCalled();
 		});
 	});
 });

@@ -701,5 +701,10 @@ describe('DatabaseManagementService', () => {
 			await uc.migrationPending();
 			expect(dbService.migrationPending).toHaveBeenCalled();
 		});
+		it('should call migrationCreate', async () => {
+			jest.spyOn(dbService, 'migrationDown').mockImplementation();
+			await uc.migrationCreate();
+			expect(dbService.migrationCreate).toHaveBeenCalled();
+		});
 	});
 });
