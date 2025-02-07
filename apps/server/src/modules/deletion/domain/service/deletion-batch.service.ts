@@ -3,10 +3,10 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DeletionBatchSummaryRepo, DeletionRequestRepo, UsersByRole } from '../../repo';
+import { DeletionBatchSummaryRepo, DeletionRequestRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
-import { DomainName } from '../types';
+import { DomainName, BatchStatus } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
 
 export type CreateDeletionBatchParams = {
@@ -20,19 +20,21 @@ export type DeletionBatchDetails = {
 	pendingDeletions: EntityId[];
 	failedDeletions: EntityId[];
 	successfulDeletions: EntityId[];
+	invalidIds: EntityId[];
+	skippedUsersByRole: UserIdsByRole[];
 };
 
 export type DeletionBatchSummary = {
 	id: EntityId;
 	name: string;
-	status: string;
-	usersByRole: UsersByRole[];
-	invalidUsers?: EntityId[];
+	status: BatchStatus;
+	usersByRole: UsersCountByRole[];
+	invalidUsers: EntityId[];
+	skippedUsersByRole: UsersCountByRole[];
 	createdAt: Date;
 	updatedAt: Date;
 };
 
-// TODO: tests missing
 @Injectable()
 export class DeletionBatchService {
 	constructor(
@@ -45,22 +47,32 @@ export class DeletionBatchService {
 	public async createDeletionBatch(
 		params: CreateDeletionBatchParams,
 		validUserIds: EntityId[],
-		invalidUserIds: EntityId[] | undefined
+		invalidIds: EntityId[] = [],
+		skippedIds: EntityId[] = []
 	): Promise<DeletionBatchSummary> {
 		const newBatch = new DeletionBatch({
 			id: new ObjectId().toHexString(),
 			name: params.name,
+			status: BatchStatus.CREATED,
 			targetRefDomain: params.targetRefDomain,
 			targetRefIds: validUserIds,
+			invalidIds,
+			skippedIds,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 
 		await this.deletionBatchRepo.save(newBatch);
 
-		const summary = await this.buildSummary(newBatch, invalidUserIds);
+		const summary = await this.buildSummary(newBatch);
 
 		return summary;
+	}
+
+	public async deleteDeletionBatch(batchId: EntityId): Promise<void> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		await this.deletionBatchRepo.delete(deletionBatch);
 	}
 
 	public async getDeletionBatchDetails(batchId: EntityId): Promise<DeletionBatchDetails> {
@@ -83,11 +95,15 @@ export class DeletionBatchService {
 			(deletionRequest) => deletionRequest.targetRefId
 		);
 
+		const skippedUsers = await this.deletionBatchSummaryRepo.getUsersByRole(deletionBatch.skippedIds);
+
 		const summary: DeletionBatchDetails = {
 			id: deletionBatch.id,
 			pendingDeletions: pendingDeletionUserIds,
 			failedDeletions: failedDeletionUserIds,
 			successfulDeletions: successfulDeletionUserIds,
+			invalidIds: deletionBatch.invalidIds,
+			skippedUsersByRole: skippedUsers,
 		};
 
 		return summary;
@@ -114,34 +130,34 @@ export class DeletionBatchService {
 	}
 
 	public async requestDeletionForBatch(batch: DeletionBatch): Promise<DeletionBatchSummary> {
+		const deleteNow = new Date(Date.now());
 		for (const targetRefId of batch.targetRefIds) {
-			const deleteNow = new Date(Date.now());
+			// TODO validate again that user exists?
 			await this.deletionRequestService.createDeletionRequest(targetRefId, DomainName.USER, deleteNow);
 		}
 
-		const summary = await this.buildSummary(batch, undefined, 'deletion requested');
+		await this.deletionBatchRepo.updateStatus(batch, BatchStatus.DELETION_REQUESTED);
+
+		const summary = await this.buildSummary(batch);
 
 		return summary;
 	}
 
 	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
-	public async getUsersByRoles(userIds: EntityId[]): Promise<UsersByRole[]> {
+	public async getUsersCountByRoles(userIds: EntityId[]): Promise<UsersCountByRole[]> {
 		const usersByRole = await this.deletionBatchSummaryRepo.countUsersByRole(userIds);
 
 		return usersByRole;
 	}
 
-	private async buildSummary(
-		batch: DeletionBatch,
-		invalidUsers?: EntityId[],
-		newStatus?: string
-	): Promise<DeletionBatchSummary> {
+	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {
 		const summary = {
 			id: batch.id,
 			name: batch.name,
-			status: newStatus ?? 'created', // TODO implement status
-			usersByRole: await this.getUsersByRoles(batch.targetRefIds),
-			invalidUsers,
+			status: batch.status,
+			usersByRole: await this.getUsersCountByRoles(batch.targetRefIds),
+			invalidUsers: batch.invalidIds,
+			skippedUsersByRole: await this.getUsersCountByRoles(batch.skippedIds),
 			createdAt: batch.createdAt,
 			updatedAt: batch.updatedAt,
 		};

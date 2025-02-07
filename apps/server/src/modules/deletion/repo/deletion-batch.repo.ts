@@ -7,6 +7,7 @@ import { EntityId } from '@shared/domain/types';
 import { DeletionBatch } from '../domain/do';
 import { DeletionBatchEntity } from './entity/deletion-batch.entity';
 import { DeletionBatchDomainMapper } from './mapper/deletion-batch-domain.mapper';
+import { BatchStatus } from '../domain/types';
 
 // TODO: repo tests are missing
 @Injectable()
@@ -59,6 +60,13 @@ export class DeletionBatchRepo {
 			this.em.remove(entity);
 		});
 
+		await this.em.flush();
+	}
+
+	public async updateStatus(deletionBatch: DeletionBatch, status: BatchStatus): Promise<void> {
+		const entity = DeletionBatchDomainMapper.mapDoToEntity(deletionBatch);
+		entity.status = status;
+		this.em.persist(entity);
 		await this.em.flush();
 	}
 }

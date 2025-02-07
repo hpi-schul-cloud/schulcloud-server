@@ -3,8 +3,9 @@ import { DeletionBatchDetails, DeletionBatchSummary } from '../../domain/service
 import { DeletionBatchPaginationParams } from '../controller/dto/request/deletion-batch-pagination.params';
 import { DeletionBatchItemResponse } from '../controller/dto/response/deletion-batch-item.response';
 import { DeletionBatchListResponse } from '../controller/dto/response/deletion-batch-list.response';
-import { UsersByRoleResponse } from '../controller/dto/response/users-by-role.response';
+import { UsersByRoleCountResponse } from '../controller/dto/response/users-by-role-count.response';
 import { DeletionBatchDetailsResponse } from '../controller/dto/response/deletion-batch-details.response';
+import { UsersByRoleResponse } from '../controller/dto/response/users-by-role.response';
 
 export class DeletionBatchMapper {
 	public static mapToDeletionBatchItemResponse(summary: DeletionBatchSummary): DeletionBatchItemResponse {
@@ -13,9 +14,12 @@ export class DeletionBatchMapper {
 			status: summary.status,
 			name: summary.name,
 			usersByRole: summary.usersByRole.map(
-				(u) => new UsersByRoleResponse({ roleName: u.roleName, userCount: u.userCount })
+				(u) => new UsersByRoleCountResponse({ roleName: u.roleName, userCount: u.userCount })
 			),
 			invalidUsers: summary.invalidUsers,
+			skippedUsersByRole: summary.skippedUsersByRole.map(
+				(u) => new UsersByRoleCountResponse({ roleName: u.roleName, userCount: u.userCount })
+			),
 			createdAt: summary.createdAt,
 			updatedAt: summary.updatedAt,
 		});
@@ -41,6 +45,10 @@ export class DeletionBatchMapper {
 			pendingDeletions: details.pendingDeletions,
 			failedDeletions: details.failedDeletions,
 			successfulDeletions: details.successfulDeletions,
+			skippedDeletions: details.skippedUsersByRole.map(
+				(u) => new UsersByRoleResponse({ roleName: u.roleName, ids: u.userIds })
+			),
+			invalidIds: details.invalidIds,
 		});
 
 		return response;

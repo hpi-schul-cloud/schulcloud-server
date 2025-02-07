@@ -3,14 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
 export type UserIdsByRole = {
-	roleName: {
-		id: EntityId;
-		name: string;
-	};
+	roleName: string;
 	userIds: EntityId[];
 };
 
-export type UsersByRole = {
+export type UsersCountByRole = {
 	roleName: string;
 	userCount: number;
 };
@@ -19,7 +16,7 @@ export type UsersByRole = {
 export class DeletionBatchSummaryRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async countUsersByRole(userIds: EntityId[]): Promise<UsersByRole[]> {
+	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {
 		const pipeline = [
 			{
 				$match: {
@@ -55,7 +52,48 @@ export class DeletionBatchSummaryRepo {
 			},
 		];
 
-		const usersByRole = await this.em.getConnection().aggregate<UsersByRole>('users', pipeline);
+		const usersByRole = await this.em.getConnection().aggregate<UsersCountByRole>('users', pipeline);
+
+		return usersByRole;
+	}
+
+	public async getUsersByRole(userIds: EntityId[]): Promise<UserIdsByRole[]> {
+		const pipeline = [
+			{
+				$match: {
+					_id: { $in: userIds.map((id) => new ObjectId(id)) },
+				},
+			},
+			{
+				$unwind: '$roles',
+			},
+			{
+				$lookup: {
+					from: 'roles',
+					localField: 'roles',
+					foreignField: '_id',
+					as: 'roleDetails',
+				},
+			},
+			{
+				$unwind: '$roleDetails',
+			},
+			{
+				$group: {
+					_id: '$roleDetails.name',
+					userIds: { $push: '$_id' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					roleName: '$_id',
+					userIds: 1,
+				},
+			},
+		];
+
+		const usersByRole = await this.em.getConnection().aggregate<UserIdsByRole>('users', pipeline);
 
 		return usersByRole;
 	}

@@ -1,11 +1,14 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { DomainName } from '../types';
+import { DomainName, BatchStatus } from '../types';
 
 export interface DeletionBatchProps extends AuthorizableObject {
 	name: string;
+	status: BatchStatus;
 	targetRefDomain: DomainName;
 	targetRefIds: EntityId[];
+	invalidIds: EntityId[];
+	skippedIds: EntityId[];
 	createdAt: Date;
 	updatedAt: Date;
 }
@@ -26,12 +29,24 @@ export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 		return this.props.name;
 	}
 
+	get status(): BatchStatus {
+		return this.props.status;
+	}
+
 	get targetRefDomain(): DomainName {
 		return this.props.targetRefDomain;
 	}
 
 	get targetRefIds(): EntityId[] {
 		return this.props.targetRefIds;
+	}
+
+	get invalidIds(): EntityId[] {
+		return this.props.invalidIds;
+	}
+
+	get skippedIds(): EntityId[] {
+		return this.props.skippedIds;
 	}
 
 	get createdAt(): Date {

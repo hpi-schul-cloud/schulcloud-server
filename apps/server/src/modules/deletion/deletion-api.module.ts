@@ -8,13 +8,13 @@ import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { TeamsModule } from '@modules/teams';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
+import { UserModule } from '@modules/user';
 import { DeletionModule } from '.';
 import { DeletionExecutionController } from './api/controller/deletion-execution.controller';
 import { DeletionRequestController } from './api/controller/deletion-request.controller';
 import { DeletionRequestUc } from './api/uc';
 import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
 import { DeletionBatchController } from './api/controller/deletion-batch.controller';
-import { UserModule } from '@modules/user';
 
 // The most of this imports should not be part of the api module.
 @Module({

@@ -1,14 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+// import { RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 
 export class UsersByRoleResponse {
 	@ApiProperty()
 	roleName: string;
 
 	@ApiProperty()
-	userCount: number;
+	ids: EntityId[];
 
-	constructor(usersByRole: UsersByRoleResponse) {
-		this.roleName = usersByRole.roleName;
-		this.userCount = usersByRole.userCount;
+	constructor(item: UsersByRoleResponse) {
+		this.roleName = item.roleName;
+		this.ids = item.ids;
 	}
 }

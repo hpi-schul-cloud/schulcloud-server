@@ -1,7 +1,9 @@
 import { XApiKeyAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IFindOptions } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { ApiValidationError } from '@shared/common/error';
 import { DeletionBatchSummary } from '../../domain/service';
 import { DeletionBatchMapper } from '../uc/deletion-batch.mapper';
 import { DeletionBatchUc } from '../uc/deletion-batch.uc';
@@ -44,8 +46,11 @@ export class DeletionBatchController {
 	}
 
 	@Post('')
-	@HttpCode(201)
 	@ApiOperation({ summary: 'Create a new deletion batch' })
+	@ApiResponse({ status: 201, type: DeletionBatchItemResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@HttpCode(201)
 	public async createBatch(@Body() params: CreateDeletionBatchBodyParams): Promise<DeletionBatchItemResponse> {
 		const summary = await this.deletionBatchUc.createDeletionBatch(params);
 
@@ -54,12 +59,21 @@ export class DeletionBatchController {
 		return response;
 	}
 
+	@Delete(':batchId')
+	@HttpCode(204)
+	@ApiOperation({
+		summary: 'Delete a deletion batch',
+	})
+	public async deleteBatch(@Param('batchId') batchId: EntityId): Promise<void> {
+		await this.deletionBatchUc.deleteDeletionBatch(batchId);
+	}
+
 	@Post(':batchId/execute')
 	@HttpCode(202)
 	@ApiOperation({
 		summary: '"Queueing" a deletion request for specific batch',
 	})
-	public async createDeletionRequestsForBatch(@Param('batchId') batchId: string): Promise<DeletionBatchItemResponse> {
+	public async createDeletionRequestsForBatch(@Param('batchId') batchId: EntityId): Promise<DeletionBatchItemResponse> {
 		const summary = await this.deletionBatchUc.createDeletionRequestForBatch(batchId);
 
 		const response = DeletionBatchMapper.mapToDeletionBatchItemResponse(summary);

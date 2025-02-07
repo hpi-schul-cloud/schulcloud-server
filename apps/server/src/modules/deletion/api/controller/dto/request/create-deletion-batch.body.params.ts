@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { IsArray, IsEnum, IsMongoId, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { EntityId } from '@shared/domain/types';
 import { DomainName } from '../../../../domain/types';
 
 export class CreateDeletionBatchBodyParams {
@@ -30,5 +31,5 @@ export class CreateDeletionBatchBodyParams {
 	@IsArray()
 	@IsNotEmpty()
 	@IsMongoId({ each: true })
-	targetRefIds: string[] = [];
+	targetRefIds: EntityId[] = [];
 }

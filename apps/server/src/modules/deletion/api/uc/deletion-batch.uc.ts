@@ -1,29 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
+import { IFindOptions, RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { UserService } from '@modules/user';
+import { DeletionBatchRepo } from '../../repo';
 import {
 	CreateDeletionBatchParams,
 	DeletionBatchDetails,
 	DeletionBatchService,
 	DeletionBatchSummary,
 } from '../../domain/service';
-import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user';
-import { DeletionBatchRepo } from '@modules/deletion/repo';
 
 @Injectable()
 export class DeletionBatchUc {
 	constructor(
 		private readonly deletionBatchService: DeletionBatchService,
 		private readonly deletionBatchRepo: DeletionBatchRepo,
-		private readonly userRepo: UserRepo
+		private readonly userService: UserService
 	) {}
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
-		const { validUserIds, invalidUserIds } = await this.validateAndFilterUserIds(params.targetRefIds);
-		const deletionBatch = await this.deletionBatchService.createDeletionBatch(params, validUserIds, invalidUserIds);
+		const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(params.targetRefIds);
+		const deletionBatch = await this.deletionBatchService.createDeletionBatch(
+			params,
+			validUserIds,
+			invalidUserIds,
+			skippedUserIds
+		);
 
 		return deletionBatch;
+	}
+
+	public async deleteDeletionBatch(batchId: EntityId): Promise<void> {
+		await this.deletionBatchService.deleteDeletionBatch(batchId);
 	}
 
 	public async getDeletionBatchDetails(batchId: EntityId): Promise<DeletionBatchDetails> {
@@ -49,19 +58,30 @@ export class DeletionBatchUc {
 
 	private async validateAndFilterUserIds(
 		targetRefIds: EntityId[]
-	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[] }> {
+	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[]; skippedUserIds: EntityId[] }> {
+		// TODO move this in config
+		const allowedUserRoles = [RoleName.STUDENT];
+
 		const validUserIds: EntityId[] = [];
 		const invalidUserIds: EntityId[] = [];
+		const skippedUserIds: EntityId[] = [];
 
-		for (const userId of targetRefIds) {
-			const userExists = await this.userRepo.findByIdOrNull(userId);
-			if (userExists) {
-				validUserIds.push(userId);
+		// TODO optimise findByIdsAndRoles
+		const userChecks = targetRefIds.map(async (userId) => {
+			const user = await this.userService.findByIdOrNull(userId);
+			if (user) {
+				if (user.roles.some((role) => allowedUserRoles.includes(role.name))) {
+					validUserIds.push(userId);
+				} else {
+					skippedUserIds.push(userId);
+				}
 			} else {
 				invalidUserIds.push(userId);
 			}
-		}
+		});
 
-		return { validUserIds, invalidUserIds };
+		await Promise.all(userChecks);
+
+		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
 }
