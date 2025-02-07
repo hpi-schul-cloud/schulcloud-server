@@ -8,7 +8,7 @@ import { InstanceEntity } from '@modules/instance';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
-import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
@@ -34,7 +34,6 @@ import {
 	TaskBoardElement,
 } from './legacy-board';
 import { LessonEntity } from './lesson.entity';
-import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { Role } from './role.entity';
@@ -70,10 +69,8 @@ export const ALL_ENTITIES = [
 	ImportUser,
 	LessonEntity,
 	LessonBoardElement,
-	LtiTool,
 	Material,
 	News,
-	PseudonymEntity,
 	ExternalToolPseudonymEntity,
 	RocketChatUserEntity,
 	Role,

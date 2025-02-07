@@ -22,7 +22,6 @@ describe('EduSharingV7 FIND', () => {
 	let nestServices;
 
 	before(async () => {
-		Configuration.set('ES_API_V7', true);
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		eduSharingPlayerService = app.service('edu-sharing/player');
