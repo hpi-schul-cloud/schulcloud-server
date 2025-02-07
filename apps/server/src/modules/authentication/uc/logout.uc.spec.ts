@@ -156,7 +156,7 @@ describe(LogoutUc.name, () => {
 				const currentUser = currentUserFactory.build({ isExternalUser: true });
 
 				configService.get.mockReturnValueOnce(false);
-				jest.spyOn(authenticationService, 'logoutFromExternalSystem');
+				jest.spyOn(logoutService, 'logoutFromExternalSystem');
 
 				return {
 					currentUser,
@@ -169,7 +169,7 @@ describe(LogoutUc.name, () => {
 				const promise = logoutUc.externalSystemLogout(currentUser);
 
 				await expect(promise).rejects.toThrow(new ExternalSystemLogoutIsDisabledLoggableException());
-				expect(authenticationService.logoutFromExternalSystem).not.toHaveBeenCalled();
+				expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
 			});
 		});
 
@@ -184,7 +184,7 @@ describe(LogoutUc.name, () => {
 					systemService.findById.mockResolvedValue(system);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 
-					jest.spyOn(authenticationService, 'logoutFromExternalSystem');
+					jest.spyOn(logoutService, 'logoutFromExternalSystem');
 
 					return {
 						currentUser,
@@ -198,7 +198,7 @@ describe(LogoutUc.name, () => {
 
 					await logoutUc.externalSystemLogout(currentUser);
 
-					expect(authenticationService.logoutFromExternalSystem).toHaveBeenCalledWith(sessionToken, system);
+					expect(logoutService.logoutFromExternalSystem).toHaveBeenCalledWith(sessionToken, system);
 				});
 			});
 
@@ -207,7 +207,7 @@ describe(LogoutUc.name, () => {
 					const currentUser = currentUserFactory.build({ isExternalUser: false, systemId: undefined });
 
 					configService.get.mockReturnValueOnce(true);
-					jest.spyOn(authenticationService, 'logoutFromExternalSystem');
+					jest.spyOn(logoutService, 'logoutFromExternalSystem');
 
 					return {
 						currentUser,
@@ -219,7 +219,7 @@ describe(LogoutUc.name, () => {
 
 					await logoutUc.externalSystemLogout(currentUser);
 
-					expect(authenticationService.logoutFromExternalSystem).not.toHaveBeenCalled();
+					expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
 				});
 			});
 
@@ -232,7 +232,7 @@ describe(LogoutUc.name, () => {
 					systemService.findById.mockResolvedValue(system);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(null);
 
-					jest.spyOn(authenticationService, 'logoutFromExternalSystem');
+					jest.spyOn(logoutService, 'logoutFromExternalSystem');
 
 					return {
 						currentUser,
@@ -244,7 +244,7 @@ describe(LogoutUc.name, () => {
 
 					await logoutUc.externalSystemLogout(currentUser);
 
-					expect(authenticationService.logoutFromExternalSystem).not.toHaveBeenCalled();
+					expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
 				});
 			});
 
@@ -257,7 +257,7 @@ describe(LogoutUc.name, () => {
 					systemService.findById.mockResolvedValue(null);
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 
-					jest.spyOn(authenticationService, 'logoutFromExternalSystem');
+					jest.spyOn(logoutService, 'logoutFromExternalSystem');
 
 					return {
 						currentUser,
@@ -269,7 +269,7 @@ describe(LogoutUc.name, () => {
 
 					await logoutUc.externalSystemLogout(currentUser);
 
-					expect(authenticationService.logoutFromExternalSystem).not.toHaveBeenCalled();
+					expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
 				});
 			});
 		});

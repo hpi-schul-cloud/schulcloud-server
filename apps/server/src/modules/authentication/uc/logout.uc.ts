@@ -21,11 +21,11 @@ export class LogoutUc {
 		private readonly oauthSessionTokenService: OauthSessionTokenService
 	) {}
 
-	async logout(jwt: string): Promise<void> {
+	public async logout(jwt: string): Promise<void> {
 		await this.authenticationService.removeJwtFromWhitelist(jwt);
 	}
 
-	async logoutOidc(logoutToken: string): Promise<void> {
+	public async logoutOidc(logoutToken: string): Promise<void> {
 		// Do not publish any information (like the users existence) before validating the logout tokens origin
 		try {
 			const account: Account = await this.logoutService.getAccountFromLogoutToken(logoutToken);
@@ -41,7 +41,7 @@ export class LogoutUc {
 		}
 	}
 
-	async externalSystemLogout(user: ICurrentUser): Promise<void> {
+	public async externalSystemLogout(user: ICurrentUser): Promise<void> {
 		if (!this.configService.get<boolean>('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED')) {
 			throw new ExternalSystemLogoutIsDisabledLoggableException();
 		}
@@ -57,6 +57,6 @@ export class LogoutUc {
 			return;
 		}
 
-		await this.authenticationService.logoutFromExternalSystem(sessionToken, system);
+		await this.logoutService.logoutFromExternalSystem(sessionToken, system);
 	}
 }

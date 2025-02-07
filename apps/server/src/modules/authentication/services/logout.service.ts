@@ -1,11 +1,21 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import { OAuthService } from '@modules/oauth';
+import {
+	OAuthService,
+	OauthSessionToken,
+	OauthSessionTokenService,
+	OauthConfigMissingLoggableException,
+} from '@modules/oauth';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
+import { AxiosError, AxiosHeaders, AxiosRequestConfig } from 'axios';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { firstValueFrom } from 'rxjs';
+import { EndSessionEndpointNotFoundLoggableException, ExternalSystemLogoutFailedLoggableException } from '../errors';
 import { AccountSystemMismatchLoggableException, InvalidTokenLoggableException } from '../loggable';
 
 @Injectable()
@@ -14,10 +24,13 @@ export class LogoutService {
 		private readonly systemService: SystemService,
 		private readonly oauthService: OAuthService,
 		private readonly userService: UserService,
-		private readonly accountService: AccountService
+		private readonly accountService: AccountService,
+		private readonly oauthSessionTokenService: OauthSessionTokenService,
+		@Inject(DefaultEncryptionService) private readonly oauthEncryptionService: EncryptionService,
+		private readonly httpService: HttpService
 	) {}
 
-	async getAccountFromLogoutToken(logoutToken: string): Promise<Account> {
+	public async getAccountFromLogoutToken(logoutToken: string): Promise<Account> {
 		const decodedLogoutToken: JwtPayload | null = jwt.decode(logoutToken, { json: true });
 
 		if (!decodedLogoutToken || !decodedLogoutToken.iss || !decodedLogoutToken.sub) {
@@ -51,5 +64,49 @@ export class LogoutService {
 		}
 
 		return account;
+	}
+
+	public async logoutFromExternalSystem(sessionToken: OauthSessionToken, system: System): Promise<void> {
+		if (!system.oauthConfig) {
+			throw new OauthConfigMissingLoggableException(system.id);
+		}
+
+		if (!system?.oauthConfig.endSessionEndpoint) {
+			throw new EndSessionEndpointNotFoundLoggableException(system.id);
+		}
+
+		const now = new Date();
+		if (now > sessionToken.expiresAt) {
+			await this.oauthSessionTokenService.delete(sessionToken);
+			return;
+		}
+
+		const headers: AxiosHeaders = new AxiosHeaders();
+		headers.setContentType('application/x-www-form-urlencoded');
+
+		const config: AxiosRequestConfig = {
+			auth: {
+				username: system.oauthConfig.clientId,
+				password: this.oauthEncryptionService.decrypt(system.oauthConfig.clientSecret),
+			},
+			headers,
+		};
+
+		try {
+			await firstValueFrom(
+				this.httpService.post(
+					system.oauthConfig.endSessionEndpoint,
+					{
+						refresh_token: sessionToken.refreshToken,
+					},
+					config
+				)
+			);
+		} catch (err) {
+			const axiosError = err as AxiosError;
+			throw new ExternalSystemLogoutFailedLoggableException(sessionToken.userId, system.id, axiosError);
+		}
+
+		await this.oauthSessionTokenService.delete(sessionToken);
 	}
 }
