@@ -1,6 +1,5 @@
 import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
@@ -9,6 +8,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity } from '@shared/domain/entity';
+import { DatabaseManagementService } from '@testing/database';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
