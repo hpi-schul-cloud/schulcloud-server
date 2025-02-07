@@ -1,6 +1,5 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
@@ -13,6 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 

@@ -1,6 +1,6 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AccountModule } from './account.module';
 import { AccountEntity } from './domain/entity/account.entity';
 import { AccountService } from './domain/services/account.service';

@@ -1,7 +1,7 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { SystemEntity } from '@modules/system/entity';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { KeycloakConsole } from './console/keycloak-configuration.console';
 import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';

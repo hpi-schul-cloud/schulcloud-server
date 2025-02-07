@@ -1,11 +1,11 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym } from '@shared/domain/domainobject';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymEntity } from '../entity';

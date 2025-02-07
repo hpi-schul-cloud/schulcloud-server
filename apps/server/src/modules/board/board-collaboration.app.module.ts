@@ -1,13 +1,13 @@
 import { CoreModule } from '@core/core.module';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
 import { serverConfig } from '../server';
 import { config } from './board-collaboration.config';

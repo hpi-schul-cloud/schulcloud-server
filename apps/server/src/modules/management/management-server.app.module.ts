@@ -1,8 +1,8 @@
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ENTITIES, TEST_ENTITIES } from './management.entity.imports';
 import { ManagementModule } from './management.module';
 

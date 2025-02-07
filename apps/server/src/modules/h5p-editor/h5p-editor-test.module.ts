@@ -1,12 +1,12 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { AuthorizationClientModule } from '@infra/authorization-client';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { AuthenticationApiTestModule } from '@modules/authentication/authentication-api-test.module';
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
+import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@testing/database';
 import { H5PEditorController } from './controller';
 import { H5PEditorModule } from './h5p-editor.app.module';
 import { authorizationClientConfig, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';

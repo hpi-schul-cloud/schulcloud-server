@@ -2,7 +2,6 @@ import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EtherpadClientModule } from '@infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -16,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 

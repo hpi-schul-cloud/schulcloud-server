@@ -1,13 +1,12 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-
-import { LegacyLogger } from '@core/logger';
 import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
 import { v4 as uuidv4 } from 'uuid';

@@ -1,7 +1,7 @@
 import { DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
 import { TEST_ENTITIES } from './deletion-console.entity.imports';

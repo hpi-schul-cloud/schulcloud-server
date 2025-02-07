@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { type SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { LegacyLogger } from '@core/logger';
 import { systemEntityFactory } from '@modules/system/testing';

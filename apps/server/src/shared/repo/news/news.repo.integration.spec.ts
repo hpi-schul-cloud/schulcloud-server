@@ -1,4 +1,3 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -6,6 +5,7 @@ import { Course, CourseGroup, CourseNews, News, SchoolNews, TeamEntity, TeamNews
 import { SortOrder } from '@shared/domain/interface';
 import { NewsTargetModel } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import {
 	courseNewsFactory,
 	courseUnpublishedNewsFactory,

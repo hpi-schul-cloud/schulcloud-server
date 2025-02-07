@@ -1,6 +1,6 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FilesStorageApiModule } from './files-storage-api.app.module';
 import { TEST_ENTITIES } from './files-storage.entity.imports';
 

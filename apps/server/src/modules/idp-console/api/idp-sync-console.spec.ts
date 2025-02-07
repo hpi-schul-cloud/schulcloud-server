@@ -1,6 +1,6 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from 'bson';
 import { IdpConsoleModule } from '../idp-console.app.module';
 import { TEST_ENTITIES } from '../idp.entity.imports';

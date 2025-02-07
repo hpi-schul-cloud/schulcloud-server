@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createCollections } from '@testing/create-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { TEST_ENTITIES } from '../management.entity.imports';
 import { DatabaseManagementService } from './database-management.service';
 
