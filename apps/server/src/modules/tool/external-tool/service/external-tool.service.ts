@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { OauthProviderService } from '@modules/oauth-provider/domain/service/oauth-provider.service';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
@@ -5,7 +6,6 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolRepo } from '@shared/repo/externaltool';
-import { LegacyLogger } from '@core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
@@ -67,7 +67,7 @@ export class ExternalToolService {
 			})
 		);
 
-		tools.data = resolvedTools.filter((tool) => tool !== undefined);
+		tools.data = resolvedTools.filter((tool): tool is ExternalTool => tool !== undefined);
 
 		return tools;
 	}

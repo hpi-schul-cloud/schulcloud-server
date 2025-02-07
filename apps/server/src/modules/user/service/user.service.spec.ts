@@ -851,6 +851,14 @@ describe('UserService', () => {
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
+				config.get.mockImplementationOnce((key) => {
+					if (key === 'CALENDAR_SERVICE_ENABLED') {
+						return true;
+					}
+
+					return false;
+				});
+
 				return {
 					expectedResult,
 					user,

@@ -7,7 +7,6 @@ import {
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
 	ComponentLernstoreProperties,
-	ComponentNexboardProperties,
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
@@ -133,17 +132,6 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 				contents: [{ ...contents, component: ComponentType.LERNSTORE, content: contentLernstore }],
 			});
 
-			const contentNexboard: ComponentNexboardProperties = {
-				title: 'nexboard content',
-				url: 'nexboardUrl',
-				board: 'nexboard',
-				description: 'nexboard description',
-			};
-			const lessonWithNexboard = lessonFactory.build({
-				course,
-				contents: [{ ...contents, component: ComponentType.NEXBOARD, content: contentNexboard }],
-			});
-
 			await em.persistAndFlush([
 				teacherAccount,
 				teacherUser,
@@ -153,7 +141,6 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 				lessonWithEtherpad,
 				lessonWithInternal,
 				lessonWithLernstore,
-				lessonWithNexboard,
 			]);
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -165,13 +152,11 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 				lessonWithEtherpad,
 				lessonWithInternal,
 				lessonWithLernstore,
-				lessonWithNexboard,
 				contentText,
 				contentGeogebra,
 				contentEtherpad,
 				contentInternal,
 				contentLernstore,
-				contentNexboard,
 			};
 		};
 
@@ -237,17 +222,6 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const componentProps = body.contents[0] as ComponentProperties;
 			expect(componentProps.component).toEqual(ComponentType.LERNSTORE);
 			expect(componentProps.content).toEqual(contentLernstore);
-		});
-		it('should return lesson with Nexboard contents', async () => {
-			const { loggedInClient, lessonWithNexboard, contentNexboard } = await setup();
-
-			const response = await loggedInClient.get(`${lessonWithNexboard.id}`);
-			expect(response.status).toBe(HttpStatus.OK);
-
-			const body = response.body as LessonResponse;
-			const componentProps = body.contents[0] as ComponentProperties;
-			expect(componentProps.component).toEqual(ComponentType.NEXBOARD);
-			expect(componentProps.content).toEqual(contentNexboard);
 		});
 	});
 

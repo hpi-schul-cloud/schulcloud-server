@@ -7,7 +7,6 @@ import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
-	ComponentNexboardProperties,
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
@@ -18,7 +17,6 @@ import { randomBytes } from 'crypto';
 import { LessonRepo } from '../repository';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
-import { NexboardService } from './nexboard.service';
 
 @Injectable()
 export class LessonCopyService {
@@ -26,7 +24,6 @@ export class LessonCopyService {
 		private readonly copyHelperService: CopyHelperService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly etherpadService: EtherpadService,
-		private readonly nexboardService: NexboardService,
 		private readonly lessonRepo: LessonRepo,
 		private readonly copyFilesService: CopyFilesService
 	) {}
@@ -166,7 +163,6 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
-		const nexboardCopyEnabled = Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean;
 		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
 		for (let i = 0; i < content.length; i += 1) {
@@ -222,25 +218,6 @@ export class LessonCopyService {
 				};
 				copiedContent.push(linkContent);
 				copiedContentStatus.push(embeddedTaskStatus);
-			}
-			if (element.component === ComponentType.NEXBOARD) {
-				const nexboardStatus = {
-					title: element.title,
-					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
-					status: CopyStatusEnum.FAIL,
-				};
-
-				if (nexboardCopyEnabled) {
-					// eslint-disable-next-line no-await-in-loop
-					const nexboardContent = await this.copyNexboard(element, params);
-
-					if (nexboardContent) {
-						copiedContent.push(nexboardContent);
-						nexboardStatus.status = CopyStatusEnum.PARTIAL;
-					}
-				}
-
-				copiedContentStatus.push(nexboardStatus);
 			}
 		}
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
@@ -312,24 +289,6 @@ export class LessonCopyService {
 		if (etherpadPadId) {
 			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
 			content.url = `${etherpadUri}/${etherpadPadId}`;
-			copy.content = content;
-			return copy;
-		}
-		return false;
-	}
-
-	private async copyNexboard(
-		originalElement: ComponentProperties,
-		params: LessonCopyParams
-	): Promise<ComponentProperties | false> {
-		const copy = { ...originalElement } as ComponentProperties;
-		delete copy._id;
-		const content = { ...copy.content, url: '', board: '' } as ComponentNexboardProperties;
-
-		const nexboard = await this.nexboardService.createNexboard(params.user.id, content.title, content.description);
-		if (nexboard) {
-			content.url = nexboard.url;
-			content.board = nexboard.board;
 			copy.content = content;
 			return copy;
 		}

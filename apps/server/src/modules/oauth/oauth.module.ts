@@ -10,9 +10,8 @@ import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo/ltitool';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenMikroOrmRepo } from './repo';
-import { HydraSsoService, OAuthService, OauthSessionTokenService } from './service';
+import { OAuthService, OauthSessionTokenService } from './service';
 
 @Module({
 	imports: [
@@ -30,11 +29,9 @@ import { HydraSsoService, OAuthService, OauthSessionTokenService } from './servi
 	],
 	providers: [
 		OAuthService,
-		HydraSsoService,
-		LtiToolRepo,
 		{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo },
 		OauthSessionTokenService,
 	],
-	exports: [OAuthService, HydraSsoService, OauthSessionTokenService],
+	exports: [OAuthService, OauthSessionTokenService],
 })
 export class OauthModule {}
