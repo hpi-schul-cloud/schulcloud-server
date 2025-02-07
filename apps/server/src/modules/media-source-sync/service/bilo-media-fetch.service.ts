@@ -27,7 +27,11 @@ export class BiloMediaFetchService {
 	) {}
 
 	public async fetchMediaMetadata(mediumIds: string[], mediaSource: MediaSource): Promise<BiloMediaQueryResponse[]> {
-		const url = new URL(`${mediaSource.sourceId}/query`);
+		if (!mediaSource.oauthConfig) {
+			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
+		}
+
+		const url = new URL(`${mediaSource.oauthConfig.baseUrl}/query`);
 
 		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string) => new BiloMediaQueryBodyParams({ id }));
 
@@ -50,18 +54,16 @@ export class BiloMediaFetchService {
 	}
 
 	private async fetchAccessToken(mediaSource: MediaSource): Promise<OAuthTokenDto> {
-		if (!mediaSource.oauthConfig) {
-			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
-		}
+		const oauthConfig = mediaSource.oauthConfig as MediaSourceOauthConfig;
 
 		const credentials = new ClientCredentialsGrantTokenRequest({
-			client_id: mediaSource.oauthConfig.clientId,
-			client_secret: this.encryptionService.decrypt(mediaSource.oauthConfig.clientSecret),
+			client_id: oauthConfig.clientId,
+			client_secret: this.encryptionService.decrypt(oauthConfig.clientSecret),
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
 		const accessToken: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(
-			mediaSource.oauthConfig.authEndpoint,
+			oauthConfig.authEndpoint,
 			credentials
 		);
 
