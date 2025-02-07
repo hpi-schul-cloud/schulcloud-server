@@ -1,4 +1,3 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
@@ -6,6 +5,7 @@ import { accountFactory } from '@modules/account/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
