@@ -1,17 +1,17 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym } from '@shared/domain/domainobject';
-import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymEntity } from '../entity';
-import { PseudonymsRepo } from './pseudonyms.repo';
 import { pseudonymEntityFactory } from '../testing';
+import { PseudonymsRepo } from './pseudonyms.repo';
 
 describe('PseudonymRepo', () => {
 	let module: TestingModule;
