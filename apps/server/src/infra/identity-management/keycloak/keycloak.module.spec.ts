@@ -1,9 +1,9 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { KeycloakModule } from './keycloak.module';
-import { KeycloakIdentityManagementService } from './service/keycloak-identity-management.service';
 import { KeycloakIdentityManagementOauthService } from './service/keycloak-identity-management-oauth.service';
+import { KeycloakIdentityManagementService } from './service/keycloak-identity-management.service';
 
 describe('KeycloakModule', () => {
 	let module: TestingModule;
