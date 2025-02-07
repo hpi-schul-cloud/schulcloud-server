@@ -18,7 +18,6 @@ const createTestCourse =
 		userIds = [],
 		classIds = [],
 		teacherIds = [],
-		ltiToolIds = [],
 		substitutionIds = [],
 		features = [],
 		startDate,
@@ -34,7 +33,6 @@ const createTestCourse =
 			userIds,
 			classIds,
 			teacherIds,
-			ltiToolIds,
 			substitutionIds,
 			features,
 			startDate,
@@ -54,8 +52,10 @@ const cleanup = () => {
 	return removeManyCourses(ids);
 };
 
-module.exports = (app, opt) => ({
-	create: createTestCourse(app, opt),
-	cleanup,
-	info: createdCourseIds,
-});
+module.exports = (app, opt) => {
+	return {
+		create: createTestCourse(app, opt),
+		cleanup,
+		info: createdCourseIds,
+	};
+};
