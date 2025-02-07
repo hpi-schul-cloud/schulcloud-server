@@ -21,6 +21,7 @@ import { OauthConfig } from '@modules/oauth';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { RoomConfig } from '@modules/room';
+import { RoomMembershipConfig } from '@modules/room-membership';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
@@ -78,7 +79,8 @@ export interface ServerConfig
 		EncryptionConfig,
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
-		ManagementServerConfig {
+		ManagementServerConfig,
+		RoomMembershipConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
