@@ -62,7 +62,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
 		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
 
-		const syncPromises: Promise<void>[] = externalTools.map(async (externalTool: ExternalTool) => {
+		const countAndUpdateMetadata = async (externalTool: ExternalTool): Promise<void> => {
 			const targetMetadata = metadataItems.find(
 				(metadataItem: BiloMediaQueryResponse) => externalTool.medium?.mediumId === metadataItem.id
 			);
@@ -79,19 +79,24 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
 
-			await this.updateMediaMetadata(externalTool, targetMetadata);
+			await this.mapBiloResponseToExternalTool(externalTool, targetMetadata);
+
+			await this.externalToolService.updateExternalTool(externalTool);
 
 			if (isMetadataFirstSync) {
 				createSuccessReport.count += 1;
 			} else {
 				updateSuccessReport.count += 1;
 			}
-		});
+		};
 
-		await Promise.all(syncPromises).catch(() => {
-			// FIXME
-			failureReport.count += 1;
-		});
+		const syncPromises: Promise<void>[] = externalTools.map((externalTool: ExternalTool) =>
+			countAndUpdateMetadata(externalTool).catch(() => {
+				failureReport.count += 1;
+			})
+		);
+
+		await Promise.all(syncPromises);
 
 		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
 			createSuccessReport,
@@ -111,18 +116,30 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		return !!isUpToDate;
 	}
 
-	private async updateMediaMetadata(externalTool: ExternalTool, metadataItem: BiloMediaQueryResponse): Promise<void> {
+	private async mapBiloResponseToExternalTool(
+		externalTool: ExternalTool,
+		metadataItem: BiloMediaQueryResponse
+	): Promise<void> {
 		externalTool.name = metadataItem.title;
 		externalTool.description = metadataItem.description;
 		externalTool.logoUrl = metadataItem.cover.href;
-		// TODO updating thumbnail requires jwt (not possible for now)
-		// externalTool.thumbnail = metadataItem.coverSmall.href;
 
 		const medium = externalTool.medium as ExternalToolMedium;
 		medium.publisher = metadataItem.publisher;
-		medium.metadataModifiedAt = new Date(metadataItem.modified);
+		medium.metadataModifiedAt = new Date(metadataItem.modified * 1000);
 
-		// TODO try to use batch write op
-		await this.externalToolService.updateExternalTool(externalTool);
+		externalTool.thumbnail = await this.updateExternalToolThumbnail(externalTool, metadataItem.coverSmall.href);
+	}
+
+	private async updateExternalToolThumbnail(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		externalTool: ExternalTool,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		thumbnailUrl: string
+	): Promise<FileRecordRef | undefined> {
+		// TODO updating thumbnail requires jwt (not possible for now)
+		await Promise.resolve();
+
+		return undefined;
 	}
 }

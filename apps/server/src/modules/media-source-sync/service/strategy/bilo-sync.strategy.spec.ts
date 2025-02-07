@@ -5,15 +5,10 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
-import { MediaSourceDataFormat, MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../enum';
-import {
-	biloMediaQueryResponseFactory,
-	mediaSourceFactory,
-	mediaSourceSyncOperationReportFactory,
-	mediaSourceSyncReportFactory,
-} from '../../testing';
-import { MediaSourceSyncReport } from '../../domain';
-import { BiloMediaQueryResponse, BiloLinkResponse } from '../../domain/response';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
+import { MediaSourceSyncReport } from '../../interface';
+import { BiloMediaQueryResponse, BiloLinkResponse } from '../../response';
+import { biloMediaQueryResponseFactory, mediaSourceSyncOperationReportFactory } from '../../testing';
 import { BiloMediaFetchService } from '../bilo-media-fetch.service';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
 
@@ -349,33 +344,36 @@ describe(BiloSyncStrategy.name, () => {
 				externalToolService.updateExternalTool.mockRejectedValueOnce(mockError);
 				externalToolService.updateExternalTool.mockRejectedValueOnce(mockError);
 
-				const expectedSyncReport = mediaSourceSyncReportFactory.build({
+				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
 					totalCount: mediums.length,
 					successCount: 1,
+					undeliveredCount: 0,
 					failedCount: 2,
-					operations: [
-						mediaSourceSyncOperationReportFactory.build({
-							status: MediaSourceSyncStatus.FAILED,
-							operation: MediaSourceSyncOperation.ANY,
-							count: 2,
-						}),
-						mediaSourceSyncOperationReportFactory.build({
-							status: MediaSourceSyncStatus.SUCCESS,
-							operation: MediaSourceSyncOperation.CREATE,
-							count: 1,
-						}),
-					],
-				});
+				};
 
-				return { mediaSource, expectedSyncReport };
+				const expectedOperations = [
+					mediaSourceSyncOperationReportFactory.build({
+						status: MediaSourceSyncStatus.FAILED,
+						operation: MediaSourceSyncOperation.ANY,
+						count: 2,
+					}),
+					mediaSourceSyncOperationReportFactory.build({
+						status: MediaSourceSyncStatus.SUCCESS,
+						operation: MediaSourceSyncOperation.CREATE,
+						count: 1,
+					}),
+				];
+
+				return { mediaSource, expectedSyncReport, expectedOperations };
 			};
 
 			it('should return sync report with error operations', async () => {
-				const { mediaSource, expectedSyncReport } = setup();
+				const { mediaSource, expectedSyncReport, expectedOperations } = setup();
 
 				const result = await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(result).toEqual(expectedSyncReport);
+				expect(result).toMatchObject(expectedSyncReport);
+				expect(result.operations).toEqual(expect.arrayContaining(expectedOperations));
 			});
 		});
 	});
