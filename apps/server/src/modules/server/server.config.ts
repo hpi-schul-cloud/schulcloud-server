@@ -21,6 +21,7 @@ import { OauthConfig } from '@modules/oauth';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RocketChatUserConfig } from '@modules/rocketchat-user';
 import { RoomConfig } from '@modules/room';
+import { RoomMembershipConfig } from '@modules/room-membership';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { ShdConfig } from '@modules/shd';
@@ -78,7 +79,8 @@ export interface ServerConfig
 		EncryptionConfig,
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
-		ManagementServerConfig {
+		ManagementServerConfig,
+		RoomMembershipConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -288,8 +290,6 @@ const config: ServerConfig = {
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
 	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	BOARD_COLLABORATION_URI: Configuration.get('BOARD_COLLABORATION_URI') as string,
-	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
-	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
 	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
 		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
 	) as number,

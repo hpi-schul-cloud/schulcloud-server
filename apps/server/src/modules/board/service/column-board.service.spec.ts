@@ -100,7 +100,7 @@ describe('ColumnBoardService', () => {
 		await service.deleteByCourseId('1');
 
 		expect(repo.findByExternalReference).toHaveBeenCalledWith(reference, undefined);
-		expect(repo.delete).toHaveBeenCalledWith([columnBoard]);
+		expect(boardNodeService.delete).toHaveBeenCalledWith(columnBoard);
 	});
 
 	it('should copy ColumnBoard', async () => {

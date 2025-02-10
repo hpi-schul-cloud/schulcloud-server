@@ -53,8 +53,6 @@ describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
 	const config: ToolConfig = {
-		FEATURE_CTL_TOOLS_TAB_ENABLED: false,
-		FEATURE_LTI_TOOLS_TAB_ENABLED: false,
 		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
 		CTL_TOOLS_BACKEND_URL: '',
 		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
