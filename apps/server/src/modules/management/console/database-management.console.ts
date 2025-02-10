@@ -37,7 +37,7 @@ export class DatabaseManagementConsole {
 		],
 		description: 'reset database collections with seed data from filesystem',
 	})
-	async seedCollections(options: Options): Promise<string[]> {
+	public async seedCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
 
 		const collections = options.onlyfactories
@@ -64,7 +64,7 @@ export class DatabaseManagementConsole {
 		],
 		description: 'export database collections to filesystem',
 	})
-	async exportCollections(options: Options): Promise<string[]> {
+	public async exportCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
 		const toSeedFolder = options?.override ? true : undefined;
 		const collections = await this.databaseManagementUc.exportCollectionsToFileSystem(filter, toSeedFolder);
@@ -78,7 +78,7 @@ export class DatabaseManagementConsole {
 		options: [],
 		description: 'sync indexes from nest and mikroorm',
 	})
-	async syncIndexes(): Promise<string> {
+	public async syncIndexes(): Promise<string> {
 		await this.databaseManagementUc.syncIndexes();
 		const report = 'sync of indexes is completed';
 		this.consoleWriter.info(report);
@@ -121,7 +121,7 @@ export class DatabaseManagementConsole {
 		],
 		description: 'Execute MikroOrm migration up/down',
 	})
-	async migration(migrationOptions: MigrationOptions): Promise<string> {
+	public async migration(migrationOptions: MigrationOptions): Promise<string> {
 		let report = 'no migration option was given';
 		if (!migrationOptions.up && !migrationOptions.down && !migrationOptions.pending) {
 			this.consoleWriter.error(report);
