@@ -66,7 +66,7 @@ export class DatabaseManagementService {
 	}
 
 	public async syncIndexes(): Promise<void> {
-		return this.orm.getSchemaGenerator().ensureIndexes();
+		await this.orm.getSchemaGenerator().ensureIndexes();
 	}
 
 	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
@@ -88,7 +88,13 @@ export class DatabaseManagementService {
 		return pendingMigrations;
 	}
 
-	private migrationParams(only?: string, from?: string, to?: string) {
+	public async migrationCreate(): Promise<void> {
+		const migrator = this.orm.getMigrator();
+
+		await migrator.createInitialMigration();
+	}
+
+	private migrationParams(only?: string, from?: string, to?: string): MigrateOptions {
 		const params: MigrateOptions = {};
 		if (only) {
 			params.migrations = [only];
