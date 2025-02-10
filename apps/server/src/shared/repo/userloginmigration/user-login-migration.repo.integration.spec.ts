@@ -21,7 +21,7 @@ describe('UserLoginMigrationRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [UserLoginMigrationEntity] })],
 			providers: [
 				UserLoginMigrationRepo,
 				{

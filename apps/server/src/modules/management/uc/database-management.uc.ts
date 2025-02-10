@@ -1,6 +1,5 @@
 import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
@@ -13,6 +12,7 @@ import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import { DatabaseManagementService } from '../service/database-management.service';
 
 export interface CollectionFilePath {
 	filePath: string;

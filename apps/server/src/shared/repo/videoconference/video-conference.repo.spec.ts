@@ -28,7 +28,7 @@ describe('Video Conference Repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [VideoConference] })],
 			providers: [
 				VideoConferenceRepoSpec,
 				{

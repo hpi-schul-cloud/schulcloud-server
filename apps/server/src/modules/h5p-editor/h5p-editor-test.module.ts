@@ -6,12 +6,11 @@ import { S3ClientModule } from '@infra/s3-client';
 import { AuthenticationApiTestModule } from '@modules/authentication/authentication-api-test.module';
 import { UserModule } from '@modules/user';
 import { DynamicModule, Module } from '@nestjs/common';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@testing/database';
 import { H5PEditorController } from './controller';
-import { H5PContent } from './entity';
 import { H5PEditorModule } from './h5p-editor.app.module';
 import { authorizationClientConfig, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
+import { TEST_ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
 import { H5PContentRepo, LibraryRepo } from './repo';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from './service';
@@ -19,7 +18,7 @@ import { H5PEditorUc } from './uc/h5p.uc';
 
 const imports = [
 	H5PEditorModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [...ALL_ENTITIES, H5PContent] }),
+	MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }),
 	AuthenticationApiTestModule,
 	AuthorizationClientModule.register(authorizationClientConfig),
 	UserModule,

@@ -25,7 +25,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolEntity] })],
 			providers: [{ provide: SCHOOL_REPO, useClass: SchoolMikroOrmRepo }],
 		}).compile();
 
