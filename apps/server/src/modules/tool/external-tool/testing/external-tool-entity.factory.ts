@@ -57,6 +57,17 @@ export const lti11ToolConfigEntityFactory = BaseFactory.define<Lti11ToolConfigEn
 	}
 );
 
+export const mediumEntityFactory = BaseFactory.define<ExternalToolMediumEntity, ExternalToolMediumEntity>(
+	ExternalToolMediumEntity,
+	() => {
+		return {
+			mediumId: 'mediumId',
+			publisher: 'publisher',
+			mediaSourceId: 'mediaSourceId',
+		};
+	}
+);
+
 export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, ExternalToolEntityProps> {
 	withName(name: string): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
@@ -98,14 +109,9 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, E
 		return this.params(params);
 	}
 
-	withMedium(medium?: ExternalToolMediumEntity): this {
+	withMedium(medium?: DeepPartial<ExternalToolMediumEntity>): this {
 		const params: DeepPartial<ExternalToolEntityProps> = {
-			medium: new ExternalToolMediumEntity({
-				mediumId: 'mediumId',
-				publisher: 'publisher',
-				mediaSourceId: 'mediaSourceId',
-				...medium,
-			}),
+			medium: mediumEntityFactory.build(medium),
 		};
 
 		return this.params(params);

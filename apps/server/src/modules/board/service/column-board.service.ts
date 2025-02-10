@@ -48,7 +48,7 @@ export class ColumnBoardService {
 			id: courseId,
 		});
 
-		await this.boardNodeRepo.delete(boardNodes);
+		await Promise.all(boardNodes.map(async (boardNode) => this.boardNodeService.delete(boardNode)));
 	}
 
 	public async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {

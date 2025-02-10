@@ -7,7 +7,7 @@ import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -29,7 +29,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				SchulconnexFetchImportUsersService,
 				{
