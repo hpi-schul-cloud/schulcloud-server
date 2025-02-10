@@ -44,10 +44,10 @@ class EduSharingConnector {
 
 		try {
 			if (secretOptions.method.toUpperCase() === 'GET') {
-				return await axios(secretOptions);
+				return await axios.get(secretOptions.url, secretOptions);
 			}
 			if (secretOptions.method.toUpperCase() === 'POST') {
-				return await axios(secretOptions);
+				return await axios.post(secretOptions.url, secretOptions);
 			}
 			return null;
 		} catch (err) {
