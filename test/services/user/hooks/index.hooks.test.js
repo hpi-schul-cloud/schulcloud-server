@@ -1,4 +1,3 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
@@ -25,10 +24,6 @@ describe('user hooks', () => {
 		userService = app.service('users');
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
-	});
-
-	afterEach(async () => {
-		mockery.disable();
 	});
 
 	after(async () => {
