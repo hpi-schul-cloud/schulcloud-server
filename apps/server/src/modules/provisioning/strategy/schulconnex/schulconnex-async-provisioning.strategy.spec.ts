@@ -20,7 +20,7 @@ import {
 import { ExternalLicenseDto, OauthDataDto, ProvisioningDto, ProvisioningSystemDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
-import { SchulconnexAsyncProvisioningStrategy } from './schulconnex-async.strategy';
+import { SchulconnexAsyncProvisioningStrategy } from './schulconnex-async-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import {
 	SchulconnexGroupProvisioningService,
