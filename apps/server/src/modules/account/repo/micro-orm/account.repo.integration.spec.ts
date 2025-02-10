@@ -24,7 +24,7 @@ describe('AccountRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, User] })],
 			providers: [AccountTestRepo],
 		}).compile();
 		repo = module.get(AccountTestRepo);

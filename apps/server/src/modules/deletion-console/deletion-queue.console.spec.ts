@@ -6,6 +6,7 @@ import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionUc } from './uc';
 
@@ -16,7 +17,10 @@ describe(DeletionQueueConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [DeletionConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+			imports: [
+				DeletionConsoleModule,
+				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+			],
 		}).compile();
 
 		console = module.get(DeletionQueueConsole);

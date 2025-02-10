@@ -15,7 +15,7 @@ describe('RoomMembershipRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [RoomMembershipEntity] })],
 			providers: [RoomMembershipRepo],
 		}).compile();
 

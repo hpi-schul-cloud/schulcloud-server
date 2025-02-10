@@ -23,8 +23,8 @@
 	"mikro-orm": {
 		"useTsNode": true,
 		"configPaths": [
-			"./apps/server/src/config/mikro-orm-cli.config.ts",
-			"./dist/server/config/mikro-orm-cli.config.js"
+			"./apps/server/src/modules/management/mikro-orm-cli.config.ts",
+			"./dist/server/modules/management/mikro-orm-cli.config.js"
 		]
 	},
 	"scripts": {
@@ -160,7 +160,7 @@
 		"@feathersjs/authentication": "^5.0.31",
 		"@feathersjs/authentication-local": "^5.0.31",
 		"@feathersjs/commons": "^5.0.31",
-		"@feathersjs/configuration": "^5.0.31",
+		"@feathersjs/configuration": "^5.0.32",
 		"@feathersjs/errors": "^5.0.31",
 		"@feathersjs/express": "^5.0.31",
 		"@feathersjs/feathers": "^5.0.31",
