@@ -17,6 +17,9 @@ export class DeletionBatchUsersRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {
+		if (userIds.length === 0) {
+			return [];
+		}
 		const pipeline = [
 			{
 				$match: {
@@ -58,6 +61,9 @@ export class DeletionBatchUsersRepo {
 	}
 
 	public async getUsersByRole(userIds: EntityId[]): Promise<UserIdsByRole[]> {
+		if (userIds.length === 0) {
+			return [];
+		}
 		const pipeline = [
 			{
 				$match: {
