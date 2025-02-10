@@ -6,12 +6,8 @@ import { System, SystemService } from '@modules/system';
 import { OauthConfigEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
-import {
-	OAuthTokenDto,
-	OauthAdapterService,
-	AuthenticationCodeGrantTokenRequest,
-	TokenRequestMapper,
-} from '@modules/oauth-adapter';
+import { OAuthTokenDto, OauthAdapterService, AuthenticationCodeGrantTokenRequest } from '@modules/oauth-adapter';
+import { TokenRequestMapper } from '@modules/oauth-adapter/mapper/token-request.mapper';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { isObject } from '@nestjs/common/utils/shared.utils';

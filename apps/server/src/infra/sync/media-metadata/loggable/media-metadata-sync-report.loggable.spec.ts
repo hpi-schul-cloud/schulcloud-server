@@ -1,5 +1,6 @@
-import { MediaSourceSyncOperationReport, MediaSourceDataFormat } from '@modules/media-source';
-import { mediaSourceSyncReportFactory } from '@modules/media-source/testing';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncOperationReport } from '@modules/media-source-sync';
+import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';
 import { MediaMetadataSyncReportLoggable } from './media-metadata-sync-report.loggable';
 
 describe(MediaMetadataSyncReportLoggable.name, () => {

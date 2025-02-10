@@ -1,8 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSourceSyncService, MediaSourceDataFormat } from '@modules/media-source';
-import { mediaSourceSyncReportFactory } from '@modules/media-source/testing';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncService } from '@modules/media-source-sync';
+import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { MediaMetadataSyncReportLoggable } from '../loggable';
 import { MediaMetadataSyncStrategy } from './media-metadata-sync.strategy';

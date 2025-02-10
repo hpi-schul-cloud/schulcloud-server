@@ -5,7 +5,7 @@ import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { TokenRequestLoggableException } from '../loggable';
-import { TokenRequestMapper } from '../mapper';
+import { TokenRequestMapper } from '../mapper/token-request.mapper';
 import { OAuthTokenDto } from '../domain';
 import { AuthenticationCodeGrantTokenRequest, ClientCredentialsGrantTokenRequest, OauthTokenResponse } from './dto';
 
