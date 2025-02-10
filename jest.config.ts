@@ -14,7 +14,7 @@ let config: Config.InitialOptions = {
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
-	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
+	coveragePathIgnorePatterns: ['.module.ts$', '.entity.imports.ts$', 'index.ts$', 'spec.ts$'],
 	testEnvironment: 'node',
 	// detectOpenHandles: true,
 	// detectLeaks: true,
