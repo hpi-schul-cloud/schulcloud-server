@@ -1506,5 +1506,105 @@
 			"$oid": "6613aa2c7537afa17f3aade6"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "0000d225816abba584714c9e"
+		},
+		"username": "carlo.teacher.ext.qa@schul-cloud.org",
+		"password": "$2a$10$N6rKlBhtXe17undzyxwXHu2o2.3iFnP7WzuQsM6OVON2l5G293Lri",
+		"updatedAt": {
+			"$date": "2020-02-05T15:43:39.516Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "67a3a93c5d5d9cb7f26eb630"
+		},
+		"__v": 0,
+		"lasttriedFailedLogin": {
+			"$date": "1970-01-01T00:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "0000d225816abba584714c9f"
+		},
+		"username": "emma.teacher.ext.qa@schul-cloud.org",
+		"password": "$2a$10$N6rKlBhtXe17undzyxwXHu2o2.3iFnP7WzuQsM6OVON2l5G293Lri",
+		"updatedAt": {
+			"$date": "2020-02-05T15:43:39.516Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "67a3a9735d5d9cb7f26eb69e"
+		},
+		"__v": 0,
+		"lasttriedFailedLogin": {
+			"$date": "1970-01-01T00:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "0000d225816abba584714c8e"
+		},
+		"username": "alex.student.ext.qa@schul-cloud.org",
+		"password": "$2a$10$N6rKlBhtXe17undzyxwXHu2o2.3iFnP7WzuQsM6OVON2l5G293Lri",
+		"updatedAt": {
+			"$date": "2020-02-05T15:43:39.516Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "67a3a9a35d5d9cb7f26eb70c"
+		},
+		"__v": 0,
+		"lasttriedFailedLogin": {
+			"$date": "1970-01-01T00:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "0000d225816abba584714c8f"
+		},
+		"username": "sophia.student.ext.qa@schul-cloud.org",
+		"password": "$2a$10$N6rKlBhtXe17undzyxwXHu2o2.3iFnP7WzuQsM6OVON2l5G293Lri",
+		"updatedAt": {
+			"$date": "2020-02-05T15:43:39.516Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "67a3a9c85d5d9cb7f26eb77a"
+		},
+		"__v": 0,
+		"lasttriedFailedLogin": {
+			"$date": "1970-01-01T00:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "0000d225816abba584714c7e"
+		},
+		"username": "admin.ext.qa@schul-cloud.org",
+		"password": "$2a$10$N6rKlBhtXe17undzyxwXHu2o2.3iFnP7WzuQsM6OVON2l5G293Lri",
+		"updatedAt": {
+			"$date": "2020-02-05T15:43:39.516Z"
+		},
+		"createdAt": {
+			"$date": "2017-01-01T00:06:37.148Z"
+		},
+		"userId": {
+			"$oid": "67a3a9f05d5d9cb7f26eb7e8"
+		},
+		"__v": 0,
+		"lasttriedFailedLogin": {
+			"$date": "1970-01-01T00:00:00Z"
+		}
 	}
 ]
