@@ -51,7 +51,7 @@ describe('deleteBatch', () => {
 		it('should acttually delete the deletion batch', async () => {
 			const { id } = await setup();
 
-			const response = await testApiClient.delete(id);
+			await testApiClient.delete(id);
 
 			const dbResult = await em.findOne(DeletionBatchEntity, { id });
 			expect(dbResult).toBeNull();

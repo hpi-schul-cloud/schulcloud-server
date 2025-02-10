@@ -3,7 +3,6 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserService } from '@modules/user';
-import { DeletionBatchRepo } from '../../repo';
 import {
 	CreateDeletionBatchParams,
 	DeletionBatchDetails,

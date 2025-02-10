@@ -1,8 +1,8 @@
 import { Scope } from '@shared/repo/scope';
 import { FilterQuery } from '@mikro-orm/core';
+import { EntityId } from '@shared/domain/types';
 import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
-import { EntityId } from '@shared/domain/types';
 
 export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 	byDeleteAfter(currentDate: Date): this {
