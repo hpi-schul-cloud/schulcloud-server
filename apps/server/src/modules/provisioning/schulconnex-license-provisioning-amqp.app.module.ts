@@ -7,8 +7,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { SchulconnexLicenseProvisioningConsumerModule } from './schulconnex-license-provisioning-consumer.module';
+import { ENTITIES } from './schulconnex-license-provisioning.entity.imports';
 import { schulconnexProvisioningConfig } from './schulconnex-provisioning.config';
 
 @Module({
@@ -21,7 +21,7 @@ import { schulconnexProvisioningConfig } from './schulconnex-provisioning.config
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, ...HealthEntities],
+			entities: [...ENTITIES, ...HealthEntities],
 		}),
 		RabbitMQWrapperModule,
 		HealthApiModule,
