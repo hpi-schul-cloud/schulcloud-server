@@ -15,7 +15,6 @@ module.exports = function oauth2MockServer({ port = null }) {
 				mockOauth.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 				mockOauth.port = freePort;
 				mockOauth.url = `http://localhost:${mockOauth.port}`;
-				mockOauth.ltiTool = '';
 				mockOauth.post('/clients', (req, res) =>
 					res.send({
 						client_id: 'unit_test',

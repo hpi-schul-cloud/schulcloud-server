@@ -40,7 +40,7 @@ export class GridElement implements IGridElement {
 
 	title?: string;
 
-	private sortReferences = (a: Learnroom, b: Learnroom): 1 | -1 | 0 => {
+	private compareLearnroomReferences = (a: Learnroom, b: Learnroom): 1 | -1 | 0 => {
 		const titleA = a.getMetadata().title;
 		const titleB = b.getMetadata().title;
 		if (titleA < titleB) {
@@ -55,7 +55,8 @@ export class GridElement implements IGridElement {
 	private constructor(props: { id?: EntityId; title?: string; references: Learnroom[] }) {
 		if (props.id) this.id = props.id;
 		if (props.title) this.title = props.title;
-		this.references = props.references.sort(this.sortReferences);
+		const sortedReferences = [...props.references].sort(this.compareLearnroomReferences);
+		this.references = sortedReferences;
 	}
 
 	public static FromPersistedReference(id: EntityId, reference: Learnroom): GridElement {
@@ -108,10 +109,10 @@ export class GridElement implements IGridElement {
 
 	public addReferences(anotherReference: Learnroom[]): void {
 		if (!this.isGroup()) {
-			this.references = this.references.concat(anotherReference).sort(this.sortReferences);
+			this.references = this.references.concat(anotherReference).sort(this.compareLearnroomReferences);
 			this.setGroupName('');
 		} else {
-			this.references = this.references.concat(anotherReference).sort(this.sortReferences);
+			this.references = this.references.concat(anotherReference).sort(this.compareLearnroomReferences);
 		}
 	}
 

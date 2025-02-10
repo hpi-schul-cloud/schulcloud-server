@@ -7,7 +7,6 @@ export * from './dashboard.model.entity';
 export * from './federal-state.entity';
 export * from './legacy-board';
 export * from './lesson.entity';
-export * from './ltitool.entity';
 export * from './materials.entity';
 export * from './news.entity';
 export * from './role.entity';

@@ -30,7 +30,6 @@ describe('course service', () => {
 			userIds: [],
 			classIds: [],
 			teacherIds: [],
-			ltiToolIds: [],
 		});
 		expect(course.name).to.equal('testCourse');
 		expect(course.userIds).to.have.lengthOf(0);
