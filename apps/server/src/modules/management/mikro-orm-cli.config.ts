@@ -3,10 +3,22 @@ import { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import path from 'path';
 import { ENTITIES } from './management.entity.imports';
 
-export const migrationsPath = path.resolve(__dirname, '..', '..', 'migrations', 'mikro-orm');
+const migrationsDistPath = path.resolve(__dirname, '..', '..', 'migrations', 'mikro-orm');
+const migrationsSourcePath = path.resolve(
+	__dirname,
+	'..',
+	'..',
+	'..',
+	'..',
+	'..',
+	'apps',
+	'server',
+	'src',
+	'migrations',
+	'mikro-orm'
+);
 
 const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
-	// TODO repeats server module definitions
 	type: 'mongo',
 	clientUrl: DB_URL,
 	password: DB_PASSWORD,
@@ -15,8 +27,8 @@ const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	allowGlobalContext: true,
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
-		path: migrationsPath, // path to the folder with migrations
-		pathTs: migrationsPath, // path to the folder with TS migrations (if used, we should put path to compiled files in `path`)
+		path: migrationsDistPath, // path to the folder with migrations
+		pathTs: migrationsSourcePath, // path to the folder with TS migrations
 		glob: '!(*.d).{js,ts}', // how to match migration files (all .js and .ts files, but not .d.ts)
 		transactional: false, // wrap each migration in a transaction
 		disableForeignKeys: true, // wrap statements with `set foreign_key_checks = 0` or equivalent
