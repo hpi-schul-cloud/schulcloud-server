@@ -3,7 +3,7 @@ import { BiloMediaRestClient, BiloMediaQueryResponse } from '@infra/bilo-client'
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium, FileRecordRef } from '@modules/tool/external-tool/domain';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport, MediaSourceSyncOperationReport } from '../../interface';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
 import { MediaSourceSyncOperation } from '../../types';
 

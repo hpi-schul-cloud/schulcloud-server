@@ -683,7 +683,7 @@ describe(ExternalToolService.name, () => {
 		it('should save all the external tools', async () => {
 			const { externalTool } = setup();
 
-			const result: ExternalTool[] = await service.updateExternalTools([externalTool]);
+			await service.updateExternalTools([externalTool]);
 
 			expect(externalToolRepo.saveAll).toBeCalled();
 		});
