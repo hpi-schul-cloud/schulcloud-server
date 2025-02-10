@@ -56,7 +56,7 @@ interface Group {
  * This service will be called from feathers to get the roster data for ctl pseudonyms {@link ExternalToolPseudonymEntity}.
  * These data will be used e.g. by bettermarks to resolve and display the usernames.
  */
-@Injectable()
+@Injectable() // Why Feathers in name?
 export class FeathersRosterService {
 	constructor(
 		private readonly userService: UserService,

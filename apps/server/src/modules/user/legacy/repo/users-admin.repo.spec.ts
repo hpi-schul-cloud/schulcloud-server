@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
+import { ClassEntity } from '@modules/class/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
@@ -114,7 +115,11 @@ describe('users admin repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [User, Role, SchoolEntity, SchoolYearEntity, AccountEntity, ClassEntity],
+				}),
+			],
 			providers: [UsersAdminRepo],
 		}).compile();
 		repo = module.get(UsersAdminRepo);
