@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConsoleWriterService } from '@infra/console';
+import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseManagementUc } from '../uc/database-management.uc';
 import { DatabaseManagementConsole } from './database-management.console';
 
@@ -100,16 +100,25 @@ describe('DatabaseManagementConsole', () => {
 				expect(consoleInfoSpy).toHaveBeenCalledWith('migration up is completed');
 				expect(databaseManagementUc.migrationUp).toHaveBeenCalled();
 			});
+
 			it('should migrate down', async () => {
 				await service.migration({ down: true });
 				expect(consoleInfoSpy).toHaveBeenCalledWith('migration down is completed');
 				expect(databaseManagementUc.migrationDown).toHaveBeenCalled();
 			});
+
 			it('should check pending migrations', async () => {
 				await service.migration({ pending: true });
 				expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Pending:'));
 				expect(databaseManagementUc.migrationPending).toHaveBeenCalled();
 			});
+
+			it('should check create migrations', async () => {
+				await service.migration({ create: true });
+				expect(consoleInfoSpy).toHaveBeenCalledWith('migration created');
+				expect(databaseManagementUc.migrationCreate).toHaveBeenCalled();
+			});
+
 			it('should no migrate if no param specified', async () => {
 				await service.migration({});
 				expect(consoleErrorSpy).toHaveBeenCalledWith('no migration option was given');
