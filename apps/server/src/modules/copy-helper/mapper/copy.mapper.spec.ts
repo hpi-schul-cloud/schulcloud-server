@@ -63,13 +63,13 @@ describe('copy mapper', () => {
 				title: 'Test element',
 				type: CopyElementType.COURSE || CopyElementType.TASK,
 				status: CopyStatusEnum.PARTIAL,
-				elements: [{ title: 'Sub element', type: CopyElementType.LTITOOL_GROUP, status: CopyStatusEnum.NOT_DOING }],
+				elements: [{ title: 'Sub element', type: CopyElementType.BOARD, status: CopyStatusEnum.NOT_DOING }],
 			};
 			const result = CopyMapper.mapToResponse(copyStatus);
 
 			expect(result.elements).toBeDefined();
 			if (result.elements) {
-				expect(result.elements[0].type).toEqual(CopyElementType.LTITOOL_GROUP);
+				expect(result.elements[0].type).toEqual(CopyElementType.BOARD);
 			}
 		});
 	});

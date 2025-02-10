@@ -261,17 +261,15 @@ describe('course copy service', () => {
 			expect(status.title).toEqual((status.copyEntity as Course).name);
 		});
 
-		it('should set static statuses (metadata, ltitools, usergroup, timegroup)', async () => {
+		it('should set static statuses (metadata, usergroup, timegroup)', async () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 
 			const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
-			const ltiToolsStatus = status.elements?.find((el) => el.type === CopyElementType.LTITOOL_GROUP);
 			const teachersStatus = status.elements?.find((el) => el.type === CopyElementType.USER_GROUP);
 			const timesStatus = status.elements?.find((el) => el.type === CopyElementType.TIME_GROUP);
 
 			expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-			expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			expect(teachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});
