@@ -33,10 +33,12 @@ const getConfig = (provider) => {
 		region: provider.region,
 		endpointUrl: provider.endpointUrl,
 	});
+
 	if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 		awsConfig.cors_rules = getCorsRules();
 	}
 	awsConfig.endpoint = new aws.Endpoint(provider.endpointUrl);
+
 	return awsConfig;
 };
 
@@ -74,11 +76,12 @@ const chooseProvider = async (schoolId) => {
 		{ readPreference: 'primary' } // transactions will only work with readPreference = 'primary'
 	);
 	session.endSession();
+
 	return provider;
 };
 
 // begin legacy
-let awsConfig = {};
+let awsConfig = {}; // TODO: Need cleanup to make it testable
 if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 	try {
 		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
@@ -98,6 +101,7 @@ const getS3 = (storageProvider) => {
 	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
 		CryptoJS.enc.Utf8
 	);
+
 	return new aws.S3(getConfig(storageProvider));
 };
 
@@ -107,6 +111,7 @@ const listBuckets = async (awsObject) => {
 		return response.Buckets ? response.Buckets.map((b) => b.Name) : [];
 	} catch (e) {
 		logger.warning('Could not retrieve buckets for provider', e);
+
 		return [];
 	}
 };
@@ -128,6 +133,7 @@ const createAWSObjectFromSchoolId = async (schoolId) => {
 			school.storageProvider = await chooseProvider(schoolId);
 		}
 		const s3 = getS3(school.storageProvider);
+
 		return {
 			s3,
 			bucket: getBucketName(schoolId),
@@ -200,6 +206,7 @@ const reassignProviderForSchool = async (awsObject) => {
 		err.provider = correctProvider;
 		throw err;
 	}
+
 	return awsObject;
 };
 
@@ -227,6 +234,7 @@ const createBucket = async (awsObject) => {
 		if (Configuration.get('FEATURE_S3_BUCKET_CORS') === true) {
 			await putBucketCors(awsObject);
 		}
+
 		return awsObject;
 	} catch (err) {
 		logger.error(`Error by creating the bucket ${awsObject.bucket}: ${err.code} ${err.message}`);
@@ -252,6 +260,7 @@ class AWSS3Strategy {
 
 		const awsObject = await createAWSObjectFromSchoolId(schoolId);
 		const data = await createBucket(awsObject);
+
 		return {
 			message: 'Successfully created s3-bucket!',
 			data,
@@ -271,6 +280,7 @@ class AWSS3Strategy {
 		const params = {
 			Bucket: awsObject.bucket,
 		};
+
 		try {
 			await awsObject.s3.headBucket(params).promise();
 			logger.info(`Bucket ${awsObject.bucket} does exist`);
