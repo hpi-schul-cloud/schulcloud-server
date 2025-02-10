@@ -15,6 +15,6 @@ import { DeletionLogRepo, DeletionRequestRepo, DeletionBatchRepo, DeletionBatchU
 		DeletionRequestService,
 		DeletionBatchService,
 	],
-	exports: [DeletionRequestService, DeletionLogService, DeletionBatchService, DeletionBatchRepo],
+	exports: [DeletionRequestService, DeletionLogService, DeletionBatchService],
 })
 export class DeletionModule {}

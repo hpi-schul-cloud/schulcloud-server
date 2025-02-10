@@ -15,11 +15,7 @@ import { CantCreateDeletionRequestsForBatchErrorLoggable } from '../loggable/can
 
 @Injectable()
 export class DeletionBatchUc {
-	constructor(
-		private readonly deletionBatchService: DeletionBatchService,
-		private readonly deletionBatchRepo: DeletionBatchRepo,
-		private readonly userService: UserService
-	) {}
+	constructor(private readonly deletionBatchService: DeletionBatchService, private readonly userService: UserService) {}
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
 		const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(params.targetRefIds);
@@ -52,7 +48,7 @@ export class DeletionBatchUc {
 	}
 
 	public async createDeletionRequestForBatch(batchId: EntityId, deleteAfter: Date): Promise<DeletionBatchSummary> {
-		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+		const deletionBatch = await this.deletionBatchService.findById(batchId);
 		if (deletionBatch.status !== BatchStatus.CREATED) {
 			throw new CantCreateDeletionRequestsForBatchErrorLoggable(batchId, deletionBatch.status);
 		}

@@ -44,6 +44,12 @@ export class DeletionBatchService {
 		private readonly deletionRequestService: DeletionRequestService
 	) {}
 
+	public async findById(batchId: EntityId): Promise<DeletionBatch> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		return deletionBatch;
+	}
+
 	public async createDeletionBatch(
 		params: CreateDeletionBatchParams,
 		validUserIds: EntityId[],
