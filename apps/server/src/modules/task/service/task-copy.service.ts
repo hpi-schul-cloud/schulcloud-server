@@ -87,8 +87,8 @@ export class TaskCopyService {
 			title: taskCopy.name,
 			type: CopyElementType.TASK,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copy: taskCopy,
-			original: originalTask,
+			copyEntity: taskCopy,
+			originalEntity: originalTask,
 			elements,
 		};
 		return status;

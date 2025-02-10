@@ -4,7 +4,7 @@ export * from './board-node.factory';
 export * from './collaborative-text-editor.do';
 export * from './card.do';
 export * from './column.do';
-export * from './column-board.do';
+export * from './colum-board.do';
 export * from './drawing-element.do';
 export * from './external-tool-element.do';
 export * from './file-element.do';

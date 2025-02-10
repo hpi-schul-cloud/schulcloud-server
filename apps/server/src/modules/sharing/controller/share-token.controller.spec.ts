@@ -120,7 +120,7 @@ describe('ShareTokenController', () => {
 				title: 'Spanisch',
 				type: CopyElementType.COURSE,
 				status: CopyStatusEnum.SUCCESS,
-				copy: course,
+				copyEntity: course,
 			};
 			uc.importShareToken.mockResolvedValue(status);
 			const newName = 'NewName';
@@ -142,7 +142,7 @@ describe('ShareTokenController', () => {
 			const result = await controller.importShareToken(currentUser, { token }, { newName });
 
 			expect(result).toEqual({
-				id: status.copy?.id,
+				id: status.copyEntity?.id,
 				title: status.title,
 				type: status.type,
 				status: status.status,

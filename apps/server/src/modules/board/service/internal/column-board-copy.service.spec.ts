@@ -76,7 +76,7 @@ describe(ColumnBoardCopyService.name, () => {
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 			const status: CopyStatus = {
-				copy: boardCopy,
+				copyEntity: boardCopy,
 				type: CopyElementType.BOARD,
 				status: CopyStatusEnum.SUCCESS,
 			};
@@ -155,14 +155,14 @@ describe(ColumnBoardCopyService.name, () => {
 			const copyStatus = await service.copyColumnBoard(copyParams);
 
 			expect(copyStatus).toBeDefined();
-			expect(copyStatus.copy).toBeDefined();
+			expect(copyStatus.copyEntity).toBeDefined();
 		});
 
 		it('should not affect the original board', async () => {
 			const { copyParams, originalBoard } = setup();
 			const copyStatus = await service.copyColumnBoard(copyParams);
 
-			expect(copyStatus.original).toBe(originalBoard);
+			expect(copyStatus.originalEntity).toBe(originalBoard);
 		});
 	});
 
@@ -194,7 +194,7 @@ describe(ColumnBoardCopyService.name, () => {
 
 			const boardCopy = { ...originalBoard, id: new ObjectId().toHexString(), type: 'not-a-column-board' };
 			const status: CopyStatus = {
-				copy: boardCopy,
+				copyEntity: boardCopy,
 				type: CopyElementType.BOARD,
 				status: CopyStatusEnum.SUCCESS,
 			};

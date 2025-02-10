@@ -5,7 +5,7 @@ import { TaskCopyParentParams } from '@modules/task/types/task-copy-parent.param
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Task } from '@shared/domain/entity/task.entity';
 import { EntityId } from '@shared/domain/types';
-import { ColumnBoard } from '@modules/board/domain/column-board.do';
+import { ColumnBoard } from '@modules/board/domain/colum-board.do';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
@@ -17,8 +17,8 @@ export class CopyMapper {
 			status: copyStatus.status,
 		});
 
-		if (copyStatus.copy) {
-			const copyEntity = copyStatus.copy as LessonEntity | Task;
+		if (copyStatus.copyEntity) {
+			const copyEntity = copyStatus.copyEntity as LessonEntity | Task;
 			dto.id = copyEntity.id;
 			if (copyEntity instanceof LessonEntity || copyEntity instanceof Task) {
 				dto.destinationId = copyEntity.course?.id;

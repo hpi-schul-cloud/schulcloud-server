@@ -1,6 +1,6 @@
 import type { Card } from '../card.do';
 import type { CollaborativeTextEditorElement } from '../collaborative-text-editor.do';
-import type { ColumnBoard } from '../column-board.do';
+import type { ColumnBoard } from '../colum-board.do';
 import type { Column } from '../column.do';
 import type { AnyMediaBoardNode } from '../media-board';
 import type { SubmissionItem } from '../submission-item.do';
