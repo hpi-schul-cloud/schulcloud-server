@@ -51,9 +51,9 @@ describe('EduSharingV7 FIND', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 			paramsStudent.query = { searchQuery: '' };
-			const response = await eduSharingService.find(paramsStudent);
+			const result = await eduSharingService.find(paramsStudent);
 
-			chai.expect(JSON.stringify(response)).to.equal(JSON.stringify(eduSharingResponse));
+			chai.expect(JSON.stringify(result)).to.equal(JSON.stringify(eduSharingResponse));
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -69,9 +69,9 @@ describe('EduSharingV7 FIND', () => {
 			postStub.onCall(1).returns({ data: mockNodes });
 
 			paramsStudent.query = { searchQuery: 'foo' };
-			const response = await eduSharingService.find(paramsStudent);
+			const result = await eduSharingService.find(paramsStudent);
 
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -86,9 +86,9 @@ describe('EduSharingV7 FIND', () => {
 			postStub.onCall(0).returns({ data: mockNodes });
 
 			params.query = { collection: 'a4808865-da94-4884-bdba-0ad66070e83b' };
-			const response = await eduSharingService.find(params);
+			const result = await eduSharingService.find(params);
 
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -103,9 +103,9 @@ describe('EduSharingV7 FIND', () => {
 			postStub.onCall(0).returns({ data: mockNodes });
 
 			params.query = { searchQuery: 'foo' };
-			const response = await eduSharingService.find(params);
+			const result = await eduSharingService.find(params);
 
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -133,8 +133,8 @@ describe('EduSharingV7 FIND', () => {
 			const mockImg = { body: 'dummyImage' };
 			postStub.onCall(1).returns({ data: mockImg });
 
-			const response = await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
-			chai.expect(response.title).to.equal('dummy title');
+			const result = await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
+			chai.expect(result.title).to.equal('dummy title');
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -225,9 +225,9 @@ describe('EduSharingV7 config flags', () => {
 			postStub.onCall(0).returns({ data: mockNodes });
 
 			params.query = { searchQuery: 'foo' };
-			const response = await eduSharingService.find(params);
+			const result = await eduSharingService.find(params);
 
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
