@@ -6,6 +6,7 @@ import {
 	MediaSourceService,
 	MediaSourceAuthMethod,
 	MediaSourceVidisConfig,
+	MediaSourceOauthConfig,
 } from '@modules/media-source';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -169,7 +170,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 							clientSecret: encryptedClientSecret,
 							authEndpoint: 'https://login.test.sso.bildungslogin.de/realms/BiLo-Broker/protocol/openid-connect/token',
 							method: MediaSourceAuthMethod.CLIENT_CREDENTIALS,
-						},
+							baseUrl: 'https://www.bildungslogin-test.de/api/external/univention/media',
+						} as MediaSourceOauthConfig,
 					})
 				);
 			});
