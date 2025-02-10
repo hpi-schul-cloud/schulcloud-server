@@ -130,7 +130,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyColumnBoard(columnBoard, copyContext);
 
-			expect(result.copy).toBeInstanceOf(ColumnBoard);
+			expect(result.copyObject).toBeInstanceOf(ColumnBoard);
 		});
 
 		it('should copy the original node', async () => {
@@ -138,7 +138,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyColumnBoard(columnBoard, copyContext);
 
-			expect(result.original).toBeInstanceOf(ColumnBoard);
+			expect(result.originalObject).toBeInstanceOf(ColumnBoard);
 		});
 
 		it('should copy the children', async () => {
@@ -146,7 +146,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyColumnBoard(columnBoard, copyContext);
 
-			expect((result.elements ?? [])[0].copy).toBeInstanceOf(Column);
+			expect((result.elements ?? [])[0].copyObject).toBeInstanceOf(Column);
 		});
 
 		it('should use the service to derive status from children', async () => {
@@ -171,7 +171,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyColumn(column, copyContext);
 
-			expect(result.copy).toBeInstanceOf(Column);
+			expect(result.copyObject).toBeInstanceOf(Column);
 		});
 
 		it('should copy the original node', async () => {
@@ -179,7 +179,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyColumn(column, copyContext);
 
-			expect(result.original).toBeInstanceOf(Column);
+			expect(result.originalObject).toBeInstanceOf(Column);
 		});
 
 		it('should copy the children', async () => {
@@ -187,7 +187,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyColumn(column, copyContext);
 
-			expect((result.elements ?? [])[0].copy).toBeInstanceOf(Card);
+			expect((result.elements ?? [])[0].copyObject).toBeInstanceOf(Card);
 		});
 	});
 
@@ -204,7 +204,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyCard(card, copyContext);
 
-			expect(result.copy).toBeInstanceOf(Card);
+			expect(result.copyObject).toBeInstanceOf(Card);
 		});
 
 		it('should copy the original node', async () => {
@@ -212,14 +212,14 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyCard(card, copyContext);
 
-			expect(result.original).toBeInstanceOf(Card);
+			expect(result.originalObject).toBeInstanceOf(Card);
 		});
 		it('should copy the children', async () => {
 			const { copyContext, card } = setup();
 
 			const result = await service.copyCard(card, copyContext);
 
-			expect((result.elements ?? [])[0].copy).toBeInstanceOf(RichTextElement);
+			expect((result.elements ?? [])[0].copyObject).toBeInstanceOf(RichTextElement);
 		});
 	});
 
@@ -242,7 +242,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyFileElement(fileElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(FileElement);
+			expect(result.copyObject).toBeInstanceOf(FileElement);
 		});
 
 		it('should copy the files', async () => {
@@ -250,7 +250,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyFileElement(fileElement, copyContext);
 
-			expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileElement.id, result.copy?.id);
+			expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileElement.id, result.copyObject?.id);
 			expect(result.elements ?? []).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
 		});
 	});
@@ -282,7 +282,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyLinkElement(linkElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(LinkElement);
+			expect(result.copyObject).toBeInstanceOf(LinkElement);
 		});
 
 		it('should copy the original node', async () => {
@@ -290,7 +290,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyLinkElement(linkElement, copyContext);
 
-			expect(result.original).toBeInstanceOf(LinkElement);
+			expect(result.originalObject).toBeInstanceOf(LinkElement);
 		});
 
 		it('should copy the files', async () => {
@@ -298,7 +298,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyLinkElement(linkElement, copyContext);
 
-			expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(linkElement.id, result.copy?.id);
+			expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(linkElement.id, result.copyObject?.id);
 			expect(result.elements ?? []).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
 		});
 
@@ -309,7 +309,7 @@ describe(BoardNodeCopyService.name, () => {
 				const result = await service.copyLinkElement(linkElement, copyContext);
 
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				expect((result.copy as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
+				expect((result.copyObject as LinkElement).imageUrl).toBe(`https://example.com/${fileCopyStatus.id}/bird.jpg`);
 			});
 		});
 
@@ -320,7 +320,7 @@ describe(BoardNodeCopyService.name, () => {
 				const result = await service.copyLinkElement(linkElementWithoutId, copyContext);
 
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-				expect((result.copy as LinkElement).imageUrl).toBe('');
+				expect((result.copyObject as LinkElement).imageUrl).toBe('');
 			});
 		});
 
@@ -336,7 +336,7 @@ describe(BoardNodeCopyService.name, () => {
 
 				const result = await service.copyLinkElement(linkElement, copyContext);
 
-				expect((result.copy as LinkElement).imageUrl).toBe('');
+				expect((result.copyObject as LinkElement).imageUrl).toBe('');
 			});
 		});
 	});
@@ -354,7 +354,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyRichTextElement(richTextElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(RichTextElement);
+			expect(result.copyObject).toBeInstanceOf(RichTextElement);
 		});
 	});
 
@@ -371,7 +371,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyDrawingElement(drawingElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(DrawingElement);
+			expect(result.copyObject).toBeInstanceOf(DrawingElement);
 		});
 	});
 
@@ -390,7 +390,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copySubmissionContainerElement(submissionContainerElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(SubmissionContainerElement);
+			expect(result.copyObject).toBeInstanceOf(SubmissionContainerElement);
 		});
 
 		it('should copy the children', async () => {
@@ -442,7 +442,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyExternalToolElement(externalToolElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(ExternalToolElement);
+			expect(result.copyObject).toBeInstanceOf(ExternalToolElement);
 		});
 
 		describe('when ctl tools copy is enabled', () => {
@@ -482,11 +482,11 @@ describe(BoardNodeCopyService.name, () => {
 
 						expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
 							contextTool,
-							result.copy?.id,
+							result.copyObject?.id,
 							copyContext.targetSchoolId
 						);
-						expect(result.copy instanceof ExternalToolElement).toEqual(true);
-						expect((result.copy as ExternalToolElement).contextExternalToolId).toEqual(copiedTool.id);
+						expect(result.copyObject instanceof ExternalToolElement).toEqual(true);
+						expect((result.copyObject as ExternalToolElement).contextExternalToolId).toEqual(copiedTool.id);
 						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
 						expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
 					});
@@ -516,7 +516,7 @@ describe(BoardNodeCopyService.name, () => {
 							expect.any(String),
 							copyContext.targetSchoolId
 						);
-						expect(result.copy instanceof DeletedElement).toEqual(true);
+						expect(result.copyObject instanceof DeletedElement).toEqual(true);
 						expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
 						expect(result.status).toEqual(CopyStatusEnum.FAIL);
 					});
@@ -592,7 +592,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyCollaborativeTextEditorElement(collaborativeTextEditor, copyContext);
 
-			expect(result.copy).toBeInstanceOf(CollaborativeTextEditorElement);
+			expect(result.copyObject).toBeInstanceOf(CollaborativeTextEditorElement);
 		});
 
 		it('should return the correct type and status', async () => {
@@ -707,7 +707,7 @@ describe(BoardNodeCopyService.name, () => {
 
 			const result = await service.copyDeletedElement(deletedElement, copyContext);
 
-			expect(result.copy).toBeInstanceOf(DeletedElement);
+			expect(result.copyObject).toBeInstanceOf(DeletedElement);
 		});
 	});
 

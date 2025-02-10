@@ -286,8 +286,8 @@ describe('copy helper service', () => {
 					{
 						type: CopyElementType.COURSE,
 						status: CopyStatusEnum.SUCCESS,
-						original: originalEntity,
-						copy: copyEntity,
+						originalObject: originalEntity,
+						copyObject: copyEntity,
 					},
 				],
 			};

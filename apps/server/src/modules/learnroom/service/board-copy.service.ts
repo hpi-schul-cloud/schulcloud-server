@@ -59,14 +59,14 @@ export class BoardCopyService {
 			title: 'board',
 			type: CopyElementType.BOARD,
 			status: this.copyHelperService.deriveStatusFromElements(elements),
-			copy: boardCopy,
-			original: params.originalBoard,
+			copyObject: boardCopy,
+			originalObject: params.originalBoard,
 			elements,
 		};
 
 		status = this.updateCopiedEmbeddedTasksOfLessons(status);
-		if (status.copy) {
-			boardCopy = status.copy as LegacyBoard;
+		if (status.copyObject) {
+			boardCopy = status.copyObject as LegacyBoard;
 		}
 
 		status = await this.swapLinkedIdsInBoards(status);
@@ -161,18 +161,18 @@ export class BoardCopyService {
 		const references: LegacyBoardElement[] = [];
 		for (const status of statuses) {
 			// statuses.forEach((status) => {
-			if (status.copy instanceof Task) {
-				const taskElement = new TaskBoardElement({ target: status.copy });
+			if (status.copyObject instanceof Task) {
+				const taskElement = new TaskBoardElement({ target: status.copyObject });
 				references.push(taskElement);
 			}
-			if (status.copy instanceof LessonEntity) {
-				const lessonElement = new LessonBoardElement({ target: status.copy });
+			if (status.copyObject instanceof LessonEntity) {
+				const lessonElement = new LessonBoardElement({ target: status.copyObject });
 				references.push(lessonElement);
 			}
-			if (status.copy instanceof ColumnBoard) {
+			if (status.copyObject instanceof ColumnBoard) {
 				// TODO comment this, legacy!
 				// eslint-disable-next-line no-await-in-loop
-				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copy.id);
+				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copyObject.id);
 				const columnBoardElement = new ColumnboardBoardElement({
 					target: columnBoardNode,
 				});
@@ -200,15 +200,15 @@ export class BoardCopyService {
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => map.set(key, value.id));
 
-		if (copyStatus.copy instanceof LegacyBoard && copyStatus.original instanceof LegacyBoard) {
-			map.set(copyStatus.original.course.id, copyStatus.copy.course.id);
+		if (copyStatus.copyObject instanceof LegacyBoard && copyStatus.originalObject instanceof LegacyBoard) {
+			map.set(copyStatus.originalObject.course.id, copyStatus.copyObject.course.id);
 		}
 
 		const elements = copyStatus.elements ?? [];
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
-				if (el.type === CopyElementType.COLUMNBOARD && el.copy) {
-					el.copy = await this.columnBoardService.swapLinkedIds(el.copy?.id, map);
+				if (el.type === CopyElementType.COLUMNBOARD && el.copyObject) {
+					el.copyObject = await this.columnBoardService.swapLinkedIds(el.copyObject?.id, map);
 				}
 				return el;
 			})
