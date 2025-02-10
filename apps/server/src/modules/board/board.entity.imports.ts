@@ -8,7 +8,7 @@ import { InstanceEntity } from '@modules/instance';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
-import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
@@ -27,7 +27,6 @@ import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
 import { CountyEmbeddable, FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
-import { LtiTool } from '@shared/domain/entity/ltitool.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';
@@ -63,14 +62,12 @@ export const ENTITIES = [
 	InstanceEntity,
 	LessonEntity,
 	LtiDeepLinkTokenEntity,
-	LtiTool,
 	Material,
 	MediaSchoolLicenseEntity,
 	MediaSourceEntity,
 	MediaUserLicenseEntity,
 	News,
 	OauthSessionTokenEntity,
-	PseudonymEntity,
 	RegistrationPinEntity,
 	RocketChatUserEntity,
 	Role,

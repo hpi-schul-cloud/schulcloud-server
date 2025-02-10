@@ -4,7 +4,7 @@ import { ClassEntity } from '@modules/class/entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
-import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership';
@@ -50,7 +50,6 @@ export const ENTITIES = [
 	SchoolNews,
 	TeamNews,
 	TeamEntity,
-	PseudonymEntity,
 	ExternalToolPseudonymEntity,
 	RocketChatUserEntity,
 	RegistrationPinEntity,
