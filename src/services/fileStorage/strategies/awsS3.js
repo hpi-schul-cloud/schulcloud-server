@@ -447,7 +447,7 @@ class AWSS3Strategy {
 		};
 
 		if (getBoolean(download)) {
-			params.ResponseContentDisposition = `attachment; filename = "${localFileName.replace('"', '')}"`;
+			params.ResponseContentDisposition = `attachment; filename = "${localFileName.replace(/"/g, '')}"`;
 		}
 
 		return promisify(awsObject.s3.getSignedUrl.bind(awsObject.s3), awsObject.s3)(action, params);
