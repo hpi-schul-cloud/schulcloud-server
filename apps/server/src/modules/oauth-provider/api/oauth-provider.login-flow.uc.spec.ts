@@ -6,9 +6,9 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { ltiToolDOFactory, pseudonymFactory } from '@testing/factory/domainobject';
+import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -202,72 +202,6 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			});
 		});
 
-		describe('when the login was accepted for a lti tool', () => {
-			const setup = () => {
-				const query: AcceptQuery = { accept: true };
-
-				const loginRequestBodyMock: LoginRequestBody = {
-					remember: true,
-					remember_for: 0,
-				};
-
-				const providerLoginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
-					challenge: 'challenge',
-					client: {
-						client_id: 'clientId',
-					},
-					oidc_context: {},
-					request_url: 'request_url',
-					requested_access_token_audience: ['requested_access_token_audience'],
-					requested_scope: ['requested_scope'],
-					session_id: 'session_id',
-					skip: true,
-					subject: 'subject',
-				});
-
-				const tool: LtiToolDO = ltiToolDOFactory.buildWithId({ skipConsent: true });
-
-				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
-				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
-				oauthProviderLoginFlowService.isNextcloudTool.mockReturnValue(false);
-				pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
-				oauthProviderService.acceptLoginRequest.mockResolvedValue(redirectResponse);
-
-				return {
-					query,
-					loginRequestBodyMock,
-				};
-			};
-
-			it('should accept the login request', async () => {
-				const { query, loginRequestBodyMock } = setup();
-
-				await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
-
-				expect(oauthProviderService.acceptLoginRequest).toHaveBeenCalledWith('challenge', {
-					...loginRequestBodyMock,
-					subject: 'userId',
-					force_subject_identifier: pseudonym.pseudonym,
-					context: {
-						skipConsent: true,
-					},
-				});
-			});
-
-			it('should return a redirect', async () => {
-				const { query, loginRequestBodyMock } = setup();
-
-				const result: ProviderRedirectResponse = await uc.patchLoginRequest(
-					'userId',
-					'challenge',
-					loginRequestBodyMock,
-					query
-				);
-
-				expect(result).toEqual(redirectResponse);
-			});
-		});
-
 		describe('when the tool is Nextcloud', () => {
 			const setup = () => {
 				const query: AcceptQuery = { accept: true };
@@ -361,7 +295,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			});
 		});
 
-		describe('when the required tool is not a legacy lti tool or has a oauth2 config', () => {
+		describe('when the required tool does not has a oauth2 config', () => {
 			const setup = () => {
 				const query: AcceptQuery = { accept: true };
 
@@ -405,7 +339,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 				await expect(func).rejects.toThrow(
 					new UnprocessableEntityException(
-						`Cannot use Tool ${tool.name} for OAuth2 login, since it is not a LtiTool or OAuth2-ExternalTool`
+						`Cannot use Tool ${tool.name} for OAuth2 login, since it is not a OAuth2-ExternalTool`
 					)
 				);
 			});
