@@ -13,7 +13,7 @@ export class BoardNodePermissionService {
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
-	async checkPermission(userId: EntityId, boardNode: AnyBoardNode, action: Action): Promise<void> {
+	public async checkPermission(userId: EntityId, boardNode: AnyBoardNode, action: Action): Promise<void> {
 		const requiredPermissions: Permission[] = [];
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
@@ -21,7 +21,7 @@ export class BoardNodePermissionService {
 		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
 	}
 
-	isUserBoardEditor(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
+	public isUserBoardEditor(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
 		const boardDoAuthorisedUser = userBoardRoles.find((user) => user.userId === userId);
 
 		if (boardDoAuthorisedUser) {
@@ -31,7 +31,7 @@ export class BoardNodePermissionService {
 		return false;
 	}
 
-	isUserBoardReader(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
+	public isUserBoardReader(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
 		const boardDoAuthorisedUser = userBoardRoles.find((user) => user.userId === userId);
 
 		if (boardDoAuthorisedUser) {

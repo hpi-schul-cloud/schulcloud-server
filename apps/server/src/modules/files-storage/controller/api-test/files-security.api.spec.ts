@@ -1,49 +1,25 @@
 import { createMock } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiValidationError } from '@shared/common/error';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import type { Server } from 'node:net';
-import request from 'supertest';
 import { FileRecord } from '../../entity';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
 import { FileRecordParentType, StorageLocation } from '../../interface';
 import { fileRecordFactory } from '../../testing';
-import { FileRecordListResponse, ScanResultParams } from '../dto';
+import { ScanResultParams } from '../dto';
 
 const baseRouteName = '/file-security';
 const scanResult: ScanResultParams = { virus_detected: false };
 
-class API {
-	app: INestApplication<Server>;
-
-	constructor(app: INestApplication<Server>) {
-		this.app = app;
-	}
-
-	async put(requestString: string, body: ScanResultParams) {
-		const response = await request(this.app.getHttpServer())
-			.put(`${baseRouteName}${requestString}`)
-			.set('Accept', 'application/json')
-			.send(body);
-
-		return {
-			result: response.body as FileRecordListResponse,
-			error: response.body as ApiValidationError,
-			status: response.status,
-		};
-	}
-}
-
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication<Server>;
 	let em: EntityManager;
-	let api: API;
 	let validId: string;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -57,7 +33,7 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		api = new API(app);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -66,13 +42,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		const school = schoolEntityFactory.build();
-		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
-
-		await em.persistAndFlush([user, account]);
-		em.clear();
-
-		validId = user.school.id;
+		validId = new ObjectId().toHexString();
 	});
 
 	describe('with bad request data', () => {
@@ -86,7 +56,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush(fileRecord);
 			em.clear();
 
-			const response = await api.put(`/update-status/wrong-token`, scanResult);
+			const response = await testApiClient.put(`/update-status/wrong-token`, scanResult);
 
 			expect(response.status).toEqual(404);
 		});
@@ -104,7 +74,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush(fileRecord);
 			em.clear();
 
-			const response = await api.put(`/update-status/${token}`, scanResult);
+			const response = await testApiClient.put(`/update-status/${token}`, scanResult);
 			const changedFileRecord = await em.findOneOrFail(FileRecord, fileRecord.id);
 
 			expect(changedFileRecord.securityCheck.status).toStrictEqual('verified');

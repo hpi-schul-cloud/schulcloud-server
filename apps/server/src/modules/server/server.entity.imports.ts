@@ -20,33 +20,33 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
-import { ColumnBoardNode } from './column-board-node.entity';
-import { Course } from './course.entity';
-import { CourseGroup } from './coursegroup.entity';
-import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
+import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity';
+import { Course } from '@shared/domain/entity/course.entity';
+import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
+import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
+import { CountyEmbeddable, FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import {
 	ColumnboardBoardElement,
 	LegacyBoard,
 	LegacyBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
-} from './legacy-board';
-import { LessonEntity } from './lesson.entity';
-import { Material } from './materials.entity';
-import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
-import { Role } from './role.entity';
-import { SchoolEntity, SchoolRolePermission, SchoolRoles } from './school.entity';
-import { SchoolYearEntity } from './schoolyear.entity';
-import { StorageProviderEntity } from './storageprovider.entity';
-import { Submission } from './submission.entity';
-import { Task } from './task.entity';
-import { TeamEntity, TeamUserEntity } from './team.entity';
-import { UserLoginMigrationEntity } from './user-login-migration.entity';
-import { User } from './user.entity';
-import { VideoConference } from './video-conference.entity';
+} from '@shared/domain/entity/legacy-board';
+import { LessonEntity } from '@shared/domain/entity/lesson.entity';
+import { Material } from '@shared/domain/entity/materials.entity';
+import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity, SchoolRolePermission, SchoolRoles } from '@shared/domain/entity/school.entity';
+import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
+import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
+import { Submission } from '@shared/domain/entity/submission.entity';
+import { Task } from '@shared/domain/entity/task.entity';
+import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
-export const ALL_ENTITIES = [
+export const ENTITIES = [
 	AccountEntity,
 	LegacyBoard,
 	LegacyBoardElement,
@@ -106,3 +106,5 @@ export const ALL_ENTITIES = [
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
 ];
+
+export const TEST_ENTITIES = [...ENTITIES];

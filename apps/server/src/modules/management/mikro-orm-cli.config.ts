@@ -1,24 +1,18 @@
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
-import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
-import { FileRecord } from '@modules/files-storage/entity';
-import { FileEntity } from '@modules/files/entity';
-import { ALL_ENTITIES } from '@shared/domain/entity';
+import { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import path from 'path';
+import { ENTITIES } from './management.entity.imports';
 
-const migrationsPath = path.resolve(__dirname, '..', 'migrations', 'mikro-orm');
+export const migrationsPath = path.resolve(__dirname, '..', '..', 'migrations', 'mikro-orm');
 
-export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
+const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	// TODO repeats server module definitions
 	type: 'mongo',
 	clientUrl: DB_URL,
 	password: DB_PASSWORD,
 	user: DB_USERNAME,
-	entities: [...ALL_ENTITIES, FileEntity, FileRecord],
+	entities: ENTITIES,
 	allowGlobalContext: true,
-	/*
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
-		new NotFoundException(`The requested ${entityName}: ${JSON.stringify(where)} has not been found.`),
-	*/
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
 		path: migrationsPath, // path to the folder with migrations

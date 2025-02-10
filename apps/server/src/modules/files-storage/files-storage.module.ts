@@ -1,15 +1,10 @@
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
 import { AntivirusModule } from '@infra/antivirus';
 import { PreviewGeneratorProducerModule } from '@infra/preview-generator';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { FileRecord, FileRecordSecurityCheck } from './entity';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
 import { FilesStorageService, PreviewService } from './service';
@@ -30,21 +25,7 @@ const imports = [
 const providers = [FilesStorageService, PreviewService, FileRecordRepo];
 
 @Module({
-	imports: [
-		...imports,
-		RabbitMQWrapperModule,
-		MikroOrmModule.forRoot({
-			...defaultMikroOrmOptions,
-			type: 'mongo',
-			// TODO add mongoose options as mongo options (see database.js)
-			clientUrl: DB_URL,
-			password: DB_PASSWORD,
-			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileRecord, FileRecordSecurityCheck],
-
-			// debug: true, // use it for locally debugging of querys
-		}),
-	],
+	imports: [...imports, RabbitMQWrapperModule],
 	providers,
 	exports: [FilesStorageService, PreviewService],
 })
