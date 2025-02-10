@@ -3,7 +3,7 @@ import { CountyEmbeddable } from '@shared/domain/entity';
 import { County } from '../../../domain';
 
 export class CountyEmbeddableMapper {
-	static mapToEntity(county: County): CountyEmbeddable {
+	public static mapToEntity(county: County): CountyEmbeddable {
 		const countyProps = county.getProps();
 
 		const countyEmbeddable = new CountyEmbeddable({ ...countyProps, _id: new ObjectId(countyProps.id) });
@@ -11,7 +11,7 @@ export class CountyEmbeddableMapper {
 		return countyEmbeddable;
 	}
 
-	static mapToDo(embeddable: CountyEmbeddable): County {
+	public static mapToDo(embeddable: CountyEmbeddable): County {
 		const county = new County({
 			id: embeddable._id.toHexString(),
 			name: embeddable.name,

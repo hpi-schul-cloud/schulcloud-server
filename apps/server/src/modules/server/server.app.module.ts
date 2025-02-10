@@ -42,15 +42,15 @@ import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-
 import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { ALL_ENTITIES } from '@shared/domain/entity';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@testing/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -124,7 +124,7 @@ const controllers = [ServerController, ServerConfigController];
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: ALL_ENTITIES,
+			entities: ENTITIES,
 
 			// debug: true, // use it for locally debugging of queries
 		}),
@@ -146,24 +146,11 @@ export class ServerModule {}
 @Module({
 	imports: [
 		...serverModules,
-		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
+		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
 	providers,
 	controllers,
 })
-export class ServerTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: ServerTestModule,
-			imports: [
-				...serverModules,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
-				RabbitMQWrapperTestModule,
-			],
-			providers,
-			controllers,
-		};
-	}
-}
+export class ServerTestModule {}

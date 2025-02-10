@@ -74,7 +74,7 @@ describe('AccountService Integration', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				IdentityManagementModule,
-				MongoMemoryDatabaseModule.forRoot(),
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					ignoreEnvFile: true,

@@ -1,3 +1,4 @@
+import { SystemEntity } from '@modules/system/entity';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -12,7 +13,7 @@ describe('KeycloakManagementModule', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				KeycloakConfigurationModule,
-				MongoMemoryDatabaseModule.forRoot(),
+				MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] }),
 				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();
