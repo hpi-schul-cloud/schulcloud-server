@@ -42,8 +42,6 @@ export class DeletionBatchRepo {
 	public async save(deletionBatch: DeletionBatch | DeletionBatch[]): Promise<void> {
 		const deletionBatches = Utils.asArray(deletionBatch);
 
-		console.log('---- deletionBatches', deletionBatches);
-
 		deletionBatches.forEach((db) => {
 			const entity = DeletionBatchDomainMapper.mapDoToEntity(db);
 			this.em.persist(entity);
