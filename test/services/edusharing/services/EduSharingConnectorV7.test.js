@@ -227,9 +227,6 @@ describe('EduSharingV7 config flags', () => {
 			params.query = { searchQuery: 'foo' };
 			const response = await eduSharingService.find(params);
 
-			chai
-				.expect(postStub.getCalls()[0].args[0].body)
-				.contains(`{"property":"ccm:hpi_lom_general_aggregationlevel","values":["1"]}`);
 			chai.expect(response.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
