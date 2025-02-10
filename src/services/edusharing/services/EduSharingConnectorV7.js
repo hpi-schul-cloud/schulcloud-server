@@ -47,7 +47,7 @@ class EduSharingConnector {
 				return await axios.get(secretOptions.url, secretOptions);
 			}
 			if (secretOptions.method.toUpperCase() === 'POST') {
-				return await axios.post(secretOptions.url, secretOptions);
+				return await axios.post(secretOptions.url, secretOptions.data, secretOptions);
 			}
 			return null;
 		} catch (err) {
