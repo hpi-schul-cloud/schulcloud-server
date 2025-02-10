@@ -116,7 +116,7 @@ async function bootstrap(): Promise<void> {
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
-	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
 		legacyLogger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};

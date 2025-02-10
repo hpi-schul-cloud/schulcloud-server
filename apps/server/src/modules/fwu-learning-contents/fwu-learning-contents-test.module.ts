@@ -3,22 +3,20 @@ import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { AuthorizationModule } from '@modules/authorization';
-import { SystemEntity } from '@modules/system/entity';
 import { HttpModule } from '@nestjs/axios';
-import { DynamicModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
-import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@testing/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
+import { TEST_ENTITIES } from './fwu.entity.imports';
 import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({
-		entities: [User, AccountEntity, Role, SchoolEntity, SystemEntity, SchoolYearEntity],
+		entities: TEST_ENTITIES,
 	}),
 	AuthorizationModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
@@ -36,13 +34,4 @@ const providers = [FwuLearningContentsUc];
 	controllers,
 	providers,
 })
-export class FwuLearningContentsTestModule {
-	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
-		return {
-			module: FwuLearningContentsTestModule,
-			imports: [...imports, MongoMemoryDatabaseModule.forRoot({ ...options })],
-			controllers,
-			providers,
-		};
-	}
-}
+export class FwuLearningContentsTestModule {}

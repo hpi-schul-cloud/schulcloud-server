@@ -1,13 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
@@ -23,6 +20,7 @@ const baseRouteName = '/file/list';
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -37,6 +35,7 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -45,41 +44,26 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('with not authenticated user', () => {
 		it('should return status 401', async () => {
-			const apiClient = new TestApiClient(app, baseRouteName);
-
-			const response = await apiClient.get(`/school/123/users/123`);
+			const response = await testApiClient.get(`/school/123/users/123`);
 
 			expect(response.status).toEqual(401);
 		});
 	});
 
 	describe('with bad request data', () => {
-		const setup = async () => {
-			await cleanupCollections(em);
-			const school = schoolEntityFactory.build();
-			const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+		const setup = () => {
+			const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			const authValue = JwtAuthenticationFactory.createJwt({
-				accountId: account.id,
-				userId: user.id,
-				schoolId: user.school.id,
-				roles: [user.roles[0].id],
-				support: false,
-				isExternalUser: false,
-			});
-			const apiClient = new TestApiClient(app, baseRouteName, authValue);
+			const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-			await em.persistAndFlush([user, account]);
-			em.clear();
+			const validId = new ObjectId().toHexString();
 
-			const validId = user.school.id;
-
-			return { apiClient, validId };
+			return { loggedInClient, validId };
 		};
 
 		it('should return status 400 for invalid schoolId', async () => {
-			const { apiClient, validId } = await setup();
-			const response = await apiClient.get(`/school/123/users/${validId}`);
+			const { loggedInClient, validId } = setup();
+			const response = await loggedInClient.get(`/school/123/users/${validId}`);
 			const { validationErrors } = response.body as ApiValidationError;
 
 			expect(response.status).toEqual(400);
@@ -92,8 +76,8 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid parentId', async () => {
-			const { apiClient, validId } = await setup();
-			const response = await apiClient.get(`/school/${validId}/users/123`);
+			const { loggedInClient, validId } = setup();
+			const response = await loggedInClient.get(`/school/${validId}/users/123`);
 			const { validationErrors } = response.body as ApiValidationError;
 
 			expect(validationErrors).toEqual([
@@ -106,8 +90,8 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for invalid parentType', async () => {
-			const { apiClient, validId } = await setup();
-			const response = await apiClient.get(`/school/${validId}/cookies/${validId}`);
+			const { loggedInClient, validId } = setup();
+			const response = await loggedInClient.get(`/school/${validId}/cookies/${validId}`);
 			const { validationErrors } = response.body as ApiValidationError;
 
 			expect(validationErrors).toEqual([
@@ -121,41 +105,28 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe(`with valid request data`, () => {
-		const setup = async () => {
-			await cleanupCollections(em);
-			const school = schoolEntityFactory.build();
-			const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+		const setup = () => {
+			const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			const authValue = JwtAuthenticationFactory.createJwt({
-				accountId: account.id,
-				userId: user.id,
-				schoolId: user.school.id,
-				roles: [user.roles[0].id],
-				support: false,
-				isExternalUser: false,
-			});
-			const apiClient = new TestApiClient(app, baseRouteName, authValue);
+			const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-			await em.persistAndFlush([user, account]);
-			em.clear();
+			const validId = new ObjectId().toHexString();
 
-			const validId = user.school.id;
-
-			return { apiClient, validId };
+			return { loggedInClient, validId };
 		};
 
 		it('should return status 200 for successful request', async () => {
-			const { apiClient, validId } = await setup();
+			const { loggedInClient, validId } = setup();
 
-			const response = await apiClient.get(`/school/${validId}/schools/${validId}`);
+			const response = await loggedInClient.get(`/school/${validId}/schools/${validId}`);
 
 			expect(response.status).toEqual(200);
 		});
 
 		it('should return a paginated result as default', async () => {
-			const { apiClient, validId } = await setup();
+			const { loggedInClient, validId } = setup();
 
-			const result = await apiClient.get(`/school/${validId}/schools/${validId}`);
+			const result = await loggedInClient.get(`/school/${validId}/schools/${validId}`);
 			const response = result.body as FileRecordListResponse;
 
 			expect(response).toEqual({
@@ -167,9 +138,9 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should pass the pagination qurey params', async () => {
-			const { apiClient, validId } = await setup();
+			const { loggedInClient, validId } = setup();
 
-			const result = await apiClient.get(`/school/${validId}/schools/${validId}`).query({ limit: 100, skip: 100 });
+			const result = await loggedInClient.get(`/school/${validId}/schools/${validId}`).query({ limit: 100, skip: 100 });
 			const response = result.body as FileRecordListResponse;
 
 			expect(response.limit).toEqual(100);
@@ -177,7 +148,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return right type of data', async () => {
-			const { apiClient, validId } = await setup();
+			const { loggedInClient, validId } = setup();
 			const fileRecords = fileRecordFactory.buildList(1, {
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
@@ -188,7 +159,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush(fileRecords);
 			em.clear();
 
-			const result = await apiClient.get(`/school/${validId}/schools/${validId}`);
+			const result = await loggedInClient.get(`/school/${validId}/schools/${validId}`);
 			const response = result.body as FileRecordListResponse;
 
 			expect(Array.isArray(response.data)).toBe(true);
@@ -210,7 +181,7 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return elements of requested scope', async () => {
-			const { apiClient, validId } = await setup();
+			const { loggedInClient, validId } = setup();
 			const fileRecords = fileRecordFactory.buildList(3, {
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
@@ -226,7 +197,7 @@ describe(`${baseRouteName} (api)`, () => {
 			await em.persistAndFlush([...otherFileRecords, ...fileRecords]);
 			em.clear();
 
-			const result = await apiClient.get(`/school/${validId}/schools/${validId}`);
+			const result = await loggedInClient.get(`/school/${validId}/schools/${validId}`);
 			const response = result.body as FileRecordListResponse;
 
 			const resultData: FileRecordResponse[] = response.data;

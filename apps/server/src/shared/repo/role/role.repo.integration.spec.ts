@@ -16,7 +16,7 @@ describe('role repo', () => {
 	beforeAll(async () => {
 		// em.clear do not clear the resultCache, it must be disabled for this test
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ resultCache: { adapter: NullCacheAdapter } })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ resultCache: { adapter: NullCacheAdapter }, entities: [Role] })],
 			providers: [RoleRepo],
 		}).compile();
 		repo = module.get(RoleRepo);

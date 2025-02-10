@@ -23,8 +23,8 @@
 	"mikro-orm": {
 		"useTsNode": true,
 		"configPaths": [
-			"./apps/server/src/config/mikro-orm-cli.config.ts",
-			"./dist/server/config/mikro-orm-cli.config.js"
+			"./apps/server/src/modules/management/mikro-orm-cli.config.ts",
+			"./dist/server/modules/management/mikro-orm-cli.config.js"
 		]
 	},
 	"scripts": {
