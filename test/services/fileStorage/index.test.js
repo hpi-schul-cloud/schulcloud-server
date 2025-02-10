@@ -1,8 +1,8 @@
-const mockery = require('mockery');
 const { expect } = require('chai');
 const assert = require('assert');
 const mongoose = require('mongoose');
 const sinon = require('sinon');
+const appPromise = require('../../../src/app');
 const { FileModel } = require('../../../src/services/fileStorage/model');
 const { schoolModel } = require('../../../src/services/school/model');
 const { userModel } = require('../../../src/services/user/model');
@@ -11,13 +11,15 @@ const { teamsModel } = require('../../../src/services/teams/model');
 const { courseModel } = require('../../../src/services/user-group/model');
 const fixtures = require('./fixtures');
 
-const setContext = (userId) => ({
-	payload: {
-		userId: mongoose.mongo.ObjectId(userId),
-		fileStorageType: 'awsS3',
-	},
-	account: { userId: mongoose.mongo.ObjectId(userId) },
-});
+const setContext = (userId) => {
+	return {
+		payload: {
+			userId: mongoose.mongo.ObjectId(userId),
+			fileStorageType: 'awsS3',
+		},
+		account: { userId: mongoose.mongo.ObjectId(userId) },
+	};
+};
 
 class AWSStrategy {
 	deleteFile() {
@@ -40,24 +42,18 @@ describe('fileStorage services', () => {
 	let signedUrlService;
 	let directoryService;
 
-	before(async function before() {
-		this.timeout(20000);
-
-		mockery.enable({
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-
-		/* important mockery is match the require import strings */
-		mockery.registerMock('../strategies/awsS3', AWSStrategy);
-
-		// eslint-disable-next-line global-require
-		app = await require('../../../src/app')();
+	before(async () => {
+		app = await appPromise();
 		server = await app.listen(0);
 
 		fileStorageService = app.service('/fileStorage/');
 		signedUrlService = app.service('/fileStorage/signedUrl');
 		directoryService = app.service('/fileStorage/directories');
+
+		fileStorageService.Stategy = AWSStrategy;
+		signedUrlService.Stategy = AWSStrategy;
+
+		// 	app.use('/fileStorage/bucket', bucketService); ????
 
 		const promises = [
 			teamsModel.create(fixtures.teams),
@@ -72,9 +68,6 @@ describe('fileStorage services', () => {
 	});
 
 	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
-
 		const promises = [
 			...fixtures.teams.map((_) => teamsModel.findByIdAndRemove(_._id).exec()),
 			...fixtures.schools.map((_) => schoolModel.findByIdAndRemove(_._id).exec()),
