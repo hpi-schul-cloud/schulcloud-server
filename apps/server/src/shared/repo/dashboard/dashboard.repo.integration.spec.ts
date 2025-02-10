@@ -1,6 +1,14 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, DashboardGridElementModel, GridElement } from '@shared/domain/entity';
+import {
+	Course,
+	CourseGroup,
+	DashboardEntity,
+	DashboardGridElementModel,
+	DashboardModelEntity,
+	GridElement,
+	User,
+} from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -14,7 +22,11 @@ describe('dashboard repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [DashboardEntity, DashboardModelEntity, DashboardGridElementModel, Course, User, CourseGroup],
+				}),
+			],
 			providers: [DashboardRepo, DashboardModelMapper],
 		}).compile();
 

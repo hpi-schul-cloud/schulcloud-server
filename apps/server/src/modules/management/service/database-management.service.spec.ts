@@ -4,6 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createCollections } from '@testing/create-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { TEST_ENTITIES } from '../management.entity.imports';
 import { DatabaseManagementService } from './database-management.service';
 
 const randomChars = () => new ObjectId().toHexString();
@@ -13,7 +14,7 @@ describe('DatabaseManagementService', () => {
 	let orm: MikroORM;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES })],
 			providers: [DatabaseManagementService],
 		}).compile();
 

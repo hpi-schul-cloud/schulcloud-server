@@ -7,9 +7,6 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
@@ -33,6 +30,7 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -51,6 +49,7 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -60,42 +59,27 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('restore files of parent', () => {
 		describe('with not authenticated uer', () => {
 			it('should return status 401', async () => {
-				const apiClient = new TestApiClient(app, baseRouteName);
-
-				const result = await apiClient.post(`/restore/school/123/users/123`);
+				const result = await testApiClient.post(`/restore/school/123/users/123`);
 
 				expect(result.status).toEqual(401);
 			});
 		});
 
 		describe('with bad request data', () => {
-			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				const validId = user.school.id;
+				const validId = new ObjectId().toHexString();
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-				return { validId, apiClient };
+				return { validId, loggedInClient };
 			};
 
 			it('should return status 400 for invalid schoolId', async () => {
-				const { apiClient, validId } = await setup();
+				const { loggedInClient, validId } = setup();
 
-				const result = await apiClient.post(`/restore/school/123/users/${validId}`);
+				const result = await loggedInClient.post(`/restore/school/123/users/${validId}`);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -108,9 +92,9 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentId', async () => {
-				const { apiClient, validId } = await setup();
+				const { loggedInClient, validId } = setup();
 
-				const result = await apiClient.post(`/restore/school/${validId}/users/123`);
+				const result = await loggedInClient.post(`/restore/school/${validId}/users/123`);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -123,9 +107,9 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return status 400 for invalid parentType', async () => {
-				const { apiClient, validId } = await setup();
+				const { loggedInClient, validId } = setup();
 
-				const result = await apiClient.post(`/restore/school/${validId}/cookies/${validId}`);
+				const result = await loggedInClient.post(`/restore/school/${validId}/cookies/${validId}`);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -139,33 +123,20 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		describe(`with valid request data`, () => {
-			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user, account]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				const validId = user.school.id;
+				const validId = new ObjectId().toHexString();
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-				return { validId, apiClient };
+				return { validId, loggedInClient };
 			};
 
-			const uploadFile = async (apiClient: TestApiClient, path: string, fileName: string) => {
-				const result = await apiClient
+			const uploadFile = async (loggedInClient: TestApiClient, path: string, fileName: string) => {
+				const result = await loggedInClient
 					.post(path)
 					.attach('file', Buffer.from('abcd'), fileName)
 					.set('connection', 'keep-alive')
@@ -175,23 +146,23 @@ describe(`${baseRouteName} (api)`, () => {
 			};
 
 			it('should return status 200 for successful request', async () => {
-				const { validId, apiClient } = await setup();
-				await uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				const { validId, loggedInClient } = setup();
+				await uploadFile(loggedInClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				await apiClient.delete(`/school/${validId}/schools/${validId}`);
+				await loggedInClient.delete(`/school/${validId}/schools/${validId}`);
 
-				const response = await apiClient.post(`/restore/school/${validId}/schools/${validId}`);
+				const response = await loggedInClient.post(`/restore/school/${validId}/schools/${validId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				const { validId, apiClient } = await setup();
-				await uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt');
+				const { validId, loggedInClient } = setup();
+				await uploadFile(loggedInClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt');
 
-				await apiClient.delete(`/delete/school/${validId}/schools/${validId}`);
+				await loggedInClient.delete(`/delete/school/${validId}/schools/${validId}`);
 
-				const result = await apiClient.post(`/restore/school/${validId}/schools/${validId}`);
+				const result = await loggedInClient.post(`/restore/school/${validId}/schools/${validId}`);
 				const response = result.body as FileRecordListResponse;
 
 				expect(Array.isArray(response.data)).toBe(true);
@@ -213,21 +184,21 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements of requested scope', async () => {
-				const { validId, apiClient } = await setup();
+				const { validId, loggedInClient } = setup();
 
 				const otherParentId = new ObjectId().toHexString();
 				const fileRecords = await Promise.all([
-					uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
-					uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
-					uploadFile(apiClient, `/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
-					uploadFile(apiClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
-					uploadFile(apiClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
-					uploadFile(apiClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
+					uploadFile(loggedInClient, `/upload/school/${validId}/schools/${validId}`, 'test1.txt'),
+					uploadFile(loggedInClient, `/upload/school/${validId}/schools/${validId}`, 'test2.txt'),
+					uploadFile(loggedInClient, `/upload/school/${validId}/schools/${validId}`, 'test3.txt'),
+					uploadFile(loggedInClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other1.txt'),
+					uploadFile(loggedInClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other3.txt'),
+					uploadFile(loggedInClient, `/upload/school/${validId}/schools/${otherParentId}`, 'other2.txt'),
 				]);
 
-				await apiClient.delete(`/delete/school/${validId}/schools/${validId}`);
+				await loggedInClient.delete(`/delete/school/${validId}/schools/${validId}`);
 
-				const result = await apiClient.post(`/restore/school/${validId}/schools/${validId}`);
+				const result = await loggedInClient.post(`/restore/school/${validId}/schools/${validId}`);
 				const response = result.body as FileRecordListResponse;
 
 				const resultData: FileRecordResponse[] = response.data;
@@ -241,31 +212,18 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('restore single file', () => {
 		describe('with bad request data', () => {
-			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+			const setup = () => {
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-				return { apiClient };
+				return { loggedInClient };
 			};
 
 			it('should return status 400 for invalid fileRecordId', async () => {
-				const { apiClient } = await setup();
+				const { loggedInClient } = setup();
 
-				const result = await apiClient.post(`/restore/123`);
+				const result = await loggedInClient.post(`/restore/123`);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -282,26 +240,15 @@ describe(`${baseRouteName} (api)`, () => {
 			let fileRecordId: string;
 
 			const setup = async () => {
-				await cleanupCollections(em);
-				const school = schoolEntityFactory.build();
-				const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([user, account]);
-				em.clear();
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
 
-				const authValue = JwtAuthenticationFactory.createJwt({
-					accountId: account.id,
-					userId: user.id,
-					schoolId: user.school.id,
-					roles: [user.roles[0].id],
-					support: false,
-					isExternalUser: false,
-				});
-				const apiClient = new TestApiClient(app, baseRouteName, authValue);
+				const validId = new ObjectId().toHexString();
 
 				const result = (
-					await apiClient
-						.post(`/upload/school/${school.id}/schools/${school.id}`)
+					await loggedInClient
+						.post(`/upload/school/${validId}/schools/${validId}`)
 						.attach('file', Buffer.from('abcd'), 'test1.txt')
 						.set('connection', 'keep-alive')
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20')
@@ -311,25 +258,25 @@ describe(`${baseRouteName} (api)`, () => {
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-				return { apiClient };
+				return { loggedInClient };
 			};
 
 			it('should return status 200 for successful request', async () => {
-				const { apiClient } = await setup();
+				const { loggedInClient } = await setup();
 
-				await apiClient.delete(`/delete/${fileRecordId}`);
+				await loggedInClient.delete(`/delete/${fileRecordId}`);
 
-				const response = await apiClient.post(`/restore/${fileRecordId}`);
+				const response = await loggedInClient.post(`/restore/${fileRecordId}`);
 
 				expect(response.status).toEqual(201);
 			});
 
 			it('should return right type of data', async () => {
-				const { apiClient } = await setup();
+				const { loggedInClient } = await setup();
 
-				await apiClient.delete(`/delete/${fileRecordId}`);
+				await loggedInClient.delete(`/delete/${fileRecordId}`);
 
-				const result = await apiClient.post(`/restore/${fileRecordId}`);
+				const result = await loggedInClient.post(`/restore/${fileRecordId}`);
 				const response = result.body as FileRecordResponse;
 
 				expect(response).toStrictEqual({
@@ -349,7 +296,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 
 			it('should return elements of requested scope', async () => {
-				const { apiClient } = await setup();
+				const { loggedInClient } = await setup();
 				const otherFileRecords = fileRecordFactory.buildList(3, {
 					parentType: FileRecordParentType.School,
 				});
@@ -357,9 +304,9 @@ describe(`${baseRouteName} (api)`, () => {
 				await em.persistAndFlush(otherFileRecords);
 				em.clear();
 
-				await apiClient.delete(`/delete/${fileRecordId}`);
+				await loggedInClient.delete(`/delete/${fileRecordId}`);
 
-				const result = await apiClient.post(`/restore/${fileRecordId}`);
+				const result = await loggedInClient.post(`/restore/${fileRecordId}`);
 				const response = result.body as FileRecordResponse;
 
 				expect(response.id).toEqual(fileRecordId);
