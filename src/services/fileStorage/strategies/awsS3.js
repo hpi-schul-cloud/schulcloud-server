@@ -63,22 +63,6 @@ const chooseProvider = async (schoolId) => {
 	return provider;
 };
 
-// begin legacy
-let awsConfig = {}; // TODO: Need cleanup to make it testable
-if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
-	try {
-		//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
-		/* eslint-disable global-require, no-unused-expressions */
-		NODE_ENV === ENVIRONMENTS.PRODUCTION
-			? (awsConfig = require('../../../../config/secrets.js').aws)
-			: (awsConfig = require('../../../../config/secrets.json').aws);
-		/* eslint-enable global-require, no-unused-expressions */
-	} catch (e) {
-		logger.warning("The AWS config couldn't be read");
-	}
-}
-// end legacy
-
 const getS3 = (storageProvider, awsClientHelper) => {
 	const S3_KEY = Configuration.get('S3_KEY');
 	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
@@ -115,40 +99,6 @@ const listBuckets = async (awsObject) => {
 };
 
 const getBucketName = (schoolId) => `${BUCKET_NAME_PREFIX}${schoolId}`;
-
-const createAWSObjectFromSchoolId = async (schoolId, awsClientHelper) => {
-	const school = await schoolModel
-		.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
-		.populate('storageProvider')
-		.select(['storageProvider'])
-		.lean()
-		.exec();
-
-	if (school === null) throw new NotFound('School not found.');
-
-	if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
-		if (!school.storageProvider) {
-			school.storageProvider = await chooseProvider(schoolId);
-		}
-		const s3 = getS3(school.storageProvider, awsClientHelper);
-
-		return {
-			s3,
-			bucket: getBucketName(schoolId),
-		};
-	}
-
-	// begin legacy
-	if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
-	const config = new awsClientHelper.Config(awsConfig);
-	config.endpoint = new awsClientHelper.Endpoint(awsConfig.endpointUrl);
-
-	return {
-		s3: new awsClientHelper.S3(config),
-		bucket: getBucketName(schoolId),
-	};
-	// end legacy
-};
 
 /**
  * If school was not found by its provider try to find the school bucket by other providers
@@ -224,17 +174,105 @@ const createBucket = async (awsObject, awsClientHelper) => {
 };
 
 class AWSS3Strategy {
-	connect(storageProvider) {
-		return getS3(storageProvider, aws);
+	constructor(awsClientHelper, config) {
+		this.awsClientHelper = awsClientHelper || aws;
+		this.awsConfig = config || this.loadConfigFromDisk();
 	}
 
-	async create(schoolId) {
+	loadConfigFromDisk() {
+		let awsConfig = {}; // TODO: Need cleanup to make it testable
+		if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
+			try {
+				//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
+				/* eslint-disable global-require, no-unused-expressions */
+				NODE_ENV === ENVIRONMENTS.PRODUCTION
+					? (awsConfig = require('../../../../config/secrets.js').aws)
+					: (awsConfig = require('../../../../config/secrets.json').aws);
+				/* eslint-enable global-require, no-unused-expressions */
+			} catch (e) {
+				logger.warning("The AWS config couldn't be read");
+			}
+		}
+
+		return awsConfig;
+	}
+
+	connect(storageProvider) {
+		return getS3(storageProvider, this.awsClientHelper);
+	}
+
+	checkSchool(school) {
+		if (school === null) throw new NotFound('School not found.');
+	}
+
+	async loadSchool(schoolId) {
+		const school = await schoolModel
+			.findOne({ _id: schoolId }, null, { readPreference: 'primary' }) // primary for afterhook in school.create
+			.populate('storageProvider')
+			.select(['storageProvider'])
+			.lean()
+			.exec();
+
+		this.checkSchool(school);
+
+		return school;
+	}
+
+	checkUser(user) {
+		if (!user) {
+			throw new NotFound('User not found');
+		}
+	}
+
+	async loadUser(userId) {
+		const user = UserModel.userModel.findById(userId).lean().exec();
+
+		this.checkUser(user);
+
+		return user;
+	}
+
+	async createAWSObjectFromSchool(school) {
+		const schoolId = school._id.toString();
+		let awsObject;
+		if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
+			if (!school.storageProvider) {
+				school.storageProvider = await chooseProvider(schoolId);
+			}
+			const s3 = getS3(school.storageProvider, this.awsClientHelper);
+
+			awsObject = {
+				s3,
+				bucket: getBucketName(schoolId),
+			};
+		} else {
+			if (!this.awsConfig.endpointUrl) {
+				throw new Error('S3 integration is not configured on the server');
+			}
+
+			const config = new this.awsClientHelper.Config(this.awsConfig);
+			config.endpoint = new this.awsClientHelper.Endpoint(this.awsConfig.endpointUrl);
+
+			awsObject = {
+				s3: new this.awsClientHelper.S3(config),
+				bucket: getBucketName(schoolId),
+			};
+		}
+
+		return awsObject;
+	}
+
+	checkCreateParams(schoolId) {
 		if (!schoolId) {
 			throw new BadRequest('No school id parameter given.');
 		}
+	}
 
-		const awsObject = await createAWSObjectFromSchoolId(schoolId, aws);
-		const data = await createBucket(awsObject, aws);
+	async create(schoolId) {
+		this.checkCreateParams(schoolId);
+		const school = await this.loadSchool(schoolId);
+		const awsObject = await this.createAWSObjectFromSchool(school);
+		const data = await createBucket(awsObject, this.awsClientHelper);
 
 		return {
 			message: 'Successfully created s3-bucket!',
@@ -262,7 +300,7 @@ class AWSS3Strategy {
 			return awsObject;
 		} catch (err) {
 			if (err.statusCode === 404 || err.statusCode === 403) {
-				const response = await createBucket(awsObject, aws);
+				const response = await createBucket(awsObject, this.awsClientHelper);
 				logger.info(`Bucket ${response.bucket} created ... `);
 
 				return response;
@@ -271,126 +309,135 @@ class AWSS3Strategy {
 		}
 	}
 
-	copyFile(userId, oldPath, newPath, externalSchoolId) {
+	checkCopyFileParams(userId, oldPath, newPath) {
 		if (!userId || !oldPath || !newPath) {
-			return Promise.reject(new BadRequest('Missing parameters by copyFile.', { userId, oldPath, newPath }));
+			throw new BadRequest('Missing parameters by copyFile.', { userId, oldPath, newPath });
 		}
-		return UserModel.userModel
-			.findById(userId)
-			.lean()
-			.exec()
-			.then((result) => {
-				if (!result || !result.schoolId) {
-					return new NotFound('User not found');
-				}
-
-				return createAWSObjectFromSchoolId(result.schoolId, aws).then((awsObject) => {
-					// files can be copied to different schools
-					const sourceBucket = `bucket-${externalSchoolId || result.schoolId}`;
-
-					const params = {
-						Bucket: awsObject.bucket, // destination bucket
-						CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
-						Key: newPath, // destination path
-					};
-					return promisify(awsObject.s3.copyObject.bind(awsObject.s3), awsObject.s3)(params);
-				});
-			})
-			.catch((err) => {
-				logger.warning(err);
-				throw err;
-			});
 	}
 
-	deleteFile(userId, filename) {
+	async copyFile(userId, oldPath, newPath, externalSchoolId) {
+		try {
+			this.checkCopyFileParams(userId, oldPath, newPath);
+
+			const user = await this.loadUser(userId);
+			const school = await this.loadSchool(user.schoolId);
+			const awsObject = await this.createAWSObjectFromSchool(school);
+
+			// files can be copied to different schools
+			const sourceBucket = `bucket-${externalSchoolId || user.schoolId}`;
+
+			const params = {
+				Bucket: awsObject.bucket, // destination bucket
+				CopySource: `/${sourceBucket}/${encodeURIComponent(oldPath)}`, // full source path (with bucket)
+				Key: newPath, // destination path
+			};
+
+			return promisify(awsObject.s3.copyObject.bind(awsObject.s3), awsObject.s3)(params);
+		} catch (err) {
+			logger.warning(err);
+			throw err;
+		}
+	}
+
+	checkDeleteFileParams(userId, filename) {
 		if (!userId || !filename) {
-			return Promise.reject(new BadRequest('Missing parameters by deleteFile.', { userId, filename }));
+			throw new BadRequest('Missing parameters by deleteFile.', { userId, filename });
 		}
-		return UserModel.userModel
-			.findById(userId)
-			.exec()
-			.then((result) => {
-				if (!result || !result.schoolId) {
-					return new NotFound('User not found');
-				}
-				return createAWSObjectFromSchoolId(result.schoolId, aws).then((awsObject) => {
-					const params = {
-						Bucket: awsObject.bucket,
-						Delete: {
-							Objects: [
-								{
-									Key: filename,
-								},
-							],
-							Quiet: true,
-						},
-					};
-					return promisify(awsObject.s3.deleteObjects.bind(awsObject.s3), awsObject.s3)(params);
-				});
-			});
 	}
 
-	generateSignedUrl({ userId, flatFileName, fileType, header }) {
+	async deleteFile(userId, filename) {
+		this.checkDeleteFileParams(userId, filename);
+		const user = await this.loadUser(userId);
+		const school = await this.loadSchool(user.schoolId);
+		const awsObject = await this.createAWSObjectFromSchool(school);
+
+		const params = {
+			Bucket: awsObject.bucket,
+			Delete: {
+				Objects: [
+					{
+						Key: filename,
+					},
+				],
+				Quiet: true,
+			},
+		};
+
+		return promisify(awsObject.s3.deleteObjects.bind(awsObject.s3), awsObject.s3)(params);
+	}
+
+	checkGenerateSignedUrl(userId, flatFileName, fileType) {
 		if (!userId || !flatFileName || !fileType) {
-			return Promise.reject(
-				new BadRequest('Missing parameters by generateSignedUrl.', { userId, flatFileName, fileType })
-			);
+			throw new BadRequest('Missing parameters by generateSignedUrl.', { userId, flatFileName, fileType });
+		}
+	}
+
+	async generateSignedUrl({ userId, flatFileName, fileType, header }) {
+		this.checkGenerateSignedUrl(userId, flatFileName, fileType);
+		const user = await this.loadUser(userId);
+		const school = await this.loadSchool(user.schoolId);
+		const awsObject = await this.createAWSObjectFromSchool(school);
+		const safeAwsObject = await this.createIfNotExists(awsObject);
+
+		const params = {
+			Bucket: safeAwsObject.bucket,
+			Key: flatFileName,
+			Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
+			ContentType: fileType,
+			Metadata: header,
+		};
+
+		return promisify(safeAwsObject.s3.getSignedUrl.bind(safeAwsObject.s3), safeAwsObject.s3)('putObject', params);
+	}
+
+	checkSignedUrlParameter(storageProviderId, bucket, flatFileName) {
+		if (!storageProviderId || !bucket || !flatFileName) {
+			throw new BadRequest('Missing parameters by getSignedUrl.', { storageProviderId, bucket, flatFileName });
+		}
+	}
+
+	// private
+	async getAwsObjectForMultipleProvider(bucket, storageProviderId) {
+		const storageProvider = await StorageProviderModel.findOne({ _id: storageProviderId }).lean().exec();
+
+		if (!storageProvider) {
+			throw new NotFound('Storage provider not found.');
 		}
 
-		return UserModel.userModel
-			.findById(userId)
-			.exec()
-			.then((result) => {
-				if (!result || !result.schoolId) {
-					return new NotFound('User not found');
-				}
-				return createAWSObjectFromSchoolId(result.schoolId, aws).then((awsObject) =>
-					this.createIfNotExists(awsObject).then((safeAwsObject) => {
-						const params = {
-							Bucket: safeAwsObject.bucket,
-							Key: flatFileName,
-							Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
-							ContentType: fileType,
-							Metadata: header,
-						};
-						return promisify(safeAwsObject.s3.getSignedUrl.bind(safeAwsObject.s3), safeAwsObject.s3)(
-							'putObject',
-							params
-						);
-					})
-				);
-			});
+		const s3 = getS3(storageProvider, this.awsClientHelper);
+		const awsObject = {
+			s3,
+			bucket,
+		};
+
+		return awsObject;
+	}
+
+	// private
+	async getAwsObjectForSingleProviderFromDiskConfig(bucket, awsClientHelper, awsConfig) {
+		if (!awsConfig.endpointUrl) {
+			throw new Error('S3 integration is not configured on the server');
+		}
+
+		const config = new this.awsClientHelper.Config(awsConfig);
+		config.endpoint = new this.awsClientHelper.Endpoint(awsConfig.endpointUrl);
+
+		const awsObject = {
+			s3: new awsClientHelper.S3(config),
+			bucket,
+		};
+
+		return awsObject;
 	}
 
 	async getSignedUrl({ storageProviderId, bucket, flatFileName, localFileName, download, action = 'getObject' }) {
-		if (!storageProviderId || !bucket || !flatFileName) {
-			return Promise.reject(
-				new BadRequest('Missing parameters by getSignedUrl.', { storageProviderId, bucket, flatFileName })
-			);
-		}
+		this.checkSignedUrlParameter(storageProviderId, bucket, flatFileName);
 
 		let awsObject;
 		if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
-			const storageProvider = await StorageProviderModel.findOne({ _id: storageProviderId }).lean().exec();
-
-			if (!storageProvider) {
-				throw new NotFound('Storage provider not found.');
-			}
-
-			const s3 = getS3(storageProvider, aws);
-			awsObject = {
-				s3,
-				bucket,
-			};
+			awsObject = await this.getAwsObjectForMultipleProvider(bucket, storageProviderId);
 		} else {
-			if (!awsConfig.endpointUrl) throw new Error('S3 integration is not configured on the server');
-			const config = new aws.Config(awsConfig);
-			config.endpoint = new aws.Endpoint(awsConfig.endpointUrl);
-
-			awsObject = {
-				s3: new aws.S3(config),
-				bucket,
-			};
+			awsObject = this.getAwsObjectForSingleProviderFromDiskConfig(bucket, this.awsClientHelper, this.awsConfig);
 		}
 
 		const params = {
