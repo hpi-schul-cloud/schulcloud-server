@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolYearEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { SchoolYearRepo } from './schoolyear.repo';
 
@@ -13,7 +13,7 @@ describe('schoolyear repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolYearEntity] })],
 			providers: [SchoolYearRepo],
 		}).compile();
 		repo = module.get(SchoolYearRepo);

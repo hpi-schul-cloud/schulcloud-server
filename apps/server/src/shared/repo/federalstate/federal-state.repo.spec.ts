@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FederalStateEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { FederalStateRepo } from './federal-state.repo';
 
@@ -13,7 +13,7 @@ describe('FederalStateRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FederalStateEntity] })],
 			providers: [FederalStateRepo],
 		}).compile();
 		repo = module.get(FederalStateRepo);

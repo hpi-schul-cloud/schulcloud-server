@@ -51,19 +51,19 @@ const consentFactory = BaseFactory.define<ConsentEntity, ConsentEntity>(ConsentE
 });
 
 class UserFactory extends BaseFactory<User, UserProperties> {
-	withRoleByName(name: RoleName): this {
+	public withRoleByName(name: RoleName): this {
 		const params: DeepPartial<UserProperties> = { roles: [roleFactory.buildWithId({ name })] };
 
 		return this.params(params);
 	}
 
-	withRole(role: Role): this {
+	public withRole(role: Role): this {
 		const params: DeepPartial<UserProperties> = { roles: [role] };
 
 		return this.params(params);
 	}
 
-	asStudent(additionalPermissions: Permission[] = []): this {
+	public asStudent(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, studentPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.STUDENT });
 
@@ -72,7 +72,7 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 		return this.params(params);
 	}
 
-	asTeacher(additionalPermissions: Permission[] = []): this {
+	public asTeacher(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, teacherPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.TEACHER });
 
@@ -81,7 +81,7 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 		return this.params(params);
 	}
 
-	asAdmin(additionalPermissions: Permission[] = []): this {
+	public asAdmin(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, adminPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.ADMINISTRATOR });
 
@@ -90,7 +90,7 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 		return this.params(params);
 	}
 
-	asSuperhero(additionalPermissions: Permission[] = []): this {
+	public asSuperhero(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, superheroPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.SUPERHERO });
 
@@ -106,7 +106,7 @@ export const userFactory = UserFactory.define(User, ({ sequence }) => {
 		lastName: `Doe ${sequence}`,
 		email: `user-${sequence}@example.com`,
 		roles: [],
-		school: schoolEntityFactory.build(),
+		school: schoolEntityFactory.buildWithId(),
 		consent: consentFactory.build(),
 		secondarySchools: [],
 	};

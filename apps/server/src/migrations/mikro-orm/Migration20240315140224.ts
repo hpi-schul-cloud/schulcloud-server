@@ -5,7 +5,7 @@ enum FileRecordParentType {
 	'Grading' = 'gradings',
 }
 
-export enum RoleName {
+enum RoleName {
 	TEACHER = 'teacher',
 }
 

@@ -1,11 +1,11 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News } from '@shared/domain/entity';
+import { Course, CourseGroup, CourseNews, News, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { NewsTargetModel } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import {
 	courseNewsFactory,
 	courseUnpublishedNewsFactory,
@@ -24,7 +24,11 @@ describe('NewsRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [News, TeamEntity, Course, CourseGroup, CourseNews, SchoolNews, TeamNews],
+				}),
+			],
 			providers: [NewsRepo],
 		}).compile();
 

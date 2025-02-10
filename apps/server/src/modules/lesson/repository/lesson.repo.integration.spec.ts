@@ -1,13 +1,22 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType, LessonEntity } from '@shared/domain/entity';
+import {
+	ComponentProperties,
+	ComponentType,
+	Course,
+	CourseGroup,
+	LessonEntity,
+	Material,
+	Submission,
+	Task,
+} from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { LessonRepo } from './lesson.repo';
 
@@ -18,7 +27,11 @@ describe('LessonRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [LessonEntity, Material, Task, Submission, Course, CourseGroup],
+				}),
+			],
 			providers: [LessonRepo],
 		}).compile();
 		repo = module.get(LessonRepo);

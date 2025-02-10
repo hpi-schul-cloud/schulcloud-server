@@ -44,7 +44,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId: undefined,
 						roles: [teacherRole.id],
-						schoolId: null,
+						schoolId: user.school.id,
 						isExternalUser: false,
 					});
 				});
@@ -70,7 +70,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId: undefined,
 						roles: [],
-						schoolId: null,
+						schoolId: user.school.id,
 						isExternalUser: true,
 					});
 				});

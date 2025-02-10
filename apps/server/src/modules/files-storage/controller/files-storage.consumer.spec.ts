@@ -1,19 +1,17 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_ENTITIES } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
-import { courseFactory } from '@testing/factory/course.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { fileRecordFactory } from '../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from './dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
-import { fileRecordFactory } from '../testing';
 
 describe('FilesStorageConsumer', () => {
 	let module: TestingModule;
@@ -30,7 +28,7 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities([...ALL_ENTITIES, FileRecord]);
+		orm = await setupEntities([FileRecord]);
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageConsumer,
@@ -82,18 +80,19 @@ describe('FilesStorageConsumer', () => {
 				});
 			});
 			it('regular RPC handler should receive a valid RPC response', async () => {
-				const sourceCourse = courseFactory.buildWithId();
-				const targetCourse = courseFactory.buildWithId();
+				const sourceCourseId = new ObjectId().toHexString();
+				const targetCourseId = new ObjectId().toHexString();
+
 				const payload: CopyFilesOfParentPayload = {
 					userId: new ObjectId().toHexString(),
 					source: {
-						parentId: sourceCourse.id,
+						parentId: sourceCourseId,
 						parentType: FileRecordParentType.Course,
 						storageLocationId,
 						storageLocation: StorageLocation.SCHOOL,
 					},
 					target: {
-						parentId: targetCourse.id,
+						parentId: targetCourseId,
 						parentType: FileRecordParentType.Course,
 						storageLocationId,
 						storageLocation: StorageLocation.SCHOOL,
@@ -107,18 +106,18 @@ describe('FilesStorageConsumer', () => {
 		});
 		describe('WHEN file not exists', () => {
 			it('should return RpcMessage with empty array', async () => {
-				const sourceCourse = courseFactory.buildWithId();
-				const targetCourse = courseFactory.buildWithId();
+				const sourceCourseId = new ObjectId().toHexString();
+				const targetCourseId = new ObjectId().toHexString();
 				const payload = {
 					userId: new ObjectId().toHexString(),
 					source: {
-						parentId: sourceCourse.id,
+						parentId: sourceCourseId,
 						parentType: FileRecordParentType.Course,
 						storageLocationId,
 						storageLocation: StorageLocation.SCHOOL,
 					},
 					target: {
-						parentId: targetCourse.id,
+						parentId: targetCourseId,
 						parentType: FileRecordParentType.Course,
 						storageLocationId,
 						storageLocation: StorageLocation.SCHOOL,

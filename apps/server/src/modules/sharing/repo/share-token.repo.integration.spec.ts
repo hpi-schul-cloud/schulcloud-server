@@ -1,11 +1,13 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
+import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
+import { ShareToken } from '../entity/share-token.entity';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenRepo } from './share-token.repo';
 
@@ -16,7 +18,7 @@ describe('ShareTokenRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ShareToken, SchoolEntity] })],
 			providers: [
 				ShareTokenRepo,
 				{

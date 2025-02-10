@@ -53,8 +53,6 @@ describe(BoardNodeCopyService.name, () => {
 	let module: TestingModule;
 	let service: BoardNodeCopyService;
 	const config: ToolConfig = {
-		FEATURE_CTL_TOOLS_TAB_ENABLED: false,
-		FEATURE_LTI_TOOLS_TAB_ENABLED: false,
 		CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: 0,
 		CTL_TOOLS_BACKEND_URL: '',
 		FEATURE_CTL_TOOLS_COPY_ENABLED: false,
@@ -135,6 +133,14 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(ColumnBoard);
 		});
 
+		it('should copy the original node', async () => {
+			const { copyContext, columnBoard } = setup();
+
+			const result = await service.copyColumnBoard(columnBoard, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(ColumnBoard);
+		});
+
 		it('should copy the children', async () => {
 			const { copyContext, columnBoard } = setup();
 
@@ -168,6 +174,14 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(Column);
 		});
 
+		it('should copy the original node', async () => {
+			const { copyContext, column } = setup();
+
+			const result = await service.copyColumn(column, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(Column);
+		});
+
 		it('should copy the children', async () => {
 			const { copyContext, column } = setup();
 
@@ -193,6 +207,13 @@ describe(BoardNodeCopyService.name, () => {
 			expect(result.copyEntity).toBeInstanceOf(Card);
 		});
 
+		it('should copy the original node', async () => {
+			const { copyContext, card } = setup();
+
+			const result = await service.copyCard(card, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(Card);
+		});
 		it('should copy the children', async () => {
 			const { copyContext, card } = setup();
 
@@ -262,6 +283,14 @@ describe(BoardNodeCopyService.name, () => {
 			const result = await service.copyLinkElement(linkElement, copyContext);
 
 			expect(result.copyEntity).toBeInstanceOf(LinkElement);
+		});
+
+		it('should copy the original node', async () => {
+			const { copyContext, linkElement } = setup();
+
+			const result = await service.copyLinkElement(linkElement, copyContext);
+
+			expect(result.originalEntity).toBeInstanceOf(LinkElement);
 		});
 
 		it('should copy the files', async () => {
