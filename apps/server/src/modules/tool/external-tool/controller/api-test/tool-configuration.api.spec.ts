@@ -26,7 +26,7 @@ import { contextExternalToolEntityFactory } from '../../../context-external-tool
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolEntity } from '../../entity';
-import { customParameterFactory, externalToolEntityFactory } from '../../testing';
+import { customParameterFactory, externalToolEntityFactory, mediumEntityFactory } from '../../testing';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
@@ -457,7 +457,8 @@ describe('ToolConfigurationController (API)', () => {
 				]);
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
-				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const medium = mediumEntityFactory.build();
+				const externalTool: ExternalToolEntity = externalToolEntityFactory.withMedium(medium).buildWithId({
 					parameters: [globalParameter, schoolParameter, contextParameter],
 				});
 
@@ -477,11 +478,12 @@ describe('ToolConfigurationController (API)', () => {
 					externalTool,
 					schoolParameter,
 					schoolExternalTool,
+					medium,
 				};
 			};
 
 			it('should return a tool with parameter with scope school', async () => {
-				const { loggedInClient, schoolExternalTool, externalTool, schoolParameter } = await setup();
+				const { loggedInClient, schoolExternalTool, externalTool, schoolParameter, medium } = await setup();
 
 				const response: Response = await loggedInClient.get(
 					`school-external-tools/${schoolExternalTool.id}/configuration-template`
@@ -507,6 +509,11 @@ describe('ToolConfigurationController (API)', () => {
 							location: CustomParameterLocationParams.BODY,
 						},
 					],
+					medium: {
+						mediumId: medium.mediumId,
+						mediaSourceId: medium.mediaSourceId,
+						publisher: medium.publisher,
+					},
 				});
 			});
 		});
