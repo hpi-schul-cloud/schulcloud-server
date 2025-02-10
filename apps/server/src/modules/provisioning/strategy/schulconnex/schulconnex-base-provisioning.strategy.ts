@@ -26,7 +26,7 @@ import { ProvisioningStrategy } from '../base.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 @Injectable()
-export abstract class SchulconnexFetchStrategy extends ProvisioningStrategy {
+export abstract class SchulconnexBaseProvisioningStrategy extends ProvisioningStrategy {
 	constructor(
 		protected readonly responseMapper: SchulconnexResponseMapper,
 		protected readonly schulconnexRestClient: SchulconnexRestClient,

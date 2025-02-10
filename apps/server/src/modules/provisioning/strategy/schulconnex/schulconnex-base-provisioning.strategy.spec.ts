@@ -36,13 +36,13 @@ import {
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalUserDtoFactory } from '../../testing';
-import { SchulconnexFetchStrategy } from './schulconnex-fetch.strategy';
+import { SchulconnexBaseProvisioningStrategy } from './schulconnex-base-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import ArgsType = jest.ArgsType;
 import SpyInstance = jest.SpyInstance;
 
 @Injectable()
-class TestClass extends SchulconnexFetchStrategy {
+class TestClass extends SchulconnexBaseProvisioningStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	apply(data: OauthDataDto): Promise<ProvisioningDto> {
 		return Promise.resolve(new ProvisioningDto({ externalUserId: new ObjectId().toHexString() }));
@@ -53,9 +53,9 @@ class TestClass extends SchulconnexFetchStrategy {
 	}
 }
 
-describe(SchulconnexFetchStrategy.name, () => {
+describe(SchulconnexBaseProvisioningStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: SchulconnexFetchStrategy;
+	let strategy: SchulconnexBaseProvisioningStrategy;
 
 	let mapper: DeepMocked<SchulconnexResponseMapper>;
 	let logger: DeepMocked<Logger>;

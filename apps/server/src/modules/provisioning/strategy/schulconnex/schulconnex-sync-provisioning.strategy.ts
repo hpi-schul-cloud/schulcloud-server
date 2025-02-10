@@ -8,7 +8,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { GroupProvisioningInfoLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
-import { SchulconnexFetchStrategy } from './schulconnex-fetch.strategy';
+import { SchulconnexBaseProvisioningStrategy } from './schulconnex-base-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import {
 	SchulconnexCourseSyncService,
@@ -20,7 +20,7 @@ import {
 } from './service';
 
 @Injectable()
-export class SchulconnexProvisioningStrategy extends SchulconnexFetchStrategy {
+export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisioningStrategy {
 	constructor(
 		private readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
 		private readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,

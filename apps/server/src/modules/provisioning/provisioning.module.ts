@@ -21,8 +21,8 @@ import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
-	SchulconnexProvisioningStrategy,
 	SchulconnexResponseMapper,
+	SchulconnexSyncProvisioningStrategy,
 	TspProvisioningStrategy,
 } from './strategy';
 import {
@@ -61,7 +61,7 @@ import {
 		SchulconnexCourseSyncService,
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
-		SchulconnexProvisioningStrategy,
+		SchulconnexSyncProvisioningStrategy,
 		SchulconnexAsyncProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,

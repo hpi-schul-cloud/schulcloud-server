@@ -9,7 +9,7 @@ import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
-	SchulconnexProvisioningStrategy,
+	SchulconnexSyncProvisioningStrategy,
 	TspProvisioningStrategy,
 } from '../strategy';
 import { externalUserDtoFactory } from '../testing';
@@ -20,7 +20,7 @@ describe('ProvisioningService', () => {
 	let service: ProvisioningService;
 
 	let systemService: DeepMocked<SystemService>;
-	let provisioningStrategy: DeepMocked<SchulconnexProvisioningStrategy>;
+	let provisioningStrategy: DeepMocked<SchulconnexSyncProvisioningStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -31,8 +31,8 @@ describe('ProvisioningService', () => {
 					useValue: createMock<SystemService>(),
 				},
 				{
-					provide: SchulconnexProvisioningStrategy,
-					useValue: createMock<SchulconnexProvisioningStrategy>({
+					provide: SchulconnexSyncProvisioningStrategy,
+					useValue: createMock<SchulconnexSyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.SANIS;
 						},
@@ -75,7 +75,7 @@ describe('ProvisioningService', () => {
 
 		service = module.get(ProvisioningService);
 		systemService = module.get(SystemService);
-		provisioningStrategy = module.get(SchulconnexProvisioningStrategy);
+		provisioningStrategy = module.get(SchulconnexSyncProvisioningStrategy);
 	});
 
 	afterAll(async () => {

@@ -15,7 +15,7 @@ import { ExternalGroupDto, ExternalSchoolDto, OauthDataDto, ProvisioningDto, Pro
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
-import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
+import { SchulconnexSyncProvisioningStrategy } from './schulconnex-sync-provisioning.strategy';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
@@ -25,9 +25,9 @@ import {
 	SchulconnexUserProvisioningService,
 } from './service';
 
-describe(SchulconnexProvisioningStrategy.name, () => {
+describe(SchulconnexSyncProvisioningStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: SchulconnexProvisioningStrategy;
+	let strategy: SchulconnexSyncProvisioningStrategy;
 
 	let schulconnexSchoolProvisioningService: DeepMocked<SchulconnexSchoolProvisioningService>;
 	let schulconnexUserProvisioningService: DeepMocked<SchulconnexUserProvisioningService>;
@@ -43,7 +43,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SchulconnexProvisioningStrategy,
+				SchulconnexSyncProvisioningStrategy,
 				{
 					provide: SchulconnexSchoolProvisioningService,
 					useValue: createMock<SchulconnexSchoolProvisioningService>(),
@@ -93,7 +93,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 			],
 		}).compile();
 
-		strategy = module.get(SchulconnexProvisioningStrategy);
+		strategy = module.get(SchulconnexSyncProvisioningStrategy);
 		schulconnexSchoolProvisioningService = module.get(SchulconnexSchoolProvisioningService);
 		schulconnexUserProvisioningService = module.get(SchulconnexUserProvisioningService);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
