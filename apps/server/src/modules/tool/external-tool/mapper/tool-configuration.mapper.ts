@@ -2,18 +2,18 @@ import { ToolContextType } from '../../common/enum';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
+	PreferredToolListResponse,
+	PreferredToolResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
-	PreferredToolListResponse,
-	PreferredToolResponse,
 } from '../controller/dto';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 export class ToolConfigurationMapper {
-	static mapToSchoolExternalToolConfigurationTemplateResponse(
+	public static mapToSchoolExternalToolConfigurationTemplateResponse(
 		externalTool: ExternalTool
 	): SchoolExternalToolConfigurationTemplateResponse {
 		const mapped = new SchoolExternalToolConfigurationTemplateResponse({
@@ -24,12 +24,13 @@ export class ToolConfigurationMapper {
 			parameters: externalTool.parameters
 				? ExternalToolResponseMapper.mapCustomParameterToResponse(externalTool.parameters)
 				: [],
+			medium: ExternalToolResponseMapper.mapMediumToResponse(externalTool.medium),
 		});
 
 		return mapped;
 	}
 
-	static mapToSchoolExternalToolConfigurationTemplateListResponse(
+	public static mapToSchoolExternalToolConfigurationTemplateListResponse(
 		externalTools: ExternalTool[]
 	): SchoolExternalToolConfigurationTemplateListResponse {
 		const mappedTools = externalTools.map(
@@ -42,7 +43,7 @@ export class ToolConfigurationMapper {
 		return mapped;
 	}
 
-	static mapToContextExternalToolConfigurationTemplateResponse(
+	public static mapToContextExternalToolConfigurationTemplateResponse(
 		toolInfo: ContextExternalToolTemplateInfo
 	): ContextExternalToolConfigurationTemplateResponse {
 		const { externalTool, schoolExternalTool } = toolInfo;
@@ -61,7 +62,7 @@ export class ToolConfigurationMapper {
 		return mapped;
 	}
 
-	static mapToContextExternalToolConfigurationTemplateListResponse(
+	public static mapToContextExternalToolConfigurationTemplateListResponse(
 		toolInfos: ContextExternalToolTemplateInfo[]
 	): ContextExternalToolConfigurationTemplateListResponse {
 		const mappedTools = toolInfos.map(
@@ -74,13 +75,15 @@ export class ToolConfigurationMapper {
 		return mapped;
 	}
 
-	static mapToToolContextTypesListResponse(toolContextTypes: ToolContextType[]): ToolContextTypesListResponse {
+	public static mapToToolContextTypesListResponse(toolContextTypes: ToolContextType[]): ToolContextTypesListResponse {
 		const mappedTypes = new ToolContextTypesListResponse(toolContextTypes);
 
 		return mappedTypes;
 	}
 
-	static mapToPreferredToolListResponse(preferedTools: ContextExternalToolTemplateInfo[]): PreferredToolListResponse {
+	public static mapToPreferredToolListResponse(
+		preferedTools: ContextExternalToolTemplateInfo[]
+	): PreferredToolListResponse {
 		const mappedTools = preferedTools.map((tool): PreferredToolResponse => this.mapToPreferredToolResponse(tool));
 
 		const mapped = new PreferredToolListResponse(mappedTools);
@@ -88,7 +91,7 @@ export class ToolConfigurationMapper {
 		return mapped;
 	}
 
-	static mapToPreferredToolResponse(preferredTool: ContextExternalToolTemplateInfo): PreferredToolResponse {
+	public static mapToPreferredToolResponse(preferredTool: ContextExternalToolTemplateInfo): PreferredToolResponse {
 		const { externalTool, schoolExternalTool } = preferredTool;
 
 		const mapped = new PreferredToolResponse({

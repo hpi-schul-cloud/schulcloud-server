@@ -1,4 +1,3 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
@@ -12,6 +11,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { User as UserEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity } from '../entity';

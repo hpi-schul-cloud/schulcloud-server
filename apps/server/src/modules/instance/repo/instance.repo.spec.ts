@@ -1,6 +1,6 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { InstanceProps } from '../domain';
 import { InstanceEntity } from '../entity';
 import { InstanceNotIdentifiableLoggableException } from '../loggable';

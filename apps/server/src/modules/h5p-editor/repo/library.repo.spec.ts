@@ -1,6 +1,6 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { ILibraryMetadata } from '@lumieducation/h5p-server';
 import { cleanupCollections } from '@testing/cleanup-collections';
