@@ -12,7 +12,7 @@ const mockAwsHelper = require('./s3.mock');
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 
-describe.only('AWS file storage strategy', () => {
+describe('AWS file storage strategy', () => {
 	let aws;
 	let server;
 	let testObjects;
