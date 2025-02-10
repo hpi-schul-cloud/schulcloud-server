@@ -210,7 +210,7 @@ describe('LessonDtoMapper', () => {
 				const result = LessonDtoMapper.mapToLessonDto(lessonResponse);
 
 				expect(result).toBeInstanceOf(LessonDto);
-				expect(result.contents[0].component).toEqual('lernstore');
+				expect(result.contents[0].component).toEqual('resources');
 				expect(result.contents[0].content).toBeInstanceOf(ComponentLernstorePropsDto);
 			});
 		});
