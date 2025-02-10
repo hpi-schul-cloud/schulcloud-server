@@ -1,9 +1,9 @@
-import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { LoggerModule } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { LoggerModule } from '@core/logger';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
