@@ -2,7 +2,7 @@ import { PseudonymService } from '@modules/pseudonym';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { LtiToolDO, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { TeamEntity } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo/teams';
 import { IdTokenCreationLoggableException } from '../error';
@@ -18,7 +18,7 @@ export class IdTokenService {
 		private readonly userService: UserService
 	) {}
 
-	async createIdToken(userId: string, scopes: string[], clientId: string): Promise<IdToken> {
+	public async createIdToken(userId: string, scopes: string[], clientId: string): Promise<IdToken> {
 		let teams: TeamEntity[] = [];
 		if (scopes.includes(OauthScope.GROUPS)) {
 			teams = await this.teamsRepo.findByUserId(userId);
@@ -50,7 +50,7 @@ export class IdTokenService {
 
 	// TODO N21-335 How we can refactor the iframe in the id token?
 	private async createIframeSubject(user: UserDO, clientId: string): Promise<string> {
-		const tool: ExternalTool | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
+		const tool: ExternalTool = await this.oauthProviderLoginFlowService.findToolByClientId(clientId);
 
 		if (!tool.id) {
 			throw new IdTokenCreationLoggableException(clientId, user.id);
