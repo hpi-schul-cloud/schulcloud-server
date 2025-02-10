@@ -3,16 +3,19 @@ const request = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks');
 
-const calendarUri = Configuration.get('CALENDAR_URI');
 class CourseCalendarService {
 	constructor(app) {
 		this.app = app;
 	}
 
+	async send(options) {
+		return request(options);
+	}
+
 	remove(id, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${calendarUri}/scopes/${id}`,
+			uri: `${Configuration.get('CALENDAR_URI')}/scopes/${id}`,
 			headers: {
 				Authorization: userId,
 			},
@@ -22,7 +25,7 @@ class CourseCalendarService {
 			body: { data: [{ type: 'event' }] },
 		};
 
-		return request(options).then((res) => {
+		return this.send(options).then((res) => {
 			// calendar returns nothing if event was successfully deleted
 			if (!res) return { message: 'Successful deleted event' };
 			return res;
