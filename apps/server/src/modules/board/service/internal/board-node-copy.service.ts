@@ -116,11 +116,11 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.COLUMNBOARD,
 			status: childrenCopyStatus,
 			elements: childrenResults,
-			originalObject: original,
+			original,
 		};
 
 		return result;
@@ -135,11 +135,11 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.COLUMN,
 			status: CopyStatusEnum.SUCCESS,
 			elements: childrenResults,
-			originalObject: original,
+			original,
 		};
 
 		return result;
@@ -154,11 +154,11 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.CARD,
 			status: CopyStatusEnum.SUCCESS,
 			elements: childrenResults,
-			originalObject: original,
+			original,
 		};
 
 		return result;
@@ -181,7 +181,7 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.FILE_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 			elements: fileCopyStatus,
@@ -198,10 +198,10 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.LINK_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
-			originalObject: original,
+			original,
 		};
 
 		if (original.imageUrl) {
@@ -238,7 +238,7 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.RICHTEXT_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 		};
@@ -254,7 +254,7 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.DRAWING_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
 		};
@@ -274,7 +274,7 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.SUBMISSION_CONTAINER_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 			elements: childrenResults,
@@ -302,7 +302,7 @@ export class BoardNodeCopyService {
 
 		if (!this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') || !original.contextExternalToolId) {
 			const copyStatus: CopyStatus = {
-				copyObject: copy,
+				copy,
 				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 				status: CopyStatusEnum.SUCCESS,
 			};
@@ -313,7 +313,7 @@ export class BoardNodeCopyService {
 		const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);
 		if (!linkedTool) {
 			const copyStatus: CopyStatus = {
-				copyObject: copy,
+				copy,
 				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 				status: CopyStatusEnum.FAIL,
 			};
@@ -344,7 +344,7 @@ export class BoardNodeCopyService {
 		}
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
 			status: copyStatus,
 		};
@@ -363,7 +363,7 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.COLLABORATIVE_TEXT_EDITOR_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
 		};
@@ -427,7 +427,7 @@ export class BoardNodeCopyService {
 		});
 
 		const result: CopyStatus = {
-			copyObject: copy,
+			copy,
 			type: CopyElementType.DELETED_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 		};
@@ -473,7 +473,7 @@ export class BoardNodeCopyService {
 			id: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			children: childrenResults.map((r) => r.copyObject).filter((c) => c !== undefined) as AnyBoardNode[],
+			children: childrenResults.map((r) => r.copy).filter((c) => c !== undefined) as AnyBoardNode[],
 		};
 	}
 }

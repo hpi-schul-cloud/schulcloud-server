@@ -17,8 +17,8 @@ export class CopyMapper {
 			status: copyStatus.status,
 		});
 
-		if (copyStatus.copyObject) {
-			const copyEntity = copyStatus.copyObject as LessonEntity | Task;
+		if (copyStatus.copy) {
+			const copyEntity = copyStatus.copy as LessonEntity | Task;
 			dto.id = copyEntity.id;
 			if (copyEntity instanceof LessonEntity || copyEntity instanceof Task) {
 				dto.destinationId = copyEntity.course?.id;

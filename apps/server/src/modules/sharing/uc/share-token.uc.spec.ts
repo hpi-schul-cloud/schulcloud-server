@@ -850,7 +850,7 @@ describe('ShareTokenUC', () => {
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: course,
+					copy: course,
 				};
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 
@@ -919,7 +919,7 @@ describe('ShareTokenUC', () => {
 				const status: CopyStatus = {
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: lesson,
+					copy: lesson,
 				};
 				lessonCopyService.copyLesson.mockResolvedValueOnce(status);
 
@@ -1005,7 +1005,7 @@ describe('ShareTokenUC', () => {
 				const status: CopyStatus = {
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: task,
+					copy: task,
 				};
 				taskCopyService.copyTask.mockResolvedValueOnce(status);
 
@@ -1145,7 +1145,7 @@ describe('ShareTokenUC', () => {
 				const status: CopyStatus = {
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: columnBoard,
+					copy: columnBoard,
 				};
 				columnBoardService.copyColumnBoard.mockResolvedValueOnce(status);
 				const newName = 'NewName';
@@ -1196,7 +1196,7 @@ describe('ShareTokenUC', () => {
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: course,
+					copy: course,
 				};
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 
@@ -1233,7 +1233,7 @@ describe('ShareTokenUC', () => {
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: course,
+					copy: course,
 				};
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 

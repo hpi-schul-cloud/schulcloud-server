@@ -128,7 +128,7 @@ describe('board copy service', () => {
 					originalCourse: destinationCourse,
 					destinationCourse,
 				});
-				expect(status.originalObject).toEqual(originalBoard);
+				expect(status.original).toEqual(originalBoard);
 			});
 
 			it('should create a copy', async () => {
@@ -140,7 +140,7 @@ describe('board copy service', () => {
 					originalCourse: destinationCourse,
 					destinationCourse,
 				});
-				const board = status.copyObject as LegacyBoard;
+				const board = status.copy as LegacyBoard;
 				expect(board.id).not.toEqual(originalBoard.id);
 			});
 
@@ -153,7 +153,7 @@ describe('board copy service', () => {
 					originalCourse: destinationCourse,
 					destinationCourse,
 				});
-				const board = status.copyObject as LegacyBoard;
+				const board = status.copy as LegacyBoard;
 				expect(board.course.id).toEqual(destinationCourse.id);
 			});
 		});
@@ -171,7 +171,7 @@ describe('board copy service', () => {
 					title: taskCopy.name,
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: taskCopy,
+					copy: taskCopy,
 				});
 
 				return { destinationCourse, originalBoard, user, originalTask };
@@ -204,7 +204,7 @@ describe('board copy service', () => {
 					originalCourse: destinationCourse,
 					destinationCourse,
 				});
-				const board = status.copyObject as LegacyBoard;
+				const board = status.copy as LegacyBoard;
 				expect(board.getElements().length).toEqual(1);
 			});
 
@@ -237,7 +237,7 @@ describe('board copy service', () => {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: lessonCopy,
+					copy: lessonCopy,
 				});
 				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
@@ -265,7 +265,7 @@ describe('board copy service', () => {
 					originalCourse: destinationCourse,
 					destinationCourse,
 				});
-				const board = status.copyObject as LegacyBoard;
+				const board = status.copy as LegacyBoard;
 
 				expect(board.getElements().length).toEqual(1);
 			});
@@ -299,8 +299,8 @@ describe('board copy service', () => {
 				columnBoardService.copyColumnBoard.mockResolvedValue({
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: copyOfColumnBoard,
-					originalObject: originalColumnBoard,
+					copy: copyOfColumnBoard,
+					original: originalColumnBoard,
 					title: copyOfColumnBoard.title,
 				});
 
@@ -334,7 +334,7 @@ describe('board copy service', () => {
 					user,
 					destinationCourse,
 				});
-				const board = status.copyObject as LegacyBoard;
+				const board = status.copy as LegacyBoard;
 
 				expect(board.getElements().length).toEqual(1);
 			});
@@ -362,7 +362,7 @@ describe('board copy service', () => {
 					title: taskCopy.name,
 					type: CopyElementType.TASK,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: taskCopy,
+					copy: taskCopy,
 				});
 
 				const originalLesson = lessonFactory.buildWithId();
@@ -372,7 +372,7 @@ describe('board copy service', () => {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: lessonCopy,
+					copy: lessonCopy,
 				});
 				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
@@ -386,8 +386,8 @@ describe('board copy service', () => {
 				columnBoardService.copyColumnBoard.mockResolvedValue({
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: columnBoardCopy,
-					originalObject: originalColumnBoard,
+					copy: columnBoardCopy,
+					original: originalColumnBoard,
 					title: columnBoardCopy.title,
 				});
 
@@ -508,7 +508,7 @@ describe('board copy service', () => {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: lessonCopy,
+					copy: lessonCopy,
 				});
 				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
@@ -524,7 +524,7 @@ describe('board copy service', () => {
 					originalCourse: destinationCourse,
 					destinationCourse,
 				});
-				const board = status.copyObject as LegacyBoard;
+				const board = status.copy as LegacyBoard;
 
 				expect(board.references).toHaveLength(0);
 			});
@@ -543,7 +543,7 @@ describe('board copy service', () => {
 					title: originalLesson.name,
 					type: CopyElementType.LESSON,
 					status: CopyStatusEnum.SUCCESS,
-					copyObject: lessonCopy,
+					copy: lessonCopy,
 				});
 				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 				boardRepo.save.mockRejectedValue(new Error());

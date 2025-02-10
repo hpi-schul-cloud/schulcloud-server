@@ -7,8 +7,8 @@ export type CopyStatus = {
 	type: CopyElementType;
 	status: CopyStatusEnum;
 	elements?: CopyStatus[];
-	copyObject?: AuthorizableObject;
-	originalObject?: AuthorizableObject;
+	copy?: AuthorizableObject;
+	original?: AuthorizableObject;
 };
 
 export enum CopyElementType {

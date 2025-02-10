@@ -43,22 +43,22 @@ export class ColumnBoardCopyService {
 		const copyStatus = await this.boardNodeCopyService.copy(originalBoard, copyContext);
 
 		/* istanbul ignore next */
-		if (!isColumnBoard(copyStatus.copyObject)) {
+		if (!isColumnBoard(copyStatus.copy)) {
 			throw new InternalServerErrorException('expected copy of columnboard to be a columnboard');
 		}
 
 		if (params.copyTitle) {
-			copyStatus.copyObject.title = params.copyTitle;
+			copyStatus.copy.title = params.copyTitle;
 		} else {
-			copyStatus.copyObject.title = await this.columnBoardTitleService.deriveColumnBoardTitle(
+			copyStatus.copy.title = await this.columnBoardTitleService.deriveColumnBoardTitle(
 				originalBoard.title,
 				params.targetExternalReference
 			);
 		}
-		copyStatus.copyObject.context = params.targetExternalReference;
-		copyStatus.copyObject.isVisible = false;
-		await this.boardNodeService.addRoot(copyStatus.copyObject);
-		copyStatus.originalObject = originalBoard;
+		copyStatus.copy.context = params.targetExternalReference;
+		copyStatus.copy.isVisible = false;
+		await this.boardNodeService.addRoot(copyStatus.copy);
+		copyStatus.original = originalBoard;
 
 		return copyStatus;
 	}
