@@ -1,16 +1,16 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
+import { Account } from '../../domain';
 import { AccountEntity } from '../../domain/entity/account.entity';
 import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountRepo } from './account.repo';
 import { AccountEntityToDoMapper } from './mapper';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
-import { Account } from '../../domain';
 
 class AccountTestRepo extends AccountRepo {
 	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
@@ -24,7 +24,7 @@ describe('AccountRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, User] })],
 			providers: [AccountTestRepo],
 		}).compile();
 		repo = module.get(AccountTestRepo);

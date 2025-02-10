@@ -1,15 +1,15 @@
 import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { type SystemEntity } from '@modules/system/entity';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
+import { LegacyLogger } from '@core/logger';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { SchoolEntity } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { LegacyLogger } from '@core/logger';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
@@ -21,7 +21,7 @@ describe('UserLoginMigrationRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [UserLoginMigrationEntity] })],
 			providers: [
 				UserLoginMigrationRepo,
 				{

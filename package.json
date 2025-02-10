@@ -20,13 +20,6 @@
 		"node": "22",
 		"npm": ">=9"
 	},
-	"mikro-orm": {
-		"useTsNode": true,
-		"configPaths": [
-			"./apps/server/src/config/mikro-orm-cli.config.ts",
-			"./dist/server/config/mikro-orm-cli.config.js"
-		]
-	},
 	"scripts": {
 		"lint": "eslint . --ignore-path .gitignore",
 		"test": "npm run nest:test && npm run feathers:test",
@@ -53,6 +46,7 @@
 		"migration:down": "npm run nest:start:console -- database migration --down",
 		"migration:pending": "npm run nest:start:console -- database migration --pending",
 		"migration:persisted": "npm run nest:start:console -- database export --collection migrations --override",
+		"migration:create": "npm run nest:start:console -- database migration --create",
 		"nest:prebuild": "rimraf dist",
 		"nest:build": "nest build",
 		"nest:build:all": "npm run nest:build",
@@ -61,6 +55,7 @@
 		"nest:start:debug": "nest start server --debug --watch",
 		"nest:start:prod": "node dist/apps/server/apps/server.app",
 		"nest:start:admin-api-server": "nest start admin-api-server",
+		"nest:start:admin-api-server:dev": "nest start admin-api-server --watch",
 		"nest:start:admin-api-server:debug": "nest start admin-api-server --debug --watch",
 		"nest:start:admin-api-server:prod": "node dist/apps/server/apps/admin-api-server.app",
 		"nest:start:board-collaboration": "nest start board-collaboration",
@@ -136,6 +131,8 @@
 		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api",
 		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
 		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
+		"pregenerate-client:boards-api": "rimraf ./apps/server/src/infra/boards-client/generated",
+		"generate-client:boards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key boards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
 	},
 	"overrides": {
@@ -153,7 +150,7 @@
 		"@feathersjs/authentication": "^5.0.31",
 		"@feathersjs/authentication-local": "^5.0.31",
 		"@feathersjs/commons": "^5.0.31",
-		"@feathersjs/configuration": "^5.0.31",
+		"@feathersjs/configuration": "^5.0.32",
 		"@feathersjs/errors": "^5.0.31",
 		"@feathersjs/express": "^5.0.31",
 		"@feathersjs/feathers": "^5.0.31",
@@ -225,7 +222,7 @@
 		"i18next": "^24.2.1",
 		"i18next-fs-backend": "^2.6.0",
 		"ioredis": "^5.4.2",
-		"jose": "^2.0.7",
+		"jose": "^1.28.1",
 		"jsdom": "^23.2.0",
 		"jsonwebtoken": "^9.0.2",
 		"jwks-rsa": "^3.1.0",

@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { StorageProviderRepo } from './storageprovider.repo';
 
@@ -13,7 +13,7 @@ describe('StorageProviderRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [StorageProviderEntity] })],
 			providers: [StorageProviderRepo],
 		}).compile();
 

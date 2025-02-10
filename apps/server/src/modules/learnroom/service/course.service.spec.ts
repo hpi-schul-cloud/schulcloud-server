@@ -177,19 +177,22 @@ describe('CourseService', () => {
 	});
 
 	describe('create', () => {
-		const setup = () => {
-			const course = courseFactory.buildWithId();
-			legacyCourseRepo.createCourse.mockResolvedValueOnce();
+		describe('when creating new Course', () => {
+			const setup = () => {
+				const course = courseFactory.buildWithId();
 
-			return { course };
-		};
+				legacyCourseRepo.createCourse.mockResolvedValueOnce(course);
 
-		it('should call createCourse from course repository', async () => {
-			const { course } = setup();
+				return { course };
+			};
 
-			await expect(courseService.create(course)).resolves.not.toThrow();
+			it('should call createCourse from course repository', async () => {
+				const { course } = setup();
 
-			expect(legacyCourseRepo.createCourse).toBeCalledWith(course);
+				await expect(courseService.create(course)).resolves.not.toThrow();
+
+				expect(legacyCourseRepo.createCourse).toBeCalledWith(course);
+			});
 		});
 	});
 

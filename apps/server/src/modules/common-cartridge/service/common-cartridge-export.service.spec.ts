@@ -2,12 +2,13 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
+import { BoardsClientAdapter, BoardResponse } from '@infra/boards-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { faker } from '@faker-js/faker';
 import { FileRecordParentType } from '@modules/files-storage/interface';
-import { BoardClientAdapter, BoardSkeletonDto } from '../common-cartridge-client/board-client';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import {
 	CardListResponseDto,
@@ -15,7 +16,6 @@ import {
 	RichTextElementContentDto,
 } from '../common-cartridge-client/card-client/dto';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import {
 	BoardColumnBoardDto,
 	BoardLessonDto,
@@ -33,7 +33,6 @@ import {
 	listOfCardResponseFactory,
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
@@ -42,7 +41,7 @@ describe('CommonCartridgeExportService', () => {
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let courseRoomsClientAdapterMock: DeepMocked<CourseRoomsClientAdapter>;
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
-	let boardClientAdapterMock: DeepMocked<BoardClientAdapter>;
+	let boardClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
 	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
@@ -57,12 +56,12 @@ describe('CommonCartridgeExportService', () => {
 		exportTasks: boolean,
 		exportColumnBoards: boolean
 	) => {
-		const courseMetadata: CourseCommonCartridgeMetadataDto = courseMetadataFactory.build();
+		const courseMetadata = courseMetadataFactory.build();
 		const lessons = lessonFactory.buildList(2);
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
 
-		const boardSkeleton: BoardSkeletonDto = columnBoardFactory.build();
+		const boardSkeleton: BoardResponse = columnBoardFactory.build();
 		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.build();
 		const boardTask: BoardTaskDto = boardTaskFactory.build();
 		boardTask.courseName = courseMetadata.title;
@@ -133,8 +132,8 @@ describe('CommonCartridgeExportService', () => {
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 				{
-					provide: BoardClientAdapter,
-					useValue: createMock<BoardClientAdapter>(),
+					provide: BoardsClientAdapter,
+					useValue: createMock<BoardsClientAdapter>(),
 				},
 				{
 					provide: CoursesClientAdapter,
@@ -167,7 +166,7 @@ describe('CommonCartridgeExportService', () => {
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		courseRoomsClientAdapterMock = module.get(CourseRoomsClientAdapter);
 		cardClientAdapterMock = module.get(CardClientAdapter);
-		boardClientAdapterMock = module.get(BoardClientAdapter);
+		boardClientAdapterMock = module.get(BoardsClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
 		filesMetadataClientAdapterMock = module.get(FilesStorageClientAdapterService);
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);

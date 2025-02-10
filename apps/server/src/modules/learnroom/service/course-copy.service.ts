@@ -136,10 +136,6 @@ export class CourseCopyService {
 				status: CopyStatusEnum.NOT_DOING,
 			},
 			{
-				type: CopyElementType.LTITOOL_GROUP,
-				status: CopyStatusEnum.NOT_DOING,
-			},
-			{
 				type: CopyElementType.TIME_GROUP,
 				status: CopyStatusEnum.NOT_DOING,
 			},
