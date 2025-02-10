@@ -2,13 +2,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
+import { userFactory } from '@testing/factory/user.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
-import { DeletionBatchEntity } from '../../../repo/entity';
 import { deletionBatchEntityFactory } from '../../../testing';
+import { DeletionBatchListResponse } from '../dto/response/deletion-batch-list.response';
+// import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
 
 const baseRouteName = '/deletion-batches';
 
-describe('getBatchDetails ', () => {
+describe('getBatches ', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
@@ -30,39 +33,66 @@ describe('getBatchDetails ', () => {
 		await app.close();
 	});
 
-	describe('when getting an existing deletion batch', () => {
+	describe('when getting deletion batches', () => {
 		const setup = async () => {
-			const batch = deletionBatchEntityFactory.build();
-			await em.persistAndFlush(batch);
+			const student1 = userFactory.asStudent().buildWithId();
+			const student2 = userFactory.asStudent().buildWithId();
+			const student3 = userFactory.asStudent().buildWithId();
+			const teacher1 = userFactory.asTeacher().buildWithId();
+			const teacher2 = userFactory.asTeacher().buildWithId();
+			const invalidId1 = new ObjectId().toHexString();
+			const invalidId2 = new ObjectId().toHexString();
+
+			const batch1 = deletionBatchEntityFactory.build({
+				targetRefIds: [student1.id, student2.id],
+				skippedIds: [teacher1.id],
+				invalidIds: [invalidId1],
+			});
+			const batch2 = deletionBatchEntityFactory.build({
+				targetRefIds: [student3.id],
+				skippedIds: [teacher2.id],
+				invalidIds: [invalidId2],
+			});
+			await em.persistAndFlush([student1, student2, student3, teacher1, teacher2, batch1, batch2]);
 			em.clear();
 
-			return { id: batch.id };
+			const deletionBatchListResponse1 = {
+				id: batch1.id,
+				name: batch1.name,
+				status: batch1.status,
+				usersByRole: [{ roleName: 'student', userCount: 2 }],
+				skippedUsersByRole: [{ roleName: 'teacher', userCount: 1 }],
+				invalidUsers: [invalidId1],
+			};
+			const deletionBatchListResponse2 = {
+				id: batch2.id,
+				name: batch2.name,
+				status: batch2.status,
+				usersByRole: [{ roleName: 'student', userCount: 1 }],
+				skippedUsersByRole: [{ roleName: 'teacher', userCount: 1 }],
+				invalidUsers: [invalidId2],
+			};
+
+			return { deletionBatchListResponse1, deletionBatchListResponse2 };
 		};
 
 		it('should return status 200', async () => {
-			const { id } = await setup();
-
-			const response = await testApiClient.get(id);
+			const response = await testApiClient.get();
 
 			expect(response.status).toEqual(200);
 		});
 
-		it('should return the deletion batch', async () => {
-			const { id } = await setup();
+		it('should return a paginated list of deletion batches', async () => {
+			const { deletionBatchListResponse1, deletionBatchListResponse2 } = await setup();
 
-			const response = await testApiClient.get(id);
+			const response = await testApiClient.get();
+			const result = response.body as DeletionBatchListResponse;
 
-			const deletionBatch = response.body as DeletionBatchEntity;
-
-			expect(deletionBatch.id).toEqual(id);
-		});
-	});
-
-	describe('when calling with invalid id', () => {
-		it('should return status 404', async () => {
-			const response = await testApiClient.get('invalid-id');
-
-			expect(response.status).toEqual(404);
+			expect(result.total).toEqual(2);
+			expect(result.data).toEqual([
+				expect.objectContaining(deletionBatchListResponse1),
+				expect.objectContaining(deletionBatchListResponse2),
+			]);
 		});
 	});
 });

@@ -2,14 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
-// import { cleanupCollections } from '@testing/cleanup-collections';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DeletionBatchEntity } from '../../../repo/entity';
 import { deletionBatchEntityFactory } from '../../../testing';
 
 const baseRouteName = '/deletion-batches';
 
-describe('deleteBatch', () => {
+describe('getBatchDetails ', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
@@ -31,7 +30,7 @@ describe('deleteBatch', () => {
 		await app.close();
 	});
 
-	describe('when getting a deletion batch details', () => {
+	describe('when getting an existing deletion batch', () => {
 		const setup = async () => {
 			const batch = deletionBatchEntityFactory.build();
 			await em.persistAndFlush(batch);
@@ -40,27 +39,28 @@ describe('deleteBatch', () => {
 			return { id: batch.id };
 		};
 
-		it('should return status 204', async () => {
+		it('should return status 200', async () => {
 			const { id } = await setup();
 
-			const response = await testApiClient.delete(id);
+			const response = await testApiClient.get(id);
 
-			expect(response.status).toEqual(204);
+			expect(response.status).toEqual(200);
 		});
 
-		it('should acttually delete the deletion batch', async () => {
+		it('should return the deletion batch', async () => {
 			const { id } = await setup();
 
-			const response = await testApiClient.delete(id);
+			const response = await testApiClient.get(id);
 
-			const dbResult = await em.findOne(DeletionBatchEntity, { id });
-			expect(dbResult).toBeNull();
+			const deletionBatch = response.body as DeletionBatchEntity;
+
+			expect(deletionBatch.id).toEqual(id);
 		});
 	});
 
 	describe('when calling with invalid id', () => {
 		it('should return status 404', async () => {
-			const response = await testApiClient.delete('invalid-id');
+			const response = await testApiClient.get('invalid-id');
 
 			expect(response.status).toEqual(404);
 		});
