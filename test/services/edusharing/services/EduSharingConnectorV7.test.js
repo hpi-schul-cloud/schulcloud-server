@@ -130,8 +130,6 @@ describe('EduSharingV7 FIND', () => {
 
 			const postStub = sinon.stub(axios, 'post');
 			postStub.onCall(0).returns({ data: mockNode });
-			const mockImg = { body: 'dummyImage' };
-			postStub.onCall(1).returns({ data: mockImg });
 
 			const result = await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
 			chai.expect(result.title).to.equal('dummy title');
