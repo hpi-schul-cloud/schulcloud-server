@@ -73,6 +73,7 @@ const config: SchulconnexProvisioningConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
+	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 };
 
 export const schulconnexProvisioningConfig = () => config;
