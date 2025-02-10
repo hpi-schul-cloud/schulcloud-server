@@ -1,1 +1,1 @@
-export { MediaSourceSyncStrategyNotImplementedLoggableException } from './media-source-sync-strategy-not-implemented-loggable.exception';
+export { SyncStrategyNotImplementedLoggableException } from './sync-strategy-not-implemented-loggable.exception';

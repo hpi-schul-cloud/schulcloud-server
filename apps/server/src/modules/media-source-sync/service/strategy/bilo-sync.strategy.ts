@@ -3,7 +3,7 @@ import { BiloMediaRestClient, BiloMediaQueryResponse } from '@infra/bilo-client'
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium, FileRecordRef } from '@modules/tool/external-tool/domain';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport, MediaSourceSyncOperationReport } from '../../interface';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
 import { MediaSourceSyncOperation } from '../../types';
 
@@ -61,41 +61,44 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
 		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
 
-		const countAndUpdateMetadata = async (externalTool: ExternalTool): Promise<void> => {
-			const targetMetadata = metadataItems.find(
+		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
+			const fetchedMetadata = metadataItems.find(
 				(metadataItem: BiloMediaQueryResponse) => externalTool.medium?.mediumId === metadataItem.id
 			);
 
-			if (!targetMetadata) {
+			if (!fetchedMetadata) {
 				undeliveredReport.count += 1;
-				return;
+				return null;
 			}
 
-			if (this.isMetadataInToolUpToDate(externalTool, targetMetadata)) {
+			if (this.isMetadataUpToDate(externalTool, fetchedMetadata)) {
 				updateSuccessReport.count += 1;
-				return;
+				return null;
 			}
 
 			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
 
-			await this.mapBiloResponseToExternalTool(externalTool, targetMetadata);
-
-			await this.externalToolService.updateExternalTool(externalTool);
+			try {
+				await this.mapBiloResponseToExternalTool(externalTool, fetchedMetadata);
+			} catch (error) {
+				failureReport.count += 1;
+				return null;
+			}
 
 			if (isMetadataFirstSync) {
 				createSuccessReport.count += 1;
 			} else {
 				updateSuccessReport.count += 1;
 			}
-		};
 
-		const syncPromises: Promise<void>[] = externalTools.map((externalTool: ExternalTool) =>
-			countAndUpdateMetadata(externalTool).catch(() => {
-				failureReport.count += 1;
-			})
+			return externalTool;
+		});
+
+		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
+			(updateResult: ExternalTool | null) => !!updateResult
 		);
 
-		await Promise.all(syncPromises);
+		await this.externalToolService.updateExternalTools(updatedExternalTools);
 
 		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
 			createSuccessReport,
@@ -107,7 +110,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		return report;
 	}
 
-	private isMetadataInToolUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryResponse): boolean {
+	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryResponse): boolean {
 		const isUpToDate =
 			externalTool.medium?.metadataModifiedAt &&
 			Math.trunc(externalTool.medium.metadataModifiedAt.getTime() / 1000) === metadata.modified;
@@ -136,7 +139,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		thumbnailUrl: string
 	): Promise<FileRecordRef | undefined> {
-		// TODO updating thumbnail requires jwt (not possible for now)
+		// TODO N21-2398 updating thumbnail requires jwt (not possible for now)
 		await Promise.resolve();
 
 		return undefined;

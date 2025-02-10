@@ -482,4 +482,124 @@ describe(ExternalToolRepo.name, () => {
 			});
 		});
 	});
+
+	describe('saveAll', () => {
+		describe('when the external tools passed do not exist', () => {
+			it('should save all the external tools', async () => {
+				const externalToolDOs: ExternalTool[] = externalToolFactory.buildList(5);
+
+				await repo.saveAll(externalToolDOs);
+				const savedTools = await em.find(ExternalToolEntity, {});
+
+				expect(savedTools.length).toEqual(externalToolDOs.length);
+				expect(savedTools).toEqual(
+					expect.arrayContaining(
+						externalToolDOs.map((externalToolDO: ExternalTool) => {
+							const entity = externalToolEntityFactory.buildWithId(
+								ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO, em),
+								externalToolDO.id
+							);
+							entity.createdAt = expect.any(Date) as unknown as Date;
+							entity.updatedAt = expect.any(Date) as unknown as Date;
+
+							return entity;
+						})
+					)
+				);
+			});
+
+			it('should return the saved external tools', async () => {
+				const externalToolDOs: ExternalTool[] = externalToolFactory.buildList(5);
+
+				const result: ExternalTool[] = await repo.saveAll(externalToolDOs);
+
+				expect(result).toEqual(
+					expect.arrayContaining(
+						externalToolDOs.map((externalToolDO: ExternalTool) =>
+							externalToolFactory.buildWithId(
+								{
+									...externalToolDO.getProps(),
+									parameters: [],
+									createdAt: expect.any(Date) as unknown as Date,
+								},
+								externalToolDO.id
+							)
+						)
+					)
+				);
+			});
+		});
+
+		describe('when the external tools passed exist', () => {
+			const setupEntities = async () => {
+				const existingTools: ExternalTool[] = externalToolFactory.buildList(3);
+
+				const externalToolEntities: ExternalToolEntity[] = existingTools.map((externalToolDO: ExternalTool) =>
+					externalToolEntityFactory.buildWithId(
+						ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO, em),
+						externalToolDO.id
+					)
+				);
+
+				await em.persistAndFlush(externalToolEntities);
+				em.clear();
+
+				const externalToolDOs: ExternalTool[] = existingTools.map((existingTool: ExternalTool) =>
+					externalToolFactory.buildWithId(
+						{
+							...existingTool.getProps(),
+							name: `new-${existingTool.name}`,
+							description: `new-${existingTool?.description ?? 'description'}`,
+						},
+						existingTool.id
+					)
+				);
+
+				return {
+					externalToolDOs,
+				};
+			};
+
+			it('should update the existing the external tools', async () => {
+				const { externalToolDOs } = await setupEntities();
+
+				await repo.saveAll(externalToolDOs);
+				const updatedEntities = await em.find(ExternalToolEntity, {});
+
+				expect(updatedEntities).toEqual(
+					expect.arrayContaining(
+						externalToolDOs.map((externalToolDO: ExternalTool) => {
+							const entity = externalToolEntityFactory.buildWithId(
+								ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO, em),
+								externalToolDO.id
+							);
+							entity.createdAt = expect.any(Date) as unknown as Date;
+							entity.updatedAt = expect.any(Date) as unknown as Date;
+
+							return entity;
+						})
+					)
+				);
+			});
+
+			it('should return the updated external tools', async () => {
+				const { externalToolDOs } = await setupEntities();
+
+				const result: ExternalTool[] = await repo.saveAll(externalToolDOs);
+
+				const things = externalToolDOs.map((externalToolDO: ExternalTool) =>
+					externalToolFactory.buildWithId(
+						{
+							...externalToolDO.getProps(),
+							parameters: [],
+							createdAt: expect.any(Date) as unknown as Date,
+						},
+						externalToolDO.id
+					)
+				);
+
+				expect(result).toEqual(expect.arrayContaining(things));
+			});
+		});
+	});
 });

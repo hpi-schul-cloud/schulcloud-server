@@ -6,7 +6,7 @@ import {
 	MediaSourceNotFoundLoggableException,
 } from '@modules/media-source';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../interface';
-import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
+import { SyncStrategyNotImplementedLoggableException } from '../loggable';
 import { BiloSyncStrategy } from './strategy';
 
 @Injectable()
@@ -25,7 +25,7 @@ export class MediaSourceSyncService {
 		const strategy = this.syncStrategyMap.get(dataFormat);
 
 		if (!strategy) {
-			throw new MediaSourceSyncStrategyNotImplementedLoggableException(dataFormat);
+			throw new SyncStrategyNotImplementedLoggableException(dataFormat);
 		}
 
 		const mediaSource = await this.getMediaSource(strategy);

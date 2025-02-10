@@ -671,4 +671,29 @@ describe(ExternalToolService.name, () => {
 			expect(result).toEqual([externalTool]);
 		});
 	});
+
+	describe('updateExternalTools', () => {
+		const setup = () => {
+			const { externalTool } = createTools();
+			externalToolRepo.saveAll.mockResolvedValue([externalTool]);
+
+			return { externalTool };
+		};
+
+		it('should save all the external tools', async () => {
+			const { externalTool } = setup();
+
+			const result: ExternalTool[] = await service.updateExternalTools([externalTool]);
+
+			expect(externalToolRepo.saveAll).toBeCalled();
+		});
+
+		it('should return the updated external tools', async () => {
+			const { externalTool } = setup();
+
+			const result: ExternalTool[] = await service.updateExternalTools([externalTool]);
+
+			expect(result).toEqual([externalTool]);
+		});
+	});
 });

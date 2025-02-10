@@ -1,11 +1,11 @@
 import { MediaSourceDataFormat } from '../../media-source/enum';
-import { MediaSourceSyncStrategyNotImplementedLoggableException } from './media-source-sync-strategy-not-implemented-loggable.exception';
+import { SyncStrategyNotImplementedLoggableException } from './sync-strategy-not-implemented-loggable.exception';
 
-describe(MediaSourceSyncStrategyNotImplementedLoggableException.name, () => {
+describe(SyncStrategyNotImplementedLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
-			const exception = new MediaSourceSyncStrategyNotImplementedLoggableException(mediaSourceDataFormat);
+			const exception = new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat);
 
 			return {
 				exception,

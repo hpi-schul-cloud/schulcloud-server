@@ -2,7 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { MediaSourceDataFormat } from '../../media-source/enum';
 
-export class MediaSourceSyncStrategyNotImplementedLoggableException extends NotImplementedException {
+export class SyncStrategyNotImplementedLoggableException extends NotImplementedException {
 	constructor(private readonly mediaSourceDataFormat: MediaSourceDataFormat) {
 		super();
 	}

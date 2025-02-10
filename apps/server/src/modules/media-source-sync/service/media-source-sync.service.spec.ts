@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceService, MediaSourceDataFormat, MediaSourceNotFoundLoggableException } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSourceSyncStrategy } from '../interface';
-import { MediaSourceSyncStrategyNotImplementedLoggableException } from '../loggable';
+import { SyncStrategyNotImplementedLoggableException } from '../loggable';
 import { mediaSourceSyncReportFactory } from '../testing';
 import { BiloSyncStrategy } from './strategy';
 import { MediaSourceSyncService } from './media-source-sync.service';
@@ -115,14 +115,12 @@ describe(MediaSourceSyncService.name, () => {
 				return { mediaSourceDataFormat };
 			};
 
-			it('should throw an MediaSourceSyncStrategyNotImplementedLoggableException', async () => {
+			it('should throw an SyncStrategyNotImplementedLoggableException', async () => {
 				const { mediaSourceDataFormat } = setup();
 
 				const promise = service.syncAllMediaMetadata(mediaSourceDataFormat);
 
-				await expect(promise).rejects.toThrow(
-					new MediaSourceSyncStrategyNotImplementedLoggableException(mediaSourceDataFormat)
-				);
+				await expect(promise).rejects.toThrow(new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat));
 			});
 		});
 	});

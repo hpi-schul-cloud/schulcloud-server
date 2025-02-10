@@ -40,6 +40,20 @@ export class ExternalToolRepo {
 		return savedDomainObject;
 	}
 
+	public async saveAll(domainObjects: ExternalTool[]): Promise<ExternalTool[]> {
+		this.em.clear();
+
+		const savedDomainObjects: ExternalTool[] = await Promise.all(
+			domainObjects.map(
+				async (domainObject: ExternalTool): Promise<ExternalTool> => this.saveWithoutFlush(domainObject)
+			)
+		);
+
+		await this.em.flush();
+
+		return savedDomainObjects;
+	}
+
 	public async findById(id: EntityId): Promise<ExternalTool> {
 		const entity: ExternalToolEntity = await this.em.findOneOrFail(this.entityName, id, {
 			populate: ['thumbnail.fileRecord'],
@@ -178,5 +192,24 @@ export class ExternalToolRepo {
 		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO, this.em);
 
 		return entity;
+	}
+
+	private async saveWithoutFlush(domainObject: ExternalTool): Promise<ExternalTool> {
+		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id, {
+			populate: ['thumbnail.fileRecord'],
+		});
+
+		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
+		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
+
+		if (existing) {
+			entity = this.em.assign(existing, entity);
+		} else {
+			this.em.persist(entity);
+		}
+
+		const savedDomainObject: ExternalTool = this.mapEntityToDomainObject(entity);
+
+		return savedDomainObject;
 	}
 }

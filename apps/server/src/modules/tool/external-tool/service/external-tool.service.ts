@@ -111,6 +111,16 @@ export class ExternalToolService {
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
 	}
 
+	public async updateExternalTools(externalTools: ExternalTool[]): Promise<ExternalTool[]> {
+		await Promise.all(
+			externalTools.map((externalToolToUpdate: ExternalTool) => this.updateOauth2ToolConfig(externalToolToUpdate))
+		);
+
+		const updatedExternalTools = await this.externalToolRepo.saveAll(externalTools);
+
+		return updatedExternalTools;
+	}
+
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {
 		if (ExternalTool.isOauth2Config(toUpdate.config)) {
 			const toUpdateOauthClient: Partial<ProviderOauthClient> = this.mapper.mapDoToProviderOauthClient(
