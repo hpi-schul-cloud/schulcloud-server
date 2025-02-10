@@ -21,7 +21,7 @@ import { ContextExternalToolValidationService } from './service/context-external
 
 @Module({
 	imports: [
-		CommonToolModule,
+		forwardRef(() => CommonToolModule),
 		forwardRef(() => ExternalToolModule),
 		SchoolExternalToolModule,
 		LoggerModule,

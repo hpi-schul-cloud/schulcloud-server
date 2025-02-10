@@ -32,9 +32,9 @@ import { SyncUc } from './uc/sync.uc';
 		ConsoleWriterModule,
 		SystemModule,
 		SchoolModule,
-		MediaSourceModule,
 		SchoolLicenseModule,
 		EncryptionModule,
+		MediaSourceModule,
 		MediaSourceSyncModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
