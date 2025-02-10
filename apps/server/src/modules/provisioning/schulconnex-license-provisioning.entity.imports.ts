@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
