@@ -1,7 +1,7 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo';
 import { ClassEntity } from '@modules/class/entity';
-import { DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
+import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
@@ -32,6 +32,7 @@ export const ENTITIES = [
 	Role,
 	DeletionRequestEntity,
 	DeletionLogEntity,
+	DeletionBatchEntity,
 	SchoolEntity,
 	SchoolYearEntity,
 	StorageProviderEntity,
