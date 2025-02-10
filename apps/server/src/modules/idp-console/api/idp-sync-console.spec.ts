@@ -1,12 +1,12 @@
-import { ObjectId } from 'bson';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ObjectId } from 'bson';
+import { IdpConsoleModule } from '../idp-console.app.module';
+import { UsersSyncOptionsBuilder } from '../testing';
 import { IdpSyncConsole } from './idp-sync-console';
 import { SystemType } from './interface';
-import { UsersSyncOptionsBuilder } from '../testing';
 import { SynchronizationUc } from './synchronization.uc';
-import { IdpConsoleModule } from '../idp-console.app.module';
 
 // Sorry but in the end this test do test neraly nothing..
 describe(IdpSyncConsole.name, () => {
