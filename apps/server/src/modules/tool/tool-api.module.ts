@@ -9,7 +9,6 @@ import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
-import { LtiToolRepo } from '@shared/repo/ltitool';
 import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
 import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
@@ -52,7 +51,6 @@ import { ToolModule } from './tool.module';
 		ToolDeepLinkController,
 	],
 	providers: [
-		LtiToolRepo,
 		ExternalToolUc,
 		ExternalToolConfigurationUc,
 		ExternalToolConfigurationService,
