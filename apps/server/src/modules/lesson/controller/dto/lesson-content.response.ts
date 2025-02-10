@@ -8,11 +8,8 @@ import {
 	ComponentTextProperties,
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
-import { LessonResources } from './lesson-resources.model';
-import { Type } from 'class-transformer';
 import { EntityId } from '@shared/domain/types';
-
-
+import { LessonResources } from './lesson-resources.model';
 // eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
 	@ApiProperty({ nullable: false })

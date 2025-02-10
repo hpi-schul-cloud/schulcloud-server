@@ -3,14 +3,12 @@ import { ComponentEtherpadPropsDto } from '../dto/component-etherpad-props.dto';
 import { ComponentGeogebraPropsDto } from '../dto/component-geogebra-props.dto';
 import { ComponentInternalPropsDto } from '../dto/component-internal-props.dto';
 import { ComponentLernstorePropsDto } from '../dto/component-lernstore-props.dto';
-import { ComponentNexboardPropsDto } from '../dto/component-nexboard-props-dto';
 import { ComponentTextPropsDto } from '../dto/component-text-props.dto';
 import {
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
 	ComponentInternalPropsImpl,
 	ComponentLernstorePropsImpl,
-	ComponentNexboardPropsImpl,
 	ComponentTextPropsImpl,
 	LessonContentResponse,
 	LessonContentResponseComponentEnum,
@@ -105,21 +103,13 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentInternalPropsDto(lessonContentResponse.content as ComponentInternalPropsImpl),
 				});
-			case LessonContentResponseComponentEnum.Lernstore:
+			case LessonContentResponseComponentEnum.Resources:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
 					component: lessonContentResponse.component,
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl),
-				});
-			case LessonContentResponseComponentEnum.NeXboard:
-				return new LessonContentDto({
-					id: lessonContentResponse.id,
-					title: lessonContentResponse.title,
-					component: lessonContentResponse.component,
-					hidden: lessonContentResponse.hidden,
-					content: new ComponentNexboardPropsDto(lessonContentResponse.content as ComponentNexboardPropsImpl),
 				});
 			default:
 				return null;

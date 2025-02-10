@@ -2,7 +2,6 @@ export * from './component-etherpad-props-impl';
 export * from './component-geogebra-props-impl';
 export * from './component-internal-props-impl';
 export * from './component-lernstore-props-impl';
-export * from './component-nexboard-props-impl';
 export * from './component-text-props-impl';
 export * from './lesson-content-response';
 export * from './lesson-linked-task-response';

@@ -66,9 +66,8 @@ export const LessonContentResponseComponentEnum = {
     Etherpad: 'Etherpad',
     GeoGebra: 'geoGebra',
     Internal: 'internal',
-    Lernstore: 'lernstore',
-    Text: 'text',
-    NeXboard: 'neXboard'
+    Resources: 'resources',
+    Text: 'text'
 } as const;
 
 export type LessonContentResponseComponentEnum = typeof LessonContentResponseComponentEnum[keyof typeof LessonContentResponseComponentEnum];

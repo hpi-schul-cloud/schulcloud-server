@@ -10,7 +10,6 @@ import {
 	ComponentInternalPropsImpl,
 	ComponentTextPropsImpl,
 	ComponentLernstorePropsImpl,
-	ComponentNexboardPropsImpl,
 	LessonContentResponseComponentEnum,
 } from '../lessons-api-client';
 import { LessonDtoMapper } from './lesson-dto.mapper';
@@ -19,7 +18,6 @@ import { ComponentGeogebraPropsDto } from '../dto/component-geogebra-props.dto';
 import { ComponentTextPropsDto } from '../dto/component-text-props.dto';
 import { ComponentInternalPropsDto } from '../dto/component-internal-props.dto';
 import { ComponentLernstorePropsDto } from '../dto/component-lernstore-props.dto';
-import { ComponentNexboardPropsDto } from '../dto/component-nexboard-props-dto';
 
 describe('LessonDtoMapper', () => {
 	describe('mapToLessonDto', () => {
@@ -187,7 +185,7 @@ describe('LessonDtoMapper', () => {
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['lernstore']),
+					component: faker.helpers.arrayElement(['resources']),
 					hidden: faker.datatype.boolean(),
 				};
 
@@ -217,57 +215,12 @@ describe('LessonDtoMapper', () => {
 			});
 		});
 
-		describe('when mapping LessonResponse to lesson DTO with next board content', () => {
-			const setup = () => {
-				const lessonContentResponse: LessonContentResponse = {
-					content: {
-						board: faker.lorem.text(),
-						description: faker.lorem.word(),
-						title: faker.lorem.text(),
-						url: faker.internet.url(),
-					} as ComponentNexboardPropsImpl,
-					_id: faker.string.uuid(),
-					id: faker.string.uuid(),
-					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['neXboard']),
-					hidden: faker.datatype.boolean(),
-				};
-
-				const lessonResponse: LessonResponse = {
-					_id: faker.string.uuid(),
-					id: faker.string.uuid(),
-					name: faker.lorem.sentence(),
-					courseId: faker.string.uuid(),
-					courseGroupId: faker.string.uuid(),
-					hidden: faker.datatype.boolean(),
-					position: faker.number.int(),
-					contents: [lessonContentResponse],
-					materials: [materialResponse],
-				};
-
-				return { lessonResponse, lessonContentResponse };
-			};
-
-			it('should return LessonDto with nexboard content', () => {
-				const { lessonResponse } = setup();
-
-				const result = LessonDtoMapper.mapToLessonDto(lessonResponse);
-
-				expect(result).toBeInstanceOf(LessonDto);
-				expect(result.contents[0].component).toEqual('neXboard');
-				expect(result.contents[0].content).toBeInstanceOf(ComponentNexboardPropsDto);
-			});
-		});
-
 		describe('when mapping LessonResponse to lesson DTO with an empty content', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
 					content: {
-						board: faker.lorem.text(),
-						description: faker.lorem.word(),
-						title: faker.lorem.text(),
-						url: faker.internet.url(),
-					} as ComponentNexboardPropsImpl,
+						text: faker.lorem.text(),
+					} as ComponentTextPropsImpl,
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
