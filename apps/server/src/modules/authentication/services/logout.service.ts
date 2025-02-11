@@ -1,10 +1,11 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
 import {
+	OauthConfigMissingLoggableException,
 	OAuthService,
 	OauthSessionToken,
 	OauthSessionTokenService,
-	OauthConfigMissingLoggableException,
 } from '@modules/oauth';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
@@ -17,7 +18,6 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { firstValueFrom } from 'rxjs';
 import { EndSessionEndpointNotFoundLoggableException, ExternalSystemLogoutFailedLoggableException } from '../errors';
 import { AccountSystemMismatchLoggableException, InvalidTokenLoggableException } from '../loggable';
-import { ICurrentUser } from '../../../infra/auth-guard';
 
 @Injectable()
 export class LogoutService {
@@ -91,8 +91,7 @@ export class LogoutService {
 			throw new EndSessionEndpointNotFoundLoggableException(system.id);
 		}
 
-		const now = new Date();
-		if (now > sessionToken.expiresAt) {
+		if (!sessionToken.expiresAt || new Date() > sessionToken.expiresAt) {
 			await this.oauthSessionTokenService.delete(sessionToken);
 			return;
 		}

@@ -13,12 +13,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
-import { currentUserFactory } from '../../../testing/factory/currentuser.factory';
 import { EndSessionEndpointNotFoundLoggableException, ExternalSystemLogoutFailedLoggableException } from '../errors';
 import { AccountSystemMismatchLoggableException, InvalidTokenLoggableException } from '../loggable';
 import { LogoutService } from './logout.service';
@@ -86,10 +86,7 @@ describe(LogoutService.name, () => {
 	});
 
 	beforeEach(() => {
-		jest.clearAllMocks();
-		jest.restoreAllMocks();
 		jest.resetAllMocks();
-		jest.resetModules();
 	});
 
 	describe('getAccountFromLogoutToken', () => {
