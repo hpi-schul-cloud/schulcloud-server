@@ -1,7 +1,7 @@
-import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
-import { BaseDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { AuthorizationContext } from './authorization-context.interface';
+import type { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
+import type { BaseDO } from '@shared/domain/domainobject/base.do';
+import { User } from '@shared/domain/entity/user.entity';
+import type { AuthorizationContext } from './authorization-context.interface';
 
 export interface Rule<T extends AuthorizableObject | BaseDO = AuthorizableObject | BaseDO> {
 	isApplicable(user: User, object: unknown, context?: AuthorizationContext): boolean;

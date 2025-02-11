@@ -1,8 +1,8 @@
 import { FeathersServiceProvider } from '@infra/feathers';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { BaseEntity } from '@shared/domain/entity';
-import { EntityId, NewsTargetModel } from '@shared/domain/types';
+import type { BaseEntity } from '@shared/domain/entity/base.entity';
+import { type EntityId, NewsTargetModel } from '@shared/domain/types';
 
 interface User {
 	_id: ObjectId;
@@ -14,7 +14,7 @@ interface User {
 export class FeathersAuthProvider {
 	constructor(private feathersServiceProvider: FeathersServiceProvider) {}
 
-	async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
+	public async getUserSchoolPermissions(userId: EntityId, schoolId: EntityId): Promise<string[]> | never {
 		const user = await this.getUser(userId);
 		// test user is school member
 		const sameSchool = user.schoolId.toString() === schoolId;
@@ -24,7 +24,7 @@ export class FeathersAuthProvider {
 		return [];
 	}
 
-	async getUserTargetPermissions(
+	public async getUserTargetPermissions(
 		userId: EntityId,
 		targetModel: NewsTargetModel,
 		targetId: EntityId
@@ -40,7 +40,7 @@ export class FeathersAuthProvider {
 		return targetPermissions;
 	}
 
-	async getPermittedTargets(
+	public async getPermittedTargets(
 		userId: EntityId,
 		targetModel: NewsTargetModel,
 		permissions: string[]
@@ -57,7 +57,7 @@ export class FeathersAuthProvider {
 		return targetIds;
 	}
 
-	async getPermittedSchools(userId: EntityId): Promise<EntityId[]> {
+	public async getPermittedSchools(userId: EntityId): Promise<EntityId[]> {
 		const user = await this.getUser(userId);
 		return [user.schoolId.toString()] as EntityId[];
 	}

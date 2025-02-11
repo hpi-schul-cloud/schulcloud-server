@@ -1,7 +1,8 @@
 import { Collection } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Role, User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
+import { User } from '@shared/domain/entity/user.entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import type { RoleName } from '@shared/domain/interface/rolename.enum';
 
 @Injectable()
 export class AuthorizationHelper {
@@ -36,7 +37,7 @@ export class AuthorizationHelper {
 		return result;
 	}
 
-	public hasRole(user: User, roleName: RoleName) {
+	public hasRole(user: User, roleName: RoleName): boolean {
 		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 
