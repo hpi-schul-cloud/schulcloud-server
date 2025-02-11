@@ -5,15 +5,9 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { Group } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
 import { groupEntityFactory, groupFactory } from '@modules/group/testing';
+import { SchoolEntity } from '@modules/school/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course as CourseEntity,
-	CourseFeatures,
-	CourseGroup,
-	SchoolEntity,
-	SyncAttribute,
-	User,
-} from '@shared/domain/entity';
+import { Course as CourseEntity, CourseFeatures, CourseGroup, SyncAttribute, User } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';

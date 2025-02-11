@@ -8,7 +8,6 @@ import {
 	LessonBoardElement,
 	LessonEntity,
 	Material,
-	SchoolEntity,
 	Submission,
 	Task,
 	TaskBoardElement,
@@ -21,6 +20,7 @@ import { lessonFactory } from '@testing/factory/lesson.factory';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { lessonBoardElementFactory, taskBoardElementFactory } from '@modules/learnroom/testing';
+import { SchoolEntity } from '@modules/school/repo';
 import { LegacyBoardRepo } from './legacy-board.repo';
 
 describe('LegacyRoomBoardRepo', () => {

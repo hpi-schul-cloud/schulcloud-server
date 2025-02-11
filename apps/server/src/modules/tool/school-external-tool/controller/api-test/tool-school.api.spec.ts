@@ -6,7 +6,7 @@ import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@mod
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -26,6 +26,7 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from '../dto';
+import { SchoolEntity } from '@modules/school/repo';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;

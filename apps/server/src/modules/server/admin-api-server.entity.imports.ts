@@ -8,6 +8,7 @@ import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership';
+import { SchoolEntity } from '@modules/school/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
@@ -18,7 +19,6 @@ import {
 	FederalStateEntity,
 	News,
 	Role,
-	SchoolEntity,
 	SchoolNews,
 	SchoolYearEntity,
 	StorageProviderEntity,

@@ -1,8 +1,8 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { SchoolEntity } from '@modules/school/repo';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 // admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';

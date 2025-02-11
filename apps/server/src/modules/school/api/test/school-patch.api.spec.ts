@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
 import { ServerTestModule } from '@modules/server';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';

@@ -1,1 +1,1 @@
-export { SchoolEntity, SchoolRolePermission, SchoolRoles } from './mikro-orm/school.entity';
+export { SchoolEntity, SchoolProperties, SchoolRolePermission, SchoolRoles } from './mikro-orm/school.entity';

@@ -7,7 +7,7 @@ import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, SchoolEntity, User } from '@shared/domain/entity';
+import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory } from '@testing/factory/course.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';

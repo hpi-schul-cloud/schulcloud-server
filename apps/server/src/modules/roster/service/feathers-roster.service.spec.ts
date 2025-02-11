@@ -6,6 +6,7 @@ import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFact
 
 import { CourseService } from '@modules/learnroom/service';
 import { PseudonymService } from '@modules/pseudonym';
+import { SchoolEntity } from '@modules/school/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -21,7 +22,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { Course, SchoolEntity } from '@shared/domain/entity';
+import { Course } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { courseFactory } from '@testing/factory/course.factory';
 import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
