@@ -1,5 +1,4 @@
 import AdmZip from 'adm-zip';
-import { JSDOM } from 'jsdom';
 import {
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
@@ -62,17 +61,6 @@ export class CommonCartridgeFileParser {
 		const resource = this.archive.readAsText(organization.resourcePath);
 
 		return resource;
-	}
-
-	private getManifestAsDocument(): Document {
-		try {
-			const manifestString = CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
-			const manifestDocument = new JSDOM(manifestString as string, { contentType: 'text/xml' }).window.document;
-
-			return manifestDocument;
-		} catch (error) {
-			throw new CommonCartridgeManifestNotFoundException();
-		}
 	}
 
 	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
