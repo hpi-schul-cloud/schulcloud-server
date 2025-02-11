@@ -1,5 +1,5 @@
 const service = require('../../utils/feathers-mongoose');
-const request = require('request-promise-native');
+const axios = require('axios');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -9,16 +9,14 @@ const hooks = require('./hooks/index');
 class ReleaseFetchService {
 	async find() {
 		const options = {
-			uri: 'https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases',
-			headers: {
-				'User-Agent': 'Request-Promise',
-			},
-			json: true,
+			method: 'get',
+			url: 'https://api.github.com/repos/hpi-schul-cloud/RELEASE-NOTES/releases',
 		};
 
 		let releases = null;
 		try {
-			releases = await request(options);
+			const res = await axios(options);
+			releases = res.data;
 			await release.deleteMany({});
 			for (const r of releases) {
 				await release.create({
