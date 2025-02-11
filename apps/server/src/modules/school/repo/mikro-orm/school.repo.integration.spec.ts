@@ -3,7 +3,6 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -16,6 +15,7 @@ import { FileStorageType, SCHOOL_REPO } from '../../domain';
 import { federalStateFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';
 import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
+import { SchoolEntity } from './school.entity';
 import { SchoolMikroOrmRepo } from './school.repo';
 
 describe('SchoolMikroOrmRepo', () => {

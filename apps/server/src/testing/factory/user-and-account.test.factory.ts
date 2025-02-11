@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing/account.factory';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@shared/domain/entity/user.entity';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
