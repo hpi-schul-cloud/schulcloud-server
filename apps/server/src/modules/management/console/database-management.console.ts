@@ -15,6 +15,7 @@ interface MigrationOptions {
 	to?: string;
 	only?: string;
 	pending?: boolean;
+	create?: boolean;
 }
 
 @Console({ command: 'database', description: 'database setup console' })
@@ -118,12 +119,17 @@ export class DatabaseManagementConsole {
 				required: false,
 				description: 'list pending migrations',
 			},
+			{
+				flags: '--create',
+				required: false,
+				description: 'create a new migration',
+			},
 		],
 		description: 'Execute MikroOrm migration up/down',
 	})
 	public async migration(migrationOptions: MigrationOptions): Promise<string> {
 		let report = 'no migration option was given';
-		if (!migrationOptions.up && !migrationOptions.down && !migrationOptions.pending) {
+		if (!migrationOptions.up && !migrationOptions.down && !migrationOptions.pending && !migrationOptions.create) {
 			this.consoleWriter.error(report);
 			return report;
 		}
@@ -138,6 +144,10 @@ export class DatabaseManagementConsole {
 		if (migrationOptions.pending) {
 			const pendingMigrations = await this.databaseManagementUc.migrationPending();
 			report = `Pending: ${JSON.stringify(pendingMigrations.map((migration) => migration.name))}`;
+		}
+		if (migrationOptions.create) {
+			await this.databaseManagementUc.migrationCreate();
+			report = 'migration created';
 		}
 
 		this.consoleWriter.info(report);
