@@ -1,4 +1,3 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
@@ -17,6 +16,7 @@ import {
 } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory as courseGroupEntityFactory } from '@testing/factory/coursegroup.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -33,7 +33,7 @@ describe(CourseMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroup, User] })],
 			providers: [{ provide: COURSE_REPO, useClass: CourseMikroOrmRepo }],
 		}).compile();
 

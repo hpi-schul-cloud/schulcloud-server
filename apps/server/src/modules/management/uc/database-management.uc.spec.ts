@@ -1,7 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, LdapEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
@@ -13,6 +12,7 @@ import { setupEntities } from '@testing/setup-entities';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import { DatabaseManagementService } from '../service/database-management.service';
 import { DatabaseManagementUc } from './database-management.uc';
 
 describe('DatabaseManagementService', () => {

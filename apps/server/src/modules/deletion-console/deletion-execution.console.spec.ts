@@ -1,12 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Test, TestingModule } from '@nestjs/testing';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { DeletionExecutionConsole } from './deletion-execution.console';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
-import { DeletionExecutionUc } from './uc';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { TEST_ENTITIES } from './deletion-console.entity.imports';
+import { DeletionExecutionConsole } from './deletion-execution.console';
 import { TriggerDeletionExecutionOptions } from './interface';
+import { DeletionExecutionUc } from './uc';
 
 describe(DeletionExecutionConsole.name, () => {
 	let module: TestingModule;
@@ -15,7 +16,10 @@ describe(DeletionExecutionConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [DeletionConsoleModule, MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions })],
+			imports: [
+				DeletionConsoleModule,
+				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+			],
 		}).compile();
 
 		console = module.get(DeletionExecutionConsole);

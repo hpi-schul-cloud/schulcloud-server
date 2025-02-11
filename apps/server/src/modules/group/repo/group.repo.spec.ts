@@ -1,13 +1,13 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { Course, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -24,7 +24,11 @@ describe(GroupRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [GroupEntity, SchoolEntity, User, SystemEntity, Course, CourseGroup],
+				}),
+			],
 			providers: [GroupRepo],
 		}).compile();
 

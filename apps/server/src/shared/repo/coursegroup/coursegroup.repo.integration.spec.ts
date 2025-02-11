@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { CourseGroupRepo } from './coursegroup.repo';
@@ -20,7 +20,7 @@ describe('course group repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [Course, CourseGroup] })],
 			providers: [CourseGroupRepo],
 		}).compile();
 		repo = module.get(CourseGroupRepo);
