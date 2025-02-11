@@ -17,6 +17,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { firstValueFrom } from 'rxjs';
 import { EndSessionEndpointNotFoundLoggableException, ExternalSystemLogoutFailedLoggableException } from '../errors';
 import { AccountSystemMismatchLoggableException, InvalidTokenLoggableException } from '../loggable';
+import { ICurrentUser } from '../../../infra/auth-guard';
 
 @Injectable()
 export class LogoutService {
@@ -66,7 +67,22 @@ export class LogoutService {
 		return account;
 	}
 
-	public async logoutFromExternalSystem(sessionToken: OauthSessionToken, system: System): Promise<void> {
+	public async externalSystemLogout(user: ICurrentUser): Promise<void> {
+		if (!user.systemId) {
+			return;
+		}
+
+		const system: System | null = await this.systemService.findById(user.systemId);
+		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(user.userId);
+
+		if (!sessionToken || !system) {
+			return;
+		}
+
+		await this.logoutFromExternalSystem(sessionToken, system);
+	}
+
+	private async logoutFromExternalSystem(sessionToken: OauthSessionToken, system: System): Promise<void> {
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}

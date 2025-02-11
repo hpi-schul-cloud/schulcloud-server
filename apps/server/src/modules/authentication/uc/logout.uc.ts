@@ -3,8 +3,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
-import { System, SystemService } from '@modules/system';
-import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { ConfigService } from '@nestjs/config';
 import { AuthenticationService, LogoutService } from '../services';
 import { AuthenticationConfig } from '../authentication-config';
@@ -16,9 +14,7 @@ export class LogoutUc {
 		private readonly authenticationService: AuthenticationService,
 		private readonly logoutService: LogoutService,
 		private readonly logger: Logger,
-		private readonly configService: ConfigService<AuthenticationConfig, true>,
-		private readonly systemService: SystemService,
-		private readonly oauthSessionTokenService: OauthSessionTokenService
+		private readonly configService: ConfigService<AuthenticationConfig, true>
 	) {}
 
 	public async logout(jwt: string): Promise<void> {
@@ -50,13 +46,6 @@ export class LogoutUc {
 			return;
 		}
 
-		const system: System | null = await this.systemService.findById(user.systemId);
-		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(user.userId);
-
-		if (!sessionToken || !system) {
-			return;
-		}
-
-		await this.logoutService.logoutFromExternalSystem(sessionToken, system);
+		await this.logoutService.externalSystemLogout(user);
 	}
 }

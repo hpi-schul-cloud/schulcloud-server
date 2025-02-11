@@ -1,14 +1,11 @@
+import { ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { accountDoFactory } from '@modules/account/testing';
-import { OauthSessionTokenService } from '@modules/oauth';
-import { oauthSessionTokenFactory } from '@modules/oauth/testing';
-import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { ExternalSystemLogoutIsDisabledLoggableException } from '../errors';
@@ -23,8 +20,6 @@ describe(LogoutUc.name, () => {
 	let logoutService: DeepMocked<LogoutService>;
 	let logger: DeepMocked<Logger>;
 	let configService: DeepMocked<ConfigService>;
-	let systemService: DeepMocked<SystemService>;
-	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,14 +41,6 @@ describe(LogoutUc.name, () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>({ get: () => true }),
 				},
-				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
-				},
-				{
-					provide: OauthSessionTokenService,
-					useValue: createMock<OauthSessionTokenService>(),
-				},
 			],
 		}).compile();
 
@@ -62,8 +49,6 @@ describe(LogoutUc.name, () => {
 		logoutService = await module.get(LogoutService);
 		logger = await module.get(Logger);
 		configService = await module.get(ConfigService);
-		systemService = module.get(SystemService);
-		oauthSessionTokenService = module.get(OauthSessionTokenService);
 	});
 
 	afterEach(() => {
@@ -156,7 +141,7 @@ describe(LogoutUc.name, () => {
 				const currentUser = currentUserFactory.build({ isExternalUser: true });
 
 				configService.get.mockReturnValueOnce(false);
-				jest.spyOn(logoutService, 'logoutFromExternalSystem');
+				jest.spyOn(logoutService, 'externalSystemLogout');
 
 				return {
 					currentUser,
@@ -169,7 +154,7 @@ describe(LogoutUc.name, () => {
 				const promise = logoutUc.externalSystemLogout(currentUser);
 
 				await expect(promise).rejects.toThrow(new ExternalSystemLogoutIsDisabledLoggableException());
-				expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
+				expect(logoutService.externalSystemLogout).not.toHaveBeenCalled();
 			});
 		});
 
@@ -178,27 +163,23 @@ describe(LogoutUc.name, () => {
 				const setup = () => {
 					const system = systemFactory.withOauthConfig().build();
 					const currentUser = currentUserFactory.build({ isExternalUser: true, systemId: system.id });
-					const sessionToken = oauthSessionTokenFactory.build({ userId: currentUser.userId });
 
 					configService.get.mockReturnValueOnce(true);
-					systemService.findById.mockResolvedValue(system);
-					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
 
-					jest.spyOn(logoutService, 'logoutFromExternalSystem');
+					jest.spyOn(logoutService, 'externalSystemLogout');
 
 					return {
 						currentUser,
 						system,
-						sessionToken,
 					};
 				};
 
 				it('should log out the user from the external system', async () => {
-					const { currentUser, system, sessionToken } = setup();
+					const { currentUser } = setup();
 
 					await logoutUc.externalSystemLogout(currentUser);
 
-					expect(logoutService.logoutFromExternalSystem).toHaveBeenCalledWith(sessionToken, system);
+					expect(logoutService.externalSystemLogout).toHaveBeenCalledWith(currentUser);
 				});
 			});
 
@@ -207,7 +188,7 @@ describe(LogoutUc.name, () => {
 					const currentUser = currentUserFactory.build({ isExternalUser: false, systemId: undefined });
 
 					configService.get.mockReturnValueOnce(true);
-					jest.spyOn(logoutService, 'logoutFromExternalSystem');
+					jest.spyOn(logoutService, 'externalSystemLogout');
 
 					return {
 						currentUser,
@@ -219,57 +200,7 @@ describe(LogoutUc.name, () => {
 
 					await logoutUc.externalSystemLogout(currentUser);
 
-					expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
-				});
-			});
-
-			describe('when the current user provided is externally signed in but has no session token', () => {
-				const setup = () => {
-					const system = systemFactory.withOauthConfig().build();
-					const currentUser = currentUserFactory.build({ isExternalUser: true, systemId: system.id });
-
-					configService.get.mockReturnValueOnce(true);
-					systemService.findById.mockResolvedValue(system);
-					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(null);
-
-					jest.spyOn(logoutService, 'logoutFromExternalSystem');
-
-					return {
-						currentUser,
-					};
-				};
-
-				it('should not log out the user from the external system', async () => {
-					const { currentUser } = setup();
-
-					await logoutUc.externalSystemLogout(currentUser);
-
-					expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
-				});
-			});
-
-			describe('when the system of the current user cannot be found', () => {
-				const setup = () => {
-					const currentUser = currentUserFactory.build({ isExternalUser: true });
-					const sessionToken = oauthSessionTokenFactory.build({ userId: currentUser.userId });
-
-					configService.get.mockReturnValueOnce(true);
-					systemService.findById.mockResolvedValue(null);
-					oauthSessionTokenService.findLatestByUserId.mockResolvedValue(sessionToken);
-
-					jest.spyOn(logoutService, 'logoutFromExternalSystem');
-
-					return {
-						currentUser,
-					};
-				};
-
-				it('should not log out the user from the external system', async () => {
-					const { currentUser } = setup();
-
-					await logoutUc.externalSystemLogout(currentUser);
-
-					expect(logoutService.logoutFromExternalSystem).not.toHaveBeenCalled();
+					expect(logoutService.externalSystemLogout).not.toHaveBeenCalled();
 				});
 			});
 		});
