@@ -6,11 +6,11 @@ import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { GroupProvisioningSuccessfulLoggable } from '../loggable';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../testing';
 import { SchulconnexGroupProvisioningConsumer } from './schulconnex-group-provisioning.consumer';
+import { ENTITIES } from '../schulconnex-group-provisioning.entity.imports';
 
 describe(SchulconnexGroupProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -48,7 +48,13 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities(),
+					useValue: await MikroORM.init({
+						type: 'mongo',
+						dbName: 'dummy',
+						entities: ENTITIES,
+						allowGlobalContext: true,
+						connect: false,
+					}),
 				},
 			],
 		}).compile();
