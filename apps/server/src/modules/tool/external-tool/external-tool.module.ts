@@ -7,6 +7,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
+import { ExternalToolRule } from './authorization/external-tool.rule';
 import { ExternalToolMetadataMapper } from './mapper';
 import {
 	DatasheetPdfService,
@@ -42,6 +43,7 @@ import {
 		DatasheetPdfService,
 		ExternalToolAuthorizableService,
 		ExternalToolImageService,
+		ExternalToolRule,
 	],
 	exports: [
 		ExternalToolService,

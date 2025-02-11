@@ -1,4 +1,4 @@
-const request = require('request-promise-native');
+const axios = require('axios');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 const queryString = require('qs');
@@ -178,18 +178,17 @@ class Service {
 	create(data, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${calendarUri}/events/`,
+			url: `${calendarUri}/events/`,
 			method: 'POST',
 			headers: {
 				Authorization: userId,
 			},
-			body: convertEventToJsonApi(data),
-			json: true,
+			data: convertEventToJsonApi(data),
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
-		return request(options).then((events) => {
-			events = (events.data || []).map((event) =>
+		return axios(options).then((res) => {
+			const events = (res.data.data || []).map((event) =>
 				Object.assign(event, {
 					title: event.summary,
 					allDay: false, // TODO: find correct value
@@ -198,6 +197,7 @@ class Service {
 					url: '', // TODO: add x-sc-field
 				})
 			);
+
 			return events.map(convertJsonApiToEvent);
 		});
 	}
@@ -205,18 +205,17 @@ class Service {
 	find(params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${calendarUri}/events?${queryString.stringify(params.query)}`,
+			url: `${calendarUri}/events?${queryString.stringify(params.query)}`,
 			headers: {
 				Authorization: userId,
 			},
-			json: true,
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
-		return request(options).then((events) => {
-			events =
+		return axios(options).then((res) => {
+			const events =
 				(params.query || {}).userId ||
-				(events.data || events || []).map((event) =>
+				(res.data.data || res.data || []).map((event) =>
 					Object.assign(event, {
 						title: event.summary,
 						allDay: false, // TODO: find correct value
@@ -232,19 +231,18 @@ class Service {
 	remove(id, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${calendarUri}/events/${id}`,
+			url: `${calendarUri}/events/${id}`,
+			method: 'DELETE',
 			headers: {
 				Authorization: userId,
 			},
-			json: true,
-			method: 'DELETE',
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
-			body: { data: [{ type: 'event' }] },
+			data: { data: [{ type: 'event' }] },
 		};
 
-		return request(options).then((res) => {
+		return axios(options).then((res) => {
 			// calendar returns nothing if event was successfully deleted
-			if (!res) return { message: 'Successful deleted event' };
+			if (!res.data) return { message: 'Successful deleted event' };
 			return res;
 		});
 	}
@@ -252,18 +250,17 @@ class Service {
 	update(id, data, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${calendarUri}/events/${id}`,
+			url: `${calendarUri}/events/${id}`,
 			method: 'PUT',
 			headers: {
 				Authorization: userId,
 			},
-			body: convertEventToJsonApi(data),
-			json: true,
+			data: convertEventToJsonApi(data),
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
-		return request(options).then((events) => {
-			events = events.data || events || [];
+		return axios(options).then((res) => {
+			const events = res.data.data || res.data || [];
 			return events.map(convertJsonApiToEvent);
 		});
 	}
