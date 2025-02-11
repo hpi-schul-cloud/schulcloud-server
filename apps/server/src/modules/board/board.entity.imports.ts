@@ -5,7 +5,14 @@ import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.en
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
-import { ColumnBoardNode } from '@modules/learnroom/repo';
+import {
+	ColumnBoardBoardElement,
+	ColumnBoardNode,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonBoardElement,
+	TaskBoardElement,
+} from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
@@ -44,7 +51,12 @@ export const ENTITIES = [
 	AccountEntity,
 	BoardNodeEntity,
 	ClassEntity,
+	ColumnBoardBoardElement,
 	ColumnBoardNode,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonBoardElement,
+	TaskBoardElement,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
 	Course,
