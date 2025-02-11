@@ -26,6 +26,9 @@ export class SchulconnexGroupRemovalConsumer {
 		exchange: SchulconnexProvisioningExchange,
 		routingKey: SchulconnexProvisioningEvents.GROUP_REMOVAL,
 		queue: SchulconnexProvisioningEvents.GROUP_REMOVAL,
+		queueOptions: {
+			channel: SchulconnexProvisioningEvents.GROUP_REMOVAL,
+		},
 	})
 	@UseRequestContext()
 	public async removeUserFromGroup(

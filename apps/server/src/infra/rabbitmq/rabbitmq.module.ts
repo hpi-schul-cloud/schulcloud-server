@@ -1,5 +1,7 @@
 import { AmqpConnectionManager, RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Global, Module, OnModuleDestroy } from '@nestjs/common';
+import { SchulconnexProvisioningEvents } from './exchange';
 import {
 	AntivirusExchange,
 	FilesPreviewExchange,
@@ -19,6 +21,7 @@ import {
 
 const imports = [
 	RabbitMQModule.forRoot(RabbitMQModule, {
+		uri: RabbitMqURI,
 		// Please don't change the global prefetch count, if you need constraint, change it at channel level
 		prefetchCount: 5,
 		exchanges: [
@@ -43,7 +46,22 @@ const imports = [
 				type: 'direct',
 			},
 		],
-		uri: RabbitMqURI,
+		channels: {
+			[SchulconnexProvisioningEvents.GROUP_PROVISIONING]: {
+				prefetchCount: Configuration.get('SCHULCONNEX_PROVISIONING_AMQP__GROUP_PROVISIONING_PREFETCH_COUNT') as number,
+				default: false,
+			},
+			[SchulconnexProvisioningEvents.GROUP_REMOVAL]: {
+				prefetchCount: Configuration.get('SCHULCONNEX_PROVISIONING_AMQP__GROUP_REMOVAL_PREFETCH_COUNT') as number,
+				default: false,
+			},
+			[SchulconnexProvisioningEvents.LICENSE_PROVISIONING]: {
+				prefetchCount: Configuration.get(
+					'SCHULCONNEX_PROVISIONING_AMQP__LICENSE_PROVISIONING_PREFETCH_COUNT'
+				) as number,
+				default: false,
+			},
+		},
 	}),
 ];
 @Global()

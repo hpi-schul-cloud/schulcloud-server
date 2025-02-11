@@ -25,6 +25,9 @@ export class SchulconnexLicenseProvisioningConsumer {
 		exchange: SchulconnexProvisioningExchange,
 		routingKey: SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
 		queue: SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
+		queueOptions: {
+			channel: SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
+		},
 	})
 	@UseRequestContext()
 	public async provisionLicenses(@RabbitPayload() payload: SchulconnexLicenseProvisioningMessage): Promise<void> {
