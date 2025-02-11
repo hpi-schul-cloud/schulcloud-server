@@ -224,5 +224,17 @@ describe(MetaTagExternalUrlService.name, () => {
 				expect(result).toBeUndefined();
 			});
 		});
+
+		describe('when server responds with 401', () => {
+			it('should return undefined', async () => {
+				const url = new URL('https://docs.dbildungscloud.de/display/DBH/Arc+Weekly+Meetings');
+
+				mockedAxios.get.mockRejectedValue({ response: { status: 401 } });
+
+				const result = await service.tryExtractMetaTags(url);
+
+				expect(result).toBeUndefined();
+			});
+		});
 	});
 });
