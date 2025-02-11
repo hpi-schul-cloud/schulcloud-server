@@ -8,6 +8,16 @@
     tags:
       - configmap
 
+  - name: Schulconnex group removal configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-removal-configmap.yml.j2
+      apply: yes
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - configmap
+
   - name: Schulconnex license provisioning configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -44,6 +54,15 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: schulconnex-group-provisioning-deployment.yml.j2
+      state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
+    tags:
+      - deployment
+
+  - name: Schulconnex group removal deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: schulconnex-group-removal-deployment.yml.j2
       state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
     tags:
       - deployment

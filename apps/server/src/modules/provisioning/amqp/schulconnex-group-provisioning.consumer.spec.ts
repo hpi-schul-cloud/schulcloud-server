@@ -3,11 +3,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/setup-entities';
-import { groupFactory } from '../../group/testing';
-import { GroupProvisioningSuccessfulLoggable, GroupRemovalSuccessfulLoggable } from '../loggable';
+import { GroupProvisioningSuccessfulLoggable } from '../loggable';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../testing';
 import { SchulconnexGroupProvisioningConsumer } from './schulconnex-group-provisioning.consumer';
@@ -270,133 +270,6 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 					systemId,
 					externalSchool,
 					externalGroup,
-				});
-
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).not.toHaveBeenCalled();
-			});
-		});
-	});
-
-	describe('removeUserFromGroup', () => {
-		describe('when the user gets removed from a group', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const removedGroup = groupFactory.build();
-
-				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(removedGroup);
-				configService.get.mockReturnValueOnce(true);
-
-				return {
-					userId,
-					removedGroup,
-				};
-			};
-
-			it('should remove the user from the group', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
-				});
-
-				expect(schulconnexGroupProvisioningService.removeUserFromGroup).toHaveBeenCalledWith(userId, removedGroup.id);
-			});
-
-			it('should synchronize the courses', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
-				});
-
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(
-					removedGroup,
-					removedGroup
-				);
-			});
-
-			it('should log a success info', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
-				});
-
-				expect(logger.info).toHaveBeenCalledWith(new GroupRemovalSuccessfulLoggable(removedGroup.id, userId, false));
-			});
-		});
-
-		describe('when the group was deleted', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const removedGroup = groupFactory.build();
-
-				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(null);
-				configService.get.mockReturnValueOnce(true);
-
-				return {
-					userId,
-					removedGroup,
-				};
-			};
-
-			it('should remove the user from the group', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
-				});
-
-				expect(schulconnexGroupProvisioningService.removeUserFromGroup).toHaveBeenCalledWith(userId, removedGroup.id);
-			});
-
-			it('should not synchronize the courses', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
-				});
-
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).not.toHaveBeenCalled();
-			});
-
-			it('should log a success info', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
-				});
-
-				expect(logger.info).toHaveBeenCalledWith(new GroupRemovalSuccessfulLoggable(removedGroup.id, userId, true));
-			});
-		});
-
-		describe('when course synchronisation is deactivated', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const removedGroup = groupFactory.build();
-
-				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(removedGroup);
-				configService.get.mockReturnValueOnce(false);
-
-				return {
-					userId,
-					removedGroup,
-				};
-			};
-
-			it('should not synchronize the courses', async () => {
-				const { userId, removedGroup } = setup();
-
-				await consumer.removeUserFromGroup({
-					userId,
-					groupId: removedGroup.id,
 				});
 
 				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).not.toHaveBeenCalled();
