@@ -9,6 +9,7 @@ import { GroupRemovalSuccessfulLoggable } from '../loggable';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
+import {setupEntities} from "@testing/setup-entities";
 
 describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let module: TestingModule;
@@ -41,13 +42,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await MikroORM.init({
-						type: 'mongo',
-						dbName: 'dummy',
-						entities: ENTITIES,
-						allowGlobalContext: true,
-						connect: false,
-					}),
+					useValue: await setupEntities(ENTITIES),
 				},
 			],
 		}).compile();

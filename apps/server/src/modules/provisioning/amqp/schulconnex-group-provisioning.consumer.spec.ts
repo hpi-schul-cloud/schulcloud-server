@@ -11,6 +11,7 @@ import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } fro
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../testing';
 import { SchulconnexGroupProvisioningConsumer } from './schulconnex-group-provisioning.consumer';
 import { ENTITIES } from '../schulconnex-group-provisioning.entity.imports';
+import {setupEntities} from "@testing/setup-entities";
 
 describe(SchulconnexGroupProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -48,13 +49,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await MikroORM.init({
-						type: 'mongo',
-						dbName: 'dummy',
-						entities: ENTITIES,
-						allowGlobalContext: true,
-						connect: false,
-					}),
+					useValue: await setupEntities(ENTITIES),
 				},
 			],
 		}).compile();
