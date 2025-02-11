@@ -1,7 +1,7 @@
+import type { Loggable } from '@core/logger/interfaces';
+import type { ErrorLogMessage } from '@core/logger/types';
 import { ForbiddenException } from '@nestjs/common';
-import type { EntityId } from '@shared/domain/types/entity-id';
-import type { Loggable } from '@core/logger/interfaces/loggable';
-import type { ErrorLogMessage } from '@core/logger/types/logging.types';
+import type { EntityId } from '@shared/domain/types';
 import type { AuthorizationContext } from '../type';
 
 export class ForbiddenLoggableException extends ForbiddenException implements Loggable {

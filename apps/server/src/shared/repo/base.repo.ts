@@ -1,8 +1,8 @@
 import { EntityName, FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import type { BaseEntity } from '@shared/domain/entity/base.entity';
-import type { EntityId } from '@shared/domain/types/entity-id';
+import type { BaseEntity } from '@shared/domain/entity';
+import type { EntityId } from '@shared/domain/types';
 
 /**
  * This repo will be replaced in the future by a more domain driven repo, which is currently discussed in the arc chapter.

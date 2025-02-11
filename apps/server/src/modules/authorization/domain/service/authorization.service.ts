@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type { AuthorizableObject } from '@shared/domain/domain-object';
-import type { BaseDO } from '@shared/domain/domainobject/base.do';
+import type { BaseDO } from '@shared/domain/domainobject';
 import type { User } from '@shared/domain/entity/user.entity';
-import type { EntityId } from '@shared/domain/types/entity-id';
-import { UserRepo } from '@shared/repo/user/user.repo';
+import type { EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo/user';
 import { ForbiddenLoggableException } from '../error';
 import type { AuthorizationContext } from '../type';
 import { AuthorizationHelper } from './authorization.helper';

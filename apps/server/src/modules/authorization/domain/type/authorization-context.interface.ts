@@ -1,4 +1,4 @@
-import type { Permission } from '@shared/domain/interface/permission.enum';
+import type { Permission } from '@shared/domain/interface';
 import type { Action } from './action.enum';
 
 export interface AuthorizationContext {

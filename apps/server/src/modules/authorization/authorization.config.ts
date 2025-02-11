@@ -1,3 +1,3 @@
-import { LoggerConfig } from '@core/logger/logger.config';
+import { LoggerConfig } from '@core/logger';
 
 export interface AuthorizationConfig extends LoggerConfig {}

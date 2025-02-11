@@ -2,12 +2,12 @@ import { EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { Injectable } from '@nestjs/common';
-import type { Role } from '@shared/domain/entity/role.entity';
-import type { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { User } from '@shared/domain/entity/user.entity';
-import type { IFindOptions } from '@shared/domain/interface';
-import type { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '@shared/repo/base.repo';
+import type { Role } from '../../domain/entity/role.entity';
+import type { SchoolEntity } from '../../domain/entity/school.entity';
+import { User } from '../../domain/entity/user.entity';
+import type { IFindOptions } from '../../domain/interface';
+import type { Counted, EntityId } from '../../domain/types';
+import { BaseRepo } from '../base.repo';
 import { UserScope } from './user.scope';
 
 @Injectable()

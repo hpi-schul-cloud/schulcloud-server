@@ -1,6 +1,6 @@
 import type { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
-import type { BaseDO } from '@shared/domain/domainobject/base.do';
-import type { EntityId } from '@shared/domain/types/entity-id';
+import type { BaseDO } from '@shared/domain/domainobject';
+import type { EntityId } from '@shared/domain/types';
 
 export interface AuthorizationLoaderService {
 	findById(id: EntityId): Promise<AuthorizableObject | BaseDO>;
