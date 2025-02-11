@@ -28,6 +28,54 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
+			"boards-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/boards-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn|ColumnController_updateColumnTitle"
+				},
+				"globalProperty": {
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse:RenameBodyParams",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"files-storage-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:4444/api/v3/docs-json",
+				"output": "./apps/server/src/infra/files-storage-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:upload|download"
+				},
+				"globalProperty": {
+					"models": "FileRecordResponse:StreamableFile",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
 			"courses-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
@@ -38,9 +86,18 @@
 					"FILTER": "operationId:CourseController_getCourseCcMetadataById|CourseController_createCourse"
 				},
 				"globalProperty": {
-					"models": "CourseCommonCartridgeMetadataResponse:CreateCourseBodyParams",
+					"models": "CourseCommonCartridgeMetadataResponse:CreateCourseBodyParams:CreateCourseResponse",
 					"apis": "",
 					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
 				}
 			},
 			"svs-lesson-api": {
@@ -81,7 +138,7 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:getActivatedOffersByRegion"
+					"FILTER": "operationId:getActivatedOffersByRegion|operationId:getActivatedOffersBySchool"
 				},
 				"additionalProperties": {
 					"apiPackage": "api",

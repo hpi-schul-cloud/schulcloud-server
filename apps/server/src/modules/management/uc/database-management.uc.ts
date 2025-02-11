@@ -1,5 +1,5 @@
+import { LegacyLogger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
@@ -8,10 +8,11 @@ import { SystemEntity } from '@modules/system/entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { LegacyLogger } from '@core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
+import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import { DatabaseManagementService } from '../service/database-management.service';
 
 export interface CollectionFilePath {
 	filePath: string;
@@ -38,7 +39,9 @@ export class DatabaseManagementUc {
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService
+		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
+		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
+		private readonly systemsSeedDataService: SystemsSeedDataService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -54,7 +57,7 @@ export class DatabaseManagementUc {
 	/**
 	 * setup dir with json files
 	 */
-	private getSeedFolder() {
+	private getSeedFolder(): string {
 		return this.fileSystemAdapter.joinPath(this.baseDir, 'setup');
 	}
 
@@ -62,7 +65,7 @@ export class DatabaseManagementUc {
 	 * export folder name based on current date
 	 * @returns
 	 */
-	private getTargetFolder(toSeedFolder?: boolean) {
+	private getTargetFolder(toSeedFolder?: boolean): string {
 		if (toSeedFolder === true) {
 			const targetFolder = this.getSeedFolder();
 			return targetFolder;
@@ -115,7 +118,7 @@ export class DatabaseManagementUc {
 		source: 'files' | 'database',
 		folder: string,
 		collectionNameFilter?: string[]
-	) {
+	): Promise<CollectionFilePath[]> {
 		let allCollectionsWithFilePaths: CollectionFilePath[] = [];
 
 		// load all available collections from source
@@ -148,7 +151,7 @@ export class DatabaseManagementUc {
 		return allCollectionsWithFilePaths;
 	}
 
-	private async dropCollectionIfExists(collectionName: string) {
+	private async dropCollectionIfExists(collectionName: string): Promise<void> {
 		const collectionExists = await this.databaseManagementService.collectionExists(collectionName);
 		if (collectionExists) {
 			// clear existing documents, if collection exists
@@ -159,7 +162,7 @@ export class DatabaseManagementUc {
 		}
 	}
 
-	async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
+	public async seedDatabaseCollectionsFromFactories(collections?: string[]): Promise<string[]> {
 		const promises = generateSeedData((s: string) => this.injectEnvVars(s))
 			.filter((data) => {
 				if (collections && collections.length > 0) {
@@ -189,7 +192,7 @@ export class DatabaseManagementUc {
 	 * @param collections optional filter applied on existing collections
 	 * @returns the list of collection names exported
 	 */
-	async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
+	public async seedDatabaseCollectionsFromFileSystem(collections?: string[]): Promise<string[]> {
 		// detect collections to seed based on filesystem data
 		const setupPath = this.getSeedFolder();
 		const collectionsToSeed = await this.loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
@@ -198,7 +201,7 @@ export class DatabaseManagementUc {
 			collections
 		);
 
-		const seededCollectionsWithAmount: string[] = [];
+		const seededCollectionsWithAmount: Map<string, number> = new Map();
 
 		await Promise.all(
 			collectionsToSeed.map(async ({ filePath, collectionName }) => {
@@ -210,7 +213,7 @@ export class DatabaseManagementUc {
 				}
 
 				// create bson-objects from text
-				const bsonDocuments = JSON.parse(fileContent) as unknown[];
+				const bsonDocuments = JSON.parse(fileContent) as object[];
 				// deserialize bson (format of mongoexport) to json documents we can import to mongo
 				const jsonDocuments = this.bsonConverter.deserialize(bsonDocuments);
 
@@ -232,10 +235,28 @@ export class DatabaseManagementUc {
 					jsonDocuments
 				);
 				// keep collection name and number of imported documents
-				seededCollectionsWithAmount.push(`${collectionName}:${importedDocumentsAmount}`);
+				seededCollectionsWithAmount.set(collectionName, importedDocumentsAmount);
 			})
 		);
-		return seededCollectionsWithAmount;
+
+		if (collections === undefined || collections.includes('media-sources')) {
+			const mediaSourcesCount: number = await this.mediaSourcesSeedDataService.import();
+			seededCollectionsWithAmount.set(
+				'media-sources',
+				mediaSourcesCount + (seededCollectionsWithAmount.get('media-sources') ?? 0)
+			);
+		}
+
+		if (collections === undefined || collections.includes('systems')) {
+			const systemsCount: number = await this.systemsSeedDataService.import();
+			seededCollectionsWithAmount.set('systems', systemsCount + (seededCollectionsWithAmount.get('systems') ?? 0));
+		}
+
+		const seededCollectionsWithAmountFormatted: string[] = Array.from(seededCollectionsWithAmount).map(
+			([key, value]) => `${key}:${value}`
+		);
+
+		return seededCollectionsWithAmountFormatted;
 	}
 
 	/**
@@ -245,7 +266,7 @@ export class DatabaseManagementUc {
 	 * @param toSeedFolder optional override existing seed data files
 	 * @returns the list of collection names exported
 	 */
-	async exportCollectionsToFileSystem(collections?: string[], toSeedFolder?: boolean): Promise<string[]> {
+	public async exportCollectionsToFileSystem(collections?: string[], toSeedFolder?: boolean): Promise<string[]> {
 		const targetFolder = this.getTargetFolder(toSeedFolder);
 		await this.fileSystemAdapter.createDir(targetFolder);
 		// detect collections to export based on database collections
@@ -280,7 +301,7 @@ export class DatabaseManagementUc {
 	/**
 	 * Updates the indexes in the database based on definitions in entities
 	 */
-	async syncIndexes(): Promise<void> {
+	public async syncIndexes(): Promise<void> {
 		await this.createUserSearchIndex();
 		return this.databaseManagementService.syncIndexes();
 	}
@@ -336,7 +357,7 @@ export class DatabaseManagementUc {
 		return json;
 	}
 
-	private resolvePlaceholder(placeholder: string) {
+	private resolvePlaceholder(placeholder: string): string {
 		if (Configuration.has(placeholder)) {
 			return Configuration.get(placeholder) as string;
 		}
@@ -348,13 +369,13 @@ export class DatabaseManagementUc {
 		return '';
 	}
 
-	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]) {
+	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]): void {
 		if (collectionName === systemsCollectionName) {
 			this.encryptSecretsInSystems(jsonDocuments as SystemEntity[]);
 		}
 	}
 
-	private encryptSecretsInSystems(systems: SystemEntity[]) {
+	private encryptSecretsInSystems(systems: SystemEntity[]): SystemEntity[] {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
@@ -376,7 +397,7 @@ export class DatabaseManagementUc {
 	 * Manual replacement with the intend placeholders or value is mandatory.
 	 * Currently, this affects system and storageproviders collections.
 	 */
-	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
+	private removeSecrets(collectionName: string, jsonDocuments: unknown[]): void {
 		if (collectionName === systemsCollectionName) {
 			this.removeSecretsFromSystems(jsonDocuments as SystemEntity[]);
 		}
@@ -385,14 +406,14 @@ export class DatabaseManagementUc {
 		}
 	}
 
-	private removeSecretsFromStorageproviders(storageProviders: StorageProviderEntity[]) {
+	private removeSecretsFromStorageproviders(storageProviders: StorageProviderEntity[]): void {
 		storageProviders.forEach((storageProvider) => {
 			storageProvider.accessKeyId = defaultSecretReplacementHintText;
 			storageProvider.secretAccessKey = defaultSecretReplacementHintText;
 		});
 	}
 
-	private removeSecretsFromSystems(systems: SystemEntity[]) {
+	private removeSecretsFromSystems(systems: SystemEntity[]): SystemEntity[] {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;
@@ -407,16 +428,22 @@ export class DatabaseManagementUc {
 		return systems;
 	}
 
+	public async migrationCreate(): Promise<void> {
+		await this.databaseManagementService.migrationCreate();
+	}
+
 	public async migrationUp(from?: string, to?: string, only?: string): Promise<void> {
-		return this.databaseManagementService.migrationUp(from, to, only);
+		await this.databaseManagementService.migrationUp(from, to, only);
 	}
 
 	public async migrationDown(from?: string, to?: string, only?: string): Promise<void> {
-		return this.databaseManagementService.migrationDown(from, to, only);
+		await this.databaseManagementService.migrationDown(from, to, only);
 	}
 
 	public async migrationPending(): Promise<UmzugMigration[]> {
-		return this.databaseManagementService.migrationPending();
+		const result = await this.databaseManagementService.migrationPending();
+
+		return result;
 	}
 
 	public encryptPlainText(plainText: string): string {

@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -51,7 +51,7 @@ describe('Room Controller (API)', () => {
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
-			const role = roleFactory.buildWithId({
+			const roleAdmin = roleFactory.buildWithId({
 				name: RoleName.ROOMADMIN,
 				permissions: [
 					Permission.ROOM_VIEW,
@@ -60,13 +60,18 @@ describe('Room Controller (API)', () => {
 					Permission.ROOM_MEMBERS_REMOVE,
 				],
 			});
+			const roleViewer = roleFactory.buildWithId({
+				name: RoleName.ROOMVIEWER,
+				permissions: [Permission.ROOM_VIEW],
+			});
+
 			const roomEditorRole = roleFactory.buildWithId({
 				name: RoleName.ROOMEDITOR,
 				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
 			});
 			// TODO: add more than one user
 			const userGroupEntity = groupEntityFactory.buildWithId({
-				users: [{ role, user: teacherUser }],
+				users: [{ role: roleAdmin, user: teacherUser }],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
 				externalSource: undefined,
@@ -80,6 +85,8 @@ describe('Room Controller (API)', () => {
 			await em.persistAndFlush([
 				room,
 				roomMemberships,
+				roleAdmin,
+				roleViewer,
 				teacherAccount,
 				teacherUser,
 				teacherGuestRole,

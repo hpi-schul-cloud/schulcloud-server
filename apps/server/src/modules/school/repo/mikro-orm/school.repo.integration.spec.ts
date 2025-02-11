@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
 import { federalStateFactory as federalStateEntityFactory } from '@testing/factory/federal-state.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { FileStorageType, SCHOOL_REPO } from '../../domain';
 import { federalStateFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';
@@ -25,7 +25,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolEntity] })],
 			providers: [{ provide: SCHOOL_REPO, useClass: SchoolMikroOrmRepo }],
 		}).compile();
 

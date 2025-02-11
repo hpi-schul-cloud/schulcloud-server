@@ -4,6 +4,7 @@ export {
 	basicToolConfigEntityFactory,
 	oauth2ToolConfigEntityFactory,
 	lti11ToolConfigEntityFactory,
+	mediumEntityFactory,
 } from './external-tool-entity.factory';
 export {
 	externalToolFactory,

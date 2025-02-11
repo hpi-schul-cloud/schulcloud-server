@@ -1,3 +1,3 @@
 export { MediaSource, MediaSourceProps } from './media-source';
-export { MediaSourceBasicAuthConfig } from './media-source-basic-auth-config';
+export { MediaSourceVidisConfig } from './media-source-vidis-config';
 export { MediaSourceOauthConfig } from './media-source-oauth-config';

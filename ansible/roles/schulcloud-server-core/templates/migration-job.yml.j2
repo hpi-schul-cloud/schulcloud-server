@@ -16,6 +16,8 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
         runAsNonRoot: true
+      os:
+        name: linux
       containers:
       - name: api-migration-job
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -28,7 +30,7 @@ spec:
         - secretRef:
             name: api-files-secret
         command: ['/bin/sh','-c']
-        args: ['npm run ensureIndexes && npm run migration:up']
+        args: ['npm run ensureIndexes:prod && npm run migration:up:prod']
         resources:
           limits:
             cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

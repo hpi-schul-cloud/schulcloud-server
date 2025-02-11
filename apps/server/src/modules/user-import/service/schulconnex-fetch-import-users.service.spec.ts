@@ -1,22 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import type { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
-import { systemFactory } from '@modules/system/testing';
+import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { importUserFactory } from '@testing/factory/import-user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
+import { importUserFactory } from '../testing';
 import { SchulconnexFetchImportUsersService } from './schulconnex-fetch-import-users.service';
 
 describe(SchulconnexFetchImportUsersService.name, () => {
@@ -30,7 +29,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				SchulconnexFetchImportUsersService,
 				{

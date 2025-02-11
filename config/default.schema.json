@@ -215,7 +215,7 @@
 		},
 		"TSP_SYNC_MIGRATION_LIMIT": {
 			"type": "number",
-			"default": "500",
+			"default": "50",
 			"description": "The amount of users the sync migrates at once."
 		},
 		"FEATURE_TSP_MIGRATION_ENABLED": {
@@ -626,41 +626,11 @@
 			"default": 1,
 			"description": "Time between updating alerts (in minutes)"
 		},
-		"NEXBOARD_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://nexboard.nexenio.com",
-			"pattern": ".*(?<!/)$",
-			"description": "The nexboard url."
-		},
-		"NEXBOARD_URI": {
-			"type": "string",
-			"default": "/portal/api/v1/public/",
-			"description": "The nexboard api version uri."
-		},
-		"NEXBOARD_API_KEY": {
-			"type": "string",
-			"description": "The nexboard api key for sending requests."
-		},
-		"NEXBOARD_USER_ID": {
-			"type": "string",
-			"description": "The nexboard 'schul-cloud' userId."
-		},
 		"HYDRA_URI": {
 			"type": "string",
 			"format": "uri",
 			"default": "http://localhost:9001",
 			"description": "The hydra url."
-		},
-		"FEATURE_NEXBOARD_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable nexboard"
-		},
-		"FEATURE_NEXBOARD_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable nexboard copying when copying course or lesson"
 		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
@@ -974,11 +944,6 @@
 			"type": "string",
 			"description": "The password for edu-sharing api access",
 			"default": ""
-		},
-		"ES_API_V7": {
-			"type": "boolean",
-			"default": false,
-			"description": "Use the newer API for Edusharing v7"
 		},
 		"FEATURE_ES_MERLIN_ENABLED": {
 			"type": "boolean",
@@ -1392,20 +1357,30 @@
 					"default": "",
 					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
 				},
-				"MODIFICATION_THRESHOLD_MS": {
+				"DELETION_DELETE_AFTER_MINUTES": {
 					"type": "number",
-					"default": 60000,
-					"description": "threshold in milliseconds to get deletionRequest to delete"
+					"default": 43200,
+					"description": "threshold in minutes, after which a deletion request can be processed"
 				},
-				"MAX_CONCURRENT_DELETION_REQUESTS": {
+				"DELETION_MODIFICATION_THRESHOLD_MS": {
 					"type": "number",
-					"default": 100,
-					"description": "max amount of deletion requests proccessed concurently"
+					"default": 300000,
+					"description": "threshold in milliseconds to try again to process a hanging Pending or Failed deletion requests"
+				},
+				"DELETION_CONSIDER_FAILED_AFTER_MS": {
+					"type": "number",
+					"default": 360000000,
+					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
+				},
+				"DELETION_MAX_CONCURRENT_DELETION_REQUESTS": {
+					"type": "number",
+					"default": 20,
+					"description": "max amount of deletion requests to be processed simultaneously"
 				},
 				"DELETION_DELAY_MILLISECONDS": {
 					"type": "number",
 					"default": 5000,
-					"description": "deley in milliseconds to give time modules to perform deletion proccess"
+					"description": "delay in milliseconds to sleep before processing another batch of deletion requests"
 				}
 			},
 			"default": {}
@@ -1414,16 +1389,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Makes the new school administration page the default page"
-		},
-		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables new CTL-tool tab in a course"
-		},
-		"FEATURE_LTI_TOOLS_TAB_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables old LTI-tool tab in a course"
 		},
 		"FEATURE_SHOW_OUTDATED_USERS": {
 			"type": "boolean",
@@ -1685,16 +1650,6 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
-		},
-		"VIDIS_API_CLIENT_BASE_URL": {
-			"type": "string",
-			"default": "",
-			"description": "The VIDIS API base URL"
-		},
-		"VIDIS_SYNC_REGION": {
-			"type": "string",
-			"default": "",
-			"description": "The region for fetching activated offers from VIDIS"
 		},
 		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
 			"type": "boolean",

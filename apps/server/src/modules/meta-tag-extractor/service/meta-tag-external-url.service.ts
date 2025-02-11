@@ -3,26 +3,30 @@ import axios from 'axios';
 import ogs from 'open-graph-scraper';
 import { ImageObject } from 'open-graph-scraper/types/lib/types';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
-import { MetaData } from '../types';
+import { MetaData, MetaDataEntityType } from '../types';
 
 @Injectable()
 export class MetaTagExternalUrlService {
-	async tryExtractMetaTags(url: URL): Promise<MetaData | undefined> {
-		const html = await this.fetchHtmlPartly(url);
-		const result = await this.parseHtml(html);
-		if (!result) {
+	public async tryExtractMetaTags(url: URL): Promise<MetaData | undefined> {
+		try {
+			const html = await this.fetchHtmlPartly(url);
+			const result = await this.parseHtml(html);
+			if (!result) {
+				return undefined;
+			}
+
+			const { ogTitle, ogDescription, ogImage } = result;
+
+			return {
+				title: ogTitle ?? '',
+				description: ogDescription ?? '',
+				originalImageUrl: this.getImageUrl(ogImage, url),
+				url: url.toString(),
+				type: MetaDataEntityType.EXTERNAL,
+			};
+		} catch {
 			return undefined;
 		}
-
-		const { ogTitle, ogDescription, ogImage } = result;
-
-		return {
-			title: ogTitle ?? '',
-			description: ogDescription ?? '',
-			originalImageUrl: this.getImageUrl(ogImage, url),
-			url: url.toString(),
-			type: 'external',
-		};
 	}
 
 	private async parseHtml(html: string) {

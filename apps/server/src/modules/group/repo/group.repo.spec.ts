@@ -1,21 +1,20 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { Course, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { groupFactory } from '@testing/factory/domainobject';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
+import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
 
 describe(GroupRepo.name, () => {
@@ -25,7 +24,11 @@ describe(GroupRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [GroupEntity, SchoolEntity, User, SystemEntity, Course, CourseGroup],
+				}),
+			],
 			providers: [GroupRepo],
 		}).compile();
 

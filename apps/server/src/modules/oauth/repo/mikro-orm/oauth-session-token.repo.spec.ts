@@ -1,7 +1,7 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { OauthSessionTokenEntity } from '../../entity';
 import { oauthSessionTokenEntityFactory, oauthSessionTokenFactory } from '../../testing';
@@ -15,7 +15,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [OauthSessionTokenEntity] })],
 			providers: [{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo }],
 		}).compile();
 

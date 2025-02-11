@@ -249,5 +249,28 @@ describe(DeletionClient.name, () => {
 				await expect(client.executeDeletions()).rejects.toThrow(Error);
 			});
 		});
+
+		describe('when runFailed is true', () => {
+			const setup = () => {
+				setupConfig();
+
+				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 204,
+				});
+
+				httpService.post.mockReturnValueOnce(of(response));
+
+				const fullUrl = 'http://api-admin:4030/admin/api/v1/deletionExecutions?runFailed=true';
+
+				return { fullUrl };
+			};
+			it('should call endpoint with runFailed param', async () => {
+				const { fullUrl } = setup();
+
+				await client.executeDeletions(undefined, true);
+
+				expect(httpService.post).toHaveBeenCalledWith(fullUrl, null, expect.any(Object));
+			});
+		});
 	});
 });

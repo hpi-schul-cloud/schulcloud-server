@@ -1,10 +1,10 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
 import { Group } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
+import { groupEntityFactory, groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course as CourseEntity,
@@ -16,10 +16,9 @@ import {
 } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory as courseGroupEntityFactory } from '@testing/factory/coursegroup.factory';
-import { groupFactory } from '@testing/factory/domainobject';
-import { groupEntityFactory } from '@testing/factory/group-entity.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Course, COURSE_REPO, CourseProps, CourseStatus } from '../../domain';
@@ -34,7 +33,7 @@ describe(CourseMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroup, User] })],
 			providers: [{ provide: COURSE_REPO, useClass: CourseMikroOrmRepo }],
 		}).compile();
 

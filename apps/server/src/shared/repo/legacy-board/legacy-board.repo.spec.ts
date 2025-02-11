@@ -1,14 +1,26 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoard, LessonEntity, Task } from '@shared/domain/entity';
+import {
+	Course,
+	CourseGroup,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonBoardElement,
+	LessonEntity,
+	Material,
+	SchoolEntity,
+	Submission,
+	Task,
+	TaskBoardElement,
+} from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { boardFactory } from '@testing/factory/board.factory';
-import { lessonBoardElementFactory, taskBoardElementFactory } from '@testing/factory/boardelement.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
+import { lessonBoardElementFactory, taskBoardElementFactory } from '@modules/learnroom/testing';
 import { LegacyBoardRepo } from './legacy-board.repo';
 
 describe('LegacyRoomBoardRepo', () => {
@@ -18,7 +30,23 @@ describe('LegacyRoomBoardRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [
+						LegacyBoard,
+						Course,
+						LegacyBoardElement,
+						CourseGroup,
+						SchoolEntity,
+						Submission,
+						Task,
+						LessonEntity,
+						Material,
+						TaskBoardElement,
+						LessonBoardElement,
+					],
+				}),
+			],
 			providers: [LegacyBoardRepo],
 		}).compile();
 		repo = module.get(LegacyBoardRepo);

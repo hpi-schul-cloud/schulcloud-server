@@ -1,16 +1,15 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/entity';
+import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolSystemOptionsFactory } from '@testing/factory/domainobject';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { schoolSystemOptionsEntityFactory } from '@testing/factory/school-system-options-entity.factory';
-import { systemEntityFactory } from '@testing/factory/systemEntityFactory';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsEntity } from '../entity';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
+import { schoolSystemOptionsEntityFactory, schoolSystemOptionsFactory } from '../testing';
 import { SchoolSystemOptionsRepo } from './school-system-options.repo';
 
 describe(SchoolSystemOptionsRepo.name, () => {
@@ -20,7 +19,9 @@ describe(SchoolSystemOptionsRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolSystemOptionsEntity, SchoolEntity, SystemEntity] }),
+			],
 			providers: [SchoolSystemOptionsRepo],
 		}).compile();
 

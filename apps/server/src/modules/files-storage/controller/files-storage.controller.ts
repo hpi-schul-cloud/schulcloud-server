@@ -22,7 +22,7 @@ import {
 	UnprocessableEntityException,
 	UseInterceptors,
 } from '@nestjs/common';
-import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiConsumes, ApiHeader, ApiOperation, ApiProduces, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { RequestLoggingInterceptor } from '@shared/common/interceptor';
 import { PaginationParams } from '@shared/controller/dto';
@@ -59,7 +59,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/upload-from-url/:storageLocation/:storageLocationId/:parentType/:parentId')
-	async uploadFromUrl(
+	public async uploadFromUrl(
 		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -79,7 +79,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:storageLocation/:storageLocationId/:parentType/:parentId')
-	async upload(
+	public async upload(
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
 		@CurrentUser() currentUser: ICurrentUser,
@@ -93,8 +93,15 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Streamable download of a binary file.' })
-	@ApiResponse({ status: 200, type: StreamableFile })
-	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiProduces('application/octet-stream')
+	@ApiResponse({
+		status: 200,
+		schema: { type: 'string', format: 'binary' },
+	})
+	@ApiResponse({
+		status: 206,
+		schema: { type: 'string', format: 'binary' },
+	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -102,7 +109,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
 	@Get('/download/:fileRecordId/:fileName')
-	async download(
+	public async download(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
@@ -128,7 +135,7 @@ export class FilesStorageController {
 	@ApiHeader({ name: 'Range', required: false })
 	@ApiHeader({ name: 'If-None-Match', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
-	async downloadPreview(
+	public async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() previewParams: PreviewParams,
@@ -189,7 +196,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get('/list/:storageLocation/:storageLocationId/:parentType/:parentId')
-	async list(
+	public async list(
 		@Param() params: FileRecordParams,
 		@Query() pagination: PaginationParams
 	): Promise<FileRecordListResponse> {
@@ -212,7 +219,7 @@ export class FilesStorageController {
 	})
 	@Patch('/rename/:fileRecordId/')
 	@UseInterceptors(RequestLoggingInterceptor)
-	async patchFilename(
+	public async patchFilename(
 		@Param() params: SingleFileParams,
 		@Body() renameFileParam: RenameFileParams
 	): Promise<FileRecordResponse> {
@@ -233,7 +240,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:storageLocation/:storageLocationId/:parentType/:parentId')
 	@UseInterceptors(RequestLoggingInterceptor)
-	async deleteByParent(@Param() params: FileRecordParams): Promise<FileRecordListResponse> {
+	public async deleteByParent(@Param() params: FileRecordParams): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.deleteFilesOfParent(params);
 		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
 
@@ -247,7 +254,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('/delete/:fileRecordId')
 	@UseInterceptors(RequestLoggingInterceptor)
-	async deleteFile(@Param() params: SingleFileParams): Promise<FileRecordResponse> {
+	public async deleteFile(@Param() params: SingleFileParams): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.deleteOneFile(params);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
@@ -260,7 +267,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post('/restore/:storageLocation/:storageLocationId/:parentType/:parentId')
-	async restore(@Param() params: FileRecordParams): Promise<FileRecordListResponse> {
+	public async restore(@Param() params: FileRecordParams): Promise<FileRecordListResponse> {
 		const [fileRecords, total] = await this.filesStorageUC.restoreFilesOfParent(params);
 
 		const response = FileRecordMapper.mapToFileRecordListResponse(fileRecords, total);
@@ -273,7 +280,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Post('/restore/:fileRecordId')
-	async restoreFile(@Param() params: SingleFileParams): Promise<FileRecordResponse> {
+	public async restoreFile(@Param() params: SingleFileParams): Promise<FileRecordResponse> {
 		const fileRecord = await this.filesStorageUC.restoreOneFile(params);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
@@ -287,7 +294,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/copy/:storageLocation/:storageLocationId/:parentType/:parentId')
-	async copy(
+	public async copy(
 		@Param() params: FileRecordParams,
 		@Body() copyFilesParam: CopyFilesOfParentParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -304,7 +311,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/copy/:fileRecordId')
-	async copyFile(
+	public async copyFile(
 		@Param() params: SingleFileParams,
 		@Body() copyFileParam: CopyFileParams,
 		@CurrentUser() currentUser: ICurrentUser
