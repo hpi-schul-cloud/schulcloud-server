@@ -1,8 +1,8 @@
 import { ConsoleWriterService } from '@infra/console';
-import { ServerConsoleModule } from '@modules/server-console/server-console.app.module';
 import { INestApplicationContext } from '@nestjs/common';
 import { CommanderError } from 'commander';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { ManagementConsoleModule } from '../../management-console.app.module';
 import { TestBootstrapConsole, execute } from './test-bootstrap.console';
 
 describe('DatabaseManagementConsole (API)', () => {
@@ -13,7 +13,7 @@ describe('DatabaseManagementConsole (API)', () => {
 
 	beforeEach(async () => {
 		bootstrap = new TestBootstrapConsole({
-			module: ServerConsoleModule,
+			module: ManagementConsoleModule,
 			useDecorators: true,
 		});
 		app = await bootstrap.init();

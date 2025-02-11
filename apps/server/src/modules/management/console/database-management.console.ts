@@ -15,6 +15,7 @@ interface MigrationOptions {
 	to?: string;
 	only?: string;
 	pending?: boolean;
+	create?: boolean;
 }
 
 @Console({ command: 'database', description: 'database setup console' })
@@ -37,7 +38,7 @@ export class DatabaseManagementConsole {
 		],
 		description: 'reset database collections with seed data from filesystem',
 	})
-	async seedCollections(options: Options): Promise<string[]> {
+	public async seedCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
 
 		const collections = options.onlyfactories
@@ -64,7 +65,7 @@ export class DatabaseManagementConsole {
 		],
 		description: 'export database collections to filesystem',
 	})
-	async exportCollections(options: Options): Promise<string[]> {
+	public async exportCollections(options: Options): Promise<string[]> {
 		const filter = options?.collection ? [options.collection] : undefined;
 		const toSeedFolder = options?.override ? true : undefined;
 		const collections = await this.databaseManagementUc.exportCollectionsToFileSystem(filter, toSeedFolder);
@@ -78,7 +79,7 @@ export class DatabaseManagementConsole {
 		options: [],
 		description: 'sync indexes from nest and mikroorm',
 	})
-	async syncIndexes(): Promise<string> {
+	public async syncIndexes(): Promise<string> {
 		await this.databaseManagementUc.syncIndexes();
 		const report = 'sync of indexes is completed';
 		this.consoleWriter.info(report);
@@ -118,12 +119,17 @@ export class DatabaseManagementConsole {
 				required: false,
 				description: 'list pending migrations',
 			},
+			{
+				flags: '--create',
+				required: false,
+				description: 'create a new migration',
+			},
 		],
 		description: 'Execute MikroOrm migration up/down',
 	})
-	async migration(migrationOptions: MigrationOptions): Promise<string> {
+	public async migration(migrationOptions: MigrationOptions): Promise<string> {
 		let report = 'no migration option was given';
-		if (!migrationOptions.up && !migrationOptions.down && !migrationOptions.pending) {
+		if (!migrationOptions.up && !migrationOptions.down && !migrationOptions.pending && !migrationOptions.create) {
 			this.consoleWriter.error(report);
 			return report;
 		}
@@ -138,6 +144,10 @@ export class DatabaseManagementConsole {
 		if (migrationOptions.pending) {
 			const pendingMigrations = await this.databaseManagementUc.migrationPending();
 			report = `Pending: ${JSON.stringify(pendingMigrations.map((migration) => migration.name))}`;
+		}
+		if (migrationOptions.create) {
+			await this.databaseManagementUc.migrationCreate();
+			report = 'migration created';
 		}
 
 		this.consoleWriter.info(report);

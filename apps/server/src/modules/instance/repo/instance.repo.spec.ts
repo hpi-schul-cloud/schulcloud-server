@@ -14,7 +14,7 @@ describe(InstanceRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [InstanceEntity] })],
 			providers: [InstanceRepo],
 		}).compile();
 
