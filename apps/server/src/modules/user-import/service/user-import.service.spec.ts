@@ -40,7 +40,7 @@ describe(UserImportService.name, () => {
 		await setupEntities();
 
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				UserImportService,
 				{

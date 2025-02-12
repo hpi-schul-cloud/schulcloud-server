@@ -10,6 +10,7 @@ import { UserService } from '@modules/user';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -33,7 +34,7 @@ describe('RoomMembershipService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
 				RoomMembershipService,
 				{

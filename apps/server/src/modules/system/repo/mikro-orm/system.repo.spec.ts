@@ -23,7 +23,7 @@ describe(SystemMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] })],
 			providers: [{ provide: SYSTEM_REPO, useClass: SystemMikroOrmRepo }],
 		}).compile();
 

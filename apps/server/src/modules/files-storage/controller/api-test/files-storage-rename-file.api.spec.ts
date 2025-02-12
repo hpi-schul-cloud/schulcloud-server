@@ -1,12 +1,9 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
@@ -20,6 +17,7 @@ const baseRouteName = '/file/rename';
 describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -34,6 +32,7 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -41,42 +40,32 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	const setup = async () => {
-		await cleanupCollections(em);
-		const school = schoolEntityFactory.build();
-		const { studentUser: user, studentAccount: account } = UserAndAccountTestFactory.buildStudent({ school });
+		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-		await em.persistAndFlush([user, account]);
+		const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+		const validId = new ObjectId().toHexString();
 
 		const fileParams = {
-			schoolId: school.id,
-			parentId: school.id,
+			schoolId: validId,
+			parentId: validId,
 			parentType: FileRecordParentType.School,
 		};
 		const fileRecords = fileRecordFactory.buildList(3, fileParams);
-		const fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: user.id });
+		const fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: studentUser.id });
 		fileRecords.push(fileRecord);
 
-		await em.persistAndFlush([user, ...fileRecords, school]);
+		await em.persistAndFlush(fileRecords);
 		em.clear();
 
-		const authValue = JwtAuthenticationFactory.createJwt({
-			accountId: account.id,
-			userId: user.id,
-			schoolId: user.school.id,
-			roles: [user.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
-		const apiClient = new TestApiClient(app, baseRouteName, authValue);
-
-		return { user, fileRecord, apiClient };
+		return { user: studentUser, fileRecord, loggedInClient };
 	};
 
 	describe('with not authenticated user', () => {
 		it('should return status 401', async () => {
-			const apiClient = new TestApiClient(app, baseRouteName);
+			const loggedInClient = new TestApiClient(app, baseRouteName);
 
-			const result = await apiClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+			const result = await loggedInClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
 
 			expect(result.status).toEqual(401);
 		});
@@ -84,9 +73,9 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid fileRecordId', async () => {
-			const { apiClient } = await setup();
+			const { loggedInClient } = await setup();
 
-			const result = await apiClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
+			const result = await loggedInClient.patch(`invalid_id`, { fileName: 'test_new_name.txt' });
 			const { validationErrors } = result.body as ApiValidationError;
 
 			expect(validationErrors).toEqual([
@@ -99,9 +88,9 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 400 for empty filename', async () => {
-			const { apiClient, fileRecord } = await setup();
+			const { loggedInClient, fileRecord } = await setup();
 
-			const result = await apiClient.patch(`${fileRecord.id}`, { fileName: undefined });
+			const result = await loggedInClient.patch(`${fileRecord.id}`, { fileName: undefined });
 			const { validationErrors } = result.body as ApiValidationError;
 
 			expect(validationErrors).toEqual([
@@ -114,9 +103,9 @@ describe(`${baseRouteName} (api)`, () => {
 		});
 
 		it('should return status 409 if filename exists', async () => {
-			const { apiClient, fileRecord } = await setup();
+			const { loggedInClient, fileRecord } = await setup();
 
-			const result = await apiClient.patch(`${fileRecord.id}`, { fileName: 'test.txt' });
+			const result = await loggedInClient.patch(`${fileRecord.id}`, { fileName: 'test.txt' });
 
 			expect(result.body).toEqual({ code: 409, message: 'FILE_NAME_EXISTS', title: 'Conflict', type: 'CONFLICT' });
 			expect(result.status).toEqual(409);
@@ -125,9 +114,9 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe(`with valid request data`, () => {
 		it('should return status 200 for successful request', async () => {
-			const { apiClient, fileRecord } = await setup();
+			const { loggedInClient, fileRecord } = await setup();
 
-			const result = await apiClient.patch(`${fileRecord.id}`, { fileName: 'test_1.txt' });
+			const result = await loggedInClient.patch(`${fileRecord.id}`, { fileName: 'test_1.txt' });
 			const response = result.body as FileRecordResponse;
 
 			expect(response.name).toEqual('test_1.txt');

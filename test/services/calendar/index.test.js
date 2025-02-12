@@ -4,7 +4,32 @@ const chai = require('chai');
 const { expect } = chai;
 const mockery = require('mockery');
 
-const requestMock = require('./mock/mockResponses');
+const axiosMock = () =>
+	Promise.resolve({
+		data: {
+			links: {
+				self: 'https://dbildungscloud.de:3000/events',
+			},
+			data: [
+				{
+					type: 'event',
+					id: '0ef82d0a-0e20-465d-ae1e-850dc04d9432',
+					attributes: {
+						summary: 'tttttt',
+						location: 'Paul-Gerhardt-Gymnasium',
+						description: 'sdds',
+						dtstart: '2017-05-19T20:00:00.000Z',
+						dtend: '2017-05-19T20:00:00.000Z',
+						dtstamp: '2017-05-10T06:44:24.174Z',
+						uid: 'e40e1276-4a27-458c-8b64-ae549adadbc2',
+					},
+					relationships: {
+						'scope-ids': ['0000d231816abba584714c9e'],
+					},
+				},
+			],
+		},
+	});
 
 describe('calendar service', () => {
 	let app = null;
@@ -16,7 +41,7 @@ describe('calendar service', () => {
 			warnOnUnregistered: false,
 			useCleanCache: true,
 		});
-		mockery.registerMock('request-promise-native', requestMock);
+		mockery.registerMock('axios', axiosMock);
 		// eslint-disable-next-line global-require
 		app = await require('../../../src/app')();
 		app.setup();

@@ -65,7 +65,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['apps/**/*.ts'],
+			files: ['apps/server/src/**/*.ts'],
 			env: {
 				node: true,
 				es6: true,
@@ -92,7 +92,7 @@ module.exports = {
 				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
-				'filename-rules/match': [1, 'kebabcase'],
+				'filename-rules/match': [1, /^([a-z0-9]+-)*[a-z]+(?:\..*)?$/],
 				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',

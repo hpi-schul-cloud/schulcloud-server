@@ -62,15 +62,13 @@ describe('H5PEditor Controller (api)', () => {
 		});
 
 		describe('when user is logged in', () => {
-			const createStudent = () => UserAndAccountTestFactory.buildStudent();
-
 			const setup = async () => {
-				const { studentAccount, studentUser } = createStudent();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+				await em.persistAndFlush([studentUser]);
 				em.clear();
-
-				const loggedInClient = await testApiClient.login(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -123,15 +121,13 @@ describe('H5PEditor Controller (api)', () => {
 			});
 
 			describe('when user is logged in', () => {
-				const createStudent = () => UserAndAccountTestFactory.buildStudent();
-
 				const setup = async () => {
-					const { studentAccount, studentUser } = createStudent();
+					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-					await em.persistAndFlush([studentAccount, studentUser]);
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+
+					await em.persistAndFlush([studentUser]);
 					em.clear();
-
-					const loggedInClient = await testApiClient.login(studentAccount);
 
 					return { loggedInClient, studentUser };
 				};
