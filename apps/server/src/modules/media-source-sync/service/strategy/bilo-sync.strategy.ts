@@ -1,5 +1,5 @@
 import { ErrorLoggable } from '@core/error/loggable';
-import { Loggable, Logger } from '@core/logger';
+import { Logger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';

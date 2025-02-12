@@ -1,3 +1,4 @@
+import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,7 +13,6 @@ import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { MediaSourceSyncReport } from '../../interface';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
-import { ErrorLoggable } from '@core/error/loggable';
 
 describe(BiloSyncStrategy.name, () => {
 	let module: TestingModule;
