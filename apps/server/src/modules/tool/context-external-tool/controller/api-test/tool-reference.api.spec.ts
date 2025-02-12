@@ -1,14 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { fileRecordFactory } from '@modules/files-storage/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { DateToString } from '@testing/date-to-string';
 import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
@@ -63,10 +62,10 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolWithoutTool = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -111,11 +110,11 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const thumbnailFileRecord = fileRecordFactory.build();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
@@ -210,10 +209,10 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolWithoutTool = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -255,11 +254,11 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const thumbnailFileRecord = fileRecordFactory.build();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
 					.withLti11Config({

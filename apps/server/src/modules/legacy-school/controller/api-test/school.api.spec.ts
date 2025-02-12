@@ -1,13 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { SchoolSystemOptionsEntity } from '../../entity';
@@ -44,10 +42,10 @@ describe('School (API)', () => {
 	describe('[GET] /schools/:schoolId/systems/:systemId/provisioning-options', () => {
 		describe('when an admin requests the configured options for a system at their school', () => {
 			const setup = async () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId({
+				const system = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const schoolSystemOptions: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({
@@ -91,10 +89,10 @@ describe('School (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId({
+				const system = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const schoolSystemOptions: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({
@@ -135,10 +133,10 @@ describe('School (API)', () => {
 	describe('[POST] /schools/:schoolId/systems/:systemId/provisioning-options', () => {
 		describe('when an admin creates new school system options', () => {
 			const setup = async () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId({
+				const system = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
@@ -197,10 +195,10 @@ describe('School (API)', () => {
 
 		describe('when an admin updates the school system options', () => {
 			const setup = async () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId({
+				const system = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const schoolSystemOptions: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({
@@ -269,10 +267,10 @@ describe('School (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				const system: SystemEntity = systemEntityFactory.buildWithId({
+				const system = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 

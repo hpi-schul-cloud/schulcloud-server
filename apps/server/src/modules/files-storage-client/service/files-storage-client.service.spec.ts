@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { MikroORM } from '@mikro-orm/core';
@@ -11,10 +12,9 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';

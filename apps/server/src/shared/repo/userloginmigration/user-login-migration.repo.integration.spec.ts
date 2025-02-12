@@ -6,12 +6,12 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 
 import { LegacyLogger } from '@core/logger';
 import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
 
 describe('UserLoginMigrationRepo', () => {

@@ -1,5 +1,6 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
 import {
 	ConsentEntity,
 	ParentConsentEntity,
@@ -20,7 +21,6 @@ import {
 } from '../user-role-permissions';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
-import { schoolEntityFactory } from './school-entity.factory';
 
 const userConsentFactory = BaseFactory.define<UserConsentEntity, UserConsentEntity>(UserConsentEntity, () => {
 	return {

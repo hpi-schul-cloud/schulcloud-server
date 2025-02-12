@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@shared/domain/entity';
 import { setupEntities } from '../setup-entities';
-import { schoolEntityFactory } from './school-entity.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {

@@ -10,6 +10,7 @@ import {
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { schoolEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
@@ -21,7 +22,6 @@ import { Course } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType } from '../../domainobject/share-token.do';

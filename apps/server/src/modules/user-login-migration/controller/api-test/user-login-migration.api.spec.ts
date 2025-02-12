@@ -4,6 +4,7 @@ import { SchulconnexPoliciesInfoResponse, SchulconnexResponse, SchulconnexRole }
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { type SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
@@ -17,7 +18,6 @@ import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migra
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';

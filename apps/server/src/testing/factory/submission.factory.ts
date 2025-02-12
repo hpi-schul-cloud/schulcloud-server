@@ -1,7 +1,7 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, SubmissionProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
-import { schoolEntityFactory } from './school-entity.factory';
 import { taskFactory } from './task.factory';
 import { userFactory } from './user.factory';
 

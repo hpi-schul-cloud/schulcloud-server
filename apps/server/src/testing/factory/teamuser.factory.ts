@@ -1,8 +1,8 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Role, TeamUserEntity } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
-import { schoolEntityFactory } from './school-entity.factory';
 import { userFactory } from './user.factory';
 
 class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserEntity> {

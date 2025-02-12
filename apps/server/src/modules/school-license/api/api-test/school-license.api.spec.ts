@@ -5,16 +5,16 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
-import { ServerTestModule } from '@modules/server';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { ServerTestModule } from '@modules/server';
+import { federalStateFactory } from '@testing/factory/federal-state.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
 describe('SchoolLicenseController (API)', () => {
 	let app: INestApplication;

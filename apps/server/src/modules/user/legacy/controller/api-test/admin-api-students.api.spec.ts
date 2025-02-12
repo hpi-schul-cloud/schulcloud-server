@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';

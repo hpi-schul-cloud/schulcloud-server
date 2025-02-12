@@ -1,5 +1,5 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/entity';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';

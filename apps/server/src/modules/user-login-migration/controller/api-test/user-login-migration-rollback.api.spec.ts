@@ -1,15 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
-import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
@@ -43,9 +41,9 @@ describe('UserLoginMigrationRollbackController (API)', () => {
 		describe('when a user is rolled back', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
-				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const sourceSystem = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const school = schoolEntityFactory.buildWithId({
 					systems: [sourceSystem],
 				});
 				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
@@ -89,8 +87,8 @@ describe('UserLoginMigrationRollbackController (API)', () => {
 
 				const response: Response = await loggedInClient.post(`/users/${migratedUser.id}/rollback-migration`);
 
-				const revertedUser: User = await em.findOneOrFail(User, migratedUser.id);
-				const revertedAccount: AccountEntity = await em.findOneOrFail(AccountEntity, migratedAccount.id);
+				const revertedUser = await em.findOneOrFail(User, migratedUser.id);
+				const revertedAccount = await em.findOneOrFail(AccountEntity, migratedAccount.id);
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 				expect(revertedUser.externalId).toEqual(migratedUser.previousExternalId);

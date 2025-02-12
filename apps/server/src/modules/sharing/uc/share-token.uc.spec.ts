@@ -13,7 +13,7 @@ import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
-import { schoolFactory } from '@modules/school/testing';
+import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -21,7 +21,6 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Permission } from '@shared/domain/interface';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';

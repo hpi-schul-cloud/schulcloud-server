@@ -1,11 +1,10 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
-import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 // admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
@@ -68,7 +67,7 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 
 		describe('when authenticating with a valid api token', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					parameters: [
 						customParameterEntityFactory.build({

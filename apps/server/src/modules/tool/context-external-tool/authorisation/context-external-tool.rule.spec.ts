@@ -1,5 +1,6 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
@@ -10,7 +11,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { ContextExternalToolRule } from './context-external-tool.rule';

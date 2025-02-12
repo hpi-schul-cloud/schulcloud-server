@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { CourseNews, News, NewsProperties, SchoolNews, TeamEntity, TeamNews, User } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
 import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import {

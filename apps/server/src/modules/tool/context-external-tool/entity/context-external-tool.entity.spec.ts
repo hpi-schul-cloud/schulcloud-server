@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { setupEntities } from '@testing/setup-entities';
 import { ToolConfigType } from '../../common/enum';
 import {

@@ -1,7 +1,7 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
-import { schoolEntityFactory } from './school-entity.factory';
 import { teamFactory } from './team.factory';
 import { userFactory } from './user.factory';
 

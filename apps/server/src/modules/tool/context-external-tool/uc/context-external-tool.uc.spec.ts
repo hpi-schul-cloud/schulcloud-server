@@ -10,12 +10,11 @@ import {
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardContextApiHelperService } from '@modules/board-context';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { UUID } from 'bson';
@@ -137,7 +136,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const schoolId: EntityId = school.id;
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -221,7 +220,7 @@ describe(ContextExternalToolUc.name, () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
 				const schoolId: EntityId = school.id;
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const userId = user.id;
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -270,7 +269,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the user is from a different school than the school external tool', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const userId = user.id;
 				const schoolId: EntityId = new ObjectId().toHexString();
 
@@ -318,7 +317,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the user does not have permission', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const userId = user.id;
 				const schoolId: EntityId = school.id;
 
@@ -366,7 +365,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when the validation fails', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school });
+				const user = userFactory.buildWithId({ school });
 				const userId = user.id;
 				const schoolId: EntityId = school.id;
 
@@ -415,7 +414,7 @@ describe(ContextExternalToolUc.name, () => {
 			describe('when the user is from a different school', () => {
 				it('should use the boardContextApiHelperService to determine the right schoolId', async () => {
 					const school = schoolEntityFactory.buildWithId();
-					const user: User = userFactory.buildWithId({ school });
+					const user = userFactory.buildWithId({ school });
 					const schoolId: EntityId = school.id;
 
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -449,7 +448,7 @@ describe(ContextExternalToolUc.name, () => {
 	describe('updateContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 				const schoolId: EntityId = new ObjectId().toHexString();
 
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -695,7 +694,7 @@ describe(ContextExternalToolUc.name, () => {
 	describe('deleteContextExternalTool', () => {
 		describe('when contextExternalTool is given and user has permission ', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
@@ -736,7 +735,7 @@ describe(ContextExternalToolUc.name, () => {
 		describe('when parameters are given and user has permission ', () => {
 			const setup = () => {
 				const userId: EntityId = 'userId';
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 				const contextId: EntityId = 'contextId';
 				const contextType: ToolContextType = ToolContextType.COURSE;
 
@@ -846,7 +845,7 @@ describe(ContextExternalToolUc.name, () => {
 	describe('getContextExternalTool', () => {
 		describe('when right permission, context  and id is given', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 				const contextId: EntityId = 'contextId';
 				const contextType: ToolContextType = ToolContextType.COURSE;
 

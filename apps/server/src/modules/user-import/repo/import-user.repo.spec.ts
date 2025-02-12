@@ -1,13 +1,13 @@
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { createCollections } from '@testing/create-collections';
-import { MongoMemoryDatabaseModule, MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, ImportUserRoleName, MatchCreator } from '../entity';

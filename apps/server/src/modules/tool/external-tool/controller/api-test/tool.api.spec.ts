@@ -3,14 +3,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { FileRecordResponse } from '@modules/files-storage/controller/dto';
 import { instanceEntityFactory } from '@modules/instance/testing';
-import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -802,7 +801,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({ id: toolId });
 
-				const school: SchoolEntity = schoolEntityFactory.build();
+				const school = schoolEntityFactory.build();
 				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
