@@ -1,33 +1,17 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { BiloLinkResponse } from './bilo-link.response';
+import { IsEnum, ValidateNested } from 'class-validator';
+import { BiloMediaQueryBodyParams } from '../request';
+import { BiloMediaQueryDataResponse } from './bilo-media-query-data.response';
 
 export class BiloMediaQueryResponse {
-	@IsString()
-	public id!: string;
+	@ValidateNested({ each: true })
+	@Type(() => BiloMediaQueryBodyParams)
+	public query!: BiloMediaQueryBodyParams;
 
-	@IsString()
-	public title!: string;
-
-	@IsString()
-	@IsOptional()
-	public author?: string;
-
-	@IsString()
-	@IsOptional()
-	public description?: string;
-
-	@IsString()
-	public publisher!: string;
+	@IsEnum([200, 400, 404])
+	public status!: number;
 
 	@ValidateNested({ each: true })
-	@Type(() => BiloLinkResponse)
-	public cover!: BiloLinkResponse;
-
-	@ValidateNested({ each: true })
-	@Type(() => BiloLinkResponse)
-	public coverSmall!: BiloLinkResponse;
-
-	@IsInt()
-	public modified!: number;
+	@Type(() => BiloMediaQueryDataResponse)
+	public data!: BiloMediaQueryDataResponse;
 }

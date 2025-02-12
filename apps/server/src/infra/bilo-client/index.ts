@@ -1,3 +1,3 @@
 export * from './response';
-export { BiloMediaRestClient } from './bilo-media-rest-client';
+export { BiloMediaClientAdapter } from './bilo-media-client.adapter';
 export { BiloClientModule } from './bilo-client.module';

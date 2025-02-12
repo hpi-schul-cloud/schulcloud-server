@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceService, MediaSourceDataFormat, MediaSourceNotFoundLoggableException } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSourceSyncStrategy } from '../interface';
