@@ -1,5 +1,5 @@
-import { OAuthTokenDto, OAuthGrantType } from '../domain';
-import { AuthenticationCodeGrantTokenRequest } from '../service/dto';
+import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto } from '../dto';
+import { OAuthGrantType } from '../types';
 import { TokenRequestMapper } from './token-request.mapper';
 
 describe('TokenRequestMapper', () => {

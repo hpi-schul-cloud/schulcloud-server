@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { MediaSourceDataFormat } from '../../media-source/enum';
+import { MediaSourceDataFormat } from '@modules/media-source';
 
 export class SyncStrategyNotImplementedLoggableException extends NotImplementedException {
 	constructor(private readonly mediaSourceDataFormat: MediaSourceDataFormat) {

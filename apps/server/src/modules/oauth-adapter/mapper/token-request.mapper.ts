@@ -1,5 +1,5 @@
-import { OAuthTokenDto, OAuthGrantType } from '../domain';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from '../service/dto';
+import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthTokenResponse } from '../dto';
+import { OAuthGrantType } from '../types';
 
 export class TokenRequestMapper {
 	public static createAuthenticationCodeGrantTokenRequestPayload(

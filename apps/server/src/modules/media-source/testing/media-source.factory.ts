@@ -22,7 +22,7 @@ class MediaSourceFactory extends BaseFactory<MediaSource, MediaSourceProps> {
 			format: MediaSourceDataFormat.BILDUNGSLOGIN,
 			oauthConfig: mediaSourceOauthConfigFactory.build(),
 			vidisConfig: undefined,
-			sourceId: 'https://mein.bildungslogin.de/source-id',
+			sourceId: 'medium-source-id',
 		};
 
 		return this.params(params);

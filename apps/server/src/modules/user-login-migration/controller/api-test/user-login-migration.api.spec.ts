@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchulconnexPoliciesInfoResponse, SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { ServerTestModule } from '@modules/server';
 import { type SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';

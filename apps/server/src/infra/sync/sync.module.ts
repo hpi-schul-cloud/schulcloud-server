@@ -36,17 +36,9 @@ import { SyncUc } from './uc/sync.uc';
 		EncryptionModule,
 		MediaSourceModule,
 		MediaSourceSyncModule,
+		RabbitMQWrapperModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [
-					TspClientModule,
-					SystemModule,
-					SchoolModule,
-					LegacySchoolModule,
-					RabbitMQWrapperModule,
-					ProvisioningModule,
-					UserModule,
-					AccountModule,
-			  ]
+			? [TspClientModule, SystemModule, SchoolModule, LegacySchoolModule, ProvisioningModule, UserModule, AccountModule]
 			: []),
 	],
 	providers: [

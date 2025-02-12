@@ -6,7 +6,7 @@ export class MediaSourceNotFoundLoggableException extends NotFoundException impl
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			message: `Media source could not be found.`,
 			data: {
