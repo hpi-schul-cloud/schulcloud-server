@@ -79,10 +79,6 @@ export class LogoutService {
 			return;
 		}
 
-		await this.logoutFromExternalSystem(sessionToken, system);
-	}
-
-	private async logoutFromExternalSystem(sessionToken: OauthSessionToken, system: System): Promise<void> {
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}
@@ -111,9 +107,7 @@ export class LogoutService {
 			await firstValueFrom(
 				this.httpService.post(
 					system.oauthConfig.endSessionEndpoint,
-					{
-						refresh_token: sessionToken.refreshToken,
-					},
+					{ refresh_token: sessionToken.refreshToken },
 					config
 				)
 			);
