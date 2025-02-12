@@ -7,6 +7,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DeletionBatchEntity } from '../../../repo/entity';
 import { deletionBatchEntityFactory } from '../../../testing';
+import { DeletionBatchDetails } from '../../../domain/service';
+import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response';
 
 const baseRouteName = '/deletion-batches';
 
@@ -73,6 +75,33 @@ describe('getBatchDetails ', () => {
 			const response = await testApiClient.get('invalid-id');
 
 			expect(response.status).toEqual(404);
+		});
+	});
+
+	describe('when batch has no ids', () => {
+		const setup = async () => {
+			const batch = deletionBatchEntityFactory.build();
+			await em.persistAndFlush(batch);
+			em.clear();
+
+			const response: DeletionBatchDetailsResponse = {
+				id: batch.id,
+				pendingDeletions: [],
+				failedDeletions: [],
+				successfulDeletions: [],
+				invalidIds: [],
+				skippedDeletions: [],
+			};
+
+			return { id: batch.id, response };
+		};
+		it('should return response with empty arrays', async () => {
+			const { id, response } = await setup();
+
+			const result = await testApiClient.get(id);
+
+			expect(result.status).toEqual(200);
+			expect(result.body).toEqual(response);
 		});
 	});
 });
