@@ -1,12 +1,7 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import {
-	OauthConfigMissingLoggableException,
-	OAuthService,
-	OauthSessionToken,
-	OauthSessionTokenService,
-} from '@modules/oauth';
+import { OauthConfigMissingLoggableException, OAuthService, OauthSessionTokenService } from '@modules/oauth';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { HttpService } from '@nestjs/axios';
@@ -77,11 +72,6 @@ export class LogoutService {
 			return;
 		}
 
-		const sessionToken = await this.oauthSessionTokenService.findLatestByUserId(user.userId);
-		if (!sessionToken) {
-			return;
-		}
-
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}
@@ -89,6 +79,12 @@ export class LogoutService {
 		if (!system.oauthConfig.endSessionEndpoint) {
 			throw new EndSessionEndpointNotFoundLoggableException(system.id);
 		}
+
+		const sessionToken = await this.oauthSessionTokenService.findLatestByUserId(user.userId);
+		if (!sessionToken) {
+			return;
+		}
+
 		if (!sessionToken.expiresAt || new Date() > sessionToken.expiresAt) {
 			await this.oauthSessionTokenService.delete(sessionToken);
 			return;

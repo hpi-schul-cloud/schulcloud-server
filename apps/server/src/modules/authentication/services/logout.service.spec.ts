@@ -427,7 +427,7 @@ describe(LogoutService.name, () => {
 
 		describe('when an user with invalid session token is provided', () => {
 			const setup = () => {
-				const system = systemFactory.build();
+				const system = systemFactory.withOauthConfig().build();
 				const user = currentUserFactory.build({ isExternalUser: true, systemId: system.id });
 
 				systemService.findById.mockResolvedValue(system);
