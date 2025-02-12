@@ -43,7 +43,7 @@ describe('getBatchDetails ', () => {
 				skippedIds: [teacher.id],
 				invalidIds: [invalidId],
 			});
-			await em.persistAndFlush([student, teacher]);
+			await em.persistAndFlush([batch, student, teacher]);
 			em.clear();
 
 			return { id: batch.id };
