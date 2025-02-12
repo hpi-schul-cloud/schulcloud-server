@@ -72,10 +72,13 @@ export class LogoutService {
 			return;
 		}
 
-		const system: System | null = await this.systemService.findById(user.systemId);
-		const sessionToken: OauthSessionToken | null = await this.oauthSessionTokenService.findLatestByUserId(user.userId);
+		const system = await this.systemService.findById(user.systemId);
+		if (!system) {
+			return;
+		}
 
-		if (!sessionToken || !system) {
+		const sessionToken = await this.oauthSessionTokenService.findLatestByUserId(user.userId);
+		if (!sessionToken) {
 			return;
 		}
 
@@ -83,27 +86,25 @@ export class LogoutService {
 			throw new OauthConfigMissingLoggableException(system.id);
 		}
 
-		if (!system?.oauthConfig.endSessionEndpoint) {
+		if (!system.oauthConfig.endSessionEndpoint) {
 			throw new EndSessionEndpointNotFoundLoggableException(system.id);
 		}
-
 		if (!sessionToken.expiresAt || new Date() > sessionToken.expiresAt) {
 			await this.oauthSessionTokenService.delete(sessionToken);
 			return;
 		}
 
-		const headers: AxiosHeaders = new AxiosHeaders();
-		headers.setContentType('application/x-www-form-urlencoded');
-
-		const config: AxiosRequestConfig = {
-			auth: {
-				username: system.oauthConfig.clientId,
-				password: this.oauthEncryptionService.decrypt(system.oauthConfig.clientSecret),
-			},
-			headers,
-		};
-
 		try {
+			const headers: AxiosHeaders = new AxiosHeaders();
+			headers.setContentType('application/x-www-form-urlencoded');
+			const config: AxiosRequestConfig = {
+				auth: {
+					username: system.oauthConfig.clientId,
+					password: this.oauthEncryptionService.decrypt(system.oauthConfig.clientSecret),
+				},
+				headers,
+			};
+
 			await firstValueFrom(
 				this.httpService.post(
 					system.oauthConfig.endSessionEndpoint,
