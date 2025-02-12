@@ -136,10 +136,11 @@ export class DeletionBatchService {
 	}
 
 	public async requestDeletionForBatch(deletionBatch: DeletionBatch, deleteAfter: Date): Promise<DeletionBatchSummary> {
-		for (const targetRefId of deletionBatch.targetRefIds) {
-			// TODO validate again that user exists?
-			await this.deletionRequestService.createDeletionRequest(targetRefId, deletionBatch.targetRefDomain, deleteAfter);
-		}
+		const deletionRequests = deletionBatch.targetRefIds.map((targetRefId) =>
+			this.deletionRequestService.createDeletionRequest(targetRefId, deletionBatch.targetRefDomain, deleteAfter)
+		);
+
+		await Promise.allSettled(deletionRequests);
 
 		await this.deletionBatchRepo.updateStatus(deletionBatch, BatchStatus.DELETION_REQUESTED);
 
