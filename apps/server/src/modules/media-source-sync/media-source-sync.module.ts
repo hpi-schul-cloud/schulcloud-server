@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
 import { BiloClientModule } from '@infra/bilo-client';
 import { MediaSourceModule } from '@modules/media-source';
@@ -7,7 +8,7 @@ import { MediaSourceSyncService } from './service';
 import { BiloSyncStrategy } from './service/strategy';
 
 @Module({
-	imports: [BiloClientModule, MediaSourceModule, OauthAdapterModule, ExternalToolModule],
+	imports: [BiloClientModule, LoggerModule, MediaSourceModule, OauthAdapterModule, ExternalToolModule],
 	providers: [MediaSourceSyncService, BiloSyncStrategy],
 	exports: [MediaSourceSyncService],
 })

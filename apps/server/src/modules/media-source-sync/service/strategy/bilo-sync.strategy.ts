@@ -1,8 +1,10 @@
+import { ErrorLoggable } from '@core/error/loggable';
+import { Loggable, Logger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
-import { ExternalTool, ExternalToolMedium, FileRecordRef } from '@modules/tool/external-tool/domain';
+import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
 import { MediaSourceSyncOperation } from '../../types';
@@ -10,8 +12,9 @@ import { MediaSourceSyncOperation } from '../../types';
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
+		private readonly biloMediaFetchService: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,
-		private readonly biloMediaFetchService: BiloMediaClientAdapter
+		private readonly logger: Logger
 	) {}
 
 	public getMediaSourceFormat(): MediaSourceDataFormat {
@@ -80,7 +83,13 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 			try {
 				await this.mapBiloMetadataToExternalTool(externalTool, fetchedMetadata);
-			} catch (error) {
+			} catch (error: unknown) {
+				this.logger.debug(
+					new ErrorLoggable(error, {
+						mediumId: externalTool.medium?.mediumId as string,
+						mediumMediaSourceId: externalTool.medium?.mediaSourceId as string,
+					})
+				);
 				failureReport.count += 1;
 				return null;
 			}
@@ -129,7 +138,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		medium.publisher = metadataItem.publisher;
 		medium.metadataModifiedAt = new Date(metadataItem.modified);
 
-		externalTool.thumbnail = await this.updateExternalToolThumbnail(externalTool, metadataItem.coverSmall.href);
+		await this.updateExternalToolThumbnail(externalTool, metadataItem.coverSmall.href);
 	}
 
 	private async updateExternalToolThumbnail(
@@ -137,10 +146,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		externalTool: ExternalTool,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		thumbnailUrl: string
-	): Promise<FileRecordRef | undefined> {
+	): Promise<void> {
 		// TODO N21-2398 updating thumbnail requires jwt (not possible for now)
 		await Promise.resolve();
-
-		return undefined;
 	}
 }

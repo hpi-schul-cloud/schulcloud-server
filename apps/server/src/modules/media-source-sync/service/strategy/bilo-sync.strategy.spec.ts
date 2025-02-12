@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BiloLinkResponse, BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
@@ -11,24 +12,31 @@ import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { MediaSourceSyncReport } from '../../interface';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
+import { ErrorLoggable } from '@core/error/loggable';
 
 describe(BiloSyncStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: BiloSyncStrategy;
-	let externalToolService: DeepMocked<ExternalToolService>;
+
 	let biloMediaFetchService: DeepMocked<BiloMediaClientAdapter>;
+	let externalToolService: DeepMocked<ExternalToolService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				BiloSyncStrategy,
 				{
+					provide: BiloMediaClientAdapter,
+					useValue: createMock<BiloMediaClientAdapter>(),
+				},
+				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
 				},
 				{
-					provide: BiloMediaClientAdapter,
-					useValue: createMock<BiloMediaClientAdapter>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -36,6 +44,7 @@ describe(BiloSyncStrategy.name, () => {
 		strategy = module.get(BiloSyncStrategy);
 		externalToolService = module.get(ExternalToolService);
 		biloMediaFetchService = module.get(BiloMediaClientAdapter);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -371,7 +380,7 @@ describe(BiloSyncStrategy.name, () => {
 					id: externalTools[0].medium?.mediumId,
 				});
 
-				const badBiloResponses: BiloMediaQueryDataResponse[] = [
+				const badBiloMetadata: BiloMediaQueryDataResponse[] = [
 					biloMediaQueryDataResponseFactory.build({
 						id: externalTools[1].medium?.mediumId,
 						cover: undefined,
@@ -383,7 +392,7 @@ describe(BiloSyncStrategy.name, () => {
 				];
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
-				biloMediaFetchService.fetchMediaMetadata.mockResolvedValueOnce([metadataItems, ...badBiloResponses]);
+				biloMediaFetchService.fetchMediaMetadata.mockResolvedValueOnce([metadataItems, ...badBiloMetadata]);
 
 				const expectedUpdatedTools: ExternalTool[] = [
 					externalToolFactory.buildWithId(
@@ -423,7 +432,7 @@ describe(BiloSyncStrategy.name, () => {
 					}),
 				];
 
-				return { mediaSource, expectedSyncReport, expectedOperations, expectedUpdatedTools };
+				return { mediaSource, expectedSyncReport, expectedOperations, expectedUpdatedTools, badBiloMetadata };
 			};
 
 			it('should return sync report with error operations', async () => {
@@ -433,6 +442,15 @@ describe(BiloSyncStrategy.name, () => {
 
 				expect(result).toMatchObject(expectedSyncReport);
 				expect(result.operations).toEqual(expect.arrayContaining(expectedOperations));
+			});
+
+			it('should log the errors as debug logs', async () => {
+				const { mediaSource, badBiloMetadata } = setup();
+
+				await strategy.syncAllMediaMetadata(mediaSource);
+
+				expect(logger.debug).toHaveBeenCalledWith(expect.any(ErrorLoggable));
+				expect(logger.debug).toHaveBeenCalledTimes(badBiloMetadata.length);
 			});
 
 			it('should update non-failing media metadata', async () => {

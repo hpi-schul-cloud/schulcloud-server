@@ -1,3 +1,4 @@
+import { LogMessage } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncOperationReport } from '@modules/media-source-sync';
 import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';
@@ -12,18 +13,19 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 			const loggable = new MediaMetadataSyncReportLoggable(report, mediaSourceDataFormat);
 
 			let expectedMessage =
-				`Media metadata sync for ${mediaSourceDataFormat} had finished.\n` +
-				`Total media processed: ${report.totalCount}\n` +
-				`Total successful sync: ${report.successCount}\n` +
-				`Total failed sync: ${report.failedCount}\n` +
-				`Total undelivered media: ${report.undeliveredCount}\n`;
+				`Media metadata sync for ${mediaSourceDataFormat} had finished. ` +
+				`Total media to be processed: ${report.totalCount}, ` +
+				`Total successful sync: ${report.successCount}, ` +
+				`Total failed sync: ${report.failedCount}, ` +
+				`Total undelivered media: ${report.undeliveredCount}. ` +
+				`Operations: `;
 
 			const operationsString = report.operations
 				.map(
 					(operation: MediaSourceSyncOperationReport): string =>
-						`${operation.operation} operation, Status: ${operation.status}, Total: ${operation.count}`
+						`Operation: ${operation.operation}; Status: ${operation.status}; Total: ${operation.count}`
 				)
-				.join('\n');
+				.join(', ');
 
 			expectedMessage += operationsString;
 
@@ -46,7 +48,7 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 					mediaSourceDataFormat,
 					report: JSON.stringify(report),
 				},
-			});
+			} as LogMessage);
 		});
 	});
 });
