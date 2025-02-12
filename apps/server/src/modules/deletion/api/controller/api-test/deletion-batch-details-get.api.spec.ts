@@ -2,6 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
+import { userFactory } from '@testing/factory/user.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DeletionBatchEntity } from '../../../repo/entity';
 import { deletionBatchEntityFactory } from '../../../testing';
@@ -32,8 +34,16 @@ describe('getBatchDetails ', () => {
 
 	describe('when getting an existing deletion batch', () => {
 		const setup = async () => {
-			const batch = deletionBatchEntityFactory.build();
-			await em.persistAndFlush(batch);
+			const student = userFactory.asStudent().buildWithId();
+			const teacher = userFactory.asTeacher().buildWithId();
+			const invalidId = new ObjectId().toHexString();
+
+			const batch = deletionBatchEntityFactory.build({
+				targetRefIds: [student.id],
+				skippedIds: [teacher.id],
+				invalidIds: [invalidId],
+			});
+			await em.persistAndFlush([student, teacher]);
 			em.clear();
 
 			return { id: batch.id };
