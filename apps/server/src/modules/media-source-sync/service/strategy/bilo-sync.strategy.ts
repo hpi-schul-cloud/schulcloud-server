@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BiloMediaRestClient, BiloMediaQueryResponse } from '@infra/bilo-client';
+import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium, FileRecordRef } from '@modules/tool/external-tool/domain';
@@ -11,7 +11,7 @@ import { MediaSourceSyncOperation } from '../../types';
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly biloMediaFetchService: BiloMediaRestClient
+		private readonly biloMediaFetchService: BiloMediaClientAdapter
 	) {}
 
 	public getMediaSourceFormat(): MediaSourceDataFormat {
@@ -30,7 +30,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
 			.filter((mediumId: string | undefined): mediumId is string => !!mediumId);
 
-		const metadataItems: BiloMediaQueryResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
 			mediumIds,
 			mediaSource
 		);
@@ -50,7 +50,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 	private async syncExternalToolMediaMetadata(
 		externalTools: ExternalTool[],
-		metadataItems: BiloMediaQueryResponse[]
+		metadataItems: BiloMediaQueryDataResponse[]
 	): Promise<MediaSourceSyncReport> {
 		const createSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
 			MediaSourceSyncOperation.CREATE
@@ -63,7 +63,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
 			const fetchedMetadata = metadataItems.find(
-				(metadataItem: BiloMediaQueryResponse) => externalTool.medium?.mediumId === metadataItem.id
+				(metadataItem: BiloMediaQueryDataResponse) => externalTool.medium?.mediumId === metadataItem.id
 			);
 
 			if (!fetchedMetadata) {
@@ -79,7 +79,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
 
 			try {
-				await this.mapBiloResponseToExternalTool(externalTool, fetchedMetadata);
+				await this.mapBiloMetadataToExternalTool(externalTool, fetchedMetadata);
 			} catch (error) {
 				failureReport.count += 1;
 				return null;
@@ -110,17 +110,16 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		return report;
 	}
 
-	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryResponse): boolean {
+	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryDataResponse): boolean {
 		const isUpToDate =
-			externalTool.medium?.metadataModifiedAt &&
-			Math.trunc(externalTool.medium.metadataModifiedAt.getTime() / 1000) === metadata.modified;
+			externalTool.medium?.metadataModifiedAt && externalTool.medium.metadataModifiedAt.getTime() === metadata.modified;
 
 		return !!isUpToDate;
 	}
 
-	private async mapBiloResponseToExternalTool(
+	private async mapBiloMetadataToExternalTool(
 		externalTool: ExternalTool,
-		metadataItem: BiloMediaQueryResponse
+		metadataItem: BiloMediaQueryDataResponse
 	): Promise<void> {
 		externalTool.name = metadataItem.title;
 		externalTool.description = metadataItem.description;
@@ -128,7 +127,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 		const medium = externalTool.medium as ExternalToolMedium;
 		medium.publisher = metadataItem.publisher;
-		medium.metadataModifiedAt = new Date(metadataItem.modified * 1000);
+		medium.metadataModifiedAt = new Date(metadataItem.modified);
 
 		externalTool.thumbnail = await this.updateExternalToolThumbnail(externalTool, metadataItem.coverSmall.href);
 	}
