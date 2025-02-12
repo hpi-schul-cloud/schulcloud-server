@@ -5,11 +5,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { groupFactory } from '@modules/group/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/setup-entities';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
-import {setupEntities} from "@testing/setup-entities";
 
 describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let module: TestingModule;
