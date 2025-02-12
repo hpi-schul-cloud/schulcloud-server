@@ -24,7 +24,6 @@ import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/
 import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
 import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
-import { LessonResourcesDto } from '../common-cartridge-client/lesson-client/dto/lesson-resources.dto';
 import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
 
 export class CommonCartridgeExportMapper {
