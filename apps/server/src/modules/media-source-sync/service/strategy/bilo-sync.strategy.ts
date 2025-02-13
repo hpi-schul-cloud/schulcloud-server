@@ -120,10 +120,18 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	}
 
 	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryDataResponse): boolean {
-		const isUpToDate =
-			externalTool.medium?.metadataModifiedAt && externalTool.medium.metadataModifiedAt.getTime() === metadata.modified;
+		if (!externalTool.medium || !externalTool.medium.metadataModifiedAt) {
+			return false;
+		}
 
-		return !!isUpToDate;
+		const isUpToDate =
+			externalTool.name === metadata.title &&
+			externalTool.description === metadata.description &&
+			externalTool.logoUrl === metadata.cover.href &&
+			externalTool.medium.publisher === metadata.publisher &&
+			externalTool.medium.metadataModifiedAt.getTime() === metadata.modified;
+
+		return isUpToDate;
 	}
 
 	private async mapBiloMetadataToExternalTool(

@@ -24,7 +24,7 @@ export class MediaMetadataSyncReportLoggable implements Loggable {
 
 	private formatCountOverview(syncReport: MediaSourceSyncReport): string {
 		const formattedString =
-			`Total media to be processed: ${syncReport.totalCount}, ` +
+			`Total media found: ${syncReport.totalCount}, ` +
 			`Total successful sync: ${syncReport.successCount}, ` +
 			`Total failed sync: ${syncReport.failedCount}, ` +
 			`Total undelivered media: ${syncReport.undeliveredCount}. `;

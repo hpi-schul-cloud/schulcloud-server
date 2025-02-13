@@ -41,6 +41,7 @@ import {
 	customParameterFactory,
 	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
+	externalToolMediumFactory,
 	fileRecordRefFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
@@ -1114,6 +1115,51 @@ describe(ExternalToolUc.name, () => {
 				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(updatedExternalToolDO);
+			});
+		});
+
+		describe('when the external tool has a medium with a last metadata modified date', () => {
+			const setupMedium = () => {
+				const mediumWithDate = externalToolMediumFactory.build({ metadataModifiedAt: new Date() });
+
+				const currentExternalTool = externalToolFactory.build({ medium: mediumWithDate });
+				const toolId = currentExternalTool.id;
+
+				const externalToolToUpdate: ExternalToolUpdate = {
+					...currentExternalTool.getProps(),
+					id: toolId,
+					name: 'newName',
+					description: 'newDescription',
+					medium: {
+						...mediumWithDate,
+						metadataModifiedAt: undefined,
+					},
+				};
+
+				const pendingExternalTool: ExternalTool = externalToolFactory.buildWithId(
+					{
+						...externalToolToUpdate,
+						medium: mediumWithDate,
+					},
+					toolId
+				);
+
+				externalToolService.findById.mockResolvedValueOnce(currentExternalTool);
+
+				return {
+					toolId,
+					externalToolToUpdate,
+					pendingExternalTool,
+				};
+			};
+
+			it('should not update the metadata modified date to be undefined', async () => {
+				const { currentUser } = setupAuthorization();
+				const { toolId, externalToolToUpdate, pendingExternalTool } = setupMedium();
+
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdate, 'jwt');
+
+				expect(externalToolService.updateExternalTool).toBeCalledWith(pendingExternalTool);
 			});
 		});
 	});

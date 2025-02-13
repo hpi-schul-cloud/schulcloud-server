@@ -188,6 +188,12 @@ describe(BiloSyncStrategy.name, () => {
 						(_externalTool: ExternalTool, i: number) =>
 							biloMediaQueryDataResponseFactory.build({
 								id: externalTools[i].medium?.mediumId,
+								title: `${externalTools[i].name}-modified`,
+								description: `${externalTools[i].description as string}-modified`,
+								cover: {
+									href: `${externalTools[i].logoUrl as string}-modified`,
+									rel: 'src',
+								} as BiloLinkResponse,
 								modified: (externalTools[i].medium?.metadataModifiedAt?.getTime() as number) + 3600 * 1000,
 							})
 					);
@@ -256,6 +262,7 @@ describe(BiloSyncStrategy.name, () => {
 					const mediums = externalToolMediumFactory.buildList(5, {
 						mediaSourceId: 'media-source-id',
 						metadataModifiedAt: new Date(),
+						publisher: undefined,
 					});
 
 					const externalTools = mediums.map((medium: ExternalToolMedium) => externalToolFactory.build({ medium }));
@@ -265,6 +272,7 @@ describe(BiloSyncStrategy.name, () => {
 							id: externalTool.medium?.mediumId,
 							title: externalTool.name,
 							description: externalTool.description,
+							publisher: undefined,
 							cover: {
 								href: externalTool.logoUrl,
 								rel: 'src',

@@ -14,7 +14,7 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 
 			let expectedMessage =
 				`Media metadata sync for ${mediaSourceDataFormat} had finished. ` +
-				`Total media to be processed: ${report.totalCount}, ` +
+				`Total media found: ${report.totalCount}, ` +
 				`Total successful sync: ${report.successCount}, ` +
 				`Total failed sync: ${report.failedCount}, ` +
 				`Total undelivered media: ${report.undeliveredCount}. ` +
