@@ -26,7 +26,7 @@ export class CreateDeletionBatchBodyParams {
 	@ApiProperty({
 		description: 'Array of targetRefIds to process in batch',
 		required: true,
-		type: () => [String],
+		type: [String],
 	})
 	@IsArray()
 	@IsNotEmpty()
