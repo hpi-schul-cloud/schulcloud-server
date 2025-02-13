@@ -251,7 +251,7 @@
 		"config_type": "oauth2",
 		"name": "nextcloud",
 		"config_baseUrl": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"config_clientId": "neWZs5MIKnAHUbbuO9TzeClZQF",
+		"config_clientId": "yourLocalFancyId",
 		"config_skipConsent": true,
 		"createdAt": {
 			"$date": "2024-03-19T09:19:57.984Z"
