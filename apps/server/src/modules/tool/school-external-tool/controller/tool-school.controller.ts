@@ -42,15 +42,17 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
-	async getSchoolExternalTools(
+	public async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
 	): Promise<SchoolExternalToolSearchListResponse> {
 		const found: SchoolExternalTool[] = await this.schoolExternalToolUc.findSchoolExternalTools(currentUser.userId, {
 			schoolId: schoolExternalToolParams.schoolId,
 		});
+
 		const response: SchoolExternalToolSearchListResponse =
 			SchoolExternalToolResponseMapper.mapToSearchListResponse(found);
+
 		return response;
 	}
 
@@ -58,7 +60,7 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
-	async getSchoolExternalTool(
+	public async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolResponse> {
@@ -77,7 +79,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Updates a SchoolExternalTool' })
-	async updateSchoolExternalTool(
+	public async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
 		@Body() body: SchoolExternalToolPostParams
@@ -92,6 +94,7 @@ export class ToolSchoolController {
 
 		const mapped: SchoolExternalToolResponse =
 			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(updated);
+
 		this.logger.debug(`SchoolExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
 		return mapped;
 	}
@@ -101,11 +104,12 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async deleteSchoolExternalTool(
+	public async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<void> {
 		await this.schoolExternalToolUc.deleteSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
+
 		this.logger.debug(
 			`SchoolExternalTool with id ${params.schoolExternalToolId} was deleted by user with id ${currentUser.userId}`
 		);
@@ -121,7 +125,7 @@ export class ToolSchoolController {
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
-	async createSchoolExternalTool(
+	public async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
 	): Promise<SchoolExternalToolResponse> {
@@ -148,7 +152,7 @@ export class ToolSchoolController {
 		type: SchoolExternalToolMetadataResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getMetaDataForExternalTool(
+	public async getMetaDataForExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolMetadataResponse> {

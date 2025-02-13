@@ -2,13 +2,14 @@ import { CustomParameterEntry } from '../../common/domain';
 import {
 	CustomParameterEntryResponse,
 	SchoolExternalToolConfigurationStatusResponse,
+	SchoolExternalToolMediumResponse,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 
 export class SchoolExternalToolResponseMapper {
-	static mapToSearchListResponse(externalTools: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {
+	public static mapToSearchListResponse(externalTools: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {
 		const responses: SchoolExternalToolResponse[] = externalTools.map((toolDO: SchoolExternalTool) =>
 			this.mapToSchoolExternalToolResponse(toolDO)
 		);
@@ -16,7 +17,7 @@ export class SchoolExternalToolResponseMapper {
 		return new SchoolExternalToolSearchListResponse(responses);
 	}
 
-	static mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalTool): SchoolExternalToolResponse {
+	public static mapToSchoolExternalToolResponse(schoolExternalTool: SchoolExternalTool): SchoolExternalToolResponse {
 		const response: SchoolExternalToolResponse = new SchoolExternalToolResponse({
 			id: schoolExternalTool.id,
 			name: schoolExternalTool.name ?? '',
@@ -29,6 +30,13 @@ export class SchoolExternalToolResponseMapper {
 				isGloballyDeactivated: schoolExternalTool.status.isGloballyDeactivated,
 			}),
 			restrictToContexts: schoolExternalTool.restrictToContexts,
+			medium: schoolExternalTool.medium
+				? new SchoolExternalToolMediumResponse({
+						mediaSourceName: schoolExternalTool.medium.mediaSourceName,
+						mediumId: schoolExternalTool.medium.mediumId,
+						mediaSourceId: schoolExternalTool.medium.mediaSourceId,
+				  })
+				: undefined,
 		});
 
 		return response;
