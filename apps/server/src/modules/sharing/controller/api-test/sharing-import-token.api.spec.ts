@@ -10,7 +10,7 @@ import {
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { schoolEntityFactory, schoolEntityFactory } from '@modules/school/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';

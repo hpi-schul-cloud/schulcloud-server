@@ -8,7 +8,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -178,7 +178,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -231,7 +231,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -272,7 +272,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -314,7 +314,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '01234';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: officialSchoolNumber,
 					officialSchoolNumber,
