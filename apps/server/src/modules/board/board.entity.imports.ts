@@ -14,7 +14,14 @@ import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
-import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
+import {
+	CountyEmbeddable,
+	FederalStateEntity,
+	SchoolEntity,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+} from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
@@ -26,7 +33,6 @@ import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity'
 import { Course } from '@shared/domain/entity/course.entity';
 import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
-import { CountyEmbeddable, FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
