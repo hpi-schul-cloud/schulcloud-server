@@ -6,14 +6,14 @@ type SchoolYearTransientParams = {
 	startYear: number;
 };
 
-class SchoolYearFactory extends BaseFactory<SchoolYear, SchoolYearProps, SchoolYearTransientParams> {
+class SchoolYearDoFactory extends BaseFactory<SchoolYear, SchoolYearProps, SchoolYearTransientParams> {
 	public withStartYear(startYear: number): this {
 		this.rewindSequence();
 		return this.transient({ startYear });
 	}
 }
 
-export const schoolYearFactory = SchoolYearFactory.define(SchoolYear, ({ transientParams, sequence }) => {
+export const schoolYearDoFactory = SchoolYearDoFactory.define(SchoolYear, ({ transientParams, sequence }) => {
 	const id = new ObjectId().toHexString();
 
 	const now = new Date();

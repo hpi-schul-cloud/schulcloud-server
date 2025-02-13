@@ -19,7 +19,7 @@ import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { roleDtoFactory } from '@modules/role/testing';
 import { School, SchoolService } from '@modules/school/domain';
-import { schoolFactory, schoolYearFactory } from '@modules/school/testing';
+import { schoolFactory, schoolYearDoFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
@@ -158,7 +158,7 @@ describe('ClassGroupUc', () => {
 
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
-				const schoolYearDo = schoolYearFactory.build();
+				const schoolYearDo = schoolYearDoFactory.build();
 				const school: School = schoolFactory.build({
 					currentYear: schoolYearDo,
 				});
