@@ -1,12 +1,8 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	BoardExternalReference,
-	BoardExternalReferenceType,
-} from '@modules/board/domain/types/board-external-reference';
-import { BoardLayout } from '@modules/board/domain/types/board-layout.enum';
-import { LearnroomElement } from '../interface';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '@modules/board';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { LearnroomElement } from '@shared/domain/interface';
 
 // TODO comment
 /**
