@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
-import { schoolYearEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchoolNameRequiredLoggableException } from '../../../loggable';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
@@ -64,7 +63,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -116,7 +115,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -158,7 +157,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -201,7 +200,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -246,7 +245,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -299,7 +298,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -353,7 +352,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -408,7 +407,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -469,7 +468,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 					});
 
 					const schoolYear = schoolYearEntityFactory.build();
-					const federalState = federalStateFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',

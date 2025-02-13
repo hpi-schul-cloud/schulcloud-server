@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { schoolYearEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
@@ -9,7 +9,6 @@ import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
-import { federalStateFactory as federalStateEntityFactory } from '@testing/factory/federal-state.factory';
 import { FileStorageType, SCHOOL_REPO } from '../../domain';
 import { federalStateDoFactory, schoolEntityFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';

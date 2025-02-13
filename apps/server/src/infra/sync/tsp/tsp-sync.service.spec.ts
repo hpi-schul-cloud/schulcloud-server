@@ -4,12 +4,11 @@ import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { FileStorageType, SchoolProps } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
-import { schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemService, SystemType } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
@@ -217,7 +216,7 @@ describe(TspSyncService.name, () => {
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValueOnce(schoolYearEntity);
 
-				const federalStateEntity = federalStateFactory.build();
+				const federalStateEntity = federalStateEntityFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				federalStateService.findFederalStateByName.mockResolvedValueOnce(federalStateEntity);
 
@@ -255,7 +254,7 @@ describe(TspSyncService.name, () => {
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValueOnce(schoolYearEntity);
 
-				const federalStateEntity = federalStateFactory.build();
+				const federalStateEntity = federalStateEntityFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				Reflect.set(sut, 'federalState', federalState);
 

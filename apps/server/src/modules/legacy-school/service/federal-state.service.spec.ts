@@ -1,8 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { federalStateEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FederalStateEntity } from '@shared/domain/entity';
 import { FederalStateRepo } from '@shared/repo/federalstate';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FederalStateNames } from '../types/federal-state-names.enum';
 import { FederalStateService } from './federal-state.service';
@@ -35,7 +35,9 @@ describe('FederalStateService', () => {
 
 	describe('findFederalStateByName', () => {
 		const setup = () => {
-			const federalState: FederalStateEntity = federalStateFactory.build({ name: FederalStateNames.NIEDERSACHEN });
+			const federalState: FederalStateEntity = federalStateEntityFactory.build({
+				name: FederalStateNames.NIEDERSACHEN,
+			});
 			federalStateRepo.findByName.mockResolvedValue(federalState);
 
 			return {

@@ -1,4 +1,5 @@
 export * from './federal-state.do.factory';
+export * from './federal-state.entity.factory';
 export * from './school-entity.factory';
 export * from './school-year.do.factory';
 export * from './school-year.entity.factory';

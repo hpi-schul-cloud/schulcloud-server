@@ -5,7 +5,7 @@ import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolEntity } from '@modules/school/repo';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
@@ -23,7 +23,6 @@ import { Permission } from '@shared/domain/interface';
 import { Counted, SchoolFeature } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
@@ -167,7 +166,7 @@ describe('[ImportUserModule]', () => {
 				school && school.systems.isInitialized()
 					? school.systems.getItems().map((system: SystemEntity) => system.id)
 					: [];
-			const federalState = school ? school.federalState : federalStateFactory.build();
+			const federalState = school ? school.federalState : federalStateEntityFactory.build();
 
 			return new LegacySchoolDo({
 				id,

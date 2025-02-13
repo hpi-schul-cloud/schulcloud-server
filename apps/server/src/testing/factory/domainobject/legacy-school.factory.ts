@@ -1,6 +1,5 @@
-import { schoolYearEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { federalStateFactory } from '../federal-state.factory';
 import { DoBaseFactory } from './do-base.factory';
 
 class LegacySchoolFactory extends DoBaseFactory<LegacySchoolDo, LegacySchoolDo> {}
@@ -18,7 +17,7 @@ export const legacySchoolDoFactory = LegacySchoolFactory.define(LegacySchoolDo, 
 		previousExternalId: '456',
 		officialSchoolNumber: '789',
 		systems: [],
-		federalState: federalStateFactory.build(),
+		federalState: federalStateEntityFactory.build(),
 		schoolYear: schoolYearEntityFactory.build(),
 	};
 });

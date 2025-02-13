@@ -8,9 +8,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -55,7 +54,7 @@ describe('SchoolLicenseController (API)', () => {
 
 		describe('when update media school licenses was successful', () => {
 			const setup = async () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateEntityFactory.build();
 				const school = schoolEntityFactory.buildWithId({
 					officialSchoolNumber: '00100',
 					federalState,
