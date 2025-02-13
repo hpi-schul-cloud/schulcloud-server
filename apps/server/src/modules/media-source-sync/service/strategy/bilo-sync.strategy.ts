@@ -127,7 +127,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const isUpToDate =
 			externalTool.name === metadata.title &&
 			externalTool.description === metadata.description &&
-			externalTool.logoUrl === metadata.cover.href &&
+			externalTool.logoUrl === metadata.coverSmall.href &&
 			externalTool.medium.publisher === metadata.publisher &&
 			externalTool.medium.metadataModifiedAt.getTime() === metadata.modified;
 
@@ -140,13 +140,13 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	): Promise<void> {
 		externalTool.name = metadataItem.title;
 		externalTool.description = metadataItem.description;
-		externalTool.logoUrl = metadataItem.cover.href;
+		externalTool.logoUrl = metadataItem.coverSmall.href;
 
 		const medium = externalTool.medium as ExternalToolMedium;
 		medium.publisher = metadataItem.publisher;
 		medium.metadataModifiedAt = new Date(metadataItem.modified);
 
-		await this.updateExternalToolThumbnail(externalTool, metadataItem.coverSmall.href);
+		await this.updateExternalToolThumbnail(externalTool, metadataItem.cover.href);
 	}
 
 	private async updateExternalToolThumbnail(

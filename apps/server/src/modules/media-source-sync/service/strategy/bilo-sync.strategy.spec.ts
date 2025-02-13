@@ -124,7 +124,7 @@ describe(BiloSyncStrategy.name, () => {
 							...externalTool.getProps(),
 							name: metadataItems[i].title,
 							description: metadataItems[i].description,
-							logoUrl: metadataItems[i].cover.href,
+							logoUrl: metadataItems[i].coverSmall.href,
 							thumbnail: undefined,
 							medium: {
 								...externalTool.getProps().medium,
@@ -207,7 +207,7 @@ describe(BiloSyncStrategy.name, () => {
 								...externalTool.getProps(),
 								name: metadataItems[i].title,
 								description: metadataItems[i].description,
-								logoUrl: metadataItems[i].cover.href,
+								logoUrl: metadataItems[i].coverSmall.href,
 								thumbnail: undefined,
 								medium: {
 									...externalTool.getProps().medium,
@@ -273,7 +273,7 @@ describe(BiloSyncStrategy.name, () => {
 							title: externalTool.name,
 							description: externalTool.description,
 							publisher: undefined,
-							cover: {
+							coverSmall: {
 								href: externalTool.logoUrl,
 								rel: 'src',
 							} as BiloLinkResponse,
@@ -408,7 +408,7 @@ describe(BiloSyncStrategy.name, () => {
 							...externalTools[0].getProps(),
 							name: metadataItems.title,
 							description: metadataItems.description,
-							logoUrl: metadataItems.cover.href,
+							logoUrl: metadataItems.coverSmall.href,
 							thumbnail: undefined,
 							medium: {
 								...externalTools[0].getProps().medium,
