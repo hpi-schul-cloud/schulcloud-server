@@ -1,9 +1,9 @@
 import { ObjectId } from 'bson';
 import { EntityFactory } from '@testing/factory/entity.factory';
 
-import { DeletionBatchEntity } from '../repo/entity';
-import { DeletionBatchProps } from '../domain/do';
-import { BatchStatus, DomainName } from '../domain/types';
+import { DeletionBatchEntity } from '../../index';
+import { DeletionBatchProps } from '../../../../domain/do';
+import { BatchStatus, DomainName } from '../../../../domain/types';
 
 export const deletionBatchEntityFactory = EntityFactory.define<DeletionBatchEntity, DeletionBatchProps>(
 	DeletionBatchEntity,

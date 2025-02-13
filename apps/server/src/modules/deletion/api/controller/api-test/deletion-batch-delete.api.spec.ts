@@ -5,7 +5,7 @@ import { EntityManager } from '@mikro-orm/core';
 // import { cleanupCollections } from '@testing/cleanup-collections';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DeletionBatchEntity } from '../../../repo/entity';
-import { deletionBatchEntityFactory } from '../../../testing';
+import { deletionBatchEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletion-batches';
 

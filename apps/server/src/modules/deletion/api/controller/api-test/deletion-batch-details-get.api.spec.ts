@@ -4,10 +4,12 @@ import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { RoleName } from '@shared/domain/interface';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DeletionBatchEntity } from '../../../repo/entity';
-import { deletionBatchEntityFactory } from '../../../testing';
 import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response';
+import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { StatusModel } from '../../../domain/types';
 
 const baseRouteName = '/deletion-batches';
 
@@ -39,15 +41,34 @@ describe('getBatchDetails ', () => {
 			const teacher = userFactory.asTeacher().buildWithId();
 			const invalidId = new ObjectId().toHexString();
 
-			const batch = deletionBatchEntityFactory.build({
+			const deletionBatch: DeletionBatchEntity = deletionBatchEntityFactory.build({
 				targetRefIds: [student.id],
 				skippedIds: [teacher.id],
 				invalidIds: [invalidId],
 			});
-			await em.persistAndFlush([batch, student, teacher]);
+			const deletionRequest = deletionRequestEntityFactory.build({
+				targetRefId: student.id,
+				status: StatusModel.SUCCESS,
+			});
+
+			await em.persistAndFlush([student, teacher, deletionBatch, deletionRequest]);
 			em.clear();
 
-			return { id: batch.id };
+			const expectedResponse: DeletionBatchDetailsResponse = {
+				id: deletionBatch.id,
+				pendingDeletions: [],
+				failedDeletions: [],
+				successfulDeletions: [student.id],
+				invalidIds: [invalidId],
+				skippedDeletions: [
+					{
+						ids: [teacher.id],
+						roleName: RoleName.TEACHER,
+					},
+				],
+			};
+
+			return { id: deletionBatch.id, expectedResponse };
 		};
 
 		it('should return status 200', async () => {
@@ -59,13 +80,13 @@ describe('getBatchDetails ', () => {
 		});
 
 		it('should return the deletion batch', async () => {
-			const { id } = await setup();
+			const { id, expectedResponse } = await setup();
 
 			const response = await testApiClient.get(id);
 
-			const deletionBatch = response.body as DeletionBatchEntity;
+			const responseBody = response.body as DeletionBatchEntity;
 
-			expect(deletionBatch.id).toEqual(id);
+			expect(responseBody).toEqual(expectedResponse);
 		});
 	});
 
@@ -83,7 +104,7 @@ describe('getBatchDetails ', () => {
 			await em.persistAndFlush(batch);
 			em.clear();
 
-			const response: DeletionBatchDetailsResponse = {
+			const expectedResponse: DeletionBatchDetailsResponse = {
 				id: batch.id,
 				pendingDeletions: [],
 				failedDeletions: [],
@@ -92,15 +113,15 @@ describe('getBatchDetails ', () => {
 				skippedDeletions: [],
 			};
 
-			return { id: batch.id, response };
+			return { id: batch.id, expectedResponse };
 		};
 		it('should return response with empty arrays', async () => {
-			const { id, response } = await setup();
+			const { id, expectedResponse } = await setup();
 
 			const result = await testApiClient.get(id);
 
 			expect(result.status).toEqual(200);
-			expect(result.body).toEqual(response);
+			expect(result.body).toEqual(expectedResponse);
 		});
 	});
 });

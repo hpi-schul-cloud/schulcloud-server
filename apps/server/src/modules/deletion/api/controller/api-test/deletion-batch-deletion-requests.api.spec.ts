@@ -5,7 +5,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
-import { deletionBatchEntityFactory } from '../../../testing';
+import { deletionBatchEntityFactory } from '../../../repo/entity/testing';
 import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
 
 const baseRouteName = '/deletion-batches';

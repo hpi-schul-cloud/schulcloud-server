@@ -18,7 +18,7 @@ export interface DeletionRequestEntityProps {
 @Unique({ properties: ['targetRefId', 'targetRefDomain'] })
 @Index({ properties: ['createdAt'] })
 @Index({ properties: ['updatedAt'] })
-export class DeletionRequestEntity extends BaseEntityWithTimestamps {
+export class DeletionRequestEntity extends BaseEntityWithTimestamps implements DeletionRequestEntityProps {
 	@Property()
 	@Index({ options: { expireAfterSeconds: SECONDS_OF_90_DAYS } })
 	deleteAfter: Date;
