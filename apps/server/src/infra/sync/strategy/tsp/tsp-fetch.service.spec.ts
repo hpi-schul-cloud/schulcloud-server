@@ -405,6 +405,20 @@ describe(TspFetchService.name, () => {
 		});
 	});
 
+	describe('formatChangeDate', () => {
+		describe('when days is -1', () => {
+			it('should return the current date minus the days', async () => {
+				const { system, exportApiMock } = setupTspClient();
+				const days = -1;
+				const expectedDate = '1970-01-01 01:00:00.000';
+
+				await sut.fetchTspTeachers(system, days);
+
+				expect(exportApiMock.exportLehrerList).toHaveBeenCalledWith(expectedDate);
+			});
+		});
+	});
+
 	describe('createClient', () => {
 		describe('when oauthConfig is missing', () => {
 			const setup = () => {
