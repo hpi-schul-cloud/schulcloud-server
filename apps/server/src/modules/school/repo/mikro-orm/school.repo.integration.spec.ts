@@ -11,7 +11,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
 import { federalStateFactory as federalStateEntityFactory } from '@testing/factory/federal-state.factory';
 import { FileStorageType, SCHOOL_REPO } from '../../domain';
-import { federalStateFactory, schoolEntityFactory, schoolFactory } from '../../testing';
+import { federalStateDoFactory, schoolEntityFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';
 import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
 import { SchoolEntity } from './school.entity';
@@ -63,7 +63,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when query is given', () => {
 			const setup = async () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateDoFactory.build();
 				const externalId = faker.string.uuid();
 				const systems = systemEntityFactory.buildList(1);
 				const entity1 = schoolEntityFactory.build({ federalState, externalId, systems });
