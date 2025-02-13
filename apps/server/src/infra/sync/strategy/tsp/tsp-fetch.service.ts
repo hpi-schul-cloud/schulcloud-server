@@ -14,7 +14,7 @@ import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { AxiosError, AxiosResponse } from 'axios';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 @Injectable()
 export class TspFetchService {
@@ -86,13 +86,13 @@ export class TspFetchService {
 	}
 
 	private formatChangeDate(daysToFetch: number): string {
-		let days = daysToFetch;
-		if (days === -1) {
-			const now = moment(new Date());
-			const epoch = moment([1970, 0, 1]);
-			days = now.diff(epoch, 'days');
+		let lastChange: Moment;
+		if (daysToFetch === -1) {
+			lastChange = moment(0);
+		} else {
+			lastChange = moment().subtract(daysToFetch, 'days').subtract(1, 'hours');
 		}
-		return moment(new Date()).subtract(days, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+		return lastChange.format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 
 	private createClient(system: System): ExportApiInterface {
