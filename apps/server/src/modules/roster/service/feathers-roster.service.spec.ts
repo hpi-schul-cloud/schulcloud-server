@@ -6,7 +6,6 @@ import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFact
 
 import { CourseService } from '@modules/learnroom/service';
 import { PseudonymService } from '@modules/pseudonym';
-import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
@@ -508,7 +507,7 @@ describe('FeathersRosterService', () => {
 	describe('getGroup', () => {
 		describe('when the tool is active in a course', () => {
 			const setup = () => {
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -692,7 +691,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = () => {
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();

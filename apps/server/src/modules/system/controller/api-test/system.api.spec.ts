@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
@@ -117,7 +116,7 @@ describe('System (API)', () => {
 		describe('when the endpoint is called with a known systemId', () => {
 			const setup = async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig({ provider: 'general' }).buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.build({ systems: [system] });
+				const school = schoolEntityFactory.build({ systems: [system] });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([system, adminAccount, adminUser, school]);
