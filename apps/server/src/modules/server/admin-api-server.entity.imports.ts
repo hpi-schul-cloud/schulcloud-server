@@ -25,11 +25,6 @@ import {
 	TeamEntity,
 	TeamNews,
 	User,
-	Task,
-	Submission,
-	DashboardEntity,
-	LessonEntity,
-	Material,
 } from '@shared/domain/entity';
 
 export const ENTITIES = [
@@ -62,11 +57,6 @@ export const ENTITIES = [
 	LtiDeepLinkTokenEntity,
 	BoardNodeEntity,
 	RoomMembershipEntity,
-	Task,
-	Submission,
-	DashboardEntity,
-	LessonEntity,
-	Material,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];
