@@ -35,16 +35,29 @@ import { SyncUc } from './uc/sync.uc';
 		SchoolLicenseModule,
 		EncryptionModule,
 		MediaSourceModule,
-		MediaSourceSyncModule,
-		RabbitMQWrapperModule,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [TspClientModule, SystemModule, SchoolModule, LegacySchoolModule, ProvisioningModule, UserModule, AccountModule]
+			? [
+					TspClientModule,
+					SystemModule,
+					SchoolModule,
+					LegacySchoolModule,
+					RabbitMQWrapperModule,
+					ProvisioningModule,
+					UserModule,
+					AccountModule,
+			  ]
+			: []),
+		...((Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean)
+			? [MediaSourceSyncModule, RabbitMQWrapperModule]
 			: []),
 	],
 	providers: [
 		SyncConsole,
 		SyncUc,
 		SyncService,
+		VidisSyncService,
+		VidisSyncStrategy,
+		VidisFetchService,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspSyncStrategy,
@@ -55,10 +68,7 @@ import { SyncUc } from './uc/sync.uc';
 					TspSyncMigrationService,
 			  ]
 			: []),
-		VidisSyncService,
-		VidisSyncStrategy,
-		VidisFetchService,
-		MediaMetadataSyncStrategy,
+		...((Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean) ? [MediaMetadataSyncStrategy] : []),
 	],
 	exports: [SyncConsole],
 })
