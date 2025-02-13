@@ -86,7 +86,13 @@ export class TspFetchService {
 	}
 
 	private formatChangeDate(daysToFetch: number): string {
-		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+		let days = daysToFetch;
+		if (days === -1) {
+			const now = moment(new Date());
+			const epoch = moment([1970, 0, 1]);
+			days = now.diff(epoch, 'days');
+		}
+		return moment(new Date()).subtract(days, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 
 	private createClient(system: System): ExportApiInterface {
