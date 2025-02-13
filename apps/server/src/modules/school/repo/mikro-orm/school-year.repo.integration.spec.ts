@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { SCHOOL_YEAR_REPO } from '../../domain';
 import { SchoolYearEntityMapper } from './mapper';
+import { SchoolYearEntity } from './school-year.entity';
 import { SchoolYearMikroOrmRepo } from './school-year.repo';
 
 describe('SchoolYearMikroOrmRepo', () => {

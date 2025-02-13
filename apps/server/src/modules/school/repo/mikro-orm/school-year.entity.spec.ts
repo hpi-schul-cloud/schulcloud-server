@@ -1,6 +1,6 @@
 import { schoolYearEntityFactory } from '@modules/school/testing';
 import { setupEntities } from '@testing/setup-entities';
-import { SchoolYearEntity } from './schoolyear.entity';
+import { SchoolYearEntity } from './school-year.entity';
 
 describe('schoolyear entity', () => {
 	beforeAll(async () => {

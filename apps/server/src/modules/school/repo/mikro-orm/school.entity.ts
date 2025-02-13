@@ -18,9 +18,9 @@ import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migra
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { BaseEntityWithTimestamps } from '../../../../shared/domain/entity/base.entity';
 import { CountyEmbeddable, FederalStateEntity } from '../../../../shared/domain/entity/federal-state.entity';
-import { SchoolYearEntity } from '../../../../shared/domain/entity/schoolyear.entity';
 import { StorageProviderEntity } from '../../../../shared/domain/entity/storageprovider.entity';
 import { LanguageType } from '../../../../shared/domain/interface';
+import { SchoolYearEntity } from './school-year.entity';
 
 export interface SchoolProperties {
 	_id?: string;

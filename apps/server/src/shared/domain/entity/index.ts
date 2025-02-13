@@ -11,7 +11,6 @@ export * from './lesson.entity';
 export * from './materials.entity';
 export * from './news.entity';
 export * from './role.entity';
-export * from './schoolyear.entity';
 export * from './storageprovider.entity';
 export * from './submission.entity';
 export * from './task.entity';

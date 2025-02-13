@@ -1,5 +1,5 @@
-import { SchoolYearEntity, SchoolYearProperties } from '@shared/domain/entity/schoolyear.entity';
 import { BaseFactory } from '@testing/factory/base.factory';
+import { SchoolYearEntity, SchoolYearProperties } from '../repo';
 
 type SchoolYearTransientParams = {
 	startYear: number;
