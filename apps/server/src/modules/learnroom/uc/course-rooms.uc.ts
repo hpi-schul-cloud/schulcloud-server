@@ -1,12 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { UserRepo } from '@shared/repo/user';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
+import { LegacyBoardRepo } from '../repo';
 
 @Injectable()
 export class CourseRoomsUc {
@@ -55,7 +55,7 @@ export class CourseRoomsUc {
 		// TODO if the element is a columnboard, then the visibility must be in sync with it
 		// TODO call columnBoard service to update the visibility of the columnboard, based on reference
 
-		// if (element instanceof ColumnboardBoardElement) {
+		// if (element instanceof ColumnBoardBoardElement) {
 		// await this.updateColumnBoardVisibility(element.target._columnBoardId, visibility);
 		// }
 	}
