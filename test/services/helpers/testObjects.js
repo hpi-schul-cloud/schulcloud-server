@@ -88,6 +88,8 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 
 	const info = () => {
 		return {
+			// Directly returned array and function that return the array are mixed.
+			// Please check if you change something!
 			accounts: accounts.info,
 			activation: activation.info,
 			base64Files: base64Files.info,
@@ -95,21 +97,22 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 			courseGroups: courseGroups.info,
 			courses: courses.info,
 			datasources: datasources.info,
-			files: files.info,
-			homeworks: homeworks.info,
-			lessons: lessons.info,
+			files: files.info(),
+			homeworks: homeworks.info(),
+			lessons: lessons.info(),
 			registrationPins: registrationPins.info,
 			problems: problems.info,
-			schoolGroups: schoolGroups.info,
+			schoolGroups: schoolGroups.info(),
 			schools: schools.info,
 			storageProviders: storageProviders.info,
-			submissions: submissions.info,
+			submissions: submissions.info(),
 			teams: teams.info,
 			tempPins: users.tempPinIds,
 			testSystem: testSystem.info,
 			users: users.info,
-			years: years.info,
+			years: years.info(),
 			importUsers: importUsers.info,
+			roles: roles.info(),
 		};
 	};
 
@@ -154,7 +157,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		createTestFile: files.create,
 		createTestHomework: homeworks.create,
 		createTestLesson: lessons.create,
-		lessons,
 		createTestRegistrationPin: registrationPins.create,
 		createTestProblem: problems.create,
 		createTestRole: roles.create,
@@ -165,12 +167,13 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		createTestSystem: testSystem.create,
 		createTestUser: users.create,
 		createTestYear: years.create,
-		cleanup,
+		createTestImportUser: importUsers.create,
+		createTestTeamWithOwner,
 		generateJWT: login.generateJWT,
 		generateRequestParams: login.generateRequestParams,
 		generateRequestParamsFromUser: login.generateRequestParamsFromUser,
 		generateJWTFromUser: login.generateJWTFromUser,
-		createdUserIds: warn('@deprecated use info() instead', users.info),
+		lessons,
 		teams,
 		files,
 		classes,
@@ -178,14 +181,14 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		years,
 		users,
 		registrationPins,
-		createTestTeamWithOwner,
+		createdUserIds: warn('@deprecated use info() instead', users.info),
 		info,
+		cleanup,
 		setupUser,
 		options: opt,
 		randomGen,
 		generateObjectId,
 		TestEventEmitter,
 		performanceMessurceLimits,
-		createTestImportUser: importUsers.create,
 	};
 };
