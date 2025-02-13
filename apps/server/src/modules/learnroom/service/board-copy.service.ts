@@ -6,25 +6,20 @@ import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
+import { Course, isLesson, isTask, LessonEntity, Task, User } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { sortBy } from 'lodash';
 import {
-	ColumnboardBoardElement,
+	ColumnBoardBoardElement,
 	ColumnBoardNode,
-	Course,
-	isLesson,
-	isTask,
+	ColumnBoardNodeRepo,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
+	LegacyBoardRepo,
 	LessonBoardElement,
-	LessonEntity,
-	Task,
 	TaskBoardElement,
-	User,
-} from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
-import { sortBy } from 'lodash';
-import { ColumnBoardNodeRepo } from '../repo';
+} from '../repo';
 
 export type BoardCopyParams = {
 	originalBoard: LegacyBoard;
@@ -173,7 +168,7 @@ export class BoardCopyService {
 				// TODO comment this, legacy!
 				// eslint-disable-next-line no-await-in-loop
 				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copyEntity.id);
-				const columnBoardElement = new ColumnboardBoardElement({
+				const columnBoardElement = new ColumnBoardBoardElement({
 					target: columnBoardNode,
 				});
 				references.push(columnBoardElement);

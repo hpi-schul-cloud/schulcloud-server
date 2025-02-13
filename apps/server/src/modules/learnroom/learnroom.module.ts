@@ -14,11 +14,10 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { CourseRepo } from '@shared/repo/course';
 import { CourseGroupRepo } from '@shared/repo/coursegroup';
 import { DashboardElementRepo, DashboardModelMapper, DashboardRepo } from '@shared/repo/dashboard';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
-import { ColumnBoardNodeRepo } from './repo';
+import { ColumnBoardNodeRepo, LegacyBoardRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
