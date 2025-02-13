@@ -34,7 +34,7 @@ const mockRequest = (options) => {
 	return calendarResponse;
 };
 
-describe.only('calendar service', () => {
+describe('calendar service', () => {
 	let server;
 	let calendarService;
 
