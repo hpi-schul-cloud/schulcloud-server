@@ -1,11 +1,14 @@
+import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
-import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../domain';
+import { ToolConfig } from '../../tool-config';
+import { SchoolExternalTool, SchoolExternalToolConfigurationStatus, SchoolExternalToolMedium } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 
 @Injectable()
@@ -14,7 +17,9 @@ export class SchoolExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly commonToolValidationService: CommonToolValidationService,
-		private readonly commonToolDeleteService: CommonToolDeleteService
+		private readonly commonToolDeleteService: CommonToolDeleteService,
+		private readonly mediaSourceService: MediaSourceService,
+		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
 	public async findById(schoolExternalToolId: EntityId): Promise<SchoolExternalTool> {
@@ -51,11 +56,17 @@ export class SchoolExternalToolService {
 		const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
 		const status: SchoolExternalToolConfigurationStatus = this.determineSchoolToolStatus(tool, externalTool);
 
+		let medium: SchoolExternalToolMedium | undefined;
+		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+			medium = await this.determineMedium(externalTool);
+		}
+
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool.getProps(),
 			name: externalTool.name,
 			status,
 			restrictToContexts: externalTool.restrictToContexts,
+			medium,
 		});
 
 		return schoolExternalTool;
@@ -79,6 +90,29 @@ export class SchoolExternalToolService {
 		});
 
 		return status;
+	}
+
+	private async determineMedium(externalTool: ExternalTool): Promise<SchoolExternalToolMedium | undefined> {
+		if (!externalTool.medium) {
+			return undefined;
+		}
+
+		let mediaSourceName: string | undefined;
+		if (externalTool.medium.mediaSourceId) {
+			const mediaSource: MediaSource | null = await this.mediaSourceService.findBySourceId(
+				externalTool.medium.mediaSourceId
+			);
+
+			mediaSourceName = mediaSource?.name;
+		}
+
+		const medium: SchoolExternalToolMedium = new SchoolExternalToolMedium({
+			mediumId: externalTool.medium.mediumId,
+			mediaSourceId: externalTool.medium.mediaSourceId,
+			mediaSourceName,
+		});
+
+		return medium;
 	}
 
 	public async deleteSchoolExternalTool(schoolExternalTool: SchoolExternalTool): Promise<void> {

@@ -12,6 +12,7 @@ import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { mediaSourceEntityFactory } from '../../../../media-source/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
@@ -233,8 +234,20 @@ describe('ToolSchoolController (API)', () => {
 				userId: userWithMissingPermission.id,
 			});
 
+			const mediumId = 'mediumId';
+			const mediaSourceId = 'mediaSourceId';
+			const mediaSourceName = 'mediaSourceName';
+			const mediaSource = mediaSourceEntityFactory.buildWithId({
+				sourceId: mediaSourceId,
+				name: mediaSourceName,
+			});
+
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				parameters: [],
+				medium: {
+					mediumId,
+					mediaSourceId,
+				},
 				isDeactivated: true,
 			});
 
@@ -255,6 +268,7 @@ describe('ToolSchoolController (API)', () => {
 				accountWithMissingPermission,
 				externalToolEntity,
 				schoolExternalToolEntity,
+				mediaSource,
 			]);
 			await em.flush();
 			em.clear();
@@ -271,6 +285,9 @@ describe('ToolSchoolController (API)', () => {
 				schoolExternalToolEntity,
 				params,
 				school,
+				mediumId,
+				mediaSourceId,
+				mediaSourceName,
 			};
 		};
 
@@ -283,7 +300,16 @@ describe('ToolSchoolController (API)', () => {
 		});
 
 		it('should return found schoolExternalTools for given school', async () => {
-			const { loggedInClient, schoolExternalToolEntity, externalToolEntity, params, school } = await setup();
+			const {
+				loggedInClient,
+				schoolExternalToolEntity,
+				externalToolEntity,
+				params,
+				mediumId,
+				mediaSourceId,
+				mediaSourceName,
+				school,
+			} = await setup();
 
 			const response = await loggedInClient.get().query(params);
 
@@ -300,6 +326,11 @@ describe('ToolSchoolController (API)', () => {
 							status: {
 								isOutdatedOnScopeSchool: true,
 								isGloballyDeactivated: true,
+							},
+							medium: {
+								mediumId,
+								mediaSourceId,
+								mediaSourceName,
 							},
 							parameters: [
 								{
