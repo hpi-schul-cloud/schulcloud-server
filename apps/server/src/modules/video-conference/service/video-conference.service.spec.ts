@@ -24,6 +24,7 @@ import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/inter
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
@@ -31,7 +32,6 @@ import { teamUserFactory } from '@testing/factory/teamuser.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';

@@ -1,9 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardLayout } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { ColumnBoardMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
@@ -17,7 +18,7 @@ describe('room board response mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [RoomBoardResponseMapper],

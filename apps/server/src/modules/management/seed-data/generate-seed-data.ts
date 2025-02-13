@@ -5,7 +5,9 @@ import { generateSchools } from './schools';
 import { generateSchoolYears } from './schoolyears';
 import { generateSystems } from './systems';
 
-export function generateSeedData(injectEnvVars: (s: string) => string) {
+export function generateSeedData(
+	injectEnvVars: (s: string) => string
+): { collectionName: string; data: BaseEntity[] }[] {
 	let collections: { collectionName: string; data: BaseEntity[] }[] = [];
 	// create school related collections
 	const systems = generateSystems(injectEnvVars);

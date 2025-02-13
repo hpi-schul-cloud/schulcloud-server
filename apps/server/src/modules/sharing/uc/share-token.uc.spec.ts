@@ -1,7 +1,6 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-
-import { LegacyLogger } from '@core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
@@ -18,13 +17,14 @@ import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
@@ -121,7 +121,7 @@ describe('ShareTokenUC', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		schoolService = module.get(SchoolService);
 
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {

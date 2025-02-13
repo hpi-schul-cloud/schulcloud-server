@@ -3,17 +3,28 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, LegacyBoard, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
+import {
+	Course,
+	CourseGroup,
+	LegacyBoard,
+	LegacyBoardElement,
+	LessonEntity,
+	Material,
+	Submission,
+	Task,
+	TaskWithStatusVo,
+	User,
+} from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
 import { LessonMetaData } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
 
 describe(RoomBoardDTOFactory.name, () => {
 	let module: TestingModule;
@@ -53,7 +64,17 @@ describe(RoomBoardDTOFactory.name, () => {
 		roomsAuthorisationService = module.get(CourseRoomsAuthorisationService);
 		authorisationService = module.get(AuthorizationService);
 		mapper = module.get(RoomBoardDTOFactory);
-		await setupEntities();
+		await setupEntities([
+			User,
+			Course,
+			CourseGroup,
+			LessonEntity,
+			Material,
+			Task,
+			Submission,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
 	});
 
 	describe('mapDTO', () => {

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	DeletionErrorLoggableException,
@@ -7,9 +8,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';
 import { RegistrationPinRepo } from '../repo';
@@ -36,8 +35,6 @@ describe(RegistrationPinService.name, () => {
 
 		service = module.get(RegistrationPinService);
 		registrationPinRepo = module.get(RegistrationPinRepo);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {

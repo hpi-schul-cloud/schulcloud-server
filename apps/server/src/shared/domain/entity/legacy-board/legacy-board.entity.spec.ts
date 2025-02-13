@@ -5,11 +5,11 @@ import {
 	taskBoardElementFactory,
 } from '@modules/learnroom/testing';
 import { BadRequestException } from '@nestjs/common';
+import { setupEntities } from '@testing/database';
 import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {

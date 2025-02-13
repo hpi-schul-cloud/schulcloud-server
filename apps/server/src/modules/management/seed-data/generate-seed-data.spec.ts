@@ -1,10 +1,11 @@
-import { setupEntities } from '@testing/setup-entities';
-import { generateSeedData } from './generateSeedData';
+import { Role, SchoolEntity } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
+import { generateSeedData } from './generate-seed-data';
 import * as roleModule from './roles';
 
 describe('Seed Data generation', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([SchoolEntity, Role]);
 	});
 
 	const setup = () => {

@@ -4,9 +4,9 @@ import { accountDoFactory } from '@modules/account/testing';
 import { RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserService } from '../service/user.service';
 import { AdminApiUserUc } from './admin-api-user.uc';
 

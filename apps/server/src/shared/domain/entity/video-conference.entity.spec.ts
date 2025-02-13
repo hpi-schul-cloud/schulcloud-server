@@ -1,6 +1,6 @@
 import { VideoConference, VideoConferenceOptions } from '@shared/domain/entity/video-conference.entity';
+import { setupEntities } from '@testing/database';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
-import { setupEntities } from '@testing/setup-entities';
 
 describe('Video Conference Entity', () => {
 	beforeAll(async () => {

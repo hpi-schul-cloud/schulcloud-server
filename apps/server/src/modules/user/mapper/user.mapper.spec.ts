@@ -1,9 +1,9 @@
 import { UserMapper } from '@modules/user/mapper/user.mapper';
 import { UserDto } from '@modules/user/uc/dto/user.dto';
 import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 
 describe('UserMapper', () => {
 	let userEntity: User;

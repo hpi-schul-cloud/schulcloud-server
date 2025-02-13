@@ -1,7 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
-import { setupEntities } from '@testing/setup-entities';
-import { UserMigrationFailedLoggable } from './user-migration-failed.loggable';
+import { setupEntities } from '@testing/database';
 import { importUserFactory } from '../testing';
+import { UserMigrationFailedLoggable } from './user-migration-failed.loggable';
 
 describe(UserMigrationFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
