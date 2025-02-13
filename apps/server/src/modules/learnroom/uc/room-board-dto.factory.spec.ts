@@ -6,8 +6,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course,
 	CourseGroup,
-	LegacyBoard,
-	LegacyBoardElement,
 	LessonEntity,
 	Material,
 	Submission,
@@ -16,12 +14,12 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
+import { LegacyBoard, LegacyBoardElement } from '../repo';
+import { boardFactory, columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
 import { LessonMetaData } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';

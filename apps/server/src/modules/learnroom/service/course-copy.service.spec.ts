@@ -9,12 +9,10 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LegacyBoard, LegacyBoardElement, User } from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -23,6 +21,8 @@ import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '../../tool/context-external-tool/testing';
+import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
+import { boardFactory } from '../testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';

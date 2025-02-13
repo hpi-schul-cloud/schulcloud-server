@@ -1,11 +1,11 @@
 const assert = require('assert');
 const chai = require('chai');
+const appPromise = require('../../../src/app');
 
 const { expect } = chai;
-const mockery = require('mockery');
 
-const axiosMock = () =>
-	Promise.resolve({
+const mockRequest = (options) => {
+	const calendarResponse = {
 		data: {
 			links: {
 				self: 'https://dbildungscloud.de:3000/events',
@@ -29,29 +29,25 @@ const axiosMock = () =>
 				},
 			],
 		},
-	});
+	};
+
+	return calendarResponse;
+};
 
 describe('calendar service', () => {
-	let app = null;
-	let calendarService = null;
+	let server;
+	let calendarService;
 
 	before(async () => {
-		mockery.enable({
-			warnOnReplace: false,
-			warnOnUnregistered: false,
-			useCleanCache: true,
-		});
-		mockery.registerMock('axios', axiosMock);
 		// eslint-disable-next-line global-require
-		app = await require('../../../src/app')();
-		app.setup();
+		const app = await appPromise();
+		server = await app.listen(0);
 		calendarService = await app.service('calendar');
+		calendarService.send = async (options) => mockRequest(options);
 	});
 
-	after((done) => {
-		mockery.deregisterAll();
-		mockery.disable();
-		done();
+	after(async () => {
+		await server.close();
 	});
 
 	it('registered the calendar service', () => {
@@ -65,11 +61,11 @@ describe('calendar service', () => {
 		});
 
 		expect(result.length).to.be.above(0);
-		expect(result[0].title).to.not.be.undefined;
+		expect(result[0].title).to.not.equal(undefined);
 		expect(result[0].title).to.equal('tttttt');
-		expect(result[0].start).to.not.be.undefined;
+		expect(result[0].start).to.not.equal(undefined);
 		expect(result[0].start).to.equal(1495224000000);
-		expect(result[0].end).to.not.be.undefined;
+		expect(result[0].end).to.not.equal(undefined);
 		expect(result[0].end).to.equal(1495224000000);
 	});
 
@@ -84,6 +80,7 @@ describe('calendar service', () => {
 		};
 
 		const result = await calendarService.create(postBody, { payload: { userId: '0000d231816abba584714c9e' } });
+
 		expect(result.length).to.be.above(0);
 	});
 
@@ -106,6 +103,6 @@ describe('calendar service', () => {
 
 	it('DELETE /calendar', async () => {
 		const result = await calendarService.remove('exampleId', { payload: { userId: '0000d231816abba584714c9e' } });
-		expect(result).to.not.be.undefined;
+		expect(result).to.not.equal(undefined);
 	});
 });

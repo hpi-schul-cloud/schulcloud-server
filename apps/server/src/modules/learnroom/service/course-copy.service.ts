@@ -12,10 +12,10 @@ import { ConfigService } from '@nestjs/config';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { UserRepo } from '@shared/repo/user';
 import { BoardCopyService } from './board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
+import { LegacyBoardRepo } from '../repo';
 
 type CourseCopyParams = {
 	originalCourse: Course;

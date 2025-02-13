@@ -78,7 +78,7 @@ export class MetaTagExternalUrlService {
 			return undefined;
 		}
 
-		const baseUrl = url;
+		const baseUrl = new URL(url.toString());
 		baseUrl.pathname = '';
 
 		const imageUrl = new URL(image.url, baseUrl.toString());

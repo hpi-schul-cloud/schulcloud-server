@@ -1,16 +1,13 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { LearnroomElement } from '../../interface';
-import { EntityId } from '../../types';
-import { BaseEntityWithTimestamps } from '../base.entity';
-import { ColumnBoardNode } from '../column-board-node.entity';
-import type { Course } from '../course.entity';
-import { LessonEntity } from '../lesson.entity';
-import { Task } from '../task.entity';
-import { ColumnboardBoardElement } from './column-board-boardelement';
-import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boardelement.entity';
-import { LessonBoardElement } from './lesson-boardelement.entity';
-import { TaskBoardElement } from './task-boardelement.entity';
+import { BaseEntityWithTimestamps, Course, LessonEntity, Task } from '@shared/domain/entity';
+import { LearnroomElement } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { ColumnBoardBoardElement } from './column-board-board-element.entity';
+import { ColumnBoardNode } from './column-board-node.entity';
+import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-board-element.entity';
+import { LessonBoardElement } from './lesson-board-element.entity';
+import { TaskBoardElement } from './task-board-element.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];
@@ -99,7 +96,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
 		if (boardElementTarget instanceof ColumnBoardNode) {
-			return new ColumnboardBoardElement({ target: boardElementTarget });
+			return new ColumnBoardBoardElement({ target: boardElementTarget });
 		}
 		throw new Error('not a valid boardElementReference');
 	}

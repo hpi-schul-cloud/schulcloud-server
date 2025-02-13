@@ -11,7 +11,6 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
 import { DashboardModelMapper, DashboardRepo } from '@shared/repo/dashboard';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { UserRepo } from '@shared/repo/user';
 import { CourseRoomsController } from './controller/course-rooms.controller';
 import { CourseController } from './controller/course.controller';
@@ -32,6 +31,7 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
+import { LegacyBoardRepo } from './repo';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
