@@ -3,7 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
-import { ServerTestModule } from '@modules/server';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { serverConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, User } from '@shared/domain/entity';
@@ -12,7 +13,6 @@ import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { mediaSourceEntityFactory } from '../../../../media-source/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
@@ -46,6 +46,8 @@ describe('ToolSchoolController (API)', () => {
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
+
+		serverConfig().FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
 	});
 
 	afterAll(async () => {
