@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolYearEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { SchoolYearRepo } from './schoolyear.repo';
 
 describe('schoolyear repo', () => {
@@ -33,7 +33,7 @@ describe('schoolyear repo', () => {
 	});
 
 	it('should create a schoolyear', async () => {
-		const schoolYear = schoolYearFactory.build();
+		const schoolYear = schoolYearEntityFactory.build();
 		await repo.save(schoolYear);
 		em.clear();
 		const storedSchoolYears = await em.find(SchoolYearEntity, {});
@@ -53,7 +53,7 @@ describe('schoolyear repo', () => {
 						.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
 						.setSystemTime(new Date('2023-10-01'));
 
-					const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+					const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
 						startDate: new Date('2023-08-01'),
 						endDate: new Date('2024-07-31'),
 					});
@@ -78,7 +78,7 @@ describe('schoolyear repo', () => {
 						.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
 						.setSystemTime(new Date('2024-03-01'));
 
-					const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+					const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
 						startDate: new Date('2023-08-01'),
 						endDate: new Date('2024-07-31'),
 					});
@@ -105,7 +105,7 @@ describe('schoolyear repo', () => {
 					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
 					.setSystemTime(new Date('2024-01-01'));
 
-				const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2020-08-01'),
 					endDate: new Date('2021-07-31'),
 				});
@@ -133,17 +133,17 @@ describe('schoolyear repo', () => {
 					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
 					.setSystemTime(new Date('2021-01-01'));
 
-				const previousYear: SchoolYearEntity = schoolYearFactory.build({
+				const previousYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2019-09-01'),
 					endDate: new Date('2020-07-31'),
 				});
 
-				const currentYear: SchoolYearEntity = schoolYearFactory.build({
+				const currentYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2020-09-01'),
 					endDate: new Date('2021-07-31'),
 				});
 
-				const nextYear: SchoolYearEntity = schoolYearFactory.build({
+				const nextYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2021-09-01'),
 					endDate: new Date('2022-07-31'),
 				});
@@ -169,12 +169,12 @@ describe('schoolyear repo', () => {
 					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
 					.setSystemTime(new Date('2020-08-31'));
 
-				const previousYear: SchoolYearEntity = schoolYearFactory.build({
+				const previousYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2019-09-01'),
 					endDate: new Date('2020-07-31'),
 				});
 
-				const nextYear: SchoolYearEntity = schoolYearFactory.build({
+				const nextYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2020-09-01'),
 					endDate: new Date('2021-07-31'),
 				});
@@ -200,12 +200,12 @@ describe('schoolyear repo', () => {
 					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
 					.setSystemTime(new Date('2030-08-31'));
 
-				const previousYear: SchoolYearEntity = schoolYearFactory.build({
+				const previousYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2019-09-01'),
 					endDate: new Date('2020-07-31'),
 				});
 
-				const nextYear: SchoolYearEntity = schoolYearFactory.build({
+				const nextYear: SchoolYearEntity = schoolYearEntityFactory.build({
 					startDate: new Date('2020-09-01'),
 					endDate: new Date('2021-07-31'),
 				});

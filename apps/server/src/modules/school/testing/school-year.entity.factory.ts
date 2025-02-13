@@ -1,5 +1,5 @@
 import { SchoolYearEntity, SchoolYearProperties } from '@shared/domain/entity/schoolyear.entity';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
 
 type SchoolYearTransientParams = {
 	startYear: number;
@@ -12,7 +12,7 @@ class SchoolYearFactory extends BaseFactory<SchoolYearEntity, SchoolYearProperti
 	}
 }
 
-export const schoolYearFactory = SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) => {
+export const schoolYearEntityFactory = SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) => {
 	const now = new Date();
 	const startYearWithoutSequence = transientParams?.startYear ?? now.getFullYear();
 	const sequenceStartingWithZero = sequence - 1;

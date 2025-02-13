@@ -1,13 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -26,7 +25,7 @@ describe('Users Admin Students Controller (API)', () => {
 	let loggedInStudentClient: TestApiClient;
 
 	const setup = async () => {
-		const currentYear = schoolYearFactory.withStartYear(2002).buildWithId();
+		const currentYear = schoolYearEntityFactory.withStartYear(2002).buildWithId();
 		const school = schoolEntityFactory.buildWithId({ currentYear });
 		const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT, permissions: [] });
 

@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -8,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -45,7 +44,7 @@ describe('Group (API)', () => {
 	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
-				const schoolYear = schoolYearFactory.buildWithId();
+				const schoolYear = schoolYearEntityFactory.buildWithId();
 				const school = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 

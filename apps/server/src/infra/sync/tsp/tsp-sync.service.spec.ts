@@ -4,13 +4,12 @@ import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
 import { FileStorageType, SchoolProps } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
-import { schoolFactory } from '@modules/school/testing';
+import { schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemService, SystemType } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { TspSyncService } from './tsp-sync.service';
 
 describe(TspSyncService.name, () => {
@@ -214,7 +213,7 @@ describe(TspSyncService.name, () => {
 				const name = faker.string.alpha();
 				const externalId = faker.string.alpha();
 
-				const schoolYearEntity = schoolYearFactory.build();
+				const schoolYearEntity = schoolYearEntityFactory.build();
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValueOnce(schoolYearEntity);
 
@@ -252,7 +251,7 @@ describe(TspSyncService.name, () => {
 				const name = faker.string.alpha();
 				const externalId = faker.string.alpha();
 
-				const schoolYearEntity = schoolYearFactory.build();
+				const schoolYearEntity = schoolYearEntityFactory.build();
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValueOnce(schoolYearEntity);
 

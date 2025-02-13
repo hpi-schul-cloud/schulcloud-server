@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -7,7 +7,6 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 
@@ -118,7 +117,7 @@ describe('School Controller (API)', () => {
 
 		describe('when user is in requested school', () => {
 			const setup = async () => {
-				const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
+				const schoolYears = schoolYearEntityFactory.withStartYear(2002).buildList(3);
 				const currentYear = schoolYears[1];
 				const federalState = federalStateFactory.build();
 				const county = countyEmbeddableFactory.build();

@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
@@ -6,7 +7,6 @@ import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { setupEntities } from '@testing/setup-entities';
 import { FederalStateService } from './federal-state.service';
@@ -376,7 +376,7 @@ describe('LegacySchoolService', () => {
 				const name = 'Hogwarts';
 				const federalStateName = 'maybescottland?';
 				const federalState = federalStateFactory.build({ name: federalStateName });
-				const year = schoolYearFactory.build();
+				const year = schoolYearEntityFactory.build();
 				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 				const storageProvider = storageProviderFactory.build();
@@ -428,7 +428,7 @@ describe('LegacySchoolService', () => {
 				const name = 'Hogwarts';
 				const federalStateName = 'maybescottland?';
 				const federalState = federalStateFactory.build({ name: federalStateName });
-				const year = schoolYearFactory.build();
+				const year = schoolYearEntityFactory.build();
 				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 				storageProviderRepo.findAll.mockResolvedValue([]);
