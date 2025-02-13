@@ -27,9 +27,6 @@ export class SchulconnexGroupProvisioningConsumer {
 		exchange: SchulconnexProvisioningExchange,
 		routingKey: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 		queue: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
-		queueOptions: {
-			channel: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
-		},
 	})
 	@UseRequestContext()
 	public async provisionGroups(

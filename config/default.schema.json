@@ -1630,32 +1630,10 @@
 			"type": "number",
 			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
 		},
-		"SCHULCONNEX_PROVISIONING_AMQP": {
-			"type": "object",
-			"description": "Configuration of the schulcloud's schulconnex client.",
-			"properties": {
-				"EXCHANGE": {
-					"type": "string",
-					"default": "schulconnex-provisioning",
-					"description": "rabbitmq exchange name for schulconnex provisioning"
-				},
-				"GROUP_PROVISIONING_PREFETCH_COUNT": {
-					"type": "integer",
-					"default": 1,
-					"description": "rabbitmq channel prefetch count for group provisioning"
-				},
-				"GROUP_REMOVAL_PREFETCH_COUNT": {
-					"type": "integer",
-					"default": 1,
-					"description": "rabbitmq channel prefetch count for group removal"
-				},
-				"LICENSE_PROVISIONING_PREFETCH_COUNT": {
-					"type": "integer",
-					"default": 1,
-					"description": "rabbitmq channel prefetch count for license provisioning"
-				}
-			},
-			"default": {}
+		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
+			"type": "string",
+			"default": "schulconnex-provisioning",
+			"description": "rabbitmq exchange name for schulconnex provisioning"
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
