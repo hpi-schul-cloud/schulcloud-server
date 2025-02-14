@@ -1,7 +1,6 @@
 export * from './board-node-authorizable.factory';
 export * from './card.factory';
 export * from './collaborative-text-editor.factory';
-export * from './column-board-node.factory';
 export * from './column-board.factory';
 export * from './column.factory';
 export * from './deleted-element.factory';

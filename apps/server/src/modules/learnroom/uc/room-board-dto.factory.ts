@@ -1,20 +1,16 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
+import { Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { TaskStatus } from '@shared/domain/types';
 import {
-	ColumnboardBoardElement,
+	ColumnBoardBoardElement,
 	ColumnBoardNode,
-	Course,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
-	LessonEntity,
-	Task,
-	TaskWithStatusVo,
-	User,
-} from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
-import { TaskStatus } from '@shared/domain/types';
+} from '../repo';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
@@ -75,7 +71,7 @@ class DtoCreator {
 				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
 			}
 
-			if (element instanceof ColumnboardBoardElement && this.isColumnBoardFeatureFlagActive()) {
+			if (element instanceof ColumnBoardBoardElement && this.isColumnBoardFeatureFlagActive()) {
 				result = this.authorisationService.hasPermission(this.user, this.room, {
 					action: Action.read,
 					requiredPermissions: [Permission.COURSE_VIEW],
