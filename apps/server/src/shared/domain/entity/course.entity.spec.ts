@@ -18,7 +18,7 @@ describe('CourseEntity', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([Course, CourseGroup]);
 	});
 
 	describe('constructor', () => {

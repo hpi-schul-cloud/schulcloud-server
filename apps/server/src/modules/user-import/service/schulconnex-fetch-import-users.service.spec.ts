@@ -9,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { MongoMemoryDatabaseModule, setupEntities } from '@testing/database';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ImportUser } from '../entity';
@@ -25,8 +25,6 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [

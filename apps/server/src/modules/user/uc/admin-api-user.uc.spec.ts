@@ -4,7 +4,6 @@ import { accountDoFactory } from '@modules/account/testing';
 import { RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { UserService } from '../service/user.service';
@@ -44,7 +43,6 @@ describe('admin api user uc', () => {
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
 		roleService = module.get(RoleService);
-		await setupEntities();
 	});
 
 	describe('createUserAndAccount', () => {

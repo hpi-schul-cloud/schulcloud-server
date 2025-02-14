@@ -17,7 +17,7 @@ describe('User Entity', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([User]);
 	});
 
 	describe('constructor', () => {

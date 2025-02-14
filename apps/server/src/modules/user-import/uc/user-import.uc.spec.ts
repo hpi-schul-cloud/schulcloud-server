@@ -8,7 +8,6 @@ import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -33,6 +32,7 @@ import {
 	UserAlreadyMigratedLoggable,
 	UserMigrationFailedLoggable,
 } from '../loggable';
+import { UserLoginMigrationNotActiveLoggableException } from '../loggable/user-login-migration-not-active.loggable-exception';
 import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { importUserFactory } from '../testing';
@@ -68,7 +68,7 @@ describe('[ImportUserModule]', () => {
 		};
 
 		beforeAll(async () => {
-			await setupEntities();
+			await setupEntities([User]);
 
 			module = await Test.createTestingModule({
 				providers: [

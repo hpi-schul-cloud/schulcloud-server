@@ -47,7 +47,7 @@ describe('UserService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

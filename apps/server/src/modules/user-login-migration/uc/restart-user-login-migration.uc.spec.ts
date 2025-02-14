@@ -49,7 +49,7 @@ describe(RestartUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

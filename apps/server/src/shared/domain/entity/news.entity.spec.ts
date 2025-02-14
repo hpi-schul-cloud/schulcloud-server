@@ -2,10 +2,11 @@ import { setupEntities } from '@testing/database';
 import { teamNewsFactory } from '@testing/factory/news.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { News } from './news.entity';
+import { User } from './user.entity';
 
 describe(News.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('removeCreatorReference', () => {

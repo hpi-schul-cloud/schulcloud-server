@@ -6,11 +6,13 @@ import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
+import { Course, CourseGroup, LessonEntity, Material, Task } from '.';
 import { Submission } from './submission.entity';
+import { User } from './user.entity';
 
 describe('Submission entity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
 	});
 
 	beforeEach(() => {

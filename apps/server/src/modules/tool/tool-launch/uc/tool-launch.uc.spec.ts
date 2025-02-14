@@ -66,7 +66,7 @@ describe('ToolLaunchUc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

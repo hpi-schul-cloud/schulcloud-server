@@ -19,7 +19,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
-import { Course, TeamUserEntity } from '@shared/domain/entity';
+import { Course, CourseGroup, TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
@@ -121,7 +121,7 @@ describe(VideoConferenceService.name, () => {
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 	});
 
 	describe('canGuestJoin', () => {

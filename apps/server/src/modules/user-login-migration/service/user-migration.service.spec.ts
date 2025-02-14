@@ -5,7 +5,6 @@ import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
@@ -46,8 +45,6 @@ describe(UserMigrationService.name, () => {
 		userService = module.get(UserService);
 		accountService = module.get(AccountService);
 		logger = module.get(Logger);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

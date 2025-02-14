@@ -1,3 +1,4 @@
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -10,7 +11,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[UserMatchMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('[mapToDomain] from query', () => {

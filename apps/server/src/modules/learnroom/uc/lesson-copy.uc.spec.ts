@@ -6,7 +6,7 @@ import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/cop
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Task, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
@@ -31,7 +31,7 @@ describe('lesson copy uc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, LessonEntity, Material, Task]);
+		await setupEntities([User, Course, CourseGroup, LessonEntity, Material, Task, Submission]);
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,

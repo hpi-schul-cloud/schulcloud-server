@@ -1,4 +1,5 @@
 import { BadRequestException } from '@nestjs/common';
+import { User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
@@ -21,7 +22,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[ImportUserMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('[mapSortingQueryToDomain] from query to domain', () => {

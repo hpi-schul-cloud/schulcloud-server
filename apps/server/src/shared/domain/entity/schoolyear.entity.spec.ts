@@ -1,12 +1,7 @@
-import { setupEntities } from '@testing/database';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { SchoolYearEntity } from './schoolyear.entity';
 
 describe('schoolyear entity', () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	describe('constructor', () => {
 		describe('when creating a schoolyear', () => {
 			it('should create schoolyear', () => {

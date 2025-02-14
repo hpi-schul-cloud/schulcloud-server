@@ -51,7 +51,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(LegacySchoolService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

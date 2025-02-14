@@ -4,7 +4,6 @@ import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { Permission, RoleName } from '../interface';
 import { Role } from './role.entity';
-// import { Permission,  } from '..';
 
 describe('Role Entity', () => {
 	let orm: MikroORM;
@@ -13,7 +12,7 @@ describe('Role Entity', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([Role]);
 	});
 
 	describe('constructor', () => {

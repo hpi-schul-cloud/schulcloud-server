@@ -1,12 +1,7 @@
-import { VideoConference, VideoConferenceOptions } from '@shared/domain/entity/video-conference.entity';
-import { setupEntities } from '@testing/database';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
+import { VideoConference, VideoConferenceOptions } from './video-conference.entity';
 
 describe('Video Conference Entity', () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
