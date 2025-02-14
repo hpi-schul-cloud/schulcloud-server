@@ -14,6 +14,7 @@ import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
+import { CantPassOwnershipToUserNotInRoom } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 
 @Injectable()
 export class RoomUc {
@@ -163,6 +164,19 @@ export class RoomUc {
 		return Promise.resolve();
 	}
 
+	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
+		this.checkFeatureEnabled();
+		const roomAuthorizable = await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [
+			Permission.ROOM_CHANGE_OWNER,
+		]);
+		if (roomAuthorizable.members.find((member) => member.userId === targetUserId) === undefined) {
+			throw new CantPassOwnershipToUserNotInRoom({ currentUserId, roomId, targetUserId });
+		}
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN);
+		return Promise.resolve();
+	}
+
 	private preventChangingOwnersRole(
 		roomAuthorizable: RoomMembershipAuthorizable,
 		userIdsToChange: EntityId[],
@@ -172,7 +186,7 @@ export class RoomUc {
 			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 		);
 		if (owner && userIdsToChange.includes(owner.userId)) {
-			throw new CantChangeOwnersRoleLoggableException(roomAuthorizable.roomId, currentUserId);
+			throw new CantChangeOwnersRoleLoggableException({ roomId: roomAuthorizable.roomId, currentUserId });
 		}
 	}
 

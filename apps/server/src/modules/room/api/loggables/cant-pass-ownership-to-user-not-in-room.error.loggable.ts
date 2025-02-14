@@ -2,20 +2,20 @@ import { BadRequestException } from '@nestjs/common';
 import { ErrorLogMessage } from '@shared/common/error';
 import { Loggable } from '@shared/common/loggable';
 
-export class CantChangeOwnersRoleLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly props: { currentUserId: string; roomId: string }) {
+export class CantPassOwnershipToUserNotInRoom extends BadRequestException implements Loggable {
+	constructor(private readonly props: { currentUserId: string; roomId: string; targetUserId: string }) {
 		super();
 	}
 
 	public getLogMessage(): ErrorLogMessage {
 		const message: ErrorLogMessage = {
-			type: 'CANT_CHANGE_OWNERS_ROLE',
+			type: 'CANT_PASS_OWNERSHIP_TO_USER_NOT_IN_ROOM',
 			stack: this.stack,
 			data: {
 				currentUserId: this.props.currentUserId,
 				roomId: this.props.roomId,
-				errorMessage:
-					'You cannot change the role of the room owner. If you want to change the owner, please transfer the ownership to another user instead.',
+				targetUserId: this.props.targetUserId,
+				errorMessage: 'You cannot pass the ownership of the room to a user who is not a member of the room.',
 			},
 		};
 
