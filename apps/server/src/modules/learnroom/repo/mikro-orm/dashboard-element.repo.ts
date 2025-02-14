@@ -1,18 +1,18 @@
-import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { DashboardGridElementModel } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 @Injectable()
 export class DashboardElementRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): typeof DashboardGridElementModel {
 		return DashboardGridElementModel;
 	}
 
-	async deleteByDashboardId(id: EntityId): Promise<number> {
+	public deleteByDashboardId(id: EntityId): Promise<number> {
 		const promise = this.em.nativeDelete(DashboardGridElementModel, {
 			dashboard: new ObjectId(id),
 		});

@@ -4,7 +4,7 @@ import { Course, CourseGroup, DashboardGridElementModel, DashboardModelEntity, U
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { DashboardElementRepo } from './dashboardElement.repo';
+import { DashboardElementRepo } from './dashboard-element.repo';
 
 describe(DashboardElementRepo.name, () => {
 	let repo: DashboardElementRepo;
