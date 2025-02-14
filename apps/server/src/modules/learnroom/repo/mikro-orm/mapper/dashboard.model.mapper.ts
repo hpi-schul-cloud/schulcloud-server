@@ -3,26 +3,25 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	Course as CourseEntity,
 	DashboardEntity,
-	DashboardGridElementModel,
-	DashboardModelEntity,
 	GridElement,
 	GridElementWithPosition,
 	User,
 } from '@shared/domain/entity';
 import { Learnroom } from '@shared/domain/interface';
 import { LearnroomTypes } from '@shared/domain/types';
+import { DashboardGridElementModel, DashboardModelEntity } from '../dashboard.model.entity';
 
 @Injectable()
 export class DashboardModelMapper {
 	constructor(protected readonly em: EntityManager) {}
 
-	async mapReferenceToEntity(modelEntity: CourseEntity): Promise<CourseEntity> {
+	public async mapReferenceToEntity(modelEntity: CourseEntity): Promise<CourseEntity> {
 		const domainEntity: CourseEntity = await wrap(modelEntity).init();
 
 		return domainEntity;
 	}
 
-	async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
+	public async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
 		const referenceModels: CourseEntity[] = await modelEntity.references.loadItems();
 		const references: CourseEntity[] = await Promise.all(referenceModels.map((ref) => this.mapReferenceToEntity(ref)));
 		const result: GridElementWithPosition = {
@@ -32,7 +31,7 @@ export class DashboardModelMapper {
 		return result;
 	}
 
-	async mapDashboardToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
+	public async mapDashboardToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
@@ -40,7 +39,7 @@ export class DashboardModelMapper {
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	mapReferenceToModel(reference: Learnroom): CourseEntity {
+	public mapReferenceToModel(reference: Learnroom): CourseEntity {
 		const metadata = reference.getMetadata();
 		if (metadata.type === LearnroomTypes.Course) {
 			const course = reference as CourseEntity;
@@ -49,7 +48,7 @@ export class DashboardModelMapper {
 		throw new InternalServerErrorException('unknown learnroom type');
 	}
 
-	async mapGridElementToModel(
+	public async mapGridElementToModel(
 		elementWithPosition: GridElementWithPosition,
 		dashboard: DashboardModelEntity
 	): Promise<DashboardGridElementModel> {
@@ -110,7 +109,7 @@ export class DashboardModelMapper {
 		return elementModel;
 	}
 
-	async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
+	public async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
 		const modelEntity = await this.getOrConstructDashboardModelEntity(entity);
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))

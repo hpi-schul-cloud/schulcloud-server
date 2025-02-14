@@ -1,10 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { DashboardEntity, DashboardModelEntity, GridElementWithPosition } from '@shared/domain/entity';
+import { DashboardEntity, GridElementWithPosition } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardModelMapper } from './mapper/dashboard.model.mapper';
 
-const generateEmptyDashboard = (userId: EntityId) => {
+const generateEmptyDashboard = (userId: EntityId): DashboardEntity => {
 	const gridArray: GridElementWithPosition[] = [];
 
 	const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: gridArray, userId });
@@ -24,25 +25,25 @@ export class DashboardRepo implements IDashboardRepo {
 	constructor(protected readonly em: EntityManager, protected readonly mapper: DashboardModelMapper) {}
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
-	async persist(entity: DashboardEntity): Promise<DashboardEntity> {
+	public async persist(entity: DashboardEntity): Promise<DashboardEntity> {
 		const modelEntity = await this.mapper.mapDashboardToModel(entity);
 		this.em.persist(modelEntity);
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
-	async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
+	public async persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity> {
 		const modelEntity = await this.mapper.mapDashboardToModel(entity);
 		await this.em.persistAndFlush(modelEntity);
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
-	async getDashboardById(id: EntityId): Promise<DashboardEntity> {
+	public async getDashboardById(id: EntityId): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
 		const dashboard = await this.mapper.mapDashboardToEntity(dashboardModel);
 		return dashboard;
 	}
 
-	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+	public async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
 		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
 		if (dashboardModel) {
 			return this.mapper.mapDashboardToEntity(dashboardModel);
@@ -54,7 +55,7 @@ export class DashboardRepo implements IDashboardRepo {
 		return dashboard;
 	}
 
-	async getUsersDashboardIfExist(userId: EntityId): Promise<DashboardEntity | null> {
+	public async getUsersDashboardIfExist(userId: EntityId): Promise<DashboardEntity | null> {
 		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
 		if (dashboardModel) {
 			return this.mapper.mapDashboardToEntity(dashboardModel);
@@ -63,7 +64,7 @@ export class DashboardRepo implements IDashboardRepo {
 		return dashboardModel;
 	}
 
-	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
+	public async deleteDashboardByUserId(userId: EntityId): Promise<number> {
 		const promise = await this.em.nativeDelete(DashboardModelEntity, { user: userId });
 
 		return promise;

@@ -3,7 +3,6 @@ export * from './consent';
 export * from './course.entity';
 export * from './coursegroup.entity';
 export * from './dashboard';
-export * from './dashboard.model.entity';
 export * from './federal-state.entity';
 export * from './lesson.entity';
 export * from './materials.entity';

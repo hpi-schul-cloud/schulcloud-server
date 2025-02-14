@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { DashboardGridElementModel } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { DashboardGridElementModel } from './dashboard.model.entity';
 
 @Injectable()
 export class DashboardElementRepo {

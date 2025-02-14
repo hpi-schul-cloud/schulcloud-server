@@ -8,11 +8,14 @@ import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
 	ColumnBoardNode,
+	DashboardGridElementModel,
+	DashboardModelEntity,
 	LegacyBoard,
 	LegacyBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from '@modules/learnroom/repo';
+
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
@@ -31,7 +34,6 @@ import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { Course } from '@shared/domain/entity/course.entity';
 import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
-import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
 import { CountyEmbeddable, FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';

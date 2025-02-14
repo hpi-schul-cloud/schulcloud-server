@@ -1,7 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LearnroomTypes } from '@shared/domain/types';
-import { Learnroom } from '../interface';
-import { DashboardEntity, GridElement } from './dashboard';
+import { DashboardEntity, GridElement } from '../../../../shared/domain/entity/dashboard';
+import { Learnroom } from '../../../../shared/domain/interface';
 
 const getLearnroomMock = (id: string): Learnroom => {
 	return {
