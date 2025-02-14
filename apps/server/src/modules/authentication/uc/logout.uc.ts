@@ -42,10 +42,6 @@ export class LogoutUc {
 			throw new ExternalSystemLogoutIsDisabledLoggableException();
 		}
 
-		if (!user.systemId) {
-			return;
-		}
-
 		await this.logoutService.externalSystemLogout(user);
 	}
 }

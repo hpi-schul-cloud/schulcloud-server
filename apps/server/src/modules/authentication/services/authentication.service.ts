@@ -1,10 +1,7 @@
 import { Logger } from '@core/logger';
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
-import { OauthSessionTokenService } from '@modules/oauth';
-import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { User } from '@shared/domain/entity';
@@ -23,9 +20,6 @@ export class AuthenticationService {
 		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		private readonly accountService: AccountService,
 		private readonly configService: ConfigService<AuthenticationConfig, true>,
-		private readonly oauthSessionTokenService: OauthSessionTokenService,
-		private readonly httpService: HttpService,
-		@Inject(DefaultEncryptionService) private readonly oauthEncryptionService: EncryptionService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(AuthenticationService.name);

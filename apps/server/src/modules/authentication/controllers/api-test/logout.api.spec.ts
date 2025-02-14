@@ -372,7 +372,7 @@ describe('Logout Controller (api)', () => {
 			describe('when the session token of the user is deleted or could not be found', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const oauthConfig = systemOauthConfigFactory.build();
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 
 					await em.persistAndFlush([studentAccount, studentUser, system]);
@@ -406,7 +406,7 @@ describe('Logout Controller (api)', () => {
 			describe('when the session token of the user is expired', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const oauthConfig = systemOauthConfigFactory.build();
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 					const token = oauthSessionTokenEntityFactory.build({ expiresAt: new Date(Date.now() - 5000) });
 

@@ -1,5 +1,4 @@
 import { School } from '@modules/school';
-import { System } from '@modules/system';
 import { Role, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -17,14 +16,13 @@ export class MeResponseMapper {
 		user: User,
 		accountId: EntityId,
 		permissions: string[],
-		system: System | null
+		systemId?: EntityId
 	): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user);
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
 		const language = user.getInfo().language || school.getInfo().language;
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
-		const systemId = system ? system.id : undefined;
 
 		const res = new MeResponse({
 			school: schoolResponse,

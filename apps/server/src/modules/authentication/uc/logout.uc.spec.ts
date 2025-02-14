@@ -141,7 +141,6 @@ describe(LogoutUc.name, () => {
 				const currentUser = currentUserFactory.build({ isExternalUser: true });
 
 				configService.get.mockReturnValueOnce(false);
-				jest.spyOn(logoutService, 'externalSystemLogout');
 
 				return {
 					currentUser,
@@ -166,8 +165,6 @@ describe(LogoutUc.name, () => {
 
 					configService.get.mockReturnValueOnce(true);
 
-					jest.spyOn(logoutService, 'externalSystemLogout');
-
 					return {
 						currentUser,
 						system,
@@ -188,7 +185,6 @@ describe(LogoutUc.name, () => {
 					const currentUser = currentUserFactory.build({ isExternalUser: false, systemId: undefined });
 
 					configService.get.mockReturnValueOnce(true);
-					jest.spyOn(logoutService, 'externalSystemLogout');
 
 					return {
 						currentUser,

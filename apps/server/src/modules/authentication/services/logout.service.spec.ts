@@ -375,7 +375,6 @@ describe(LogoutService.name, () => {
 
 				httpService.post.mockReturnValue(of(axiosResponse));
 				oauthEncryptionService.decrypt.mockReturnValue(mockedSecret);
-				jest.spyOn(oauthSessionTokenService, 'delete');
 
 				const oauthConfig = system.oauthConfig as OauthConfig;
 				const axiosConfig = setupAxiosConfig(oauthConfig.clientId, mockedSecret);
@@ -554,8 +553,6 @@ describe(LogoutService.name, () => {
 
 				httpService.post.mockReturnValue(of(axiosResponse));
 				oauthEncryptionService.decrypt.mockReturnValue(mockedSecret);
-				jest.spyOn(oauthSessionTokenService, 'delete');
-				jest.spyOn(httpService, 'post');
 				const oauthConfig = system.oauthConfig as OauthConfig;
 				const axiosConfig = setupAxiosConfig(oauthConfig.clientId, mockedSecret);
 
