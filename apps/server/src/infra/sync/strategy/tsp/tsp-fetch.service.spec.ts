@@ -408,19 +408,10 @@ describe(TspFetchService.name, () => {
 
 	describe('formatChangeDate', () => {
 		describe('when days is -1', () => {
-			it('should return the current date minus the days', async () => {
+			it('should return the correct formatted date', async () => {
 				const { system, exportApiMock } = setupTspClient();
+
 				const days = -1;
-				// const expectedDate = '1970-01-01 01:00:00.000';
-
-				/* let expectedDate;
-				const currentTimezoneOffset = new Date().getTimezoneOffset();
-				if (currentTimezoneOffset === 0) {
-					expectedDate = '1970-01-01 00:00:00.000';
-				} else {
-					expectedDate = '1970-01-01 01:00:00.000';
-				} */
-
 				const expectedDate = moment(0).format('YYYY-MM-DD HH:mm:ss.SSS');
 
 				await sut.fetchTspTeachers(system, days);
