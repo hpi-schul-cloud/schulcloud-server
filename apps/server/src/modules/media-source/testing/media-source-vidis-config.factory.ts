@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaSourceVidisConfig } from '../domain';
+import { MediaSourceVidisConfig } from '../do';
 
 export const mediaSourceVidisConfigFactory = BaseFactory.define<MediaSourceVidisConfig, MediaSourceVidisConfig>(
 	MediaSourceVidisConfig,

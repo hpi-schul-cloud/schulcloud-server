@@ -1,8 +1,6 @@
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
-import { OauthAdapterService } from '@modules/oauth';
-import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
-import { ClientCredentialsGrantTokenRequest } from '@modules/oauth/service/dto';
+import { OauthAdapterService, OAuthGrantType, ClientCredentialsGrantTokenRequest } from '@modules/oauth-adapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AxiosError } from 'axios';

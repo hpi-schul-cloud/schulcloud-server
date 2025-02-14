@@ -1,7 +1,8 @@
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OAuthService, OAuthTokenDto } from '@modules/oauth';
+import { OAuthService } from '@modules/oauth';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';

@@ -1,12 +1,7 @@
 import type { ICurrentUser } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
-import {
-	OAuthService,
-	OauthSessionToken,
-	OauthSessionTokenFactory,
-	OauthSessionTokenService,
-	OAuthTokenDto,
-} from '@modules/oauth';
+import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import type { UserDO } from '@shared/domain/domainobject';

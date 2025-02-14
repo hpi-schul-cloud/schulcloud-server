@@ -102,8 +102,23 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findExternalToolsByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
+		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByMediaSource(mediaSourceId);
+		return externalTools;
+	}
+
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
+	}
+
+	public async updateExternalTools(externalTools: ExternalTool[]): Promise<ExternalTool[]> {
+		await Promise.all(
+			externalTools.map((externalToolToUpdate: ExternalTool) => this.updateOauth2ToolConfig(externalToolToUpdate))
+		);
+
+		const updatedExternalTools = await this.externalToolRepo.saveAll(externalTools);
+
+		return updatedExternalTools;
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

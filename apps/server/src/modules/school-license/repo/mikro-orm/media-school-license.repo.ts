@@ -1,6 +1,6 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSource } from '@modules/media-source/domain';
+import { MediaSource } from '@modules/media-source';
 import { MediaSourceMapper } from '@modules/media-source/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

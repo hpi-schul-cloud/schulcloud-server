@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { MediaSource } from '../domain';
+import { MediaSource } from '../do';
 import { MediaSourceEntity, MediaSourceOauthConfigEmbeddable } from '../entity';
 import { MediaSourceDataFormat } from '../enum';
 import { mediaSourceEntityFactory, mediaSourceFactory, mediaSourceOAuthConfigEmbeddableFactory } from '../testing';

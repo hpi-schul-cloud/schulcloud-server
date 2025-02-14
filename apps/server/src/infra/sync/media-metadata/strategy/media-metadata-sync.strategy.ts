@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@core/logger';
-import { MediaSourceSyncService } from '@modules/media-source/service';
-import { MediaSourceSyncReport } from '@modules/media-source/domain';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncService, MediaSourceSyncReport } from '@modules/media-source-sync';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { MediaMetadataSyncReportLoggable } from '../loggable';
@@ -15,13 +15,19 @@ export class MediaMetadataSyncStrategy implements SyncStrategy {
 	}
 
 	public async sync(): Promise<void> {
-		const report: MediaSourceSyncReport = await this.mediaSourceSyncService.syncAllMediaMetadata();
+		const mediaSourceDataFormatsToSync: MediaSourceDataFormat[] = [MediaSourceDataFormat.BILDUNGSLOGIN];
 
-		this.logSyncReport(report);
+		const syncPromises = mediaSourceDataFormatsToSync.map(async (dataFormat: MediaSourceDataFormat): Promise<void> => {
+			const report: MediaSourceSyncReport = await this.mediaSourceSyncService.syncAllMediaMetadata(dataFormat);
+
+			this.logSyncReport(report, dataFormat);
+		});
+
+		await Promise.all(syncPromises);
 	}
 
-	private logSyncReport(report: MediaSourceSyncReport): void {
-		const loggable = new MediaMetadataSyncReportLoggable(report);
+	private logSyncReport(report: MediaSourceSyncReport, mediaSourceDataFormat: MediaSourceDataFormat): void {
+		const loggable = new MediaMetadataSyncReportLoggable(report, mediaSourceDataFormat);
 
 		this.logger.info(loggable);
 	}

@@ -1,7 +1,7 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { MediaSource } from '../domain';
+import { MediaSource } from '../do';
 import { MediaSourceEntity } from '../entity';
 import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceMapper } from './media-source.mapper';

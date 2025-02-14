@@ -1,9 +1,13 @@
-import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
+import {
+	MediaSource,
+	MediaSourceDataFormat,
+	MediaSourceService,
+	MediaSourceNotFoundLoggableException,
+} from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { VidisSyncService, VidisFetchService } from '../service';
-import { MediaSourceForSyncNotFoundLoggableException } from '../loggable';
 
 @Injectable()
 export class VidisSyncStrategy extends SyncStrategy {
@@ -23,7 +27,7 @@ export class VidisSyncStrategy extends SyncStrategy {
 		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
 
 		if (!mediaSource) {
-			throw new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
+			throw new MediaSourceNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
 
 		const vidisOfferItems = await this.vidisFetchService.getOfferItemsFromVidis(mediaSource);

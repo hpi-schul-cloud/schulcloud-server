@@ -2,7 +2,7 @@ import { SchulconnexResponse } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemEntityFactory } from '@modules/system/testing';

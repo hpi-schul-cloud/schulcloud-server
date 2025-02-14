@@ -8,7 +8,7 @@ export class MediaSourceVidisConfigNotFoundLoggableException extends NotFoundExc
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: `Required basic auth config of media source ${this.mediaSourceName} is missing.`,
+			message: `Required vidis config of media source ${this.mediaSourceName} is missing.`,
 			data: {
 				mediaSourceId: this.mediaSourceId,
 				mediaSourceName: this.mediaSourceName,

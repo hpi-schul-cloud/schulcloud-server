@@ -11,9 +11,13 @@ export class ExternalToolMediumEntity {
 	@Property({ nullable: true })
 	mediaSourceId?: string;
 
+	@Property({ nullable: true })
+	metadataModifiedAt?: Date;
+
 	constructor(props: ExternalToolMediumEntity) {
 		this.mediumId = props.mediumId;
 		this.publisher = props.publisher;
 		this.mediaSourceId = props.mediaSourceId;
+		this.metadataModifiedAt = props.metadataModifiedAt;
 	}
 }
