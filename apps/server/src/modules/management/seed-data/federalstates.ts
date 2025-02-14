@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CountyEmbeddable, FederalStateProperties } from '@shared/domain/entity/federal-state.entity';
+import { CountyEmbeddable, FederalStateProperties } from '@modules/school/repo';
 import { DeepPartial } from 'fishery';
 import { federalStateFactory } from './factory/federal-state.factory';
 

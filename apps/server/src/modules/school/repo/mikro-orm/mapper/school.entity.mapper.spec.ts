@@ -1,8 +1,8 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/entity';
-import { SchoolEntity } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { School } from '../../../domain';
+import { SchoolEntity } from '../school.entity';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
 import { SchoolYearEntityMapper } from './school-year.entity.mapper';

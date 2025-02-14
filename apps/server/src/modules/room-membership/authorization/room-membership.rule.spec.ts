@@ -1,12 +1,12 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { roleDtoFactory } from '@modules/role/testing';
 import { roomFactory } from '@modules/room/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';

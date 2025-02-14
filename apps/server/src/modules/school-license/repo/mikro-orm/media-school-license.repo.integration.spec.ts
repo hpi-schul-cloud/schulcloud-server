@@ -1,11 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';

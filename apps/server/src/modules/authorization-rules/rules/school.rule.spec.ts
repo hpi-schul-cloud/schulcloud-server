@@ -4,12 +4,12 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { setupEntities } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { SchoolRule } from './school.rule';
 

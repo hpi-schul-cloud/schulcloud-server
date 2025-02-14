@@ -1,4 +1,4 @@
-import { SchoolYearProperties } from '@shared/domain/entity';
+import { SchoolYearProperties } from '@modules/school/repo';
 import { DeepPartial } from 'fishery';
 import { schoolYearFactory } from './factory/schoolyear.factory';
 

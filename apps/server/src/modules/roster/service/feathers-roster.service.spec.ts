@@ -6,6 +6,7 @@ import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFact
 
 import { CourseService } from '@modules/learnroom/service';
 import { PseudonymService } from '@modules/pseudonym';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -21,12 +22,11 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { Course, CourseGroup, SchoolEntity } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { RosterConfig } from '../roster.config';
@@ -507,7 +507,7 @@ describe('FeathersRosterService', () => {
 	describe('getGroup', () => {
 		describe('when the tool is active in a course', () => {
 			const setup = () => {
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -691,7 +691,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = () => {
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
+				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();

@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { FederalStateEntity } from '@shared/domain/entity';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo/base.repo';
+import { FederalStateEntity } from './federal-state.entity';
 
 @Injectable()
 export class FederalStateRepo extends BaseRepo<FederalStateEntity> {

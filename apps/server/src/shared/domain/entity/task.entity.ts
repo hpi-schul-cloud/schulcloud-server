@@ -1,6 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { SchoolEntity } from '@modules/school/repo';
 import { InternalServerErrorException } from '@nestjs/common';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { EntityWithSchool } from '../interface';
 import type { LearnroomElement } from '../interface/learnroom';

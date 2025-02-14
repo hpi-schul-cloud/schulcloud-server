@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { StorageProviderEntity } from '@shared/domain/entity';
@@ -7,8 +8,6 @@ import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
@@ -376,8 +375,8 @@ describe('LegacySchoolService', () => {
 			const setup = () => {
 				const name = 'Hogwarts';
 				const federalStateName = 'maybescottland?';
-				const federalState = federalStateFactory.build({ name: federalStateName });
-				const year = schoolYearFactory.build();
+				const federalState = federalStateEntityFactory.build({ name: federalStateName });
+				const year = schoolYearEntityFactory.build();
 				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 				const storageProvider = storageProviderFactory.build();
@@ -428,8 +427,8 @@ describe('LegacySchoolService', () => {
 			const setup = () => {
 				const name = 'Hogwarts';
 				const federalStateName = 'maybescottland?';
-				const federalState = federalStateFactory.build({ name: federalStateName });
-				const year = schoolYearFactory.build();
+				const federalState = federalStateEntityFactory.build({ name: federalStateName });
+				const year = schoolYearEntityFactory.build();
 				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 				storageProviderRepo.findAll.mockResolvedValue([]);

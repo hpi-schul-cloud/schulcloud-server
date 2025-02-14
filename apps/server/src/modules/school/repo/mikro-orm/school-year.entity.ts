@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntity } from './base.entity';
+import { BaseEntity } from '@shared/domain/entity';
 
 export interface SchoolYearProperties {
 	name: string;

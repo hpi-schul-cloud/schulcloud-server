@@ -1,10 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
@@ -52,8 +51,8 @@ describe('Admin API - Schools (API)', () => {
 
 		describe('with api token', () => {
 			const setup = async () => {
-				const federalState = federalStateFactory.build({ name: 'niedersachsen' });
-				const year = schoolYearFactory.build();
+				const federalState = federalStateEntityFactory.build({ name: 'niedersachsen' });
+				const year = schoolYearEntityFactory.build();
 				const storageProvider = storageProviderFactory.build();
 				await em.persistAndFlush([federalState, year, storageProvider]);
 				return { federalState, year };

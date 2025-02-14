@@ -1,27 +1,17 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { Group } from '@modules/group';
-import { GroupEntity } from '@modules/group/entity';
 import { groupEntityFactory, groupFactory } from '@modules/group/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course as CourseEntity,
-	CourseFeatures,
-	CourseGroup,
-	SchoolEntity,
-	SyncAttribute,
-	User,
-} from '@shared/domain/entity';
+import { Course as CourseEntity, CourseFeatures, CourseGroup, SyncAttribute, User } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory as courseGroupEntityFactory } from '@testing/factory/coursegroup.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { Course, COURSE_REPO, CourseProps, CourseStatus } from '../../domain';
+import { Course, COURSE_REPO, CourseStatus } from '../../domain';
 import { courseFactory } from '../../testing';
 import { CourseMikroOrmRepo } from './course.repo';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
@@ -60,12 +50,12 @@ describe(CourseMikroOrmRepo.name, () => {
 
 		describe('when entity is found', () => {
 			const setup = async () => {
-				const entity: CourseEntity = courseEntityFactory.build();
+				const entity = courseEntityFactory.build();
 
 				await em.persistAndFlush([entity]);
 				em.clear();
 
-				const course: Course = CourseEntityMapper.mapEntityToDo(entity);
+				const course = CourseEntityMapper.mapEntityToDo(entity);
 
 				return { course };
 			};
@@ -73,7 +63,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should return course', async () => {
 				const { course } = await setup();
 
-				const result: Course = await repo.findCourseById(course.id);
+				const result = await repo.findCourseById(course.id);
 
 				expect(result).toEqual(course);
 			});
@@ -83,15 +73,15 @@ describe(CourseMikroOrmRepo.name, () => {
 	describe('findBySyncedGroup', () => {
 		describe('when a course is synced with a group', () => {
 			const setup = async () => {
-				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-				const syncedCourseEntity: CourseEntity = courseEntityFactory.build({ syncedWithGroup: groupEntity });
-				const otherCourseEntity: CourseEntity = courseEntityFactory.build({ syncedWithGroup: undefined });
-				const group: Group = groupFactory.build({ id: groupEntity.id });
+				const groupEntity = groupEntityFactory.buildWithId();
+				const syncedCourseEntity = courseEntityFactory.build({ syncedWithGroup: groupEntity });
+				const otherCourseEntity = courseEntityFactory.build({ syncedWithGroup: undefined });
+				const group = groupFactory.build({ id: groupEntity.id });
 
 				await em.persistAndFlush([syncedCourseEntity, groupEntity, otherCourseEntity]);
 				em.clear();
 
-				const course: Course = CourseEntityMapper.mapEntityToDo(syncedCourseEntity);
+				const course = CourseEntityMapper.mapEntityToDo(syncedCourseEntity);
 
 				return {
 					course,
@@ -102,7 +92,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should return courses', async () => {
 				const { course, group } = await setup();
 
-				const result: Course[] = await repo.findBySyncedGroup(group);
+				const result = await repo.findBySyncedGroup(group);
 
 				expect(result).toEqual([course]);
 			});
@@ -112,12 +102,12 @@ describe(CourseMikroOrmRepo.name, () => {
 	describe('save', () => {
 		describe('when entity is new', () => {
 			const setup = async () => {
-				const entity: CourseEntity = courseEntityFactory.build();
+				const entity = courseEntityFactory.build();
 
 				await em.persistAndFlush([entity.school]);
 				em.clear();
 
-				const course: Course = CourseEntityMapper.mapEntityToDo(entity);
+				const course = CourseEntityMapper.mapEntityToDo(entity);
 
 				return { course };
 			};
@@ -125,7 +115,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should save entity', async () => {
 				const { course } = await setup();
 
-				const result: Course = await repo.save(course);
+				const result = await repo.save(course);
 
 				expect(result).toEqual(course);
 			});
@@ -133,17 +123,17 @@ describe(CourseMikroOrmRepo.name, () => {
 
 		describe('when entity is existing', () => {
 			const setup = async () => {
-				const courseEntity: CourseEntity = courseEntityFactory.buildWithId();
-				const userEntity: User = userFactory.buildWithId();
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
-				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-				const classEntity: ClassEntity = classEntityFactory.buildWithId();
-				const courseGroupEntity: CourseGroup = courseGroupEntityFactory.buildWithId();
+				const courseEntity = courseEntityFactory.buildWithId();
+				const userEntity = userFactory.buildWithId();
+				const schoolEntity = schoolEntityFactory.buildWithId();
+				const groupEntity = groupEntityFactory.buildWithId();
+				const classEntity = classEntityFactory.buildWithId();
+				const courseGroupEntity = courseGroupEntityFactory.buildWithId();
 
 				await em.persistAndFlush([courseEntity, userEntity, schoolEntity, groupEntity, classEntity, courseGroupEntity]);
 				em.clear();
 
-				const expectedProps: CourseProps = {
+				const expectedProps = {
 					id: courseEntity.id,
 					name: `course 1`,
 					features: new Set<CourseFeatures>([CourseFeatures.VIDEOCONFERENCE]),
@@ -171,7 +161,7 @@ describe(CourseMikroOrmRepo.name, () => {
 			it('should update entity', async () => {
 				const { newCourse, expectedProps } = await setup();
 
-				const result: Course = await repo.save(newCourse);
+				const result = await repo.save(newCourse);
 
 				expect(result).toEqual(newCourse);
 
@@ -184,8 +174,8 @@ describe(CourseMikroOrmRepo.name, () => {
 	describe('findCourses', () => {
 		describe('when entitys are not found', () => {
 			const setup = async () => {
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
-				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(2, {
+				const schoolEntity = schoolEntityFactory.buildWithId();
+				const courseEntities = courseEntityFactory.buildList(2, {
 					school: schoolEntity,
 					untilDate: new Date('2050-04-24'),
 				});
@@ -210,8 +200,8 @@ describe(CourseMikroOrmRepo.name, () => {
 
 		describe('when entitys are found for school', () => {
 			const setup = async () => {
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
-				const courseEntities: CourseEntity[] = courseEntityFactory.buildList(5, {
+				const schoolEntity = schoolEntityFactory.buildWithId();
+				const courseEntities = courseEntityFactory.buildList(5, {
 					school: schoolEntity,
 					untilDate: new Date('1995-04-24'),
 				});

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolYearFactory } from '../../testing';
-import { SchoolYearRepo, SCHOOL_YEAR_REPO } from '../interface';
+import { schoolYearDoFactory } from '../../testing';
+import { SCHOOL_YEAR_REPO, SchoolYearRepo } from '../interface';
 import { SchoolYearService } from './school-year.service';
 
 describe('SchoolYearService', () => {
@@ -26,7 +26,7 @@ describe('SchoolYearService', () => {
 	describe('getAllSchoolYears', () => {
 		describe('when multiple school years exist', () => {
 			const setup = () => {
-				const schoolYears = schoolYearFactory.buildList(3);
+				const schoolYears = schoolYearDoFactory.buildList(3);
 				schoolYearRepo.getAllSchoolYears.mockResolvedValueOnce(schoolYears);
 
 				return { schoolYears };

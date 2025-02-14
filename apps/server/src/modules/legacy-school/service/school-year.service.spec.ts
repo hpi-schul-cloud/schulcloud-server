@@ -1,8 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SchoolYearEntity, SchoolYearRepo } from '@modules/school/repo';
+import { schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYearEntity } from '@shared/domain/entity';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
-import { SchoolYearRepo } from '../repo';
 import { SchoolYearService } from './school-year.service';
 
 describe('SchoolYearService', () => {
@@ -32,7 +31,7 @@ describe('SchoolYearService', () => {
 
 	describe('getCurrentSchoolYear', () => {
 		const setup = () => {
-			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
 				startDate: new Date('2021-09-01'),
 				endDate: new Date('2022-12-31'),
 			});
@@ -56,7 +55,7 @@ describe('SchoolYearService', () => {
 
 	describe('getCurrentOrNextSchoolYear', () => {
 		const setup = () => {
-			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
 				startDate: new Date('2021-09-01'),
 				endDate: new Date('2022-12-31'),
 			});
@@ -80,7 +79,7 @@ describe('SchoolYearService', () => {
 
 	describe('findById', () => {
 		const setup = () => {
-			const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
 				startDate: new Date('2021-09-01'),
 				endDate: new Date('2022-12-31'),
 			});

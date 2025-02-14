@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { SCHOOL_YEAR_REPO } from '../../domain';
 import { SchoolYearEntityMapper } from './mapper';
+import { SchoolYearEntity } from './school-year.entity';
 import { SchoolYearMikroOrmRepo } from './school-year.repo';
 
 describe('SchoolYearMikroOrmRepo', () => {
@@ -34,7 +34,7 @@ describe('SchoolYearMikroOrmRepo', () => {
 
 	describe('getAllSchoolYears', () => {
 		const setup = async () => {
-			const entities = schoolYearFactory.buildList(3);
+			const entities = schoolYearEntityFactory.buildList(3);
 			await em.persistAndFlush(entities);
 			em.clear();
 			const schools = entities.map((entity) => SchoolYearEntityMapper.mapToDo(entity));

@@ -2,23 +2,17 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import {
-	SchoolEntity,
-	SchoolRolePermission,
-	SchoolRoles,
-	SchoolYearEntity,
-	UserLoginMigrationEntity,
-} from '@shared/domain/entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {
@@ -83,7 +77,7 @@ describe('LegacySchoolRepo', () => {
 	});
 
 	it('should create a school with embedded object', async () => {
-		const schoolYear = schoolYearFactory.build();
+		const schoolYear = schoolYearEntityFactory.build();
 		const school = schoolEntityFactory.build({
 			name: 'test',
 			currentYear: schoolYear,
@@ -184,7 +178,7 @@ describe('LegacySchoolRepo', () => {
 	describe('mapEntityToDO is called', () => {
 		it('should map school entity to school domain object', () => {
 			const system: SystemEntity = systemEntityFactory.buildWithId();
-			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({
 				systems: [system],
 				features: [],

@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { SchoolYear, SchoolYearRepo } from '../../domain';
 import { SchoolYearEntityMapper } from './mapper';
+import { SchoolYearEntity } from './school-year.entity';
 
 @Injectable()
 export class SchoolYearMikroOrmRepo implements SchoolYearRepo {

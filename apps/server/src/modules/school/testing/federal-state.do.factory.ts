@@ -3,7 +3,7 @@ import { BaseFactory } from '@testing/factory/base.factory';
 import { FederalState, FederalStateProps } from '../domain';
 import { countyFactory } from './county.factory';
 
-export const federalStateFactory = BaseFactory.define<FederalState, FederalStateProps>(FederalState, () => {
+export const federalStateDoFactory = BaseFactory.define<FederalState, FederalStateProps>(FederalState, () => {
 	return {
 		id: new ObjectId().toHexString(),
 		name: 'Hamburg',

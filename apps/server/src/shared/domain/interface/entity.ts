@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SchoolEntity } from '@modules/school/repo';
 
 export interface IEntity {
 	_id: ObjectId;

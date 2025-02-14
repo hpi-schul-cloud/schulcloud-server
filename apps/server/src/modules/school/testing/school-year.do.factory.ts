@@ -1,18 +1,21 @@
-import { SchoolYearEntity, SchoolYearProperties } from '@shared/domain/entity/schoolyear.entity';
-import { BaseFactory } from './base.factory';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { SchoolYear, SchoolYearProps } from '../domain';
 
 type SchoolYearTransientParams = {
 	startYear: number;
 };
 
-class SchoolYearFactory extends BaseFactory<SchoolYearEntity, SchoolYearProperties, SchoolYearTransientParams> {
+class SchoolYearDoFactory extends BaseFactory<SchoolYear, SchoolYearProps, SchoolYearTransientParams> {
 	public withStartYear(startYear: number): this {
 		this.rewindSequence();
 		return this.transient({ startYear });
 	}
 }
 
-export const schoolYearFactory = SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) => {
+export const schoolYearDoFactory = SchoolYearDoFactory.define(SchoolYear, ({ transientParams, sequence }) => {
+	const id = new ObjectId().toHexString();
+
 	const now = new Date();
 	const startYearWithoutSequence = transientParams?.startYear ?? now.getFullYear();
 	const sequenceStartingWithZero = sequence - 1;
@@ -28,5 +31,5 @@ export const schoolYearFactory = SchoolYearFactory.define(SchoolYearEntity, ({ t
 	const startDate = new Date(`${startYear}-08-01`);
 	const endDate = new Date(`${startYear + 1}-07-31`);
 
-	return { name, startDate, endDate };
+	return { id, name, startDate, endDate };
 });

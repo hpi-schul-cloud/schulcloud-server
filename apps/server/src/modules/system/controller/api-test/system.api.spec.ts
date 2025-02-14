@@ -1,10 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
@@ -117,7 +116,7 @@ describe('System (API)', () => {
 		describe('when the endpoint is called with a known systemId', () => {
 			const setup = async () => {
 				const system: SystemEntity = systemEntityFactory.withLdapConfig({ provider: 'general' }).buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.build({ systems: [system] });
+				const school = schoolEntityFactory.build({ systems: [system] });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([system, adminAccount, adminUser, school]);

@@ -1,6 +1,6 @@
 import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
-import { federalStateFactory, schoolFactory } from '../../testing';
+import { federalStateDoFactory, schoolFactory } from '../../testing';
 import { FileStorageType } from '../type';
 import { SchoolFactory } from './school.factory';
 
@@ -20,7 +20,7 @@ describe('SchoolFactory', () => {
 				features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
 				createdAt: new Date(),
 				updatedAt: new Date(),
-				federalState: federalStateFactory.build(),
+				federalState: federalStateDoFactory.build(),
 			});
 
 			return school;

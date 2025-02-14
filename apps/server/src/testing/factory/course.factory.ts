@@ -1,8 +1,9 @@
 import { Course, CourseProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
-
+// Remove the eslint-disable after fixing the import issue in EPIC-96
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { schoolEntityFactory } from '@modules/school/testing';
 import { BaseFactory } from './base.factory';
-import { schoolEntityFactory } from './school-entity.factory';
 import { userFactory } from './user.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
