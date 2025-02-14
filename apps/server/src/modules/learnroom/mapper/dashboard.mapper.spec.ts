@@ -1,6 +1,6 @@
-import { DashboardEntity, GridElement, GridElementWithPosition } from '@shared/domain/entity';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardResponse } from '../controller/dto';
+import { Dashboard, GridElement, GridElementWithPosition } from '../domain/do/dashboard';
+import { LearnroomMetadata, LearnroomTypes } from '../types';
 import { DashboardMapper } from './dashboard.mapper';
 
 const learnroomMock = (id: string, name: string) => {
@@ -34,7 +34,7 @@ describe('dashboard mapper', () => {
 				]),
 			},
 		];
-		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });
+		const entity = new Dashboard('someid', { grid: gridArray, userId: 'userId' });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);
 		expect(result.gridElements[0].id).toEqual('referenceId');

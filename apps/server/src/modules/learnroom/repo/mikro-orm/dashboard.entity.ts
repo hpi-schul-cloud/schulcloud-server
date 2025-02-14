@@ -11,8 +11,8 @@ import {
 } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { Course } from './course.entity';
-import { User } from './user.entity';
+import { Course } from '@shared/domain/entity/course.entity';
+import { User } from '@shared/domain/entity/user.entity';
 
 export interface DashboardGridElementModelProperties {
 	id?: string;
@@ -20,11 +20,11 @@ export interface DashboardGridElementModelProperties {
 	xPos: number;
 	yPos: number;
 	references: Course[];
-	dashboard: DashboardModelEntity;
+	dashboard: DashboardEntity;
 }
 
 @Entity({ tableName: 'dashboardelement' })
-export class DashboardGridElementModel extends BaseEntityWithTimestamps {
+export class DashboardGridElementEntity extends BaseEntityWithTimestamps {
 	constructor({ id, title, xPos, yPos, references, dashboard }: DashboardGridElementModelProperties) {
 		super();
 		if (id) {
@@ -52,18 +52,18 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	references = new Collection<Course>(this);
 
 	@Index()
-	@ManyToOne('DashboardModelEntity', { wrappedReference: true })
-	dashboard: IdentifiedReference<DashboardModelEntity>;
+	@ManyToOne('DashboardEntity', { wrappedReference: true })
+	dashboard: IdentifiedReference<DashboardEntity>;
 }
 
 export interface DashboardModelProperties {
 	id: string;
 	user: User;
-	gridElements?: DashboardGridElementModel[];
+	gridElements?: DashboardGridElementEntity[];
 }
 
 @Entity({ tableName: 'dashboard' })
-export class DashboardModelEntity extends BaseEntityWithTimestamps {
+export class DashboardEntity extends BaseEntityWithTimestamps {
 	constructor(props: DashboardModelProperties) {
 		super();
 		this._id = ObjectId.createFromHexString(props.id);
@@ -72,8 +72,8 @@ export class DashboardModelEntity extends BaseEntityWithTimestamps {
 		if (props.gridElements) this.gridElements.set(props.gridElements);
 	}
 
-	@OneToMany('DashboardGridElementModel', 'dashboard', { orphanRemoval: true })
-	gridElements: Collection<DashboardGridElementModel> = new Collection<DashboardGridElementModel>(this);
+	@OneToMany('DashboardGridElementEntity', 'dashboard', { orphanRemoval: true })
+	gridElements: Collection<DashboardGridElementEntity> = new Collection<DashboardGridElementEntity>(this);
 
 	// userId
 	@Index()

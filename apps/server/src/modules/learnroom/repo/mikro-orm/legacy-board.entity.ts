@@ -1,8 +1,8 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, Course, LessonEntity, Task } from '@shared/domain/entity';
-import { LearnroomElement } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { LearnroomElement } from '../../domain/interface/learnroom';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
 import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-board-element.entity';
@@ -28,16 +28,16 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);
 
-	getByTargetId(id: EntityId): LearnroomElement {
+	public getByTargetId(id: EntityId): LearnroomElement {
 		const element = this.getElementByTargetId(id);
 		return element.target;
 	}
 
-	getElements() {
+	public getElements(): LegacyBoardElement[] {
 		return this.references.getItems();
 	}
 
-	reorderElements(ids: EntityId[]) {
+	public reorderElements(ids: EntityId[]): void {
 		this.validateReordering(ids);
 
 		const elements = ids.map((id) => this.getElementByTargetId(id));
@@ -45,7 +45,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		this.references.set(elements);
 	}
 
-	private validateReordering(reorderedIds: EntityId[]) {
+	private validateReordering(reorderedIds: EntityId[]): void {
 		const existingElements = this.getElements().map((el) => el.target.id);
 		const listsEqual = this.checkListsContainingEqualEntities(reorderedIds, existingElements);
 		if (!listsEqual) {
@@ -54,7 +54,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	}
 
 	private checkListsContainingEqualEntities(first: EntityId[], second: EntityId[]): boolean {
-		const compareAlphabetic = (a, b) => (a < b ? -1 : 1);
+		const compareAlphabetic = (a: EntityId, b: EntityId): number => (a < b ? -1 : 1);
 		const firstSorted = [...first].sort(compareAlphabetic);
 		const secondSorted = [...second].sort(compareAlphabetic);
 		const isEqual = JSON.stringify(firstSorted) === JSON.stringify(secondSorted);
@@ -67,12 +67,12 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		return element;
 	}
 
-	syncBoardElementReferences(boardElementTargets: LegacyBoardElementReference[]) {
+	public syncBoardElementReferences(boardElementTargets: LegacyBoardElementReference[]): void {
 		this.removeDeletedReferences(boardElementTargets);
 		this.appendNotContainedBoardElements(boardElementTargets);
 	}
 
-	private removeDeletedReferences(boardElementTargets: LegacyBoardElementReference[]) {
+	private removeDeletedReferences(boardElementTargets: LegacyBoardElementReference[]): void {
 		const references = this.references.getItems();
 		const onlyExistingReferences = references.filter((ref) => boardElementTargets.includes(ref.target));
 		this.references.set(onlyExistingReferences);
@@ -80,8 +80,10 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 
 	private appendNotContainedBoardElements(boardElementTargets: LegacyBoardElementReference[]): void {
 		const references = this.references.getItems();
-		const isNotContained = (element: LegacyBoardElementReference) => !references.some((ref) => ref.target === element);
-		const mapToBoardElement = (target: LegacyBoardElementReference) => this.createBoardElementFor(target);
+		const isNotContained = (element: LegacyBoardElementReference): boolean =>
+			!references.some((ref) => ref.target === element);
+		const mapToBoardElement = (target: LegacyBoardElementReference): LegacyBoardElement =>
+			this.createBoardElementFor(target);
 
 		const elementsToAdd = boardElementTargets.filter(isNotContained).map(mapToBoardElement);
 		const newList = [...elementsToAdd, ...references];

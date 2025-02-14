@@ -10,7 +10,6 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
-import { DashboardModelMapper, DashboardRepo } from '@shared/repo/dashboard';
 import { UserRepo } from '@shared/repo/user';
 import { CourseRoomsController } from './controller/course-rooms.controller';
 import { CourseController } from './controller/course.controller';
@@ -19,6 +18,7 @@ import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 
 import { CourseInfoController } from './controller/course-info.controller';
+import { DashboardModelMapper, DashboardRepo, LegacyBoardRepo } from './repo';
 import {
 	CourseCopyUC,
 	CourseImportUc,
@@ -31,7 +31,6 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
-import { LegacyBoardRepo } from './repo';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future

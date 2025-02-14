@@ -1,19 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	CourseGroup,
-	DashboardEntity,
-	DashboardGridElementModel,
-	DashboardModelEntity,
-	GridElement,
-	User,
-} from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { DashboardModelMapper } from './dashboard.model.mapper';
+import { Dashboard, GridElement } from '../../domain/do/dashboard';
+import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
 import { DashboardRepo } from './dashboard.repo';
+import { DashboardModelMapper } from './mapper/dashboard.entity.mapper';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;
@@ -24,7 +18,7 @@ describe('dashboard repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardEntity, DashboardModelEntity, DashboardGridElementModel, Course, User, CourseGroup],
+					entities: [Dashboard, DashboardEntity, DashboardGridElementEntity, Course, User, CourseGroup],
 				}),
 			],
 			providers: [DashboardRepo, DashboardModelMapper],
@@ -41,7 +35,7 @@ describe('dashboard repo', () => {
 	it('should persist a plain dashboard', async () => {
 		const user = userFactory.build();
 		await em.persistAndFlush(user);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [], userId: user.id });
+		const dashboard = new Dashboard(new ObjectId().toString(), { grid: [], userId: user.id });
 		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
@@ -53,7 +47,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const course = courseFactory.build({ students: [user] });
 		await em.persistAndFlush([course, user]);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -73,7 +67,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const courses = courseFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -101,7 +95,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const courses = courseFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -127,7 +121,7 @@ describe('dashboard repo', () => {
 		const courses = courseFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
 		const elementId = new ObjectId().toString();
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -144,7 +138,7 @@ describe('dashboard repo', () => {
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
 		await repo.persistAndFlush(dashboard);
 
-		const findOrphan = () => em.findOneOrFail(DashboardGridElementModel, elementId);
+		const findOrphan = () => em.findOneOrFail(DashboardGridElementEntity, elementId);
 
 		await expect(findOrphan).rejects.toThrow();
 	});
@@ -154,7 +148,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -177,7 +171,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -198,7 +192,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -221,7 +215,7 @@ describe('dashboard repo', () => {
 				const user = userFactory.build();
 				await em.persistAndFlush(user);
 				const result = await repo.getUsersDashboard(user.id);
-				expect(result instanceof DashboardEntity).toEqual(true);
+				expect(result instanceof Dashboard).toEqual(true);
 				expect(result.getGrid().length).toEqual(0);
 			});
 		});
@@ -231,7 +225,7 @@ describe('dashboard repo', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
-				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				const dashboard = new Dashboard(new ObjectId().toString(), {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
@@ -281,7 +275,7 @@ describe('dashboard repo', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
-				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				const dashboard = new Dashboard(new ObjectId().toString(), {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
@@ -311,7 +305,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([userWithoutDashoard, user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -341,7 +335,7 @@ describe('dashboard repo', () => {
 				expect(result1).toEqual(1);
 
 				const result2 = await repo.getUsersDashboard(user.id);
-				expect(result2 instanceof DashboardEntity).toEqual(true);
+				expect(result2 instanceof Dashboard).toEqual(true);
 				expect(result2.getGrid().length).toEqual(0);
 			});
 		});
