@@ -941,4 +941,186 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			});
 		});
 	});
+
+	describe('removeUserFromGroup', () => {
+		describe('when group is empty after removing the user', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [{ userId, roleId: role.id }],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+
+				return {
+					group,
+					userId,
+				};
+			};
+
+			it('should delete the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.delete).toHaveBeenCalledWith(
+					new Group({
+						...group.getProps(),
+						users: [],
+					})
+				);
+			});
+
+			it('should return null', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when group is empty after removing the user, but a synchronized course is attached', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [{ userId, roleId: role.id }],
+				});
+				const course = courseFactory.build({ syncedWithGroup: group.id });
+
+				groupService.findById.mockResolvedValueOnce(group);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
+				groupService.save.mockResolvedValueOnce(group);
+
+				return {
+					group,
+					course,
+					userId,
+				};
+			};
+
+			it('should not delete the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.delete).not.toHaveBeenCalled();
+			});
+
+			it('should save the group without users', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					new Group({
+						...group.getProps(),
+						users: [],
+					})
+				);
+			});
+
+			it('should return the group', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toEqual(group);
+			});
+		});
+
+		describe('when group is not empty after removing the user', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const otherUserId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [
+						{ userId, roleId: role.id },
+						{ userId: otherUserId, roleId: role.id },
+					],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+				groupService.save.mockResolvedValueOnce(group);
+
+				return {
+					group,
+					role,
+					userId,
+					otherUserId,
+				};
+			};
+
+			it('should not delete the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.delete).not.toHaveBeenCalled();
+			});
+
+			it('should save the group with the other users remaining', async () => {
+				const { group, userId, role, otherUserId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					new Group({
+						...group.getProps(),
+						users: [{ userId: otherUserId, roleId: role.id }],
+					})
+				);
+			});
+
+			it('should return the group', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toEqual(group);
+			});
+		});
+
+		describe('when the user is not part of the group', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [{ userId: new ObjectId().toHexString(), roleId: role.id }],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+
+				return {
+					group,
+					userId,
+				};
+			};
+
+			it('should modify the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.save).not.toHaveBeenCalled();
+				expect(groupService.delete).not.toHaveBeenCalled();
+			});
+
+			it('should return null', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toBeNull();
+			});
+		});
+	});
 });

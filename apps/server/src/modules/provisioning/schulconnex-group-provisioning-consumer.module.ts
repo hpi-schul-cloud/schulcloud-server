@@ -1,0 +1,16 @@
+import { LoggerModule } from '@core/logger';
+import { GroupModule } from '@modules/group';
+import { LearnroomModule } from '@modules/learnroom';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { RoleModule } from '@modules/role';
+import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
+import { Module } from '@nestjs/common';
+import { SchulconnexGroupProvisioningConsumer } from './amqp';
+import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
+
+@Module({
+	imports: [LoggerModule, LegacySchoolModule, UserModule, RoleModule, SystemModule, GroupModule, LearnroomModule],
+	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
+})
+export class SchulconnexGroupProvisioningConsumerModule {}

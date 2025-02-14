@@ -4,4 +4,5 @@ import { SchulConneXProvisioningOptions } from './schulconnex-provisionin-option
 
 export const provisioningStrategyOptions: Map<SystemProvisioningStrategy, new () => AnyProvisioningOptions> = new Map([
 	[SystemProvisioningStrategy.SANIS, SchulConneXProvisioningOptions],
+	[SystemProvisioningStrategy.SCHULCONNEX_ASYNC, SchulConneXProvisioningOptions],
 ]);

@@ -14,13 +14,16 @@ import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
+import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
 	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
-	SanisProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
 	SchulconnexResponseMapper,
+	SchulconnexSyncProvisioningStrategy,
+	TspProvisioningStrategy,
 } from './strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -30,7 +33,6 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
-import { TspProvisioningStrategy } from './strategy/tsp';
 
 @Module({
 	imports: [
@@ -59,11 +61,14 @@ import { TspProvisioningStrategy } from './strategy/tsp';
 		SchulconnexCourseSyncService,
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
-		SanisProvisioningStrategy,
+		SchulconnexSyncProvisioningStrategy,
+		SchulconnexAsyncProvisioningStrategy,
 		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
+		SchulconnexGroupProvisioningProducer,
+		SchulconnexLicenseProvisioningProducer,
 	],
 	exports: [ProvisioningService, TspProvisioningService],
 })

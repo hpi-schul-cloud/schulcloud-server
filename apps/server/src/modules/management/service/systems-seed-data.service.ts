@@ -27,7 +27,7 @@ export class SystemsSeedDataService {
 					alias: 'SANIS',
 					displayName: 'moin.schule',
 					type: 'oauth',
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
 					provisioningUrl: 'https://api-dienste.stage.niedersachsen-login.schule/v1/person-info',
 					oauthConfig: new OauthConfig({
 						clientId: moinSchuleClientId,

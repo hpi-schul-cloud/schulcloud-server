@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	SchulconnexGruppenResponse,
@@ -13,15 +14,14 @@ import {
 	schulconnexPoliciesInfoResponseFactory,
 	schulconnexResponseFactory,
 } from '@infra/schulconnex-client/testing';
-import { GroupService } from '@modules/group';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupTypes } from '@modules/group/domain';
-import { InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@core/logger';
 import * as classValidator from 'class-validator';
 import {
 	ExternalGroupDto,
@@ -30,27 +30,32 @@ import {
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
+	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalUserDtoFactory } from '../../testing';
-import { SanisProvisioningStrategy } from './sanis.strategy';
+import { SchulconnexBaseProvisioningStrategy } from './schulconnex-base-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
-import {
-	SchulconnexCourseSyncService,
-	SchulconnexGroupProvisioningService,
-	SchulconnexLicenseProvisioningService,
-	SchulconnexSchoolProvisioningService,
-	SchulconnexToolProvisioningService,
-	SchulconnexUserProvisioningService,
-} from './service';
 import ArgsType = jest.ArgsType;
 import SpyInstance = jest.SpyInstance;
 
-describe(SanisProvisioningStrategy.name, () => {
+@Injectable()
+class TestClass extends SchulconnexBaseProvisioningStrategy {
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	apply(data: OauthDataDto): Promise<ProvisioningDto> {
+		return Promise.resolve(new ProvisioningDto({ externalUserId: new ObjectId().toHexString() }));
+	}
+
+	getType(): SystemProvisioningStrategy {
+		return SystemProvisioningStrategy.SANIS;
+	}
+}
+
+describe(SchulconnexBaseProvisioningStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: SanisProvisioningStrategy;
+	let strategy: SchulconnexBaseProvisioningStrategy;
 
 	let mapper: DeepMocked<SchulconnexResponseMapper>;
 	let logger: DeepMocked<Logger>;
@@ -66,38 +71,10 @@ describe(SanisProvisioningStrategy.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SanisProvisioningStrategy,
+				TestClass,
 				{
 					provide: SchulconnexResponseMapper,
 					useValue: createMock<SchulconnexResponseMapper>(),
-				},
-				{
-					provide: SchulconnexSchoolProvisioningService,
-					useValue: createMock<SchulconnexSchoolProvisioningService>(),
-				},
-				{
-					provide: SchulconnexUserProvisioningService,
-					useValue: createMock<SchulconnexUserProvisioningService>(),
-				},
-				{
-					provide: SchulconnexGroupProvisioningService,
-					useValue: createMock<SchulconnexGroupProvisioningService>(),
-				},
-				{
-					provide: SchulconnexCourseSyncService,
-					useValue: createMock<SchulconnexCourseSyncService>(),
-				},
-				{
-					provide: GroupService,
-					useValue: createMock<GroupService>(),
-				},
-				{
-					provide: SchulconnexLicenseProvisioningService,
-					useValue: createMock<SchulconnexLicenseProvisioningService>(),
-				},
-				{
-					provide: SchulconnexToolProvisioningService,
-					useValue: createMock<SchulconnexToolProvisioningService>(),
 				},
 				{
 					provide: ConfigService,
@@ -116,7 +93,7 @@ describe(SanisProvisioningStrategy.name, () => {
 			],
 		}).compile();
 
-		strategy = module.get(SanisProvisioningStrategy);
+		strategy = module.get(TestClass);
 		mapper = module.get(SchulconnexResponseMapper);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
 		logger = module.get(Logger);
@@ -129,18 +106,6 @@ describe(SanisProvisioningStrategy.name, () => {
 		validationFunction.mockReset();
 		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
 		config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = false;
-	});
-
-	const setupSchulconnexResponse = (): SchulconnexResponse => schulconnexResponseFactory.build();
-
-	describe('getType is called', () => {
-		describe('when it is called', () => {
-			it('should return type SANIS', () => {
-				const result: SystemProvisioningStrategy = strategy.getType();
-
-				expect(result).toEqual(SystemProvisioningStrategy.SANIS);
-			});
-		});
 	});
 
 	describe('getData is called', () => {
@@ -156,7 +121,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
@@ -278,7 +243,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
@@ -330,7 +295,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
@@ -379,7 +344,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
@@ -420,7 +385,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
@@ -470,7 +435,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user = new ExternalUserDto({
 					externalId: 'externalSchoolId',
 					roles: [RoleName.ADMINISTRATOR],
@@ -525,7 +490,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'sanisIdToken',
 					accessToken: 'sanisAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
 				const school: ExternalSchoolDto = new ExternalSchoolDto({
 					externalId: 'externalSchoolId',
@@ -586,7 +551,7 @@ describe(SanisProvisioningStrategy.name, () => {
 					idToken: 'schulconnexIdToken',
 					accessToken: 'schulconnexAccessToken',
 				});
-				const schulconnexResponse: SchulconnexResponse = setupSchulconnexResponse();
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const validationError: classValidator.ValidationError = new classValidator.ValidationError();
 
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);

@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { ExternalSource, type UserDO } from '@shared/domain/domainobject';
+import { ExternalSource } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { GroupPeriod } from './group-period';
 import { GroupTypes } from './group-types';
@@ -50,8 +50,8 @@ export class Group extends DomainObject<GroupProps> {
 		return this.props.validPeriod;
 	}
 
-	public removeUser(user: UserDO): void {
-		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== user.id);
+	public removeUser(userId: EntityId): void {
+		this.props.users = this.props.users.filter((groupUser: GroupUser): boolean => groupUser.userId !== userId);
 	}
 
 	public isEmpty(): boolean {

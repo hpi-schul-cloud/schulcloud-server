@@ -1,9 +1,9 @@
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
-import { Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
+import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
@@ -21,7 +21,7 @@ import { ContextExternalToolValidationService } from './service/context-external
 
 @Module({
 	imports: [
-		CommonToolModule,
+		forwardRef(() => CommonToolModule),
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		LoggerModule,
