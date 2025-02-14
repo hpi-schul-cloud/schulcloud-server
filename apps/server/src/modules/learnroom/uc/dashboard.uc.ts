@@ -3,8 +3,7 @@ import { DashboardEntity, GridPosition, GridPositionWithGroupIndex } from '@shar
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
-import { IDashboardRepo } from '@shared/repo/dashboard';
-// import { NotFound } from '@feathersjs/errors'; // wrong import? see NotFoundException
+import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 @Injectable()
 export class DashboardUc {
