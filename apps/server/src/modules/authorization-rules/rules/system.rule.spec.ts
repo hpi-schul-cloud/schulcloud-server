@@ -8,9 +8,10 @@ import { schoolEntityFactory } from '@modules/school/testing/school-entity.facto
 import { System } from '@modules/system';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SystemRule } from './system.rule';
 
 describe(SystemRule.name, () => {
@@ -21,7 +22,7 @@ describe(SystemRule.name, () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -12,8 +12,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { TeamsRepo } from '@shared/repo/teams';
+import { setupEntities } from '@testing/database';
 import { teamFactory } from '@testing/factory/team.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {
@@ -61,7 +61,7 @@ describe('Collaborative Storage Service', () => {
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
 		teamRepo = module.get(TeamsRepo);
-		await setupEntities();
+		await setupEntities([TeamEntity]);
 	});
 
 	beforeEach(() => {

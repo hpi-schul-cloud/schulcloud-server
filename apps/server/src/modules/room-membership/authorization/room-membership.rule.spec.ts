@@ -3,10 +3,11 @@ import { roleDtoFactory } from '@modules/role/testing';
 import { roomFactory } from '@modules/room/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 import { RoomMembershipRule } from './room-membership.rule';
 
@@ -15,7 +16,7 @@ describe(RoomMembershipRule.name, () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [RoomMembershipRule, AuthorizationHelper, AuthorizationInjectionService],

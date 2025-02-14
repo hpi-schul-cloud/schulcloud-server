@@ -10,11 +10,12 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { groupFactory } from '../testing';
@@ -30,7 +31,7 @@ describe('GroupService', () => {
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -13,12 +13,13 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,
@@ -47,7 +48,7 @@ describe(UserLoginMigrationUc.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

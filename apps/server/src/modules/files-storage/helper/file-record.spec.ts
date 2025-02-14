@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord } from '../entity';

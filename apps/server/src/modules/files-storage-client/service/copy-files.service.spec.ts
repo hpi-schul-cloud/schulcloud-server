@@ -2,11 +2,21 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType } from '@shared/domain/entity';
+import {
+	ComponentProperties,
+	ComponentType,
+	Course,
+	CourseGroup,
+	LessonEntity,
+	Material,
+	Submission,
+	Task,
+	User,
+} from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
@@ -22,7 +32,7 @@ describe('copy files service', () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
 	});
 
 	afterAll(async () => {

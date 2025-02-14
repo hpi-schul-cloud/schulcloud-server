@@ -3,7 +3,6 @@ import { FederalStateEntity } from '@modules/school/repo';
 import { federalStateEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FederalStateRepo } from '@shared/repo/federalstate';
-import { setupEntities } from '@testing/setup-entities';
 import { FederalStateNames } from '../types/federal-state-names.enum';
 import { FederalStateService } from './federal-state.service';
 
@@ -25,8 +24,6 @@ describe('FederalStateService', () => {
 
 		service = module.get(FederalStateService);
 		federalStateRepo = module.get(FederalStateRepo);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

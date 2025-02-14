@@ -5,7 +5,6 @@ import { LessonCopyParentParams } from '@modules/lesson';
 import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@modules/task/types';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 
@@ -17,7 +16,6 @@ describe('copy mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [CopyMapper],

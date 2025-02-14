@@ -4,9 +4,10 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserImportService } from '@modules/user-import';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { CloseMigrationWizardUc } from './close-migration-wizard.uc';
 
@@ -19,7 +20,7 @@ describe(CloseMigrationWizardUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -11,10 +11,10 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
 import { NextcloudStrategy } from './nextcloud.strategy';
@@ -81,7 +81,7 @@ describe('NextCloudStrategy', () => {
 		userService = module.get(UserService);
 		externalToolService = module.get(ExternalToolService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {

@@ -1,11 +1,12 @@
+import { Permission } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { MediaSchoolLicenseService } from '../service';
 import { MediaSchoolLicenseUc } from './media-school-license.uc';
 
@@ -16,7 +17,7 @@ describe(MediaSchoolLicenseUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

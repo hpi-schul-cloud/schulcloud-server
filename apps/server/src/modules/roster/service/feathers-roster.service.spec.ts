@@ -22,13 +22,13 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { Course } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
 
@@ -94,7 +94,7 @@ describe('FeathersRosterService', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	beforeEach(() => {

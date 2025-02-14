@@ -9,9 +9,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationService } from '../../user-login-migration';
 import { ImportUser } from '../entity';
 import { UserLoginMigrationNotActiveLoggableException, UserMigrationIsNotEnabledLoggableException } from '../loggable';
@@ -34,7 +34,7 @@ describe(UserImportFetchUc.name, () => {
 	let config: UserImportConfig;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

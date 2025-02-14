@@ -5,9 +5,9 @@ import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseFeatures } from '@shared/domain/entity';
+import { Course, CourseFeatures, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { BoardFeature } from '../board/domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';
 import { LegacySchoolService } from '../legacy-school';
@@ -29,7 +29,7 @@ describe('BoardContextApiHelperService', () => {
 		};
 
 	beforeEach(async () => {
-		await setupEntities();
+		await setupEntities([Course, CourseGroup]);
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextApiHelperService,

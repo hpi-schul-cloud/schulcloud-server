@@ -10,9 +10,10 @@ import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SchoolSystemOptionsRule } from './school-system-options.rule';
 
 describe(SchoolSystemOptionsRule.name, () => {
@@ -23,7 +24,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

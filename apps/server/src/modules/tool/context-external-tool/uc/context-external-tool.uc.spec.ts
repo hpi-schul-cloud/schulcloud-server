@@ -13,10 +13,11 @@ import { BoardContextApiHelperService } from '@modules/board-context';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UUID } from 'bson';
 import { LtiMessageType, ToolContextType } from '../../common/enum';
 import { Lti11EncryptionService } from '../../common/service';
@@ -59,7 +60,7 @@ describe(ContextExternalToolUc.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				ContextExternalToolUc,

@@ -11,11 +11,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { Group, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
 import { groupFactory } from '../testing';
@@ -71,7 +71,7 @@ describe(GroupUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		logger = module.get(Logger);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

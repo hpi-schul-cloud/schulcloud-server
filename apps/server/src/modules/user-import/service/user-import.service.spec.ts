@@ -15,7 +15,6 @@ import { SchoolFeature } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ImportUser, MatchCreator } from '../entity';
 import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
 import { ImportUserRepo } from '../repo';
@@ -37,8 +36,6 @@ describe(UserImportService.name, () => {
 	let config: UserImportConfig;
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
