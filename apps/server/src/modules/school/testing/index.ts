@@ -1,3 +1,4 @@
+export * from './county.embeddable.factory';
 export * from './federal-state.do.factory';
 export * from './federal-state.entity.factory';
 export * from './school-entity.factory';

@@ -1,13 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
-import { federalStateEntityFactory, schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
+import {
+	countyEmbeddableFactory,
+	federalStateEntityFactory,
+	schoolEntityFactory,
+	schoolYearEntityFactory,
+} from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { SchoolErrorEnum } from '../../domain/error';
