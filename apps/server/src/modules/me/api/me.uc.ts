@@ -1,5 +1,5 @@
 import { SchoolService } from '@modules/school';
-import { System, SystemService } from '@modules/system';
+import { SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
