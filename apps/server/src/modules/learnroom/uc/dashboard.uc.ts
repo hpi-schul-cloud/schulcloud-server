@@ -1,5 +1,5 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { DashboardEntity, GridPosition, GridPositionWithGroupIndex } from '@shared/domain/entity';
+import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
@@ -12,7 +12,7 @@ export class DashboardUc {
 		private readonly courseRepo: CourseRepo
 	) {}
 
-	async getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+	async getUsersDashboard(userId: EntityId): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		const [courses] = await this.courseRepo.findAllByUserId(
 			userId,
@@ -30,7 +30,7 @@ export class DashboardUc {
 		from: GridPositionWithGroupIndex,
 		to: GridPositionWithGroupIndex,
 		userId: EntityId
-	): Promise<DashboardEntity> {
+	): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);
 
@@ -45,7 +45,7 @@ export class DashboardUc {
 		position: GridPosition,
 		params: string,
 		userId: EntityId
-	): Promise<DashboardEntity> {
+	): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getDashboardById(dashboardId);
 		this.validateUsersMatch(dashboard, userId);
 
@@ -56,7 +56,7 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	private validateUsersMatch(dashboard: DashboardEntity, userId: EntityId) {
+	private validateUsersMatch(dashboard: Dashboard, userId: EntityId) {
 		if (dashboard.getUserId() !== userId) {
 			throw new NotFoundException('no such dashboard found');
 		}

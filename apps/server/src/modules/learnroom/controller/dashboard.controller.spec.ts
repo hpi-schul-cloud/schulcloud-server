@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, GridPosition } from '@shared/domain/entity';
+import { Dashboard, GridElement, GridPosition } from '@shared/domain/entity';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { DashboardUc } from '../uc/dashboard.uc';
@@ -34,7 +34,7 @@ describe('dashboard uc', () => {
 					provide: DashboardUc,
 					useValue: {
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
-						getUsersDashboard(userId: EntityId): Promise<DashboardEntity> {
+						getUsersDashboard(userId: EntityId): Promise<Dashboard> {
 							throw new Error('Please write a mock for DashboardRepo.getUsersDashboard.');
 						},
 						// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -57,7 +57,7 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = currentUserFactory.build();
@@ -68,7 +68,7 @@ describe('dashboard uc', () => {
 
 		it('should return a dashboard for teacher', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = currentUserFactory.build();
@@ -79,7 +79,7 @@ describe('dashboard uc', () => {
 
 		it('should return a dashboard with a group', async () => {
 			jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', {
+				const dashboard = new Dashboard('someid', {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
@@ -102,7 +102,7 @@ describe('dashboard uc', () => {
 
 		it('should call uc', async () => {
 			const spy = jest.spyOn(uc, 'getUsersDashboard').mockImplementation(() => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+				const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 				return Promise.resolve(dashboard);
 			});
 			const currentUser = currentUserFactory.build();
@@ -117,7 +117,7 @@ describe('dashboard uc', () => {
 			const spy = jest
 				.spyOn(uc, 'moveElementOnDashboard')
 				.mockImplementation((dashboardId: EntityId, from: GridPosition, to: GridPosition) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: to,
@@ -141,7 +141,7 @@ describe('dashboard uc', () => {
 			jest
 				.spyOn(uc, 'moveElementOnDashboard')
 				.mockImplementation((dashboardId: EntityId, from: GridPosition, to: GridPosition) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: to,
@@ -170,7 +170,7 @@ describe('dashboard uc', () => {
 			const spy = jest
 				.spyOn(uc, 'renameGroupOnDashboard')
 				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: position,
@@ -193,7 +193,7 @@ describe('dashboard uc', () => {
 			jest
 				.spyOn(uc, 'renameGroupOnDashboard')
 				.mockImplementation((dashboardId: EntityId, position: GridPosition, title: string) => {
-					const dashboard = new DashboardEntity(dashboardId, {
+					const dashboard = new Dashboard(dashboardId, {
 						grid: [
 							{
 								pos: position,

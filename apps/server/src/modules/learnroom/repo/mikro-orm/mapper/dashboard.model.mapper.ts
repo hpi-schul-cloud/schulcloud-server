@@ -1,12 +1,6 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import {
-	Course as CourseEntity,
-	DashboardEntity,
-	GridElement,
-	GridElementWithPosition,
-	User,
-} from '@shared/domain/entity';
+import { Course as CourseEntity, Dashboard, GridElement, GridElementWithPosition, User } from '@shared/domain/entity';
 import { Learnroom } from '@shared/domain/interface';
 import { LearnroomTypes } from '@shared/domain/types';
 import { DashboardGridElementModel, DashboardModelEntity } from '../dashboard.model.entity';
@@ -31,12 +25,12 @@ export class DashboardModelMapper {
 		return result;
 	}
 
-	public async mapDashboardToEntity(modelEntity: DashboardModelEntity): Promise<DashboardEntity> {
+	public async mapDashboardToEntity(modelEntity: DashboardModelEntity): Promise<Dashboard> {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
 		const grid = await Promise.all(Array.from(modelEntity.gridElements).map(async (e) => this.mapElementToEntity(e)));
-		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
+		return new Dashboard(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
 	public mapReferenceToModel(reference: Learnroom): CourseEntity {
@@ -109,7 +103,7 @@ export class DashboardModelMapper {
 		return elementModel;
 	}
 
-	public async mapDashboardToModel(entity: DashboardEntity): Promise<DashboardModelEntity> {
+	public async mapDashboardToModel(entity: Dashboard): Promise<DashboardModelEntity> {
 		const modelEntity = await this.getOrConstructDashboardModelEntity(entity);
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
@@ -125,7 +119,7 @@ export class DashboardModelMapper {
 		return modelEntity;
 	}
 
-	private async getOrConstructDashboardModelEntity(entity: DashboardEntity): Promise<DashboardModelEntity> {
+	private async getOrConstructDashboardModelEntity(entity: Dashboard): Promise<DashboardModelEntity> {
 		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
 		if (existing) {
 			return existing;

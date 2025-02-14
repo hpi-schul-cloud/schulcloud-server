@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LearnroomTypes } from '@shared/domain/types';
-import { DashboardEntity, GridElement } from '../../../../shared/domain/entity/dashboard';
+import { Dashboard, GridElement } from '../../../../shared/domain/entity/dashboard';
 import { Learnroom } from '../../../../shared/domain/interface';
 
 const getLearnroomMock = (id: string): Learnroom => {
@@ -21,7 +21,7 @@ const getLearnroomMock = (id: string): Learnroom => {
 describe('dashboard entity', () => {
 	describe('constructor', () => {
 		it('should create dashboard with prefilled Grid', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
@@ -31,20 +31,20 @@ describe('dashboard entity', () => {
 				userId: 'userId',
 			});
 
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(dashboard instanceof Dashboard).toEqual(true);
 		});
 
 		it('should create dashboard when passing empty grid', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(dashboard instanceof Dashboard).toEqual(true);
 		});
 	});
 
 	describe('getUserId', () => {
 		it('should return the owners userId', () => {
 			const userId = 'userId';
-			const dashboard = new DashboardEntity('someid', { grid: [], userId });
+			const dashboard = new Dashboard('someid', { grid: [], userId });
 			const result = dashboard.getUserId();
 			expect(result).toEqual(userId);
 		});
@@ -52,13 +52,13 @@ describe('dashboard entity', () => {
 
 	describe('getGrid', () => {
 		it('getGrid should return correct value', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 			const testGrid = dashboard.getGrid();
 			expect(Array.isArray(testGrid)).toEqual(true);
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
@@ -78,7 +78,7 @@ describe('dashboard entity', () => {
 
 	describe('moveElement', () => {
 		it('should move existing element to a new position', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
@@ -94,7 +94,7 @@ describe('dashboard entity', () => {
 		});
 
 		it('when no element at origin position, it should throw notFound', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 			const callMove = () => dashboard.moveElement({ x: 4, y: 2 }, { x: 3, y: 2 });
 			expect(callMove).toThrow(NotFoundException);
 		});
@@ -102,7 +102,7 @@ describe('dashboard entity', () => {
 		it('when the new position is taken, it should merge the elements into a group', () => {
 			const movedElement = GridElement.FromPersistedReference('tomove', getLearnroomMock('ref02'));
 			const targetElement = GridElement.FromPersistedReference('target', getLearnroomMock('ref01'));
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
 					{ pos: { x: 3, y: 3 }, gridElement: targetElement },
@@ -121,7 +121,7 @@ describe('dashboard entity', () => {
 				getLearnroomMock('ref02'),
 				getLearnroomMock('ref03'),
 			]);
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
 				userId: 'userId',
 			});
@@ -132,7 +132,7 @@ describe('dashboard entity', () => {
 		});
 
 		it('when the new position is out of bounds, it should throw badrequest', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				colums: 3,
 				grid: [
 					{
@@ -149,7 +149,7 @@ describe('dashboard entity', () => {
 
 	describe('getElement', () => {
 		it('getElement should return correct value', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
@@ -173,7 +173,7 @@ describe('dashboard entity', () => {
 		});
 
 		it('when no element at request position, it should throw notFound', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 			const callGetElement = () => dashboard.getElement({ x: 0, y: 2 });
 			expect(callGetElement).toThrow(NotFoundException);
 		});
@@ -181,7 +181,7 @@ describe('dashboard entity', () => {
 
 	describe('setLearnrooms', () => {
 		it('should add any passed rooms that are not on the dashboard yet', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [],
 				userId: 'userId',
 			});
@@ -193,7 +193,7 @@ describe('dashboard entity', () => {
 
 		it('should put new elements into first available positions', () => {
 			const existingRoom = getLearnroomMock('referenceId');
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 0 },
@@ -211,7 +211,7 @@ describe('dashboard entity', () => {
 
 		it('should not change any received rooms that are already on the board', () => {
 			const room = getLearnroomMock('referenceId');
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
@@ -230,7 +230,7 @@ describe('dashboard entity', () => {
 
 		it('should remove any rooms that are on the dashboard, but not in the received list', () => {
 			const room = getLearnroomMock('referenceId');
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },

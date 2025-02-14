@@ -161,7 +161,7 @@ export type GridElementWithPosition = {
 export type DashboardProps = { colums?: number; grid: GridElementWithPosition[]; userId: EntityId };
 
 // is not marked as Entity and should not named as Entity
-export class DashboardEntity {
+export class Dashboard {
 	public id: EntityId;
 
 	public columns: number;

@@ -1,4 +1,4 @@
-import { DashboardEntity, GridElement, GridElementWithPosition } from '@shared/domain/entity';
+import { Dashboard, GridElement, GridElementWithPosition } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardResponse } from '../controller/dto';
 import { DashboardMapper } from './dashboard.mapper';
@@ -34,7 +34,7 @@ describe('dashboard mapper', () => {
 				]),
 			},
 		];
-		const entity = new DashboardEntity('someid', { grid: gridArray, userId: 'userId' });
+		const entity = new Dashboard('someid', { grid: gridArray, userId: 'userId' });
 		const result = DashboardMapper.mapToResponse(entity);
 		expect(result instanceof DashboardResponse).toEqual(true);
 		expect(result.gridElements[0].id).toEqual('referenceId');

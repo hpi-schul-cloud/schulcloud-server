@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course,
 	CourseGroup,
-	DashboardEntity,
+	Dashboard,
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	GridElement,
@@ -24,7 +24,7 @@ describe('dashboard repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardEntity, DashboardModelEntity, DashboardGridElementModel, Course, User, CourseGroup],
+					entities: [Dashboard, DashboardModelEntity, DashboardGridElementModel, Course, User, CourseGroup],
 				}),
 			],
 			providers: [DashboardRepo, DashboardModelMapper],
@@ -41,7 +41,7 @@ describe('dashboard repo', () => {
 	it('should persist a plain dashboard', async () => {
 		const user = userFactory.build();
 		await em.persistAndFlush(user);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), { grid: [], userId: user.id });
+		const dashboard = new Dashboard(new ObjectId().toString(), { grid: [], userId: user.id });
 		await repo.persist(dashboard);
 		await em.flush();
 		const result = await repo.getDashboardById(dashboard.id);
@@ -53,7 +53,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const course = courseFactory.build({ students: [user] });
 		await em.persistAndFlush([course, user]);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -73,7 +73,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const courses = courseFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -101,7 +101,7 @@ describe('dashboard repo', () => {
 		const user = userFactory.build();
 		const courses = courseFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -127,7 +127,7 @@ describe('dashboard repo', () => {
 		const courses = courseFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
 		const elementId = new ObjectId().toString();
-		const dashboard = new DashboardEntity(new ObjectId().toString(), {
+		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
 				{
 					pos: { x: 1, y: 3 },
@@ -154,7 +154,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -177,7 +177,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -198,7 +198,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -221,7 +221,7 @@ describe('dashboard repo', () => {
 				const user = userFactory.build();
 				await em.persistAndFlush(user);
 				const result = await repo.getUsersDashboard(user.id);
-				expect(result instanceof DashboardEntity).toEqual(true);
+				expect(result instanceof Dashboard).toEqual(true);
 				expect(result.getGrid().length).toEqual(0);
 			});
 		});
@@ -231,7 +231,7 @@ describe('dashboard repo', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
-				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				const dashboard = new Dashboard(new ObjectId().toString(), {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
@@ -281,7 +281,7 @@ describe('dashboard repo', () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
-				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				const dashboard = new Dashboard(new ObjectId().toString(), {
 					grid: [
 						{
 							pos: { x: 1, y: 3 },
@@ -311,7 +311,7 @@ describe('dashboard repo', () => {
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([userWithoutDashoard, user, course]);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -341,7 +341,7 @@ describe('dashboard repo', () => {
 				expect(result1).toEqual(1);
 
 				const result2 = await repo.getUsersDashboard(user.id);
-				expect(result2 instanceof DashboardEntity).toEqual(true);
+				expect(result2 instanceof Dashboard).toEqual(true);
 				expect(result2.getGrid().length).toEqual(0);
 			});
 		});

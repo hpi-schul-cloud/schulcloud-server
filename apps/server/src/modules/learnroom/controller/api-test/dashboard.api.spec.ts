@@ -3,7 +3,7 @@ import { DashboardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
+import { Dashboard, GridElement, User } from '@shared/domain/entity';
 import { IDashboardRepo } from '@shared/repo/dashboard';
 import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -150,7 +150,7 @@ describe('Dashboard Controller (API)', () => {
 		it('should update position of target element', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -175,7 +175,7 @@ describe('Dashboard Controller (API)', () => {
 		it('should create groups', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -210,7 +210,7 @@ describe('Dashboard Controller (API)', () => {
 		it('should add element to group', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 2, y: 2 },
@@ -245,7 +245,7 @@ describe('Dashboard Controller (API)', () => {
 		it('should remove element from group', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },
@@ -272,7 +272,7 @@ describe('Dashboard Controller (API)', () => {
 		it('should fail with incomplete input', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 3 },
@@ -311,7 +311,7 @@ describe('Dashboard Controller (API)', () => {
 		it('should be able to rename group', async () => {
 			const { loggedInClient, dashboardId, teacherUser } = await setup();
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 3, y: 3 },

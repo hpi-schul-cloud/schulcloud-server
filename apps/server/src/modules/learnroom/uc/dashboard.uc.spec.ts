@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, DashboardEntity, GridElement } from '@shared/domain/entity';
+import { Course, Dashboard, GridElement } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
@@ -61,19 +61,19 @@ describe('dashboard uc', () => {
 	describe('getUsersDashboard', () => {
 		it('should return a dashboard', async () => {
 			const spy = jest.spyOn(repo, 'getUsersDashboard').mockImplementation((userId: EntityId) => {
-				const dashboard = new DashboardEntity('someid', { grid: [], userId });
+				const dashboard = new Dashboard('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
 			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
 			const dashboard = await service.getUsersDashboard('userId');
 
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(dashboard instanceof Dashboard).toEqual(true);
 			expect(spy).toHaveBeenCalledWith('userId');
 		});
 
 		it('should synchronize which courses are on the board', async () => {
 			const userId = 'userId';
-			const dashboard = new DashboardEntity('someid', { grid: [], userId });
+			const dashboard = new Dashboard('someid', { grid: [], userId });
 			const dashboardRepoSpy = jest
 				.spyOn(repo, 'getUsersDashboard')
 				.mockImplementation(() => Promise.resolve(dashboard));
@@ -86,7 +86,7 @@ describe('dashboard uc', () => {
 
 			const result = await service.getUsersDashboard('userId');
 
-			expect(result instanceof DashboardEntity).toEqual(true);
+			expect(result instanceof Dashboard).toEqual(true);
 			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
 			expect(courseRepoSpy).toHaveBeenCalledWith(
 				userId,
@@ -101,7 +101,7 @@ describe('dashboard uc', () => {
 	describe('moveElementOnDashboard', () => {
 		it('should update position of existing element', async () => {
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
-				const dashboard = new DashboardEntity(id, {
+				const dashboard = new Dashboard(id, {
 					grid: [
 						{
 							pos: { x: 1, y: 2 },
@@ -121,7 +121,7 @@ describe('dashboard uc', () => {
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
 				if (id === 'dashboardId')
 					return Promise.resolve(
-						new DashboardEntity(id, {
+						new Dashboard(id, {
 							grid: [
 								{
 									pos: { x: 1, y: 2 },
@@ -141,7 +141,7 @@ describe('dashboard uc', () => {
 		it('should throw if userIds dont match', async () => {
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) =>
 				Promise.resolve(
-					new DashboardEntity(id, {
+					new Dashboard(id, {
 						grid: [
 							{
 								pos: { x: 1, y: 2 },
@@ -161,7 +161,7 @@ describe('dashboard uc', () => {
 	describe('renameGroupOnDashboard', () => {
 		it('should update title of existing element', async () => {
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
-				const dashboard = new DashboardEntity(id, {
+				const dashboard = new Dashboard(id, {
 					grid: [
 						{
 							pos: { x: 3, y: 4 },
@@ -185,7 +185,7 @@ describe('dashboard uc', () => {
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) => {
 				if (id === 'dashboardId')
 					return Promise.resolve(
-						new DashboardEntity(id, {
+						new Dashboard(id, {
 							grid: [
 								{
 									pos: { x: 3, y: 4 },
@@ -208,7 +208,7 @@ describe('dashboard uc', () => {
 		it('should throw if userIds dont match', async () => {
 			jest.spyOn(repo, 'getDashboardById').mockImplementation((id: EntityId) =>
 				Promise.resolve(
-					new DashboardEntity(id, {
+					new Dashboard(id, {
 						grid: [
 							{
 								pos: { x: 3, y: 4 },

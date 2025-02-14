@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Course,
 	CourseGroup,
-	DashboardEntity,
+	Dashboard,
 	DashboardGridElementModel,
 	DashboardModelEntity,
 	GridElement,
@@ -68,7 +68,7 @@ describe('dashboard model mapper', () => {
 		it('should map dashboard with elements and groups to model', async () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
@@ -130,7 +130,7 @@ describe('dashboard model mapper', () => {
 			);
 			await em.persistAndFlush(originalDashboard);
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 2, y: 1 },
@@ -157,7 +157,7 @@ describe('dashboard model mapper', () => {
 		it('should not accept unknown types of learnrooms', async () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 4 },

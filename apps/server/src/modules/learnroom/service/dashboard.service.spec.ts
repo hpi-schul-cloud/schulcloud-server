@@ -11,7 +11,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
+import { Dashboard, GridElement, User } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
 import { UserRepo } from '@shared/repo/user';
@@ -95,7 +95,7 @@ describe(DashboardService.name, () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const dashboardId = new ObjectId().toHexString();
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
