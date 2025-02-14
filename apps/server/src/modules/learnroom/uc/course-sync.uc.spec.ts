@@ -3,9 +3,10 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CourseDoService } from '../service';
 import { CourseSyncService } from '../service/course-sync.service';
 import { courseFactory } from '../testing';
@@ -49,7 +50,7 @@ describe(CourseSyncUc.name, () => {
 		groupService = module.get(GroupService);
 		courseSyncService = module.get(CourseSyncService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

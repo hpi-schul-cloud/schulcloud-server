@@ -13,10 +13,10 @@ import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
@@ -33,7 +33,7 @@ describe('LdapStrategy', () => {
 	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			imports: [PassportModule],

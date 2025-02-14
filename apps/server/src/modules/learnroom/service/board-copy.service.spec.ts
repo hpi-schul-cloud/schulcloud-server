@@ -3,24 +3,28 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
-import { columnBoardFactory, columnBoardNodeFactory } from '@modules/board/testing';
+import { columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { LegacyBoard } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
-import { boardFactory } from '@testing/factory/board.factory';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { ColumnBoardNodeRepo } from '../repo';
-import { columnboardBoardElementFactory, lessonBoardElementFactory, taskBoardElementFactory } from '../testing';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
+import {
+	boardFactory,
+	columnboardBoardElementFactory,
+	columnBoardNodeFactory,
+	lessonBoardElementFactory,
+	taskBoardElementFactory,
+} from '../testing';
 import { BoardCopyService } from './board-copy.service';
 
 describe('board copy service', () => {
@@ -37,7 +41,18 @@ describe('board copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([
+			User,
+			Course,
+			CourseGroup,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				BoardCopyService,

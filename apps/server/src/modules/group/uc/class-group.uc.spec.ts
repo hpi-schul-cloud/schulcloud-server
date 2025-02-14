@@ -29,11 +29,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupFilter, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -116,7 +116,7 @@ describe('ClassGroupUc', () => {
 		courseService = module.get(CourseDoService);
 		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

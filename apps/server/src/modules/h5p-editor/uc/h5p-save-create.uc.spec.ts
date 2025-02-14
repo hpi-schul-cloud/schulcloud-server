@@ -6,7 +6,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { H5PContentParentType } from '../entity';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
@@ -76,7 +75,6 @@ describe('save or create H5P content', () => {
 		uc = module.get(H5PEditorUc);
 		h5pEditor = module.get(H5PEditor);
 		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
-		await setupEntities();
 	});
 
 	afterEach(() => {

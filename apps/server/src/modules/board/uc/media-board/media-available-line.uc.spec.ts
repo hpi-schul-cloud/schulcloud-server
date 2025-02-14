@@ -13,8 +13,8 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	MediaAvailableLine,
 	MediaAvailableLineElement,
@@ -51,7 +51,7 @@ describe(MediaAvailableLineUc.name, () => {
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

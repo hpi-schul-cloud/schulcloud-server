@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { MetaDataEntityType } from '../types';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
@@ -31,7 +30,6 @@ describe(MetaTagExtractorService.name, () => {
 		metaTagInternalUrlService = module.get(MetaTagInternalUrlService);
 		metaTagExternalUrlService = module.get(MetaTagExternalUrlService);
 		service = module.get(MetaTagExtractorService);
-		await setupEntities();
 	});
 
 	afterAll(async () => {

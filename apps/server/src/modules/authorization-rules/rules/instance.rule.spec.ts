@@ -7,9 +7,10 @@ import {
 } from '@modules/authorization';
 import { instanceFactory } from '@modules/instance/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { InstanceRule } from './instance.rule';
 
 describe(InstanceRule.name, () => {
@@ -20,7 +21,7 @@ describe(InstanceRule.name, () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [InstanceRule, AuthorizationHelper, AuthorizationInjectionService],

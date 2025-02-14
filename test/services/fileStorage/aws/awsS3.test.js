@@ -1,55 +1,45 @@
 const chai = require('chai');
 const chaiHttp = require('chai-http');
 const chaiAsPromised = require('chai-as-promised');
-
 const { expect } = require('chai');
-const mockery = require('mockery');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
-const mockAws = require('./s3.mock');
 const appPromise = require('../../../../src/app');
-
-const testObjects = require('../../helpers/testObjects')(appPromise());
 const { schoolModel } = require('../../../../src/services/school/model');
+const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
+const testHelper = require('../../helpers/testObjects');
+const mockAwsHelper = require('./s3.mock');
 
 chai.use(chaiHttp);
 chai.use(chaiAsPromised);
 
 describe('AWS file storage strategy', () => {
 	let aws;
+	let server;
+	let testObjects;
 
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
 	let configBefore = {};
 	before(async () => {
-		// Enable mockery to mock objects
-		mockery.enable({
-			warnOnUnregistered: false,
-		});
-
-		// mock aws functions
-		mockery.registerMock('aws-sdk', mockAws);
-		mockery.registerMock('../../../../config/secrets.json', {
-			aws: {
-				endpointUrl: 'test.url/',
-			},
-		});
-
 		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
 		Configuration.set('S3_KEY', '1234567891234567');
-
+		const app = await appPromise();
+		server = await app.listen(0);
+		testObjects = testHelper(app);
 		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
 
-		delete require.cache[require.resolve('../../../../src/services/fileStorage/strategies/awsS3')];
-		const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
-		aws = new AWSStrategy();
+		const config = {
+			aws: {
+				endpointUrl: 'test.url/',
+			},
+		};
+		aws = new AWSStrategy(mockAwsHelper, config);
 	});
 
 	after(async () => {
-		mockery.deregisterAll();
-		mockery.disable();
 		await testObjects.cleanup();
+		await server.close();
 		Configuration.reset(configBefore);
 	});
 

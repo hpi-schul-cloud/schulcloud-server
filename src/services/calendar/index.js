@@ -175,6 +175,10 @@ class Service {
 		};
 	}
 
+	async send(options) {
+		return axios(options);
+	}
+
 	create(data, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
@@ -187,7 +191,7 @@ class Service {
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
-		return axios(options).then((res) => {
+		return this.send(options).then((res) => {
 			const events = (res.data.data || []).map((event) =>
 				Object.assign(event, {
 					title: event.summary,
@@ -212,7 +216,7 @@ class Service {
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
-		return axios(options).then((res) => {
+		return this.send(options).then((res) => {
 			const events =
 				(params.query || {}).userId ||
 				(res.data.data || res.data || []).map((event) =>
@@ -240,7 +244,7 @@ class Service {
 			data: { data: [{ type: 'event' }] },
 		};
 
-		return axios(options).then((res) => {
+		return this.send(options).then((res) => {
 			// calendar returns nothing if event was successfully deleted
 			if (!res.data) return { message: 'Successful deleted event' };
 			return res;
@@ -259,7 +263,7 @@ class Service {
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
-		return axios(options).then((res) => {
+		return this.send(options).then((res) => {
 			const events = res.data.data || res.data || [];
 			return events.map(convertJsonApiToEvent);
 		});
