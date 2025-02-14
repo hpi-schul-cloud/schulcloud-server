@@ -4,10 +4,10 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestUc } from '../uc';
 import { DeletionExecutionParams } from './dto';
 
-@ApiTags('DeletionExecutions')
+@ApiTags('DeletionExecution')
 @XApiKeyAuthentication()
 @Controller('deletionExecutions')
-export class DeletionExecutionsController {
+export class DeletionExecutionController {
 	constructor(private readonly deletionRequestUc: DeletionRequestUc) {}
 
 	@Post()
@@ -18,7 +18,7 @@ export class DeletionExecutionsController {
 	@ApiResponse({
 		status: 204,
 	})
-	async executeDeletions(@Query() deletionExecutionQuery: DeletionExecutionParams) {
+	public executeDeletions(@Query() deletionExecutionQuery: DeletionExecutionParams): Promise<void> {
 		return this.deletionRequestUc.executeDeletionRequests(
 			deletionExecutionQuery.limit,
 			deletionExecutionQuery.runFailed

@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNumber, IsOptional, Min } from 'class-validator';
-import { DeletionTargetRef } from '../../../domain/interface';
+import { DeletionTargetRef } from '../../../../domain/interface';
 
-export class DeletionRequestBodyProps {
+export class DeletionRequestBodyParams {
 	@ApiProperty({
 		required: true,
 		nullable: false,

@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { DeletionTargetRef, DomainDeletionReport } from '../../../domain/interface';
-import { StatusModel } from '../../../domain/types';
+import { DeletionTargetRef, DomainDeletionReport } from '../../../../domain/interface';
+import { StatusModel } from '../../../../domain/types';
 
 export class DeletionRequestLogResponse {
 	@ApiProperty()

@@ -22,7 +22,7 @@ export class DeletionRequestService {
 		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
 	}
 
-	async createDeletionRequest(
+	public async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DomainName,
 		deleteAfter: Date
@@ -40,7 +40,7 @@ export class DeletionRequestService {
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
-	async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
+	public async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestRepo.findById(deletionRequestId);
 
 		return deletionRequest;
@@ -62,23 +62,26 @@ export class DeletionRequestService {
 		return count;
 	}
 
-	async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
+	public async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
 		await this.deletionRequestRepo.update(deletionRequestToUpdate);
 	}
 
-	async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
-		return this.deletionRequestRepo.markDeletionRequestAsExecuted(deletionRequestId);
+	public async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
+		const result = await this.deletionRequestRepo.markDeletionRequestAsExecuted(deletionRequestId);
+		return result;
 	}
 
-	async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
-		return this.deletionRequestRepo.markDeletionRequestAsFailed(deletionRequestId);
+	public async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise<boolean> {
+		const result = await this.deletionRequestRepo.markDeletionRequestAsFailed(deletionRequestId);
+		return result;
 	}
 
-	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
-		return this.deletionRequestRepo.markDeletionRequestAsPending(deletionRequestId);
+	public async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
+		const result = await this.deletionRequestRepo.markDeletionRequestAsPending(deletionRequestId);
+		return result;
 	}
 
-	async deleteById(deletionRequestId: EntityId): Promise<void> {
+	public async deleteById(deletionRequestId: EntityId): Promise<void> {
 		await this.deletionRequestRepo.deleteById(deletionRequestId);
 	}
 }

@@ -1,18 +1,18 @@
+import { LegacyLogger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
+import { DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
+import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
-import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 @EventsHandler(DataDeletedEvent)
@@ -49,7 +49,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	}
 
 	@UseRequestContext()
-	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
+	public async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent): Promise<void> {
 		await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
 
 		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
@@ -63,7 +63,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		return this.config.every((domain) => deletionLogs.some((log) => log.domain === domain));
 	}
 
-	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
+	public async createDeletionRequest(deletionRequest: DeletionRequestBodyParams): Promise<DeletionRequestResponse> {
 		this.logger.debug({ action: 'createDeletionRequest', deletionRequest });
 		const minutes =
 			deletionRequest.deleteAfterMinutes ?? this.configService.get<number>('ADMIN_API__DELETION_DELETE_AFTER_MINUTES');
@@ -78,7 +78,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		return result;
 	}
 
-	async executeDeletionRequests(limit?: number, getFailed?: boolean): Promise<void> {
+	public async executeDeletionRequests(limit?: number, getFailed?: boolean): Promise<void> {
 		this.logger.debug({ action: 'executeDeletionRequests', limit });
 
 		let deletionRequests: DeletionRequest[] = [];
@@ -110,7 +110,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		this.logger.debug({ action: 'deletion process completed' });
 	}
 
-	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
+	public async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
 		this.logger.debug({ action: 'findById', deletionRequestId });
 
 		const deletionRequest: DeletionRequest = await this.deletionRequestService.findById(deletionRequestId);
@@ -129,7 +129,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		return response;
 	}
 
-	async deleteDeletionRequestById(deletionRequestId: EntityId): Promise<void> {
+	public async deleteDeletionRequestById(deletionRequestId: EntityId): Promise<void> {
 		this.logger.debug({ action: 'deleteDeletionRequestById', deletionRequestId });
 
 		await this.deletionRequestService.deleteById(deletionRequestId);

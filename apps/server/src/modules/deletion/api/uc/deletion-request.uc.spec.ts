@@ -15,7 +15,7 @@ import { DeletionLogService, DeletionRequestService } from '../../domain/service
 import { deletionLogFactory, deletionRequestFactory, deletionTestConfig } from '../../domain/testing';
 import { DomainName, OperationType, StatusModel } from '../../domain/types';
 import { DeletionRequestLogResponseBuilder } from '../builder';
-import { DeletionRequestBodyProps } from '../controller/dto';
+import { DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
 
@@ -80,7 +80,7 @@ describe(DeletionRequestUc.name, () => {
 				jest.useFakeTimers().setSystemTime(new Date());
 
 				const deleteAfterMinutes = 1;
-				const deletionRequestToCreate: DeletionRequestBodyProps = {
+				const deletionRequestToCreate: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
 						id: new ObjectId().toHexString(),

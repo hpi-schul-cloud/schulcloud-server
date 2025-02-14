@@ -1,5 +1,6 @@
 import { Scope } from '@shared/repo/scope';
 import { FilterQuery } from '@mikro-orm/core';
+import { EntityId } from '@shared/domain/types';
 import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 
@@ -24,6 +25,30 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		if (dateConditions.length > 0) {
 			query.$and = dateConditions;
 		}
+
+		this.addQuery(query);
+		return this;
+	}
+
+	byUserIdsAndFailed(userIds: EntityId[]): this {
+		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.FAILED };
+		query.$and = [{ targetRefId: { $in: userIds } }];
+
+		this.addQuery(query);
+		return this;
+	}
+
+	byUserIdsAndPending(userIds: EntityId[]): this {
+		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.PENDING };
+		query.$and = [{ targetRefId: { $in: userIds } }];
+
+		this.addQuery(query);
+		return this;
+	}
+
+	byUserIdsAndSuccess(userIds: EntityId[]): this {
+		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.SUCCESS };
+		query.$and = [{ targetRefId: { $in: userIds } }];
 
 		this.addQuery(query);
 		return this;

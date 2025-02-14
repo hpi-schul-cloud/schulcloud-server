@@ -1,10 +1,10 @@
-import { DeletionRequestBodyProps } from './deletion-request.body.props';
+import { DeletionRequestBodyParams } from './deletion-request.body.params';
 
-describe(DeletionRequestBodyProps.name, () => {
+describe(DeletionRequestBodyParams.name, () => {
 	describe('constructor', () => {
 		describe('when passed properties', () => {
 			const setup = () => {
-				const deletionRequestBodyProps = new DeletionRequestBodyProps();
+				const deletionRequestBodyProps = new DeletionRequestBodyParams();
 
 				return { deletionRequestBodyProps };
 			};
