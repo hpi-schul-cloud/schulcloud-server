@@ -24,6 +24,7 @@ import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosError, AxiosResponse } from 'axios';
+import moment from 'moment';
 import { TspFetchService } from './tsp-fetch.service';
 
 describe(TspFetchService.name, () => {
@@ -412,13 +413,15 @@ describe(TspFetchService.name, () => {
 				const days = -1;
 				// const expectedDate = '1970-01-01 01:00:00.000';
 
-				let expectedDate;
+				/* let expectedDate;
 				const currentTimezoneOffset = new Date().getTimezoneOffset();
 				if (currentTimezoneOffset === 0) {
 					expectedDate = '1970-01-01 00:00:00.000';
 				} else {
 					expectedDate = '1970-01-01 01:00:00.000';
-				}
+				} */
+
+				const expectedDate = moment(0).format('YYYY-MM-DD HH:mm:ss.SSS');
 
 				await sut.fetchTspTeachers(system, days);
 
