@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { DeletionLogRepo } from '../../repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../builder';
 import { deletionLogFactory } from '../testing';
@@ -26,8 +25,6 @@ describe(DeletionLogService.name, () => {
 
 		service = module.get(DeletionLogService);
 		deletionLogRepo = module.get(DeletionLogRepo);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {

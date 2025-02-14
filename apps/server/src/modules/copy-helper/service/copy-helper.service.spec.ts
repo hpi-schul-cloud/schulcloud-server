@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 import { CopyHelperService } from './copy-helper.service';
 
@@ -35,7 +36,7 @@ describe('copy helper service', () => {
 	let copyHelperService: CopyHelperService;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	afterAll(async () => {

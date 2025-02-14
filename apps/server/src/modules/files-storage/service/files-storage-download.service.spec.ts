@@ -6,7 +6,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';

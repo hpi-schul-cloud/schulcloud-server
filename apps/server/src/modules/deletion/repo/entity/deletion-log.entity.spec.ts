@@ -1,14 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { setupEntities } from '@testing/setup-entities';
 import { DomainDeletionReport, DomainOperationReport } from '../../domain/interface';
 import { DomainName, OperationType } from '../../domain/types';
 import { DeletionLogEntity } from './deletion-log.entity';
 
 describe(DeletionLogEntity.name, () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	describe('constructor', () => {
 		describe('When constructor is called', () => {
 			const setup = () => {

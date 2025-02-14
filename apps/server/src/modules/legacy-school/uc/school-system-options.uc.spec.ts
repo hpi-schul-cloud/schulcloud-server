@@ -5,15 +5,16 @@ import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';
-import { SchoolSystemOptionsUc } from './school-system-options.uc';
 import { schoolSystemOptionsFactory } from '../testing';
+import { SchoolSystemOptionsUc } from './school-system-options.uc';
 
 describe(SchoolSystemOptionsUc.name, () => {
 	let module: TestingModule;
@@ -25,7 +26,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 	let provisioningOptionsUpdateService: DeepMocked<ProvisioningOptionsUpdateService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

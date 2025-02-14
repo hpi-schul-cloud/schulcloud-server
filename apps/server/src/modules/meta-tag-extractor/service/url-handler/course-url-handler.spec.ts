@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
-import { setupEntities } from '@testing/setup-entities';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
+import { ObjectId } from 'bson';
 import { MetaDataEntityType } from '../../types';
 import { CourseUrlHandler } from './course-url-handler';
 
@@ -24,13 +26,14 @@ describe(CourseUrlHandler.name, () => {
 
 		courseService = module.get(CourseService);
 		courseUrlHandler = module.get(CourseUrlHandler);
-		await setupEntities();
+
+		await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {
 		describe('when url fits', () => {
 			it('should call courseService with the correct id', async () => {
-				const id = '671a5bdf0995ace8cbc6f899';
+				const id = new ObjectId().toHexString();
 				const url = new URL(`https://localhost/course-rooms/${id}`);
 
 				await courseUrlHandler.getMetaData(url);
@@ -39,14 +42,14 @@ describe(CourseUrlHandler.name, () => {
 			});
 
 			it('should take the title from the course name', async () => {
-				const id = '671a5bdf0995ace8cbc6f899';
-				const url = new URL(`https://localhost/course-rooms/${id}`);
-				const courseName = 'My Course';
-				courseService.findById.mockResolvedValue({ name: courseName } as Course);
+				const name = 'My Course';
+				const course = courseFactory.buildWithId({ name });
+				const url = new URL(`https://localhost/course-rooms/${course.id}`);
+
+				courseService.findById.mockResolvedValueOnce(course);
 
 				const result = await courseUrlHandler.getMetaData(url);
-
-				expect(result).toEqual(expect.objectContaining({ title: courseName, type: MetaDataEntityType.COURSE }));
+				expect(result).toEqual(expect.objectContaining({ title: name, type: MetaDataEntityType.COURSE }));
 			});
 		});
 

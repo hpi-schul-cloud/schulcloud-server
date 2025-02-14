@@ -8,7 +8,6 @@ import { synchronizationFactory } from '@modules/synchronization/domain/testing'
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { IdpConsoleConfig } from '../idp-console.config';
 import {
@@ -63,8 +62,6 @@ describe(SynchronizationUc.name, () => {
 		accountService = module.get(AccountService);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
 		configService = module.get(ConfigService);
-
-		await setupEntities();
 	});
 
 	beforeEach(() => {
