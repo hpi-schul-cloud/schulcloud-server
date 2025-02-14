@@ -205,12 +205,6 @@ export class RoomController {
 		@Body() bodyParams: PassOwnershipBodyParams
 	): Promise<void> {
 		await this.roomUc.passOwnership(currentUser.userId, urlParams.roomId, bodyParams.userId);
-		/* await this.roomUc.changeRolesOfMembers(
-			currentUser.userId,
-			urlParams.roomId,
-			bodyParams.userIds,
-			bodyParams.roleName
-		); */
 	}
 
 	@Patch(':roomId/leave')

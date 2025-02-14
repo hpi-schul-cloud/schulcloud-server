@@ -3,7 +3,7 @@ import { IsMongoId } from 'class-validator';
 
 export class PassOwnershipBodyParams {
 	@ApiProperty({
-		description: 'The IDs of the users',
+		description: 'The ID of the users',
 		required: true,
 	})
 	@IsMongoId()
