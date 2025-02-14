@@ -405,6 +405,7 @@ describe(LogoutService.name, () => {
 		describe('when an user with invalid system is provided', () => {
 			const setup = () => {
 				const user = currentUserFactory.build({ isExternalUser: true, systemId: undefined });
+				systemService.findById.mockResolvedValue(null);
 
 				return {
 					user,
