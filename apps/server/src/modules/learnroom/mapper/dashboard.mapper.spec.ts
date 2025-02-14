@@ -1,6 +1,6 @@
-import { Dashboard, GridElement, GridElementWithPosition } from '@shared/domain/entity';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardResponse } from '../controller/dto';
+import { Dashboard, GridElement, GridElementWithPosition } from '../domain/do/dashboard';
+import { LearnroomMetadata, LearnroomTypes } from '../types';
 import { DashboardMapper } from './dashboard.mapper';
 
 const learnroomMock = (id: string, name: string) => {

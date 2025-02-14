@@ -11,14 +11,16 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Dashboard, GridElement, User } from '@shared/domain/entity';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
+import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
+import { Dashboard, GridElement } from '../domain/do/dashboard';
+import { DashboardElementRepo } from '../repo';
+import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { LearnroomMetadata, LearnroomTypes } from '../types';
 
 const learnroomMock = (id: string, name: string) => {
 	return {

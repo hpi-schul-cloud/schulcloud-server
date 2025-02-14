@@ -1,13 +1,14 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { DashboardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Dashboard, GridElement, User } from '@shared/domain/entity';
-import { IDashboardRepo } from '@shared/repo/dashboard';
+import { User } from '@shared/domain/entity';
 import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { Dashboard, GridElement } from '../../domain/do/dashboard';
+import { IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
+import { DashboardResponse } from '../dto';
 
 describe('Dashboard Controller (API)', () => {
 	let app: INestApplication;

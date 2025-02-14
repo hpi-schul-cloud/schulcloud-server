@@ -1,17 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	CourseGroup,
-	Dashboard,
-	DashboardGridElementModel,
-	DashboardModelEntity,
-	GridElement,
-	User,
-} from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
+import { Dashboard, GridElement } from '../../domain/do/dashboard';
+import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardRepo } from './dashboard.repo';
 import { DashboardModelMapper } from './mapper/dashboard.model.mapper';
 
