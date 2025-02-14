@@ -5,9 +5,10 @@ import { EntityNotFoundError } from '@shared/common/error';
 
 import { faker } from '@faker-js/faker';
 import { AuthorizationService } from '@modules/authorization';
+import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
