@@ -1,6 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { DomainName, BatchStatus } from '../types';
+import { BatchStatus, DomainName } from '../types';
 
 export interface DeletionBatchProps extends AuthorizableObject {
 	name: string;
@@ -13,7 +13,6 @@ export interface DeletionBatchProps extends AuthorizableObject {
 	updatedAt: Date;
 }
 
-// TODO: tests missing
 export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 	public getProps(): DeletionBatchProps {
 		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.

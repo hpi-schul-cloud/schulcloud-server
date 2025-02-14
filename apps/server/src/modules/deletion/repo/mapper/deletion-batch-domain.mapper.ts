@@ -1,7 +1,6 @@
 import { DeletionBatch } from '../../domain/do';
 import { DeletionBatchEntity } from '../entity';
 
-// TODO: tests missing
 export class DeletionBatchDomainMapper {
 	public static mapEntityToDo(entity: DeletionBatchEntity): DeletionBatch {
 		// check identity map reference
