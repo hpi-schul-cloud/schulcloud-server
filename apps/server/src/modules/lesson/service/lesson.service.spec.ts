@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -13,10 +14,18 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import { Logger } from '@core/logger';
+import {
+	ComponentProperties,
+	ComponentType,
+	Course,
+	CourseGroup,
+	LessonEntity,
+	Material,
+	Submission,
+	Task,
+} from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 
@@ -30,7 +39,7 @@ describe('LessonService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [

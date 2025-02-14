@@ -7,11 +7,12 @@ import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ProviderLoginResponse, ProviderRedirectResponse } from '../domain';
 import { OauthProviderLoginFlowService } from '../domain/service/oauth-provider.login-flow.service';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
@@ -72,7 +73,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		userService = module.get(UserService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

@@ -3,13 +3,8 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { Role } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
-import { setupEntities } from '@testing/setup-entities';
 
 describe('RoleMapper', () => {
-	beforeAll(async () => {
-		await setupEntities();
-	});
-
 	it('mapFromEntityToDto', () => {
 		// Arrange
 		const entity: Role = roleFactory.buildWithId({ permissions: [Permission.DELETE_TEAM, Permission.COMMENTS_EDIT] });

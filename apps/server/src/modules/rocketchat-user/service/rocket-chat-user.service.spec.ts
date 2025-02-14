@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -14,10 +15,10 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RocketChatError, RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { RocketChatUser } from '../domain';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
+import { RocketChatUserEntity } from '../entity';
 import { RocketChatUserRepo } from '../repo';
 import { RocketChatUserService } from './rocket-chat-user.service';
 
@@ -29,7 +30,7 @@ describe(RocketChatUserService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([RocketChatUserEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -1,8 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference } from '@modules/board';
 import { Injectable } from '@nestjs/common';
-import { ColumnBoardNode } from '@shared/domain/entity/column-board-node.entity';
 import { EntityId } from '@shared/domain/types/entity-id';
+import { ColumnBoardNode } from './column-board-node.entity';
 
 /**
  * @deprecated - this is here only for the sake of the legacy-board (lernraum)

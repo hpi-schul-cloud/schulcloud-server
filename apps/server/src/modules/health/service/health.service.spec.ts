@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { HealthCheck } from '../domain';
 import { HealthCheckRepo } from '../repo';
 import { HealthCheckEntity } from '../repo/entity';

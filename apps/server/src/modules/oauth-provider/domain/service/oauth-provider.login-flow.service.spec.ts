@@ -4,7 +4,6 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 describe(OauthProviderLoginFlowService.name, () => {
@@ -26,8 +25,6 @@ describe(OauthProviderLoginFlowService.name, () => {
 
 		service = module.get(OauthProviderLoginFlowService);
 		externalToolService = module.get(ExternalToolService);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

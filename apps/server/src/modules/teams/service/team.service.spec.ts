@@ -11,10 +11,11 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TeamEntity } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo/teams';
+import { setupEntities } from '@testing/database';
 import { teamFactory } from '@testing/factory/team.factory';
 import { teamUserFactory } from '@testing/factory/teamuser.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { TeamService } from './team.service';
 
@@ -26,7 +27,7 @@ describe('TeamService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([TeamEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

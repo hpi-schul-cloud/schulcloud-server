@@ -1,5 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
+	Course,
+	CourseGroup,
 	CourseNews,
 	News,
 	NewsProperties,
@@ -10,10 +12,10 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	CreateNewsParams,
 	FilterNewsParams,
@@ -115,7 +117,7 @@ const getExpectedNewsResponse = (
 
 describe('NewsMapper', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 	});
 
 	describe('mapToResponse', () => {

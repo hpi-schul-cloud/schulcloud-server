@@ -12,7 +12,6 @@ const homeworks = require('./homeworks');
 const lessons = require('./lessons');
 const login = require('./login');
 const problems = require('./problems');
-
 const roles = require('./roles');
 const registrationPins = require('./registrationPins');
 const schoolGroups = require('./schoolGroups');

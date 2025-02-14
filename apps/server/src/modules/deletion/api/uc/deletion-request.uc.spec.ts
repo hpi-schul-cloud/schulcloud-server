@@ -1,11 +1,13 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
+import { DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
 import { UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
@@ -16,7 +18,6 @@ import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
-import { DeletionConfig } from '../../deletion.config';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -27,7 +28,7 @@ describe(DeletionRequestUc.name, () => {
 	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([DeletionRequestEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

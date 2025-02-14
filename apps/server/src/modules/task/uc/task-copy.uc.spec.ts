@@ -7,14 +7,15 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { CourseRepo } from '@shared/repo/course';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 import { TaskCopyUC } from './task-copy.uc';
@@ -31,7 +32,7 @@ describe('task copy uc', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [

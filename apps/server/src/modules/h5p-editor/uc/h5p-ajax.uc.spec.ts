@@ -7,7 +7,6 @@ import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
-import { setupEntities } from '@testing/setup-entities';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -56,7 +55,6 @@ describe('H5P Ajax', () => {
 		uc = module.get(H5PEditorUc);
 		ajaxEndpoint = module.get(H5PAjaxEndpoint);
 		userService = module.get(UserService);
-		await setupEntities();
 	});
 
 	afterEach(() => {

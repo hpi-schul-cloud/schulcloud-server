@@ -2,9 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationRollbackService } from '../service';
 import { UserLoginMigrationRollbackUc } from './user-login-migration-rollback.uc';
 
@@ -16,7 +17,7 @@ describe(UserLoginMigrationRollbackUc.name, () => {
 	let userLoginMigrationRollbackService: DeepMocked<UserLoginMigrationRollbackService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

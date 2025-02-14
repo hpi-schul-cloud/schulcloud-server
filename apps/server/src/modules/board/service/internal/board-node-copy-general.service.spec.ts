@@ -8,7 +8,6 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool/se
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	cardFactory,
 	collaborativeTextEditorFactory,
@@ -58,8 +57,6 @@ describe(BoardNodeCopyService.name, () => {
 		}).compile();
 
 		service = module.get(BoardNodeCopyService);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

@@ -8,7 +8,6 @@ import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/doma
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
@@ -58,8 +57,6 @@ describe(SchoolMigrationService.name, () => {
 		userService = module.get(UserService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
 		logger = module.get(Logger);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {

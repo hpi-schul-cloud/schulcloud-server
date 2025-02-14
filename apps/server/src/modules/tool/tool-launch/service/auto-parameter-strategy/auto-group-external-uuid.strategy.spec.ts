@@ -7,9 +7,9 @@ import { GroupEntity } from '@modules/group/entity';
 import { groupEntityFactory, groupFactory } from '@modules/group/testing';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
@@ -26,7 +26,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([Course, CourseGroup]);
 
 		module = await Test.createTestingModule({
 			providers: [

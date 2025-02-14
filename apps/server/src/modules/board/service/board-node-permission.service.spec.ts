@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
 import { columnBoardFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
@@ -33,7 +34,7 @@ describe(BoardNodePermissionService.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {

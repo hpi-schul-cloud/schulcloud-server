@@ -10,7 +10,7 @@ import { ConfigService } from '@nestjs/config';
 import { StorageProviderEntity } from '@shared/domain/entity';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
-import { generateSeedData } from '../seed-data/generateSeedData';
+import { generateSeedData } from '../seed-data/generate-seed-data';
 import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
 
