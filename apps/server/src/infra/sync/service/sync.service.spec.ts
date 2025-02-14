@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
-import { faker } from '@faker-js/faker';
 import { Logger } from '@core/logger';
+import { faker } from '@faker-js/faker';
+import { createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
-import { SyncStrategy } from '../strategy/sync-strategy';
-import { SyncStrategyTarget } from '../sync-strategy.types';
-import { TspSyncStrategy } from '../tsp';
-import { MediaMetadataSyncStrategy } from '../media-metadata';
 import { VidisSyncStrategy } from '../media-licenses';
+import { MediaMetadataSyncStrategy } from '../media-metadata';
+import { SyncStrategy } from '../strategy/sync-strategy';
+import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
+import { SyncStrategyTarget } from '../sync-strategy.types';
 import { SyncService } from './sync.service';
 
 describe(SyncService.name, () => {

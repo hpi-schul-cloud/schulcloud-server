@@ -5,18 +5,15 @@ import { School, SchoolService } from '@modules/school';
 import { FileStorageType, SchoolProps } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
 import { schoolFactory } from '@modules/school/testing';
-import { SystemService, SystemType } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
-import { TspSyncService } from './tsp-sync.service';
+import { TspSchoolService } from './tsp-school.service';
 
-describe(TspSyncService.name, () => {
+describe(TspSchoolService.name, () => {
 	let module: TestingModule;
-	let sut: TspSyncService;
-	let systemService: DeepMocked<SystemService>;
+	let sut: TspSchoolService;
 	let schoolService: DeepMocked<SchoolService>;
 	let federalStateService: DeepMocked<FederalStateService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
@@ -24,11 +21,7 @@ describe(TspSyncService.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				TspSyncService,
-				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
-				},
+				TspSchoolService,
 				{
 					provide: SchoolService,
 					useValue: createMock<SchoolService>(),
@@ -44,15 +37,13 @@ describe(TspSyncService.name, () => {
 			],
 		}).compile();
 
-		sut = module.get(TspSyncService);
-		systemService = module.get(SystemService);
+		sut = module.get(TspSchoolService);
 		schoolService = module.get(SchoolService);
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.resetAllMocks();
 	});
 
@@ -66,43 +57,10 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
-	describe('findTspSystemOrFail', () => {
-		describe('when tsp system is found', () => {
-			const setup = () => {
-				const system = systemFactory.build({
-					type: SystemType.OAUTH,
-					provisioningStrategy: SystemProvisioningStrategy.TSP,
-				});
-
-				systemService.find.mockResolvedValueOnce([system]);
-			};
-
-			it('should be returned', async () => {
-				setup();
-
-				const system = await sut.findTspSystemOrFail();
-
-				expect(system).toBeDefined();
-			});
-		});
-
-		describe('when tsp system is not found', () => {
-			const setup = () => {
-				systemService.find.mockResolvedValueOnce([]);
-			};
-
-			it('should throw a TspSystemNotFound exception', async () => {
-				setup();
-
-				await expect(sut.findTspSystemOrFail()).rejects.toThrow();
-			});
-		});
-	});
-
 	describe('findSchool', () => {
 		describe('when school is found', () => {
 			const setup = () => {
-				const externalId = faker.string.alpha();
+				const externalId = faker.string.uuid();
 				const system = systemFactory.build();
 				const school = schoolFactory.build();
 
@@ -122,7 +80,7 @@ describe(TspSyncService.name, () => {
 
 		describe('when school is not found', () => {
 			const setup = () => {
-				const externalId = faker.string.alpha();
+				const externalId = faker.string.uuid();
 				const system = systemFactory.build();
 
 				schoolService.getSchools.mockResolvedValueOnce([]);
@@ -140,7 +98,7 @@ describe(TspSyncService.name, () => {
 		});
 	});
 
-	describe('findSchoolsForSystem', () => {
+	describe('findAllSchoolsForSystem', () => {
 		describe('when findSchoolsForSystem is called', () => {
 			const setup = () => {
 				const system = systemFactory.build();
@@ -154,7 +112,7 @@ describe(TspSyncService.name, () => {
 			it('should return an array of schools', async () => {
 				const { system, school } = setup();
 
-				const schools = await sut.findSchoolsForSystem(system);
+				const schools = await sut.findAllSchoolsForSystem(system);
 
 				expect(schools).toEqual([school]);
 			});
@@ -164,8 +122,8 @@ describe(TspSyncService.name, () => {
 	describe('updateSchool', () => {
 		describe('when school is updated', () => {
 			const setup = () => {
-				const newName = faker.string.alpha();
-				const oldName = faker.string.alpha();
+				const newName = faker.person.fullName();
+				const oldName = faker.person.fullName();
 				const school = schoolFactory.build({
 					name: oldName,
 				});
@@ -189,7 +147,7 @@ describe(TspSyncService.name, () => {
 		describe('when school name is undefined', () => {
 			const setup = () => {
 				const newName = undefined;
-				const oldName = faker.string.alpha();
+				const oldName = faker.person.fullName();
 				const school = schoolFactory.build({
 					name: oldName,
 				});
@@ -211,8 +169,8 @@ describe(TspSyncService.name, () => {
 		describe('when school is created', () => {
 			const setup = () => {
 				const system = systemFactory.build();
-				const name = faker.string.alpha();
-				const externalId = faker.string.alpha();
+				const name = faker.word.noun();
+				const externalId = faker.string.uuid();
 
 				const schoolYearEntity = schoolYearFactory.build();
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);
@@ -249,8 +207,8 @@ describe(TspSyncService.name, () => {
 		describe('when federalState is already cached', () => {
 			const setup = () => {
 				const system = systemFactory.build();
-				const name = faker.string.alpha();
-				const externalId = faker.string.alpha();
+				const name = faker.word.noun();
+				const externalId = faker.string.uuid();
 
 				const schoolYearEntity = schoolYearFactory.build();
 				const schoolYear = SchoolYearEntityMapper.mapToDo(schoolYearEntity);

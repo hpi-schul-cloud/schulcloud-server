@@ -11,6 +11,7 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
@@ -24,7 +25,6 @@ import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
-import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../../../testing';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
 describe(SchulconnexGroupProvisioningService.name, () => {

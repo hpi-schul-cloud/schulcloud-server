@@ -1,5 +1,5 @@
+import { DomainErrorHandler } from '@core/error';
 import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,
@@ -14,13 +14,14 @@ import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { AxiosError, AxiosResponse } from 'axios';
-import moment from 'moment';
+import moment, { Moment } from 'moment';
 
 @Injectable()
 export class TspFetchService {
-	constructor(private readonly tspClientFactory: TspClientFactory, private readonly logger: Logger) {
-		this.logger.setContext(TspFetchService.name);
-	}
+	constructor(
+		private readonly tspClientFactory: TspClientFactory,
+		private readonly domainErrorHandler: DomainErrorHandler
+	) {}
 
 	public fetchTspSchools(system: System, daysToFetch: number): Promise<RobjExportSchule[]> {
 		const lastChangeDate = this.formatChangeDate(daysToFetch);
@@ -64,27 +65,34 @@ export class TspFetchService {
 
 	private async fetchTsp<T>(
 		system: System,
-		fetch: (client: ExportApiInterface) => Promise<AxiosResponse<T>>,
+		fetchFunction: (client: ExportApiInterface) => Promise<AxiosResponse<T>>,
 		defaultValue: T
 	): Promise<T> {
-		const client = this.createClient(system);
 		try {
-			const response = await fetch(client);
+			const client = this.createClient(system);
+
+			const response = await fetchFunction(client);
 			const { data } = response;
 
 			return data;
 		} catch (e) {
 			if (e instanceof AxiosError) {
-				this.logger.warning(new AxiosErrorLoggable(e, 'TSP_FETCH_ERROR'));
+				this.domainErrorHandler.exec(new AxiosErrorLoggable(e, 'TSP_FETCH_ERROR'));
 			} else {
-				this.logger.warning(new ErrorLoggable(e));
+				this.domainErrorHandler.exec(new ErrorLoggable(e));
 			}
 		}
 		return defaultValue;
 	}
 
 	private formatChangeDate(daysToFetch: number): string {
-		return moment(new Date()).subtract(daysToFetch, 'days').subtract(1, 'hours').format('YYYY-MM-DD HH:mm:ss.SSS');
+		let lastChange: Moment;
+		if (daysToFetch === -1) {
+			lastChange = moment(0);
+		} else {
+			lastChange = moment().subtract(daysToFetch, 'days').subtract(1, 'hours');
+		}
+		return lastChange.format('YYYY-MM-DD HH:mm:ss.SSS');
 	}
 
 	private createClient(system: System): ExportApiInterface {
