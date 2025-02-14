@@ -3,7 +3,7 @@ import { ErrorLogMessage } from '@shared/common/error';
 import { Loggable } from '@shared/common/loggable';
 
 export class CantChangeOwnersRoleLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly currentUserId: string, private readonly roomId: string) {
+	constructor(private readonly props: { currentUserId: string; roomId: string }) {
 		super();
 	}
 
@@ -12,8 +12,8 @@ export class CantChangeOwnersRoleLoggableException extends BadRequestException i
 			type: 'CANT_CHANGE_OWNERS_ROLE',
 			stack: this.stack,
 			data: {
-				currentUserId: this.currentUserId,
-				roomId: this.roomId,
+				currentUserId: this.props.currentUserId,
+				roomId: this.props.roomId,
 				errorMessage:
 					'You cannot change the role of the room owner. If you want to change the owner, please transfer the ownership to another user instead.',
 			},
