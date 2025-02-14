@@ -16,7 +16,6 @@ import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { AxiosHeaders, AxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
 import { EndSessionEndpointNotFoundLoggableException, ExternalSystemLogoutFailedLoggableException } from '../errors';
@@ -77,8 +76,6 @@ describe(LogoutService.name, () => {
 		oauthSessionTokenService = module.get(OauthSessionTokenService);
 		httpService = module.get(HttpService);
 		oauthEncryptionService = module.get(DefaultEncryptionService);
-
-		await setupEntities();
 	});
 
 	afterAll(async () => {
