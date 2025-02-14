@@ -15,10 +15,7 @@ import {
 	LessonBoardElement,
 	TaskBoardElement,
 } from '@modules/learnroom/repo';
-import {
-	DashboardGridElementModel,
-	DashboardModelEntity,
-} from '@modules/learnroom/repo/mikro-orm/dashboard.model.entity';
+import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
@@ -67,8 +64,8 @@ export const ENTITIES = [
 	Course,
 	CourseGroup,
 	CourseNews,
-	DashboardGridElementModel,
-	DashboardModelEntity,
+	DashboardGridElementEntity,
+	DashboardEntity,
 	ExternalToolEntity,
 	FileEntity,
 	FileRecord,

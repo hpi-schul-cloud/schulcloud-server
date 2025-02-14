@@ -5,9 +5,9 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
-import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
+import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
 import { DashboardRepo } from './dashboard.repo';
-import { DashboardModelMapper } from './mapper/dashboard.model.mapper';
+import { DashboardModelMapper } from './mapper/dashboard.entity.mapper';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;
@@ -18,7 +18,7 @@ describe('dashboard repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Dashboard, DashboardModelEntity, DashboardGridElementModel, Course, User, CourseGroup],
+					entities: [Dashboard, DashboardEntity, DashboardGridElementEntity, Course, User, CourseGroup],
 				}),
 			],
 			providers: [DashboardRepo, DashboardModelMapper],
@@ -138,7 +138,7 @@ describe('dashboard repo', () => {
 		dashboard.moveElement({ x: 1, y: 3 }, { x: 1, y: 4 });
 		await repo.persistAndFlush(dashboard);
 
-		const findOrphan = () => em.findOneOrFail(DashboardGridElementModel, elementId);
+		const findOrphan = () => em.findOneOrFail(DashboardGridElementEntity, elementId);
 
 		await expect(findOrphan).rejects.toThrow();
 	});

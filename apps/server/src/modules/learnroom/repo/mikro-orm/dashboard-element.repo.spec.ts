@@ -5,7 +5,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { DashboardElementRepo } from './dashboard-element.repo';
-import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
+import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
 
 describe(DashboardElementRepo.name, () => {
 	let repo: DashboardElementRepo;
@@ -16,7 +16,7 @@ describe(DashboardElementRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardGridElementModel, DashboardModelEntity, Course, User, CourseGroup],
+					entities: [DashboardGridElementEntity, DashboardEntity, Course, User, CourseGroup],
 				}),
 			],
 			providers: [DashboardElementRepo],
@@ -41,7 +41,7 @@ describe(DashboardElementRepo.name, () => {
 		});
 
 		it('should implement entityName getter', () => {
-			expect(repo.entityName).toBe(DashboardGridElementModel);
+			expect(repo.entityName).toBe(DashboardGridElementEntity);
 		});
 	});
 
@@ -52,10 +52,10 @@ describe(DashboardElementRepo.name, () => {
 			const course = courseFactory.build({ students: [user1], name: 'Mathe' });
 			await em.persistAndFlush([user1, course]);
 
-			const dashboard = new DashboardModelEntity({ id: new ObjectId().toString(), user: user1 });
-			const dashboardWithoutDashboardElement = new DashboardModelEntity({ id: new ObjectId().toString(), user: user2 });
+			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: user1 });
+			const dashboardWithoutDashboardElement = new DashboardEntity({ id: new ObjectId().toString(), user: user2 });
 
-			const element = new DashboardGridElementModel({
+			const element = new DashboardGridElementEntity({
 				id: new ObjectId().toString(),
 				xPos: 1,
 				yPos: 2,
@@ -87,7 +87,7 @@ describe(DashboardElementRepo.name, () => {
 				const result1 = await repo.deleteByDashboardId(dashboard.id);
 				expect(result1).toEqual(1);
 
-				const result2 = await em.findOne(DashboardGridElementModel, {
+				const result2 = await em.findOne(DashboardGridElementEntity, {
 					dashboard: dashboard.id,
 				});
 				expect(result2).toEqual(null);

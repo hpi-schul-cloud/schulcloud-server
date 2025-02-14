@@ -3,11 +3,11 @@ export { ColumnBoardNode, ColumnBoardNodeProps } from './mikro-orm/column-board-
 export { ColumnBoardNodeRepo } from './mikro-orm/column-board-node.repo';
 export { CourseMikroOrmRepo } from './mikro-orm/course.repo';
 export { DashboardElementRepo } from './mikro-orm/dashboard-element.repo';
-export { DashboardGridElementModel, DashboardModelEntity } from './mikro-orm/dashboard.model.entity';
+export { DashboardEntity, DashboardGridElementEntity } from './mikro-orm/dashboard.entity';
 export { DashboardRepo } from './mikro-orm/dashboard.repo';
 export { LegacyBoardElement, LegacyBoardElementType } from './mikro-orm/legacy-board-element.entity';
 export { BoardProps, LegacyBoard } from './mikro-orm/legacy-board.entity';
 export { LegacyBoardRepo } from './mikro-orm/legacy-board.repo';
 export { LessonBoardElement } from './mikro-orm/lesson-board-element.entity';
-export { DashboardModelMapper } from './mikro-orm/mapper/dashboard.model.mapper';
+export { DashboardModelMapper } from './mikro-orm/mapper/dashboard.entity.mapper';
 export { TaskBoardElement } from './mikro-orm/task-board-element.entity';

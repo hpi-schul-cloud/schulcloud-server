@@ -2,8 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Dashboard, GridElementWithPosition } from '../../domain/do/dashboard';
-import { DashboardModelEntity } from './dashboard.model.entity';
-import { DashboardModelMapper } from './mapper/dashboard.model.mapper';
+import { DashboardEntity } from './dashboard.entity';
+import { DashboardModelMapper } from './mapper/dashboard.entity.mapper';
 
 const generateEmptyDashboard = (userId: EntityId): Dashboard => {
 	const gridArray: GridElementWithPosition[] = [];
@@ -40,14 +40,14 @@ export class DashboardRepo implements IDashboardRepo {
 	}
 
 	public async getDashboardById(id: EntityId): Promise<Dashboard> {
-		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
+		const dashboardModel = await this.em.findOneOrFail(DashboardEntity, id);
 		const dashboard = await this.mapper.mapDashboardToEntity(dashboardModel);
 
 		return dashboard;
 	}
 
 	public async getUsersDashboard(userId: EntityId): Promise<Dashboard> {
-		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
+		const dashboardModel = await this.em.findOne(DashboardEntity, { user: userId });
 		if (dashboardModel) {
 			return this.mapper.mapDashboardToEntity(dashboardModel);
 		}
@@ -59,7 +59,7 @@ export class DashboardRepo implements IDashboardRepo {
 	}
 
 	public async getUsersDashboardIfExist(userId: EntityId): Promise<Dashboard | null> {
-		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
+		const dashboardModel = await this.em.findOne(DashboardEntity, { user: userId });
 		if (dashboardModel) {
 			return this.mapper.mapDashboardToEntity(dashboardModel);
 		}
@@ -68,7 +68,7 @@ export class DashboardRepo implements IDashboardRepo {
 	}
 
 	public async deleteDashboardByUserId(userId: EntityId): Promise<number> {
-		const promise = await this.em.nativeDelete(DashboardModelEntity, { user: userId });
+		const promise = await this.em.nativeDelete(DashboardEntity, { user: userId });
 
 		return promise;
 	}

@@ -4,7 +4,7 @@ import { Course as CourseEntity, User } from '@shared/domain/entity';
 import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';
 import { Learnroom } from '../../../domain/interface/learnroom';
 import { LearnroomTypes } from '../../../types';
-import { DashboardGridElementModel, DashboardModelEntity } from '../dashboard.model.entity';
+import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
 
 @Injectable()
 export class DashboardModelMapper {
@@ -16,7 +16,7 @@ export class DashboardModelMapper {
 		return domainEntity;
 	}
 
-	public async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
+	public async mapElementToEntity(modelEntity: DashboardGridElementEntity): Promise<GridElementWithPosition> {
 		const referenceModels: CourseEntity[] = await modelEntity.references.loadItems();
 		const references: CourseEntity[] = await Promise.all(referenceModels.map((ref) => this.mapReferenceToEntity(ref)));
 		const result: GridElementWithPosition = {
@@ -26,7 +26,7 @@ export class DashboardModelMapper {
 		return result;
 	}
 
-	public async mapDashboardToEntity(modelEntity: DashboardModelEntity): Promise<Dashboard> {
+	public async mapDashboardToEntity(modelEntity: DashboardEntity): Promise<Dashboard> {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
@@ -45,8 +45,8 @@ export class DashboardModelMapper {
 
 	public async mapGridElementToModel(
 		elementWithPosition: GridElementWithPosition,
-		dashboard: DashboardModelEntity
-	): Promise<DashboardGridElementModel> {
+		dashboard: DashboardEntity
+	): Promise<DashboardGridElementEntity> {
 		const existing = await this.findExistingGridElement(elementWithPosition);
 		if (existing) {
 			const updatedModel = this.updateExistingGridElement(existing, elementWithPosition, dashboard);
@@ -58,20 +58,20 @@ export class DashboardModelMapper {
 
 	private async findExistingGridElement(
 		elementWithPosition: GridElementWithPosition
-	): Promise<DashboardGridElementModel | undefined> {
+	): Promise<DashboardGridElementEntity | undefined> {
 		const { gridElement } = elementWithPosition;
 		if (gridElement.hasId()) {
-			const existing = await this.em.findOne(DashboardGridElementModel, gridElement.getId() as string);
+			const existing = await this.em.findOne(DashboardGridElementEntity, gridElement.getId() as string);
 			if (existing) return existing;
 		}
 		return undefined;
 	}
 
 	private async updateExistingGridElement(
-		elementModel: DashboardGridElementModel,
+		elementModel: DashboardGridElementEntity,
 		elementWithPosition: GridElementWithPosition,
-		dashboard: DashboardModelEntity
-	): Promise<DashboardGridElementModel> {
+		dashboard: DashboardEntity
+	): Promise<DashboardGridElementEntity> {
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
 		const { gridElement } = elementWithPosition;
@@ -89,11 +89,11 @@ export class DashboardModelMapper {
 
 	private async createGridElement(
 		elementWithPosition: GridElementWithPosition,
-		dashboard: DashboardModelEntity
-	): Promise<DashboardGridElementModel> {
+		dashboard: DashboardEntity
+	): Promise<DashboardGridElementEntity> {
 		const { gridElement } = elementWithPosition;
 		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
-		const elementModel = new DashboardGridElementModel({
+		const elementModel = new DashboardGridElementEntity({
 			id: gridElement.getId(),
 			xPos: elementWithPosition.pos.x,
 			yPos: elementWithPosition.pos.y,
@@ -104,7 +104,7 @@ export class DashboardModelMapper {
 		return elementModel;
 	}
 
-	public async mapDashboardToModel(entity: Dashboard): Promise<DashboardModelEntity> {
+	public async mapDashboardToModel(entity: Dashboard): Promise<DashboardEntity> {
 		const modelEntity = await this.getOrConstructDashboardModelEntity(entity);
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
@@ -120,12 +120,12 @@ export class DashboardModelMapper {
 		return modelEntity;
 	}
 
-	private async getOrConstructDashboardModelEntity(entity: Dashboard): Promise<DashboardModelEntity> {
-		const existing = await this.em.findOne(DashboardModelEntity, entity.getId());
+	private async getOrConstructDashboardModelEntity(entity: Dashboard): Promise<DashboardEntity> {
+		const existing = await this.em.findOne(DashboardEntity, entity.getId());
 		if (existing) {
 			return existing;
 		}
 		const user = await this.em.findOneOrFail(User, entity.getUserId());
-		return new DashboardModelEntity({ id: entity.getId(), user, gridElements: [] });
+		return new DashboardEntity({ id: entity.getId(), user, gridElements: [] });
 	}
 }
