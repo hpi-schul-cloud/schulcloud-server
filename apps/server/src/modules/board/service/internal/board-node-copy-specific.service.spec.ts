@@ -14,7 +14,6 @@ import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { setupEntities } from '@testing/setup-entities';
 import {
 	Card,
 	CollaborativeTextEditorElement,
@@ -91,8 +90,6 @@ describe(BoardNodeCopyService.name, () => {
 		service = module.get(BoardNodeCopyService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

@@ -4,7 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from '../service/files-storage.service';

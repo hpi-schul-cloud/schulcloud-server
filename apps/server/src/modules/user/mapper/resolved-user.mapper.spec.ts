@@ -1,12 +1,13 @@
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ResolvedUserResponse } from '../controller/dto';
 import { ResolvedUserMapper } from './resolved-user.mapper';
 
 describe('ResolvedUserMapper', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	it('should has mapToResponse static method', () => {

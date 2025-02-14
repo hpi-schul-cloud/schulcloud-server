@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { BoardLayout, Card, ColumnBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import {
@@ -47,7 +48,7 @@ describe(BoardNodeService.name, () => {
 		// contentElementUpdateService = module.get(ContentElementUpdateService);
 		// boardNodeDeleteHooksService = module.get(BoardNodeDeleteHooksService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {

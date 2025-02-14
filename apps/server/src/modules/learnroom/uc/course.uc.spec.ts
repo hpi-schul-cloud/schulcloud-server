@@ -4,12 +4,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CourseService } from '../service';
 import { CourseUc } from './course.uc';
 
@@ -22,7 +23,7 @@ describe('CourseUc', () => {
 	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseUc,

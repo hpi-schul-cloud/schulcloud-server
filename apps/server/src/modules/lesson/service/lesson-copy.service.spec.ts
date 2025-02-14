@@ -13,16 +13,21 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
+	Course,
+	CourseGroup,
 	LessonEntity,
 	Material,
+	Submission,
+	Task,
+	User,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { LessonRepo } from '../repository';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
@@ -42,7 +47,7 @@ describe('lesson copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyService,

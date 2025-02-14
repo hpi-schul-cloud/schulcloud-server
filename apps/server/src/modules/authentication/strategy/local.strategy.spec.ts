@@ -7,8 +7,8 @@ import { ConfigService } from '@nestjs/config';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
@@ -26,7 +26,7 @@ describe('LocalStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
 		configServiceMock = createMock<ConfigService>();

@@ -10,9 +10,10 @@ import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -39,7 +40,7 @@ describe(AuthenticationService.name, () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([Account, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

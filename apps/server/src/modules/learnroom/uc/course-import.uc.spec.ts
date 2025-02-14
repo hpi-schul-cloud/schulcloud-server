@@ -5,10 +5,11 @@ import { AuthorizationService } from '@modules/authorization';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeImportService } from '../service';
 import { CourseImportUc } from './course-import.uc';
@@ -22,7 +23,7 @@ describe('CourseImportUc', () => {
 	let courseImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([User, Course, CourseGroup]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseImportUc,

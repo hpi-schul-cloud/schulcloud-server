@@ -1,6 +1,6 @@
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import {
 	DownloadFileParams,
 	FileRecordListResponse,
