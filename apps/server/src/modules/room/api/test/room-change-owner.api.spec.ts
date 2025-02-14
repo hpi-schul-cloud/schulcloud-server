@@ -13,6 +13,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
 import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { roleFactory } from '@testing/factory/role.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -51,6 +52,8 @@ describe('Room Controller (API)', () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
 			const teacherRole = owner.roles[0];
+			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+			const student = userFactory.buildWithId({ school: owner.school, roles: [studentRole] });
 			const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
 			const room = roomEntityFactory.buildWithId({ schoolId: owner.school.id });
 			const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -58,6 +61,7 @@ describe('Room Controller (API)', () => {
 				users: [
 					{ role: roomOwnerRole, user: owner },
 					{ role: roomViewerRole, user: targetUser },
+					{ role: roomViewerRole, user: student },
 				],
 				organization: owner.school,
 				externalSource: undefined,
@@ -73,6 +77,8 @@ describe('Room Controller (API)', () => {
 				roomMemberships,
 				teacherAccount,
 				owner,
+				studentRole,
+				student,
 				teacherRole,
 				roomEditorRole,
 				roomAdminRole,
@@ -86,7 +92,7 @@ describe('Room Controller (API)', () => {
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, targetUser, owner, teacherRole };
+			return { loggedInClient, room, targetUser, owner, teacherRole, student };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -179,6 +185,16 @@ describe('Room Controller (API)', () => {
 
 				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 					userId: targetUser.id,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			it('should return error when targeting a user that is a student', async () => {
+				const { loggedInClient, room, student } = await setupRoomWithMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
+					userId: student.id,
 				});
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
