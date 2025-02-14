@@ -4,7 +4,7 @@ import { SystemEntity } from '@modules/system/entity/system.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { UserLicenseEntity } from '@modules/user-license/entity';
+import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
@@ -28,4 +28,5 @@ export const ENTITIES = [
 	ContextExternalToolEntity,
 	MediaSourceEntity,
 	UserLicenseEntity,
+	MediaUserLicenseEntity,
 ];
