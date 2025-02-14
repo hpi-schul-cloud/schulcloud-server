@@ -1,6 +1,6 @@
-import { FederalStateEntity, FederalStateProperties } from '@shared/domain/entity';
-import { BaseFactory } from '../../../testing/factory/base.factory';
-import { countyEmbeddableFactory } from '../../../testing/factory/county.embeddable.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
+import { FederalStateEntity, FederalStateProperties } from '../repo';
 
 export const federalStateEntityFactory = BaseFactory.define<FederalStateEntity, FederalStateProperties>(
 	FederalStateEntity,

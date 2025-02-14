@@ -1,5 +1,5 @@
+import { SchoolYearEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
-import { SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { SchoolYearRepo } from '../repo';
 

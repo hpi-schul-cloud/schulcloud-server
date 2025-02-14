@@ -1,5 +1,5 @@
+import { SchoolYearEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
-import { SchoolYearEntity } from '@shared/domain/entity';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SchoolYearsNoYearsLeft } from '../loggable/schoolyear-no-years-left.loggable';
 

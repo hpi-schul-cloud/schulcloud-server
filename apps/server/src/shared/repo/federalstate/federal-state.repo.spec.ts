@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { FederalStateEntity } from '@modules/school/repo';
 import { federalStateEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FederalStateEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FederalStateRepo } from './federal-state.repo';

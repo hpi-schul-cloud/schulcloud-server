@@ -2,12 +2,13 @@ import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolFactory } from '@modules/school/domain/factory';
 import { SystemEntity } from '@modules/system/entity';
-import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { School } from '../../../domain';
 import { SchoolEntity } from '../school.entity';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
 import { SchoolYearEntityMapper } from './school-year.entity.mapper';
+import { FederalStateEntity } from '../federal-state.entity';
+import { SchoolYearEntity } from '../school-year.entity';
 
 export class SchoolEntityMapper {
 	public static mapToDo(entity: SchoolEntity): School {

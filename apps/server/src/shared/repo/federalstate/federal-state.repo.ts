@@ -1,6 +1,6 @@
 import { EntityName } from '@mikro-orm/core';
+import { FederalStateEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
-import { FederalStateEntity } from '@shared/domain/entity';
 import { BaseRepo } from '../base.repo';
 
 @Injectable()

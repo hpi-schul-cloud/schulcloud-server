@@ -1,7 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { FederalStateEntity } from '@modules/school/repo';
 import { federalStateEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FederalStateEntity } from '@shared/domain/entity';
 import { FederalStateRepo } from '@shared/repo/federalstate';
 import { setupEntities } from '@testing/setup-entities';
 import { FederalStateNames } from '../types/federal-state-names.enum';
