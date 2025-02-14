@@ -16,13 +16,13 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { CoreModule } from '@core/core.module';
+import { ValidationModule } from '@core/validation';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
-	CoreModule,
+	ValidationModule,
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
