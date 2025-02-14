@@ -3,16 +3,19 @@ const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks');
 
-const calendarUri = Configuration.get('CALENDAR_URI');
 class CourseCalendarService {
 	constructor(app) {
 		this.app = app;
 	}
 
+	async send(options) {
+		return axios(options);
+	}
+
 	remove(id, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			url: `${calendarUri}/scopes/${id}`,
+			uri: `${Configuration.get('CALENDAR_URI')}/scopes/${id}`,
 			method: 'DELETE',
 			headers: {
 				Authorization: userId,

@@ -12,9 +12,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { UserRepo } from '@shared/repo/user';
-import { boardFactory } from '@testing/factory/board.factory';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -23,9 +21,11 @@ import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '../../tool/context-external-tool/testing';
+import { boardFactory } from '../testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
+import { LegacyBoardRepo } from '../repo';
 
 describe('course copy service', () => {
 	let module: TestingModule;
