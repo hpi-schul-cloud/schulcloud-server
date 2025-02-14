@@ -402,9 +402,28 @@ describe(LogoutService.name, () => {
 				expect(oauthSessionTokenService.delete).toHaveBeenCalledWith(sessionToken);
 			});
 		});
-		describe('when an user with invalid system is provided', () => {
+
+		describe('when an user with no system is provided', () => {
 			const setup = () => {
 				const user = currentUserFactory.build({ isExternalUser: true, systemId: undefined });
+
+				return {
+					user,
+				};
+			};
+
+			it('should not log the user out', async () => {
+				const { user } = setup();
+
+				await service.externalSystemLogout(user);
+
+				expect(systemService.findById).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when an user with invalid system is provided', () => {
+			const setup = () => {
+				const user = currentUserFactory.build({ isExternalUser: true, systemId: 'some-id' });
 				systemService.findById.mockResolvedValue(null);
 
 				return {
