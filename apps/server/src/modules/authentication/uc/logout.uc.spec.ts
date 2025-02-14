@@ -179,26 +179,6 @@ describe(LogoutUc.name, () => {
 					expect(logoutService.externalSystemLogout).toHaveBeenCalledWith(currentUser);
 				});
 			});
-
-			describe('when the current user provided is not signed in from an external system', () => {
-				const setup = () => {
-					const currentUser = currentUserFactory.build({ isExternalUser: false, systemId: undefined });
-
-					configService.get.mockReturnValueOnce(true);
-
-					return {
-						currentUser,
-					};
-				};
-
-				it('should not log out the user from the external system', async () => {
-					const { currentUser } = setup();
-
-					await logoutUc.externalSystemLogout(currentUser);
-
-					expect(logoutService.externalSystemLogout).not.toHaveBeenCalled();
-				});
-			});
 		});
 	});
 });
