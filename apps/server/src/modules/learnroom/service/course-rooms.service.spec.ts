@@ -4,12 +4,13 @@ import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { ColumnBoardNodeRepo, LegacyBoardRepo } from '../repo';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory, columnBoardNodeFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
 
@@ -28,7 +29,17 @@ describe('rooms service', () => {
 
 	beforeAll(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
-		await setupEntities();
+		await setupEntities([
+			User,
+			Course,
+			CourseGroup,
+			LessonEntity,
+			Material,
+			Task,
+			Submission,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseRoomsService,

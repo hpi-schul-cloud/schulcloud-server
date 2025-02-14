@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthenticationService } from '@modules/authentication';
@@ -15,12 +16,11 @@ import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } fro
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { Logger } from '@core/logger';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,
@@ -49,7 +49,7 @@ describe(UserLoginMigrationUc.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

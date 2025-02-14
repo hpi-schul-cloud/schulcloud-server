@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ToolConfigType } from '../../common/enum';
 import {
 	BasicToolConfigEntity,
@@ -21,7 +21,7 @@ import { ContextExternalToolEntity } from './context-external-tool.entity';
 
 describe(ExternalToolEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([SchoolExternalToolEntity, ExternalToolEntity, Course, CourseGroup]);
 	});
 
 	describe('constructor', () => {

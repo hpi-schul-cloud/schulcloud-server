@@ -1,11 +1,12 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
-import { Logger } from '@core/logger';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { RichTextContentBody } from '../controller/dto';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
@@ -62,7 +63,7 @@ describe(ElementUc.name, () => {
 		boardPermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		boardNodeFactory = module.get(BoardNodeFactory);
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

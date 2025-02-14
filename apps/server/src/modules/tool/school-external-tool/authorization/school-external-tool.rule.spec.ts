@@ -6,10 +6,10 @@ import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@mod
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SchoolExternalToolRule } from './school-external-tool.rule';
 
 describe('SchoolExternalToolRule', () => {
@@ -18,7 +18,7 @@ describe('SchoolExternalToolRule', () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

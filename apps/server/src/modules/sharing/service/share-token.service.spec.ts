@@ -7,10 +7,11 @@ import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
@@ -67,7 +68,7 @@ describe('ShareTokenService', () => {
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
 		columnBoardService = await module.get(ColumnBoardService);
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {

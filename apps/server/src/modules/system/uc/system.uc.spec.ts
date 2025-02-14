@@ -4,9 +4,10 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SystemDeletedEvent, SystemQuery, SystemType } from '../domain';
 import { SystemService } from '../service';
 import { systemFactory } from '../testing';
@@ -21,7 +22,7 @@ describe('SystemUc', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

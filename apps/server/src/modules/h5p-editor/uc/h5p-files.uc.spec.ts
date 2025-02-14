@@ -5,7 +5,6 @@ import { H5PAjaxEndpoint, H5PEditor, IPlayerModel } from '@lumieducation/h5p-ser
 import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { Request } from 'express';
 import { Readable } from 'stream';
 import { H5PEditorProvider, H5PPlayerProvider } from '../provider';
@@ -93,7 +92,6 @@ describe('H5P Files', () => {
 		ajaxEndpointService = module.get(H5PAjaxEndpoint);
 		h5pContentRepo = module.get(H5PContentRepo);
 		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
-		await setupEntities();
 	});
 
 	afterEach(() => {

@@ -1,12 +1,12 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseGroup, User } from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 
@@ -22,7 +22,7 @@ describe('CourseGroupRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [AuthorizationHelper, CourseRule, CourseGroupRule, AuthorizationInjectionService],

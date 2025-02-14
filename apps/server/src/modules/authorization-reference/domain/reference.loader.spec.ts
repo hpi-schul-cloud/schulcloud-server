@@ -4,6 +4,7 @@ import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modul
 import { InstanceService } from '@modules/instance';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { CourseGroupRepo } from '@shared/repo/coursegroup';
@@ -11,8 +12,8 @@ import { LegacySchoolRepo } from '@shared/repo/school';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ReferenceLoader } from './reference.loader';
 
 describe('reference.loader', () => {
@@ -28,7 +29,7 @@ describe('reference.loader', () => {
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

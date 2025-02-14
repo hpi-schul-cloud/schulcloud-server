@@ -1,10 +1,11 @@
 import { courseFactory } from '@modules/learnroom/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {
@@ -15,7 +16,7 @@ describe('AuthorizationHelper', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup, Task, LessonEntity, Submission, Material]);
 	});
 
 	afterEach(() => {

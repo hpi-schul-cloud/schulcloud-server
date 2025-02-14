@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
@@ -5,8 +6,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
-import { setupEntities } from '@testing/setup-entities';
 import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageProducer', () => {
@@ -17,7 +16,6 @@ describe('FilesStorageProducer', () => {
 	const timeout = 10000;
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageProducer,

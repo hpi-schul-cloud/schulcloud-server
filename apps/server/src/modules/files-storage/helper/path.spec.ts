@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
