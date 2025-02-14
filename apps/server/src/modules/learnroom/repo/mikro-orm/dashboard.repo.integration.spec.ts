@@ -12,8 +12,8 @@ import {
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { DashboardModelMapper } from './dashboard.model.mapper';
 import { DashboardRepo } from './dashboard.repo';
+import { DashboardModelMapper } from './mapper/dashboard.model.mapper';
 
 describe('dashboard repo', () => {
 	let repo: DashboardRepo;

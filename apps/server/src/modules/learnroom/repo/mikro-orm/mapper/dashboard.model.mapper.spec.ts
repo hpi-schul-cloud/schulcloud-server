@@ -14,7 +14,7 @@ import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { DashboardModelMapper } from './dashboard.model.mapper';
+import { DashboardModelMapper } from '../dashboard.model.mapper';
 
 describe('dashboard model mapper', () => {
 	let mapper: DashboardModelMapper;
