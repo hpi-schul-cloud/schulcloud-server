@@ -6,9 +6,11 @@ import { RegistrationPinConfig } from '@modules/registration-pin';
 import { ToolConfig } from '@modules/tool';
 import { UserConfig } from '@modules/user';
 import { LanguageType } from '@shared/domain/interface';
+import type { CoreModuleConfig } from '@core/core.config';
 
 export interface AdminApiServerConfig
-	extends DeletionConfig,
+	extends CoreModuleConfig,
+		DeletionConfig,
 		LegacySchoolConfig,
 		UserConfig,
 		RegistrationPinConfig,
@@ -74,6 +76,7 @@ const config: AdminApiServerConfig = {
 	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: Configuration.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED') as boolean,
 	FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') as boolean,
+	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 };
 
 export const adminApiServerConfig = () => config;
