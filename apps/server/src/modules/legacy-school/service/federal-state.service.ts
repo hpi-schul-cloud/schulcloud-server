@@ -1,6 +1,5 @@
-import { FederalStateEntity } from '@modules/school/repo';
+import { FederalStateEntity, FederalStateRepo } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
-import { FederalStateRepo } from '@shared/repo/federalstate';
 
 @Injectable()
 export class FederalStateService {

@@ -1,8 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { GroupModule } from '@modules/group';
-import { SchoolYearRepo } from '@modules/school/repo';
+import { FederalStateRepo, SchoolYearRepo } from '@modules/school/repo';
 import { forwardRef, Module } from '@nestjs/common';
-import { FederalStateRepo } from '@shared/repo/federalstate';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { SchoolSystemOptionsRepo } from './repo';
