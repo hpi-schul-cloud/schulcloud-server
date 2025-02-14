@@ -6,7 +6,6 @@ import { SortOrder } from '@shared/domain/interface';
 import { EntityId, LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { IDashboardRepo } from '@shared/repo/dashboard';
-import { setupEntities } from '@testing/setup-entities';
 import { DashboardUc } from './dashboard.uc';
 
 const learnroomMock = (id: string, name: string) => {
@@ -53,7 +52,6 @@ describe('dashboard uc', () => {
 		service = module.get(DashboardUc);
 		repo = module.get('DASHBOARD_REPO');
 		courseRepo = module.get(CourseRepo);
-		await setupEntities();
 	});
 
 	afterEach(() => {

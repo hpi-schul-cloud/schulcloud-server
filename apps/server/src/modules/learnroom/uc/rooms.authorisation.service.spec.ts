@@ -1,10 +1,11 @@
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 describe('rooms authorisation service', () => {
@@ -21,7 +22,7 @@ describe('rooms authorisation service', () => {
 		}).compile();
 
 		service = module.get(CourseRoomsAuthorisationService);
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup, LessonEntity, Material, Task, Submission]);
 	});
 
 	describe('hasCourseReadPermission', () => {

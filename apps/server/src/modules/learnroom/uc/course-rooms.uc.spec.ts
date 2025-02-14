@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { CourseRepo } from '@shared/repo/course';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { LegacyBoardRepo } from '../repo';
+import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { boardFactory } from '../testing';
 import { RoomBoardDTO } from '../types';
@@ -76,7 +77,18 @@ describe('rooms usecase', () => {
 		factory = module.get(RoomBoardDTOFactory);
 		authorisation = module.get(CourseRoomsAuthorisationService);
 		roomsService = module.get(CourseRoomsService);
-		await setupEntities();
+
+		await setupEntities([
+			User,
+			Course,
+			CourseGroup,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
 	});
 
 	describe('getBoard', () => {

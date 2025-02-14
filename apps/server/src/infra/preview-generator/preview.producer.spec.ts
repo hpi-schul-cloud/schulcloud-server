@@ -1,10 +1,9 @@
+import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
-import { setupEntities } from '@testing/setup-entities';
 import { ErrorMapper, FilesPreviewEvents, FilesPreviewExchange } from '../rabbitmq';
 import { PreviewFileOptions } from './interface';
 import { PreviewProducer } from './preview.producer';
@@ -17,7 +16,6 @@ describe('PreviewProducer', () => {
 	const timeout = 10000;
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				PreviewProducer,

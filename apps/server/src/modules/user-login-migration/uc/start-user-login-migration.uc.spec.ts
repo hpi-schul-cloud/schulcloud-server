@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -6,10 +7,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
@@ -50,7 +50,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(LegacySchoolService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

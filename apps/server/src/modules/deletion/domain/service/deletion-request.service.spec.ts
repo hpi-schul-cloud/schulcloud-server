@@ -2,9 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
 import { DeletionRequestRepo } from '../../repo';
+import { DeletionRequestEntity } from '../../repo/entity';
 import { deletionRequestFactory, deletionTestConfig } from '../testing';
 import { DomainName, StatusModel } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
@@ -31,7 +32,7 @@ describe(DeletionRequestService.name, () => {
 		deletionRequestRepo = module.get(DeletionRequestRepo);
 		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([DeletionRequestEntity]);
 
 		jest.useFakeTimers().setSystemTime(new Date());
 	});

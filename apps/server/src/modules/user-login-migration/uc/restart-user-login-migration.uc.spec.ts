@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
@@ -5,10 +6,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
+import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService } from '../service';
 import { RestartUserLoginMigrationUc } from './restart-user-login-migration.uc';
@@ -49,7 +49,7 @@ describe(RestartUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

@@ -12,10 +12,11 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { NewsRepo } from '@shared/repo/news';
+import { setupEntities } from '@testing/database';
 import { teamNewsFactory } from '@testing/factory/news.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {
@@ -25,7 +26,7 @@ describe(NewsService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
