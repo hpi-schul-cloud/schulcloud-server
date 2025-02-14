@@ -2,7 +2,6 @@ export * from './base.entity';
 export * from './consent';
 export * from './course.entity';
 export * from './coursegroup.entity';
-export * from './dashboard';
 export * from './federal-state.entity';
 export * from './lesson.entity';
 export * from './materials.entity';

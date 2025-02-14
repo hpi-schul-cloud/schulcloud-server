@@ -1,8 +1,8 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
+import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '../domain/do/dashboard';
 import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class DashboardUc {
 		private readonly courseRepo: CourseRepo
 	) {}
 
-	async getUsersDashboard(userId: EntityId): Promise<Dashboard> {
+	public async getUsersDashboard(userId: EntityId): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
 		const [courses] = await this.courseRepo.findAllByUserId(
 			userId,
@@ -25,7 +25,7 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	async moveElementOnDashboard(
+	public async moveElementOnDashboard(
 		dashboardId: EntityId,
 		from: GridPositionWithGroupIndex,
 		to: GridPositionWithGroupIndex,
@@ -40,7 +40,7 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	async renameGroupOnDashboard(
+	public async renameGroupOnDashboard(
 		dashboardId: EntityId,
 		position: GridPosition,
 		params: string,

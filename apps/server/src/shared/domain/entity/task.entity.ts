@@ -1,9 +1,9 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import type { LearnroomElement } from '@modules/learnroom/domain/interface/learnroom';
 import { InternalServerErrorException } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { EntityWithSchool } from '../interface';
-import type { LearnroomElement } from '../interface/learnroom';
 import type { EntityId } from '../types/entity-id';
 import type { TaskProperties, TaskStatus } from '../types/task.types';
 import { BaseEntityWithTimestamps } from './base.entity';

@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Dashboard, GridElementWithPosition } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { Dashboard, GridElementWithPosition } from '../../domain/do/dashboard';
 import { DashboardModelEntity } from './dashboard.model.entity';
 import { DashboardModelMapper } from './mapper/dashboard.model.mapper';
 
@@ -28,18 +28,21 @@ export class DashboardRepo implements IDashboardRepo {
 	public async persist(entity: Dashboard): Promise<Dashboard> {
 		const modelEntity = await this.mapper.mapDashboardToModel(entity);
 		this.em.persist(modelEntity);
+
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
 	public async persistAndFlush(entity: Dashboard): Promise<Dashboard> {
 		const modelEntity = await this.mapper.mapDashboardToModel(entity);
 		await this.em.persistAndFlush(modelEntity);
+
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}
 
 	public async getDashboardById(id: EntityId): Promise<Dashboard> {
 		const dashboardModel = await this.em.findOneOrFail(DashboardModelEntity, id);
 		const dashboard = await this.mapper.mapDashboardToEntity(dashboardModel);
+
 		return dashboard;
 	}
 

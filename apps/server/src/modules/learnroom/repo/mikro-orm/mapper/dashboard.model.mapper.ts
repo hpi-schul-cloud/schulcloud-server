@@ -1,8 +1,9 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Course as CourseEntity, Dashboard, GridElement, GridElementWithPosition, User } from '@shared/domain/entity';
-import { Learnroom } from '@shared/domain/interface';
-import { LearnroomTypes } from '@shared/domain/types';
+import { Course as CourseEntity, User } from '@shared/domain/entity';
+import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';
+import { Learnroom } from '../../../domain/interface/learnroom';
+import { LearnroomTypes } from '../../../types';
 import { DashboardGridElementModel, DashboardModelEntity } from '../dashboard.model.entity';
 
 @Injectable()

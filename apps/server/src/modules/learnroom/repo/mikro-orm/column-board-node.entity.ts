@@ -2,7 +2,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '@modules/board';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { LearnroomElement } from '@shared/domain/interface';
+import { LearnroomElement } from '../../domain/interface/learnroom';
 
 // TODO comment
 /**

@@ -1,9 +1,9 @@
-import { Dashboard, GridElementContent, GridElementWithPosition, GridPosition } from '@shared/domain/entity';
-import { LearnroomMetadata } from '@shared/domain/types';
 import { DashboardGridElementResponse, DashboardGridSubElementResponse, DashboardResponse } from '../controller/dto';
+import { Dashboard, GridElementContent, GridElementWithPosition, GridPosition } from '../domain/do/dashboard';
+import { LearnroomMetadata } from '../types';
 
 export class DashboardMapper {
-	static mapToResponse(dashboard: Dashboard): DashboardResponse {
+	public static mapToResponse(dashboard: Dashboard): DashboardResponse {
 		const dto = new DashboardResponse({
 			id: dashboard.getId(),
 			gridElements: dashboard

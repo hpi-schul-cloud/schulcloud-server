@@ -1,4 +1,4 @@
-import { LearnroomMetadata } from '@shared/domain/types';
+import { LearnroomMetadata } from '../../types';
 
 export interface Learnroom {
 	getMetadata: () => LearnroomMetadata;
