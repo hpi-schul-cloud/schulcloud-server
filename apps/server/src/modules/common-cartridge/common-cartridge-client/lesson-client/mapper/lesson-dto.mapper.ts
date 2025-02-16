@@ -46,7 +46,7 @@ export class LessonDtoMapper {
 			hidden: lessonResponse.hidden,
 			position: lessonResponse.position,
 			contents: lessonResponse.contents
-				.map((content) => this.mapToLessenContentDto(content))
+				.map((content) => this.mapToLessonContentDto(content))
 				.filter((contetnDto) => contetnDto !== null),
 			linkedTasks: [],
 			materials: lessonResponse.materials.map((material) => this.mapToLessonMaterialDto(material)),
@@ -69,7 +69,7 @@ export class LessonDtoMapper {
 		return lessonMaterialsDto;
 	}
 
-	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
+	public static mapToLessonContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
 		switch (lessonContentResponse.component) {
 			case LessonContentResponseComponentEnum.Text:
 				return new LessonContentDto({

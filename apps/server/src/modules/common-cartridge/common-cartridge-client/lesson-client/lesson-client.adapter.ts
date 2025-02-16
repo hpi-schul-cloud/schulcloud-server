@@ -4,7 +4,7 @@ import { extractJwtFromHeader } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import { LessonDto, LessonLinkedTaskDto } from './dto';
-import { LessonApi } from './lessons-api-client';
+import { LessonApi, LessonContentResponse } from './lessons-api-client';
 import { LessonDtoMapper } from './mapper/lesson-dto.mapper';
 
 @Injectable()
@@ -15,6 +15,9 @@ export class LessonClientAdapter {
 		const options = this.createOptionParams();
 		const response = await this.lessonApi.lessonControllerGetLesson(lessonId, options);
 		const lessonDto = LessonDtoMapper.mapToLessonDto(response.data);
+		lessonDto.contents = response.data.contents
+			.map((content) => LessonDtoMapper.mapToLessonContentDto(content))
+			.filter((item): item is LessonContentResponse => item !== null);
 		lessonDto.linkedTasks = await this.getLessonTasks(lessonId);
 
 		return lessonDto;
