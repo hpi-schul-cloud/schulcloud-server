@@ -27,15 +27,12 @@ import type { ComponentInternalPropsImpl } from './component-internal-props-impl
 import type { ComponentLernstorePropsImpl } from './component-lernstore-props-impl';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ComponentNexboardPropsImpl } from './component-nexboard-props-impl';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { ComponentTextPropsImpl } from './component-text-props-impl';
 
 /**
  * @type LessonContentResponseContent
  * @export
  */
-export type LessonContentResponseContent = ComponentEtherpadPropsImpl | ComponentGeogebraPropsImpl | ComponentInternalPropsImpl | ComponentLernstorePropsImpl | ComponentNexboardPropsImpl | ComponentTextPropsImpl;
+export type LessonContentResponseContent = ComponentEtherpadPropsImpl | ComponentGeogebraPropsImpl | ComponentInternalPropsImpl | ComponentLernstorePropsImpl | ComponentTextPropsImpl;
 
 

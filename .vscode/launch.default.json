@@ -88,6 +88,16 @@
 			},
 			"skipFiles": ["<node_internals>/**"],
 			"sourceMaps": true
-		}
+		},
+		{
+            "type": "node",
+            "request": "attach",
+            "name": "Attach",
+            "port": 9229,
+            "localRoot": "${workspaceRoot}",
+            "remoteRoot": "/schulcloud-server/",
+            "sourceMaps": true,
+            "smartStep": true
+        }
 	]
 }

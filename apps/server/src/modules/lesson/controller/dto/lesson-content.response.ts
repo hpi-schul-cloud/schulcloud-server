@@ -60,6 +60,7 @@ export class LessonContentResponse {
 	}
 
 	@ApiProperty({
+		name: 'LessonContentComponentType',
 		oneOf: [
 			{ $ref: getSchemaPath(ComponentTextPropsImpl) },
 			{ $ref: getSchemaPath(ComponentEtherpadPropsImpl) },

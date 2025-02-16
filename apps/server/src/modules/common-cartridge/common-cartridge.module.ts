@@ -6,6 +6,7 @@ import { FilesStorageClientModule } from '@infra/files-storage-client';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { FilesStorageClientModule as FilesMetadataClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
+import { LessonsClientModule } from '@infra/lessons-client';
 import { CardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
@@ -21,6 +22,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		LoggerModule,
 		CoursesClientModule,
 		BoardsClientModule,
+		LessonsClientModule,
 		CourseRoomsModule.register({
 			basePath: `${Configuration.get('API_HOST') as string}/v3/`,
 		}),
