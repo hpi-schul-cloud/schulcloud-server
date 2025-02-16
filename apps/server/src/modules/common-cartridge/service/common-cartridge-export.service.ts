@@ -3,13 +3,12 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
+import { LessonContentResponse, LessonsClientAdapter } from '@infra/lessons-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
 import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
-import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import {
 	BoardColumnBoardDto,
@@ -35,7 +34,7 @@ export class CommonCartridgeExportService {
 		private readonly cardClientAdapter: CardClientAdapter,
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
-		private readonly lessonClientAdapter: LessonClientAdapter,
+		private readonly lessonsClientAdapter: LessonsClientAdapter,
 		private readonly filesMetadataClientAdapter: FilesStorageClientAdapterService,
 		private readonly filesStorageClientAdapter: FilesStorageClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper
@@ -70,7 +69,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private addComponentToOrganization(
-		component: LessonContentDto,
+		component: LessonContentResponse,
 		lessonOrganization: CommonCartridgeOrganizationNode
 	): void {
 		const resources = this.mapper.mapContentToResources(component);
@@ -94,7 +93,9 @@ export class CommonCartridgeExportService {
 	): Promise<void> {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
-		const lessons = await Promise.all(lessonsIds.map((elementId) => this.lessonClientAdapter.getLessonById(elementId)));
+		const lessons = await Promise.all(
+			lessonsIds.map((elementId) => this.lessonsClientAdapter.getLessonById(elementId))
+		);
 
 		lessons.forEach((lesson) => {
 			const lessonsOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
@@ -103,8 +104,8 @@ export class CommonCartridgeExportService {
 				this.addComponentToOrganization(content, lessonsOrganization);
 			});
 
-			lesson.linkedTasks.forEach((task) => {
-				lessonsOrganization.addResource(this.mapper.mapLinkedTaskToResource(task, version));
+			lesson.contents.forEach((content) => {
+				lessonsOrganization.addResource(this.mapper.mapLinkedTaskToResource(content, version));
 			});
 		});
 	}

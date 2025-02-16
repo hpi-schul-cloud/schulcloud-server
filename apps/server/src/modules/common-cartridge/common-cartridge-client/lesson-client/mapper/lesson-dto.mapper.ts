@@ -3,17 +3,15 @@ import { ComponentEtherpadPropsDto } from '../dto/component-etherpad-props.dto';
 import { ComponentGeogebraPropsDto } from '../dto/component-geogebra-props.dto';
 import { ComponentInternalPropsDto } from '../dto/component-internal-props.dto';
 import { ComponentLernstorePropsDto } from '../dto/component-lernstore-props.dto';
-import { ComponentNexboardPropsDto } from '../dto/component-nexboard-props-dto';
 import { ComponentTextPropsDto } from '../dto/component-text-props.dto';
 import {
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
 	ComponentInternalPropsImpl,
 	ComponentLernstorePropsImpl,
-	ComponentNexboardPropsImpl,
 	ComponentTextPropsImpl,
 	LessonContentResponse,
-	LessonContentResponseComponent,
+	LessonContentResponseComponentEnum,
 	LessonLinkedTaskResponse,
 	LessonResponse,
 	MaterialResponse,
@@ -49,7 +47,7 @@ export class LessonDtoMapper {
 			position: lessonResponse.position,
 			contents: lessonResponse.contents
 				.map((content) => this.mapToLessenContentDto(content))
-				.filter((contetnDto) => contetnDto !== null),
+				.filter((contentDto) => contentDto !== null),
 			linkedTasks: [],
 			materials: lessonResponse.materials.map((material) => this.mapToLessonMaterialDto(material)),
 		});
@@ -73,7 +71,7 @@ export class LessonDtoMapper {
 
 	private static mapToLessenContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
 		switch (lessonContentResponse.component) {
-			case LessonContentResponseComponent.TEXT:
+			case LessonContentResponseComponentEnum.Text:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -81,7 +79,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentTextPropsDto(lessonContentResponse.content as ComponentTextPropsImpl),
 				});
-			case LessonContentResponseComponent.ETHERPAD:
+			case LessonContentResponseComponentEnum.Etherpad:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -89,7 +87,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentEtherpadPropsDto(lessonContentResponse.content as ComponentEtherpadPropsImpl),
 				});
-			case LessonContentResponseComponent.GEO_GEBRA:
+			case LessonContentResponseComponentEnum.GeoGebra:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -97,7 +95,7 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentGeogebraPropsDto(lessonContentResponse.content as ComponentGeogebraPropsImpl),
 				});
-			case LessonContentResponseComponent.INTERNAL:
+			case LessonContentResponseComponentEnum.Internal:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
@@ -105,21 +103,13 @@ export class LessonDtoMapper {
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentInternalPropsDto(lessonContentResponse.content as ComponentInternalPropsImpl),
 				});
-			case LessonContentResponseComponent.RESOURCES:
+			case LessonContentResponseComponentEnum.Resources:
 				return new LessonContentDto({
 					id: lessonContentResponse.id,
 					title: lessonContentResponse.title,
 					component: lessonContentResponse.component,
 					hidden: lessonContentResponse.hidden,
 					content: new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl),
-				});
-			case LessonContentResponseComponent.NEX_BOARD:
-				return new LessonContentDto({
-					id: lessonContentResponse.id,
-					title: lessonContentResponse.title,
-					component: lessonContentResponse.component,
-					hidden: lessonContentResponse.hidden,
-					content: new ComponentNexboardPropsDto(lessonContentResponse.content as ComponentNexboardPropsImpl),
 				});
 			default:
 				return null;

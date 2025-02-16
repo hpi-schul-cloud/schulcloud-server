@@ -37,7 +37,7 @@ export interface LessonLinkedTaskResponse {
      * @type {string}
      * @memberof LessonLinkedTaskResponse
      */
-    'descriptionInputFormat': LessonLinkedTaskResponseDescriptionInputFormat;
+    'descriptionInputFormat': LessonLinkedTaskResponseDescriptionInputFormatEnum;
     /**
      * 
      * @type {string}
@@ -94,13 +94,13 @@ export interface LessonLinkedTaskResponse {
     'finishedIds': Array<string>;
 }
 
-export const LessonLinkedTaskResponseDescriptionInputFormat = {
-    PLAIN_TEXT: 'plainText',
-    RICH_TEXT_CK5_SIMPLE: 'richTextCk5Simple',
-    RICH_TEXT_CK4: 'richTextCk4',
-    RICH_TEXT_CK5: 'richTextCk5'
+export const LessonLinkedTaskResponseDescriptionInputFormatEnum = {
+    PlainText: 'plainText',
+    RichTextCk5Simple: 'richTextCk5Simple',
+    RichTextCk4: 'richTextCk4',
+    RichTextCk5: 'richTextCk5'
 } as const;
 
-export type LessonLinkedTaskResponseDescriptionInputFormat = typeof LessonLinkedTaskResponseDescriptionInputFormat[keyof typeof LessonLinkedTaskResponseDescriptionInputFormat];
+export type LessonLinkedTaskResponseDescriptionInputFormatEnum = typeof LessonLinkedTaskResponseDescriptionInputFormatEnum[keyof typeof LessonLinkedTaskResponseDescriptionInputFormatEnum];
 
 

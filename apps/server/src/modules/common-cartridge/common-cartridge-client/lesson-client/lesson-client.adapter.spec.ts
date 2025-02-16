@@ -83,7 +83,7 @@ describe(LessonClientAdapter.name, () => {
 								_id: faker.string.uuid(),
 								id: faker.string.uuid(),
 								title: faker.lorem.sentence(),
-								component: faker.helpers.arrayElement(['Etherpad', 'geoGebra', 'neXboard']),
+								component: faker.helpers.arrayElement(['Etherpad', 'geoGebra']),
 								hidden: faker.datatype.boolean(),
 							},
 						],

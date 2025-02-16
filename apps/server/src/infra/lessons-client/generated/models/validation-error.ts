@@ -17,32 +17,38 @@
 /**
  * 
  * @export
- * @interface ComponentNexboardPropsImpl
+ * @interface ValidationError
  */
-export interface ComponentNexboardPropsImpl {
+export interface ValidationError {
     /**
-     * board of a Nexboard component
-     * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * The response status code.
+     * @type {number}
+     * @memberof ValidationError
      */
-    'board': string;
+    'code': number;
     /**
-     * description of a Nexboard component
+     * The error type.
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof ValidationError
      */
-    'description': string;
+    'type': string;
     /**
-     * title of a Nexboard component
+     * The error title.
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof ValidationError
      */
     'title': string;
     /**
-     * url of a Nexboard component
+     * The error message.
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof ValidationError
      */
-    'url': string;
+    'message': string;
+    /**
+     * The error details.
+     * @type {object}
+     * @memberof ValidationError
+     */
+    'details'?: object;
 }
 

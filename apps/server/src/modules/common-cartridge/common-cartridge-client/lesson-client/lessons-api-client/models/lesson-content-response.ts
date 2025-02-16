@@ -53,7 +53,7 @@ export interface LessonContentResponse {
      * @type {string}
      * @memberof LessonContentResponse
      */
-    'component': LessonContentResponseComponent;
+    'component': LessonContentResponseComponentEnum;
     /**
      * 
      * @type {boolean}
@@ -62,15 +62,14 @@ export interface LessonContentResponse {
     'hidden': boolean;
 }
 
-export const LessonContentResponseComponent = {
-    ETHERPAD: 'Etherpad',
-    GEO_GEBRA: 'geoGebra',
-    INTERNAL: 'internal',
-    RESOURCES: 'resources',
-    TEXT: 'text',
-    NEX_BOARD: 'neXboard'
+export const LessonContentResponseComponentEnum = {
+    Etherpad: 'Etherpad',
+    GeoGebra: 'geoGebra',
+    Internal: 'internal',
+    Resources: 'resources',
+    Text: 'text'
 } as const;
 
-export type LessonContentResponseComponent = typeof LessonContentResponseComponent[keyof typeof LessonContentResponseComponent];
+export type LessonContentResponseComponentEnum = typeof LessonContentResponseComponentEnum[keyof typeof LessonContentResponseComponentEnum];
 
 

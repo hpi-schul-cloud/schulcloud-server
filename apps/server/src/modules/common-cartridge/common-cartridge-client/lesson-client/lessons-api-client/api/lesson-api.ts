@@ -171,38 +171,12 @@ export const LessonApiFactory = function (configuration?: Configuration, basePat
 };
 
 /**
- * LessonApi - interface
- * @export
- * @interface LessonApi
- */
-export interface LessonApiInterface {
-    /**
-     * 
-     * @param {string} lessonId The id of the lesson.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof LessonApiInterface
-     */
-    lessonControllerGetLesson(lessonId: string, options?: RawAxiosRequestConfig): AxiosPromise<LessonResponse>;
-
-    /**
-     * 
-     * @param {string} lessonId The id of the lesson.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof LessonApiInterface
-     */
-    lessonControllerGetLessonTasks(lessonId: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<LessonLinkedTaskResponse>>;
-
-}
-
-/**
  * LessonApi - object-oriented interface
  * @export
  * @class LessonApi
  * @extends {BaseAPI}
  */
-export class LessonApi extends BaseAPI implements LessonApiInterface {
+export class LessonApi extends BaseAPI {
     /**
      * 
      * @param {string} lessonId The id of the lesson.

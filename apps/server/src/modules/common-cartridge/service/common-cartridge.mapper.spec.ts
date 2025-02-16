@@ -168,7 +168,22 @@ describe('CommonCartridgeExportMapper', () => {
 				const lessonContent = lessonContentFactory.build();
 				lessonContent.component = LessonContentDtoComponentValues.LERNSTORE;
 				lessonContent.content = {
-					resources: [faker.internet.url(), faker.internet.url()],
+					resources: [
+						{
+							url: faker.internet.url(),
+							title: faker.lorem.sentence(),
+							client: faker.company.name(),
+							description: faker.lorem.sentence(),
+							merlinReference: faker.string.uuid(),
+						},
+						{
+							url: faker.internet.url(),
+							title: faker.lorem.sentence(),
+							client: faker.company.name(),
+							description: faker.lorem.sentence(),
+							merlinReference: faker.string.uuid(),
+						},
+					],
 				};
 				return { lessonContent };
 			};
@@ -180,8 +195,14 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result[0]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
-					title: '',
-					url: '',
+					title: (lessonContent.content as any).resources[0].title,
+					url: (lessonContent.content as any).resources[0].url,
+				});
+				expect(result[1]).toEqual({
+					type: CommonCartridgeResourceType.WEB_LINK,
+					identifier: `i${lessonContent.id ?? ''}`,
+					title: (lessonContent.content as any).resources[1].title,
+					url: (lessonContent.content as any).resources[1].url,
 				});
 			});
 		});
