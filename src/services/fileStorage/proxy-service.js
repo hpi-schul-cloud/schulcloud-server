@@ -1,6 +1,5 @@
 const fs = require('fs');
 const url = require('url');
-const rp = require('request-promise-native');
 const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
@@ -774,10 +773,10 @@ const newFileService = {
 				if (Configuration.get('REQUEST_OPTION__KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
-				return rp({
+				return axios({
 					method: 'PUT',
-					uri: signedUrl.url,
-					body: buffer,
+					url: signedUrl.url,
+					data: buffer,
 					headers,
 				});
 			})
