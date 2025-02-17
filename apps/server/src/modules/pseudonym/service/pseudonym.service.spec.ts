@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
@@ -14,22 +15,21 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
-import { ltiToolDOFactory, pseudonymFactory } from '@testing/factory/domainobject';
+import { setupEntities } from '@testing/database';
+import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { ExternalToolPseudonymEntity } from '../entity';
+import { ExternalToolPseudonymRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
 
 describe('PseudonymService', () => {
 	let module: TestingModule;
 	let service: PseudonymService;
 
-	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
 	let externalToolPseudonymRepo: DeepMocked<ExternalToolPseudonymRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -37,10 +37,6 @@ describe('PseudonymService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				PseudonymService,
-				{
-					provide: PseudonymsRepo,
-					useValue: createMock<PseudonymsRepo>(),
-				},
 				{
 					provide: ExternalToolPseudonymRepo,
 					useValue: createMock<ExternalToolPseudonymRepo>(),
@@ -57,13 +53,12 @@ describe('PseudonymService', () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities(),
+					useValue: await setupEntities([ExternalToolPseudonymEntity]),
 				},
 			],
 		}).compile();
 
 		service = module.get(PseudonymService);
-		pseudonymRepo = module.get(PseudonymsRepo);
 		externalToolPseudonymRepo = module.get(ExternalToolPseudonymRepo);
 		eventBus = module.get(EventBus);
 	});
@@ -114,26 +109,6 @@ describe('PseudonymService', () => {
 				await service.findByUserAndToolOrThrow(user, externalTool);
 
 				expect(externalToolPseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, externalTool.id);
-			});
-		});
-
-		describe('when tool parameter is an LtiTool', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-				const ltiToolDO: LtiToolDO = ltiToolDOFactory.buildWithId();
-
-				return {
-					user,
-					ltiToolDO,
-				};
-			};
-
-			it('should call pseudonymRepo', async () => {
-				const { user, ltiToolDO } = setup();
-
-				await service.findByUserAndToolOrThrow(user, ltiToolDO);
-
-				expect(pseudonymRepo.findByUserIdAndToolIdOrFail).toHaveBeenCalledWith(user.id, ltiToolDO.id);
 			});
 		});
 
@@ -232,26 +207,6 @@ describe('PseudonymService', () => {
 			});
 		});
 
-		describe('when tool parameter is an LtiToolDO', () => {
-			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
-				const ltiToolDO: LtiToolDO = ltiToolDOFactory.buildWithId();
-
-				return {
-					user,
-					ltiToolDO,
-				};
-			};
-
-			it('should call pseudonymRepo', async () => {
-				const { user, ltiToolDO } = setup();
-
-				await service.findOrCreatePseudonym(user, ltiToolDO);
-
-				expect(pseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, ltiToolDO.id);
-			});
-		});
-
 		describe('when the pseudonym exists', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build();
@@ -342,18 +297,13 @@ describe('PseudonymService', () => {
 				const user1: UserDO = userDoFactory.buildWithId();
 				const pseudonym1: Pseudonym = pseudonymFactory.build({ userId: user1.id });
 				const pseudonym2: Pseudonym = pseudonymFactory.build({ userId: user1.id });
-				const pseudonym3: Pseudonym = pseudonymFactory.build({ userId: user1.id });
-				const pseudonym4: Pseudonym = pseudonymFactory.build({ userId: user1.id });
 
-				pseudonymRepo.findByUserId.mockResolvedValue([pseudonym1, pseudonym2]);
-				externalToolPseudonymRepo.findByUserId.mockResolvedValue([pseudonym3, pseudonym4]);
+				externalToolPseudonymRepo.findByUserId.mockResolvedValue([pseudonym1, pseudonym2]);
 
 				return {
 					user1,
 					pseudonym1,
 					pseudonym2,
-					pseudonym3,
-					pseudonym4,
 				};
 			};
 
@@ -362,16 +312,15 @@ describe('PseudonymService', () => {
 
 				await service.findByUserId(user1.id as string);
 
-				expect(pseudonymRepo.findByUserId).toHaveBeenCalledWith(user1.id);
 				expect(externalToolPseudonymRepo.findByUserId).toHaveBeenCalledWith(user1.id);
 			});
 
 			it('should be return array with four pseudonyms', async () => {
-				const { user1, pseudonym1, pseudonym2, pseudonym3, pseudonym4 } = setup();
+				const { user1, pseudonym1, pseudonym2 } = setup();
 
 				const result: Pseudonym[] = await service.findByUserId(user1.id as string);
 
-				expect(result).toHaveLength(4);
+				expect(result).toHaveLength(2);
 				expect(result[0].id).toEqual(pseudonym1.id);
 				expect(result[0].userId).toEqual(pseudonym1.userId);
 				expect(result[0].pseudonym).toEqual(pseudonym1.pseudonym);
@@ -384,18 +333,6 @@ describe('PseudonymService', () => {
 				expect(result[1].toolId).toEqual(pseudonym2.toolId);
 				expect(result[1].createdAt).toEqual(pseudonym2.createdAt);
 				expect(result[1].updatedAt).toEqual(pseudonym2.updatedAt);
-				expect(result[2].id).toEqual(pseudonym3.id);
-				expect(result[2].userId).toEqual(pseudonym3.userId);
-				expect(result[2].pseudonym).toEqual(pseudonym3.pseudonym);
-				expect(result[2].toolId).toEqual(pseudonym3.toolId);
-				expect(result[2].createdAt).toEqual(pseudonym3.createdAt);
-				expect(result[2].updatedAt).toEqual(pseudonym3.updatedAt);
-				expect(result[3].id).toEqual(pseudonym4.id);
-				expect(result[3].userId).toEqual(pseudonym4.userId);
-				expect(result[3].pseudonym).toEqual(pseudonym4.pseudonym);
-				expect(result[3].toolId).toEqual(pseudonym4.toolId);
-				expect(result[3].createdAt).toEqual(pseudonym4.createdAt);
-				expect(result[3].updatedAt).toEqual(pseudonym4.updatedAt);
 			});
 		});
 
@@ -403,10 +340,13 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
+				externalToolPseudonymRepo.findByUserId.mockResolvedValueOnce([]);
+
 				return {
 					user,
 				};
 			};
+
 			it('should return empty array', async () => {
 				const { user } = setup();
 
@@ -438,22 +378,12 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const pseudonymsDeleted = [new ObjectId().toHexString(), new ObjectId().toHexString()];
-				const externalPseudonymsDeleted = [
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-				];
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
-					DomainOperationReportBuilder.build(
-						OperationType.DELETE,
-						pseudonymsDeleted.length + externalPseudonymsDeleted.length,
-						[...pseudonymsDeleted, ...externalPseudonymsDeleted]
-					),
+					DomainOperationReportBuilder.build(OperationType.DELETE, pseudonymsDeleted.length, [...pseudonymsDeleted]),
 				]);
 
-				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(pseudonymsDeleted);
-				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(externalPseudonymsDeleted);
+				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(pseudonymsDeleted);
 
 				return {
 					expectedResult,

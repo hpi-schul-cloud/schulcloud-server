@@ -16,7 +16,7 @@ export class MetaTagExtractorController {
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('')
-	async getMetaTags(
+	public async getMetaTags(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() bodyParams: GetMetaTagDataBody
 	): Promise<MetaTagExtractorResponse> {

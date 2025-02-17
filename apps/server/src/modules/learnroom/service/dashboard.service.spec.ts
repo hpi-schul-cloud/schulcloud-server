@@ -11,12 +11,12 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement } from '@shared/domain/entity';
+import { DashboardEntity, GridElement, User } from '@shared/domain/entity';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 
@@ -44,7 +44,7 @@ describe(DashboardService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				DashboardService,

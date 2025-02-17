@@ -5,7 +5,7 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';

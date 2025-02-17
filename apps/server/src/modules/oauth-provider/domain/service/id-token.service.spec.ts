@@ -5,12 +5,12 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user/service/user.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { TeamEntity } from '@shared/domain/entity';
+import { TeamEntity, User } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo/teams';
+import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { teamFactory } from '@testing/factory/team.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { IdTokenCreationLoggableException } from '../error';
 import { IdToken, OauthScope } from '../interface';
 import { IdTokenService } from './id-token.service';
@@ -56,7 +56,7 @@ describe('IdTokenService', () => {
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

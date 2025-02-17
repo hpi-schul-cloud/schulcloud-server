@@ -26,10 +26,10 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -47,7 +47,7 @@ describe('UserService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -850,6 +850,14 @@ describe('UserService', () => {
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
+
+				config.get.mockImplementationOnce((key) => {
+					if (key === 'CALENDAR_SERVICE_ENABLED') {
+						return true;
+					}
+
+					return false;
+				});
 
 				return {
 					expectedResult,

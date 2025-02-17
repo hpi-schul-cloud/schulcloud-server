@@ -1,7 +1,7 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { LtiDeepLinkToken } from '../../domain';
 import { LtiDeepLinkTokenEntity } from '../../entity';
 import { ltiDeepLinkTokenEntityFactory, ltiDeepLinkTokenFactory } from '../../testing';
@@ -16,7 +16,7 @@ describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [LtiDeepLinkTokenEntity] })],
 			providers: [{ provide: LTI_DEEP_LINK_TOKEN_REPO, useClass: LtiDeepLinkTokenMikroOrmRepo }],
 		}).compile();
 

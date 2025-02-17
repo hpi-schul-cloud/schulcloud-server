@@ -1,8 +1,8 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { SCHOOL_YEAR_REPO } from '../../domain';
 import { SchoolYearEntityMapper } from './mapper';
@@ -15,7 +15,7 @@ describe('SchoolYearMikroOrmRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolYearEntity] })],
 			providers: [{ provide: SCHOOL_YEAR_REPO, useClass: SchoolYearMikroOrmRepo }],
 		}).compile();
 

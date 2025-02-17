@@ -1,9 +1,9 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
@@ -22,7 +22,11 @@ describe('TaskRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [Task, Course, CourseGroup, LessonEntity, Submission, Material],
+				}),
+			],
 			providers: [TaskRepo],
 		}).compile();
 

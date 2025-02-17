@@ -1,9 +1,10 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TeamEntity } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo/teams';
+import { setupEntities } from '@testing/database';
 import { teamFactory } from '@testing/factory/team.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { TeamAuthorisableService } from './team-authorisable.service';
 
 describe('team authorisable service', () => {
@@ -14,7 +15,7 @@ describe('team authorisable service', () => {
 	let teamsRepo: DeepMocked<TeamsRepo>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([TeamEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

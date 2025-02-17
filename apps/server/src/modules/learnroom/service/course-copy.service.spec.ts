@@ -9,20 +9,20 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { CourseRepo } from '@shared/repo/course';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
 import { UserRepo } from '@shared/repo/user';
-import { boardFactory } from '@testing/factory/board.factory';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '../../tool/context-external-tool/testing';
+import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
+import { boardFactory } from '../testing';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
@@ -45,7 +45,7 @@ describe('course copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup, LegacyBoard, LegacyBoardElement]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyService,
@@ -261,17 +261,15 @@ describe('course copy service', () => {
 			expect(status.title).toEqual((status.copyEntity as Course).name);
 		});
 
-		it('should set static statuses (metadata, ltitools, usergroup, timegroup)', async () => {
+		it('should set static statuses (metadata, usergroup, timegroup)', async () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 
 			const metadataStatus = status.elements?.find((el) => el.type === CopyElementType.METADATA);
-			const ltiToolsStatus = status.elements?.find((el) => el.type === CopyElementType.LTITOOL_GROUP);
 			const teachersStatus = status.elements?.find((el) => el.type === CopyElementType.USER_GROUP);
 			const timesStatus = status.elements?.find((el) => el.type === CopyElementType.TIME_GROUP);
 
 			expect(metadataStatus?.status).toEqual(CopyStatusEnum.SUCCESS);
-			expect(ltiToolsStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			expect(teachersStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 			expect(timesStatus?.status).toEqual(CopyStatusEnum.NOT_DOING);
 		});

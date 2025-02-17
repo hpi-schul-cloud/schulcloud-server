@@ -5,7 +5,6 @@ import { LessonCopyParentParams } from '@modules/lesson';
 import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@modules/task/types';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 
@@ -17,7 +16,6 @@ describe('copy mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [CopyMapper],
@@ -63,13 +61,13 @@ describe('copy mapper', () => {
 				title: 'Test element',
 				type: CopyElementType.COURSE || CopyElementType.TASK,
 				status: CopyStatusEnum.PARTIAL,
-				elements: [{ title: 'Sub element', type: CopyElementType.LTITOOL_GROUP, status: CopyStatusEnum.NOT_DOING }],
+				elements: [{ title: 'Sub element', type: CopyElementType.BOARD, status: CopyStatusEnum.NOT_DOING }],
 			};
 			const result = CopyMapper.mapToResponse(copyStatus);
 
 			expect(result.elements).toBeDefined();
 			if (result.elements) {
-				expect(result.elements[0].type).toEqual(CopyElementType.LTITOOL_GROUP);
+				expect(result.elements[0].type).toEqual(CopyElementType.BOARD);
 			}
 		});
 	});

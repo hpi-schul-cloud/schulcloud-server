@@ -14,5 +14,7 @@
 
 
 
+export * from './api/default-api';
+export * from './api/education-provider-api';
 export * from './api/idmbetreiber-api';
 

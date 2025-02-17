@@ -1,7 +1,6 @@
 import { QueryOrderMap } from '@mikro-orm/core';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { LtiTool } from '@shared/domain/entity';
 import { SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { ExternalToolSortingMapper } from '@shared/repo/externaltool';
 
@@ -17,7 +16,7 @@ describe('ExternalToolSortingMapper', () => {
 				name: doSortOrderMap.name,
 			};
 
-			const entityQueryOrderMap: QueryOrderMap<LtiTool> =
+			const entityQueryOrderMap: QueryOrderMap<ExternalToolEntity> =
 				ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(doSortOrderMap);
 
 			expect(entityQueryOrderMap).toEqual(expectedResponse);

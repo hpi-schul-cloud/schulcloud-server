@@ -5,10 +5,11 @@ import { AuthorizationReferenceService } from '@modules/authorization-reference'
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 
@@ -19,7 +20,7 @@ describe('course copy uc', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyUC,

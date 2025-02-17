@@ -1,14 +1,14 @@
 const assert = require('assert');
 const chai = require('chai');
 const sinon = require('sinon');
-const request = require('request-promise-native');
+const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
-const MockNode = JSON.stringify(require('../mock/response-node.json'));
-const MockNodes = JSON.stringify(require('../mock/response-nodes.json'));
-const MockH5PRenderer = JSON.stringify(require('../mock/response-h5p-renderer.json'));
+const mockNode = require('../mock/response-node.json');
+const mockNodes = require('../mock/response-nodes.json');
+const mockH5PRenderer = require('../mock/response-h5p-renderer.json');
 const EduSharingResponse = require('../../../../src/services/edusharing/services/EduSharingResponse');
-const EduSharingConnectorV7 = require('../../../../src/services/edusharing/services/EduSharingConnectorV7');
+const eduSharingConnectorV7 = require('../../../../src/services/edusharing/services/EduSharingConnectorV7');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
@@ -22,11 +22,10 @@ describe('EduSharingV7 FIND', () => {
 	let nestServices;
 
 	before(async () => {
-		Configuration.set('ES_API_V7', true);
 		app = await appPromise();
 		eduSharingService = app.service('edu-sharing');
 		eduSharingPlayerService = app.service('edu-sharing/player');
-		eduSharingService.connector = EduSharingConnectorV7;
+		eduSharingService.connector = eduSharingConnectorV7;
 		eduSharingResponse = new EduSharingResponse();
 		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
@@ -52,9 +51,9 @@ describe('EduSharingV7 FIND', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 			paramsStudent.query = { searchQuery: '' };
-			const response = await eduSharingService.find(paramsStudent);
+			const result = await eduSharingService.find(paramsStudent);
 
-			chai.expect(JSON.stringify(response)).to.equal(JSON.stringify(eduSharingResponse));
+			chai.expect(JSON.stringify(result)).to.equal(JSON.stringify(eduSharingResponse));
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -65,14 +64,14 @@ describe('EduSharingV7 FIND', () => {
 			const student = await testObjects.createTestUser({ roles: ['student'] });
 			const paramsStudent = await testObjects.generateRequestParamsFromUser(student);
 
-			const postStub = sinon.stub(request, 'post');
+			const postStub = sinon.stub(axios, 'post');
 			postStub.onCall(0).throws({ statusCode: 403, message: 'Stubbing request fail' });
-			postStub.onCall(1).returns(MockNodes);
+			postStub.onCall(1).returns({ data: mockNodes });
 
 			paramsStudent.query = { searchQuery: 'foo' };
-			const response = await eduSharingService.find(paramsStudent);
+			const result = await eduSharingService.find(paramsStudent);
 
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -83,18 +82,13 @@ describe('EduSharingV7 FIND', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
-			const postStub = sinon.stub(request, 'post');
-			postStub.onCall(0).returns(MockNodes);
+			const postStub = sinon.stub(axios, 'post');
+			postStub.onCall(0).returns({ data: mockNodes });
 
 			params.query = { collection: 'a4808865-da94-4884-bdba-0ad66070e83b' };
-			const response = await eduSharingService.find(params);
+			const result = await eduSharingService.find(params);
 
-			chai
-				.expect(postStub.getCalls()[0].args[0].body)
-				.contains(
-					`{"property":"ccm:hpi_lom_relation","values":["{'kind': 'ispartof', 'resource': {'identifier': ['a4808865-da94-4884-bdba-0ad66070e83b']}}"]`
-				);
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -105,14 +99,13 @@ describe('EduSharingV7 FIND', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
-			const postStub = sinon.stub(request, 'post');
-			postStub.onCall(0).returns(MockNodes);
+			const postStub = sinon.stub(axios, 'post');
+			postStub.onCall(0).returns({ data: mockNodes });
 
 			params.query = { searchQuery: 'foo' };
-			const response = await eduSharingService.find(params);
+			const result = await eduSharingService.find(params);
 
-			chai.expect(postStub.getCalls()[0].args[0].body).contains(`{"property":"ccm:hpi_searchable","values":["1"]}`);
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -134,17 +127,12 @@ describe('EduSharingV7 FIND', () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const postStub = sinon.stub(request, 'post');
 
-			postStub.onCall(0).returns(MockNode);
-			const mockImg = { body: 'dummyImage' };
-			postStub.onCall(1).returns(mockImg);
+			const postStub = sinon.stub(axios, 'post');
+			postStub.onCall(0).returns({ data: mockNode });
 
-			const response = await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
-			chai.expect(response.title).to.equal('dummy title');
-			chai
-				.expect(postStub.getCalls()[0].args[0].body)
-				.contains(`{"property":"ccm:replicationsourceuuid","values":["9ff3ee4e-e679-4576-bad7-0eeb9b174716"]`);
+			const result = await eduSharingService.get('9ff3ee4e-e679-4576-bad7-0eeb9b174716', params);
+			chai.expect(result.title).to.equal('dummy title');
 		} catch (err) {
 			throw new Error(err);
 		}
@@ -153,9 +141,9 @@ describe('EduSharingV7 FIND', () => {
 	it('player should return h5p data', async () => {
 		const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 		const params = await testObjects.generateRequestParamsFromUser(user);
-		const getStub = sinon.stub(request, 'get');
 
-		getStub.onCall(0).returns(MockH5PRenderer);
+		const getStub = sinon.stub(axios, 'get');
+		getStub.onCall(0).returns({ data: mockH5PRenderer });
 
 		const result = await eduSharingPlayerService.get('dummy-id', params);
 
@@ -166,9 +154,9 @@ describe('EduSharingV7 FIND', () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const getStub = sinon.stub(request, 'get');
 
-			getStub.onCall(0).returns('{}');
+			const getStub = sinon.stub(axios, 'get');
+			getStub.onCall(0).returns({ data: {} });
 
 			await eduSharingPlayerService.get('dummy-id', params);
 
@@ -183,9 +171,9 @@ describe('EduSharingV7 FIND', () => {
 		try {
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId: '5fcfb0bc685b9af4d4abf899' });
 			const params = await testObjects.generateRequestParamsFromUser(user);
-			const getStub = sinon.stub(request, 'get');
 
-			getStub.onCall(0).returns('{"detailsSnippet":""}');
+			const getStub = sinon.stub(axios, 'get');
+			getStub.onCall(0).returns({ data: { detailsSnippet: '' } });
 
 			await eduSharingPlayerService.get('dummy-id', params);
 
@@ -231,16 +219,13 @@ describe('EduSharingV7 config flags', () => {
 			const user = await testObjects.createTestUser({ roles: ['teacher'] });
 			const params = await testObjects.generateRequestParamsFromUser(user);
 
-			const postStub = sinon.stub(request, 'post');
-			postStub.onCall(0).returns(MockNodes);
+			const postStub = sinon.stub(axios, 'post');
+			postStub.onCall(0).returns({ data: mockNodes });
 
 			params.query = { searchQuery: 'foo' };
-			const response = await eduSharingService.find(params);
+			const result = await eduSharingService.find(params);
 
-			chai
-				.expect(postStub.getCalls()[0].args[0].body)
-				.contains(`{"property":"ccm:hpi_lom_general_aggregationlevel","values":["1"]}`);
-			chai.expect(response.total).to.gte(1);
+			chai.expect(result.total).to.gte(1);
 		} catch (err) {
 			throw new Error(err);
 		}

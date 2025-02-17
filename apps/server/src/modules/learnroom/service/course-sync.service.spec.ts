@@ -5,10 +5,10 @@ import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SyncAttribute } from '@shared/domain/entity';
+import { CourseGroup, SyncAttribute, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	Course,
 	COURSE_REPO,
@@ -44,7 +44,7 @@ describe(CourseSyncService.name, () => {
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
 		courseRepo = module.get(COURSE_REPO);
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 	});
 
 	afterAll(async () => {

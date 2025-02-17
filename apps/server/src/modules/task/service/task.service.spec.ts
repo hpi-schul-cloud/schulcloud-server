@@ -12,12 +12,13 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
@@ -31,7 +32,7 @@ describe('TaskService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [

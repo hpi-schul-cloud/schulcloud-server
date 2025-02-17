@@ -1,12 +1,14 @@
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { Course } from '.';
 import { CourseGroup } from './coursegroup.entity';
+import { User } from './user.entity';
 
 describe('CourseGroupEntity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 	});
 
 	describe('constructor', () => {

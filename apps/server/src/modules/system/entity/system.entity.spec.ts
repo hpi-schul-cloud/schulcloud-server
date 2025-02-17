@@ -1,11 +1,11 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { systemEntityFactory } from '../testing';
 import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([SystemEntity]);
 	});
 
 	describe('constructor', () => {

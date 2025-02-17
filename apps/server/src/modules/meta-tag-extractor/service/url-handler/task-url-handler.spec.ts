@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '@shared/domain/entity';
-import { setupEntities } from '@testing/setup-entities';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
+import { taskFactory } from '@testing/factory/task.factory';
+import { ObjectId } from 'bson';
 import { MetaDataEntityType } from '../../types';
 import { TaskUrlHandler } from './task-url-handler';
 
@@ -24,13 +26,13 @@ describe(TaskUrlHandler.name, () => {
 
 		taskService = module.get(TaskService);
 		taskUrlHandler = module.get(TaskUrlHandler);
-		await setupEntities();
+		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {
 		describe('when url fits', () => {
 			it('should call taskService with the correct id', async () => {
-				const id = '671a5bdf0995ace8cbc6f899';
+				const id = new ObjectId().toHexString();
 				const url = new URL(`https://localhost/homework/${id}`);
 
 				await taskUrlHandler.getMetaData(url);
@@ -39,10 +41,10 @@ describe(TaskUrlHandler.name, () => {
 			});
 
 			it('should take the title from the tasks name', async () => {
-				const id = '671a5bdf0995ace8cbc6f899';
-				const url = new URL(`https://localhost/homework/${id}`);
 				const taskName = 'My Task';
-				taskService.findById.mockResolvedValue({ name: taskName } as Task);
+				const task = taskFactory.buildWithId({ name: taskName });
+				const url = new URL(`https://localhost/homework/${task.id}`);
+				taskService.findById.mockResolvedValue(task);
 
 				const result = await taskUrlHandler.getMetaData(url);
 

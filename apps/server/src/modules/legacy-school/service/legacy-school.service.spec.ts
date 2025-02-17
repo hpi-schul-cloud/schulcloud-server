@@ -1,14 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolYearService } from './school-year.service';
@@ -58,7 +59,7 @@ describe('LegacySchoolService', () => {
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
 
-		await setupEntities();
+		await setupEntities([StorageProviderEntity]);
 	});
 
 	afterAll(async () => {
