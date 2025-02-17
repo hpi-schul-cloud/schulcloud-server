@@ -37,7 +37,7 @@ export interface LessonResources {
      * @type {string}
      * @memberof LessonResources
      */
-    'merlinReference': string;
+    'merlinReference'?: string;
     /**
      * title
      * @type {string}
@@ -49,6 +49,6 @@ export interface LessonResources {
      * @type {string}
      * @memberof LessonResources
      */
-    'url': string;
+    'url'?: string;
 }
 

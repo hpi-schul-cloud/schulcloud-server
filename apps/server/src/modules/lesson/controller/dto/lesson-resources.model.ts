@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class LessonResources {
 	@ApiProperty({ description: 'client' })
@@ -7,13 +7,13 @@ export class LessonResources {
 	@ApiProperty({ description: 'description' })
 	description: string;
 
-	@ApiProperty({ description: 'merlinReference' })
+	@ApiPropertyOptional({ description: 'merlinReference' })
 	merlinReference?: string;
 
 	@ApiProperty({ description: 'title' })
 	title: string;
 
-	@ApiProperty({ description: 'url' })
+	@ApiPropertyOptional({ description: 'url' })
 	url?: string;
 
 	constructor(client: string, description: string, title: string, url: string, merlinReference?: string) {

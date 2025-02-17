@@ -5,7 +5,7 @@ export class LessonResourcesDto {
 
 	description: string;
 
-	merlinReference: string;
+	merlinReference?: string;
 
 	title: string;
 
