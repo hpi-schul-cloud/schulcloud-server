@@ -6,6 +6,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolRepo } from '@shared/repo/externaltool';
+import { MediaSourceService } from '@modules/media-source';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
@@ -19,7 +20,8 @@ export class ExternalToolService {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly legacyLogger: LegacyLogger,
-		private readonly commonToolDeleteService: CommonToolDeleteService
+		private readonly commonToolDeleteService: CommonToolDeleteService,
+		private readonly mediaSourceService: MediaSourceService
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -104,6 +106,10 @@ export class ExternalToolService {
 
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
+	}
+
+	public async getMetadataForExternalToolConfiguration(mediumId: string, mediaSourceId: string) {
+		await this.mediaSourceService.fetchMetadata(mediumId, mediaSourceId);
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

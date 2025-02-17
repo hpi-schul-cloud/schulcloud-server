@@ -9,14 +9,15 @@ import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { MediaSourceService } from '../../../media-source';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	ExternalToolConfig,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolMetadata,
+	ExternalToolUtilization,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
@@ -39,7 +40,7 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly commonToolMetadataService: CommonToolUtilizationService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
@@ -202,11 +203,13 @@ export class ExternalToolUc {
 		await this.externalToolService.deleteExternalTool(externalTool);
 	}
 
-	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+	public async getUtilizationForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolUtilization> {
 		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
+		const metadata: ExternalToolUtilization = await this.commonToolMetadataService.getUtilizationForExternalTool(
+			toolId
+		);
 
 		return metadata;
 	}
@@ -263,6 +266,13 @@ export class ExternalToolUc {
 		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
+	}
+
+	public async getMetadataForExternalToolConfiguration(userId: EntityId, mediumId: EntityId, mediaSourceId: EntityId) {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		await this.externalToolService.getMetadataForExternalToolConfiguration(mediumId, mediaSourceId);
 	}
 
 	private encryptLtiSecret(

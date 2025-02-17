@@ -5,13 +5,13 @@ import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolType } from '../../context-external-tool/entity';
-import { ExternalToolMetadata } from '../../external-tool/domain';
+import { ExternalToolUtilization } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
 import { ToolContextMapper } from '../mapper/tool-context.mapper';
 
 @Injectable()
-export class CommonToolMetadataService {
+export class CommonToolUtilizationService {
 	constructor(
 		private readonly schoolToolRepo: SchoolExternalToolRepo,
 		private readonly contextToolRepo: ContextExternalToolRepo,
@@ -19,30 +19,30 @@ export class CommonToolMetadataService {
 		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
-	async getMetadataForExternalTool(toolId: EntityId): Promise<ExternalToolMetadata> {
+	async getUtilizationForExternalTool(toolId: EntityId): Promise<ExternalToolUtilization> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolToolRepo.findByExternalToolId(toolId);
 
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
 		);
 
-		const externalToolMetadata: ExternalToolMetadata = await this.getMetadata(schoolExternalToolIds);
+		const externalToolUtilization: ExternalToolUtilization = await this.getUtilization(schoolExternalToolIds);
 
-		return externalToolMetadata;
+		return externalToolUtilization;
 	}
 
-	async getMetadataForSchoolExternalTool(schoolExternalToolId: EntityId): Promise<SchoolExternalToolMetadata> {
-		const externalToolMetadata: ExternalToolMetadata = await this.getMetadata([schoolExternalToolId]);
+	async getUtilizationForSchoolExternalTool(schoolExternalToolId: EntityId): Promise<SchoolExternalToolMetadata> {
+		const externalToolUtilization: ExternalToolUtilization = await this.getUtilization([schoolExternalToolId]);
 
 		const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({
-			contextExternalToolCountPerContext: externalToolMetadata.contextExternalToolCountPerContext,
+			contextExternalToolCountPerContext: externalToolUtilization.contextExternalToolCountPerContext,
 		});
 
 		return schoolExternalToolMetadata;
 	}
 
-	private async getMetadata(schoolExternalToolIds: EntityId[]): Promise<ExternalToolMetadata> {
-		const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+	private async getUtilization(schoolExternalToolIds: EntityId[]): Promise<ExternalToolUtilization> {
+		const externalToolUtilization: ExternalToolUtilization = new ExternalToolUtilization({
 			schoolExternalToolCount: schoolExternalToolIds.length,
 			contextExternalToolCountPerContext: {
 				[ContextExternalToolType.BOARD_ELEMENT]: 0,
@@ -61,12 +61,12 @@ export class CommonToolMetadataService {
 
 					const count: number = await this.countUsageForType(contextExternalTools, type);
 
-					externalToolMetadata.contextExternalToolCountPerContext[type] = count;
+					externalToolUtilization.contextExternalToolCountPerContext[type] = count;
 				})
 			);
 		}
 
-		return externalToolMetadata;
+		return externalToolUtilization;
 	}
 
 	private async countUsageForType(

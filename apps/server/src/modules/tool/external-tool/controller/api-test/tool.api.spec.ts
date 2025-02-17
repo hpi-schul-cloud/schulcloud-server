@@ -32,7 +32,7 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolMetadataResponse,
+	ExternalToolUtilizationResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 } from '../dto';
@@ -857,7 +857,7 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+				expect(response.body).toEqual<ExternalToolUtilizationResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
 						course: 1,

@@ -8,7 +8,7 @@ import { MediaSourceVidisConfigEmbeddable } from './media-source-vidis-config.em
 export interface MediaSourceEntityProps {
 	id?: EntityId;
 
-	name?: string;
+	name: string;
 
 	sourceId: string;
 
@@ -16,7 +16,7 @@ export interface MediaSourceEntityProps {
 
 	vidisConfig?: MediaSourceVidisConfigEmbeddable;
 
-	format?: MediaSourceDataFormat;
+	format: MediaSourceDataFormat;
 }
 
 @Entity({ tableName: 'media-sources' })
@@ -38,10 +38,10 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	sourceId: string;
 
 	@Property({ nullable: true })
-	name?: string;
+	name: string;
 
 	@Property({ nullable: true })
-	format?: MediaSourceDataFormat;
+	format: MediaSourceDataFormat;
 
 	@Embedded(() => MediaSourceOauthConfigEmbeddable, { object: true, nullable: true })
 	oauthConfig?: MediaSourceOauthConfigEmbeddable;

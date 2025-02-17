@@ -4,7 +4,7 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
@@ -14,7 +14,7 @@ export class SchoolExternalToolUc {
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
-		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly commonToolMetadataService: CommonToolUtilizationService,
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService
 	) {}
@@ -126,9 +126,8 @@ export class SchoolExternalToolUc {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);
 
-		const metadata: SchoolExternalToolMetadata = await this.commonToolMetadataService.getMetadataForSchoolExternalTool(
-			schoolExternalToolId
-		);
+		const metadata: SchoolExternalToolMetadata =
+			await this.commonToolMetadataService.getUtilizationForSchoolExternalTool(schoolExternalToolId);
 
 		return metadata;
 	}

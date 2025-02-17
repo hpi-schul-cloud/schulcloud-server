@@ -25,4 +25,15 @@ export class MediaSourceService {
 
 		return savedObject;
 	}
+
+	public async getAllMediaSources(): Promise<MediaSource[]> {
+		const mediaSources: MediaSource[] = await this.mediaSourceRepo.findAll();
+
+		return mediaSources;
+	}
+
+	// TODO: Metadata
+	public async fetchMetadata(mediumId, mediaSourceId: EntityId) {
+		// const mediaSource: MediaSource | null = await this.mediaSourceRepo.findBySourceId(mediaSourceId);
+	}
 }

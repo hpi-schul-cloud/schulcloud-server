@@ -19,12 +19,12 @@ import { setupEntities } from '@testing/setup-entities';
 import { CustomParameter } from '../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolMetadata,
+	ExternalToolUtilization,
 	ExternalToolParameterDatasheetTemplateProperty,
 	ExternalToolProps,
 	Lti11ToolConfig,
@@ -58,7 +58,7 @@ describe(ExternalToolUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
-	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
+	let commonToolMetadataService: DeepMocked<CommonToolUtilizationService>;
 	let pdfService: DeepMocked<DatasheetPdfService>;
 	let externalToolImageService: DeepMocked<ExternalToolImageService>;
 	let encryptionService: DeepMocked<EncryptionService>;
@@ -96,8 +96,8 @@ describe(ExternalToolUc.name, () => {
 					useValue: createMock<ExternalToolLogoService>(),
 				},
 				{
-					provide: CommonToolMetadataService,
-					useValue: createMock<CommonToolMetadataService>(),
+					provide: CommonToolUtilizationService,
+					useValue: createMock<CommonToolUtilizationService>(),
 				},
 				{
 					provide: DatasheetPdfService,
@@ -121,7 +121,7 @@ describe(ExternalToolUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
-		commonToolMetadataService = module.get(CommonToolMetadataService);
+		commonToolMetadataService = module.get(CommonToolUtilizationService);
 		pdfService = module.get(DatasheetPdfService);
 		externalToolImageService = module.get(ExternalToolImageService);
 		encryptionService = module.get(DefaultEncryptionService);
@@ -1190,7 +1190,7 @@ describe(ExternalToolUc.name, () => {
 			it('get user with permissions', async () => {
 				const { toolId, user } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, toolId);
+				await uc.getUtilizationForExternalTool(user.id, toolId);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
@@ -1198,7 +1198,7 @@ describe(ExternalToolUc.name, () => {
 			it('should check that the user has TOOL_ADMIN permission', async () => {
 				const { user, tool } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, tool.id);
+				await uc.getUtilizationForExternalTool(user.id, tool.id);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
@@ -1221,7 +1221,7 @@ describe(ExternalToolUc.name, () => {
 			it('should throw UnauthorizedException ', async () => {
 				const { toolId, user } = setup();
 
-				const result: Promise<ExternalToolMetadata> = uc.getMetadataForExternalTool(user.id, toolId);
+				const result: Promise<ExternalToolUtilization> = uc.getUtilizationForExternalTool(user.id, toolId);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -1231,12 +1231,12 @@ describe(ExternalToolUc.name, () => {
 			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
 
-				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+				const externalToolMetadata: ExternalToolUtilization = new ExternalToolUtilization({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: { course: 3, boardElement: 3, mediaBoard: 2 },
 				});
 
-				commonToolMetadataService.getMetadataForExternalTool.mockResolvedValue(externalToolMetadata);
+				commonToolMetadataService.getUtilizationForExternalTool.mockResolvedValue(externalToolMetadata);
 
 				const user: User = userFactory.buildWithId();
 				const currentUser = currentUserFactory.build();
@@ -1254,15 +1254,15 @@ describe(ExternalToolUc.name, () => {
 			it('get metadata for external tool', async () => {
 				const { toolId, currentUser } = setup();
 
-				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+				await uc.getUtilizationForExternalTool(currentUser.userId, toolId);
 
-				expect(commonToolMetadataService.getMetadataForExternalTool).toHaveBeenCalledWith(toolId);
+				expect(commonToolMetadataService.getUtilizationForExternalTool).toHaveBeenCalledWith(toolId);
 			});
 
 			it('return metadata of external tool', async () => {
 				const { toolId, currentUser, externalToolMetadata } = setup();
 
-				const result = await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+				const result = await uc.getUtilizationForExternalTool(currentUser.userId, toolId);
 
 				expect(result).toEqual(externalToolMetadata);
 			});

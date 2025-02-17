@@ -5,10 +5,11 @@ import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { InstanceModule } from '../../instance';
+import { MediaSourceModule } from '../../media-source/media-source.module';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ExternalToolRule } from './authorization/external-tool.rule';
-import { ExternalToolMetadataMapper } from './mapper';
+import { ExternalToolUtilizationMapper } from './mapper';
 import {
 	DatasheetPdfService,
 	ExternalToolAuthorizableService,
@@ -30,6 +31,7 @@ import {
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
+		MediaSourceModule,
 	],
 	providers: [
 		ExternalToolService,
@@ -38,7 +40,7 @@ import {
 		ExternalToolValidationService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
-		ExternalToolMetadataMapper,
+		ExternalToolUtilizationMapper,
 		ToolContextMapper,
 		DatasheetPdfService,
 		ExternalToolAuthorizableService,

@@ -32,10 +32,10 @@ import { IFindOptions } from '@shared/domain/interface';
 import { LegacyLogger } from '@core/logger';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, ExternalToolMetadata } from '../domain';
+import { ExternalTool, ExternalToolUtilization } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 
-import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
+import { ExternalToolUtilizationMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
@@ -43,12 +43,13 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
 	ExternalToolImportResultListResponse,
-	ExternalToolMetadataResponse,
+	ExternalToolUtilizationResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
+	ExternalToolMediumParams,
 } from './dto';
 
 @ApiTags('Tool')
@@ -218,23 +219,23 @@ export class ToolController {
 	}
 
 	@Get('/:externalToolId/metadata')
-	@ApiOperation({ summary: 'Gets the metadata of an external tool.' })
+	@ApiOperation({ summary: 'Gets the utilization of an external tool.' })
 	@ApiOkResponse({
-		description: 'Metadata of external tool fetched successfully.',
-		type: ExternalToolMetadataResponse,
+		description: 'Utilization of external tool fetched successfully.',
+		type: ExternalToolUtilizationResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getMetaDataForExternalTool(
+	async getUtilizationForExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
-	): Promise<ExternalToolMetadataResponse> {
-		const externalToolMetadata: ExternalToolMetadata = await this.externalToolUc.getMetadataForExternalTool(
+	): Promise<ExternalToolUtilizationResponse> {
+		const externalToolUtilization: ExternalToolUtilization = await this.externalToolUc.getUtilizationForExternalTool(
 			currentUser.userId,
 			params.externalToolId
 		);
 
-		const mapped: ExternalToolMetadataResponse =
-			ExternalToolMetadataMapper.mapToExternalToolMetadataResponse(externalToolMetadata);
+		const mapped: ExternalToolUtilizationResponse =
+			ExternalToolUtilizationMapper.mapToExternalToolUtilizationResponse(externalToolUtilization);
 
 		return mapped;
 	}
@@ -257,5 +258,20 @@ export class ToolController {
 
 		const streamableFile: StreamableFile = new StreamableFile(datasheetBuffer);
 		return streamableFile;
+	}
+
+	// TODO: Metadata
+	@Get(':mediumId/media-source/:mediaSourceId/metadata')
+	@ApiOperation({ summary: 'Returns metadata from media source for configuration of a medium' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getMetadataForExternalToolFromMediaSource() {
+		// @Param() params: ExternalToolMediumParams // @CurrentUser currentUser: ICurrentUser,
+		/* const externalToolMetadata = await this.externalToolUc.getMetadataForExternalToolConfiguration(
+			currentUser.userId,
+			params.mediumId,
+			params.mediaSourceId
+		);
+
+*/
 	}
 }

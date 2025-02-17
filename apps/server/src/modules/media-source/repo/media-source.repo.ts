@@ -41,4 +41,12 @@ export class MediaSourceRepo extends BaseDomainObjectRepo<MediaSource, MediaSour
 
 		return domainObject;
 	}
+
+	public async findAll(): Promise<MediaSource[]> {
+		const entities: MediaSourceEntity[] = await this.em.find(MediaSourceEntity, {});
+
+		const domainObjects: MediaSource[] = entities.map((entity) => MediaSourceMapper.mapEntityToDo(entity));
+
+		return domainObjects;
+	}
 }

@@ -8,7 +8,7 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { userFactory } from '@testing/factory/user.factory';
 import { setupEntities } from '@testing/setup-entities';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
@@ -21,7 +21,7 @@ describe('SchoolExternalToolUc', () => {
 
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
-	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
+	let commonToolMetadataService: DeepMocked<CommonToolUtilizationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
 
@@ -39,8 +39,8 @@ describe('SchoolExternalToolUc', () => {
 					useValue: createMock<SchoolExternalToolValidationService>(),
 				},
 				{
-					provide: CommonToolMetadataService,
-					useValue: createMock<CommonToolMetadataService>(),
+					provide: CommonToolUtilizationService,
+					useValue: createMock<CommonToolUtilizationService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -56,7 +56,7 @@ describe('SchoolExternalToolUc', () => {
 		uc = module.get(SchoolExternalToolUc);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
-		commonToolMetadataService = module.get(CommonToolMetadataService);
+		commonToolMetadataService = module.get(CommonToolUtilizationService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
 	});
@@ -459,7 +459,7 @@ describe('SchoolExternalToolUc', () => {
 
 				await uc.getMetadataForSchoolExternalTool(user.id, toolId);
 
-				expect(commonToolMetadataService.getMetadataForSchoolExternalTool).toHaveBeenCalledWith(toolId);
+				expect(commonToolMetadataService.getUtilizationForSchoolExternalTool).toHaveBeenCalledWith(toolId);
 			});
 		});
 	});

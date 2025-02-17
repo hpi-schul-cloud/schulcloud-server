@@ -1,15 +1,30 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContextExternalToolCountPerContextResponse } from '../../../../common/controller/dto';
 
 export class ExternalToolMetadataResponse {
 	@ApiProperty()
-	schoolExternalToolCount: number;
+	name: string;
 
 	@ApiProperty()
-	contextExternalToolCountPerContext: ContextExternalToolCountPerContextResponse;
+	description: string | undefined;
 
-	constructor(externalToolMetadataResponse: ExternalToolMetadataResponse) {
-		this.schoolExternalToolCount = externalToolMetadataResponse.schoolExternalToolCount;
-		this.contextExternalToolCountPerContext = externalToolMetadataResponse.contextExternalToolCountPerContext;
+	@ApiProperty()
+	publisher: string | undefined;
+
+	@ApiProperty()
+	logoUrl: string | undefined;
+
+	@ApiProperty()
+	previewLogoUrl: string | undefined;
+
+	@ApiProperty()
+	modified: string | undefined;
+
+	constructor(response: ExternalToolMetadataResponse) {
+		this.name = response.name;
+		this.description = response.description;
+		this.publisher = response.publisher;
+		this.logoUrl = response.logoUrl;
+		this.previewLogoUrl = response.previewLogoUrl;
+		this.modified = response.modified;
 	}
 }
