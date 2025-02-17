@@ -85,7 +85,7 @@ export class CommonCartridgeExportMapper {
 					}`,
 					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				};
-			case LessonContentDtoComponentValues.LERNSTORE: {
+			case LessonContentDtoComponentValues.RESOURCES: {
 				const { resources } = lessonContent.content as ComponentLernstorePropsDto;
 				return (
 					resources.map((resource) => {
