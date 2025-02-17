@@ -1,6 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { GroupModule } from '@modules/group';
-import { FederalStateRepo, SchoolYearRepo } from '@modules/school/repo';
+import { SchoolModule } from '@modules/school';
+import { FederalStateRepo } from '@modules/school/repo';
 import { forwardRef, Module } from '@nestjs/common';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
@@ -11,7 +12,6 @@ import {
 	ProvisioningOptionsUpdateService,
 	SchoolSystemOptionsService,
 	SchoolValidationService,
-	SchoolYearService,
 	SchulconnexProvisioningOptionsUpdateService,
 } from './service';
 
@@ -19,12 +19,10 @@ import {
  * @deprecated because it uses the deprecated LegacySchoolDo.
  */
 @Module({
-	imports: [LoggerModule, forwardRef(() => GroupModule)],
+	imports: [LoggerModule, forwardRef(() => GroupModule), SchoolModule],
 	providers: [
 		LegacySchoolRepo,
 		LegacySchoolService,
-		SchoolYearService,
-		SchoolYearRepo,
 		FederalStateService,
 		FederalStateRepo,
 		SchoolValidationService,
@@ -34,12 +32,6 @@ import {
 		SchulconnexProvisioningOptionsUpdateService,
 		StorageProviderRepo,
 	],
-	exports: [
-		LegacySchoolService,
-		SchoolYearService,
-		FederalStateService,
-		SchoolSystemOptionsService,
-		ProvisioningOptionsUpdateService,
-	],
+	exports: [LegacySchoolService, FederalStateService, SchoolSystemOptionsService, ProvisioningOptionsUpdateService],
 })
 export class LegacySchoolModule {}

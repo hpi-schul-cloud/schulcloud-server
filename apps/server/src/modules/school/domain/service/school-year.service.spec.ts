@@ -1,12 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { SchoolYearEntity, SchoolYearMikroOrmRepo } from '@modules/school/repo';
+import { schoolYearDoFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolYearDoFactory } from '../../testing';
-import { SCHOOL_YEAR_REPO, SchoolYearRepo } from '../interface';
+import { SCHOOL_YEAR_REPO } from '../interface';
 import { SchoolYearService } from './school-year.service';
 
 describe('SchoolYearService', () => {
 	let service: SchoolYearService;
-	let schoolYearRepo: DeepMocked<SchoolYearRepo>;
+	let schoolYearRepo: DeepMocked<SchoolYearMikroOrmRepo>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -14,7 +15,7 @@ describe('SchoolYearService', () => {
 				SchoolYearService,
 				{
 					provide: SCHOOL_YEAR_REPO,
-					useValue: createMock<SchoolYearRepo>(),
+					useValue: createMock<SchoolYearMikroOrmRepo>(),
 				},
 			],
 		}).compile();
@@ -68,6 +69,79 @@ describe('SchoolYearService', () => {
 				const { error } = setup();
 
 				await expect(() => service.getAllSchoolYears()).rejects.toThrowError(error);
+			});
+		});
+	});
+
+	describe('getCurrentSchoolYear', () => {
+		const setup = () => {
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
+				startDate: new Date('2021-09-01'),
+				endDate: new Date('2022-12-31'),
+			});
+			schoolYearRepo.findCurrentYear.mockResolvedValue(schoolYear);
+
+			return {
+				schoolYear,
+			};
+		};
+
+		describe('when called', () => {
+			it('should return the current school year', async () => {
+				const { schoolYear } = setup();
+
+				const currentSchoolYear: SchoolYearEntity = await service.getCurrentSchoolYear();
+
+				expect(currentSchoolYear).toEqual(schoolYear);
+			});
+		});
+	});
+
+	describe('getCurrentOrNextSchoolYear', () => {
+		const setup = () => {
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
+				startDate: new Date('2021-09-01'),
+				endDate: new Date('2022-12-31'),
+			});
+			schoolYearRepo.findCurrentOrNextYear.mockResolvedValue(schoolYear);
+
+			return {
+				schoolYear,
+			};
+		};
+
+		describe('when called', () => {
+			it('should return the current school year', async () => {
+				const { schoolYear } = setup();
+
+				const currentSchoolYear: SchoolYearEntity = await service.getCurrentOrNextSchoolYear();
+
+				expect(currentSchoolYear).toEqual(schoolYear);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		const setup = () => {
+			const schoolYear: SchoolYearEntity = schoolYearEntityFactory.build({
+				startDate: new Date('2021-09-01'),
+				endDate: new Date('2022-12-31'),
+			});
+
+			schoolYearRepo.findById.mockResolvedValue(schoolYear);
+
+			return {
+				schoolYear,
+			};
+		};
+
+		describe('when called', () => {
+			it('should return the current school year', async () => {
+				const { schoolYear } = setup();
+
+				const currentSchoolYear: SchoolYearEntity = await service.findById(schoolYear.id);
+
+				expect(currentSchoolYear).toEqual(schoolYear);
 			});
 		});
 	});
