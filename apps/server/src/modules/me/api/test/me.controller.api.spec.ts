@@ -205,11 +205,7 @@ describe('Me Controller (API)', () => {
 					});
 
 					const expectedResponse = mapToMeResponseObject(studentUser, studentAccount, expectedPermissions);
-					expectedResponse.system = {
-						id: system.id,
-						name: system.displayName,
-						hasEndSessionEndpoint: !!system.oauthConfig?.endSessionEndpoint,
-					};
+					expectedResponse.systemId = system.id;
 
 					return { loggedInClient, expectedResponse };
 				};
