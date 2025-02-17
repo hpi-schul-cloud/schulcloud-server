@@ -1,8 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SystemModule } from '../system';
-import { SCHOOL_REPO, SchoolService, SchoolYearService } from './domain';
+import { SCHOOL_REPO, SCHOOL_YEAR_REPO, SchoolService, SchoolYearService } from './domain';
 import { SystemDeletedHandler } from './domain/event-handler';
-import { SCHOOL_YEAR_REPO } from './domain/interface';
 import { SchoolYearMikroOrmRepo } from './repo';
 import { SchoolMikroOrmRepo } from './repo/mikro-orm/school.repo';
 
