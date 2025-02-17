@@ -7,10 +7,10 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/entity';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity } from '@shared/domain/entity';
-import { setupEntities } from '@testing/setup-entities';
+import { Role, SchoolEntity, StorageProviderEntity } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
-import { generateSeedData } from '../seed-data/generateSeedData';
+import { generateSeedData } from '../seed-data/generate-seed-data';
 import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
 import { DatabaseManagementUc } from './database-management.uc';
@@ -259,7 +259,7 @@ describe('DatabaseManagementService', () => {
 		ldapEncryptionService = module.get(LdapEncryptionService);
 		mediaSourcesSeedDataService = module.get(MediaSourcesSeedDataService);
 		systemsSeedDataService = module.get(SystemsSeedDataService);
-		await setupEntities();
+		await setupEntities([SchoolEntity, Role]);
 	});
 
 	afterAll(async () => {

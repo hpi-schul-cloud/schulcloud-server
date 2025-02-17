@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -14,7 +14,7 @@ import { ExternalToolEntity } from './external-tool.entity';
 
 describe('ExternalToolEntity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([ExternalToolEntity]);
 	});
 
 	describe('constructor', () => {

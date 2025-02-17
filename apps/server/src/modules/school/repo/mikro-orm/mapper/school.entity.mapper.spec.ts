@@ -1,6 +1,7 @@
 import { SystemEntity } from '@modules/system/entity';
+import { SchoolEntity } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
@@ -11,7 +12,7 @@ describe('SchoolEntityMapper', () => {
 	describe('mapToDo', () => {
 		describe('when school entity is passed', () => {
 			const setup = async () => {
-				await setupEntities();
+				await setupEntities([SchoolEntity]);
 
 				const system = new SystemEntity({
 					type: 'type',

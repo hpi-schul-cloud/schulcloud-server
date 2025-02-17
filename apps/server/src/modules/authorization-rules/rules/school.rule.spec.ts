@@ -6,10 +6,11 @@ import {
 } from '@modules/authorization';
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
+import { setupEntities } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {
@@ -19,7 +20,7 @@ describe('SchoolRule', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
