@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
+import { MediaSourceLicenseType } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { serverConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -333,6 +334,7 @@ describe('ToolSchoolController (API)', () => {
 								mediumId,
 								mediaSourceId,
 								mediaSourceName,
+								mediaSourceLicenseType: MediaSourceLicenseType.USER_LICENSE,
 							},
 							parameters: [
 								{

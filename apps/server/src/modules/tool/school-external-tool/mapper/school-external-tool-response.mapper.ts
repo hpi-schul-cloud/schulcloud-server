@@ -32,9 +32,10 @@ export class SchoolExternalToolResponseMapper {
 			restrictToContexts: schoolExternalTool.restrictToContexts,
 			medium: schoolExternalTool.medium
 				? new SchoolExternalToolMediumResponse({
-						mediaSourceName: schoolExternalTool.medium.mediaSourceName,
 						mediumId: schoolExternalTool.medium.mediumId,
 						mediaSourceId: schoolExternalTool.medium.mediaSourceId,
+						mediaSourceName: schoolExternalTool.medium.mediaSourceName,
+						mediaSourceLicenseType: schoolExternalTool.medium.mediaSourceLicenseType,
 				  })
 				: undefined,
 		});

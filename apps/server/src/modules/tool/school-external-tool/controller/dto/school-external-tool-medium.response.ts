@@ -1,3 +1,4 @@
+import { MediaSourceLicenseType } from '@modules/media-source';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SchoolExternalToolMediumResponse {
@@ -10,9 +11,17 @@ export class SchoolExternalToolMediumResponse {
 	@ApiPropertyOptional({ description: 'Name of the media source' })
 	public mediaSourceName?: string;
 
+	@ApiPropertyOptional({
+		enum: MediaSourceLicenseType,
+		enumName: 'MediaSourceLicenseType',
+		description: 'License type of the media source',
+	})
+	public mediaSourceLicenseType?: MediaSourceLicenseType;
+
 	constructor(props: SchoolExternalToolMediumResponse) {
 		this.mediaSourceName = props.mediaSourceName;
 		this.mediumId = props.mediumId;
 		this.mediaSourceId = props.mediaSourceId;
+		this.mediaSourceLicenseType = props.mediaSourceLicenseType;
 	}
 }

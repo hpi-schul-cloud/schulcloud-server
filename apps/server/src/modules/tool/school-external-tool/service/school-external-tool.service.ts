@@ -1,4 +1,4 @@
-import { MediaSource, MediaSourceService } from '@modules/media-source';
+import { MediaSource, MediaSourceDataFormat, MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common/error';
@@ -98,18 +98,24 @@ export class SchoolExternalToolService {
 		}
 
 		let mediaSourceName: string | undefined;
+		let mediaSourceLicenseType: MediaSourceLicenseType | undefined;
 		if (externalTool.medium.mediaSourceId) {
 			const mediaSource: MediaSource | null = await this.mediaSourceService.findBySourceId(
 				externalTool.medium.mediaSourceId
 			);
 
 			mediaSourceName = mediaSource?.name;
+			mediaSourceLicenseType =
+				mediaSource?.format === MediaSourceDataFormat.VIDIS
+					? MediaSourceLicenseType.SCHOOL_LICENSE
+					: MediaSourceLicenseType.USER_LICENSE;
 		}
 
 		const medium: SchoolExternalToolMedium = new SchoolExternalToolMedium({
 			mediumId: externalTool.medium.mediumId,
 			mediaSourceId: externalTool.medium.mediaSourceId,
 			mediaSourceName,
+			mediaSourceLicenseType,
 		});
 
 		return medium;

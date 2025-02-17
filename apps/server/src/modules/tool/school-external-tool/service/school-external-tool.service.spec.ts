@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MediaSourceService } from '@modules/media-source';
+import { MediaSourceLicenseType, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ConfigService } from '@nestjs/config';
@@ -114,7 +114,7 @@ describe(SchoolExternalToolService.name, () => {
 			});
 		});
 
-		describe('when the tool has a medium', () => {
+		describe('when the tool has a medium with user licenses', () => {
 			const setup = () => {
 				const mediumId = 'mediumId';
 				const mediaSourceId = 'mediaSourceId';
@@ -160,6 +160,64 @@ describe(SchoolExternalToolService.name, () => {
 							mediumId,
 							mediaSourceId,
 							mediaSourceName,
+							mediaSourceLicenseType: MediaSourceLicenseType.USER_LICENSE,
+						}),
+						status: new SchoolExternalToolConfigurationStatus({
+							isGloballyDeactivated: externalTool.isDeactivated,
+							isOutdatedOnScopeSchool: true,
+						}),
+					})
+				);
+			});
+		});
+
+		describe('when the tool has a medium with school licenses', () => {
+			const setup = () => {
+				const mediumId = 'mediumId';
+				const mediaSourceId = 'mediaSourceId';
+				const mediaSourceName = 'mediaSourceName';
+				const externalTool: ExternalTool = externalToolFactory
+					.withMedium({
+						mediumId,
+						mediaSourceId,
+					})
+					.build();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+					name: undefined,
+					status: undefined,
+				});
+				const mediaSource = mediaSourceFactory.withVidis().build({ name: mediaSourceName, sourceId: mediaSourceId });
+
+				schoolExternalToolRepo.findById.mockResolvedValue(schoolExternalTool);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([new ValidationError('')]);
+				configService.get.mockReturnValueOnce(true);
+				mediaSourceService.findBySourceId.mockResolvedValueOnce(mediaSource);
+
+				return {
+					schoolExternalTool,
+					externalTool,
+					mediaSource,
+					mediumId,
+					mediaSourceId,
+					mediaSourceName,
+				};
+			};
+
+			it('should return the schoolExternalTool with medium data', async () => {
+				const { schoolExternalTool, externalTool, mediumId, mediaSourceId, mediaSourceName } = setup();
+
+				const result = await service.findById(schoolExternalTool.id);
+
+				expect(result).toEqual(
+					new SchoolExternalTool({
+						...schoolExternalTool.getProps(),
+						name: externalTool.name,
+						medium: new SchoolExternalToolMedium({
+							mediumId,
+							mediaSourceId,
+							mediaSourceName,
+							mediaSourceLicenseType: MediaSourceLicenseType.SCHOOL_LICENSE,
 						}),
 						status: new SchoolExternalToolConfigurationStatus({
 							isGloballyDeactivated: externalTool.isDeactivated,
