@@ -3,10 +3,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
-import { ENTITIES } from '../schulconnex-license-provisioning.entity.imports';
+import { setupEntities } from '@testing/database';
 import { ExternalLicenseDto } from '../dto';
 import { LicenseProvisioningSuccessfulLoggable } from '../loggable';
+import { ENTITIES } from '../schulconnex-license-provisioning.entity.imports';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
