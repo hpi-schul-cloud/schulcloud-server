@@ -31,7 +31,6 @@ const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
 const { FILE_SECURITY_CHECK_MAX_FILE_SIZE, SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
 const AWSS3Strategy = require('./strategies/awsS3');
-const { method } = require('lodash');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
