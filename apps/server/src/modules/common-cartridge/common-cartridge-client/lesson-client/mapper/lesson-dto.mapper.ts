@@ -19,20 +19,7 @@ import {
 
 export class LessonDtoMapper {
 	public static mapToLessonLinkedTaskDto(task: LessonLinkedTaskResponse): LessonLinkedTaskDto {
-		const lessonLinkedTaskDto = new LessonLinkedTaskDto({
-			name: task.name,
-			description: task.description,
-			descriptionInputFormat: task.descriptionInputFormat,
-			availableDate: task.availableDate,
-			dueDate: task.dueDate,
-			private: task.private,
-			publicSubmissions: task.publicSubmissions,
-			teamSubmissions: task.teamSubmissions,
-			courseId: task.courseId,
-			creator: task.creator,
-			submissionIds: task.submissionIds,
-			finishedIds: task.finishedIds,
-		});
+		const lessonLinkedTaskDto = new LessonLinkedTaskDto(task);
 
 		return lessonLinkedTaskDto;
 	}

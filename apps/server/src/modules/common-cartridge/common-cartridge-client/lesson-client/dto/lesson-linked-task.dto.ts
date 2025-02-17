@@ -1,3 +1,5 @@
+import { LessonLinkedTaskResponse } from '../lessons-api-client';
+
 export class LessonLinkedTaskDto {
 	name: string;
 
@@ -23,7 +25,7 @@ export class LessonLinkedTaskDto {
 
 	finishedIds: string[];
 
-	constructor(props: LessonLinkedTaskDto) {
+	constructor(props: LessonLinkedTaskResponse) {
 		this.name = props.name;
 		this.description = props.description;
 		this.descriptionInputFormat = props.descriptionInputFormat;
