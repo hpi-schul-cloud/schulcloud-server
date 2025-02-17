@@ -16,7 +16,7 @@ export class LessonResources {
 	@ApiPropertyOptional({ description: 'url' })
 	url?: string;
 
-	constructor(client: string, description: string, title: string, url: string, merlinReference?: string) {
+	constructor(client: string, description: string, title: string, url?: string, merlinReference?: string) {
 		this.client = client;
 		this.description = description;
 		this.title = title;
