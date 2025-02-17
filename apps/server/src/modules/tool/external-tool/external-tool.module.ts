@@ -3,7 +3,7 @@ import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { InstanceModule } from '../../instance';
 import { MediaSourceModule } from '../../media-source/media-source.module';
 import { CommonToolModule } from '../common';
@@ -24,7 +24,7 @@ import {
 
 @Module({
 	imports: [
-		CommonToolModule,
+		forwardRef(() => CommonToolModule),
 		LoggerModule,
 		OauthProviderServiceModule,
 		EncryptionModule,

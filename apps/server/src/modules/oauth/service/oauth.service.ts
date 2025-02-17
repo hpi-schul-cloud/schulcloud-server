@@ -1,5 +1,7 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { OAuthTokenDto, OauthAdapterService, AuthenticationCodeGrantTokenRequest } from '@modules/oauth-adapter';
+import { TokenRequestMapper } from '@modules/oauth-adapter/mapper/token-request.mapper';
 import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
 import { System, SystemService } from '@modules/system';
@@ -13,15 +15,11 @@ import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacyLogger } from '@core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
 	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { AuthenticationCodeGrantTokenRequest } from './dto';
-import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
 export class OAuthService {

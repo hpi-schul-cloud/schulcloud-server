@@ -1,4 +1,4 @@
-import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../domain';
+import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../do';
 import { MediaSourceOauthConfigEmbeddable, MediaSourceVidisConfigEmbeddable } from '../entity';
 import {
 	mediaSourceOAuthConfigEmbeddableFactory,
@@ -18,6 +18,7 @@ describe('MediaSourceConfigMapper', () => {
 					clientSecret: configDo.clientSecret,
 					authEndpoint: configDo.authEndpoint,
 					method: configDo.method,
+					baseUrl: configDo.baseUrl,
 				});
 
 				return { configDo, expected };
@@ -82,6 +83,7 @@ describe('MediaSourceConfigMapper', () => {
 					clientSecret: embeddable.clientSecret,
 					authEndpoint: embeddable.authEndpoint,
 					method: embeddable.method,
+					baseUrl: embeddable.baseUrl,
 				});
 
 				return { embeddable, expected };

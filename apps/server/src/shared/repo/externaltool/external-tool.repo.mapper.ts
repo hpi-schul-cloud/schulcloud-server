@@ -78,6 +78,7 @@ export class ExternalToolRepoMapper {
 			mediumId: entity.mediumId,
 			publisher: entity.publisher,
 			mediaSourceId: entity.mediaSourceId,
+			metadataModifiedAt: entity.metadataModifiedAt,
 		});
 	}
 
@@ -160,6 +161,7 @@ export class ExternalToolRepoMapper {
 			mediumId: medium.mediumId,
 			publisher: medium.publisher,
 			mediaSourceId: medium.mediaSourceId,
+			metadataModifiedAt: medium.metadataModifiedAt,
 		});
 	}
 

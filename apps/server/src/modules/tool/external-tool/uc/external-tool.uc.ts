@@ -147,6 +147,11 @@ export class ExternalToolUc {
 			...externalToolUpdateProps,
 			config: updatedConfigProps,
 		});
+
+		if (pendingExternalTool.medium && currentExternalTool.medium?.metadataModifiedAt) {
+			pendingExternalTool.medium.metadataModifiedAt = currentExternalTool.medium.metadataModifiedAt;
+		}
+
 		pendingExternalTool.logo = await this.externalToolLogoService.fetchLogo(pendingExternalTool);
 
 		await this.toolValidationService.validateUpdate(toolId, pendingExternalTool);

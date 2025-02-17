@@ -19,7 +19,9 @@ RUN npm ci && npm run build
 FROM docker.io/node:22-alpine
 
 ENV TZ=Europe/Berlin
-RUN apk add --no-cache python3 curl
+RUN apk add --no-cache \
+    python3 \
+    curl
 
 WORKDIR /schulcloud-server
 
@@ -43,4 +45,4 @@ COPY --from=builder /app/node_modules/file-type-cjs node_modules/file-type-cjs
 ENV NODE_ENV=production
 ENV NO_COLOR="true"
 
-CMD npm run nest:start:prod
+CMD ["npm", "run", "nest:start:prod"]
