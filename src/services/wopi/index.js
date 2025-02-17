@@ -2,7 +2,7 @@
 /**
  * Provides a basic wopi - endpoint, https://wopirest.readthedocs.io/en/latest/index.html
  */
-const rp = require('request-promise-native');
+const axios = require('axios');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -140,12 +140,14 @@ class WopiFilesContentsService {
 					})
 					.then((signedUrl) => {
 						const opt = {
-							uri: signedUrl.url,
-							encoding: null,
+							url: signedUrl.url,
+							responseType: 'arraybuffer',
 						};
-						return rp(opt).catch((err) => {
-							logger.warning(new Error(err));
-						});
+						return axios(opt)
+							.then((res) => res.data)
+							.catch((err) => {
+								logger.warning(new Error(err));
+							});
 					})
 					.catch((err) => {
 						logger.warning(new Error(err));
@@ -188,12 +190,11 @@ class WopiFilesContentsService {
 					// put binary content directly to file in storage
 					const options = {
 						method: 'PUT',
-						uri: signedUrl.url,
-						contentType: file.type,
-						body: data,
+						url: signedUrl.url,
+						data,
 					};
 
-					return rp(options)
+					return axios(options)
 						.then(() =>
 							FileModel.findOneAndUpdate(
 								{ _id: file._id },
