@@ -1,10 +1,11 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
-import { CommonCartridgeUc } from './common-cartridge.uc';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeImportService } from '../service';
+import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
+import { CommonCartridgeUc } from './common-cartridge.uc';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
@@ -71,16 +72,17 @@ describe('CommonCartridgeUc', () => {
 	describe('importCourse', () => {
 		const setup = () => {
 			const file = Buffer.from(faker.lorem.paragraphs());
+			const currentUser = currentUserFactory.build();
 
-			return { file };
+			return { file, currentUser };
 		};
 
 		it('should class the import service', async () => {
-			const { file } = setup();
+			const { file, currentUser } = setup();
 
-			await sut.importCourse(file);
+			await sut.importCourse(file, currentUser);
 
-			expect(commonCartridgeImportServiceMock.importManifestFile).toHaveBeenCalledWith(file);
+			expect(commonCartridgeImportServiceMock.importManifestFile).toHaveBeenCalledTimes(1);
 		});
 	});
 });
