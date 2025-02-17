@@ -103,6 +103,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED',
 				'FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED',
 				'FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED',
+				'SBOM_SUMMARY_URL',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

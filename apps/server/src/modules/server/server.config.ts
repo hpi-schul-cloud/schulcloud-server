@@ -132,6 +132,7 @@ export interface ServerConfig
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
+	SBOM_SUMMARY_URL: string | undefined;
 }
 
 const config: ServerConfig = {
@@ -340,6 +341,9 @@ const config: ServerConfig = {
 	SANIS_CLIENT_ID: Configuration.has('SANIS_CLIENT_ID') ? (Configuration.get('SANIS_CLIENT_ID') as string) : undefined,
 	SANIS_CLIENT_SECRET: Configuration.has('SANIS_CLIENT_SECRET')
 		? (Configuration.get('SANIS_CLIENT_SECRET') as string)
+		: undefined,
+	SBOM_SUMMARY_URL: Configuration.has('SBOM_SUMMARY_URL')
+		? (Configuration.get('SBOM_SUMMARY_URL') as string)
 		: undefined,
 };
 
