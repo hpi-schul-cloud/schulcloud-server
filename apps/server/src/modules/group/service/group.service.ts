@@ -155,8 +155,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 		for (const userId of userIds) {
 			const user = users.find((u) => u.id === userId);
-			if (!user) throw new BadRequestException('Unknown userId.');
-			group.removeUser(user);
+			if (!user?.id) throw new BadRequestException('Unknown userId.');
+			group.removeUser(user.id);
 		}
 
 		await this.save(group);

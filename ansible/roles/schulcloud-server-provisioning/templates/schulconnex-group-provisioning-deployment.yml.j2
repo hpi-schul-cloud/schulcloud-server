@@ -1,0 +1,131 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: schulconnex-group-provisioning-deployment
+  namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
+  labels:
+    app: schulconnex-group-provisioning
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: schulconnex-group-provisioning
+    app.kubernetes.io/component: provisioning
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  replicas: {{ SCHULCONNEX_GROUP_PROVISIONING_REPLICAS }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: schulconnex-group-provisioning
+  template:
+    metadata:
+      labels:
+        app: schulconnex-group-provisioning
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: schulconnex-group-provisioning
+        app.kubernetes.io/component: provisioning
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      os:
+        name: linux
+      containers:
+      - name: schulconnex-group-provisioning
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4450
+          name: http-health
+          protocol: TCP
+        envFrom:
+        - configMapRef:
+            name: schulconnex-group-provisioning-configmap
+        - secretRef:
+            name: schulconnex-provisioning-secret
+        command: ['npm', 'run', 'nest:start:schulconnex-group-provisioning-amqp:prod']
+        readinessProbe:
+          httpGet:
+            path: /internal/health
+            port: 4450
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 5
+        # liveless if unsatisfactory reply
+        livenessProbe:
+          httpGet:
+            path: /internal/health
+            port: 4450
+          timeoutSeconds: 4
+          failureThreshold: 3
+          periodSeconds: 15
+        startupProbe:
+          httpGet:
+            path: /internal/health
+            port: 4450
+          timeoutSeconds: 4
+          failureThreshold:  36
+          periodSeconds: 5
+        resources:
+          limits:
+            cpu: {{ SCHULCONNEX_GROUP_PROVISIONING_CPU_LIMITS }}
+            memory: {{ SCHULCONNEX_GROUP_PROVISIONING_MEMORY_LIMITS }}
+          requests:
+            cpu: {{ SCHULCONNEX_GROUP_PROVISIONING_CPU_REQUESTS }}
+            memory: {{ SCHULCONNEX_GROUP_PROVISIONING_MEMORY_REQUESTS }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - schulconnex-group-provisioning
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - schulconnex-group-provisioning
+              topologyKey: "topology.kubernetes.io/zone"
+{% endif %}
