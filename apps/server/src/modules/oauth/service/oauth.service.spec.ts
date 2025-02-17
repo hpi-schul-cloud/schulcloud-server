@@ -18,7 +18,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import { OAuthTokenDto } from '../interface';
@@ -63,8 +62,6 @@ describe('OAuthService', () => {
 	const hostUri = 'https://mock.de';
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
 			providers: [
 				OAuthService,

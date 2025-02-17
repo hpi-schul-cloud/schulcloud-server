@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { SynchronizationStatusModel } from '../../domain/types';
 import { SynchronizationEntity } from './synchronization.entity';
 
 describe(SynchronizationEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([SynchronizationEntity]);
 	});
 
 	describe('constructor', () => {

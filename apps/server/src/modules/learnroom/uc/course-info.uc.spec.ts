@@ -11,11 +11,12 @@ import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { Course, CourseFilter, CourseSortProps, CourseStatus } from '../domain';
 import { CourseDoService } from '../service';
 import { courseFactory as courseDoFactory } from '../testing';
@@ -34,7 +35,7 @@ describe('CourseInfoUc', () => {
 	let classService: DeepMocked<ClassService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseInfoUc,
