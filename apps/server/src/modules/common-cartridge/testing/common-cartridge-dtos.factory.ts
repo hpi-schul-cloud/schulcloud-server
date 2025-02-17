@@ -104,10 +104,34 @@ export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskDto>(() =>
 export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
-		type: 'lernstore',
-		content: { resources: [{ url: faker.internet.url(), client: faker.company.name(), description: faker.lorem.sentence(), merlinReference: faker.string.uuid(), title: faker.lorem.sentence() }, { url: faker.internet.url(), client: faker.company.name(), description: faker.lorem.sentence(), merlinReference: faker.string.uuid(), title: faker.lorem.sentence() }, { url: faker.internet.url(), client: faker.company.name(), description: faker.lorem.sentence(), merlinReference: faker.string.uuid(), title: faker.lorem.sentence() }] },
+		type: 'resources',
+		content: {
+			resources: [
+				{
+					url: faker.internet.url(),
+					client: faker.company.name(),
+					description: faker.lorem.sentence(),
+					merlinReference: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+				},
+				{
+					url: faker.internet.url(),
+					client: faker.company.name(),
+					description: faker.lorem.sentence(),
+					merlinReference: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+				},
+				{
+					url: faker.internet.url(),
+					client: faker.company.name(),
+					description: faker.lorem.sentence(),
+					merlinReference: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+				},
+			],
+		},
 		title: faker.lorem.sentence(),
-		component: 'lernstore',
+		component: 'resources',
 		hidden: faker.datatype.boolean(),
 	};
 });

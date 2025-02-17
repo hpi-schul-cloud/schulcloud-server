@@ -166,7 +166,7 @@ describe('CommonCartridgeExportMapper', () => {
 		describe('when lesson content is Lernstore', () => {
 			const setup = () => {
 				const lessonContent = lessonContentFactory.build();
-				lessonContent.component = LessonContentDtoComponentValues.LERNSTORE;
+				lessonContent.component = LessonContentDtoComponentValues.RESOURCES;
 				lessonContent.content = {
 					resources: [
 						{
