@@ -9,7 +9,7 @@ export class LessonResourcesDto {
 
 	title: string;
 
-	url: string;
+	url?: string;
 
 	constructor(lessonResources: LessonResources) {
 		this.client = lessonResources.client;

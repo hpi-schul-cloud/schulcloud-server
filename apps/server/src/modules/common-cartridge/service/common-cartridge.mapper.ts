@@ -93,7 +93,7 @@ export class CommonCartridgeExportMapper {
 							type: CommonCartridgeResourceType.WEB_LINK,
 							identifier: createIdentifier(lessonContent.id),
 							title: resource.title,
-							url: resource.url,
+							url: resource.url || '',
 						};
 					}) || []
 				);
