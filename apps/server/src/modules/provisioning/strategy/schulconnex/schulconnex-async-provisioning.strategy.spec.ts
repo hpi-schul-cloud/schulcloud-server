@@ -7,7 +7,7 @@ import { groupFactory } from '@modules/group/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
@@ -133,7 +133,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					schoolId,
 					externalId: externalUser.externalId,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchool.externalId,
@@ -212,7 +212,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					},
 					userId
 				);
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchool.externalId,
@@ -288,7 +288,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					},
 					userId
 				);
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchool.externalId,
@@ -346,7 +346,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					},
 					userId
 				);
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchool.externalId,
@@ -400,7 +400,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					schoolId,
 					externalId: externalUser.externalId,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchool.externalId,

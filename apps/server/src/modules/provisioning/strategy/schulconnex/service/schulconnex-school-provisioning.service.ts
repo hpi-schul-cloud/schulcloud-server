@@ -1,9 +1,9 @@
 import { FederalStateService, LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { FederalStateNames } from '@modules/legacy-school/types';
 import { SchoolYearService } from '@modules/school/domain';
 import { FederalStateEntity, SchoolYearEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchoolNameRequiredLoggableException } from '../../../loggable';

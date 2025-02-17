@@ -9,7 +9,6 @@ import { systemFactory } from '@modules/system/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { LegacySchoolRepo } from '@shared/repo/school';
@@ -91,7 +90,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: undefined });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
+				const school = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
 				const account: Account = accountDoFactory.build({
 					systemId: system.id,
@@ -138,7 +137,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [] }, user.school.id);
+				const school = legacySchoolDoFactory.buildWithId({ systems: [] }, user.school.id);
 
 				const account: Account = accountDoFactory.build({
 					systemId: system.id,
@@ -185,7 +184,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: undefined }, user.school.id);
+				const school = legacySchoolDoFactory.buildWithId({ systems: undefined }, user.school.id);
 
 				const account: Account = accountDoFactory.build({
 					systemId: system.id,
@@ -232,7 +231,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
+				const school = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
 				const account: Account = accountDoFactory.build({
 					systemId: system.id,
@@ -279,7 +278,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
+				const school = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
 				const account: Account = accountDoFactory.build({
 					systemId: system.id,
@@ -331,7 +330,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory.withRoleByName(RoleName.STUDENT).buildWithId({ ldapDn: 'mockLdapDn' });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
+				const school = legacySchoolDoFactory.buildWithId({ systems: [system.id] }, user.school.id);
 
 				const account: Account = accountDoFactory.build({
 					systemId: system.id,
@@ -388,7 +387,7 @@ describe('LdapStrategy', () => {
 					.withRoleByName(RoleName.STUDENT)
 					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolEntityFactory.buildWithId() });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
+				const school = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: undefined },
 					user.school.id
 				);
@@ -452,7 +451,7 @@ describe('LdapStrategy', () => {
 					.withRoleByName(RoleName.STUDENT)
 					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolEntityFactory.buildWithId() });
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
+				const school = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: 'previousExternalId' },
 					user.school.id
 				);

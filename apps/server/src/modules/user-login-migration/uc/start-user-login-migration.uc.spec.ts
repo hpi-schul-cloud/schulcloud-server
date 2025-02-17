@@ -4,7 +4,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -68,7 +68,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -113,7 +113,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -143,7 +143,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -165,7 +165,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: undefined });
+				const school = legacySchoolDoFactory.buildWithId({ officialSchoolNumber: undefined });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -188,7 +188,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);

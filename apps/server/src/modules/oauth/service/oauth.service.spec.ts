@@ -4,6 +4,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { System } from '@modules/system';
@@ -13,7 +14,7 @@ import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';

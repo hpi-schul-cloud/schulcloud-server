@@ -7,7 +7,7 @@ import {
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
@@ -93,7 +93,7 @@ describe('IservProvisioningStrategy', () => {
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const school = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
 					id: new ObjectId().toHexString(),
 					name: RoleName.STUDENT,

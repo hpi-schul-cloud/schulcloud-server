@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
@@ -9,7 +10,7 @@ import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -143,7 +144,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = true;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined });
+				const school = legacySchoolDoFactory.buildWithId({ features: undefined });
 
 				return {
 					school,
@@ -161,7 +162,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					features: [SchoolFeature.LDAP_UNIVENTION_MIGRATION],
 				});
 
@@ -181,7 +182,7 @@ describe(UserImportService.name, () => {
 			const setup = () => {
 				config.FEATURE_USER_MIGRATION_ENABLED = false;
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					features: [],
 				});
 
@@ -454,7 +455,7 @@ describe(UserImportService.name, () => {
 		describe('when resetting the migration for a school', () => {
 			const setup = () => {
 				const currentUser: User = userFactory.build();
-				const school: LegacySchoolDo = legacySchoolDoFactory.build();
+				const school = legacySchoolDoFactory.build();
 
 				return {
 					currentUser,

@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FederalStateService, LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { SchoolYearService } from '@modules/school/domain';
 import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { ExternalSchoolDto } from '../../../dto';

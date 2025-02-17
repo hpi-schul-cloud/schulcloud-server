@@ -4,7 +4,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
@@ -59,7 +59,7 @@ describe('PseudonymUc', () => {
 		describe('when valid user and params are given', () => {
 			const setup = () => {
 				const userId = 'userId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school: schoolEntity });
 				user.school = schoolEntity;

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { SchoolNumberDuplicateLoggableException } from '../../loggable';
