@@ -1,6 +1,7 @@
 const fs = require('fs');
 const url = require('url');
 const rp = require('request-promise-native');
+const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
 
@@ -29,11 +30,9 @@ const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const {
-	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
-	SECURITY_CHECK_SERVICE_PATH,
-} = require('../../../config/globals');
+const { FILE_SECURITY_CHECK_MAX_FILE_SIZE, SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
 const AWSS3Strategy = require('./strategies/awsS3');
+const { method } = require('lodash');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -110,20 +109,20 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 			.then((signedUrl) => {
 				const params = {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
+					method: 'POST',
 					auth: {
 						user: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
 						pass: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
 					},
-					body: {
+					data: {
 						download_uri: signedUrl,
 						callback_uri: url.resolve(
 							Configuration.get('API_HOST'),
 							`${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`
 						),
 					},
-					json: true,
 				};
-				const send = rp.post(params);
+				const send = axios(params);
 				return send;
 			});
 	}
