@@ -1,9 +1,9 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ExternalToolRepoMapper } from '@modules/tool/external-tool/repo/mikro-orm/mapper/external-tool.repo.mapper';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
-import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';

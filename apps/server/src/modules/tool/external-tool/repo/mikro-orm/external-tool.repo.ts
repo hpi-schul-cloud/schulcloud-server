@@ -1,16 +1,16 @@
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ToolConfigType } from '@modules/tool/common/enum';
-import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity, ExternalToolEntityProps } from '@modules/tool/external-tool/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
-import { ExternalToolRepoMapper, ExternalToolSortingMapper } from '@shared/repo/externaltool';
 import { Scope } from '@shared/repo/scope';
-import { EntityId } from '../../domain/types';
+import { EntityId } from '../../../../../shared/domain/types';
+import { ToolConfigType } from '../../../common/enum';
+import { ExternalToolSearchQuery } from '../../../common/interface';
+import { ExternalTool } from '../../domain';
+import { ExternalToolEntity, ExternalToolEntityProps } from './external-tool.entity';
 import { ExternalToolScope } from './external-tool.scope';
+import { ExternalToolRepoMapper, ExternalToolSortingMapper } from './mapper';
 
 @Injectable()
 export class ExternalToolRepo {

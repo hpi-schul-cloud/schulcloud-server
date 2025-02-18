@@ -2,7 +2,12 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
-import { CustomParameter } from '@modules/tool/common/domain';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { CustomParameter } from '../../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -10,16 +15,12 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '@modules/tool/common/enum';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
-import { externalToolEntityFactory, externalToolFactory } from '@modules/tool/external-tool/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo/externaltool';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { MongoMemoryDatabaseModule } from '@testing/database';
+} from '../../../common/enum';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
+import { externalToolEntityFactory, externalToolFactory } from '../../testing';
+import { ExternalToolEntity } from './external-tool.entity';
+import { ExternalToolRepo } from './external-tool.repo';
+import { ExternalToolRepoMapper } from './mapper';
 
 describe(ExternalToolRepo.name, () => {
 	let module: TestingModule;
