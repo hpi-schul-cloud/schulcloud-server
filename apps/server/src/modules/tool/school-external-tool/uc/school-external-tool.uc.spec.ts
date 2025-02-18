@@ -6,8 +6,8 @@ import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
@@ -26,7 +26,7 @@ describe('SchoolExternalToolUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolExternalToolUc,

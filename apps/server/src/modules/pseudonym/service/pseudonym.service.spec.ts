@@ -17,11 +17,12 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { PseudonymSearchQuery } from '../domain';
+import { ExternalToolPseudonymEntity } from '../entity';
 import { ExternalToolPseudonymRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
 
@@ -52,7 +53,7 @@ describe('PseudonymService', () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities(),
+					useValue: await setupEntities([ExternalToolPseudonymEntity]),
 				},
 			],
 		}).compile();

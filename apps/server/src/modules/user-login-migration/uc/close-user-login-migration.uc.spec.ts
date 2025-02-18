@@ -4,10 +4,11 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
 import { CloseUserLoginMigrationUc } from './close-user-login-migration.uc';
@@ -23,7 +24,7 @@ describe(CloseUserLoginMigrationUc.name, () => {
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

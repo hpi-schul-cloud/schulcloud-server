@@ -5,10 +5,10 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
 
@@ -21,7 +21,7 @@ describe('PseudonymUc', () => {
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [

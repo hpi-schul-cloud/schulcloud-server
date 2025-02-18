@@ -12,10 +12,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CustomParameter } from '../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
@@ -65,7 +65,7 @@ describe(ExternalToolUc.name, () => {
 	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		Configuration.set('SC_THEME', 'default');
 

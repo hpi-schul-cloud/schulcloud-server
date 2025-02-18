@@ -1,11 +1,12 @@
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { CourseMapper } from './course.mapper';
 import { CreateCourseResponse } from '../controller/dto';
+import { CourseMapper } from './course.mapper';
 
 describe(CourseMapper.name, () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	describe('mapToCreateCourseResponse', () => {

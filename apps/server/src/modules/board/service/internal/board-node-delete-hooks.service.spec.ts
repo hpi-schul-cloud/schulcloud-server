@@ -5,7 +5,6 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	collaborativeTextEditorFactory,
 	drawingElementFactory,
@@ -51,8 +50,6 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
-
-		await setupEntities();
 	});
 
 	afterEach(() => {

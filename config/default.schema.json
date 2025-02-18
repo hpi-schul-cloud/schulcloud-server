@@ -334,6 +334,15 @@
 					"default": false,
 					"description": "send file to antivirus by uploading"
 				}
+			},
+			"default": {
+				"S3_ENDPOINT": "http://localhost:9000",
+				"S3_ACCESS_KEY_ID": "miniouser",
+				"S3_SECRET_ACCESS_KEY": "miniouser",
+				"S3_BUCKET": "schulcloud",
+				"S3_REGION": "eu-central-1",
+				"INCOMING_REQUEST_TIMEOUT": 600000,
+				"EXCHANGE": "files-storage"
 			}
 		},
 		"FWU_CONTENT": {
@@ -590,6 +599,11 @@
 			"format": "uri",
 			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
+		},
+		"RABBITMQ_GLOBAL_PREFETCH_COUNT": {
+			"type": "integer",
+			"default": 5,
+			"description": "The global prefetch count of the RabbitMQ server."
 		},
 		"LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT": {
 			"type": "number",
@@ -1620,6 +1634,11 @@
 		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
 			"type": "number",
 			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
+		},
+		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
+			"type": "string",
+			"default": "schulconnex-provisioning",
+			"description": "rabbitmq exchange name for schulconnex provisioning"
 		},
 		"BOARD_COLLABORATION_URI": {
 			"type": "string",
