@@ -6,7 +6,6 @@ import { forwardRef, Module } from '@nestjs/common';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { LegacySchoolRepo, SchoolSystemOptionsRepo } from './repo';
 import {
-	FederalStateService,
 	LegacySchoolService,
 	ProvisioningOptionsUpdateService,
 	SchoolSystemOptionsService,
@@ -22,7 +21,6 @@ import {
 	providers: [
 		LegacySchoolRepo,
 		LegacySchoolService,
-		FederalStateService,
 		FederalStateRepo,
 		SchoolValidationService,
 		SchoolSystemOptionsRepo,
@@ -31,6 +29,6 @@ import {
 		SchulconnexProvisioningOptionsUpdateService,
 		StorageProviderRepo,
 	],
-	exports: [LegacySchoolService, FederalStateService, SchoolSystemOptionsService, ProvisioningOptionsUpdateService],
+	exports: [LegacySchoolService, SchoolSystemOptionsService, ProvisioningOptionsUpdateService],
 })
 export class LegacySchoolModule {}

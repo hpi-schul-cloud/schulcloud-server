@@ -1,7 +1,7 @@
-import { FederalStateService, LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { FederalStateNames } from '@modules/legacy-school/types';
-import { SchoolFeature, SchoolYearService } from '@modules/school/domain';
+import { FederalStateService, SchoolFeature, SchoolYearService } from '@modules/school/domain';
 import { FederalStateEntity, SchoolYearEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

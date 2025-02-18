@@ -1,4 +1,3 @@
-export * from './federal-state.service';
 export * from './legacy-school.service';
 export { ProvisioningOptionsUpdateService } from './provisioning-options-update.service';
 export { SchoolSystemOptionsService } from './school-system-options.service';
