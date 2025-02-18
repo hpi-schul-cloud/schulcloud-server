@@ -12,7 +12,7 @@ import {
 	ToolConfigType,
 } from '@modules/tool/common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { externalToolEntityFactory, externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';

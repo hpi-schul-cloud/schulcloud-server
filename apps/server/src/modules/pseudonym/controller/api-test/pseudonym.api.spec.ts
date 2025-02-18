@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

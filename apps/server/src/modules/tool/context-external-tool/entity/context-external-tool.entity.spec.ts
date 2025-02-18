@@ -2,16 +2,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { ToolConfigType } from '../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
 	ExternalToolConfigEntity,
 	ExternalToolEntity,
-} from '../../external-tool/entity';
+} from '../../external-tool/repo';
 import { externalToolEntityFactory } from '../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';

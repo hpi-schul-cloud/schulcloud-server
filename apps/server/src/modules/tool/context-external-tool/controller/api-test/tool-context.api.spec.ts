@@ -14,7 +14,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity } from '../../../external-tool/entity';
+import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';

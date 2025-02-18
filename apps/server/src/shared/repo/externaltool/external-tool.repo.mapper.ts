@@ -19,8 +19,8 @@ import {
 	ExternalToolMediumEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-} from '@modules/tool/external-tool/entity';
-import { FileRecordRefEmbeddable } from '@modules/tool/external-tool/entity/file-record-ref.embeddable';
+} from '@modules/tool/external-tool/repo';
+import { FileRecordRefEmbeddable } from '@modules/tool/external-tool/repo/mikro-orm';
 import { UnprocessableEntityException } from '@nestjs/common';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo

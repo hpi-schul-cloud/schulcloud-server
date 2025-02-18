@@ -1,6 +1,6 @@
 import { QueryOrderMap } from '@mikro-orm/core';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SortOrderMap } from '@shared/domain/interface';
 
 export class ExternalToolSortingMapper {

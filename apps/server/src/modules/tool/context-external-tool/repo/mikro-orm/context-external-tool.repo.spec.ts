@@ -9,7 +9,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { CustomParameterEntry } from '../../../common/domain';
 import { ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity } from '../../../external-tool/entity';
+import { ExternalToolEntity } from '../../../external-tool/repo';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalTool, ContextExternalToolProps } from '../../domain';

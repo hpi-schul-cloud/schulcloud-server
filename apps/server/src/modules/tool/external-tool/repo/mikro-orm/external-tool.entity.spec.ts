@@ -7,7 +7,7 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 	ToolConfigType,
-} from '../../common/enum';
+} from '../../../common/enum';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
 import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolEntity } from './external-tool.entity';

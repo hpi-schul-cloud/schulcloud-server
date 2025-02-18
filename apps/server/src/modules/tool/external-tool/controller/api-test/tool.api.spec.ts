@@ -25,7 +25,7 @@ import {
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolEntity } from '../../entity';
+import { ExternalToolEntity } from '../../repo';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
 	ExternalToolBulkCreateParams,

@@ -1,6 +1,6 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity, SchoolExternalToolEntityProps } from '@modules/tool/school-external-tool/entity';
 import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';

@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CustomParameterEntry } from '@modules/tool/common/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';

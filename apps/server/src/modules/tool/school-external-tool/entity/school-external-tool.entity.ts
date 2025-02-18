@@ -3,7 +3,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntryEntity } from '../../common/entity';
-import { ExternalToolEntity } from '../../external-tool/entity';
+import { ExternalToolEntity } from '../../external-tool/repo';
 
 export interface SchoolExternalToolEntityProps {
 	id?: EntityId;

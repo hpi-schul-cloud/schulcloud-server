@@ -1,11 +1,11 @@
 import { Embedded, Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { ToolContextType } from '../../common/enum';
+import { ToolContextType } from '../../../common/enum';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
 import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolMediumEntity } from './external-tool-medium.entity';
-import { FileRecordRefEmbeddable } from './file-record-ref.embeddable';
+import { FileRecordRefEmbeddable } from './file-record-ref-embeddable.entity';
 
 export interface ExternalToolEntityProps {
 	id?: EntityId;

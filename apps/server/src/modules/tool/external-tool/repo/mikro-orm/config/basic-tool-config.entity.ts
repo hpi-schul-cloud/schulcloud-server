@@ -1,5 +1,5 @@
 import { Embeddable } from '@mikro-orm/core';
-import { ToolConfigType } from '../../../common/enum';
+import { ToolConfigType } from '../../../../common/enum';
 import { ExternalToolConfigEntity } from './external-tool-config.entity';
 
 @Embeddable({ discriminatorValue: ToolConfigType.BASIC })
