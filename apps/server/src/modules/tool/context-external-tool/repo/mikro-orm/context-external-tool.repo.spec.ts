@@ -1,7 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolRepoMapper } from '@modules/tool/external-tool/repo/mikro-orm/mapper/external-tool.repo.mapper';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -9,7 +8,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { CustomParameterEntry } from '../../../common/domain';
 import { ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity } from '../../../external-tool/repo';
+import { ExternalToolEntity, ExternalToolRepoMapper } from '../../../external-tool/repo';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalTool, ContextExternalToolProps } from '../../domain';
