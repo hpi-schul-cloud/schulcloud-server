@@ -15,3 +15,4 @@ export {
 } from './external-tool-import-result-response';
 export * from './preferred-tool.response';
 export * from './preferred-tool-list.response';
+export { ExternalToolMediumMetadataResponse } from './external-tool-medium-metadata.response';

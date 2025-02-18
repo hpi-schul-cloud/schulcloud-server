@@ -9,7 +9,8 @@ import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { MediaSourceService } from '../../../media-source';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaMetadataDto } from '@modules/media-source-sync/dto';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import {
@@ -273,11 +274,22 @@ export class ExternalToolUc {
 		return fileName;
 	}
 
-	public async getMetadataForExternalToolConfiguration(userId: EntityId, mediumId: EntityId, mediaSourceId: EntityId) {
+	public async getMetadataForExternalToolConfiguration(
+		userId: EntityId,
+		mediumId: string,
+		mediaSourceId: string | undefined,
+		mediaSourceFormat: MediaSourceDataFormat | undefined
+	): Promise<MediaMetadataDto> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		await this.externalToolService.getMetadataForExternalToolConfiguration(mediumId, mediaSourceId);
+		const mediaMetadata: MediaMetadataDto = await this.externalToolService.getMetadataForExternalToolConfiguration(
+			mediumId,
+			mediaSourceId,
+			mediaSourceFormat
+		);
+
+		return mediaMetadata;
 	}
 
 	private encryptLtiSecret(

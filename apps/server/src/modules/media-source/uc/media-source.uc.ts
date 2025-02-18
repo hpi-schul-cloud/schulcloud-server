@@ -2,7 +2,7 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AuthorizationService } from '../../authorization';
-import { MediaSource } from '../domain';
+import { MediaSource } from '../do';
 import { MediaSourceService } from '../service';
 
 export class MediaSourceUc {

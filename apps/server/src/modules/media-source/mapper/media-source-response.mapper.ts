@@ -1,5 +1,5 @@
 import { MediaSourceListResponse, MediaSourceResponse } from '../api/response';
-import { MediaSource } from '../domain';
+import { MediaSource } from '../do';
 
 export class MediaSourceResponseMapper {
 	static mapToMediaSourceResponse(mediaSource: MediaSource): MediaSourceResponse {

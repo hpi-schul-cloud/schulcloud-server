@@ -1,25 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
-
-export class ExternalToolMetadataResponse {
-	@ApiProperty()
+export class MediaMetadataDto {
 	name: string;
 
-	@ApiProperty()
 	description: string | undefined;
 
-	@ApiProperty()
 	publisher: string | undefined;
 
-	@ApiProperty()
 	logoUrl: string | undefined;
 
-	@ApiProperty()
 	previewLogoUrl: string | undefined;
 
-	@ApiProperty()
-	modified: string | undefined;
+	modified: Date | undefined;
 
-	constructor(response: ExternalToolMetadataResponse) {
+	constructor(response: MediaMetadataDto) {
 		this.name = response.name;
 		this.description = response.description;
 		this.publisher = response.publisher;

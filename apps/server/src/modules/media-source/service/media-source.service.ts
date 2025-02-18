@@ -31,9 +31,4 @@ export class MediaSourceService {
 
 		return mediaSources;
 	}
-
-	// TODO: Metadata
-	public async fetchMetadata(mediumId, mediaSourceId: EntityId) {
-		// const mediaSource: MediaSource | null = await this.mediaSourceRepo.findBySourceId(mediaSourceId);
-	}
 }

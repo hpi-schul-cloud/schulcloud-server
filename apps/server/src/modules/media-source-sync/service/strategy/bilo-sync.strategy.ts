@@ -5,8 +5,10 @@ import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { MediaMetadataDto } from '../../dto';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
+import { MediaMetadataMapper } from '../../mapper';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
@@ -41,6 +43,17 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
 
 		return report;
+	}
+
+	public async fetchMediaMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediaMetadataDto> {
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
+			[mediumId],
+			mediaSource
+		);
+
+		const mediaMetadataDto: MediaMetadataDto = MediaMetadataMapper.mapToMediaMetadata(metadataItems[0]);
+
+		return mediaMetadataDto;
 	}
 
 	private async getAllToolsWithBiloMedium(mediaSource: MediaSource): Promise<ExternalTool[]> {

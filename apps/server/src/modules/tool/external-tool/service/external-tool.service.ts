@@ -6,7 +6,9 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolRepo } from '@shared/repo/externaltool';
-import { MediaSourceService } from '@modules/media-source';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncService } from '@modules/media-source-sync';
+import { MediaMetadataDto } from '../../../media-source-sync/dto';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
@@ -21,7 +23,7 @@ export class ExternalToolService {
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly legacyLogger: LegacyLogger,
 		private readonly commonToolDeleteService: CommonToolDeleteService,
-		private readonly mediaSourceService: MediaSourceService
+		private readonly mediaSourceSyncService: MediaSourceSyncService
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -123,8 +125,17 @@ export class ExternalToolService {
 		return updatedExternalTools;
 	}
 
-	public async getMetadataForExternalToolConfiguration(mediumId: string, mediaSourceId: string) {
-		await this.mediaSourceService.fetchMetadata(mediumId, mediaSourceId);
+	public async getMetadataForExternalToolConfiguration(
+		mediumId: string,
+		mediaSourceId: string | undefined,
+		mediaSourceFormat: MediaSourceDataFormat | undefined
+	): Promise<MediaMetadataDto> {
+		const MediaMetadata: MediaMetadataDto = await this.mediaSourceSyncService.fetchMediumMetadata(
+			mediumId,
+			mediaSourceFormat
+		);
+
+		return MediaMetadata;
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

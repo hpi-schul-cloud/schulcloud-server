@@ -50,6 +50,7 @@ import {
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
 	ExternalToolMediumParams,
+	ExternalToolMediumMetadataResponse,
 } from './dto';
 
 @ApiTags('Tool')
@@ -260,18 +261,23 @@ export class ToolController {
 		return streamableFile;
 	}
 
-	// TODO: Metadata
 	@Get(':mediumId/media-source/:mediaSourceId/metadata')
 	@ApiOperation({ summary: 'Returns metadata from media source for configuration of a medium' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getMetadataForExternalToolFromMediaSource() {
-		// @Param() params: ExternalToolMediumParams // @CurrentUser currentUser: ICurrentUser,
-		/* const externalToolMetadata = await this.externalToolUc.getMetadataForExternalToolConfiguration(
+	async getMetadataForExternalToolFromMediaSource(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolMediumParams
+	): Promise<ExternalToolMediumMetadataResponse> {
+		const externalToolMetadata = await this.externalToolUc.getMetadataForExternalToolConfiguration(
 			currentUser.userId,
 			params.mediumId,
-			params.mediaSourceId
+			params.mediaSourceId,
+			params.format
 		);
 
-*/
+		const mapped: ExternalToolMediumMetadataResponse =
+			ExternalToolResponseMapper.mapExternalMediumMetadataToResponse(externalToolMetadata);
+
+		return mapped;
 	}
 }
