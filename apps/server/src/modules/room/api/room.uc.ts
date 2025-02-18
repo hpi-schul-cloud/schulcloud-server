@@ -1,4 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
+// board and rooms has bi-directional dependencies -> cycle
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserService } from '@modules/user';
@@ -8,6 +9,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { User } from '@shared/domain/entity';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -16,6 +18,9 @@ import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
+
+type XYZContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
+type OwnershipContext = XYZContext & { targetUser: UserDO };
 
 @Injectable()
 export class RoomUc {
@@ -92,6 +97,9 @@ export class RoomUc {
 
 		await this.roomService.updateRoom(room, props);
 
+		// Sollten wir ein Standard Weg definieren wie permissions für das Frontend angereichtert werden?
+		// Über den Auth Service
+		// Könntet ihr das Thema mit in Arc Orga bringen?
 		return { room, permissions };
 	}
 
@@ -119,7 +127,7 @@ export class RoomUc {
 		const memberResponses = users.map((user) => {
 			const member = roomMembershipAuthorizable.members.find((item) => item.userId === user.id);
 			if (!member) {
-				/* istanbul ignore next */
+				/* istanbul ignore next */ // <------------------------------------------------------- xxxxxxxx
 				throw new Error('User not found in room members');
 			}
 			return this.mapToMember(member, user);
@@ -150,6 +158,18 @@ export class RoomUc {
 		return roleName;
 	}
 
+	private checkUserInRoom(context: OwnershipContext): void {
+		if (context.roomAuthorizable.members.find((member) => member.userId === context.targetUser.id) === undefined) {
+			throw new CantPassOwnershipToUserNotInRoomLoggableException(context);
+		}
+	}
+
+	private checkUserIsStudent(context: OwnershipContext): void {
+		if (context.targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
+			throw new CantPassOwnershipToStudentLoggableException(context);
+		}
+	}
+
 	public async changeRolesOfMembers(
 		currentUserId: EntityId,
 		roomId: EntityId,
@@ -157,42 +177,38 @@ export class RoomUc {
 		roleName: RoleName
 	): Promise<void> {
 		this.checkFeatureEnabled();
-		const roomAuthorizable = await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [
-			Permission.ROOM_MEMBERS_CHANGE_ROLE,
-		]);
-		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
+
+		const context = await this.getXYZContext(roomId, currentUserId);
+
+		this.checkRoomAuthorization(context, Action.write, [Permission.ROOM_MEMBERS_CHANGE_ROLE]);
+		this.preventChangingOwnersRole(context, userIds, currentUserId);
 		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, userIds, roleName);
-		return Promise.resolve();
+		// Die Methode kann entfernt werden, wie es jetzt auch erfolgt
 	}
 
+	// new permission CAN_OWN_ROOMS
 	public async passOwnership(currentUserId: EntityId, roomId: EntityId, targetUserId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
-		const roomAuthorizable = await this.checkRoomAuthorization(currentUserId, roomId, Action.write, [
-			Permission.ROOM_CHANGE_OWNER,
-		]);
-		if (roomAuthorizable.members.find((member) => member.userId === targetUserId) === undefined) {
-			throw new CantPassOwnershipToUserNotInRoomLoggableException({ currentUserId, roomId, targetUserId });
-		}
-		const targetUser = await this.userService.findById(targetUserId);
-		if (targetUser.roles.find((role) => role.name === RoleName.STUDENT)) {
-			throw new CantPassOwnershipToStudentLoggableException({ currentUserId, roomId, targetUserId });
-		}
 
-		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
-		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN);
-		return Promise.resolve();
+		const ownershipContext = await this.getPassOwnershipContext(roomId, currentUserId, targetUserId);
+
+		this.checkRoomAuthorization(ownershipContext, Action.write, [Permission.ROOM_CHANGE_OWNER]);
+		this.checkUserInRoom(ownershipContext);
+		this.checkUserIsStudent(ownershipContext);
+
+		await Promise.all([
+			this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER),
+			this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN),
+		]);
+		// Die Methode kann entfernt werden, wie es jetzt auch erfolgt
 	}
 
-	private preventChangingOwnersRole(
-		roomAuthorizable: RoomMembershipAuthorizable,
-		userIdsToChange: EntityId[],
-		currentUserId: EntityId
-	): void {
-		const owner = roomAuthorizable.members.find((member) =>
+	private preventChangingOwnersRole(context: XYZContext, userIdsToChange: EntityId[], currentUserId: EntityId): void {
+		const owner = context.roomAuthorizable.members.find((member) =>
 			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 		);
 		if (owner && userIdsToChange.includes(owner.userId)) {
-			throw new CantChangeOwnersRoleLoggableException({ roomId: roomAuthorizable.roomId, currentUserId });
+			throw new CantChangeOwnersRoleLoggableException({ roomId: context.roomAuthorizable.roomId, currentUserId });
 		}
 	}
 
@@ -213,23 +229,45 @@ export class RoomUc {
 		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
 
 		const authorizedRoomIds = roomAuthorizables.filter((item) =>
+			// Kann hier auch der authorisation context builder für das object verwendet werden?
 			this.authorizationService.hasPermission(user, item, { action, requiredPermissions: [] })
 		);
 
 		return authorizedRoomIds.map((item) => item.roomId);
 	}
 
-	private async checkRoomAuthorization(
-		userId: EntityId,
+	private async getPassOwnershipContext(
 		roomId: EntityId,
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): Promise<RoomMembershipAuthorizable> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+		currentUserId: EntityId,
+		targetUserId: EntityId
+	): Promise<OwnershipContext> {
+		const [targetUser, xyzContext] = await Promise.all([
+			this.userService.findById(targetUserId),
+			this.getXYZContext(roomId, currentUserId),
+		]);
 
-		return roomMembershipAuthorizable;
+		const context = { ...xyzContext, targetUser };
+
+		// Exists a linter rule for "no logic on the return line, but ok for some object with vars which can be seen in debugger"
+		return context;
+	}
+
+	private async getXYZContext(roomId: EntityId, currentUserId: EntityId): Promise<XYZContext> {
+		const [currentUser, roomAuthorizable] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(currentUserId),
+			this.roomMembershipService.getRoomMembershipAuthorizable(roomId),
+		]);
+
+		const context = { roomAuthorizable, currentUser };
+
+		return context;
+	}
+
+	private checkRoomAuthorization(context: XYZContext, action: Action, requiredPermissions: Permission[] = []): void {
+		this.authorizationService.checkPermission(context.currentUser, context.roomAuthorizable, {
+			action,
+			requiredPermissions,
+		});
 	}
 
 	private getPermissions(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): Permission[] {
@@ -242,7 +280,7 @@ export class RoomUc {
 	}
 
 	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED')) {
+		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
 		}
 	}

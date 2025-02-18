@@ -116,6 +116,7 @@ export class RoomMembershipService {
 			throw new BadRequestException('Room membership not found');
 		}
 
+		// Promise.all
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const role = await this.roleService.findByName(roleName);
 
@@ -126,8 +127,7 @@ export class RoomMembershipService {
 		});
 
 		await this.groupService.save(group);
-
-		return Promise.resolve();
+		// Die Methode kann entfernt werden, wie es jetzt auch erfolgt
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
