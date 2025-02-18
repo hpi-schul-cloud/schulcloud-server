@@ -13,7 +13,6 @@ export class LessonClientAdapter {
 
 	public async getLessonById(lessonId: string): Promise<LessonDto> {
 		const options = this.createOptionParams();
-		options.timeout = Number.MAX_SAFE_INTEGER;
 		const response = await this.lessonApi.lessonControllerGetLesson(lessonId, options);
 		console.log('I passed the getLessonRequest');
 		const lessonDto = LessonDtoMapper.mapToLessonDto(response.data);
