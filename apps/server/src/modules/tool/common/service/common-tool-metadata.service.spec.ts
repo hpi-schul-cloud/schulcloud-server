@@ -4,7 +4,7 @@ import { BoardCommonToolService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolRepo } from '../../context-external-tool/repo/mikro-orm';
+import { ContextExternalToolRepo } from '../../context-external-tool/repo';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolMetadata } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';

@@ -24,7 +24,7 @@ import { RoomEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { ImportUser } from '@modules/user-import/entity';

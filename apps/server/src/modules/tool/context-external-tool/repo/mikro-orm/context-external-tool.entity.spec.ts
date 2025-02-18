@@ -2,17 +2,22 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
+import {
+	CustomParameterLocation,
+	CustomParameterScope,
+	CustomParameterType,
+	ToolConfigType,
+} from '../../../common/enum';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolConfigEntity,
 	ExternalToolEntity,
-} from '../../external-tool/repo';
-import { externalToolEntityFactory } from '../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
-import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';
-import { contextExternalToolEntityFactory } from '../testing';
+} from '../../../external-tool/repo';
+import { externalToolEntityFactory } from '../../../external-tool/testing';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { contextExternalToolEntityFactory } from '../../testing';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 

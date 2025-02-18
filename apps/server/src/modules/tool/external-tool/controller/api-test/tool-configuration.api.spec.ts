@@ -21,7 +21,7 @@ import {
 	CustomParameterTypeParams,
 	ToolContextType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';

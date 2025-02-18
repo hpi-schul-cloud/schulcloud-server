@@ -1,5 +1,5 @@
 import { Embeddable, Embedded, Property } from '@mikro-orm/core';
-import { CustomParameterEntryEntity } from '../../common/entity';
+import { CustomParameterEntryEntity } from '../../../common/entity';
 
 @Embeddable()
 export class LtiDeepLinkEmbeddable {

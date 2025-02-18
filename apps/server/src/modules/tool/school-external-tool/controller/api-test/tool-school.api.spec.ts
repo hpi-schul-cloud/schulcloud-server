@@ -13,7 +13,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';

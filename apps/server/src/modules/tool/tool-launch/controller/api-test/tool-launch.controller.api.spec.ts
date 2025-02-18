@@ -19,7 +19,7 @@ import {
 	ToolConfigType,
 	ToolContextType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory, contextExternalToolFactory } from '../../../context-external-tool/testing';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import {

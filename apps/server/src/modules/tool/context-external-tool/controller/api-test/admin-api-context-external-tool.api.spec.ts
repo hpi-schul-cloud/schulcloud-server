@@ -14,7 +14,7 @@ import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity } from '../../entity';
+import { ContextExternalToolEntity } from '../../repo';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
 
 describe('AdminApiContextExternalTool (API)', () => {

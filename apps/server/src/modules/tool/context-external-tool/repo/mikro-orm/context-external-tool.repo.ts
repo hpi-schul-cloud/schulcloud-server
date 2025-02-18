@@ -7,14 +7,11 @@ import { ToolContextType } from '../../../common/enum/tool-context-type.enum';
 import { SchoolExternalToolRef } from '../../../school-external-tool/domain';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalTool, ContextRef, LtiDeepLink } from '../../domain';
-import {
-	ContextExternalToolEntity,
-	ContextExternalToolEntityProps,
-	ContextExternalToolType,
-	LtiDeepLinkEmbeddable,
-} from '../../entity';
 import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
+import { ContextExternalToolType } from './context-external-tool-type.enum';
+import { ContextExternalToolEntity, ContextExternalToolEntityProps } from './context-external-tool.entity';
 import { ContextExternalToolScope } from './context-external-tool.scope';
+import { LtiDeepLinkEmbeddable } from './lti-deep-link.embeddable';
 
 @Injectable()
 export class ContextExternalToolRepo {

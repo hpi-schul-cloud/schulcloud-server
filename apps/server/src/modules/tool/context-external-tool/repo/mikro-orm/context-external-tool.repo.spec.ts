@@ -13,10 +13,11 @@ import { ExternalToolEntity } from '../../../external-tool/repo';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalTool, ContextExternalToolProps } from '../../domain';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import { contextExternalToolEntityFactory, contextExternalToolFactory, ltiDeepLinkFactory } from '../../testing';
 import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
+import { ContextExternalToolType } from './context-external-tool-type.enum';
+import { ContextExternalToolEntity } from './context-external-tool.entity';
 
 describe(ContextExternalToolRepo.name, () => {
 	let module: TestingModule;

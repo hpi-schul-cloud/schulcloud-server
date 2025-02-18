@@ -2,8 +2,8 @@ import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { CustomParameterEntryEntity } from '../../common/entity';
-import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
+import { CustomParameterEntryEntity } from '../../../common/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { LtiDeepLinkEmbeddable } from './lti-deep-link.embeddable';
 
