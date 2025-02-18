@@ -2,9 +2,9 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../dto';
 
 export abstract class ProvisioningStrategy {
-	abstract getType(): SystemProvisioningStrategy;
+	public abstract getType(): SystemProvisioningStrategy;
 
-	abstract getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto>;
+	public abstract getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto>;
 
-	abstract apply(data: OauthDataDto): Promise<ProvisioningDto>;
+	public abstract apply(data: OauthDataDto): Promise<ProvisioningDto>;
 }
