@@ -34,7 +34,7 @@ export class LessonDtoMapper {
 			position: lessonResponse.position,
 			contents: lessonResponse.contents
 				.map((content) => this.mapToLessonContentDto(content))
-				.filter((contetnDto) => contetnDto !== null),
+				.filter((contentDto): contentDto is LessonContentResponse => contentDto !== null),
 			linkedTasks: [],
 			materials: lessonResponse.materials.map((material) => this.mapToLessonMaterialDto(material)),
 		});
