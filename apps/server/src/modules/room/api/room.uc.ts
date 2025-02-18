@@ -100,6 +100,10 @@ export class RoomUc {
 		await this.checkRoomAuthorization(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
+		await this.columnBoardService.deleteByExternalReference({
+			type: BoardExternalReferenceType.Room,
+			id: roomId,
+		});
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
