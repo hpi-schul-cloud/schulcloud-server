@@ -4,12 +4,12 @@ import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import {

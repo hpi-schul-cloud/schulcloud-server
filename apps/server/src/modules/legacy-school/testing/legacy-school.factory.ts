@@ -1,8 +1,6 @@
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
-// Remove the eslint-disable after fixing the import issue in EPIC-96
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { DoBaseFactory } from './do-base.factory';
+import { DoBaseFactory } from '@testing/factory/domainobject';
+import { LegacySchoolDo } from '../domain';
 
 class LegacySchoolFactory extends DoBaseFactory<LegacySchoolDo, LegacySchoolDo> {}
 

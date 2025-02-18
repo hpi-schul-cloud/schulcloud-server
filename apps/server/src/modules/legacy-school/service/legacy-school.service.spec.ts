@@ -7,12 +7,12 @@ import { SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { setupEntities } from '@testing/database';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
+import { LegacySchoolDo } from '../domain';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
-import { LegacySchoolDo } from '../domain';
+import { legacySchoolDoFactory } from '../testing';
 
 describe('LegacySchoolService', () => {
 	let module: TestingModule;
