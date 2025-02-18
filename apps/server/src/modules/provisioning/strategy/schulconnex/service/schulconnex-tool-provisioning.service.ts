@@ -1,5 +1,8 @@
+import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
+import { MediumIdentifier } from '@modules/media-source/domain';
+import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { ExternalToolService } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import { CustomParameterScope } from '@modules/tool/common/enum';
@@ -9,7 +12,6 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import { SchoolExternalToolCreatedLoggable } from '../../../loggable';
 
 @Injectable()
@@ -18,6 +20,7 @@ export class SchulconnexToolProvisioningService {
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly logger: Logger
 	) {}
@@ -34,8 +37,13 @@ export class SchulconnexToolProvisioningService {
 			userId
 		);
 
+		const mediaSchoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+		const mediaLicenses: MediumIdentifier[] = [...mediaUserLicenses, ...mediaSchoolLicenses];
+
 		await Promise.all(
-			mediaUserLicenses.map(async (license) => {
+			mediaLicenses.map(async (license: MediumIdentifier): Promise<void> => {
 				const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
 					license.mediumId,
 					license.mediaSource?.sourceId
@@ -53,7 +61,7 @@ export class SchulconnexToolProvisioningService {
 				if (schoolExternalTools.length === 0) {
 					const schoolExternalTool: SchoolExternalTool = await this.createSchoolExternalTool(externalTool, schoolId);
 
-					this.logger.notice(new SchoolExternalToolCreatedLoggable(license, schoolExternalTool));
+					this.logger.notice(new SchoolExternalToolCreatedLoggable(userId, license, schoolExternalTool));
 				}
 			})
 		);
