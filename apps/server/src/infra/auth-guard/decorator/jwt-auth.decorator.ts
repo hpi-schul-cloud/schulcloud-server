@@ -6,7 +6,7 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
-import { extractJwtFromHeader } from '@shared/common/utils';
+import { JwtExtractor } from '@shared/common/utils';
 import { Request } from 'express';
 import { JwtAuthGuard } from '../guard';
 import { ICurrentUser } from '../interface';
@@ -49,7 +49,7 @@ export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, 
  */
 export const JWT = createParamDecorator<never, never, string>((_, ctx: ExecutionContext) => {
 	const req: Request = ctx.switchToHttp().getRequest();
-	const jwt = extractJwtFromHeader(req) || req.headers.authorization;
+	const jwt = JwtExtractor.extractJwtFromRequest(req);
 
 	if (!jwt) {
 		throw new UnauthorizedException('Authentication is required.');
