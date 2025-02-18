@@ -2,7 +2,7 @@ import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } f
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, Course, LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LearnroomElement } from '../../domain/interface/learnroom';
+import { LearnroomElement } from '../../types';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
 import { ColumnBoardNode } from './column-board-node.entity';
 import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-board-element.entity';
