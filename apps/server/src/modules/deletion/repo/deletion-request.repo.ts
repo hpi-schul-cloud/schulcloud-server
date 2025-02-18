@@ -136,6 +136,17 @@ export class DeletionRequestRepo {
 		return ids.map((id) => entityMap.get(id) || null);
 	}
 
+	async findRegisteredByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		const scope = new DeletionRequestScope();
+		scope.byUserIdsAndRegistered(targetRefIds);
+
+		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
+
+		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
+
+		return mapped;
+	}
+
 	async findFailedByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
 		const scope = new DeletionRequestScope();
 		scope.byUserIdsAndFailed(targetRefIds);

@@ -62,6 +62,19 @@ export class DeletionRequestService {
 		return count;
 	}
 
+	public async findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
+		switch (status) {
+			case StatusModel.FAILED:
+				return this.deletionRequestRepo.findFailedByTargetRefId(targetRefIds);
+			case StatusModel.PENDING:
+				return this.deletionRequestRepo.findPendingByTargetRefId(targetRefIds);
+			case StatusModel.REGISTERED:
+				return this.deletionRequestRepo.findRegisteredByTargetRefId(targetRefIds);
+			default:
+				return [];
+		}
+	}
+
 	public async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
 		await this.deletionRequestRepo.update(deletionRequestToUpdate);
 	}

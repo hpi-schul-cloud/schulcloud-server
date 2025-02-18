@@ -3,10 +3,10 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DeletionBatchUsersRepo, DeletionRequestRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
+import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
-import { DomainName, BatchStatus } from '../types';
+import { BatchStatus, DomainName, StatusModel } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
 
 export type CreateDeletionBatchParams = {
@@ -39,8 +39,7 @@ export type DeletionBatchSummary = {
 export class DeletionBatchService {
 	constructor(
 		private readonly deletionBatchRepo: DeletionBatchRepo,
-		private readonly deletionBatchSummaryRepo: DeletionBatchUsersRepo,
-		private readonly deletionRequestRepo: DeletionRequestRepo,
+		private readonly deletionBatchUsersRepo: DeletionBatchUsersRepo,
 		private readonly deletionRequestService: DeletionRequestService
 	) {}
 
@@ -84,24 +83,27 @@ export class DeletionBatchService {
 	public async getDeletionBatchDetails(batchId: EntityId): Promise<DeletionBatchDetails> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
 
-		const failedDeletions: DeletionRequest[] = await this.deletionRequestRepo.findFailedByTargetRefId(
+		const failedDeletions: DeletionRequest[] = await this.deletionRequestService.findByStatusAndTargetRefId(
+			StatusModel.FAILED,
 			deletionBatch.targetRefIds
 		);
 		const failedDeletionUserIds: EntityId[] = failedDeletions.map((deletionRequest) => deletionRequest.targetRefId);
 
-		const pendingDeletions: DeletionRequest[] = await this.deletionRequestRepo.findPendingByTargetRefId(
+		const pendingDeletions: DeletionRequest[] = await this.deletionRequestService.findByStatusAndTargetRefId(
+			StatusModel.PENDING,
 			deletionBatch.targetRefIds
 		);
 		const pendingDeletionUserIds: EntityId[] = pendingDeletions.map((deletionRequest) => deletionRequest.targetRefId);
 
-		const successfulDeletions: DeletionRequest[] = await this.deletionRequestRepo.findSuccessfulByTargetRefId(
+		const successfulDeletions: DeletionRequest[] = await this.deletionRequestService.findByStatusAndTargetRefId(
+			StatusModel.SUCCESS,
 			deletionBatch.targetRefIds
 		);
 		const successfulDeletionUserIds: EntityId[] = successfulDeletions.map(
 			(deletionRequest) => deletionRequest.targetRefId
 		);
 
-		const skippedUsers = await this.deletionBatchSummaryRepo.getUsersByRole(deletionBatch.skippedIds);
+		const skippedUsers = await this.deletionBatchUsersRepo.getUsersByRole(deletionBatch.skippedIds);
 
 		const summary: DeletionBatchDetails = {
 			id: deletionBatch.id,
@@ -151,13 +153,13 @@ export class DeletionBatchService {
 
 	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
 	public async getUsersCountByRoles(userIds: EntityId[]): Promise<UsersCountByRole[]> {
-		const usersByRole = await this.deletionBatchSummaryRepo.countUsersByRole(userIds);
+		const usersByRole = await this.deletionBatchUsersRepo.countUsersByRole(userIds);
 
 		return usersByRole;
 	}
 
 	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {
-		const summary = {
+		const summary: DeletionBatchSummary = {
 			id: batch.id,
 			name: batch.name,
 			status: batch.status,

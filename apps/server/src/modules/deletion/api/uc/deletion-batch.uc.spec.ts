@@ -42,7 +42,7 @@ describe('DeletionBatchUc', () => {
 	});
 
 	describe('createDeletionBatch', () => {
-		describe('when contains invalid ids', () => {
+		describe('when contains students, teachers, and invalid ids', () => {
 			const setup = () => {
 				const student: UserDO = userDoFactory.buildWithId({
 					id: new ObjectId().toHexString(),
@@ -91,7 +91,6 @@ describe('DeletionBatchUc', () => {
 				);
 			});
 		});
-		describe('when contains user ids from roles other than student', () => {});
 	});
 
 	describe('createDeletionRequestsForBatch', () => {

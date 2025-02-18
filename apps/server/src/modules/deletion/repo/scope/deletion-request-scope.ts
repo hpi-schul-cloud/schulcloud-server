@@ -5,13 +5,13 @@ import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 
 export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
-	byDeleteAfter(currentDate: Date): this {
+	public byDeleteAfter(currentDate: Date): this {
 		this.addQuery({ deleteAfter: { $lt: currentDate } });
 
 		return this;
 	}
 
-	byStatusAndDate(status: StatusModel[], olderThan?: Date, newerThan?: Date): this {
+	public byStatusAndDate(status: StatusModel[], olderThan?: Date, newerThan?: Date): this {
 		const query: FilterQuery<DeletionRequestEntity> = { status: { $in: status } };
 
 		const dateConditions: FilterQuery<DeletionRequestEntity>[] = [];
@@ -30,7 +30,15 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byUserIdsAndFailed(userIds: EntityId[]): this {
+	public byUserIdsAndRegistered(userIds: EntityId[]): this {
+		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.REGISTERED };
+		query.$and = [{ targetRefId: { $in: userIds } }];
+
+		this.addQuery(query);
+		return this;
+	}
+
+	public byUserIdsAndFailed(userIds: EntityId[]): this {
 		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.FAILED };
 		query.$and = [{ targetRefId: { $in: userIds } }];
 
@@ -38,7 +46,7 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byUserIdsAndPending(userIds: EntityId[]): this {
+	public byUserIdsAndPending(userIds: EntityId[]): this {
 		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.PENDING };
 		query.$and = [{ targetRefId: { $in: userIds } }];
 
@@ -46,7 +54,7 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byUserIdsAndSuccess(userIds: EntityId[]): this {
+	public byUserIdsAndSuccess(userIds: EntityId[]): this {
 		const query: FilterQuery<DeletionRequestEntity> = { status: StatusModel.SUCCESS };
 		query.$and = [{ targetRefId: { $in: userIds } }];
 

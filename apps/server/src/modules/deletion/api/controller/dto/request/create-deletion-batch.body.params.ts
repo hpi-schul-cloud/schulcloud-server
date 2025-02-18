@@ -29,7 +29,6 @@ export class CreateDeletionBatchBodyParams {
 		type: [String],
 	})
 	@IsArray()
-	@IsNotEmpty()
 	@IsMongoId({ each: true })
 	targetRefIds: EntityId[] = [];
 }
