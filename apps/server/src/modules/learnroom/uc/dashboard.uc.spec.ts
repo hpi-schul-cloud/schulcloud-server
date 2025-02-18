@@ -1,29 +1,15 @@
 import { createMock } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
+import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
-import { LearnroomMetadata, LearnroomTypes } from '../types';
 import { DashboardUc } from './dashboard.uc';
-
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
 
 describe('dashboard uc', () => {
 	let module: TestingModule;
@@ -54,6 +40,8 @@ describe('dashboard uc', () => {
 		service = module.get(DashboardUc);
 		repo = module.get('DASHBOARD_REPO');
 		courseRepo = module.get(CourseRepo);
+
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	afterEach(() => {
@@ -107,7 +95,10 @@ describe('dashboard uc', () => {
 					grid: [
 						{
 							pos: { x: 1, y: 2 },
-							gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+							gridElement: GridElement.FromPersistedReference(
+								'elementId',
+								courseFactory.buildWithId({ name: 'Mathe' })
+							),
 						},
 					],
 					userId: 'userId',
@@ -127,7 +118,10 @@ describe('dashboard uc', () => {
 							grid: [
 								{
 									pos: { x: 1, y: 2 },
-									gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+									gridElement: GridElement.FromPersistedReference(
+										'elementId',
+										courseFactory.buildWithId({ name: 'Mathe' })
+									),
 								},
 							],
 							userId: 'userId',
@@ -147,7 +141,10 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: { x: 1, y: 2 },
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+								gridElement: GridElement.FromPersistedReference(
+									'elementId',
+									courseFactory.buildWithId({ name: 'Mathe' })
+								),
 							},
 						],
 						userId: 'differentId',
@@ -168,8 +165,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 3, y: 4 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-								learnroomMock('referenceId1', 'Math'),
-								learnroomMock('referenceId2', 'German'),
+								courseFactory.buildWithId({ name: 'Mathe' }),
+								courseFactory.buildWithId({ name: 'German' }),
 							]),
 						},
 					],
@@ -192,8 +189,8 @@ describe('dashboard uc', () => {
 								{
 									pos: { x: 3, y: 4 },
 									gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-										learnroomMock('referenceId1', 'Math'),
-										learnroomMock('referenceId2', 'German'),
+										courseFactory.buildWithId({ name: 'Mathe' }),
+										courseFactory.buildWithId({ name: 'German' }),
 									]),
 								},
 							],
@@ -215,8 +212,8 @@ describe('dashboard uc', () => {
 							{
 								pos: { x: 3, y: 4 },
 								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-									learnroomMock('referenceId1', 'Math'),
-									learnroomMock('referenceId2', 'German'),
+									courseFactory.buildWithId({ name: 'Mathe' }),
+									courseFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],

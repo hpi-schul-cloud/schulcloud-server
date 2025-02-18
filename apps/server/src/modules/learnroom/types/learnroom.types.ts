@@ -1,15 +1,7 @@
-export enum LearnroomTypes {
-	'Course' = 'course',
-}
+import { Course as CourseEntity, CourseMetadata, CourseType } from '@shared/domain/entity';
 
-export type LearnroomMetadata = {
-	id: string;
-	type: LearnroomTypes;
-	title: string;
-	shortTitle: string;
-	displayColor: string;
-	startDate?: Date;
-	untilDate?: Date;
-	copyingSince?: Date;
-	isSynchronized: boolean;
-};
+export type Learnroom = CourseEntity;
+
+export type LearnroomTypes = CourseType;
+
+export type LearnroomMetadata = CourseMetadata;

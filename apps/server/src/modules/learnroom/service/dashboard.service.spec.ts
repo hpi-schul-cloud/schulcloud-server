@@ -11,31 +11,16 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DashboardElementRepo } from '../repo';
 import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
-import { LearnroomMetadata, LearnroomTypes } from '../types';
-
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
 
 describe(DashboardService.name, () => {
 	let module: TestingModule;
@@ -83,6 +68,8 @@ describe(DashboardService.name, () => {
 		dashboardRepo = module.get('DASHBOARD_REPO');
 		dashboardElementRepo = module.get(DashboardElementRepo);
 		eventBus = module.get(EventBus);
+
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	afterAll(async () => {
@@ -101,7 +88,7 @@ describe(DashboardService.name, () => {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+						gridElement: GridElement.FromPersistedReference('elementId', courseFactory.buildWithId({ name: 'Mathe' })),
 					},
 				],
 				userId: user.id,

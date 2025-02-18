@@ -1,9 +1,7 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Course as CourseEntity, User } from '@shared/domain/entity';
+import { Course as CourseEntity, CourseType, User } from '@shared/domain/entity';
 import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';
-import { Learnroom } from '../../../domain/interface/learnroom';
-import { LearnroomTypes } from '../../../types';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
 
 @Injectable()
@@ -34,11 +32,10 @@ export class DashboardModelMapper {
 		return new Dashboard(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	public mapReferenceToModel(reference: Learnroom): CourseEntity {
+	public mapReferenceToModel(reference: CourseEntity): CourseEntity {
 		const metadata = reference.getMetadata();
-		if (metadata.type === LearnroomTypes.Course) {
-			const course = reference as CourseEntity;
-			return course;
+		if (metadata.type === CourseType.Course) {
+			return reference;
 		}
 		throw new InternalServerErrorException('unknown learnroom type');
 	}

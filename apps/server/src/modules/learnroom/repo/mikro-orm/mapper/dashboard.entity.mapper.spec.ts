@@ -29,6 +29,10 @@ describe('dashboard model mapper', () => {
 		em = module.get(EntityManager);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('mapDashboardToEntity', () => {
 		it('should map dashboard with elements and groups to entity', async () => {
 			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: userFactory.build() });
@@ -155,6 +159,7 @@ describe('dashboard model mapper', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 4 },
+						// @ts-expect-error	test case for unknown type
 						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), {
 							getMetadata: () =>
 								({

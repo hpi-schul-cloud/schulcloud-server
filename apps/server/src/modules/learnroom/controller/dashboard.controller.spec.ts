@@ -1,26 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Dashboard, GridElement, GridPosition } from '../domain/do/dashboard';
-import { LearnroomMetadata, LearnroomTypes } from '../types';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';
-
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
 
 describe('dashboard uc', () => {
 	let uc: DashboardUc;
@@ -53,6 +40,8 @@ describe('dashboard uc', () => {
 
 		uc = module.get(DashboardUc);
 		controller = module.get(DashboardController);
+
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	describe('getUsersDashboard', () => {
@@ -85,8 +74,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 1, y: 3 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'groupTitle', [
-								learnroomMock('firstId', 'Math'),
-								learnroomMock('secondId', 'German'),
+								courseFactory.buildWithId({ name: 'Mathe' }),
+								courseFactory.buildWithId({ name: 'German' }),
 							]),
 						},
 					],
@@ -122,7 +111,10 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+								gridElement: GridElement.FromPersistedReference(
+									'elementId',
+									courseFactory.buildWithId({ name: 'Mathe' })
+								),
 							},
 						],
 						userId: 'userId',
@@ -146,7 +138,10 @@ describe('dashboard uc', () => {
 						grid: [
 							{
 								pos: to,
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+								gridElement: GridElement.FromPersistedReference(
+									'elementId',
+									courseFactory.buildWithId({ name: 'Mathe' })
+								),
 							},
 						],
 						userId: 'userId',
@@ -176,8 +171,8 @@ describe('dashboard uc', () => {
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									learnroomMock('referenceId1', 'Math'),
-									learnroomMock('referenceId2', 'German'),
+									courseFactory.buildWithId({ name: 'Mathe' }),
+									courseFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],
@@ -199,8 +194,8 @@ describe('dashboard uc', () => {
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									learnroomMock('referenceId1', 'Math'),
-									learnroomMock('referenceId2', 'German'),
+									courseFactory.buildWithId({ name: 'Mathe' }),
+									courseFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],

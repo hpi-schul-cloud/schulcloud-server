@@ -1,26 +1,20 @@
 import { BadRequestException } from '@nestjs/common';
-import { LearnroomMetadata, LearnroomTypes } from '../../types';
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
 import { GridElement } from './dashboard';
 
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
-
 describe('dashboardElement', () => {
+	beforeAll(async () => {
+		await setupEntities([Course, CourseGroup]);
+	});
+
 	describe('constructors', () => {
-		describe('fromSingleReference', () => {
-			const dashboardElement = GridElement.FromSingleReference(learnroomMock('referenceId', 'Calendar-Dashboard'));
+		it('fromSingleReference', () => {
+			const dashboardElement = GridElement.FromSingleReference(
+				courseFactory.buildWithId({ name: 'Calendar-Dashboard' })
+			);
+
 			expect(dashboardElement instanceof GridElement);
 			expect(dashboardElement.hasId()).toEqual(false);
 		});
@@ -30,7 +24,7 @@ describe('dashboardElement', () => {
 		it('element with single reference should not be a group', () => {
 			const dashboardElement = GridElement.FromPersistedReference(
 				'id',
-				learnroomMock('referenceId', 'Calendar-Dashboard')
+				courseFactory.buildWithId({ name: 'Calendar-Dashboard' })
 			);
 
 			expect(dashboardElement.isGroup()).toEqual(false);
@@ -38,8 +32,8 @@ describe('dashboardElement', () => {
 
 		it('element with multiple references should be a group', () => {
 			const element = GridElement.FromPersistedGroup('id', 'title', [
-				learnroomMock('referenceId', 'Calendar-Dashboard'),
-				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+				courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+				courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 			]);
 
 			expect(element.isGroup()).toEqual(true);
@@ -49,17 +43,18 @@ describe('dashboardElement', () => {
 	describe('getContent', () => {
 		describe('when Element has a single reference', () => {
 			it('should return the metadata of that element', () => {
-				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
+				const mockCourse = courseFactory.buildWithId({ name: 'Calendar-Dashboard' });
+				const element = GridElement.FromPersistedReference('id', mockCourse);
 				const content = element.getContent();
-				expect(content.referencedId).toEqual('referenceId');
+				expect(content.referencedId).toEqual(mockCourse.getMetadata().id);
 				expect(content.title).toEqual('Calendar-Dashboard');
 			});
 		});
 		describe('when Element has multiple references', () => {
 			it('should return the metadata of all those elements', () => {
 				const element = GridElement.FromPersistedGroup('id', 'groupTitle', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+					courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 				]);
 				const content = element.getContent();
 				expect(content.group?.length).toEqual(2);
@@ -73,8 +68,8 @@ describe('dashboardElement', () => {
 
 			it('should sort the references', () => {
 				const element = GridElement.FromPersistedGroup('id', 'groupTitle', [
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
+					courseFactory.buildWithId({ name: 'Team-Dashboard' }),
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
 				]);
 				const content = element.getContent();
 				expect(content.group?.length).toEqual(2);
@@ -86,14 +81,14 @@ describe('dashboardElement', () => {
 			});
 
 			it('should sort in a stable way', () => {
-				const first = learnroomMock('first', 'title');
-				const second = learnroomMock('second', 'title');
+				const first = courseFactory.buildWithId({ name: 'Calendar-Dashboard' });
+				const second = courseFactory.buildWithId({ name: 'Calendar-Dashboard' });
 				const element = GridElement.FromPersistedGroup('id', 'groupTitle', [first, second]);
 				const content = element.getContent();
 				expect(content.group?.length).toEqual(2);
 				if (content.group) {
-					expect(content.group[0].id).toEqual('first');
-					expect(content.group[1].id).toEqual('second');
+					expect(content.group[0].id).toEqual(first.id);
+					expect(content.group[1].id).toEqual(second.id);
 				}
 			});
 		});
@@ -101,25 +96,26 @@ describe('dashboardElement', () => {
 
 	describe('removeReferenceByIndex', () => {
 		it('should remove a single reference', () => {
-			const element = GridElement.FromGroup('title', [
-				learnroomMock('referenceId', 'Calendar-Dashboard'),
-				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
-			]);
+			const mockCourse1 = courseFactory.buildWithId({ name: 'Calendar-Dashboard' });
+			const mockCourse2 = courseFactory.buildWithId({ name: 'Team-Dashboard' });
+			const element = GridElement.FromGroup('title', [mockCourse1, mockCourse2]);
+
 			element.removeReferenceByIndex(1);
+
 			expect(element.getReferences().length).toEqual(1);
-			expect(element.getReferences()[0].getMetadata().id).toEqual('referenceId');
+			expect(element.getReferences()[0].getMetadata().id).toEqual(mockCourse1.getMetadata().id);
 		});
 
 		it('should throw if not group', () => {
-			const element = GridElement.FromSingleReference(learnroomMock('referenceId', 'Calendar-Dashboard'));
+			const element = GridElement.FromSingleReference(courseFactory.buildWithId({ name: 'Calendar-Dashboard' }));
 			const callFunction = () => element.removeReferenceByIndex(0);
 			expect(callFunction).toThrow(BadRequestException);
 		});
 
 		it('should throw for index out of bounds', () => {
 			const element = GridElement.FromGroup('title', [
-				learnroomMock('referenceId', 'Calendar-Dashboard'),
-				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+				courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+				courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 			]);
 			const callFunction = () => element.removeReferenceByIndex(2);
 			expect(callFunction).toThrow(BadRequestException);
@@ -129,36 +125,47 @@ describe('dashboardElement', () => {
 	describe('removeReference', () => {
 		it('should throw if element doesnt exist', () => {
 			const element = GridElement.FromGroup('title', [
-				learnroomMock('referenceId', 'Calendar-Dashboard'),
-				learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+				courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+				courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 			]);
-			const callFunction = () => element.removeReference(learnroomMock('notmatching', 'Administration-Dashboard'));
+			const callFunction = () => element.removeReference(courseFactory.buildWithId({ name: 'Non-Existing' }));
 			expect(callFunction).toThrow(BadRequestException);
 		});
 	});
 
 	describe('addReferences', () => {
 		describe('when Element has a single reference', () => {
-			const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
-			const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
-			element.addReferences(referenceList);
+			const setup = () => {
+				const mockCourse = courseFactory.buildWithId({ name: 'Calendar-Dashboard' });
+				const element = GridElement.FromPersistedReference('id', mockCourse);
+				const referenceList = [courseFactory.buildWithId({ name: 'Team-Dashboard' })];
+				element.addReferences(referenceList);
+
+				return element;
+			};
 			it('should append references', () => {
+				const element = setup();
+
 				const result = element.getReferences();
+
 				expect(result.length).toEqual(2);
 				expect(result[1].getMetadata().title).toEqual('Team-Dashboard');
 			});
 			it('should set default group name', () => {
+				const element = setup();
+
 				const result = element.getContent();
+
 				expect(result.title).toEqual('');
 			});
 		});
 		describe('when Element has multiple references', () => {
 			it('should add all references and not change title', () => {
 				const element = GridElement.FromPersistedGroup('id', 'title', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+					courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 				]);
-				const referenceList = [learnroomMock('additionalReferenceId', 'Homework-Dashboard')];
+				const referenceList = [courseFactory.buildWithId({ name: 'Homework-Dashboard' })];
 				element.addReferences(referenceList);
 				const result = element.getReferences();
 				expect(result.length).toEqual(3);
@@ -168,24 +175,24 @@ describe('dashboardElement', () => {
 			});
 			it('should reset title when elements are ungrouped and regrouped', () => {
 				const element = GridElement.FromPersistedGroup('id', 'title', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+					courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 				]);
 				expect(element.getContent().title).toEqual('title');
 				expect(element.getReferences().length).toEqual(2);
 				element.removeReferenceByIndex(1);
 				expect(element.getReferences().length).toEqual(1);
-				const referenceList = [learnroomMock('anotherReferenceId', 'Team-Dashboard')];
+				const referenceList = [courseFactory.buildWithId({ name: 'Team-Dashboard' })];
 				element.addReferences(referenceList);
 				expect(element.getReferences().length).toEqual(2);
 				expect(element.getContent().title).toEqual('');
 			});
 			it('should keep references sorted', () => {
 				const element = GridElement.FromPersistedGroup('id', 'title', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+					courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 				]);
-				const referenceList = [learnroomMock('additionalReferenceId', 'Homework-Dashboard')];
+				const referenceList = [courseFactory.buildWithId({ name: 'Homework-Dashboard' })];
 				element.addReferences(referenceList);
 				const result = element.getReferences();
 				expect(result.length).toEqual(3);
@@ -200,8 +207,8 @@ describe('dashboardElement', () => {
 		describe('when new group name is set', () => {
 			it('should contain the new name as title', () => {
 				const element = GridElement.FromPersistedGroup('id', 'oldTitle', [
-					learnroomMock('referenceId', 'Calendar-Dashboard'),
-					learnroomMock('anotherReferenceId', 'Team-Dashboard'),
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' }),
+					courseFactory.buildWithId({ name: 'Team-Dashboard' }),
 				]);
 				element.setGroupName('newTitle');
 				expect(element.title).toEqual('newTitle');
@@ -209,7 +216,10 @@ describe('dashboardElement', () => {
 		});
 		describe('when element is no group', () => {
 			it('setGroupName should not change title', () => {
-				const element = GridElement.FromPersistedReference('id', learnroomMock('referenceId', 'Calendar-Dashboard'));
+				const element = GridElement.FromPersistedReference(
+					'id',
+					courseFactory.buildWithId({ name: 'Calendar-Dashboard' })
+				);
 				element.setGroupName('newTitle');
 				expect(element.isGroup()).toEqual(false);
 				expect(element.title).toBeUndefined();

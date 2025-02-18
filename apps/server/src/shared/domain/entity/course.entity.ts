@@ -1,8 +1,6 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
-import { Learnroom } from '@modules/learnroom/domain/interface/learnroom';
-import { LearnroomMetadata, LearnroomTypes } from '@modules/learnroom/types';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { EntityWithSchool } from '../interface/entity';
 import { EntityId } from '../types';
@@ -15,6 +13,22 @@ import type { User } from './user.entity';
 
 export enum SyncAttribute {
 	TEACHERS = 'teachers',
+}
+
+export enum CourseType {
+	'Course' = 'course',
+}
+
+export interface CourseMetadata {
+	id: string;
+	type: CourseType;
+	title: string;
+	shortTitle: string;
+	displayColor: string;
+	startDate?: Date;
+	untilDate?: Date;
+	copyingSince?: Date;
+	isSynchronized: boolean;
 }
 
 export interface CourseProperties {
@@ -56,7 +70,7 @@ export class UsersList {
 }
 
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps implements Learnroom, EntityWithSchool, TaskParent, LessonParent {
+export class Course extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string;
 
@@ -227,10 +241,10 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		return firstChar + secondChar;
 	}
 
-	public getMetadata(): LearnroomMetadata {
+	public getMetadata(): CourseMetadata {
 		return {
 			id: this.id,
-			type: LearnroomTypes.Course,
+			type: CourseType.Course,
 			title: this.name,
 			shortTitle: this.getShortTitle(),
 			displayColor: this.color,
