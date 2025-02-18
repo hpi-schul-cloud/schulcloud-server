@@ -1,4 +1,5 @@
 const { JWTStrategy } = require('@feathersjs/authentication');
+const cookie = require('cookie');
 const { ObjectId } = require('mongoose').Types;
 
 class CustomJwtStrategy extends JWTStrategy {
@@ -8,6 +9,17 @@ class CustomJwtStrategy extends JWTStrategy {
 		account.userId = new ObjectId(account.userId);
 
 		return account;
+	}
+
+	async parse(req) {
+		const cookies = cookie.parse(req.headers.cookie || '');
+		if (cookies && cookies.jwt) {
+			return Promise.resolve({
+				strategy: this.name,
+				accessToken: cookies.jwt,
+			});
+		}
+		return super.parse(req);
 	}
 }
 
