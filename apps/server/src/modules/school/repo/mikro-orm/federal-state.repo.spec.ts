@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { FederalStateEntity } from '@modules/school/repo';
+import { federalStateEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FederalStateEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { FederalStateRepo } from './federal-state.repo';
 
 describe('FederalStateRepo', () => {
@@ -35,7 +35,7 @@ describe('FederalStateRepo', () => {
 
 	describe('findByName', () => {
 		const setup = async () => {
-			const federalState: FederalStateEntity = federalStateFactory.build();
+			const federalState: FederalStateEntity = federalStateEntityFactory.build();
 			await em.persistAndFlush(federalState);
 			em.clear();
 
