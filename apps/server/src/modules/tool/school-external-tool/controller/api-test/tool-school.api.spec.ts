@@ -17,7 +17,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '../../../con
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../entity';
+import { SchoolExternalToolEntity } from '../../repo';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
 	CustomParameterEntryParam,

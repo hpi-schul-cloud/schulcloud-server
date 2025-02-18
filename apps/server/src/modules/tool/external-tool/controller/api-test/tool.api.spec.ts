@@ -24,7 +24,6 @@ import {
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../repo';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
@@ -803,25 +802,25 @@ describe('ToolController (API)', () => {
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({ id: toolId });
 
 				const school: SchoolEntity = schoolEntityFactory.build();
-				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
+				const schoolExternalToolEntities = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
 				});
 
 				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
-					schoolTool: schoolExternalToolEntitys[0],
+					schoolTool: schoolExternalToolEntities[0],
 					contextType: ContextExternalToolType.COURSE,
 					contextId: new ObjectId().toHexString(),
 				});
 
 				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
-					schoolTool: schoolExternalToolEntitys[1],
+					schoolTool: schoolExternalToolEntities[1],
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					contextId: new ObjectId().toHexString(),
 				});
 
 				const mediaBoardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
-					schoolTool: schoolExternalToolEntitys[1],
+					schoolTool: schoolExternalToolEntities[1],
 					contextType: ContextExternalToolType.MEDIA_BOARD,
 					contextId: new ObjectId().toHexString(),
 				});
@@ -837,7 +836,7 @@ describe('ToolController (API)', () => {
 					adminUser,
 					school,
 					externalToolEntity,
-					...schoolExternalToolEntitys,
+					...schoolExternalToolEntities,
 					...courseTools,
 					...boardTools,
 					...mediaBoardTools,

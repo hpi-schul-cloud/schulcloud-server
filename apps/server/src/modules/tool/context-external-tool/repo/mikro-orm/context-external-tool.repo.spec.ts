@@ -10,14 +10,14 @@ import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { CustomParameterEntry } from '../../../common/domain';
 import { ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/repo';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalTool, ContextExternalToolProps } from '../../domain';
 import { contextExternalToolEntityFactory, contextExternalToolFactory, ltiDeepLinkFactory } from '../../testing';
 import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
-import { ContextExternalToolRepo } from './context-external-tool.repo';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
+import { ContextExternalToolRepo } from './context-external-tool.repo';
 
 describe(ContextExternalToolRepo.name, () => {
 	let module: TestingModule;
@@ -63,8 +63,8 @@ describe(ContextExternalToolRepo.name, () => {
 
 	const createExternalTools = () => {
 		const school: SchoolEntity = schoolEntityFactory.buildWithId();
-		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
-		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
+		const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId({ school });
+		const schoolExternalTool2 = schoolExternalToolEntityFactory.buildWithId({ school });
 		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
 			schoolTool: schoolExternalTool1,
 		});
@@ -464,8 +464,8 @@ describe(ContextExternalToolRepo.name, () => {
 	describe('findBySchoolToolIdsAndContextType', () => {
 		describe('when a ContextExternalTool is found for the selected context', () => {
 			const setup = async () => {
-				const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
-				const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId();
+				const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId();
+				const schoolExternalTool2 = schoolExternalToolEntityFactory.buildWithId();
 
 				const contextExternalToolsInCourses: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(
 					4,

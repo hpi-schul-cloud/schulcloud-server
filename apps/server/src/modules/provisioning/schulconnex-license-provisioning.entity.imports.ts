@@ -3,7 +3,7 @@ import { MediaSourceEntity } from '@modules/media-source/entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { Role } from '@shared/domain/entity/role.entity';

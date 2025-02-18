@@ -1,19 +1,19 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CustomParameterEntry } from '@modules/tool/common/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
-import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { CustomParameterEntry } from '../../../common/domain';
+import { ExternalToolEntity } from '../../../external-tool/repo';
+import { externalToolEntityFactory } from '../../../external-tool/testing';
+import { SchoolExternalTool } from '../../domain';
+import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '../../testing';
+import { SchoolExternalToolQuery } from '../../uc/dto/school-external-tool.types';
+import { SchoolExternalToolEntity } from './school-external-tool.entity';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
 
 describe(SchoolExternalToolRepo.name, () => {

@@ -12,7 +12,6 @@ import { CustomParameterScope, CustomParameterType, ToolContextType } from '../.
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity } from '../../repo';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
@@ -89,7 +88,7 @@ describe('AdminApiContextExternalTool (API)', () => {
 						}),
 					],
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],

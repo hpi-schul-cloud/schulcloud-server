@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntryEntity } from '../../../common/entity';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/repo';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { LtiDeepLinkEmbeddable } from './lti-deep-link.embeddable';
 

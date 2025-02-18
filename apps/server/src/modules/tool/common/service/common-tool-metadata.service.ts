@@ -1,11 +1,11 @@
 import { BoardCommonToolService } from '@modules/board';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolRepo, ContextExternalToolType } from '../../context-external-tool/repo';
 import { ExternalToolMetadata } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
 import { ToolContextType } from '../enum';
 import { ToolContextMapper } from '../mapper/tool-context.mapper';
 

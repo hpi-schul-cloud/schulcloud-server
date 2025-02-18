@@ -11,7 +11,7 @@ import { CustomParameterScope, CustomParameterType } from '../../../common/enum'
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../entity';
+import { SchoolExternalToolEntity } from '../../repo';
 import { schoolExternalToolConfigurationStatusFactory } from '../../testing';
 import { SchoolExternalToolPostParams, SchoolExternalToolResponse } from '../dto';
 

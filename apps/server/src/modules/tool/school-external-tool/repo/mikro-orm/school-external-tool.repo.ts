@@ -1,13 +1,13 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity, SchoolExternalToolEntityProps } from '@modules/tool/school-external-tool/entity';
-import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { SchoolEntity } from '@shared/domain/entity';
-import { EntityId } from '../../domain/types';
-import { ExternalToolRepoMapper } from '../externaltool';
+import { EntityId } from '../../../../../shared/domain/types';
+import { ExternalToolRepoMapper } from '../../../../../shared/repo/externaltool';
+import { ExternalToolEntity } from '../../../external-tool/repo';
+import { SchoolExternalTool } from '../../domain';
+import { SchoolExternalToolQuery } from '../../uc/dto/school-external-tool.types';
+import { SchoolExternalToolEntity, SchoolExternalToolEntityProps } from './school-external-tool.entity';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
 
 @Injectable()
@@ -48,11 +48,11 @@ export class SchoolExternalToolRepo {
 		return domainObject;
 	}
 
-	public async deleteById(id: EntityId): Promise<void> {
+	public deleteById(id: EntityId): Promise<void> {
 		return this.em.removeAndFlush(this.em.getReference(this.entityName, id));
 	}
 
-	async findByExternalToolId(toolId: string): Promise<SchoolExternalTool[]> {
+	public async findByExternalToolId(toolId: string): Promise<SchoolExternalTool[]> {
 		const entities: SchoolExternalToolEntity[] = await this.em.find(this.entityName, { tool: toolId });
 		const domainObjects: SchoolExternalTool[] = entities.map((entity: SchoolExternalToolEntity): SchoolExternalTool => {
 			const domainObject: SchoolExternalTool = this.mapEntityToDomainObject(entity);
@@ -61,7 +61,7 @@ export class SchoolExternalToolRepo {
 		return domainObjects;
 	}
 
-	async findBySchoolId(schoolId: string): Promise<SchoolExternalTool[]> {
+	public async findBySchoolId(schoolId: string): Promise<SchoolExternalTool[]> {
 		const entities: SchoolExternalToolEntity[] = await this.em.find(this.entityName, { school: schoolId });
 		const domainObjects: SchoolExternalTool[] = entities.map((entity: SchoolExternalToolEntity): SchoolExternalTool => {
 			const domainObject: SchoolExternalTool = this.mapEntityToDomainObject(entity);
@@ -71,12 +71,13 @@ export class SchoolExternalToolRepo {
 		return domainObjects;
 	}
 
-	async deleteByExternalToolId(toolId: string): Promise<number> {
+	public deleteByExternalToolId(toolId: string): Promise<number> {
 		const count: Promise<number> = this.em.nativeDelete(this.entityName, { tool: toolId });
+
 		return count;
 	}
 
-	async find(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
+	public async find(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
 		const scope: SchoolExternalToolScope = this.buildScope(query);
 
 		const entities: SchoolExternalToolEntity[] = await this.em.find(this.entityName, scope.query);
@@ -98,7 +99,7 @@ export class SchoolExternalToolRepo {
 		return scope;
 	}
 
-	mapEntityToDomainObject(entity: SchoolExternalToolEntity): SchoolExternalTool {
+	private mapEntityToDomainObject(entity: SchoolExternalToolEntity): SchoolExternalTool {
 		return new SchoolExternalTool({
 			id: entity.id,
 			toolId: entity.tool.id,

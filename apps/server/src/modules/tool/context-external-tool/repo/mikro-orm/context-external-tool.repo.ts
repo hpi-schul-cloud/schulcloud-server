@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool';
 import { ToolContextType } from '../../../common/enum/tool-context-type.enum';
 import { SchoolExternalToolRef } from '../../../school-external-tool/domain';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/repo';
 import { ContextExternalTool, ContextRef, LtiDeepLink } from '../../domain';
 import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
 import { ContextExternalToolType } from './context-external-tool-type.enum';

@@ -8,7 +8,7 @@ import { roleFactory } from '@testing/factory/role.factory';
 import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';
 import { ContextExternalTool } from '../domain';
 import { ContextExternalToolEntity } from '../repo';

@@ -4,7 +4,7 @@ import { SchoolModule } from '@modules/school';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ExternalToolRepo } from '@shared/repo/externaltool';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
+import { ContextExternalToolRepo } from '../context-external-tool/repo/mikro-orm';
 import {
 	CommonToolDeleteService,
 	CommonToolService,
@@ -12,7 +12,7 @@ import {
 	Lti11EncryptionService,
 } from './service';
 import { CommonToolMetadataService } from './service/common-tool-metadata.service';
-import { ContextExternalToolRepo } from '../context-external-tool/repo/mikro-orm';
+import { SchoolExternalToolRepo } from '../school-external-tool/repo';
 
 @Module({
 	imports: [LoggerModule, SchoolModule, forwardRef(() => BoardModule), CqrsModule],

@@ -8,22 +8,16 @@ import {
 	CustomParameterType,
 	ToolConfigType,
 } from '../../../common/enum';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
-	ExternalToolConfigEntity,
-	ExternalToolEntity,
-} from '../../../external-tool/repo';
+import { BasicToolConfigEntity, CustomParameterEntity, ExternalToolConfigEntity } from '../../../external-tool/repo';
 import { externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { contextExternalToolEntityFactory } from '../../testing';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 
-describe(ExternalToolEntity.name, () => {
+describe(ContextExternalToolEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities([SchoolExternalToolEntity, ExternalToolEntity, Course, CourseGroup]);
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	describe('constructor', () => {
@@ -64,7 +58,7 @@ describe(ExternalToolEntity.name, () => {
 				isOptional: false,
 				isProtected: false,
 			});
-			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+			const externalToolEntity = externalToolEntityFactory.buildWithId({
 				name: 'toolName',
 				url: 'mockUrl',
 				logoUrl: 'mockLogoUrl',
@@ -73,7 +67,7 @@ describe(ExternalToolEntity.name, () => {
 				isHidden: true,
 				openNewTab: true,
 			});
-			const schoolTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+			const schoolTool = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
 				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
