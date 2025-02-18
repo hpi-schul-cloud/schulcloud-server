@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolYearService } from '@modules/school/domain';
+import { SchoolFeature, SchoolYearService } from '@modules/school/domain';
 import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { SchoolFeature } from '@shared/domain/types';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { setupEntities } from '@testing/database';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';

@@ -4,6 +4,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
+import { SchoolFeature } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { OauthConfigEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
@@ -12,7 +13,7 @@ import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { isObject } from '@nestjs/common/utils/shared.utils';
 import { UserDO } from '@shared/domain/domainobject';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
