@@ -510,6 +510,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
+
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
@@ -694,6 +695,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
+
 				const externalTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({

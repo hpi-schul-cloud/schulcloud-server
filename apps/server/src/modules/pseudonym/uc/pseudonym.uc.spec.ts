@@ -61,6 +61,7 @@ describe('PseudonymUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 				const school = legacySchoolDoFactory.buildWithId();
+
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school: schoolEntity });
 				user.school = schoolEntity;

@@ -2,7 +2,6 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/entity';
@@ -12,6 +11,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationEntity } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { legacySchoolDoFactory } from '../testing';
 import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {
