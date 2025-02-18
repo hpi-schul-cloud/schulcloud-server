@@ -27,6 +27,7 @@ import {
 	LessonContentDtoComponentValues,
 } from '../common-cartridge-client/lesson-client/dto';
 import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
+import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
 
 const GEOGEBRA_BASE_URL = 'https://geogebra.org';
 
@@ -195,14 +196,14 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result[0]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
-					title: (lessonContent.content as any).resources[0].title,
-					url: (lessonContent.content as any).resources[0].url,
+					title: (lessonContent.content as ComponentLernstorePropsDto).resources[0].title,
+					url: (lessonContent.content as ComponentLernstorePropsDto).resources[0].url,
 				});
 				expect(result[1]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
-					title: (lessonContent.content as any).resources[1].title,
-					url: (lessonContent.content as any).resources[1].url,
+					title: (lessonContent.content as ComponentLernstorePropsDto).resources[1].title,
+					url: (lessonContent.content as ComponentLernstorePropsDto).resources[1].url,
 				});
 			});
 		});
