@@ -6,7 +6,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
-import { SystemEntity } from '@modules/system/entity';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
@@ -18,7 +18,6 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { externalUserDtoFactory } from '../../provisioning/testing';
@@ -196,7 +195,7 @@ describe(UserLoginMigrationUc.name, () => {
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
 				});
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migration);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -228,7 +227,7 @@ describe(UserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
 
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -249,7 +248,7 @@ describe(UserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
 
-				const user: User = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 
 				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					schoolId,
@@ -351,7 +350,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when external school and official school number is defined and school has to be migrated', () => {
 			const setup = () => {
-				const sourceSystem: SystemEntity = systemEntityFactory
+				const sourceSystem = systemEntityFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
@@ -903,7 +902,7 @@ describe(UserLoginMigrationUc.name, () => {
 					schoolId: school.id,
 				});
 
-				const caller: User = userFactory.buildWithId({
+				const caller = userFactory.buildWithId({
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 
@@ -1005,7 +1004,7 @@ describe(UserLoginMigrationUc.name, () => {
 				const setup = () => {
 					const { school, userLoginMigration } = setupMigratedSchool();
 
-					const caller: User = userFactory.buildWithId({
+					const caller = userFactory.buildWithId({
 						school: schoolEntityFactory.buildWithId({}, school.id),
 					});
 
@@ -1341,7 +1340,7 @@ describe(UserLoginMigrationUc.name, () => {
 					finishedAt: later,
 				});
 
-				const caller: User = userFactory.buildWithId({
+				const caller = userFactory.buildWithId({
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 

@@ -1,7 +1,7 @@
-import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
+import { FederalStateService } from '@modules/legacy-school';
 import { FederalStateNames } from '@modules/legacy-school/types';
 import { School, SchoolService } from '@modules/school';
-import { FederalState, FileStorageType } from '@modules/school/domain';
+import { FederalState, FileStorageType, SchoolYearService } from '@modules/school/domain';
 import { SchoolFactory } from '@modules/school/domain/factory';
 import { SchoolPermissions } from '@modules/school/domain/type';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';

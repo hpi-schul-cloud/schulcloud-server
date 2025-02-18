@@ -1,11 +1,11 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity, SchoolExternalToolEntityProps } from '@modules/tool/school-external-tool/entity';
 import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { SchoolEntity } from '@shared/domain/entity';
 import { EntityId } from '../../domain/types';
 import { ExternalToolRepoMapper } from '../externaltool';
 import { SchoolExternalToolScope } from './school-external-tool.scope';
