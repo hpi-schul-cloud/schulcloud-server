@@ -19,6 +19,7 @@ import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 
 import { CourseInfoController } from './controller/course-info.controller';
 import { DashboardModelMapper, DashboardRepo, LegacyBoardRepo } from './repo';
+import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import {
 	CourseCopyUC,
 	CourseImportUc,
@@ -64,7 +65,7 @@ import {
 		CourseSyncUc,
 		// FIXME Refactor UCs to use services and remove these imports
 		{
-			provide: 'DASHBOARD_REPO',
+			provide: DASHBOARD_REPO,
 			useClass: DashboardRepo,
 		},
 		DashboardModelMapper,

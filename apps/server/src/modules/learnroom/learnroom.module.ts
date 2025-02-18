@@ -24,6 +24,7 @@ import {
 	LegacyBoardRepo,
 } from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
+import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import {
 	BoardCopyService,
 	CommonCartridgeImportService,
@@ -58,7 +59,7 @@ import {
 	],
 	providers: [
 		{
-			provide: 'DASHBOARD_REPO',
+			provide: DASHBOARD_REPO,
 			useClass: DashboardRepo,
 		},
 		BoardCopyService,

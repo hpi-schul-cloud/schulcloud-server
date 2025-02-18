@@ -7,7 +7,7 @@ import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
-import { IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
 import { DashboardResponse } from '../dto';
 
 describe('Dashboard Controller (API)', () => {
@@ -24,7 +24,7 @@ describe('Dashboard Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		dashboardRepo = app.get('DASHBOARD_REPO');
+		dashboardRepo = app.get(DASHBOARD_REPO);
 
 		apiClient = new TestApiClient(app, '/dashboard');
 	});

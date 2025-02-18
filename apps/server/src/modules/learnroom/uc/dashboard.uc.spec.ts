@@ -8,7 +8,7 @@ import { CourseRepo } from '@shared/repo/course';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
-import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 import { DashboardUc } from './dashboard.uc';
 
 describe('dashboard uc', () => {
@@ -27,7 +27,7 @@ describe('dashboard uc', () => {
 			providers: [
 				DashboardUc,
 				{
-					provide: 'DASHBOARD_REPO',
+					provide: DASHBOARD_REPO,
 					useValue: createMock<DashboardUc>(),
 				},
 				{
@@ -38,7 +38,7 @@ describe('dashboard uc', () => {
 		}).compile();
 
 		service = module.get(DashboardUc);
-		repo = module.get('DASHBOARD_REPO');
+		repo = module.get(DASHBOARD_REPO);
 		courseRepo = module.get(CourseRepo);
 
 		await setupEntities([Course, CourseGroup]);

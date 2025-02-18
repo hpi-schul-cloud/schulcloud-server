@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { EntityManager, EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -8,7 +8,7 @@ import { DashboardGridElementEntity } from './dashboard.entity';
 export class DashboardElementRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName(): typeof DashboardGridElementEntity {
+	get entityName(): EntityName<DashboardGridElementEntity> {
 		return DashboardGridElementEntity;
 	}
 

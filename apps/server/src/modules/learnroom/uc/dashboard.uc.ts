@@ -3,12 +3,12 @@ import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '../domain/do/dashboard';
-import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 @Injectable()
 export class DashboardUc {
 	constructor(
-		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
+		@Inject(DASHBOARD_REPO) private readonly dashboardRepo: IDashboardRepo,
 		private readonly courseRepo: CourseRepo
 	) {}
 
@@ -56,7 +56,7 @@ export class DashboardUc {
 		return dashboard;
 	}
 
-	private validateUsersMatch(dashboard: Dashboard, userId: EntityId) {
+	private validateUsersMatch(dashboard: Dashboard, userId: EntityId): void {
 		if (dashboard.getUserId() !== userId) {
 			throw new NotFoundException('no such dashboard found');
 		}

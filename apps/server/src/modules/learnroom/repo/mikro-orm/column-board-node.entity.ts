@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '@modules/board';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 
-// TODO comment
 /**
  * @deprecated - this is here only for the sake of the legacy-board (lernraum)
  */

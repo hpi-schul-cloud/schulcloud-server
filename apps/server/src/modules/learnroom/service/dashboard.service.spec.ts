@@ -20,7 +20,7 @@ import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DashboardElementRepo } from '../repo';
-import { IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 describe(DashboardService.name, () => {
 	let module: TestingModule;
@@ -40,7 +40,7 @@ describe(DashboardService.name, () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: 'DASHBOARD_REPO',
+					provide: DASHBOARD_REPO,
 					useValue: createMock<DashboardService>(),
 				},
 				{
@@ -65,7 +65,7 @@ describe(DashboardService.name, () => {
 		}).compile();
 		dashboardService = module.get(DashboardService);
 		userRepo = module.get(UserRepo);
-		dashboardRepo = module.get('DASHBOARD_REPO');
+		dashboardRepo = module.get(DASHBOARD_REPO);
 		dashboardElementRepo = module.get(DashboardElementRepo);
 		eventBus = module.get(EventBus);
 

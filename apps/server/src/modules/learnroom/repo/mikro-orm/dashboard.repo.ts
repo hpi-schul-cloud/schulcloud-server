@@ -5,6 +5,8 @@ import { Dashboard, GridElementWithPosition } from '../../domain/do/dashboard';
 import { DashboardEntity } from './dashboard.entity';
 import { DashboardModelMapper } from './mapper/dashboard.entity.mapper';
 
+export const DASHBOARD_REPO = 'DASHBOARD_REPO';
+
 const generateEmptyDashboard = (userId: EntityId): Dashboard => {
 	const gridArray: GridElementWithPosition[] = [];
 
