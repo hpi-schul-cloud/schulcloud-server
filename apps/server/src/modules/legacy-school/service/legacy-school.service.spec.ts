@@ -4,15 +4,15 @@ import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/sch
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { setupEntities } from '@testing/database';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { LegacySchoolDo } from '../domain';
+import { LegacySchoolRepo } from '../repo';
+import { legacySchoolDoFactory } from '../testing';
 import { FederalStateService } from './federal-state.service';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
-import { legacySchoolDoFactory } from '../testing';
 
 describe('LegacySchoolService', () => {
 	let module: TestingModule;

@@ -3,9 +3,8 @@ import { GroupModule } from '@modules/group';
 import { SchoolModule } from '@modules/school';
 import { FederalStateRepo } from '@modules/school/repo';
 import { forwardRef, Module } from '@nestjs/common';
-import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { SchoolSystemOptionsRepo } from './repo';
+import { LegacySchoolRepo, SchoolSystemOptionsRepo } from './repo';
 import {
 	FederalStateService,
 	LegacySchoolService,

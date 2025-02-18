@@ -7,7 +7,7 @@ import { SystemEntity } from '@modules/system/entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { StorageProviderEntity, UserLoginMigrationEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BaseDORepo } from '../base.do.repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.
