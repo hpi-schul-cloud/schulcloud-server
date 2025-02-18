@@ -1,19 +1,19 @@
 import { EntityName, Primary, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ToolContextType } from '@modules/tool/common/enum/tool-context-type.enum';
-import { ContextExternalTool, ContextRef, LtiDeepLink } from '@modules/tool/context-external-tool/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { ExternalToolRepoMapper } from '@shared/repo/externaltool';
+import { ToolContextType } from '../../../common/enum/tool-context-type.enum';
+import { SchoolExternalToolRef } from '../../../school-external-tool/domain';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { ContextExternalTool, ContextRef, LtiDeepLink } from '../../domain';
 import {
 	ContextExternalToolEntity,
 	ContextExternalToolEntityProps,
 	ContextExternalToolType,
 	LtiDeepLinkEmbeddable,
-} from '@modules/tool/context-external-tool/entity';
-import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { SchoolExternalToolRef } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { ExternalToolRepoMapper } from '../externaltool';
+} from '../../entity';
+import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 @Injectable()
@@ -24,10 +24,11 @@ export class ContextExternalToolRepo {
 		return ContextExternalToolEntity;
 	}
 
-	public async deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
+	public deleteBySchoolExternalToolIds(schoolExternalToolIds: string[]): Promise<number> {
 		const count: Promise<number> = this.em.nativeDelete(this.entityName, {
 			schoolTool: { $in: schoolExternalToolIds },
 		});
+
 		return count;
 	}
 

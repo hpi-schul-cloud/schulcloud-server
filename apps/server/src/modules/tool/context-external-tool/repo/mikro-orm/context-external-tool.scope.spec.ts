@@ -1,7 +1,7 @@
-import { ToolContextType } from '@modules/tool/common/enum';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ToolContextType } from '../../../common/enum';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolScope } from './context-external-tool.scope';
 
 describe('CourseExternalToolScope', () => {

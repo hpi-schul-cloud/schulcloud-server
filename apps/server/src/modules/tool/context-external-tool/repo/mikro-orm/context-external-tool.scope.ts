@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
+import { ToolContextType } from '../../../common/enum';
+import { ContextExternalToolEntity } from '../../entity';
 
 export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
-	byId(id: EntityId | undefined): ContextExternalToolScope {
+	public byId(id: EntityId | undefined): ContextExternalToolScope {
 		if (id !== undefined) {
 			this.addQuery({ id });
 		}
@@ -13,14 +13,14 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 		return this;
 	}
 
-	bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
+	public bySchoolToolId(schoolToolId: EntityId | undefined): ContextExternalToolScope {
 		if (schoolToolId !== undefined) {
 			this.addQuery({ schoolTool: schoolToolId });
 		}
 		return this;
 	}
 
-	byContextId(contextId: EntityId | undefined): ContextExternalToolScope {
+	public byContextId(contextId: EntityId | undefined): ContextExternalToolScope {
 		if (contextId !== undefined) {
 			this.addQuery({ contextId: new ObjectId(contextId) });
 		}
@@ -28,7 +28,7 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 		return this;
 	}
 
-	byContextType(contextType: ToolContextType | undefined): ContextExternalToolScope {
+	public byContextType(contextType: ToolContextType | undefined): ContextExternalToolScope {
 		if (contextType !== undefined) {
 			this.addQuery({ contextType });
 		}

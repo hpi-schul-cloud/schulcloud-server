@@ -6,7 +6,6 @@ import { schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
@@ -26,6 +25,7 @@ import {
 } from '../domain';
 import { contextExternalToolFactory } from '../testing';
 import { ContextExternalToolService } from './context-external-tool.service';
+import { ContextExternalToolRepo } from '../repo/mikro-orm';
 
 describe(ContextExternalToolService.name, () => {
 	let module: TestingModule;
