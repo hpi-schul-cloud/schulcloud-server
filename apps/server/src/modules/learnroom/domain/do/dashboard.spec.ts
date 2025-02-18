@@ -15,7 +15,7 @@ describe('dashboardElement', () => {
 				courseFactory.buildWithId({ name: 'Calendar-Dashboard' })
 			);
 
-			expect(dashboardElement instanceof GridElement);
+			expect(dashboardElement).toBeInstanceOf(GridElement);
 			expect(dashboardElement.hasId()).toEqual(false);
 		});
 	});

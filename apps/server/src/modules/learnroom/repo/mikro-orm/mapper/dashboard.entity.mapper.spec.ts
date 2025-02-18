@@ -88,13 +88,13 @@ describe('dashboard model mapper', () => {
 
 			const mapped = await mapper.mapDashboardToModel(dashboard);
 
-			expect(mapped instanceof DashboardEntity).toEqual(true);
+			expect(mapped).toBeInstanceOf(DashboardEntity);
 			expect(mapped.gridElements.length).toEqual(2);
 			expect(mapped.user.id).toEqual(dashboard.userId);
 			const element = mapped.gridElements[0];
-			expect(element instanceof DashboardGridElementEntity);
+			expect(element).toBeInstanceOf(DashboardGridElementEntity);
 			expect(element.references.length).toBeGreaterThan(0);
-			expect(element.references[0] instanceof Course).toEqual(true);
+			expect(element.references[0]).toBeInstanceOf(Course);
 			const reference = element.references[0];
 			expect(['English', 'German', 'Math'].includes(reference.name)).toEqual(true);
 		});
