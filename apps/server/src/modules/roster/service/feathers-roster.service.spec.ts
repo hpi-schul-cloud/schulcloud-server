@@ -5,6 +5,7 @@ import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFactory } from '@modules/board/testing';
 
 import { CourseService } from '@modules/learnroom/service';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -21,12 +22,12 @@ import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
+import { pseudonymFactory } from '@testing/factory/domainobject';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { RosterConfig } from '../roster.config';
@@ -218,7 +219,7 @@ describe('FeathersRosterService', () => {
 				const user: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
+				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
 				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				const courseA: Course = courseFactory.buildWithId();
@@ -292,7 +293,7 @@ describe('FeathersRosterService', () => {
 				const user: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
+				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
 				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				const courseA: Course = courseFactory.buildWithId();
@@ -508,7 +509,8 @@ describe('FeathersRosterService', () => {
 		describe('when the tool is active in a course', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
+				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
+
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
@@ -692,7 +694,8 @@ describe('FeathersRosterService', () => {
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
+				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
+
 				const externalTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
 				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({

@@ -1,7 +1,7 @@
-import { FileStorageType } from '@modules/school/domain';
+import { FileStorageType, SchoolFeature } from '@modules/school/domain';
 import { FederalStateEntity, SchoolYearEntity } from '@modules/school/repo';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { BaseDO } from './base.do';
+import { BaseDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 
 /**
  * @deprecated because it extends the deprecated BaseDO.

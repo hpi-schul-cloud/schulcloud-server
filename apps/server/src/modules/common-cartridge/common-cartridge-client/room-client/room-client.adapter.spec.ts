@@ -95,7 +95,7 @@ describe(CourseRoomsClientAdapter.name, () => {
 	describe('when no JWT token is found', () => {
 		const setup = () => {
 			const roomId = faker.string.uuid();
-			const error = new Error('Authentication is required.');
+			const error = new Error('No JWT token found');
 			const request = createMock<Request>({
 				headers: {},
 			});

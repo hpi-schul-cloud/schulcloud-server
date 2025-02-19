@@ -1,7 +1,6 @@
 import { LanguageType } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
 import { federalStateDoFactory, schoolFactory } from '../../testing';
-import { FileStorageType } from '../type';
+import { FileStorageType, SchoolFeature } from '../type';
 import { SchoolFactory } from './school.factory';
 
 describe('SchoolFactory', () => {

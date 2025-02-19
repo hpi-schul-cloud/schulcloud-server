@@ -2,7 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { PseudonymService } from '../service';
@@ -26,7 +26,7 @@ export class PseudonymUc {
 
 		const pseudonymUserId: string = foundPseudonym.userId;
 		const pseudonymUser: User = await this.authorizationService.getUserWithPermissions(pseudonymUserId);
-		const pseudonymSchool: LegacySchoolDo = await this.schoolService.getSchoolById(pseudonymUser.school.id);
+		const pseudonymSchool = await this.schoolService.getSchoolById(pseudonymUser.school.id);
 
 		this.authorizationService.checkPermission(user, pseudonymSchool, AuthorizationContextBuilder.read([]));
 

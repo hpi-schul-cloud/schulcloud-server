@@ -4,12 +4,12 @@ import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto, OauthDataDto, ProvisioningDto, ProvisioningSystemDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
@@ -152,7 +152,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					schoolId: 'schoolId',
 					externalId: externalUserId,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchoolId,
@@ -202,7 +202,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					schoolId: 'schoolId',
 					externalId: externalUserId,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: schoolId,
 					name: 'schoolName',
 					externalId: externalSchoolId,
