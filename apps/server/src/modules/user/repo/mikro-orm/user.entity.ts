@@ -13,10 +13,10 @@ import {
 import { SchoolEntity, SchoolRoles } from '@modules/school/repo';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { BaseEntityWithTimestamps, ConsentEntity, Role } from '@shared/domain/entity';
-import { UserParentsEntity } from '@shared/domain/entity/user-parents.entity';
-import { UserSourceOptionsEntity } from '@shared/domain/entity/user-source-options-entity';
 import { EntityWithSchool, LanguageType, Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UserParentsEntity } from './user-parents.entity';
+import { UserSourceOptionsEntity } from './user-source-options-entity';
 
 export interface UserProperties {
 	email: string;
