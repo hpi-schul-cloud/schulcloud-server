@@ -2,32 +2,16 @@ import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
-<<<<<<< Updated upstream:apps/server/src/modules/tool/context-external-tool/repo/mikro-orm/context-external-tool.repo.spec.ts
-=======
 import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool, ContextExternalToolProps } from '@modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
-import {
-	contextExternalToolEntityFactory,
-	contextExternalToolFactory,
-	ltiDeepLinkFactory,
-} from '@modules/tool/context-external-tool/testing';
-import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { ExternalToolEntity, ExternalToolRepoMapper } from '@modules/tool/external-tool/repo';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
->>>>>>> Stashed changes:apps/server/src/shared/repo/contextexternaltool/context-external-tool.repo.spec.ts
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { CustomParameterEntry } from '../../../common/domain';
-import { ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity, ExternalToolRepoMapper } from '../../../external-tool/repo';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/repo';
-import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalTool, ContextExternalToolProps } from '../../domain';
 import { contextExternalToolEntityFactory, contextExternalToolFactory, ltiDeepLinkFactory } from '../../testing';
 import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
