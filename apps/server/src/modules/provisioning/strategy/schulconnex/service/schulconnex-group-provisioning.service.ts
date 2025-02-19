@@ -11,7 +11,7 @@ import {
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
@@ -128,7 +128,7 @@ export class SchulconnexGroupProvisioningService {
 		const self: GroupUser | null = await this.getGroupUser(externalGroup.user, systemId);
 
 		if (!self) {
-			throw new NotFoundLoggableException(UserDO.name, { externalId: externalGroup.user.externalUserId });
+			throw new NotFoundLoggableException(UserDo.name, { externalId: externalGroup.user.externalUserId });
 		}
 
 		group.addUser(self);
@@ -156,7 +156,7 @@ export class SchulconnexGroupProvisioningService {
 	}
 
 	private async getGroupUser(externalGroupUser: ExternalGroupUserDto, systemId: EntityId): Promise<GroupUser | null> {
-		const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+		const user: UserDo | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
 		const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
 
 		if (!user?.id || roles.length !== 1 || !roles[0].id) {
@@ -177,10 +177,10 @@ export class SchulconnexGroupProvisioningService {
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
 	): Promise<Group[]> {
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const user: UserDo | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user?.id) {
-			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
+			throw new NotFoundLoggableException(UserDo.name, { externalId: externalUserId });
 		}
 		const userId: string = user.id;
 

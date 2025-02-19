@@ -4,7 +4,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -151,7 +151,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						externalTool,
 					};
 
-					const user: UserDO = userDoFactory.buildWithId({
+					const user: UserDo = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -246,7 +246,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 					const userId: string = new ObjectId().toHexString();
 					const userEmail = 'user@email.com';
-					const user: UserDO = userDoFactory.buildWithId(
+					const user: UserDo = userDoFactory.buildWithId(
 						{
 							email: userEmail,
 							roles: [
@@ -324,7 +324,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					};
 
 					const userId: string = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId(
+					const user: UserDo = userDoFactory.buildWithId(
 						{
 							roles: [
 								{
@@ -399,7 +399,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 					const userId: string = new ObjectId().toHexString();
 					const userEmail = 'user@email.com';
-					const user: UserDO = userDoFactory.buildWithId(
+					const user: UserDo = userDoFactory.buildWithId(
 						{
 							email: userEmail,
 							roles: [
@@ -470,7 +470,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						externalTool,
 					};
 
-					const user: UserDO = userDoFactory.buildWithId({
+					const user: UserDo = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -541,7 +541,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						externalTool,
 					};
 
-					const user: UserDO = userDoFactory.buildWithId({
+					const user: UserDo = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -599,7 +599,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						externalTool,
 					};
 
-					const user: UserDO = userDoFactory.buildWithId({
+					const user: UserDo = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -652,7 +652,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					};
 
 					const userId: string = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 					const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build();
 
 					const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
@@ -781,7 +781,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					};
 
 					const userId: string = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 
 					userService.findById.mockResolvedValue(user);
 					const decrypted = 'decryptedSecret';
@@ -860,7 +860,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					};
 
 					const userId: string = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 
 					userService.findById.mockResolvedValue(user);
 					const decrypted = 'decryptedSecret';
@@ -905,7 +905,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					};
 
 					const userId: string = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 
 					userService.findById.mockResolvedValue(user);
 					const decrypted = 'decryptedSecret';
@@ -1125,7 +1125,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when lti message type is content item selection request and no content is selected', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user: UserDo = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1211,7 +1211,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when there is a deep link with a url', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user: UserDo = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1303,7 +1303,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when there is a deep link resource that does not require an lti launch', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user: UserDo = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1370,7 +1370,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when there is a deep link resource of type lti assignment', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user: UserDo = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1462,7 +1462,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when there is a deep link resource of type lti link', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user: UserDo = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1554,7 +1554,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when lti message type is basic lti launch request', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user: UserDo = userDoFactory.buildWithId({ id: userId });
 
 				const mockKey = 'mockKey';
 				const mockSecret = 'mockSecret';

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -82,7 +82,7 @@ describe('VideoConferenceInfoUc', () => {
 	describe('getMeetingInfo', () => {
 		describe('when conference is not running', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {
@@ -123,7 +123,7 @@ describe('VideoConferenceInfoUc', () => {
 		describe('when conference is running', () => {
 			describe('when bbbRole is moderator', () => {
 				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
+					const user: UserDo = userDoFactory.buildWithId();
 					const currentUserId: string = user.id as string;
 					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 					const scopeInfo: ScopeInfo = {
@@ -236,7 +236,7 @@ describe('VideoConferenceInfoUc', () => {
 				describe('when user has expert role', () => {
 					describe('when guest can join', () => {
 						const setup = () => {
-							const user: UserDO = userDoFactory.buildWithId();
+							const user: UserDo = userDoFactory.buildWithId();
 							const currentUserId: string = user.id as string;
 							const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 							const scopeInfo: ScopeInfo = {
@@ -284,7 +284,7 @@ describe('VideoConferenceInfoUc', () => {
 
 					describe('when guest can not join', () => {
 						const setup = () => {
-							const user: UserDO = userDoFactory.buildWithId();
+							const user: UserDo = userDoFactory.buildWithId();
 							const currentUserId: string = user.id as string;
 							const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 							const scopeInfo: ScopeInfo = {
@@ -328,7 +328,7 @@ describe('VideoConferenceInfoUc', () => {
 
 				describe('when user does not have expert role', () => {
 					const setup = () => {
-						const user: UserDO = userDoFactory.buildWithId();
+						const user: UserDo = userDoFactory.buildWithId();
 						const currentUserId: string = user.id as string;
 						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 						const scopeInfo: ScopeInfo = {
@@ -378,7 +378,7 @@ describe('VideoConferenceInfoUc', () => {
 
 		describe('feature check', () => {
 			const setup = (scopeName: VideoConferenceScope) => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: scopeName, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {

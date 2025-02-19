@@ -1,7 +1,7 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { SchoolEntity } from '@modules/school/repo';
-import { SecondarySchoolReference, UserDO, UserSourceOptions } from '@modules/user/domain';
+import { SecondarySchoolReference, UserDo, UserSourceOptions } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Page, RoleReference } from '@shared/domain/domainobject';
@@ -16,12 +16,12 @@ import { User, UserSchoolEmbeddable } from './user.entity';
 import { UserScope } from './user.scope';
 
 @Injectable()
-export class UserDORepo extends BaseDORepo<UserDO, User> {
+export class UserDORepo extends BaseDORepo<UserDo, User> {
 	get entityName(): EntityName<User> {
 		return User;
 	}
 
-	public async find(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+	public async find(query: UserQuery, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
 		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
@@ -46,12 +46,12 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			orderBy: order,
 		});
 
-		const entityDos: UserDO[] = entities.map((entity) => this.mapEntityToDO(entity));
-		const page: Page<UserDO> = new Page<UserDO>(entityDos, total);
+		const entityDos: UserDo[] = entities.map((entity) => this.mapEntityToDO(entity));
+		const page: Page<UserDo> = new Page<UserDo>(entityDos, total);
 		return page;
 	}
 
-	public async findById(id: EntityId, populate = false): Promise<UserDO> {
+	public async findById(id: EntityId, populate = false): Promise<UserDo> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
@@ -62,7 +62,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return this.mapEntityToDO(userEntity);
 	}
 
-	public async findByIds(ids: string[], populate = false): Promise<UserDO[]> {
+	public async findByIds(ids: string[], populate = false): Promise<UserDo[]> {
 		const users = await this._em.find(User, { id: { $in: ids } });
 
 		if (populate) {
@@ -85,7 +85,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDOs;
 	}
 
-	public async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
+	public async findByIdOrNull(id: EntityId, populate = false): Promise<UserDo | null> {
 		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
 
 		if (!user) {
@@ -97,20 +97,20 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			await this.populateRoles(user.roles.getItems());
 		}
 
-		const domainObject: UserDO = this.mapEntityToDO(user);
+		const domainObject: UserDo = this.mapEntityToDO(user);
 
 		return domainObject;
 	}
 
-	public async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
-		const userDo: UserDO | null = await this.findByExternalId(externalId, systemId);
+	public async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDo> {
+		const userDo: UserDo | null = await this.findByExternalId(externalId, systemId);
 		if (userDo) {
 			return userDo;
 		}
 		throw new EntityNotFoundError('User');
 	}
 
-	public async findByExternalId(externalId: string, systemId: string): Promise<UserDO | null> {
+	public async findByExternalId(externalId: string, systemId: string): Promise<UserDo | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 
 		if (userEntitys.length > 1) {
@@ -121,11 +121,11 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 			return systems && !!systems.getItems().find((system): boolean => system.id === systemId);
 		});
 
-		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
+		const userDo: UserDo | null = userEntity ? this.mapEntityToDO(userEntity) : null;
 		return userDo;
 	}
 
-	public async findByEmail(email: string): Promise<UserDO[]> {
+	public async findByEmail(email: string): Promise<UserDo[]> {
 		// find mail case-insensitive by regex
 		const userEntitys: User[] = await this._em.find(User, {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
@@ -133,13 +133,13 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 
 		await this._em.populate(userEntitys, ['roles']);
 
-		const userDos: UserDO[] = userEntitys.map((userEntity: User): UserDO => this.mapEntityToDO(userEntity));
+		const userDos: UserDo[] = userEntitys.map((userEntity: User): UserDo => this.mapEntityToDO(userEntity));
 
 		return userDos;
 	}
 
-	public mapEntityToDO(entity: User): UserDO {
-		const user: UserDO = new UserDO({
+	public mapEntityToDO(entity: User): UserDo {
+		const user: UserDo = new UserDo({
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
@@ -186,7 +186,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return user;
 	}
 
-	public mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
+	public mapDOToEntityProperties(entityDO: UserDo): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
@@ -216,7 +216,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		};
 	}
 
-	public async findByTspUids(tspUids: string[]): Promise<UserDO[]> {
+	public async findByTspUids(tspUids: string[]): Promise<UserDo[]> {
 		const users = await this._em.find(
 			User,
 			{

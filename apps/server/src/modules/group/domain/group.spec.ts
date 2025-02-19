@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { RoleReference } from '@shared/domain/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
@@ -12,7 +12,7 @@ describe(Group.name, () => {
 		describe('when the user is in the group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 				const groupUser1 = new GroupUser({
 					userId: user.id as string,
 					roleId: new ObjectId().toHexString(),
@@ -54,7 +54,7 @@ describe(Group.name, () => {
 		describe('when the user is not in the group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 				const groupUser2 = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
@@ -83,7 +83,7 @@ describe(Group.name, () => {
 		describe('when the group is empty', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 				const group: Group = groupFactory.build({ users: [] });
 
 				return {
@@ -126,7 +126,7 @@ describe(Group.name, () => {
 			const setup = () => {
 				const externalUserId = 'externalUserId';
 				const role: RoleReference = roleFactory.buildWithId();
-				const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+				const user: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
 				const group: Group = groupFactory.build({ users: [{ userId: user.id as string, roleId: role.id }] });
 
 				return {

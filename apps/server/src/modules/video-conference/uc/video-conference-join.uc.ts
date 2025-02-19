@@ -1,5 +1,5 @@
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { VideoConferenceDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -28,7 +28,7 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
-		const user: UserDO = await this.userService.findById(currentUserId);
+		const user: UserDo = await this.userService.findById(currentUserId);
 
 		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),

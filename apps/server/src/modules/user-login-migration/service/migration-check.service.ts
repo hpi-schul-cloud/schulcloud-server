@@ -1,6 +1,6 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -31,7 +31,7 @@ export class MigrationCheckService {
 			return false;
 		}
 
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const user: UserDo | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (this.isUserMigrated(user, userLoginMigration)) {
 			return false;
@@ -40,7 +40,7 @@ export class MigrationCheckService {
 		return true;
 	}
 
-	private isUserMigrated(user: UserDO | null, userLoginMigration: UserLoginMigrationDO): boolean {
+	private isUserMigrated(user: UserDo | null, userLoginMigration: UserLoginMigrationDO): boolean {
 		return (
 			!!user && user.lastLoginSystemChange !== undefined && user.lastLoginSystemChange > userLoginMigration.startedAt
 		);

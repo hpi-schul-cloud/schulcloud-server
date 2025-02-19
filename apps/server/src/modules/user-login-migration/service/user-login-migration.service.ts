@@ -5,7 +5,7 @@ import { SchoolFeature } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { SystemType } from '@modules/system/domain';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -149,7 +149,7 @@ export class UserLoginMigrationService {
 	}
 
 	public async findMigrationByUser(userId: EntityId): Promise<UserLoginMigrationDO | null> {
-		const userDO: UserDO = await this.userService.findById(userId);
+		const userDO: UserDo = await this.userService.findById(userId);
 		const { schoolId } = userDO;
 
 		const userLoginMigration: UserLoginMigrationDO | null = await this.findMigrationBySchool(schoolId);

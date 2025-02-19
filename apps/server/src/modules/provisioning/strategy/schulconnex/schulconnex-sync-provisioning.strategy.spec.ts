@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -145,7 +145,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					}),
 					externalUser: externalUserDtoFactory.build(),
 				});
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					email: 'email',
@@ -195,7 +195,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					}),
 					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 				});
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					email: 'email',
@@ -254,7 +254,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
@@ -310,7 +310,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups: externalGroupDtoFactory.buildList(2),
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
@@ -352,7 +352,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups: undefined,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
@@ -394,7 +394,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 				const existingGroup: Group = groupFactory.build();
@@ -442,7 +442,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 				const updatedGroup: Group = groupFactory.build();
@@ -484,7 +484,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups: [],
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 				const group: Group = groupFactory.build();
@@ -521,7 +521,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 						externalUser: externalUserDtoFactory.build(),
 						externalLicenses: [],
 					});
-					const user: UserDO = userDoFactory.build({
+					const user: UserDo = userDoFactory.build({
 						id: new ObjectId().toHexString(),
 					});
 
@@ -568,7 +568,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 						externalUser: externalUserDtoFactory.build(),
 						externalLicenses: [],
 					});
-					const user: UserDO = userDoFactory.build({
+					const user: UserDo = userDoFactory.build({
 						id: new ObjectId().toHexString(),
 					});
 

@@ -1,6 +1,6 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -143,7 +143,7 @@ export class SchoolUc {
 
 		const isUserOfSchool = this.isSchoolInternalUser(user, school);
 
-		let result: Page<UserDO>;
+		let result: Page<UserDo>;
 		if (isUserOfSchool) {
 			result = await this.userService.findBySchoolRole(schoolId, RoleName.TEACHER);
 		} else {

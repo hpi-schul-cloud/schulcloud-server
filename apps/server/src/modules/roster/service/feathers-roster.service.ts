@@ -8,7 +8,7 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -72,7 +72,7 @@ export class FeathersRosterService {
 
 	public async getUsersMetadata(pseudonym: string): Promise<UserMetadata> {
 		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
-		const user: UserDO = await this.userService.findById(loadedPseudonym.userId);
+		const user: UserDo = await this.userService.findById(loadedPseudonym.userId);
 
 		const userMetadata: UserMetadata = {
 			data: {
@@ -105,7 +105,7 @@ export class FeathersRosterService {
 
 	private async getCourses(pseudonym: string, oauth2ClientId: string): Promise<Course[]> {
 		const pseudonymContext: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
-		const user: UserDO = await this.userService.findById(pseudonymContext.userId);
+		const user: UserDo = await this.userService.findById(pseudonymContext.userId);
 
 		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 		const schoolExternalTool: SchoolExternalTool = await this.validateSchoolExternalTool(
@@ -159,15 +159,15 @@ export class FeathersRosterService {
 		return group;
 	}
 
-	private async getAndPseudonyms(users: UserDO[], externalTool: ExternalTool): Promise<Pseudonym[]> {
+	private async getAndPseudonyms(users: UserDo[], externalTool: ExternalTool): Promise<Pseudonym[]> {
 		const pseudonyms: Pseudonym[] = await Promise.all(
-			users.map((user: UserDO) => this.pseudonymService.findOrCreatePseudonym(user, externalTool))
+			users.map((user: UserDo) => this.pseudonymService.findOrCreatePseudonym(user, externalTool))
 		);
 
 		return pseudonyms;
 	}
 
-	private getUserRole(user: UserDO): string {
+	private getUserRole(user: UserDo): string {
 		const roleName = user.roles.some((role: RoleReference) => role.name === RoleName.TEACHER)
 			? RoleName.TEACHER
 			: RoleName.STUDENT;

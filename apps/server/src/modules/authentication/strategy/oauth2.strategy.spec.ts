@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OauthSessionToken, OauthSessionTokenService, OAuthTokenDto } from '@modules/oauth';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
@@ -61,7 +61,7 @@ describe(Oauth2Strategy.name, () => {
 		describe('when a valid code is provided', () => {
 			const setup = () => {
 				const systemId: EntityId = 'systemId';
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
 				const account = accountDoFactory.build();
 				const expiryDate = new Date();
 
@@ -149,7 +149,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when no account was found', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
@@ -177,7 +177,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when account is deactivated', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
 						idToken: 'idToken',

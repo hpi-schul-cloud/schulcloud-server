@@ -5,7 +5,7 @@ import {
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
@@ -38,7 +38,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 			throw new IdTokenExtractionFailureLoggableException('uuid');
 		}
 
-		const ldapUser: UserDO | null = await this.userService.findByExternalId(
+		const ldapUser: UserDo | null = await this.userService.findByExternalId(
 			idToken.uuid as string,
 			input.system.systemId
 		);
@@ -67,9 +67,9 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 
 	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
 		if (email) {
-			const usersWithEmail: UserDO[] = await this.userService.findByEmail(email);
+			const usersWithEmail: UserDo[] = await this.userService.findByEmail(email);
 			if (usersWithEmail.length > 0) {
-				const user: UserDO = usersWithEmail[0];
+				const user: UserDo = usersWithEmail[0];
 				return ` [schoolId: ${user.schoolId}, currentLdapId: ${user.externalId ?? ''}]`;
 			}
 		}

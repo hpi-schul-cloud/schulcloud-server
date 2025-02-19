@@ -3,7 +3,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { RoleDto, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
@@ -41,12 +41,12 @@ export class GroupUc {
 	private async findUsersForGroup(group: Group): Promise<ResolvedGroupUser[]> {
 		const resolvedGroupUsersOrNull: (ResolvedGroupUser | null)[] = await Promise.all(
 			group.users.map(async (groupUser: GroupUser): Promise<ResolvedGroupUser | null> => {
-				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
+				const user: UserDo | null = await this.userService.findByIdOrNull(groupUser.userId);
 				let resolvedGroup: ResolvedGroupUser | null = null;
 
 				if (!user) {
 					this.logger.warning(
-						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, groupUser.userId)
+						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDo.name, groupUser.userId)
 					);
 				} else {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);

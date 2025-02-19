@@ -7,7 +7,7 @@ import {
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
@@ -90,7 +90,7 @@ describe('IservProvisioningStrategy', () => {
 		describe('when the operation succeeds', () => {
 			it('should return the user data', async () => {
 				const { input, userUUID, email } = setup();
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
+				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
 				const school = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
@@ -141,7 +141,7 @@ describe('IservProvisioningStrategy', () => {
 			it('should throw an error with code sso_user_notfound and additional information', async () => {
 				const { input, userUUID, email } = setup();
 				const schoolId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDo = userDoFactory.buildWithId({
 					externalId: userUUID,
 					schoolId,
 				});

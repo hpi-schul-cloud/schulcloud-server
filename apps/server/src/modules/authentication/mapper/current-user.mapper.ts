@@ -1,5 +1,5 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -23,7 +23,7 @@ export class CurrentUserMapper {
 
 	static mapToOauthCurrentUser(
 		accountId: string,
-		user: UserDO,
+		user: UserDo,
 		systemId?: string,
 		externalIdToken?: string
 	): ICurrentUser {

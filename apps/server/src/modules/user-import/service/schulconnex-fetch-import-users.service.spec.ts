@@ -7,7 +7,7 @@ import type { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -148,7 +148,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 					externalId: 'externalSchoolId',
 				});
 				const importUser: ImportUser = createImportUser(externalUserData, school, systemEntity);
-				const migratedUser: UserDO = userDoFactory.build({ externalId: externalUserData.pid });
+				const migratedUser: UserDo = userDoFactory.build({ externalId: externalUserData.pid });
 				userService.findByExternalId.mockResolvedValueOnce(null);
 
 				return {
@@ -177,7 +177,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 					externalId: 'externalSchoolId',
 				});
 				const importUser: ImportUser = createImportUser(externalUserData, school, systemEntity);
-				const migratedUser: UserDO = userDoFactory.build({ externalId: externalUserData.pid });
+				const migratedUser: UserDo = userDoFactory.build({ externalId: externalUserData.pid });
 				userService.findByExternalId.mockResolvedValueOnce(migratedUser);
 
 				return {

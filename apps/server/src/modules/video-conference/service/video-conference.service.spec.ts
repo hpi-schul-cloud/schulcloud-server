@@ -14,7 +14,7 @@ import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
@@ -172,7 +172,7 @@ describe(VideoConferenceService.name, () => {
 	describe('isExpert', () => {
 		describe('when user has EXPERT role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -208,7 +208,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has EXPERT role for a room', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -244,7 +244,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has EXPERT role for a video conference element', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -280,7 +280,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user does not have the EXPERT role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.buildWithId();
 				const userId = user.id as EntityId;
@@ -313,7 +313,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has the EXPERT role and an additional role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([
 						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
 						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
@@ -342,7 +342,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when conference scope is unknown', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.buildWithId();
 				const userId = user.id as EntityId;
@@ -367,7 +367,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has EXPERT role for a event conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -409,7 +409,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user does not exist in team', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 				const team = teamFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build({ teamUsers: [] });
@@ -1091,7 +1091,7 @@ describe(VideoConferenceService.name, () => {
 
 	describe('getUserRoleAndGuestStatusByUserIdForBbb', () => {
 		const setup = (conferenceScope: VideoConferenceScope) => {
-			const user: UserDO = userDoFactory.buildWithId();
+			const user: UserDo = userDoFactory.buildWithId();
 			const userId = user.id as EntityId;
 			const roomUser = userFactory.buildWithId();
 			const scopeId = new ObjectId().toHexString();

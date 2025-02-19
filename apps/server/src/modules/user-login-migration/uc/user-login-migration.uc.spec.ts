@@ -10,7 +10,7 @@ import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSyste
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -907,7 +907,7 @@ describe(UserLoginMigrationUc.name, () => {
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDo = userDoFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -1009,7 +1009,7 @@ describe(UserLoginMigrationUc.name, () => {
 						school: schoolEntityFactory.buildWithId({}, school.id),
 					});
 
-					const user: UserDO = userDoFactory.buildWithId({
+					const user: UserDo = userDoFactory.buildWithId({
 						schoolId: school.id,
 					});
 
@@ -1345,7 +1345,7 @@ describe(UserLoginMigrationUc.name, () => {
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDo = userDoFactory.buildWithId({
 					schoolId: school.id,
 				});
 

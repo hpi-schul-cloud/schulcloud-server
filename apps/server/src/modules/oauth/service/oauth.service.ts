@@ -9,7 +9,7 @@ import { System, SystemService } from '@modules/system';
 import { OauthConfigEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { isObject } from '@nestjs/common/utils/shared.utils';
@@ -55,7 +55,7 @@ export class OAuthService {
 		return oauthTokens;
 	}
 
-	async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDO | null> {
+	async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDo | null> {
 		const data: OauthDataDto = await this.provisioningService.getData(systemId, idToken, accessToken);
 
 		const externalUserId: string = data.externalUser.externalId;
@@ -73,7 +73,7 @@ export class OAuthService {
 			);
 
 			if (shouldUserMigrate) {
-				const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+				const existingUser: UserDo | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 				if (!existingUser) {
 					return null;
@@ -85,7 +85,7 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDO = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
+		const user: UserDo = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
 
 		return user;
 	}
@@ -94,8 +94,8 @@ export class OAuthService {
 		externalUserId: string,
 		systemId: EntityId,
 		officialSchoolNumber?: string
-	): Promise<UserDO> {
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+	): Promise<UserDo> {
+		const user: UserDo | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
 			// This can happen, when OAuth2 provisioning is disabled, because the school doesn't have the feature.

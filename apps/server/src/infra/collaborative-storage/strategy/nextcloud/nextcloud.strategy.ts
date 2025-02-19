@@ -4,7 +4,7 @@ import { PseudonymService } from '@modules/pseudonym';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Pseudonym } from '@shared/domain/domainobject';
@@ -132,7 +132,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		let convertedTeamUserIds: string[] = await Promise.all<Promise<string>[]>(
 			// The Oauth authentication generates a pseudonym which will be used from external systems as identifier
 			teamUsers.map(async (teamUser: TeamUserDto): Promise<string> => {
-				const user: UserDO = await this.userService.findById(teamUser.userId);
+				const user: UserDo = await this.userService.findById(teamUser.userId);
 				const userId = await this.pseudonymService
 					.findByUserAndToolOrThrow(user, nextcloudTool)
 					.then((pseudonymDO: Pseudonym) => this.client.getNameWithPrefix(pseudonymDO.pseudonym))

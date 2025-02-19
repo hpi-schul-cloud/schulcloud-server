@@ -4,7 +4,7 @@ import { PseudonymService } from '@modules/pseudonym';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
@@ -139,7 +139,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 					subject: 'subject',
 				});
 
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const tool: ExternalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);

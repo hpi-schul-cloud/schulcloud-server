@@ -1,13 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '../../../testing/factory/domainobject';
 
-class UserDoFactory extends DoBaseFactory<UserDO, UserDO> {
+class UserDoFactory extends DoBaseFactory<UserDo, UserDo> {
 	withRoles(roles: { id: EntityId; name: RoleName }[]) {
-		const params: DeepPartial<UserDO> = {
+		const params: DeepPartial<UserDo> = {
 			roles,
 		};
 
@@ -15,7 +15,7 @@ class UserDoFactory extends DoBaseFactory<UserDO, UserDO> {
 	}
 }
 
-export const userDoFactory = UserDoFactory.define(UserDO, ({ sequence }) => {
+export const userDoFactory = UserDoFactory.define(UserDo, ({ sequence }) => {
 	return {
 		firstName: 'John',
 		lastName: `Doe ${sequence}`,

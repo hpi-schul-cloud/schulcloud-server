@@ -8,7 +8,7 @@ import { SchoolFeature } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
@@ -83,7 +83,7 @@ describe(UserLoginMigrationService.name, () => {
 		describe('when using a query with user id and the users school is in migration and the user has not migrated yet', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 
 				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: user.schoolId,
@@ -114,7 +114,7 @@ describe(UserLoginMigrationService.name, () => {
 		describe('when using a query with user id and the users school is in migration, but the user has already migrated', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ lastLoginSystemChange: new Date('2023-04-06') }, userId);
+				const user: UserDo = userDoFactory.buildWithId({ lastLoginSystemChange: new Date('2023-04-06') }, userId);
 
 				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: user.schoolId,
@@ -143,7 +143,7 @@ describe(UserLoginMigrationService.name, () => {
 		describe('when using a query with user id and there is no migration for the user', () => {
 			const setup = () => {
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
 
 				userService.findById.mockResolvedValue(user);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);

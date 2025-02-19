@@ -3,7 +3,7 @@ import { ClassService } from '@modules/class';
 import { Group, GroupService } from '@modules/group';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -87,7 +87,7 @@ export class CourseInfoUc {
 	private async getCourseTeacherFullNames(teacherIds: EntityId[]): Promise<string[]> {
 		const teacherNames: string[] = await Promise.all(
 			teacherIds.map(async (teacherId): Promise<string> => {
-				const teacher: UserDO = await this.userService.findById(teacherId);
+				const teacher: UserDo = await this.userService.findById(teacherId);
 				const fullName = teacher.firstName.concat(' ', teacher.lastName);
 
 				return fullName;

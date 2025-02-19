@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -22,7 +22,7 @@ export class UserLoginMigrationRollbackService {
 	) {}
 
 	public async rollbackUser(targetUserId: EntityId): Promise<void> {
-		const user: UserDO = await this.userService.findById(targetUserId);
+		const user: UserDo = await this.userService.findById(targetUserId);
 		const account: Account = await this.accountService.findByUserIdOrFail(targetUserId);
 		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
 			user.schoolId

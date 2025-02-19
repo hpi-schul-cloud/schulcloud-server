@@ -7,7 +7,7 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import { School, SchoolService, SchoolYear, SchoolYearService } from '@modules/school/domain';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System, SystemService } from '@modules/system';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -212,7 +212,7 @@ export class ClassGroupUc {
 	): ClassInfoDto[] {
 		const classInfosFromClasses: ClassInfoDto[] = filteredClassesForSchoolYear.map(
 			(classWithSchoolYear): ClassInfoDto => {
-				const teachers: UserDO[] = [];
+				const teachers: UserDo[] = [];
 
 				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
 					classWithSchoolYear.clazz,

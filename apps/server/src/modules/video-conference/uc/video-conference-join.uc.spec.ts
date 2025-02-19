@@ -1,7 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -65,7 +65,7 @@ describe('VideoConferenceJoinUc', () => {
 	describe('join', () => {
 		describe('when join is called', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -129,7 +129,7 @@ describe('VideoConferenceJoinUc', () => {
 		describe('when user is a guest', () => {
 			describe('and waiting room is not enabled', () => {
 				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
+					const user: UserDo = userDoFactory.buildWithId();
 					const currentUserId: string = user.id as string;
 
 					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -169,7 +169,7 @@ describe('VideoConferenceJoinUc', () => {
 			describe('and waiting room is enabled', () => {
 				describe('and everybodyJoinsAsModerator is true', () => {
 					const setup = () => {
-						const user: UserDO = userDoFactory.buildWithId();
+						const user: UserDo = userDoFactory.buildWithId();
 						const currentUserId: string = user.id as string;
 
 						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -225,7 +225,7 @@ describe('VideoConferenceJoinUc', () => {
 
 				describe('and everybodyJoinsAsModerator is false', () => {
 					const setup = () => {
-						const user: UserDO = userDoFactory.buildWithId();
+						const user: UserDo = userDoFactory.buildWithId();
 						const currentUserId: string = user.id as string;
 
 						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -273,7 +273,7 @@ describe('VideoConferenceJoinUc', () => {
 
 		describe('when user is not a guest', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -340,7 +340,7 @@ describe('VideoConferenceJoinUc', () => {
 
 		describe('feature check', () => {
 			const setup = (scopeName: VideoConferenceScope) => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: scopeName, id: new ObjectId().toHexString() };
 				const options: VideoConferenceOptions = {

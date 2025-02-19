@@ -2,7 +2,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
@@ -192,7 +192,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		config: Lti11ToolConfig,
 		lti_message_type: LtiMessageType
 	): Promise<PropertyData[]> {
-		const user: UserDO = await this.userService.findById(userId);
+		const user: UserDo = await this.userService.findById(userId);
 
 		const roleNames: RoleName[] = user.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
 		const ltiRoles: LtiRole[] = LtiRoleMapper.mapRolesToLtiRoles(roleNames);

@@ -6,7 +6,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
@@ -83,7 +83,7 @@ describe('VideoConferenceUc', () => {
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
 	let team: TeamEntity;
-	let user: UserDO;
+	let user: UserDo;
 
 	let defaultRole: Role;
 	let expertRoleCourse: Role;

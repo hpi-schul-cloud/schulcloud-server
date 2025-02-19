@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
@@ -72,7 +72,7 @@ describe(UserMigrationService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetExternalId = 'newUserExternalId';
 				const sourceExternalId = 'currentUserExternalId';
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDo = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: mockDate,
 					updatedAt: mockDate,
@@ -161,7 +161,7 @@ describe(UserMigrationService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetExternalId = 'newUserExternalId';
 				const sourceExternalId = 'currentUserExternalId';
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDo = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: mockDate,
 					updatedAt: mockDate,
@@ -247,7 +247,7 @@ describe(UserMigrationService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetExternalId = 'newUserExternalId';
 				const sourceExternalId = 'currentUserExternalId';
-				const user: UserDO = userDoFactory.buildWithId({
+				const user: UserDo = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: mockDate,
 					updatedAt: mockDate,
@@ -296,7 +296,7 @@ describe(UserMigrationService.name, () => {
 	describe('hasUserMigratedInMigrationPhase', () => {
 		describe('when user has no external id', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					lastLoginSystemChange: new Date(),
 					externalId: undefined,
 				});
@@ -322,7 +322,7 @@ describe(UserMigrationService.name, () => {
 
 		describe('when login system of the user was never changed', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					lastLoginSystemChange: undefined,
 					externalId: 'externalId',
 				});
@@ -348,7 +348,7 @@ describe(UserMigrationService.name, () => {
 
 		describe('when the migration had been closed', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					lastLoginSystemChange: new Date(),
 					externalId: 'externalId',
 				});
@@ -376,7 +376,7 @@ describe(UserMigrationService.name, () => {
 
 		describe('when the user had been migrated in the current active migration', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					lastLoginSystemChange: new Date(),
 					externalId: 'externalId',
 				});

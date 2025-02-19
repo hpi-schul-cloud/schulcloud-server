@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
@@ -83,7 +83,7 @@ describe(UserLoginMigrationRollbackService.name, () => {
 					finishedAt: undefined,
 				});
 
-				userService.findById.mockResolvedValueOnce(new UserDO(user));
+				userService.findById.mockResolvedValueOnce(new UserDo(user));
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(account.getProps()));
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 
@@ -100,8 +100,8 @@ describe(UserLoginMigrationRollbackService.name, () => {
 
 				await service.rollbackUser(userId);
 
-				expect(userService.save).toHaveBeenCalledWith<[UserDO]>(
-					new UserDO({
+				expect(userService.save).toHaveBeenCalledWith<[UserDo]>(
+					new UserDo({
 						...user,
 						externalId: user.previousExternalId,
 						previousExternalId: undefined,
@@ -151,7 +151,7 @@ describe(UserLoginMigrationRollbackService.name, () => {
 					finishedAt: undefined,
 				});
 
-				userService.findById.mockResolvedValueOnce(new UserDO(user));
+				userService.findById.mockResolvedValueOnce(new UserDo(user));
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(account.getProps()));
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 
@@ -168,8 +168,8 @@ describe(UserLoginMigrationRollbackService.name, () => {
 
 				await service.rollbackUser(userId);
 
-				expect(userService.save).toHaveBeenCalledWith<[UserDO]>(
-					new UserDO({
+				expect(userService.save).toHaveBeenCalledWith<[UserDo]>(
+					new UserDo({
 						...user,
 						externalId: undefined,
 						previousExternalId: undefined,
@@ -209,7 +209,7 @@ describe(UserLoginMigrationRollbackService.name, () => {
 					finishedAt: new Date(),
 				});
 
-				userService.findById.mockResolvedValueOnce(new UserDO(user));
+				userService.findById.mockResolvedValueOnce(new UserDo(user));
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(account.getProps()));
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 
@@ -226,8 +226,8 @@ describe(UserLoginMigrationRollbackService.name, () => {
 
 				await service.rollbackUser(userId);
 
-				expect(userService.save).toHaveBeenCalledWith<[UserDO]>(
-					new UserDO({
+				expect(userService.save).toHaveBeenCalledWith<[UserDo]>(
+					new UserDo({
 						...user,
 						externalId: user.previousExternalId,
 						previousExternalId: undefined,
@@ -253,7 +253,7 @@ describe(UserLoginMigrationRollbackService.name, () => {
 					schoolId: user.schoolId,
 				});
 
-				userService.findById.mockResolvedValueOnce(new UserDO(user));
+				userService.findById.mockResolvedValueOnce(new UserDo(user));
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(account.getProps()));
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 
@@ -284,7 +284,7 @@ describe(UserLoginMigrationRollbackService.name, () => {
 					systemId: new ObjectId().toHexString(),
 				});
 
-				userService.findById.mockResolvedValueOnce(new UserDO(user));
+				userService.findById.mockResolvedValueOnce(new UserDo(user));
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(account.getProps()));
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
 

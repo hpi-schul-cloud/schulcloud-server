@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { UserService } from '@modules/user/service/user.service';
 import { userDoFactory } from '@modules/user/testing';
@@ -72,7 +72,7 @@ describe('IdTokenService', () => {
 	describe('createIdToken', () => {
 		describe('when scopes are empty', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+				const user: UserDo = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
 				const displayName = 'display name';
 
@@ -112,7 +112,7 @@ describe('IdTokenService', () => {
 			const setup = () => {
 				const team: TeamEntity = teamFactory.buildWithId();
 
-				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+				const user: UserDo = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
 				const displayName = 'display name';
 
@@ -158,7 +158,7 @@ describe('IdTokenService', () => {
 
 		describe('when scopes contain email', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+				const user: UserDo = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
 				const displayName = 'display name';
 
@@ -197,7 +197,7 @@ describe('IdTokenService', () => {
 
 		describe('when scopes contain profile', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+				const user: UserDo = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
 				const displayName = 'display name';
 
@@ -237,7 +237,7 @@ describe('IdTokenService', () => {
 
 		describe('when the tool has no id', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId({ schoolId: 'schoolId' });
+				const user: UserDo = userDoFactory.buildWithId({ schoolId: 'schoolId' });
 
 				const displayName = 'display name';
 

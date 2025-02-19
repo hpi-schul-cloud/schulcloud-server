@@ -4,7 +4,7 @@ import { Account, AccountService } from '@modules/account';
 import { OauthConfigMissingLoggableException, OAuthService, OauthSessionTokenService } from '@modules/oauth';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -43,7 +43,7 @@ export class LogoutService {
 
 		const externalId: string = decodedLogoutToken.sub;
 
-		const user: UserDO | null = await this.userService.findByExternalId(externalId, system.id);
+		const user: UserDo | null = await this.userService.findByExternalId(externalId, system.id);
 
 		if (!user?.id) {
 			throw new NotFoundLoggableException('User', { externalId, systemId: system.id });

@@ -5,7 +5,7 @@ import { PseudonymService } from '@modules/pseudonym';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
@@ -358,7 +358,7 @@ describe('NextCloudStrategy', () => {
 		describe('when user was added to a team', () => {
 			const setup = () => {
 				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
-				const userDo: UserDO = userDoFactory.build({ id: user.id });
+				const userDo: UserDo = userDoFactory.build({ id: user.id });
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
 

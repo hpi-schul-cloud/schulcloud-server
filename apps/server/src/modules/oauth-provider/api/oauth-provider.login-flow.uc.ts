@@ -2,7 +2,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { ExternalTool, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym } from '@shared/domain/domainobject';
@@ -66,7 +66,7 @@ export class OauthProviderLoginFlowUc {
 			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 
-		const user: UserDO = await this.userService.findById(currentUserId);
+		const user: UserDo = await this.userService.findById(currentUserId);
 		const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, tool);
 
 		const skipConsent: boolean = this.shouldSkipConsent(tool);

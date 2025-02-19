@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';
@@ -42,7 +42,7 @@ export class SchulconnexFetchImportUsersService {
 		const filteredUsers: ImportUser[] = (
 			await Promise.all(
 				importUsers.map(async (importUser: ImportUser): Promise<ImportUser | null> => {
-					const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, system.id);
+					const foundUser: UserDo | null = await this.userService.findByExternalId(importUser.externalId, system.id);
 					return foundUser ? null : importUser;
 				})
 			)

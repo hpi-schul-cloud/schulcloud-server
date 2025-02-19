@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -76,7 +76,7 @@ describe('VideoConferenceCreateUc', () => {
 		describe('when meeting is not running', () => {
 			describe('when user role is moderator', () => {
 				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
+					const user: UserDo = userDoFactory.buildWithId();
 					const currentUserId: string = user.id as string;
 
 					const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -150,7 +150,7 @@ describe('VideoConferenceCreateUc', () => {
 
 			describe('and user role is not moderator', () => {
 				const setup = () => {
-					const user: UserDO = userDoFactory.buildWithId();
+					const user: UserDo = userDoFactory.buildWithId();
 					const currentUserId: string = user.id as string;
 
 					const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -187,7 +187,7 @@ describe('VideoConferenceCreateUc', () => {
 
 		describe('when meeting is running', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 
 				const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
@@ -219,7 +219,7 @@ describe('VideoConferenceCreateUc', () => {
 
 		describe('feature check', () => {
 			const setup = (scopeName: VideoConferenceScope) => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 
 				const scope: ScopeRef = {

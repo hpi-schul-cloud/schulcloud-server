@@ -1,4 +1,4 @@
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
@@ -53,7 +53,7 @@ describe(DatasheetPdfService.name, () => {
 	describe('generatePdf', () => {
 		describe('when tool is oauth2 tool with optional properties and custom parameters', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
@@ -84,7 +84,7 @@ describe(DatasheetPdfService.name, () => {
 
 		describe('when tool is lti tool without custom parameters', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
@@ -112,7 +112,7 @@ describe(DatasheetPdfService.name, () => {
 
 		describe('when an error occurs', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });

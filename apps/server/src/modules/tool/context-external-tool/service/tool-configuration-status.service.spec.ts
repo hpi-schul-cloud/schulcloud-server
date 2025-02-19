@@ -7,7 +7,7 @@ import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -96,7 +96,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -162,7 +162,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -229,7 +229,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -296,7 +296,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -363,7 +363,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const customParameter = customParameterFactory.build();
 					const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -416,7 +416,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const customParameter = customParameterFactory.build();
 					const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -468,7 +468,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const customParameter = customParameterFactory.build();
 					const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -521,7 +521,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -570,7 +570,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -628,7 +628,7 @@ describe(ToolConfigurationStatusService.name, () => {
 						const userId: string = new ObjectId().toHexString();
 
 						const schoolId = new ObjectId().toHexString();
-						const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+						const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 						userService.findById.mockResolvedValueOnce(user);
 
 						const externalTool = externalToolFactory.withMedium().buildWithId();
@@ -696,7 +696,7 @@ describe(ToolConfigurationStatusService.name, () => {
 						const userId: string = new ObjectId().toHexString();
 
 						const schoolId = new ObjectId().toHexString();
-						const user: UserDO = userDoFactory.buildWithId({ id: userId, schoolId });
+						const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
 						userService.findById.mockResolvedValueOnce(user);
 
 						const externalTool = externalToolFactory.withMedium().buildWithId();

@@ -15,7 +15,7 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, Pseudonym } from '@shared/domain/domainobject';
@@ -44,7 +44,7 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool): Promise<Pseudonym> {
+	public async findByUserAndToolOrThrow(user: UserDo, tool: ExternalTool): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
@@ -64,7 +64,7 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 		return pseudonyms;
 	}
 
-	public async findOrCreatePseudonym(user: UserDO, tool: ExternalTool): Promise<Pseudonym> {
+	public async findOrCreatePseudonym(user: UserDo, tool: ExternalTool): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}

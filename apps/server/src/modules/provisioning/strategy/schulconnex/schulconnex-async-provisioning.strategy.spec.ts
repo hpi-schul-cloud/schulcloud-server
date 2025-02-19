@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -129,7 +129,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalSchool,
 					externalUser,
 				});
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					schoolId,
 					externalId: externalUser.externalId,
 				});
@@ -205,7 +205,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalGroups: [externalGroup],
 				});
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(
+				const user: UserDo = userDoFactory.buildWithId(
 					{
 						schoolId,
 						externalId: externalUser.externalId,
@@ -281,7 +281,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalLicenses: [externalLicense],
 				});
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(
+				const user: UserDo = userDoFactory.buildWithId(
 					{
 						schoolId,
 						externalId: externalUser.externalId,
@@ -339,7 +339,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalLicenses: undefined,
 				});
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(
+				const user: UserDo = userDoFactory.buildWithId(
 					{
 						schoolId,
 						externalId: externalUser.externalId,
@@ -395,7 +395,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalSchool,
 					externalUser,
 				});
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					id: undefined,
 					schoolId,
 					externalId: externalUser.externalId,

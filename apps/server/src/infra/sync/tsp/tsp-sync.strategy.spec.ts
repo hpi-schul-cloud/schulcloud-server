@@ -16,7 +16,7 @@ import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { System } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -122,12 +122,12 @@ describe(TspSyncStrategy.name, () => {
 		fetchedStudentMigrations?: RobjExportSchuelerMigration[];
 		foundSchool?: School;
 		foundSystemSchools?: School[];
-		foundTspUidUser?: UserDO | null;
+		foundTspUidUser?: UserDo | null;
 		foundTspUidAccount?: Account | null;
 		mappedOauthDto?: OauthDataDto[];
 		foundSystem?: System;
 		updatedAccount?: Account;
-		updatedUser?: UserDO;
+		updatedUser?: UserDo;
 		configValues?: unknown[];
 		migrationResult?: {
 			totalAmount: number;

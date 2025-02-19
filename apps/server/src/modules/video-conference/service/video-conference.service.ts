@@ -7,7 +7,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { Room, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -67,7 +67,7 @@ export class VideoConferenceService {
 			case VideoConferenceScope.COURSE:
 			case VideoConferenceScope.ROOM:
 			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
-				const user: UserDO = await this.userService.findById(userId);
+				const user: UserDo = await this.userService.findById(userId);
 				isExpert = this.existsOnlyExpertRole(user.roles);
 
 				return isExpert;

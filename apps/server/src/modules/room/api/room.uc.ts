@@ -2,7 +2,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -129,7 +129,7 @@ export class RoomUc {
 		return memberResponses;
 	}
 
-	private mapToMember(member: UserWithRoomRoles, user: UserDO): RoomMemberResponse {
+	private mapToMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
 		return new RoomMemberResponse({
 			userId: member.userId,
 			firstName: user.firstName,

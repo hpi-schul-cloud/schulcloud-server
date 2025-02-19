@@ -12,7 +12,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
@@ -75,7 +75,7 @@ describe('PseudonymService', () => {
 	describe('findByUserAndToolOrThrow', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
+				const user: UserDo = userDoFactory.build({ id: undefined });
 				const externalTool: ExternalTool = externalToolFactory.build({ id: undefined });
 
 				return {
@@ -95,7 +95,7 @@ describe('PseudonymService', () => {
 
 		describe('when tool parameter is an ExternalTool', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				return {
@@ -116,7 +116,7 @@ describe('PseudonymService', () => {
 		describe('when searching by userId and toolId', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockResolvedValueOnce(pseudonym);
@@ -148,7 +148,7 @@ describe('PseudonymService', () => {
 		describe('when the repo throws an error', () => {
 			const setup = () => {
 				externalToolPseudonymRepo.findByUserIdAndToolIdOrFail.mockRejectedValueOnce(new NotFoundException());
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				return {
@@ -170,7 +170,7 @@ describe('PseudonymService', () => {
 	describe('findOrCreatePseudonym', () => {
 		describe('when user or tool is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
+				const user: UserDo = userDoFactory.build({ id: undefined });
 				const externalTool: ExternalTool = externalToolFactory.build({ id: undefined });
 
 				return {
@@ -190,7 +190,7 @@ describe('PseudonymService', () => {
 
 		describe('when tool parameter is an ExternalToolDO', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				return {
@@ -211,7 +211,7 @@ describe('PseudonymService', () => {
 		describe('when the pseudonym exists', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonym);
@@ -240,7 +240,7 @@ describe('PseudonymService', () => {
 		describe('when no pseudonym exists yet', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(null);
@@ -279,7 +279,7 @@ describe('PseudonymService', () => {
 	describe('findByUserId', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
+				const user: UserDo = userDoFactory.build({ id: undefined });
 
 				return {
 					user,
@@ -295,7 +295,7 @@ describe('PseudonymService', () => {
 
 		describe('when searching by userId', () => {
 			const setup = () => {
-				const user1: UserDO = userDoFactory.buildWithId();
+				const user1: UserDo = userDoFactory.buildWithId();
 				const pseudonym1: Pseudonym = pseudonymFactory.build({ userId: user1.id });
 				const pseudonym2: Pseudonym = pseudonymFactory.build({ userId: user1.id });
 
@@ -339,7 +339,7 @@ describe('PseudonymService', () => {
 
 		describe('should return empty array when there is no pseudonym', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 
 				externalToolPseudonymRepo.findByUserId.mockResolvedValueOnce([]);
 
@@ -361,7 +361,7 @@ describe('PseudonymService', () => {
 	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
+				const user: UserDo = userDoFactory.build({ id: undefined });
 
 				return {
 					user,
@@ -377,7 +377,7 @@ describe('PseudonymService', () => {
 
 		describe('when deleting by userId', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDo = userDoFactory.buildWithId();
 				const pseudonymsDeleted = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [

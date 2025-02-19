@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
@@ -31,7 +31,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 
 	describe('when optional parameters are given', () => {
 		const setup = () => {
-			const user: UserDO = userDoFactory.build();
+			const user: UserDo = userDoFactory.build();
 			const externalTool = externalToolFactory.withCustomParameters(1, { isOptional: true, isProtected: true }).build({
 				isDeactivated: true,
 				restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
@@ -64,7 +64,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 
 	describe('when tool is deactivated on school level', () => {
 		const setup = () => {
-			const user: UserDO = userDoFactory.build();
+			const user: UserDo = userDoFactory.build();
 			const school: School = schoolFactory.build();
 			const externalTool = externalToolFactory.build();
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
@@ -97,7 +97,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 
 	describe('when an oauth2 tool is given', () => {
 		const setup = () => {
-			const user: UserDO = userDoFactory.build();
+			const user: UserDo = userDoFactory.build();
 			const externalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).build();
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.asOauth2Tool()
@@ -122,7 +122,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 
 	describe('when an lti11 tool is given', () => {
 		const setup = () => {
-			const user: UserDO = userDoFactory.build();
+			const user: UserDo = userDoFactory.build();
 			const externalTool = externalToolFactory.withLti11Config().build();
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
@@ -148,7 +148,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 
 	describe('when custom parameters have types and scopes', () => {
 		const setup = () => {
-			const user: UserDO = userDoFactory.build();
+			const user: UserDo = userDoFactory.build();
 			const params: CustomParameter[] = [
 				customParameterFactory.build({ type: CustomParameterType.STRING, scope: CustomParameterScope.CONTEXT }),
 				customParameterFactory.build({ type: CustomParameterType.BOOLEAN, scope: CustomParameterScope.SCHOOL }),

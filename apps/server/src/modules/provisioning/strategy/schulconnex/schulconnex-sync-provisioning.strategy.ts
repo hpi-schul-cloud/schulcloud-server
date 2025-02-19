@@ -2,7 +2,7 @@ import { Logger } from '@core/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Group, GroupService } from '@modules/group';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -51,7 +51,7 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 			);
 		}
 
-		const user: UserDO = await this.schulconnexUserProvisioningService.provisionExternalUser(
+		const user: UserDo = await this.schulconnexUserProvisioningService.provisionExternalUser(
 			data.externalUser,
 			data.system.systemId,
 			school?.id

@@ -5,7 +5,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -144,11 +144,11 @@ export class UserLoginMigrationUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
 
-		const schoolAdminUsers: UserDO[] = await this.userService.findByEmail(email);
+		const schoolAdminUsers: UserDo[] = await this.userService.findByEmail(email);
 
 		this.checkUserExists(schoolAdminUsers, email);
 
-		const schoolAdminUser: UserDO = schoolAdminUsers[0];
+		const schoolAdminUser: UserDo = schoolAdminUsers[0];
 		// TODO Use new domain object to always have an id
 		if (!schoolAdminUser.id) {
 			throw new NotFoundLoggableException('User', { email });
@@ -197,10 +197,10 @@ export class UserLoginMigrationUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.USER_LOGIN_MIGRATION_FORCE]);
 
-		const users: UserDO[] = await this.userService.findByEmail(email);
+		const users: UserDo[] = await this.userService.findByEmail(email);
 		this.checkUserExists(users, email);
 
-		const userToMigrate: UserDO = users[0];
+		const userToMigrate: UserDo = users[0];
 		// TODO Use new domain object to always have an id
 		if (!userToMigrate.id) {
 			throw new NotFoundLoggableException('User', { email });
@@ -259,7 +259,7 @@ export class UserLoginMigrationUc {
 		}
 	}
 
-	private checkUserExists(users: UserDO[], email: string): void {
+	private checkUserExists(users: UserDo[], email: string): void {
 		if (users.length === 0) {
 			throw new NotFoundLoggableException('User', { email });
 		}

@@ -2,7 +2,7 @@ import { Logger } from '@core/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Group, GroupService } from '@modules/group';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -47,7 +47,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 			school = await this.schulconnexSchoolProvisioningService.provisionExternalSchool(data.externalSchool, systemId);
 		}
 
-		const user: UserDO = await this.schulconnexUserProvisioningService.provisionExternalUser(
+		const user: UserDo = await this.schulconnexUserProvisioningService.provisionExternalUser(
 			data.externalUser,
 			systemId,
 			school?.id
@@ -69,9 +69,9 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 		return new ProvisioningDto({ externalUserId: data.externalUser.externalId });
 	}
 
-	private async provisionGroups(data: OauthDataDto, user: UserDO, school?: LegacySchoolDo): Promise<void> {
+	private async provisionGroups(data: OauthDataDto, user: UserDo, school?: LegacySchoolDo): Promise<void> {
 		if (!user?.id) {
-			throw new NotFoundLoggableException(UserDO.name, { externalId: data.externalUser.externalId });
+			throw new NotFoundLoggableException(UserDo.name, { externalId: data.externalUser.externalId });
 		}
 		const userId: string = user.id;
 		const { systemId } = data.system;

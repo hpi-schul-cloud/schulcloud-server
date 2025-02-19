@@ -2,7 +2,7 @@ import { Class } from '@modules/class/domain';
 import { Course } from '@modules/learnroom/domain';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { RoleName } from '@shared/domain/interface';
 import { Group } from '../../domain';
 import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
@@ -37,7 +37,7 @@ export class GroupUcMapper {
 		return mapped;
 	}
 
-	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDO[], schoolYear?: SchoolYearEntity): ClassInfoDto {
+	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDo[], schoolYear?: SchoolYearEntity): ClassInfoDto {
 		const name = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 		const isUpgradable = clazz.gradeLevel !== 13 && !clazz.successor;
 
@@ -46,7 +46,7 @@ export class GroupUcMapper {
 			type: ClassRootType.CLASS,
 			name,
 			externalSourceName: clazz.source,
-			teacherNames: teachers.map((user: UserDO) => user.lastName),
+			teacherNames: teachers.map((user: UserDo) => user.lastName),
 			schoolYear: schoolYear?.name,
 			isUpgradable,
 			studentCount: clazz.userIds ? clazz.userIds.length : 0,

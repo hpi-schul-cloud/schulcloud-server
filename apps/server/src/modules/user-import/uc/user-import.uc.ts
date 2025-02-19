@@ -16,7 +16,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { isError } from 'lodash';
 
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User, UserRepo } from '@modules/user/repo';
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
@@ -410,7 +410,7 @@ export class UserImportUc {
 			return;
 		}
 
-		const user: UserDO | null = await this.userService.findByExternalId(importUser.externalId, importUser.system.id);
+		const user: UserDo | null = await this.userService.findByExternalId(importUser.externalId, importUser.system.id);
 
 		if (!user) {
 			await this.userMigrationService.migrateUser(importUser.user.id, importUser.externalId, importUser.system.id);

@@ -19,7 +19,7 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -111,7 +111,7 @@ describe('FeathersRosterService', () => {
 		describe('when pseudonym is given', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 				const iFrameSubject = 'iFrameSubject';
@@ -183,7 +183,7 @@ describe('FeathersRosterService', () => {
 				const func = service.getUsersMetadata(pseudonym.pseudonym);
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(UserDO.name, { pseudonym: pseudonym.pseudonym })
+					new NotFoundLoggableException(UserDo.name, { pseudonym: pseudonym.pseudonym })
 				);
 			});
 		});
@@ -191,7 +191,7 @@ describe('FeathersRosterService', () => {
 		describe('when user does not exists', () => {
 			const setup = () => {
 				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 
@@ -217,7 +217,7 @@ describe('FeathersRosterService', () => {
 	describe('getUserGroups', () => {
 		describe('when the tool is active in a course', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
@@ -291,7 +291,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
@@ -414,14 +414,14 @@ describe('FeathersRosterService', () => {
 				const func = service.getUserGroups(pseudonym.pseudonym, 'externalToolId');
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(UserDO.name, { pseudonym: pseudonym.pseudonym })
+					new NotFoundLoggableException(UserDo.name, { pseudonym: pseudonym.pseudonym })
 				);
 			});
 		});
 
 		describe('when the external tool does not exist', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
@@ -446,7 +446,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when the external tool is deactivated', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
@@ -477,7 +477,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when the school external tool does not exist or is deactivated', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build();
 				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
@@ -519,28 +519,28 @@ describe('FeathersRosterService', () => {
 				});
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
-				const student1: UserDO = userDoFactory.build({ id: studentUser.id });
+				const student1: UserDo = userDoFactory.build({ id: studentUser.id });
 				const student1Pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: student1.id,
 					toolId: externalTool.id,
 				});
 
 				const { studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-				const student2: UserDO = userDoFactory.build({ id: studentUser2.id });
+				const student2: UserDo = userDoFactory.build({ id: studentUser2.id });
 				const student2Pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: student2.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const teacher: UserDO = userDoFactory.build({ id: teacherUser.id });
+				const teacher: UserDo = userDoFactory.build({ id: teacherUser.id });
 				const teacherPseudonym: Pseudonym = pseudonymFactory.build({
 					userId: teacher.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser: substitutionTeacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const substitutionTeacher: UserDO = userDoFactory.build({ id: substitutionTeacherUser.id });
+				const substitutionTeacher: UserDo = userDoFactory.build({ id: substitutionTeacherUser.id });
 				const substitutionTeacherPseudonym: Pseudonym = pseudonymFactory.build({
 					userId: substitutionTeacher.id,
 					toolId: externalTool.id,
@@ -709,28 +709,28 @@ describe('FeathersRosterService', () => {
 				});
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
-				const student1: UserDO = userDoFactory.build({ id: studentUser.id });
+				const student1: UserDo = userDoFactory.build({ id: studentUser.id });
 				const student1Pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: student1.id,
 					toolId: externalTool.id,
 				});
 
 				const { studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-				const student2: UserDO = userDoFactory.build({ id: studentUser2.id });
+				const student2: UserDo = userDoFactory.build({ id: studentUser2.id });
 				const student2Pseudonym: Pseudonym = pseudonymFactory.build({
 					userId: student2.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const teacher: UserDO = userDoFactory.build({ id: teacherUser.id });
+				const teacher: UserDo = userDoFactory.build({ id: teacherUser.id });
 				const teacherPseudonym: Pseudonym = pseudonymFactory.build({
 					userId: teacher.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser: substitutionTeacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const substitutionTeacher: UserDO = userDoFactory.build({ id: substitutionTeacherUser.id });
+				const substitutionTeacher: UserDo = userDoFactory.build({ id: substitutionTeacherUser.id });
 				const substitutionTeacherPseudonym: Pseudonym = pseudonymFactory.build({
 					userId: substitutionTeacher.id,
 					toolId: externalTool.id,

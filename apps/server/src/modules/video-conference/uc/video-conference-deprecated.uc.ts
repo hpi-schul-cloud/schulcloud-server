@@ -7,7 +7,7 @@ import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -143,7 +143,7 @@ export class VideoConferenceDeprecatedUc {
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, object);
 
-		const resolvedUser: UserDO = await this.userService.findById(userId);
+		const resolvedUser: UserDo = await this.userService.findById(userId);
 		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
 			fullName: VideoConferenceDeprecatedUc.sanitizeString(`${resolvedUser.firstName} ${resolvedUser.lastName}`),
 			meetingID: refId,

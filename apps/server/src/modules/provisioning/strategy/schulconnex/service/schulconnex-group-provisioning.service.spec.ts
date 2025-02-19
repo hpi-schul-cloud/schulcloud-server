@@ -15,7 +15,7 @@ import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -391,10 +391,10 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 		describe('when provisioning a new group with other group members', () => {
 			const setup = () => {
 				const school = legacySchoolDoFactory.build({ id: 'schoolId' });
-				const student: UserDO = userDoFactory
+				const student: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
-				const teacher: UserDO = userDoFactory
+				const teacher: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.TEACHER }])
 					.build({ id: new ObjectId().toHexString(), externalId: 'teacherExternalId' });
 				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
@@ -511,12 +511,12 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 		describe('when provisioning an existing group without other group members', () => {
 			const setup = () => {
-				const student: UserDO = userDoFactory
+				const student: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
 				const teacherId = new ObjectId().toHexString();
 				const teacherRoleId = new ObjectId().toHexString();
-				const teacher: UserDO = userDoFactory
+				const teacher: UserDo = userDoFactory
 					.withRoles([{ id: teacherRoleId, name: RoleName.TEACHER }])
 					.build({ id: teacherId, externalId: 'teacherExternalId' });
 				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
@@ -580,12 +580,12 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 		describe('when provisioning an existing group with empty other group members', () => {
 			const setup = () => {
-				const student: UserDO = userDoFactory
+				const student: UserDo = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
 				const teacherId = new ObjectId().toHexString();
 				const teacherRoleId = new ObjectId().toHexString();
-				const teacher: UserDO = userDoFactory
+				const teacher: UserDo = userDoFactory
 					.withRoles([{ id: teacherRoleId, name: RoleName.TEACHER }])
 					.build({ id: teacherId, externalId: 'teacherExternalId' });
 				const studentRole: RoleDto = roleDtoFactory.build({ name: RoleName.STUDENT });
@@ -650,7 +650,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				const systemId = 'systemId';
 				const externalUserId = 'externalUserId';
 				const role: RoleReference = roleFactory.buildWithId();
-				const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+				const user: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
 
 				const existingGroups: Group[] = groupFactory.buildList(2, {
 					users: [{ userId: user.id as string, roleId: role.id }],
@@ -708,7 +708,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const systemId = 'systemId';
 					const externalUserId = 'externalUserId';
 					const role: RoleReference = roleFactory.buildWithId();
-					const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+					const user: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
 					const firstExistingGroup: Group = groupFactory.build({
 						users: [{ userId: user.id as string, roleId: role.id }],
 						externalSource: new ExternalSource({
@@ -778,7 +778,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const systemId = 'systemId';
 					const externalUserId = 'externalUserId';
 					const role: RoleReference = roleFactory.buildWithId();
-					const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+					const user: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
 					const course: Course = courseFactory.build();
 
 					const firstExistingGroup: Group = groupFactory.build({
@@ -840,8 +840,8 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const externalUserId = 'externalUserId';
 					const anotherExternalUserId = 'anotherExternalUserId';
 					const role: RoleReference = roleFactory.buildWithId();
-					const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
-					const anotherUser: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: anotherExternalUserId });
+					const user: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+					const anotherUser: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: anotherExternalUserId });
 
 					const firstExistingGroup: Group = groupFactory.build({
 						users: [

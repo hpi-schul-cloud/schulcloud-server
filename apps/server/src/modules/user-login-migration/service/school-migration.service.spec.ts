@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
@@ -201,7 +201,7 @@ describe(SchoolMigrationService.name, () => {
 					externalId: sourceExternalId,
 				});
 
-				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+				const user: UserDo = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
 
 				userService.findById.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -237,7 +237,7 @@ describe(SchoolMigrationService.name, () => {
 					previousExternalId: sourceExternalId,
 				});
 
-				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+				const user: UserDo = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
 
 				userService.findById.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -273,7 +273,7 @@ describe(SchoolMigrationService.name, () => {
 					externalId: sourceExternalId,
 				});
 
-				const user: UserDO = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+				const user: UserDo = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
 
 				userService.findById.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -311,7 +311,7 @@ describe(SchoolMigrationService.name, () => {
 					finishedAt: new Date('2023-05-03'),
 				});
 
-				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
+				const users: UserDo[] = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
 
 				userService.findUsers.mockResolvedValue(new Page(users, users.length));
 
@@ -327,9 +327,9 @@ describe(SchoolMigrationService.name, () => {
 				await service.markUnmigratedUsersAsOutdated(userLoginMigration);
 
 				expect(userService.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: closedAt }),
+					expect.objectContaining<Partial<UserDo>>({ outdatedSince: closedAt }),
+					expect.objectContaining<Partial<UserDo>>({ outdatedSince: closedAt }),
+					expect.objectContaining<Partial<UserDo>>({ outdatedSince: closedAt }),
 				]);
 			});
 		});
@@ -346,7 +346,7 @@ describe(SchoolMigrationService.name, () => {
 					finishedAt: new Date('2023-05-03'),
 				});
 
-				const users: UserDO[] = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
+				const users: UserDo[] = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
 
 				userService.findUsers.mockResolvedValue(new Page(users, users.length));
 
@@ -361,9 +361,9 @@ describe(SchoolMigrationService.name, () => {
 				await service.unmarkOutdatedUsers(userLoginMigration);
 
 				expect(userService.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
-					expect.objectContaining<Partial<UserDO>>({ outdatedSince: undefined }),
+					expect.objectContaining<Partial<UserDo>>({ outdatedSince: undefined }),
+					expect.objectContaining<Partial<UserDo>>({ outdatedSince: undefined }),
+					expect.objectContaining<Partial<UserDo>>({ outdatedSince: undefined }),
 				]);
 			});
 		});

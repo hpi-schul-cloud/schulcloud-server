@@ -7,7 +7,7 @@ import {
 	OauthSessionTokenService,
 	OAuthTokenDto,
 } from '@modules/oauth';
-import type { UserDO } from '@modules/user/domain';
+import type { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
@@ -35,7 +35,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
-		const user: UserDO | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
+		const user: UserDo | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (!user || !user.id) {
 			throw new SchoolInMigrationLoggableException();

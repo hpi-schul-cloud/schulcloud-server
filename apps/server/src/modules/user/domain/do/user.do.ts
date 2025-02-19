@@ -15,7 +15,7 @@ export class SecondarySchoolReference {
 	}
 }
 
-export class UserDO extends BaseDO {
+export class UserDo extends BaseDO {
 	createdAt?: Date;
 
 	updatedAt?: Date;
@@ -68,7 +68,7 @@ export class UserDO extends BaseDO {
 
 	sourceOptions?: UserSourceOptions;
 
-	constructor(domainObject: UserDO) {
+	constructor(domainObject: UserDo) {
 		super(domainObject.id);
 
 		this.createdAt = domainObject.createdAt;

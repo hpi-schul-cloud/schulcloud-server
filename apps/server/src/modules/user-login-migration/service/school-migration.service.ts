@@ -2,7 +2,7 @@ import { LegacyLogger, Logger } from '@core/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
@@ -66,7 +66,7 @@ export class SchoolMigrationService {
 		externalId: string,
 		officialSchoolNumber: string
 	): Promise<LegacySchoolDo | null> {
-		const user: UserDO = await this.userService.findById(userId);
+		const user: UserDo = await this.userService.findById(userId);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(user.schoolId);
 
 		this.checkOfficialSchoolNumbersMatch(school, officialSchoolNumber);
@@ -111,13 +111,13 @@ export class SchoolMigrationService {
 	public async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 
-		const notMigratedUsers: Page<UserDO> = await this.userService.findUsers({
+		const notMigratedUsers: Page<UserDo> = await this.userService.findUsers({
 			schoolId: userLoginMigration.schoolId,
 			isOutdated: false,
 			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
 		});
 
-		notMigratedUsers.data.forEach((user: UserDO) => {
+		notMigratedUsers.data.forEach((user: UserDo) => {
 			user.outdatedSince = userLoginMigration.closedAt;
 		});
 
@@ -134,12 +134,12 @@ export class SchoolMigrationService {
 	public async unmarkOutdatedUsers(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		const startTime: number = performance.now();
 
-		const migratedUsers: Page<UserDO> = await this.userService.findUsers({
+		const migratedUsers: Page<UserDo> = await this.userService.findUsers({
 			schoolId: userLoginMigration.schoolId,
 			outdatedSince: userLoginMigration.closedAt,
 		});
 
-		migratedUsers.data.forEach((user: UserDO) => {
+		migratedUsers.data.forEach((user: UserDo) => {
 			user.outdatedSince = undefined;
 		});
 
@@ -158,7 +158,7 @@ export class SchoolMigrationService {
 			return false;
 		}
 
-		const users: Page<UserDO> = await this.userService.findUsers({
+		const users: Page<UserDo> = await this.userService.findUsers({
 			lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
 			lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
 		});

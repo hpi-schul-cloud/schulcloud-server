@@ -23,7 +23,7 @@ import { schoolFactory, schoolYearDoFactory, schoolYearEntityFactory } from '@mo
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -172,12 +172,12 @@ describe('ClassGroupUc', () => {
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const teacherUserDo: UserDO = userDoFactory.buildWithId({
+				const teacherUserDo: UserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDO = userDoFactory.buildWithId({
+				const studentUserDo: UserDo = userDoFactory.buildWithId({
 					id: studentUser.id,
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
@@ -234,7 +234,7 @@ describe('ClassGroupUc', () => {
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
 				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.findById.mockResolvedValue(system);
-				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findById.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -245,7 +245,7 @@ describe('ClassGroupUc', () => {
 
 					throw new Error();
 				});
-				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -571,17 +571,17 @@ describe('ClassGroupUc', () => {
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const adminUserDo: UserDO = userDoFactory.buildWithId({
+				const adminUserDo: UserDo = userDoFactory.buildWithId({
 					id: adminUser.id,
 					lastName: adminUser.lastName,
 					roles: [{ id: adminUser.roles[0].id, name: adminUser.roles[0].name }],
 				});
-				const teacherUserDo: UserDO = userDoFactory.buildWithId({
+				const teacherUserDo: UserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDO = userDoFactory.buildWithId({
+				const studentUserDo: UserDo = userDoFactory.buildWithId({
 					id: studentUser.id,
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
@@ -627,7 +627,7 @@ describe('ClassGroupUc', () => {
 				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.findById.mockResolvedValue(system);
 
-				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findById.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -642,7 +642,7 @@ describe('ClassGroupUc', () => {
 
 					throw new Error();
 				});
-				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -877,17 +877,17 @@ describe('ClassGroupUc', () => {
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const adminUserDo: UserDO = userDoFactory.buildWithId({
+				const adminUserDo: UserDo = userDoFactory.buildWithId({
 					id: adminUser.id,
 					lastName: adminUser.lastName,
 					roles: [{ id: adminUser.roles[0].id, name: adminUser.roles[0].name }],
 				});
-				const teacherUserDo: UserDO = userDoFactory.buildWithId({
+				const teacherUserDo: UserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDO = userDoFactory.buildWithId({
+				const studentUserDo: UserDo = userDoFactory.buildWithId({
 					id: studentUser.id,
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
@@ -933,7 +933,7 @@ describe('ClassGroupUc', () => {
 				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.findById.mockResolvedValue(system);
 
-				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findById.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -948,7 +948,7 @@ describe('ClassGroupUc', () => {
 
 					throw new Error();
 				});
-				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -1030,7 +1030,7 @@ describe('ClassGroupUc', () => {
 					name: teacherUser.roles[0].name,
 				});
 
-				const teacherUserDo: UserDO = userDoFactory.buildWithId({
+				const teacherUserDo: UserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
@@ -1062,14 +1062,14 @@ describe('ClassGroupUc', () => {
 				groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group], 1));
 				systemService.findById.mockResolvedValue(system);
 
-				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+				userService.findById.mockImplementation((userId: string): Promise<UserDo> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
 
 					throw new Error();
 				});
-				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO | null> => {
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDo | null> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}

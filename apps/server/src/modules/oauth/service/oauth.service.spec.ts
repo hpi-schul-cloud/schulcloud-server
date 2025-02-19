@@ -15,7 +15,7 @@ import { SystemService } from '@modules/system/service';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
-import { UserDO } from '@modules/user/domain';
+import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -368,7 +368,7 @@ describe('OAuthService', () => {
 				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
 
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
@@ -466,7 +466,7 @@ describe('OAuthService', () => {
 				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
 
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
@@ -527,7 +527,7 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
@@ -595,7 +595,7 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
@@ -787,7 +787,7 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const user: UserDO = userDoFactory.build({
+				const user: UserDo = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
