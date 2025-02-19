@@ -4,10 +4,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/entity';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { StorageProviderEntity, UserLoginMigrationEntity } from '@shared/domain/entity';
+import { UserLoginMigrationEntity, StorageProviderEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BaseDORepo } from '../base.do.repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
+import { LegacySchoolDo } from '../domain';
 
 /**
  * @deprecated because it uses the deprecated LegacySchoolDo.
