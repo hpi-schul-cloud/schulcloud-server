@@ -10,3 +10,6 @@ export { TspSyncedUsersLoggable } from './tsp-synced-users.loggable';
 export { TspSyncingUsersLoggable } from './tsp-syncing-users.loggable';
 export { TspSystemNotFoundLoggableException } from './tsp-system-not-found.loggable-exception';
 export { TspUsersMigratedLoggable } from './tsp-users-migrated.loggable';
+export { TspClassSyncSummaryLoggable } from './tsp-class-sync-summary.loggable';
+export { TspClassSyncStartLoggable } from './tsp-class-sync-start.loggable';
+export { TspClassSyncBatchLoggable } from './tsp-class-sync-batch.loggable';
