@@ -2,6 +2,7 @@ import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemEntityFactory, systemOauthConfigEntityFactory, systemOauthConfigFactory } from '@modules/system/testing';
@@ -11,7 +12,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -42,27 +42,27 @@ describe('Logout Controller (api)', () => {
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
 
+	beforeEach(async () => {
+		await cleanupCollections(em);
+	});
+
+	beforeAll(async () => {
+		const moduleFixture: TestingModule = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		}).compile();
+
+		app = moduleFixture.createNestApplication();
+		await app.init();
+		em = app.get(EntityManager);
+		cacheManager = app.get(CACHE_MANAGER);
+		testApiClient = new TestApiClient(app, baseRouteName);
+	});
+
 	afterAll(async () => {
 		await app.close();
 	});
 
 	describe('logout', () => {
-		beforeAll(async () => {
-			const moduleFixture: TestingModule = await Test.createTestingModule({
-				imports: [ServerTestModule],
-			}).compile();
-
-			app = moduleFixture.createNestApplication();
-			await app.init();
-			em = app.get(EntityManager);
-			cacheManager = app.get(CACHE_MANAGER);
-			testApiClient = new TestApiClient(app, baseRouteName);
-		});
-
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		describe('when a valid jwt is provided', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
@@ -164,23 +164,7 @@ describe('Logout Controller (api)', () => {
 			axiosMock = new MockAdapter(axios);
 		};
 
-		beforeEach(async () => {
-			await cleanupCollections(em);
-		});
-
 		describe('when the user is not logged in', () => {
-			beforeAll(async () => {
-				const moduleFixture: TestingModule = await Test.createTestingModule({
-					imports: [ServerTestModule],
-				}).compile();
-
-				app = moduleFixture.createNestApplication();
-				await app.init();
-				em = app.get(EntityManager);
-				cacheManager = app.get(CACHE_MANAGER);
-				testApiClient = new TestApiClient(app, baseRouteName);
-			});
-
 			it('should return unauthorized', async () => {
 				const response: Response = await testApiClient.post('/external');
 
@@ -229,13 +213,13 @@ describe('Logout Controller (api)', () => {
 		});
 
 		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is true', () => {
-			describe('when the external system does not return an error', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks();
-				});
+			beforeAll(async () => {
+				const config: ServerConfig = serverConfig();
+				config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
+				await setupTestWithMocks();
+			});
 
+			describe('when the external system does not return an error', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const system = systemEntityFactory.withOauthConfig().build();
@@ -273,12 +257,6 @@ describe('Logout Controller (api)', () => {
 			});
 
 			describe('when the external system returns an error', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks();
-				});
-
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const system = systemEntityFactory.withOauthConfig().build();
@@ -316,12 +294,6 @@ describe('Logout Controller (api)', () => {
 			});
 
 			describe('when no oauth config can be found for the system', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks();
-				});
-
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const system = systemEntityFactory.build();
@@ -360,12 +332,6 @@ describe('Logout Controller (api)', () => {
 			});
 
 			describe('when the oauth config has no end session endpoint', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks();
-				});
-
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
@@ -404,15 +370,9 @@ describe('Logout Controller (api)', () => {
 			});
 
 			describe('when the session token of the user is deleted or could not be found', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks();
-				});
-
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const oauthConfig = systemOauthConfigFactory.build();
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 
 					await em.persistAndFlush([studentAccount, studentUser, system]);
@@ -444,15 +404,9 @@ describe('Logout Controller (api)', () => {
 			});
 
 			describe('when the session token of the user is expired', () => {
-				beforeAll(async () => {
-					const config: ServerConfig = serverConfig();
-					config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
-					await setupTestWithMocks();
-				});
-
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const oauthConfig = systemOauthConfigFactory.build({ endSessionEndpoint: undefined });
+					const oauthConfig = systemOauthConfigFactory.build();
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 					const token = oauthSessionTokenEntityFactory.build({ expiresAt: new Date(Date.now() - 5000) });
 

@@ -4,6 +4,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolEntity } from '@modules/school/repo';
+import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
@@ -15,14 +17,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted, SchoolFeature } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
@@ -166,7 +166,7 @@ describe('[ImportUserModule]', () => {
 				school && school.systems.isInitialized()
 					? school.systems.getItems().map((system: SystemEntity) => system.id)
 					: [];
-			const federalState = school ? school.federalState : federalStateFactory.build();
+			const federalState = school ? school.federalState : federalStateEntityFactory.build();
 
 			return new LegacySchoolDo({
 				id,
