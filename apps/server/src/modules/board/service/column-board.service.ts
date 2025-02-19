@@ -40,8 +40,7 @@ export class ColumnBoardService {
 		await this.boardNodeService.updateVisibility(columnBoard, visibility);
 	}
 
-	// called from feathers
-	// TODO remove when not needed anymore
+	// @deprecated This is called from feathers. Should be removed when not needed anymore
 	public async deleteByCourseId(courseId: EntityId): Promise<void> {
 		await this.deleteByExternalReference({
 			type: BoardExternalReferenceType.Course,
