@@ -40,21 +40,13 @@ class EtherpadClient {
 		};
 	}
 
-	createSettings(
-		{
-			method = 'POST',
-			endpoint,
-			formDef = {
-				apikey: Configuration.get('ETHERPAD__API_KEY'),
-			},
-		},
-		params = {}
-	) {
-		const form = { ...formDef, ...params };
+	createOptions(endpoint, params = {}) {
+		const apikey = Configuration.get('ETHERPAD__API_KEY');
+		const data = { apikey, ...params };
 		return {
-			method,
+			method: 'POST',
 			url: `${this.uri()}/${endpoint}`,
-			data: form,
+			data,
 		};
 	}
 
@@ -71,14 +63,8 @@ class EtherpadClient {
 	}
 
 	createOrGetAuthor(params) {
-		return axios(
-			this.createSettings(
-				{
-					endpoint: 'createAuthorIfNotExistsFor',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createAuthorIfNotExistsFor', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createOrGetAuthor, err);
@@ -86,14 +72,8 @@ class EtherpadClient {
 	}
 
 	createOrGetGroup(params) {
-		return axios(
-			this.createSettings(
-				{
-					endpoint: 'createGroupIfNotExistsFor',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createGroupIfNotExistsFor', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createOrGetGroup, err);
@@ -101,14 +81,8 @@ class EtherpadClient {
 	}
 
 	getActiveSessions(params) {
-		return axios(
-			this.createSettings(
-				{
-					endpoint: 'listSessionsOfAuthor',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('listSessionsOfAuthor', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.getActiveSessions, err);
@@ -116,14 +90,8 @@ class EtherpadClient {
 	}
 
 	createSession(params) {
-		return axios(
-			this.createSettings(
-				{
-					endpoint: 'createSession',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createSession', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				throw new BadRequest(this.err.createSession, err);
@@ -137,14 +105,8 @@ class EtherpadClient {
 				sourceID: params.oldPadId,
 				destinationID: newPadId,
 			};
-			return axios(
-				this.createSettings(
-					{
-						endpoint: 'copyPad',
-					},
-					copyParams
-				)
-			)
+			const options = this.createOptions('copyPad', copyParams);
+			return axios(options)
 				.then((res) => {
 					const response = this.handleEtherpadResponse(res);
 					response.data = {
@@ -156,14 +118,8 @@ class EtherpadClient {
 					throw new BadRequest(this.err.copyOldPadToGroupPad, err);
 				});
 		}
-		return axios(
-			this.createSettings(
-				{
-					endpoint: 'createGroupPad',
-				},
-				params
-			)
-		)
+		const options = this.createOptions('createGroupPad', params);
+		return axios(options)
 			.then((res) => this.handleEtherpadResponse(res))
 			.catch((err) => {
 				// pad is already there, just return the constructed pad path
