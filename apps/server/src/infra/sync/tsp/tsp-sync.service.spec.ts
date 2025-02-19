@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FederalStateService } from '@modules/legacy-school';
 import { School, SchoolService } from '@modules/school';
-import { FileStorageType, SchoolProps, SchoolYearService } from '@modules/school/domain';
+import { FederalStateService, FileStorageType, SchoolProps, SchoolYearService } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
 import { federalStateEntityFactory, schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemService, SystemType } from '@modules/system';
