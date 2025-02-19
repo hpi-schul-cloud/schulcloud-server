@@ -1,6 +1,6 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 
 export interface FederalStateProperties {
 	name: string;

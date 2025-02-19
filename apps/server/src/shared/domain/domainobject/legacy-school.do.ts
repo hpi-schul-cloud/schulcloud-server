@@ -1,5 +1,5 @@
 import { FileStorageType } from '@modules/school/domain';
-import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
+import { FederalStateEntity, SchoolYearEntity } from '@modules/school/repo';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { BaseDO } from './base.do';
 
