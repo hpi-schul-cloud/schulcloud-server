@@ -11,7 +11,7 @@ import {
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../../common/enum';
-import { ExternalToolEntity } from '../../entity';
+import { ExternalToolEntity } from '../../repo';
 import { ExternalToolCreateParams, ExternalToolResponse } from '../dto';
 
 describe('AdminApiExternalTool (API)', () => {

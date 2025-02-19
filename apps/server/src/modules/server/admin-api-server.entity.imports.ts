@@ -9,10 +9,11 @@ import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
-import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
+
 import {
 	Course,
 	CourseGroup,
