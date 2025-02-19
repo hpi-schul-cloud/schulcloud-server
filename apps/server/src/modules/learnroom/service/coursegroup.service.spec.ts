@@ -1,6 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { CourseGroupRepo } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -12,7 +13,6 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, User } from '@shared/domain/entity';
-import { CourseGroupRepo } from '@shared/repo/coursegroup';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';

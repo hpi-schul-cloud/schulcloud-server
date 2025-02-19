@@ -1,5 +1,6 @@
 import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { CourseGroupRepo } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -16,7 +17,6 @@ import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { CourseGroup } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
-import { CourseGroupRepo } from '@shared/repo/coursegroup';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

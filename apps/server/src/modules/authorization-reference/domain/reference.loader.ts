@@ -4,14 +4,13 @@ import {
 	AuthorizationInjectionService,
 	AuthorizationLoaderService,
 } from '@modules/authorization';
-import { CourseRepo } from '@modules/course/repo';
+import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
 import { InstanceService } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { CourseGroupRepo } from '@shared/repo/coursegroup';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
