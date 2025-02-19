@@ -1,4 +1,4 @@
-const rp = require('request-promise-native');
+const axios = require('axios');
 const rpErrors = require('request-promise-core/errors');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
@@ -47,22 +47,19 @@ class EtherpadClient {
 			formDef = {
 				apikey: Configuration.get('ETHERPAD__API_KEY'),
 			},
-			body,
 		},
 		params = {}
 	) {
 		const form = { ...formDef, ...params };
 		return {
 			method,
-			uri: `${this.uri()}/${endpoint}`,
-			form,
-			body,
-			json: false,
+			url: `${this.uri()}/${endpoint}`,
+			data: form,
 		};
 	}
 
 	handleEtherpadResponse(res) {
-		const responseJSON = JSON.parse(res);
+		const responseJSON = res.data;
 		switch (responseJSON.code) {
 			case 0:
 				return responseJSON;
@@ -74,7 +71,7 @@ class EtherpadClient {
 	}
 
 	createOrGetAuthor(params) {
-		return rp(
+		return axios(
 			this.createSettings(
 				{
 					endpoint: 'createAuthorIfNotExistsFor',
@@ -89,7 +86,7 @@ class EtherpadClient {
 	}
 
 	createOrGetGroup(params) {
-		return rp(
+		return axios(
 			this.createSettings(
 				{
 					endpoint: 'createGroupIfNotExistsFor',
@@ -104,7 +101,7 @@ class EtherpadClient {
 	}
 
 	getActiveSessions(params) {
-		return rp(
+		return axios(
 			this.createSettings(
 				{
 					endpoint: 'listSessionsOfAuthor',
@@ -119,7 +116,7 @@ class EtherpadClient {
 	}
 
 	createSession(params) {
-		return rp(
+		return axios(
 			this.createSettings(
 				{
 					endpoint: 'createSession',
@@ -140,7 +137,7 @@ class EtherpadClient {
 				sourceID: params.oldPadId,
 				destinationID: newPadId,
 			};
-			return rp(
+			return axios(
 				this.createSettings(
 					{
 						endpoint: 'copyPad',
@@ -159,7 +156,7 @@ class EtherpadClient {
 					throw new BadRequest(this.err.copyOldPadToGroupPad, err);
 				});
 		}
-		return rp(
+		return axios(
 			this.createSettings(
 				{
 					endpoint: 'createGroupPad',
