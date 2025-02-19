@@ -17,7 +17,7 @@ import { ExternalToolService } from '../../external-tool';
 import { CommonToolValidationService } from '../../common/service';
 import { externalToolFactory } from '../../external-tool/testing';
 
-describe.only('SchoolExternalToolUc', () => {
+describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
 	let uc: SchoolExternalToolUc;
 
