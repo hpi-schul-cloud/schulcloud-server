@@ -11,8 +11,8 @@ export class MediaSourceUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	public async getMediaSourceList(currentUserId: EntityId): Promise<MediaSource[]> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
+	public async getMediaSourceList(userId: EntityId): Promise<MediaSource[]> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SOURCE_ADMIN]);
 

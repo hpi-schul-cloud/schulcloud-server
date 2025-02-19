@@ -274,18 +274,16 @@ export class ExternalToolUc {
 		return fileName;
 	}
 
-	public async getMetadataForExternalToolConfiguration(
+	public async getMetadataForExternalToolFromMediaSource(
 		userId: EntityId,
 		mediumId: string,
-		mediaSourceId: string | undefined,
 		mediaSourceFormat: MediaSourceDataFormat | undefined
 	): Promise<MediaMetadataDto> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		const mediaMetadata: MediaMetadataDto = await this.externalToolService.getMetadataForExternalToolConfiguration(
+		const mediaMetadata: MediaMetadataDto = await this.externalToolService.getMediaMetadataForExternalTool(
 			mediumId,
-			mediaSourceId,
 			mediaSourceFormat
 		);
 

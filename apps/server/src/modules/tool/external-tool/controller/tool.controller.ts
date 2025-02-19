@@ -261,17 +261,16 @@ export class ToolController {
 		return streamableFile;
 	}
 
-	@Get(':mediumId/media-source/:mediaSourceId/metadata')
+	@Get(':externalId/medium/:mediumId/media-source/:mediaSourceId/metadata')
 	@ApiOperation({ summary: 'Returns metadata from media source for configuration of a medium' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	async getMetadataForExternalToolFromMediaSource(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolMediumParams
 	): Promise<ExternalToolMediumMetadataResponse> {
-		const externalToolMetadata = await this.externalToolUc.getMetadataForExternalToolConfiguration(
+		const externalToolMetadata = await this.externalToolUc.getMetadataForExternalToolFromMediaSource(
 			currentUser.userId,
 			params.mediumId,
-			params.mediaSourceId,
 			params.format
 		);
 

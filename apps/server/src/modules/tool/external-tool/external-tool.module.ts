@@ -4,8 +4,8 @@ import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { forwardRef, Module } from '@nestjs/common';
+import { MediaSourceAdapterModule } from '@modules/media-source-adapter';
 import { InstanceModule } from '../../instance';
-import { MediaSourceModule } from '../../media-source/media-source.module';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ExternalToolRule } from './authorization/external-tool.rule';
@@ -31,7 +31,7 @@ import {
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
-		MediaSourceModule,
+		MediaSourceAdapterModule,
 	],
 	providers: [
 		ExternalToolService,

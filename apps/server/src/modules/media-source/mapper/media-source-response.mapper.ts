@@ -6,6 +6,7 @@ export class MediaSourceResponseMapper {
 		const response: MediaSourceResponse = new MediaSourceResponse({
 			id: mediaSource.id,
 			name: mediaSource.name,
+			sourceId: mediaSource.sourceId,
 			format: mediaSource.format,
 		});
 
