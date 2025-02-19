@@ -6,11 +6,11 @@ import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import {
 	SchulconnexGroupProvisioningMessage,

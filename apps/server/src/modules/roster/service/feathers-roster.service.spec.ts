@@ -20,6 +20,7 @@ import { SchoolExternalToolService } from '@modules/tool/school-external-tool/se
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserService } from '@modules/user';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -30,7 +31,6 @@ import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { RosterConfig } from '../roster.config';
 import { FeathersRosterService } from './feathers-roster.service';
 

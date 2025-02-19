@@ -8,6 +8,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { UserDO } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
+import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -20,7 +21,6 @@ import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,

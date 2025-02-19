@@ -3,10 +3,10 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserService } from '@modules/user';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { MigrationCheckService } from './migration-check.service';
 
 describe('MigrationCheckService', () => {

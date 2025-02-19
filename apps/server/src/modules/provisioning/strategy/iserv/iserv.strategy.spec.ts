@@ -8,10 +8,10 @@ import {
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {

@@ -15,7 +15,7 @@ import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { User, UserRepo } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -25,7 +25,6 @@ import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {

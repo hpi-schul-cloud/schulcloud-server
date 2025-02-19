@@ -1,12 +1,11 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserDO } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ValidationError } from '@shared/common/error';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ObjectId } from 'bson';
 import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';

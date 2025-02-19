@@ -3,11 +3,11 @@ import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OauthSessionToken, OauthSessionTokenService, OAuthTokenDto } from '@modules/oauth';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { OauthCurrentUser } from '../interface';
 import {
 	AccountNotFoundLoggableException,

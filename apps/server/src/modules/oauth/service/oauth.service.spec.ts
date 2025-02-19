@@ -16,9 +16,9 @@ import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import { OAuthTokenDto } from '../interface';

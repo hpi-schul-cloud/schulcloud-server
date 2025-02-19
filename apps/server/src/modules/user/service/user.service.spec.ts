@@ -15,7 +15,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
-import { userFactory } from '@modules/user/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -26,7 +26,6 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { UserDO } from '../domain';
 import { User, UserDORepo, UserRepo } from '../repo';
 import { UserDto } from '../uc/dto/user.dto';

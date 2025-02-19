@@ -8,10 +8,10 @@ import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ToolConfig } from '../..';
 import {
 	ContextExternalToolConfigurationStatus,

@@ -4,11 +4,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { UserDO } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,
