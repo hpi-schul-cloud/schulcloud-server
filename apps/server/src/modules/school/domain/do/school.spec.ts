@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LanguageType } from '@shared/domain/interface';
-import { SchoolPurpose } from '@shared/domain/types';
 import { federalStateDoFactory, schoolFactory } from '../../testing';
-import { InstanceFeature } from '../type';
+import { InstanceFeature, SchoolPurpose } from '../type';
 
 describe('School', () => {
 	beforeAll(() => {
