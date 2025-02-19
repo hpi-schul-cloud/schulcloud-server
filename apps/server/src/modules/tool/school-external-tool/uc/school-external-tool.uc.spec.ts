@@ -8,6 +8,7 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
+import { MikroORM } from '@mikro-orm/core';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalToolService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
@@ -20,6 +21,7 @@ import { externalToolFactory } from '../../external-tool/testing';
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
 	let uc: SchoolExternalToolUc;
+	let orm: MikroORM;
 
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
@@ -29,7 +31,7 @@ describe('SchoolExternalToolUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		orm = await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolExternalToolUc,
@@ -70,6 +72,7 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	afterAll(async () => {
+		await orm.close(true);
 		await module.close();
 	});
 
