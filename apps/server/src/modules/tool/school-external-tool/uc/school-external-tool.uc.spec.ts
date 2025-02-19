@@ -4,24 +4,23 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { MikroORM } from '@mikro-orm/core';
+import { CommonToolValidationService } from '../../common/service';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { ExternalToolService } from '../../external-tool';
+import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
-import { ExternalToolService } from '../../external-tool';
-import { CommonToolValidationService } from '../../common/service';
-import { externalToolFactory } from '../../external-tool/testing';
 
 describe('SchoolExternalToolUc', () => {
 	let module: TestingModule;
 	let uc: SchoolExternalToolUc;
-	let orm: MikroORM;
 
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
@@ -31,7 +30,7 @@ describe('SchoolExternalToolUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities([User]);
+		await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolExternalToolUc,
@@ -72,7 +71,6 @@ describe('SchoolExternalToolUc', () => {
 	});
 
 	afterAll(async () => {
-		await orm.close(true);
 		await module.close();
 	});
 
@@ -289,6 +287,30 @@ describe('SchoolExternalToolUc', () => {
 				await uc.createSchoolExternalTool(user.id, tool.getProps());
 
 				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(tool);
+			});
+		});
+
+		describe('when schoolExternalTool params are invalid', () => {
+			const setup = () => {
+				const externalTool = externalToolFactory.buildWithId();
+				const tool = schoolExternalToolFactory.buildWithId();
+				const user = userFactory.buildWithId();
+
+				externalToolService.findById.mockResolvedValue(externalTool);
+				const error = new ValidationError('Invalid parameters');
+				commonToolValidationService.validateParameters.mockReturnValueOnce([error]);
+
+				return {
+					user,
+					tool,
+					error,
+				};
+			};
+
+			it('should schoolExternalToolService.createSchoolExternalTool throw an error', async () => {
+				const { user, tool, error } = setup();
+
+				await expect(uc.createSchoolExternalTool(user.id, tool.getProps())).rejects.toThrowError(error);
 			});
 		});
 	});
