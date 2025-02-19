@@ -6,6 +6,7 @@ import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
+import { LessonResources } from '@modules/lesson/controller/dto/lesson-resources.model';
 import { Course, CourseGroup, Submission } from '.';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { Material } from './materials.entity';
@@ -163,6 +164,20 @@ describe('Lesson Entity', () => {
 			const lesson = lessonFactory.build({ contents: [expectedTextContent] });
 			const result = lesson.getLessonComponents();
 			expect(result).toEqual([expectedTextContent]);
+		});
+
+		it('should return full lernstore component', () => {
+			const expectedLernstoreContent: ComponentProperties = {
+				title: 'test component',
+				hidden: false,
+				component: ComponentType.RESOURCES,
+				content: {
+					resources: [new LessonResources('1', 'description', 'title', 'url', 'merlinReference')],
+				},
+			};
+			const lesson = lessonFactory.build({ contents: [expectedLernstoreContent] });
+			const result = lesson.getLessonComponents();
+			expect(result).toEqual([expectedLernstoreContent]);
 		});
 	});
 
