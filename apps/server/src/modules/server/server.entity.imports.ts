@@ -34,9 +34,9 @@ import {
 } from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { User } from '@modules/user/repo';
