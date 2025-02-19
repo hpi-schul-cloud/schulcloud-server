@@ -1,6 +1,6 @@
-import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { Scope } from '@shared/repo/scope';
-import { EntityId } from '../../../../../shared/domain/types';
+import { EntityId } from '@shared/domain/types';
+import { ExternalToolEntity } from './external-tool.entity';
 
 export class ExternalToolScope extends Scope<ExternalToolEntity> {
 	byName(name?: string): this {
