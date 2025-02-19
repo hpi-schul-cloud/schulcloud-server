@@ -70,7 +70,7 @@ describe(MediaSourcesSeedDataService.name, () => {
 
 				await service.import();
 
-				expect(mediaSourceService.save).toHaveBeenCalledWith<[MediaSource]>(
+				expect(mediaSourceService.saveAll).toHaveBeenCalledWith<[MediaSource[]]>([
 					new MediaSource({
 						id: '675b0b71553441da9a893bf9',
 						name: 'VIDIS',
@@ -82,8 +82,8 @@ describe(MediaSourcesSeedDataService.name, () => {
 							baseUrl: 'https://service-stage.vidis.schule/o/vidis-rest',
 							region: 'test-region',
 						}),
-					})
-				);
+					}),
+				]);
 			});
 
 			it('should return 1', async () => {
@@ -106,7 +106,7 @@ describe(MediaSourcesSeedDataService.name, () => {
 
 				await service.import();
 
-				expect(mediaSourceService.save).not.toHaveBeenCalled();
+				expect(mediaSourceService.saveAll).not.toHaveBeenCalled();
 			});
 
 			it('should return 0', async () => {

@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSourceRepo } from '@modules/media-source/repo';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,7 +13,6 @@ describe(MediaUserLicenseService.name, () => {
 	let service: MediaUserLicenseService;
 
 	let mediaUserLicenseRepo: DeepMocked<MediaUserLicenseRepo>;
-	let mediaSourceRepo: DeepMocked<MediaSourceRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,16 +22,11 @@ describe(MediaUserLicenseService.name, () => {
 					provide: MediaUserLicenseRepo,
 					useValue: createMock<MediaUserLicenseRepo>(),
 				},
-				{
-					provide: MediaSourceRepo,
-					useValue: createMock<MediaSourceRepo>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(MediaUserLicenseService);
 		mediaUserLicenseRepo = module.get(MediaUserLicenseRepo);
-		mediaSourceRepo = module.get(MediaSourceRepo);
 	});
 
 	afterAll(async () => {
@@ -71,21 +64,33 @@ describe(MediaUserLicenseService.name, () => {
 		});
 	});
 
-	describe('saveUserLicense', () => {
-		it('should save the media source', async () => {
-			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+	describe('saveAll', () => {
+		describe('when saving media user licenses', () => {
+			const setup = () => {
+				const mediaUserLicenses = mediaUserLicenseFactory.buildList(2);
 
-			await service.saveUserLicense(mediaUserLicense);
+				mediaUserLicenseRepo.saveAll.mockResolvedValue(mediaUserLicenses);
 
-			expect(mediaSourceRepo.save).toHaveBeenCalledWith(mediaUserLicense.mediaSource);
-		});
+				return {
+					mediaUserLicenses,
+				};
+			};
 
-		it('should save the media user license', async () => {
-			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
+			it('should save the media user licenses', async () => {
+				const { mediaUserLicenses } = setup();
 
-			await service.saveUserLicense(mediaUserLicense);
+				await service.saveAll(mediaUserLicenses);
 
-			expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicense);
+				expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicenses);
+			});
+
+			it('should return the media user licenses', async () => {
+				const { mediaUserLicenses } = setup();
+
+				await service.saveAll(mediaUserLicenses);
+
+				expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicenses);
+			});
 		});
 	});
 
@@ -93,7 +98,7 @@ describe(MediaUserLicenseService.name, () => {
 		it('should call user license repo with correct arguments', async () => {
 			const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build();
 
-			await service.deleteUserLicense(mediaUserLicense);
+			await service.delete(mediaUserLicense);
 
 			expect(mediaUserLicenseRepo.delete).toHaveBeenCalledWith(mediaUserLicense);
 		});

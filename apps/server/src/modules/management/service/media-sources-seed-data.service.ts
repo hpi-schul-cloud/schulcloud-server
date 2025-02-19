@@ -20,7 +20,7 @@ export class MediaSourcesSeedDataService {
 			const encryptedVidisUserName: string = this.defaultEncryptionService.encrypt(vidisUserName);
 			const encryptedVidisPassword: string = this.defaultEncryptionService.encrypt(vidisPassword);
 
-			await this.mediaSourceService.save(
+			await this.mediaSourceService.saveAll([
 				new MediaSource({
 					id: '675b0b71553441da9a893bf9',
 					name: 'VIDIS',
@@ -32,8 +32,8 @@ export class MediaSourcesSeedDataService {
 						baseUrl: 'https://service-stage.vidis.schule/o/vidis-rest',
 						region: 'test-region',
 					},
-				})
-			);
+				}),
+			]);
 
 			return 1;
 		}
