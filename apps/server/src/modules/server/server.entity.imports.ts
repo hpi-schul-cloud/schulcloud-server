@@ -8,6 +8,8 @@ import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
 	ColumnBoardNode,
+	DashboardEntity,
+	DashboardGridElementEntity,
 	LegacyBoard,
 	LegacyBoardElement,
 	LessonBoardElement,
@@ -39,7 +41,6 @@ import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { Course } from '@shared/domain/entity/course.entity';
 import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
-import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
@@ -65,8 +66,8 @@ export const ENTITIES = [
 	Course,
 	CourseGroup,
 	CourseNews,
-	DashboardGridElementModel,
-	DashboardModelEntity,
+	DashboardGridElementEntity,
+	DashboardEntity,
 	ExternalToolEntity,
 	FederalStateEntity,
 	ImportUser,
