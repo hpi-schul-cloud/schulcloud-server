@@ -116,7 +116,7 @@
 					"modelPackage": "models"
 				},
 				"globalProperty": {
-					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentNexboardPropsImpl:LessonResources:MaterialResponse",
+					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentNexboardPropsImpl:LernstoreResources:MaterialResponse",
 					"apis": "",
 					"supportingFiles": ""
 				}

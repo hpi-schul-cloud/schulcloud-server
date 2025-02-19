@@ -9,7 +9,7 @@ import {
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
 import { EntityId } from '@shared/domain/types';
-import { LessonResources } from './lesson-resources.model';
+import { LernstoreResources } from './lernstore.resources';
 // eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
 	@ApiProperty({ nullable: false })
@@ -38,8 +38,8 @@ class ComponentInternalPropsImpl implements ComponentInternalProperties {
 }
 
 class ComponentLernstorePropsImpl implements ComponentLernstoreProperties {
-	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component', type: [LessonResources] })
-	resources!: LessonResources[];
+	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component', type: [LernstoreResources] })
+	resources!: LernstoreResources[];
 }
 @ApiExtraModels(
 	ComponentTextPropsImpl,

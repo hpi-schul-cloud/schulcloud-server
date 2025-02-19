@@ -17,37 +17,37 @@
 /**
  * 
  * @export
- * @interface LessonResources
+ * @interface LernstoreResources
  */
-export interface LessonResources {
+export interface LernstoreResources {
     /**
      * client
      * @type {string}
-     * @memberof LessonResources
+     * @memberof LernstoreResources
      */
     'client': string;
     /**
      * description
      * @type {string}
-     * @memberof LessonResources
+     * @memberof LernstoreResources
      */
     'description': string;
     /**
      * merlinReference
      * @type {string}
-     * @memberof LessonResources
+     * @memberof LernstoreResources
      */
     'merlinReference'?: string;
     /**
      * title
      * @type {string}
-     * @memberof LessonResources
+     * @memberof LernstoreResources
      */
     'title': string;
     /**
      * url
      * @type {string}
-     * @memberof LessonResources
+     * @memberof LernstoreResources
      */
     'url'?: string;
 }

@@ -1,13 +1,13 @@
 import { ComponentLernstorePropsImpl } from '../lessons-api-client';
-import { LessonResourcesDto } from './lesson-resources.dto';
+import { LernstoreResourcesDto } from './lernstore-resources.dto';
 
 export class ComponentLernstorePropsDto {
-	public resources: LessonResourcesDto[];
+	public resources: LernstoreResourcesDto[];
 
 	constructor(lernstoreContent: ComponentLernstorePropsImpl) {
 		this.resources = [];
 		for (const resource of lernstoreContent.resources) {
-			this.resources.push(new LessonResourcesDto(resource));
+			this.resources.push(new LernstoreResourcesDto(resource));
 		}
 	}
 }

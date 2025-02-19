@@ -6,7 +6,7 @@ import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { LessonResources } from '@modules/lesson/controller/dto/lesson-resources.model';
+import { LernstoreResources } from '@modules/lesson/controller/dto/lernstore.resources';
 import { Course, CourseGroup, Submission } from '.';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { Material } from './materials.entity';
@@ -172,7 +172,7 @@ describe('Lesson Entity', () => {
 				hidden: false,
 				component: ComponentType.RESOURCES,
 				content: {
-					resources: [new LessonResources('1', 'description', 'title', 'url', 'merlinReference')],
+					resources: [new LernstoreResources('1', 'description', 'title', 'url', 'merlinReference')],
 				},
 			};
 			const lesson = lessonFactory.build({ contents: [expectedLernstoreContent] });

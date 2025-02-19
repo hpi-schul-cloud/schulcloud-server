@@ -13,8 +13,8 @@ models/component-internal-props-impl.ts
 models/component-lernstore-props-impl.ts
 models/component-text-props-impl.ts
 models/index.ts
+models/lernstore-resources.ts
 models/lesson-content-response.ts
 models/lesson-linked-task-response.ts
-models/lesson-resources.ts
 models/lesson-response.ts
 models/material-response.ts
