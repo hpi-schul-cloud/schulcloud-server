@@ -540,4 +540,104 @@ describe(DeletionRequestRepo.name, () => {
 			});
 		});
 	});
+
+	describe('findRegisteredByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.REGISTERED,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findRegisteredByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.REGISTERED);
+			});
+		});
+	});
+
+	describe('findFailedByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.FAILED,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findFailedByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.FAILED);
+			});
+		});
+	});
+
+	describe('findPendingByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.PENDING,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findPendingByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.PENDING);
+			});
+		});
+	});
+
+	describe('findSuccessfulByTargetRefId', () => {
+		describe('when searching for deletionRequest by targetRefId', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					targetRefId: userId,
+					status: StatusModel.SUCCESS,
+				});
+				await em.persistAndFlush(entity);
+
+				return { userId, entity };
+			};
+
+			it('should return the deletionRequest with status registered', async () => {
+				const { userId, entity } = await setup();
+
+				const result: DeletionRequest[] = await repo.findSuccessfulByTargetRefId([userId]);
+
+				expect(result[0].id).toEqual(entity.id);
+				expect(result[0].status).toEqual(StatusModel.SUCCESS);
+			});
+		});
+	});
 });
