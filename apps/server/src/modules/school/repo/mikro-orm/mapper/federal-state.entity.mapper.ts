@@ -1,5 +1,5 @@
-import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { FederalState } from '../../../domain';
+import { FederalStateEntity } from '../federal-state.entity';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 
 export class FederalStateEntityMapper {

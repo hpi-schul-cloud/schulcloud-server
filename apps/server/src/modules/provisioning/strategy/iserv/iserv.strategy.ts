@@ -1,11 +1,12 @@
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import {
 	IdTokenExtractionFailureLoggableException,
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
