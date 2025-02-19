@@ -11,15 +11,15 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { ExternalSource, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
@@ -359,7 +359,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			const setup = () => {
 				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ otherUsers: undefined });
 				const systemId = 'systemId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				userService.findByExternalId.mockResolvedValue(null);
 				schoolService.getSchoolByExternalId.mockResolvedValue(school);
@@ -389,7 +389,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 		describe('when provisioning a new group with other group members', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: 'schoolId' });
+				const school = legacySchoolDoFactory.build({ id: 'schoolId' });
 				const student: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });
@@ -938,6 +938,188 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				const func = async () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', { externalId: externalUserId }));
+			});
+		});
+	});
+
+	describe('removeUserFromGroup', () => {
+		describe('when group is empty after removing the user', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [{ userId, roleId: role.id }],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+
+				return {
+					group,
+					userId,
+				};
+			};
+
+			it('should delete the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.delete).toHaveBeenCalledWith(
+					new Group({
+						...group.getProps(),
+						users: [],
+					})
+				);
+			});
+
+			it('should return null', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when group is empty after removing the user, but a synchronized course is attached', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [{ userId, roleId: role.id }],
+				});
+				const course = courseFactory.build({ syncedWithGroup: group.id });
+
+				groupService.findById.mockResolvedValueOnce(group);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
+				groupService.save.mockResolvedValueOnce(group);
+
+				return {
+					group,
+					course,
+					userId,
+				};
+			};
+
+			it('should not delete the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.delete).not.toHaveBeenCalled();
+			});
+
+			it('should save the group without users', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					new Group({
+						...group.getProps(),
+						users: [],
+					})
+				);
+			});
+
+			it('should return the group', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toEqual(group);
+			});
+		});
+
+		describe('when group is not empty after removing the user', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const otherUserId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [
+						{ userId, roleId: role.id },
+						{ userId: otherUserId, roleId: role.id },
+					],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+				groupService.save.mockResolvedValueOnce(group);
+
+				return {
+					group,
+					role,
+					userId,
+					otherUserId,
+				};
+			};
+
+			it('should not delete the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.delete).not.toHaveBeenCalled();
+			});
+
+			it('should save the group with the other users remaining', async () => {
+				const { group, userId, role, otherUserId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.save).toHaveBeenCalledWith(
+					new Group({
+						...group.getProps(),
+						users: [{ userId: otherUserId, roleId: role.id }],
+					})
+				);
+			});
+
+			it('should return the group', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toEqual(group);
+			});
+		});
+
+		describe('when the user is not part of the group', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const role = roleFactory.buildWithId();
+
+				const group = groupFactory.build({
+					users: [{ userId: new ObjectId().toHexString(), roleId: role.id }],
+				});
+
+				groupService.findById.mockResolvedValueOnce(group);
+
+				return {
+					group,
+					userId,
+				};
+			};
+
+			it('should modify the group', async () => {
+				const { group, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(groupService.save).not.toHaveBeenCalled();
+				expect(groupService.delete).not.toHaveBeenCalled();
+			});
+
+			it('should return null', async () => {
+				const { group, userId } = setup();
+
+				const result = await service.removeUserFromGroup(userId, group.id);
+
+				expect(result).toBeNull();
 			});
 		});
 	});

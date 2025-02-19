@@ -2,14 +2,12 @@ import { Entity, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '@modules/board';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { LearnroomElement } from '@shared/domain/interface';
 
-// TODO comment
 /**
  * @deprecated - this is here only for the sake of the legacy-board (lernraum)
  */
 @Entity({ tableName: 'boardnodes' })
-export class ColumnBoardNode extends BaseEntityWithTimestamps implements LearnroomElement {
+export class ColumnBoardNode extends BaseEntityWithTimestamps {
 	constructor(props: ColumnBoardNodeProps) {
 		super();
 		this.title = props.title;

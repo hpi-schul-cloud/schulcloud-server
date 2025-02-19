@@ -5,8 +5,13 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
-import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
-import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
+import {
+	IservProvisioningStrategy,
+	OidcMockProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
+	SchulconnexSyncProvisioningStrategy,
+	TspProvisioningStrategy,
+} from '../strategy';
 import { externalUserDtoFactory } from '../testing';
 import { ProvisioningService } from './provisioning.service';
 
@@ -15,7 +20,7 @@ describe('ProvisioningService', () => {
 	let service: ProvisioningService;
 
 	let systemService: DeepMocked<SystemService>;
-	let provisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
+	let provisioningStrategy: DeepMocked<SchulconnexSyncProvisioningStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,10 +31,18 @@ describe('ProvisioningService', () => {
 					useValue: createMock<SystemService>(),
 				},
 				{
-					provide: SanisProvisioningStrategy,
-					useValue: createMock<SanisProvisioningStrategy>({
+					provide: SchulconnexSyncProvisioningStrategy,
+					useValue: createMock<SchulconnexSyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.SANIS;
+						},
+					}),
+				},
+				{
+					provide: SchulconnexAsyncProvisioningStrategy,
+					useValue: createMock<SchulconnexAsyncProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.SCHULCONNEX_ASYNC;
 						},
 					}),
 				},
@@ -62,7 +75,7 @@ describe('ProvisioningService', () => {
 
 		service = module.get(ProvisioningService);
 		systemService = module.get(SystemService);
-		provisioningStrategy = module.get(SanisProvisioningStrategy);
+		provisioningStrategy = module.get(SchulconnexSyncProvisioningStrategy);
 	});
 
 	afterAll(async () => {
