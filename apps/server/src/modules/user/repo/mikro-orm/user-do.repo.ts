@@ -1,9 +1,6 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { SchoolEntity } from '@modules/school/repo';
-import { User, UserSchoolEmbeddable } from '@modules/user/repo';
-import { UserSourceOptionsEntity } from '@modules/user/repo/mikro-orm/user-source-options-entity';
-import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Page, RoleReference } from '@shared/domain/domainobject';
@@ -14,6 +11,9 @@ import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domai
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
+import { UserQuery } from '../../service/user-query.type';
+import { UserSourceOptionsEntity } from './user-source-options-entity';
+import { User, UserSchoolEmbeddable } from './user.entity';
 import { UserScope } from './user.scope';
 
 @Injectable()

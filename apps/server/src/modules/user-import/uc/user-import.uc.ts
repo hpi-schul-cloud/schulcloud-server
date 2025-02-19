@@ -13,11 +13,10 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user';
 import { isError } from 'lodash';
 
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { User } from '@modules/user/repo';
+import { User, UserRepo } from '@modules/user/repo';
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {

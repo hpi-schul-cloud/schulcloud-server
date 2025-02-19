@@ -1,7 +1,6 @@
-import { User } from '@modules/user/repo';
+import { User, UserRepo } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
 import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,

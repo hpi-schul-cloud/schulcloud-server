@@ -4,10 +4,9 @@ import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, Permission } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { User } from '../repo';
+import { User, UserRepo } from '../repo';
 import { UserService } from '../service';
 import { UserUc } from './user.uc';
 

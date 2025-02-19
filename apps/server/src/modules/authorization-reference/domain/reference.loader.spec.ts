@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
-import { User } from '@modules/user/repo';
+import { User, UserRepo } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,7 +12,6 @@ import { CourseRepo } from '@shared/repo/course';
 import { CourseGroupRepo } from '@shared/repo/coursegroup';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { ReferenceLoader } from './reference.loader';
 

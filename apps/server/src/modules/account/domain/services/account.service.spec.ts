@@ -13,7 +13,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
-import { User } from '@modules/user/repo';
+import { User, UserRepo } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -24,7 +24,6 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';

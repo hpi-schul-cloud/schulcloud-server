@@ -24,12 +24,10 @@ import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { UserConfig } from '../interfaces';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 import { UserMapper } from '../mapper/user.mapper';
-import { User } from '../repo';
+import { User, UserDORepo, UserRepo } from '../repo';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 

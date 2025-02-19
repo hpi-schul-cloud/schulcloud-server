@@ -3,8 +3,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { type SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
-import { User } from '@modules/user/repo';
-import { UserParentsEntityProps } from '@modules/user/repo/mikro-orm/user-parents.entity';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
@@ -12,6 +10,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserRepo } from './user.repo';
+import { UserParentsEntityProps } from './user-parents.entity';
+import { User } from './user.entity';
 
 describe('user repo', () => {
 	let module: TestingModule;

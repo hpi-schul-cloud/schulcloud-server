@@ -11,7 +11,7 @@ import {
 	OperationType,
 	UserDeletedEvent,
 } from '@modules/deletion';
-import { User } from '@modules/user/repo';
+import { User, UserRepo } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
@@ -22,7 +22,6 @@ import {
 	ValidationError,
 } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user/user.repo';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
