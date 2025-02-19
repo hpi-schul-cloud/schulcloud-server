@@ -1,10 +1,10 @@
 import { QueryOrderMap } from '@mikro-orm/core';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SortOrderMap } from '@shared/domain/interface';
+import { type ExternalTool } from '../../../domain';
+import { ExternalToolEntity } from '../external-tool.entity';
 
 export class ExternalToolSortingMapper {
-	static mapDOSortOrderToQueryOrder(sort: SortOrderMap<ExternalTool>): QueryOrderMap<ExternalToolEntity> {
+	public static mapDOSortOrderToQueryOrder(sort: SortOrderMap<ExternalTool>): QueryOrderMap<ExternalToolEntity> {
 		const queryOrderMap: QueryOrderMap<ExternalToolEntity> = {
 			_id: sort.id,
 			name: sort.name,

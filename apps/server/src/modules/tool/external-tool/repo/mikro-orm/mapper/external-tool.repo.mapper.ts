@@ -1,31 +1,26 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FileRecord } from '@modules/files-storage/entity';
-import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
-import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
-import { ToolConfigType } from '@modules/tool/common/enum';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { CustomParameter, CustomParameterEntry } from '../../../../common/domain';
+import { CustomParameterEntryEntity } from '../../../../common/entity';
+import { ToolConfigType } from '../../../../common/enum';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	ExternalToolMedium,
+	FileRecordRef,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
-} from '@modules/tool/external-tool/domain';
-import { FileRecordRef } from '@modules/tool/external-tool/domain/file-record-ref';
-import {
-	BasicToolConfigEntity,
-	CustomParameterEntity,
-	ExternalToolEntity,
-	ExternalToolEntityProps,
-	ExternalToolMediumEntity,
-	Lti11ToolConfigEntity,
-	Oauth2ToolConfigEntity,
-} from '@modules/tool/external-tool/repo';
-import { FileRecordRefEmbeddable } from '@modules/tool/external-tool/repo/mikro-orm';
-import { UnprocessableEntityException } from '@nestjs/common';
+} from '../../../domain';
+import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from '../config';
+import { CustomParameterEntity } from '../custom-parameter';
+import { ExternalToolMediumEntity } from '../external-tool-medium.entity';
+import { ExternalToolEntity, ExternalToolEntityProps } from '../external-tool.entity';
+import { FileRecordRefEmbeddable } from '../file-record-ref-embeddable.entity';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
-	static mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
+	public static mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entity.config.type) {
 			case ToolConfigType.BASIC:
@@ -81,14 +76,14 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfig {
+	public static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfig {
 		return new BasicToolConfig({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfig {
+	public static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfig {
 		return new Oauth2ToolConfig({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
@@ -97,7 +92,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfig {
+	public static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfig {
 		return new Lti11ToolConfig({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
@@ -109,7 +104,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(domainObject: ExternalTool, em: EntityManager): ExternalToolEntityProps {
+	public static mapDOToEntityProperties(domainObject: ExternalTool, em: EntityManager): ExternalToolEntityProps {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (domainObject.config.type) {
 			case ToolConfigType.BASIC:
@@ -163,14 +158,14 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfig): BasicToolConfigEntity {
+	public static mapBasicToolConfigDOToEntity(lti11Config: BasicToolConfig): BasicToolConfigEntity {
 		return new BasicToolConfigEntity({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
-	static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfig): Oauth2ToolConfigEntity {
+	public static mapOauth2ConfigDOToEntity(oauth2Config: Oauth2ToolConfig): Oauth2ToolConfigEntity {
 		return new Oauth2ToolConfigEntity({
 			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
@@ -179,7 +174,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfig): Lti11ToolConfigEntity {
+	public static mapLti11ToolConfigDOToEntity(lti11Config: Lti11ToolConfig): Lti11ToolConfigEntity {
 		return new Lti11ToolConfigEntity({
 			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
@@ -191,7 +186,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapCustomParametersToDOs(customParameters: CustomParameterEntity[]): CustomParameter[] {
+	public static mapCustomParametersToDOs(customParameters: CustomParameterEntity[]): CustomParameter[] {
 		return customParameters.map(
 			(param: CustomParameterEntity) =>
 				new CustomParameter({
@@ -210,7 +205,7 @@ export class ExternalToolRepoMapper {
 		);
 	}
 
-	static mapCustomParameterDOsToEntities(customParameters: CustomParameter[]): CustomParameterEntity[] {
+	public static mapCustomParameterDOsToEntities(customParameters: CustomParameter[]): CustomParameterEntity[] {
 		return customParameters.map(
 			(param: CustomParameter) =>
 				new CustomParameterEntity({
@@ -229,7 +224,7 @@ export class ExternalToolRepoMapper {
 		);
 	}
 
-	static mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntryEntity[]): CustomParameterEntry[] {
+	public static mapCustomParameterEntryEntitiesToDOs(entries: CustomParameterEntryEntity[]): CustomParameterEntry[] {
 		return entries.map(
 			(entry: CustomParameterEntryEntity): CustomParameterEntry =>
 				new CustomParameterEntry({
@@ -239,7 +234,7 @@ export class ExternalToolRepoMapper {
 		);
 	}
 
-	static mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntry[]): CustomParameterEntryEntity[] {
+	public static mapCustomParameterEntryDOsToEntities(entries: CustomParameterEntry[]): CustomParameterEntryEntity[] {
 		return entries.map(
 			(entry: CustomParameterEntryEntity): CustomParameterEntry =>
 				new CustomParameterEntryEntity({
