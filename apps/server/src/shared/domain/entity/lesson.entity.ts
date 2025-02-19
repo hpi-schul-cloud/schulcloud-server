@@ -68,7 +68,7 @@ export interface LessonParent {
 }
 
 @Entity({ tableName: 'lessons' })
-export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomElement, TaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent {
 	@Property()
 	name: string;
 
