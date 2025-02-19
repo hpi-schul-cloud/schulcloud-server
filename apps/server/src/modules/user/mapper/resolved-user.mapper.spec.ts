@@ -1,6 +1,6 @@
+import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { ResolvedUserResponse } from '../controller/dto';
 import { User } from '../repo';
 import { ResolvedUserMapper } from './resolved-user.mapper';

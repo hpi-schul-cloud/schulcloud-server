@@ -11,6 +11,7 @@ import { systemEntityFactory } from '@modules/system/testing';
 import { ImportUser } from '@modules/user-import/entity';
 import { importUserFactory } from '@modules/user-import/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,7 +20,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';

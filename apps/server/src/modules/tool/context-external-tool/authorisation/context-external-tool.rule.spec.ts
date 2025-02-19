@@ -8,12 +8,12 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, LessonEntity, Material, Role, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 
 describe('ContextExternalToolRule', () => {

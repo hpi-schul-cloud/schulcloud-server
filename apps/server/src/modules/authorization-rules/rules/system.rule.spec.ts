@@ -8,10 +8,10 @@ import { schoolEntityFactory } from '@modules/school/testing/school-entity.facto
 import { System } from '@modules/system';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { SystemRule } from './system.rule';
 
 describe(SystemRule.name, () => {

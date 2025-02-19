@@ -5,9 +5,9 @@ import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserImportService } from '@modules/user-import';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { CloseMigrationWizardUc } from './close-migration-wizard.uc';
 

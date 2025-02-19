@@ -4,12 +4,12 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
 import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';

@@ -3,10 +3,10 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { CourseDoService } from '../service';
 import { CourseSyncService } from '../service/course-sync.service';
 import { courseFactory } from '../testing';

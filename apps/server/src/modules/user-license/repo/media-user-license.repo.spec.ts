@@ -9,10 +9,10 @@ import {
 	mediaSourceVidisConfigEmbeddableFactory,
 } from '@modules/media-source/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { MediaUserLicense } from '../domain';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '../entity';
 import { mediaUserLicenseEntityFactory, mediaUserLicenseFactory } from '../testing';

@@ -11,13 +11,13 @@ import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService }
 import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/learnroom';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';

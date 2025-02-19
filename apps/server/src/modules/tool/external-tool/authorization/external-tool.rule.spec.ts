@@ -3,10 +3,10 @@ import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@mod
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { ExternalToolRule } from './external-tool.rule';
 
 describe(ExternalToolRule.name, () => {

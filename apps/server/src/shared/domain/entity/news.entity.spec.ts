@@ -1,7 +1,7 @@
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
 import { teamNewsFactory } from '@testing/factory/news.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { News } from './news.entity';
 
 describe(News.name, () => {

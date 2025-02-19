@@ -4,10 +4,10 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { LaunchContextUnavailableLoggableException } from '@modules/tool/tool-launch/error';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';

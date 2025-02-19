@@ -9,6 +9,7 @@ import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
@@ -16,7 +17,6 @@ import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/in
 import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { Course, CourseFilter, CourseSortProps, CourseStatus } from '../domain';
 import { CourseDoService } from '../service';
 import { courseFactory as courseDoFactory } from '../testing';

@@ -10,6 +10,7 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, Course as CourseEntity, CourseGroup } from '@shared/domain/entity';
@@ -17,7 +18,6 @@ import { CourseRepo as LegacyCourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { CourseService } from './course.service';
 

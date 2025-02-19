@@ -1,8 +1,8 @@
+import { userFactory } from '@modules/user/testing';
 import { CourseGroup, CourseGroupProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
-import { userFactory } from './user.factory';
 
 class CourseGroupFactory extends BaseFactory<CourseGroup, CourseGroupProperties> {
 	studentsWithId(numberOfStudents: number): this {

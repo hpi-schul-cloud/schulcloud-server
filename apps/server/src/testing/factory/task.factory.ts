@@ -2,11 +2,11 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Task } from '@shared/domain/entity';
 import { TaskProperties } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
-import { userFactory } from './user.factory';
 
 const yesterday = new Date(Date.now() - 86400000);
 

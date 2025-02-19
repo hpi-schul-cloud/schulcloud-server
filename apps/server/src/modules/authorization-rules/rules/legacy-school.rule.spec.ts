@@ -2,11 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { LegacySchoolRule } from './legacy-school.rule';
 
 describe('LegacySchoolRule', () => {

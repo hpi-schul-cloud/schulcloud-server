@@ -5,10 +5,10 @@ import { accountFactory } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import _ from 'lodash';
-import { userFactory } from './user.factory';
 
 interface UserParams {
 	firstName?: string;

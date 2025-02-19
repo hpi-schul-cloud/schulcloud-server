@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import {
 	Course,
 	CourseGroup,
@@ -15,7 +16,6 @@ import {
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import {
 	CreateNewsParams,
 	FilterNewsParams,

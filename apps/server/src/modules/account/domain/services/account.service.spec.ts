@@ -14,6 +14,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -25,7 +26,6 @@ import {
 } from '@shared/common/error';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';

@@ -3,8 +3,8 @@ import { DeepPartial } from 'fishery';
 // Remove the eslint-disable after fixing the import issue in EPIC-96
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
+import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from './base.factory';
-import { userFactory } from './user.factory';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
