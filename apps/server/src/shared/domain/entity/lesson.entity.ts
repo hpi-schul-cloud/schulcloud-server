@@ -24,7 +24,7 @@ export enum ComponentType {
 	ETHERPAD = 'Etherpad',
 	GEOGEBRA = 'geoGebra',
 	INTERNAL = 'internal',
-	RESOURCES = 'resources',
+	RESOURCES = 'resources', // lernstore
 	TEXT = 'text',
 }
 
