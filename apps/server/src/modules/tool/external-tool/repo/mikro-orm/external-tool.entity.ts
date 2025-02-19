@@ -5,7 +5,7 @@ import { ToolContextType } from '../../../common/enum';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
 import { CustomParameterEntity } from './custom-parameter';
 import { ExternalToolMediumEntity } from './external-tool-medium.entity';
-import { FileRecordRefEmbeddable } from './file-record-ref-embeddable.entity';
+import { FileRecordRefEmbeddable } from './file-record-ref.embeddable';
 
 export interface ExternalToolEntityProps {
 	id?: EntityId;

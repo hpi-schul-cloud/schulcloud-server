@@ -16,7 +16,7 @@ import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } 
 import { CustomParameterEntity } from '../custom-parameter';
 import { ExternalToolMediumEntity } from '../external-tool-medium.entity';
 import { ExternalToolEntity, ExternalToolEntityProps } from '../external-tool.entity';
-import { FileRecordRefEmbeddable } from '../file-record-ref-embeddable.entity';
+import { FileRecordRefEmbeddable } from '../file-record-ref.embeddable';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
