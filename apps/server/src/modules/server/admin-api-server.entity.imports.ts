@@ -12,7 +12,7 @@ import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/sch
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
+import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 import {
 	Course,
 	CourseGroup,
@@ -63,6 +63,7 @@ export const ENTITIES = [
 	Task,
 	Submission,
 	DashboardEntity,
+	DashboardGridElementEntity,
 	LessonEntity,
 	Material,
 ];
