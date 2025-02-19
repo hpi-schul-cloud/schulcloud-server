@@ -1,20 +1,14 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	CourseGroup,
-	DashboardEntity,
-	DashboardGridElementModel,
-	DashboardModelEntity,
-	GridElement,
-	User,
-} from '@shared/domain/entity';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { DashboardModelMapper } from './dashboard.model.mapper';
+import { Dashboard, GridElement } from '../../../domain/do/dashboard';
+import { LearnroomMetadata, LearnroomTypes } from '../../../types';
+import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
+import { DashboardModelMapper } from './dashboard.entity.mapper';
 
 describe('dashboard model mapper', () => {
 	let mapper: DashboardModelMapper;
@@ -25,7 +19,7 @@ describe('dashboard model mapper', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardModelEntity, DashboardGridElementModel, User, Course, CourseGroup],
+					entities: [DashboardEntity, DashboardGridElementEntity, User, Course, CourseGroup],
 				}),
 			],
 			providers: [DashboardModelMapper],
@@ -35,13 +29,17 @@ describe('dashboard model mapper', () => {
 		em = module.get(EntityManager);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('mapDashboardToEntity', () => {
 		it('should map dashboard with elements and groups to entity', async () => {
-			const dashboard = new DashboardModelEntity({ id: new ObjectId().toString(), user: userFactory.build() });
+			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: userFactory.build() });
 			const user = userFactory.build();
 			const course = courseFactory.build({ students: [user], name: 'German' });
 
-			const element = new DashboardGridElementModel({
+			const element = new DashboardGridElementEntity({
 				id: new ObjectId().toString(),
 				xPos: 1,
 				yPos: 2,
@@ -54,7 +52,7 @@ describe('dashboard model mapper', () => {
 			await em.persistAndFlush(dashboard);
 			em.clear();
 
-			const persisted = await em.findOneOrFail(DashboardModelEntity, dashboard.id);
+			const persisted = await em.findOneOrFail(DashboardEntity, dashboard.id);
 
 			const result = await mapper.mapDashboardToEntity(persisted);
 
@@ -68,7 +66,7 @@ describe('dashboard model mapper', () => {
 		it('should map dashboard with elements and groups to model', async () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
@@ -90,13 +88,13 @@ describe('dashboard model mapper', () => {
 
 			const mapped = await mapper.mapDashboardToModel(dashboard);
 
-			expect(mapped instanceof DashboardModelEntity).toEqual(true);
+			expect(mapped).toBeInstanceOf(DashboardEntity);
 			expect(mapped.gridElements.length).toEqual(2);
 			expect(mapped.user.id).toEqual(dashboard.userId);
 			const element = mapped.gridElements[0];
-			expect(element instanceof DashboardGridElementModel);
+			expect(element).toBeInstanceOf(DashboardGridElementEntity);
 			expect(element.references.length).toBeGreaterThan(0);
-			expect(element.references[0] instanceof Course).toEqual(true);
+			expect(element.references[0]).toBeInstanceOf(Course);
 			const reference = element.references[0];
 			expect(['English', 'German', 'Math'].includes(reference.name)).toEqual(true);
 		});
@@ -109,9 +107,9 @@ describe('dashboard model mapper', () => {
 			const oldElementId = new ObjectId().toString();
 			const newElementId = new ObjectId().toString();
 			// TODO: use builder
-			const originalDashboard = new DashboardModelEntity({ id: dashboardId, user });
+			const originalDashboard = new DashboardEntity({ id: dashboardId, user });
 			originalDashboard.gridElements.add(
-				new DashboardGridElementModel({
+				new DashboardGridElementEntity({
 					id: oldElementId,
 					xPos: 1,
 					yPos: 1,
@@ -120,7 +118,7 @@ describe('dashboard model mapper', () => {
 				})
 			);
 			originalDashboard.gridElements.add(
-				new DashboardGridElementModel({
+				new DashboardGridElementEntity({
 					id: elementId,
 					xPos: 1,
 					yPos: 2,
@@ -130,7 +128,7 @@ describe('dashboard model mapper', () => {
 			);
 			await em.persistAndFlush(originalDashboard);
 
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 2, y: 1 },
@@ -157,10 +155,11 @@ describe('dashboard model mapper', () => {
 		it('should not accept unknown types of learnrooms', async () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
-			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
 						pos: { x: 1, y: 4 },
+						// @ts-expect-error	test case for unknown type
 						gridElement: GridElement.FromPersistedReference(new ObjectId().toString(), {
 							getMetadata: () =>
 								({
