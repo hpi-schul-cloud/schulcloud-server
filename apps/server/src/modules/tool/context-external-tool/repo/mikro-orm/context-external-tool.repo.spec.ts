@@ -1,11 +1,11 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { CustomParameterEntry } from '../../../common/domain';
 import { ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity, ExternalToolRepoMapper } from '../../../external-tool/repo';
@@ -30,7 +30,6 @@ describe(ContextExternalToolRepo.name, () => {
 					entities: [
 						ContextExternalToolEntity,
 						SchoolExternalToolEntity,
-						SchoolEntity,
 						ExternalToolEntity,
 						User,
 						Course,
@@ -61,7 +60,7 @@ describe(ContextExternalToolRepo.name, () => {
 	});
 
 	const createExternalTools = () => {
-		const school: SchoolEntity = schoolEntityFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
 		const schoolExternalTool1 = schoolExternalToolEntityFactory.buildWithId({ school });
 		const schoolExternalTool2 = schoolExternalToolEntityFactory.buildWithId({ school });
 		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({

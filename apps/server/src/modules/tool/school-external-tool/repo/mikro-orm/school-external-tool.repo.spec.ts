@@ -1,14 +1,13 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalToolRepoMapper } from '@modules/tool/external-tool/repo/mikro-orm/mapper/external-tool.repo.mapper';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { CustomParameterEntry } from '../../../common/domain';
 import { ExternalToolEntity } from '../../../external-tool/repo';
+import { ExternalToolRepoMapper } from '../../../external-tool/repo/mikro-orm/mapper/external-tool.repo.mapper';
 import { externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../domain';
 import { schoolExternalToolEntityFactory, schoolExternalToolFactory } from '../../testing';
@@ -23,9 +22,7 @@ describe(SchoolExternalToolRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolExternalToolEntity, ExternalToolEntity, SchoolEntity] }),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolExternalToolEntity, ExternalToolEntity] })],
 			providers: [
 				SchoolExternalToolRepo,
 				ExternalToolRepoMapper,

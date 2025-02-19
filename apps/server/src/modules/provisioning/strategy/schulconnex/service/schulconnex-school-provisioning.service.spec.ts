@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FederalStateService, LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { FederalStateService, LegacySchoolService } from '@modules/legacy-school';
+import { SchoolYearService } from '@modules/school/domain';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SchoolFeature } from '@shared/domain/types';
 import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { ExternalSchoolDto } from '../../../dto';
 import { SchoolNameRequiredLoggableException } from '../../../loggable';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
@@ -63,8 +63,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -115,8 +115,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						location: 'Hannover',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -157,8 +157,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -200,8 +200,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = new LegacySchoolDo({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -245,8 +245,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -298,8 +298,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						location: 'Hannover',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -352,8 +352,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -407,8 +407,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',
@@ -468,8 +468,8 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 						officialSchoolNumber: 'officialSchoolNumber',
 					});
 
-					const schoolYear = schoolYearFactory.build();
-					const federalState = federalStateFactory.build();
+					const schoolYear = schoolYearEntityFactory.build();
+					const federalState = federalStateEntityFactory.build();
 					const savedSchoolDO = legacySchoolDoFactory.build({
 						id: 'schoolId',
 						externalId: 'externalId',

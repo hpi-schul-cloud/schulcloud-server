@@ -3,13 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { BoardExternalReferenceType } from '@modules/board';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '@modules/board/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -287,7 +286,7 @@ describe('ToolConfigurationController (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 
-				const user: User = userFactory.buildWithId({ school, roles: [] });
+				const user = userFactory.buildWithId({ school, roles: [] });
 				const account = accountFactory.buildWithId({ userId: user.id });
 
 				const course = courseFactory.buildWithId({ teachers: [user], school });

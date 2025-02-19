@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { SchoolEntity } from '@shared/domain/entity';
 import { EntityId } from '../../../../../shared/domain/types';
 import { ExternalToolEntity, ExternalToolRepoMapper } from '../../../external-tool/repo';
 import { SchoolExternalTool } from '../../domain';

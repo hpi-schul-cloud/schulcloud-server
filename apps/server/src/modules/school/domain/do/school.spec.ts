@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LanguageType } from '@shared/domain/interface';
 import { SchoolPurpose } from '@shared/domain/types';
-import { federalStateFactory, schoolFactory } from '../../testing';
+import { federalStateDoFactory, schoolFactory } from '../../testing';
 import { InstanceFeature } from '../type';
 
 describe('School', () => {
@@ -81,7 +81,7 @@ describe('School', () => {
 
 		describe('when county is already set', () => {
 			const setup = () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateDoFactory.build();
 				// @ts-expect-error test case
 				const county = federalState.getProps().counties[0];
 				const school = schoolFactory.build({ federalState, county });
@@ -99,7 +99,7 @@ describe('School', () => {
 
 		describe('when county is not set', () => {
 			const setup = () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateDoFactory.build();
 				// @ts-expect-error test case
 				const county = federalState.getProps().counties[0];
 				const school = schoolFactory.build({ federalState });
