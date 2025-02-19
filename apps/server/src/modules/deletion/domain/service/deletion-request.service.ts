@@ -64,12 +64,14 @@ export class DeletionRequestService {
 
 	public async findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
 		switch (status) {
-			case StatusModel.FAILED:
-				return this.deletionRequestRepo.findFailedByTargetRefId(targetRefIds);
-			case StatusModel.PENDING:
-				return this.deletionRequestRepo.findPendingByTargetRefId(targetRefIds);
 			case StatusModel.REGISTERED:
 				return this.deletionRequestRepo.findRegisteredByTargetRefId(targetRefIds);
+			case StatusModel.PENDING:
+				return this.deletionRequestRepo.findPendingByTargetRefId(targetRefIds);
+			case StatusModel.FAILED:
+				return this.deletionRequestRepo.findFailedByTargetRefId(targetRefIds);
+			case StatusModel.SUCCESS:
+				return this.deletionRequestRepo.findSuccessfulByTargetRefId(targetRefIds);
 			default:
 				return [];
 		}
