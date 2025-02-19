@@ -10,7 +10,7 @@ import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalToolService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
@@ -20,7 +20,6 @@ describe('SchoolExternalToolUc', () => {
 	let uc: SchoolExternalToolUc;
 
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
-	let schoolExternalToolValidationService: DeepMocked<SchoolExternalToolValidationService>;
 	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
@@ -33,10 +32,6 @@ describe('SchoolExternalToolUc', () => {
 				{
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
-				},
-				{
-					provide: SchoolExternalToolValidationService,
-					useValue: createMock<SchoolExternalToolValidationService>(),
 				},
 				{
 					provide: CommonToolMetadataService,
@@ -55,7 +50,6 @@ describe('SchoolExternalToolUc', () => {
 
 		uc = module.get(SchoolExternalToolUc);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
-		schoolExternalToolValidationService = module.get(SchoolExternalToolValidationService);
 		commonToolMetadataService = module.get(CommonToolMetadataService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
@@ -262,14 +256,6 @@ describe('SchoolExternalToolUc', () => {
 				};
 			};
 
-			it('should call schoolExternalToolValidationService.validate()', async () => {
-				const { user, tool } = setup();
-
-				await uc.createSchoolExternalTool(user.id, tool.getProps());
-
-				expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(tool);
-			});
-
 			it('should call schoolExternalToolService.createSchoolExternalTool', async () => {
 				const { user, tool } = setup();
 
@@ -371,14 +357,6 @@ describe('SchoolExternalToolUc', () => {
 				school,
 				AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN])
 			);
-		});
-
-		it('should call schoolExternalToolValidationService.validate()', async () => {
-			const { updatedTool, schoolExternalToolId, user } = setup();
-
-			await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool.getProps());
-
-			expect(schoolExternalToolValidationService.validate).toHaveBeenCalledWith(updatedTool);
 		});
 
 		it('should call the service to update the tool', async () => {
