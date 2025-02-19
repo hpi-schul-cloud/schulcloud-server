@@ -1,6 +1,6 @@
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { Counter, Gauge, Summary, register } from 'prom-client';
 

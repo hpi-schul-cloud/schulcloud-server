@@ -1,5 +1,5 @@
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@modules/user/domain';
 import { RoleName } from '@shared/domain/interface';
 import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
 

@@ -11,9 +11,10 @@ import {
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, Page, UserDO } from '@shared/domain/domainobject';
+import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';

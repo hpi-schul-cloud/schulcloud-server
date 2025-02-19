@@ -1,6 +1,7 @@
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { VideoConferenceDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BBBJoinConfigBuilder, BBBRole, BBBService } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';

@@ -2,7 +2,7 @@ import { Class } from '@modules/class/domain';
 import { Course } from '@modules/learnroom/domain';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
-import { UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@modules/user/domain';
 import { RoleName } from '@shared/domain/interface';
 import { Group } from '../../domain';
 import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';

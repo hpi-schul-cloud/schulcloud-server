@@ -1,8 +1,9 @@
 import { PseudonymService } from '@modules/pseudonym';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { TeamEntity } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo/teams';
 import { IdTokenCreationLoggableException } from '../error';

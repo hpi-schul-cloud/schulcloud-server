@@ -1,8 +1,8 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
+import { UserDO } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { Role } from '@shared/domain/entity';
 
 export class CurrentUserMapper {

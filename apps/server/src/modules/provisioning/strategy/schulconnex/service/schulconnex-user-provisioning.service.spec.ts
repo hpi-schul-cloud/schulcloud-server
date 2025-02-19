@@ -1,13 +1,13 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import CryptoJS from 'crypto-js';
 import { ExternalUserDto } from '../../../dto';

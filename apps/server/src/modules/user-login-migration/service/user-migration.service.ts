@@ -1,13 +1,13 @@
-import { AccountService, Account } from '@modules/account';
-import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
+import { Account, AccountService } from '@modules/account';
+import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
+import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
-	UserMigrationDatabaseOperationFailedLoggableException,
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
+	UserMigrationDatabaseOperationFailedLoggableException,
 } from '../loggable';
 
 @Injectable()

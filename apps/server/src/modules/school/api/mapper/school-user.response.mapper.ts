@@ -1,4 +1,5 @@
-import { Page, UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@modules/user/domain';
+import { Page } from '@shared/domain/domainobject';
 import { SchoolUserListResponse, SchoolUserResponse } from '../dto/response/school-user.response';
 
 export class SchoolUserResponseMapper {

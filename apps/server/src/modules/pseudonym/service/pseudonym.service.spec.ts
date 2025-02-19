@@ -12,10 +12,11 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { UserDO } from '@modules/user/domain';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';

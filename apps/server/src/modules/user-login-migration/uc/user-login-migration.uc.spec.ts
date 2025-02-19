@@ -10,12 +10,13 @@ import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSyste
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';

@@ -1,8 +1,9 @@
 import { AccountSave, AccountService } from '@modules/account';
 import { RoleDto, RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
+import { UserDO } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import CryptoJS from 'crypto-js';

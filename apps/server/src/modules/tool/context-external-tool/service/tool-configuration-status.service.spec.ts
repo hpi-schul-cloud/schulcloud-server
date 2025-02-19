@@ -7,10 +7,10 @@ import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { UserDO } from '@modules/user/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { UserDO } from '@shared/domain/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ToolConfig } from '../..';
 import {

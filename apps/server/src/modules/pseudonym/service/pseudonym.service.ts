@@ -15,9 +15,10 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { UserDO } from '@modules/user/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { v4 as uuidv4 } from 'uuid';

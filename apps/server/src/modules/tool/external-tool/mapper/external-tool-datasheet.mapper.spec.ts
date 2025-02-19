@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@modules/user/domain';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';

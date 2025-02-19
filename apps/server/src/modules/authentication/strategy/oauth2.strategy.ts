@@ -7,9 +7,9 @@ import {
 	OauthSessionTokenService,
 	OAuthTokenDto,
 } from '@modules/oauth';
+import type { UserDO } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import type { UserDO } from '@shared/domain/domainobject';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';
