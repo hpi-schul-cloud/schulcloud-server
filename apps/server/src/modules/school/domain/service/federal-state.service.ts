@@ -1,4 +1,4 @@
-import { FederalStateEntity, FederalStateRepo } from '@modules/school/repo';
+import { FederalStateRepo, FederalStateEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

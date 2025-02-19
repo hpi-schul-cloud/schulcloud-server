@@ -1,16 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchoolYearService } from '@modules/school/domain';
+import { FederalStateService, SchoolFeature, SchoolYearService } from '@modules/school/domain';
 import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { StorageProviderEntity } from '@shared/domain/entity';
-import { SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo/school';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { setupEntities } from '@testing/database';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
-import { FederalStateService } from './federal-state.service';
+import { LegacySchoolDo } from '../domain';
+import { LegacySchoolRepo } from '../repo';
+import { legacySchoolDoFactory } from '../testing';
 import { LegacySchoolService } from './legacy-school.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
