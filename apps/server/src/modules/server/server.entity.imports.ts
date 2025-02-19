@@ -8,6 +8,8 @@ import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
 	ColumnBoardNode,
+	DashboardEntity,
+	DashboardGridElementEntity,
 	LegacyBoard,
 	LegacyBoardElement,
 	LessonBoardElement,
@@ -22,6 +24,14 @@ import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
+import {
+	CountyEmbeddable,
+	FederalStateEntity,
+	SchoolEntity,
+	SchoolRolePermission,
+	SchoolRoles,
+	SchoolYearEntity,
+} from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
@@ -31,14 +41,10 @@ import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { Course } from '@shared/domain/entity/course.entity';
 import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
-import { DashboardGridElementModel, DashboardModelEntity } from '@shared/domain/entity/dashboard.model.entity';
-import { CountyEmbeddable, FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';
-import { SchoolEntity, SchoolRolePermission, SchoolRoles } from '@shared/domain/entity/school.entity';
-import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { Submission } from '@shared/domain/entity/submission.entity';
 import { Task } from '@shared/domain/entity/task.entity';
@@ -60,8 +66,8 @@ export const ENTITIES = [
 	Course,
 	CourseGroup,
 	CourseNews,
-	DashboardGridElementModel,
-	DashboardModelEntity,
+	DashboardGridElementEntity,
+	DashboardEntity,
 	ExternalToolEntity,
 	FederalStateEntity,
 	ImportUser,

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CountyEmbeddable } from '@shared/domain/entity';
 import { County } from '../../../domain';
+import { CountyEmbeddable } from '../federal-state.entity';
 
 export class CountyEmbeddableMapper {
 	public static mapToEntity(county: County): CountyEmbeddable {
