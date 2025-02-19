@@ -1,7 +1,7 @@
 import type { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
+import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import type { Server } from 'node:net';
 import supertest, { Response } from 'supertest';
 import { JwtAuthenticationFactory } from './factory/jwt-authentication.factory';

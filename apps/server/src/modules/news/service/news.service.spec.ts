@@ -10,9 +10,9 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { User } from '@modules/user/repo';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { NewsRepo } from '@shared/repo/news';
 import { setupEntities } from '@testing/database';
 import { teamNewsFactory } from '@testing/factory/news.factory';

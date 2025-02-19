@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';

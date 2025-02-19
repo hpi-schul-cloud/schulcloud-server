@@ -8,8 +8,8 @@ import {
 	mediaSourceOAuthConfigEmbeddableFactory,
 	mediaSourceVidisConfigEmbeddableFactory,
 } from '@modules/media-source/testing';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';

@@ -1,8 +1,8 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';

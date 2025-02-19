@@ -5,10 +5,10 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {

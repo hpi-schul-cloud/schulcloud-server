@@ -1,10 +1,10 @@
+import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Course } from '.';
 import { CourseGroup } from './coursegroup.entity';
-import { User } from './user.entity';
 
 describe('CourseGroupEntity', () => {
 	beforeAll(async () => {

@@ -10,9 +10,10 @@ import {
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/learnroom';
+import { User } from '@modules/user/repo';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';

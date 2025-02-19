@@ -1,5 +1,6 @@
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';

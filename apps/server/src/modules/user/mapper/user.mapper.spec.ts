@@ -1,7 +1,7 @@
-import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
+import { User } from '../repo';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserMapper } from './user.mapper';
 

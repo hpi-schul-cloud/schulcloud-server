@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
@@ -10,6 +11,7 @@ import {
 	OperationType,
 	UserDeletedEvent,
 } from '@modules/deletion';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
@@ -19,10 +21,8 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { Logger } from '@core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';

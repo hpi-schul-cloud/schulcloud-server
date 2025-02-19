@@ -1,5 +1,5 @@
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { importUserFactory } from '../testing';

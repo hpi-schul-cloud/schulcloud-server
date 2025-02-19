@@ -1,4 +1,4 @@
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';

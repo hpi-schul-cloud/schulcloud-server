@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { BoardNodeAuthorizable, BoardRoles } from '@modules/board';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';

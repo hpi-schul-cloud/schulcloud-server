@@ -12,6 +12,7 @@ import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/sch
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { User } from '@modules/user/repo';
 import {
 	Course,
 	CourseGroup,
@@ -22,7 +23,6 @@ import {
 	StorageProviderEntity,
 	TeamEntity,
 	TeamNews,
-	User,
 } from '@shared/domain/entity';
 
 export const ENTITIES = [

@@ -1,9 +1,9 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page, Pseudonym } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';

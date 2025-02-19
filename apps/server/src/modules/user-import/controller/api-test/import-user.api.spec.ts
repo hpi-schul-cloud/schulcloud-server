@@ -24,10 +24,10 @@ import {
 	UserMatchResponse,
 	UserRole,
 } from '@modules/user-import/controller/dto';
+import { User } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller/dto';
-import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { roleFactory } from '@testing/factory/role.factory';

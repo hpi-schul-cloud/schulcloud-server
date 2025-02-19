@@ -6,8 +6,8 @@ import {
 } from '@modules/authorization';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { schoolFactory } from '@modules/school/testing/school.factory';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';

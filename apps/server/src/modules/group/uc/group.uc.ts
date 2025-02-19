@@ -1,14 +1,14 @@
+import { Logger } from '@core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoleDto, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { Page, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import { Group, GroupUser, GroupVisibilityPermission } from '../domain';
 import { GroupService } from '../service';
 import { ResolvedGroupDto, ResolvedGroupUser } from './dto';

@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 import { LtiDeepLinkToken } from '../../../domain';
 import { LtiDeepLinkTokenEntity, LtiDeepLinkTokenEntityProps } from '../../../entity';
 

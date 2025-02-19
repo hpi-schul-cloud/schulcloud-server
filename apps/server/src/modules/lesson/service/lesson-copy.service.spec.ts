@@ -3,6 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
@@ -19,7 +20,6 @@ import {
 	Material,
 	Submission,
 	Task,
-	User,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';

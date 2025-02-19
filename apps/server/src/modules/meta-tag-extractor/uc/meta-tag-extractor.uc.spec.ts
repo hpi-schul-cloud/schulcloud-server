@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { MetaTagExtractorService } from '../service';

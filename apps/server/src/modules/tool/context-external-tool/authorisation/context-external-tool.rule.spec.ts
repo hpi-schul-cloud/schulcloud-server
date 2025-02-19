@@ -7,8 +7,9 @@ import { contextExternalToolEntityFactory } from '@modules/tool/context-external
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Role, Submission, Task, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Role, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';

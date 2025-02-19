@@ -1,7 +1,8 @@
 // Remove the eslint-disable after fixing the import issue in EPIC-96
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
-import { Task, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { Task } from '@shared/domain/entity';
 import { TaskProperties } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';

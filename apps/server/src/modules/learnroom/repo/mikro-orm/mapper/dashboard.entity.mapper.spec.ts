@@ -1,7 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';

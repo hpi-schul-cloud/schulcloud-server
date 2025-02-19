@@ -8,9 +8,10 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { User } from '@modules/user/repo';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';

@@ -9,10 +9,10 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { User } from '@modules/user/repo';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import {

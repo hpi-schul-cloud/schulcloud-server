@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
 import {
 	Course,
 	CourseGroup,
@@ -7,7 +8,6 @@ import {
 	Submission,
 	Task,
 	TaskParentDescriptions,
-	User,
 } from '@shared/domain/entity';
 import { InputFormat, TaskStatus, TaskUpdate } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';

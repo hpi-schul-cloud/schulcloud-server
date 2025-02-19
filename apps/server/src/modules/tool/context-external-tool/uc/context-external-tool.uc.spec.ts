@@ -11,9 +11,9 @@ import {
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
 import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';

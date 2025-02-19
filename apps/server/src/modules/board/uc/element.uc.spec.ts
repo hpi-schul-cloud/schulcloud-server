@@ -1,9 +1,9 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';

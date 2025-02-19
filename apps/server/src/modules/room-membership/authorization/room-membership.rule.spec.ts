@@ -2,8 +2,8 @@ import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@mod
 import { roleDtoFactory } from '@modules/role/testing';
 import { roomFactory } from '@modules/room/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';

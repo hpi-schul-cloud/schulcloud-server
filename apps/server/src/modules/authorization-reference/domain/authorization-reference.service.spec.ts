@@ -6,9 +6,10 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';

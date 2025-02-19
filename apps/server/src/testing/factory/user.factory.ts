@@ -3,14 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 // Remove the eslint-disable after fixing the import issue in EPIC-96
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
-import {
-	ConsentEntity,
-	ParentConsentEntity,
-	Role,
-	User,
-	UserConsentEntity,
-	UserProperties,
-} from '@shared/domain/entity';
+import { User, UserProperties } from '@modules/user/repo';
+import { ConsentEntity, ParentConsentEntity, Role, UserConsentEntity } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';

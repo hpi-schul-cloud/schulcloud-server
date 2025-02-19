@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
@@ -8,7 +9,6 @@ import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Course, CourseGroup, LessonEntity, Material, Task } from '.';
 import { Submission } from './submission.entity';
-import { User } from './user.entity';
 
 describe('Submission entity', () => {
 	beforeAll(async () => {

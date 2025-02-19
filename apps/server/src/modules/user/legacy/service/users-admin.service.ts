@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from '../repo';

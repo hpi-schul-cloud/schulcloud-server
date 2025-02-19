@@ -1,7 +1,7 @@
+import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user';
 import { ForbiddenLoggableException } from '../error';

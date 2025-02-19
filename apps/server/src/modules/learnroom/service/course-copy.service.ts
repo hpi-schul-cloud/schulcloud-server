@@ -7,15 +7,16 @@ import {
 } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Course, User } from '@shared/domain/entity';
+import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
+import { LegacyBoardRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
-import { LegacyBoardRepo } from '../repo';
 
 type CourseCopyParams = {
 	originalCourse: Course;
