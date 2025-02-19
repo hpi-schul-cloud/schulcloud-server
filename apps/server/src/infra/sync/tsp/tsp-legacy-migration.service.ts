@@ -1,7 +1,8 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@core/logger';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolFeature } from '@modules/school/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { TspLegacyMigrationStartLoggable } from './loggable/tsp-legacy-migration-start.loggable';
 import { TspLegacyMigrationSystemMissingLoggable } from './loggable/tsp-legacy-migration-system-missing.loggable';
 import { TspLegacySchoolMigrationCountLoggable } from './loggable/tsp-legacy-school-migration-count.loggable';

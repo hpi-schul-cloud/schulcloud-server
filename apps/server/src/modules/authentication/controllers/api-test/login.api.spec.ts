@@ -2,16 +2,16 @@ import { EntityManager } from '@mikro-orm/core';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -178,7 +178,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -231,7 +231,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -272,7 +272,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: schoolExternalId,
 				});
@@ -314,7 +314,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '01234';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+				const school = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: officialSchoolNumber,
 					officialSchoolNumber,

@@ -12,11 +12,11 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';

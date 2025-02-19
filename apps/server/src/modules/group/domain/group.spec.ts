@@ -10,7 +10,8 @@ describe(Group.name, () => {
 	describe('removeUser', () => {
 		describe('when the user is in the group', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
 				const groupUser1 = new GroupUser({
 					userId: user.id as string,
 					roleId: new ObjectId().toHexString(),
@@ -24,6 +25,7 @@ describe(Group.name, () => {
 				});
 
 				return {
+					userId,
 					user,
 					groupUser1,
 					groupUser2,
@@ -32,17 +34,17 @@ describe(Group.name, () => {
 			};
 
 			it('should remove the user', () => {
-				const { user, group, groupUser1 } = setup();
+				const { group, groupUser1, userId } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).not.toContain(groupUser1);
 			});
 
 			it('should keep all other users', () => {
-				const { user, group, groupUser2 } = setup();
+				const { group, groupUser2, userId } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).toContain(groupUser2);
 			});
@@ -50,7 +52,8 @@ describe(Group.name, () => {
 
 		describe('when the user is not in the group', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
 				const groupUser2 = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
@@ -60,6 +63,7 @@ describe(Group.name, () => {
 				});
 
 				return {
+					userId,
 					user,
 					groupUser2,
 					group,
@@ -67,9 +71,9 @@ describe(Group.name, () => {
 			};
 
 			it('should do nothing', () => {
-				const { user, group, groupUser2 } = setup();
+				const { group, groupUser2, userId } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).toEqual([groupUser2]);
 			});
@@ -77,19 +81,21 @@ describe(Group.name, () => {
 
 		describe('when the group is empty', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const userId = new ObjectId().toHexString();
+				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
 				const group: Group = groupFactory.build({ users: [] });
 
 				return {
+					userId,
 					user,
 					group,
 				};
 			};
 
 			it('should stay empty', () => {
-				const { user, group } = setup();
+				const { userId, group } = setup();
 
-				group.removeUser(user);
+				group.removeUser(userId);
 
 				expect(group.users).toEqual([]);
 			});
