@@ -302,6 +302,24 @@ describe(DeletionRequestService.name, () => {
 				expect(result).toEqual(deletionRequests);
 			});
 		});
+
+		describe('when status is anything else', () => {
+			const setup = () => {
+				const status = StatusModel.FINISHED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequests = [];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should return empty array', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
 	});
 
 	describe('update', () => {
