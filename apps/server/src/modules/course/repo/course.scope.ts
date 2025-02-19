@@ -1,11 +1,10 @@
 import { FilterQuery } from '@mikro-orm/core';
-
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { Scope } from '../scope';
+import { Scope } from '@shared/repo/scope';
 
 export class CourseScope extends Scope<Course> {
-	forAllGroupTypes(userId: EntityId): this {
+	public forAllGroupTypes(userId: EntityId): this {
 		const isStudent = { students: userId };
 		const isTeacher = { teachers: userId };
 		const isSubstitutionTeacher = { substitutionTeachers: userId };
@@ -17,7 +16,7 @@ export class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forTeacherOrSubstituteTeacher(userId: EntityId): this {
+	public forTeacherOrSubstituteTeacher(userId: EntityId): this {
 		const isTeacher = { teachers: userId };
 		const isSubstitutionTeacher = { substitutionTeachers: userId };
 
@@ -28,12 +27,12 @@ export class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forTeacher(userId: EntityId): this {
+	public forTeacher(userId: EntityId): this {
 		this.addQuery({ teachers: userId });
 		return this;
 	}
 
-	forActiveCourses(): this {
+	public forActiveCourses(): this {
 		const now = new Date();
 		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<Course>;
 		const untilDateInFuture = { untilDate: { $gte: now } };
@@ -43,7 +42,7 @@ export class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forCourseId(courseId: EntityId): this {
+	public forCourseId(courseId: EntityId): this {
 		this.addQuery({ id: courseId });
 		return this;
 	}
@@ -55,7 +54,7 @@ export class CourseScope extends Scope<Course> {
 		return this;
 	}
 
-	forArchivedCourses(): this {
+	public forArchivedCourses(): this {
 		const now = new Date();
 		const untilDateExists = { untilDate: { $exists: true } } as FilterQuery<Course>;
 		const untilDateInPast = { untilDate: { $lt: now } };

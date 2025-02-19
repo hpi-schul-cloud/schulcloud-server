@@ -1,4 +1,5 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseRepo } from '@modules/course/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
 import {
 	ContextExternalTool,
@@ -11,11 +12,10 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
+import { LegacyBoardRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
-import { LegacyBoardRepo } from '../repo';
 
 type CourseCopyParams = {
 	originalCourse: Course;

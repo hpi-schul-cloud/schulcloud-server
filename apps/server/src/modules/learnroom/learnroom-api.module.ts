@@ -2,14 +2,13 @@ import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { CourseRepo } from '@modules/course/repo';
 import { GroupModule } from '@modules/group';
-
 import { LessonModule } from '@modules/lesson';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
 import { CourseRoomsController } from './controller/course-rooms.controller';
 import { CourseController } from './controller/course.controller';

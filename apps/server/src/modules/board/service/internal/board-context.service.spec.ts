@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseRepo } from '@modules/course/repo';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -8,7 +9,6 @@ import { roomFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo/course';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';

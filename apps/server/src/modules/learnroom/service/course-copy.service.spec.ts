@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseRepo } from '@modules/course/repo';
 import { LessonCopyService } from '@modules/lesson/service';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -11,7 +12,6 @@ import { ToolConfig } from '@modules/tool/tool-config';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, User } from '@shared/domain/entity';
-import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';

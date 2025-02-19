@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Course } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { CourseScope } from './course.scope';
 
 @Injectable()
