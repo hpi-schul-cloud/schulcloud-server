@@ -14,6 +14,7 @@ export class CourseMapper {
 			courseMetadata.untilDate,
 			courseMetadata.copyingSince
 		);
+
 		return dto;
 	}
 

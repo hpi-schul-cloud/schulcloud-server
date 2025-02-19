@@ -1,50 +1,43 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { LearnroomTypes } from '@shared/domain/types';
-import { Learnroom } from '../interface';
-import { DashboardEntity, GridElement } from './dashboard';
-
-const getLearnroomMock = (id: string): Learnroom => {
-	return {
-		getMetadata: () => {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: 'Reference',
-				shortTitle: 'Re',
-				displayColor: '#FFFFFF',
-				isSynchronized: false,
-			};
-		},
-	};
-};
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
+import { ObjectId } from 'bson';
+import { Dashboard, GridElement } from '../../domain/do/dashboard';
 
 describe('dashboard entity', () => {
+	beforeAll(async () => {
+		await setupEntities([Course, CourseGroup]);
+	});
+
 	describe('constructor', () => {
 		it('should create dashboard with prefilled Grid', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedGroup('elementId', 'title', [getLearnroomMock('referenceId')]),
+						gridElement: GridElement.FromPersistedGroup('elementId', 'title', [
+							courseFactory.buildWithId({ name: 'Mathe' }),
+						]),
 					},
 				],
 				userId: 'userId',
 			});
 
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(dashboard instanceof Dashboard).toEqual(true);
 		});
 
 		it('should create dashboard when passing empty grid', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 
-			expect(dashboard instanceof DashboardEntity).toEqual(true);
+			expect(dashboard instanceof Dashboard).toEqual(true);
 		});
 	});
 
 	describe('getUserId', () => {
 		it('should return the owners userId', () => {
 			const userId = 'userId';
-			const dashboard = new DashboardEntity('someid', { grid: [], userId });
+			const dashboard = new Dashboard('someid', { grid: [], userId });
 			const result = dashboard.getUserId();
 			expect(result).toEqual(userId);
 		});
@@ -52,37 +45,38 @@ describe('dashboard entity', () => {
 
 	describe('getGrid', () => {
 		it('getGrid should return correct value', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 			const testGrid = dashboard.getGrid();
 			expect(Array.isArray(testGrid)).toEqual(true);
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const mock = courseFactory.buildWithId({ name: 'Mathe' });
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', getLearnroomMock('referenceId')),
+						gridElement: GridElement.FromPersistedReference('elementId', mock),
 					},
 				],
 				userId: 'userId',
 			});
 			const testGrid = dashboard.getGrid();
 
-			expect(testGrid[0].gridElement.getContent().referencedId).toEqual('referenceId');
-			expect(testGrid[0].gridElement.getContent().title).toEqual('Reference');
-			expect(testGrid[0].gridElement.getContent().shortTitle).toEqual('Re');
-			expect(testGrid[0].gridElement.getContent().displayColor).toEqual('#FFFFFF');
+			expect(testGrid[0].gridElement.getContent().referencedId).toEqual(mock.getMetadata().id);
+			expect(testGrid[0].gridElement.getContent().title).toEqual(mock.getMetadata().title);
+			expect(testGrid[0].gridElement.getContent().shortTitle).toEqual(mock.getMetadata().shortTitle);
+			expect(testGrid[0].gridElement.getContent().displayColor).toEqual(mock.getMetadata().displayColor);
 		});
 	});
 
 	describe('moveElement', () => {
 		it('should move existing element to a new position', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', getLearnroomMock('referenceId')),
+						gridElement: GridElement.FromPersistedReference('elementId', courseFactory.buildWithId({ name: 'Mathe' })),
 					},
 				],
 				userId: 'userId',
@@ -94,15 +88,15 @@ describe('dashboard entity', () => {
 		});
 
 		it('when no element at origin position, it should throw notFound', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 			const callMove = () => dashboard.moveElement({ x: 4, y: 2 }, { x: 3, y: 2 });
 			expect(callMove).toThrow(NotFoundException);
 		});
 
 		it('when the new position is taken, it should merge the elements into a group', () => {
-			const movedElement = GridElement.FromPersistedReference('tomove', getLearnroomMock('ref02'));
-			const targetElement = GridElement.FromPersistedReference('target', getLearnroomMock('ref01'));
-			const dashboard = new DashboardEntity('someid', {
+			const movedElement = GridElement.FromPersistedReference('tomove', courseFactory.buildWithId({ name: 'Mathe' }));
+			const targetElement = GridElement.FromPersistedReference('target', courseFactory.buildWithId({ name: 'Mathe' }));
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
 					{ pos: { x: 3, y: 3 }, gridElement: targetElement },
@@ -117,11 +111,11 @@ describe('dashboard entity', () => {
 
 		it('should ungroup a reference from a group', () => {
 			const element = GridElement.FromPersistedGroup('target', 'grouptitle', [
-				getLearnroomMock('ref01'),
-				getLearnroomMock('ref02'),
-				getLearnroomMock('ref03'),
+				courseFactory.buildWithId({ name: 'Mathe' }),
+				courseFactory.buildWithId({ name: 'Mathe1' }),
+				courseFactory.buildWithId({ name: 'Mathe2' }),
 			]);
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
 				userId: 'userId',
 			});
@@ -132,12 +126,14 @@ describe('dashboard entity', () => {
 		});
 
 		it('when the new position is out of bounds, it should throw badrequest', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				colums: 3,
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
-						gridElement: GridElement.FromPersistedGroup('elementId', 'title', [getLearnroomMock('referenceId')]),
+						gridElement: GridElement.FromPersistedGroup('elementId', 'title', [
+							courseFactory.buildWithId({ name: 'Mathe' }),
+						]),
 					},
 				],
 				userId: 'userId',
@@ -149,11 +145,12 @@ describe('dashboard entity', () => {
 
 	describe('getElement', () => {
 		it('getElement should return correct value', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const mock = courseFactory.buildWithId({ name: 'Mathe' });
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', getLearnroomMock('referenceId')),
+						gridElement: GridElement.FromPersistedReference('elementId', mock),
 					},
 				],
 				userId: 'userId',
@@ -166,14 +163,14 @@ describe('dashboard entity', () => {
 			expect(testElement).toHaveProperty('getReferences');
 			expect(testElement).toHaveProperty('addReferences');
 			expect(testElement).toHaveProperty('setGroupName');
-			expect(result.referencedId).toEqual('referenceId');
-			expect(result.title).toEqual('Reference');
-			expect(result.shortTitle).toEqual('Re');
-			expect(result.displayColor).toEqual('#FFFFFF');
+			expect(result.referencedId).toEqual(mock.getMetadata().id);
+			expect(result.title).toEqual(mock.getMetadata().title);
+			expect(result.shortTitle).toEqual(mock.getMetadata().shortTitle);
+			expect(result.displayColor).toEqual(mock.getMetadata().displayColor);
 		});
 
 		it('when no element at request position, it should throw notFound', () => {
-			const dashboard = new DashboardEntity('someid', { grid: [], userId: 'userId' });
+			const dashboard = new Dashboard('someid', { grid: [], userId: 'userId' });
 			const callGetElement = () => dashboard.getElement({ x: 0, y: 2 });
 			expect(callGetElement).toThrow(NotFoundException);
 		});
@@ -181,19 +178,22 @@ describe('dashboard entity', () => {
 
 	describe('setLearnrooms', () => {
 		it('should add any passed rooms that are not on the dashboard yet', () => {
-			const dashboard = new DashboardEntity('someid', {
+			const dashboard = new Dashboard('someid', {
 				grid: [],
 				userId: 'userId',
 			});
 
-			dashboard.setLearnRooms([getLearnroomMock('first'), getLearnroomMock('second')]);
+			dashboard.setLearnRooms([
+				courseFactory.buildWithId({ name: 'Mathe' }),
+				courseFactory.buildWithId({ name: 'Mathe1' }),
+			]);
 
 			expect(dashboard.getGrid().length).toEqual(2);
 		});
 
 		it('should put new elements into first available positions', () => {
-			const existingRoom = getLearnroomMock('referenceId');
-			const dashboard = new DashboardEntity('someid', {
+			const existingRoom = courseFactory.buildWithId({ name: 'Mathe' });
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 0 },
@@ -203,15 +203,16 @@ describe('dashboard entity', () => {
 				userId: 'userId',
 			});
 
-			dashboard.setLearnRooms([getLearnroomMock('first'), existingRoom]);
+			dashboard.setLearnRooms([courseFactory.buildWithId(), existingRoom]);
 
 			expect(dashboard.getGrid().length).toEqual(2);
 			expect(dashboard.getGrid()[1].pos).toEqual({ x: 1, y: 0 });
 		});
 
 		it('should not change any received rooms that are already on the board', () => {
-			const room = getLearnroomMock('referenceId');
-			const dashboard = new DashboardEntity('someid', {
+			const id = new ObjectId();
+			const room = courseFactory.buildWithId({ name: 'Mathe' }, id.toHexString());
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
@@ -224,24 +225,27 @@ describe('dashboard entity', () => {
 			dashboard.setLearnRooms([room]);
 
 			expect(dashboard.getGrid().length).toEqual(1);
-			expect(dashboard.getGrid()[0].gridElement.getReferences()[0].getMetadata().id).toEqual('referenceId');
+			expect(dashboard.getGrid()[0].gridElement.getReferences()[0].getMetadata().id).toEqual(id.toHexString());
 			expect(dashboard.getGrid()[0].pos).toEqual({ x: 0, y: 2 });
 		});
 
 		it('should remove any rooms that are on the dashboard, but not in the received list', () => {
-			const room = getLearnroomMock('referenceId');
-			const dashboard = new DashboardEntity('someid', {
+			const room = courseFactory.buildWithId({ name: 'Mathe' });
+			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
 						gridElement: GridElement.FromPersistedGroup('groupId', 'grouptitle', [
 							room,
-							getLearnroomMock('toBeRemoved'),
+							courseFactory.buildWithId({ name: 'Mathe' }),
 						]),
 					},
 					{
 						pos: { x: 0, y: 2 },
-						gridElement: GridElement.FromPersistedReference('singleElement', getLearnroomMock('alsoToBeRemoved')),
+						gridElement: GridElement.FromPersistedReference(
+							'singleElement',
+							courseFactory.buildWithId({ name: 'Mathe' })
+						),
 					},
 				],
 				userId: 'userId',

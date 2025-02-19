@@ -1,6 +1,6 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Learnroom } from '../interface';
-import { EntityId, LearnroomMetadata } from '../types';
+import { EntityId } from '@shared/domain/types';
+import { type Learnroom, type LearnroomMetadata } from '../../types';
 
 const defaultColumns = 4;
 
@@ -36,9 +36,9 @@ export type GridElementContent = {
 };
 
 export class GridElement implements IGridElement {
-	id?: EntityId;
+	public id?: EntityId;
 
-	title?: string;
+	public title?: string;
 
 	private compareLearnroomReferences = (a: Learnroom, b: Learnroom): 1 | -1 | 0 => {
 		const titleA = a.getMetadata().title;
@@ -75,7 +75,7 @@ export class GridElement implements IGridElement {
 		return new GridElement({ title, references });
 	}
 
-	references: Learnroom[];
+	public references: Learnroom[];
 
 	public hasId(): boolean {
 		return !!this.id;
@@ -160,15 +160,14 @@ export type GridElementWithPosition = {
 
 export type DashboardProps = { colums?: number; grid: GridElementWithPosition[]; userId: EntityId };
 
-// is not marked as Entity and should not named as Entity
-export class DashboardEntity {
-	id: EntityId;
+export class Dashboard {
+	public id: EntityId;
 
-	columns: number;
+	public columns: number;
 
-	grid: Map<number, IGridElement>;
+	public grid: Map<number, IGridElement>;
 
-	userId: EntityId;
+	public userId: EntityId;
 
 	private gridIndexFromPosition(pos: GridPosition): number {
 		if (pos.x > this.columns) {
