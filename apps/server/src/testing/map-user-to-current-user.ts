@@ -1,6 +1,8 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+// Remove the eslint-disable after fixing the import issue in EPIC-96
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { User } from '@modules/user/repo';
 import { EntityId } from '@shared/domain/types';
 

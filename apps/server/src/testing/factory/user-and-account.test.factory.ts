@@ -1,10 +1,12 @@
+// Remove the eslint-disables after fixing the import issue in EPIC-96
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing/account.factory';
-// Remove the eslint-disable after fixing the import issue in EPIC-96
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { SchoolEntity } from '@modules/school/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { User } from '@modules/user/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';

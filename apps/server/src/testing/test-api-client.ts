@@ -1,5 +1,7 @@
 import type { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
+// Remove the eslint-disable after fixing the import issue in EPIC-96
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import type { Server } from 'node:net';

@@ -1,8 +1,9 @@
+// Remove the eslint-disables after fixing the import issue in EPIC-96
 import { Course, CourseProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
-// Remove the eslint-disable after fixing the import issue in EPIC-96
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from './base.factory';
 
