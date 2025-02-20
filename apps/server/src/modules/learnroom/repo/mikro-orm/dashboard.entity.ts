@@ -48,7 +48,7 @@ export class DashboardGridElementEntity extends BaseEntityWithTimestamps {
 	yPos: number;
 
 	@Index()
-	@ManyToMany('Course', undefined, { fieldName: 'referenceIds' })
+	@ManyToMany(() => CourseEntity, undefined, { fieldName: 'referenceIds' })
 	references = new Collection<CourseEntity>(this);
 
 	@Index()

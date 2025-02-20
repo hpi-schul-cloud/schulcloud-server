@@ -1,5 +1,5 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
-import type { CourseEntity } from '@modules/course/repo/course.entity';
+import { CourseEntity } from '@modules/course/repo/course.entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { EntityId } from '../types';
 import { NewsTarget, NewsTargetModel } from '../types/news.types';
@@ -125,7 +125,7 @@ export class CourseNews extends News {
 	// FIXME Due to a weird behaviour in the mikro-orm validation we have to
 	// disable the validation by setting the reference nullable.
 	// Remove when fixed in mikro-orm.
-	@ManyToOne('Course', { nullable: true })
+	@ManyToOne(() => CourseEntity, { nullable: true })
 	target!: CourseEntity;
 
 	constructor(props: NewsProperties) {
