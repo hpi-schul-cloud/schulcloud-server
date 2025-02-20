@@ -1,4 +1,4 @@
-const request = require('request-promise-native');
+const axios = require('axios');
 
 const mockTlsTermination = {
 	'X-Forwarded-Proto': 'https',
@@ -8,16 +8,17 @@ module.exports = (hydraUrl) => {
 	return {
 		introspectOAuth2Token: (token, scope) => {
 			const options = {
-				uri: `${hydraUrl}/oauth2/introspect`,
+				url: `${hydraUrl}/oauth2/introspect`,
 				method: 'POST',
-				body: `token=${token}&scope=${scope}`,
+				data: `token=${token}&scope=${scope}`,
 				headers: {
 					...mockTlsTermination,
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
-				json: true,
 			};
-			return request(options);
+			const res = axios(options);
+
+			return res.data;
 		},
 	};
 };
