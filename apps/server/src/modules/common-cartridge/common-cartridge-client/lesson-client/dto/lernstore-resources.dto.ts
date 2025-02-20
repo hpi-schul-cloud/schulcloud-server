@@ -5,11 +5,11 @@ export class LernstoreResourcesDto {
 
 	public description: string;
 
-	public merlinReference?: string | undefined;
+	public merlinReference?: string;
 
 	public title: string;
 
-	public url?: string | undefined;
+	public url?: string;
 
 	constructor(props: LernstoreResources) {
 		this.client = props.client;
