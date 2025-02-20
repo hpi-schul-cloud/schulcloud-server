@@ -5,11 +5,11 @@ import {
 	AntivirusExchange,
 	FilesPreviewExchange,
 	FilesStorageExchange,
+	HeartBeatIntervalInSeconds,
 	MailSendExchange,
 	RabbitMqURI,
 	SchulconnexProvisioningExchange,
 } from './rabbitmq.config';
-import { AmqpConnectionManagerOptions } from 'amqp-connection-manager/dist/types/AmqpConnectionManager';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -48,7 +48,7 @@ const imports = [
 		],
 		uri: RabbitMqURI,
 		connectionManagerOptions: {
-			heartbeatIntervalInSeconds: Configuration.get('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS') as number,
+			heartbeatIntervalInSeconds: HeartBeatIntervalInSeconds,
 		},
 	}),
 ];
@@ -67,7 +67,7 @@ export class RabbitMQWrapperModule {}
 export class RabbitMQWrapperTestModule implements OnModuleDestroy {
 	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
 
-	// In tests we need to close connections when the module is destroyed.
+	// In tests, we need to close connections when the module is destroyed.
 	public async onModuleDestroy(): Promise<void> {
 		await Promise.all(
 			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())

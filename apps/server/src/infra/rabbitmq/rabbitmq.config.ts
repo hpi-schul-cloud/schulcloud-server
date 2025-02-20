@@ -7,6 +7,7 @@ export const MailSendExchange = Configuration.get('MAIL_SEND_EXCHANGE') as strin
 export const AntivirusExchange = Configuration.get('ANTIVIRUS_EXCHANGE') as string;
 export const SchulconnexProvisioningExchange = Configuration.get('PROVISIONING_SCHULCONNEX_EXCHANGE') as string;
 export const RabbitMqURI = Configuration.get('RABBITMQ_URI') as string;
+export const HeartBeatIntervalInSeconds = Configuration.get('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS') as number;
 
 export interface RabbitMqConfig {
 	RABBITMQ_URI: string;
