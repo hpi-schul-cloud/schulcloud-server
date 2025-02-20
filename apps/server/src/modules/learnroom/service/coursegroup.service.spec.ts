@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Course, CourseGroup, CourseGroupRepo } from '@modules/course/repo';
+import { courseGroupEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -15,7 +16,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { CourseGroupService } from './coursegroup.service';
@@ -74,7 +74,7 @@ describe('CourseGroupService', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const courseGroups = courseGroupFactory.buildListWithId(2, { students: [user] });
+				const courseGroups = courseGroupEntityFactory.buildListWithId(2, { students: [user] });
 
 				userRepo.findById.mockResolvedValue(user);
 				courseGroupRepo.findByUserId.mockResolvedValue([courseGroups, courseGroups.length]);
@@ -107,8 +107,8 @@ describe('CourseGroupService', () => {
 	describe('when deleting by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const courseGroup1 = courseGroupFactory.buildWithId({ students: [user] });
-			const courseGroup2 = courseGroupFactory.buildWithId({ students: [user] });
+			const courseGroup1 = courseGroupEntityFactory.buildWithId({ students: [user] });
+			const courseGroup2 = courseGroupEntityFactory.buildWithId({ students: [user] });
 
 			userRepo.findById.mockResolvedValue(user);
 			courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);

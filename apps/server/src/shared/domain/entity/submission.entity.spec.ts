@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseGroupEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -489,7 +489,7 @@ describe('Submission entity', () => {
 				const studentId3 = new ObjectId().toHexString();
 				const studentIds = [studentId1, studentId2, studentId3];
 
-				const courseGroup = courseGroupFactory.build();
+				const courseGroup = courseGroupEntityFactory.build();
 				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
 				const creatorId = submission.student?.id;
 

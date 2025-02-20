@@ -1,15 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
+import { LessonEntity, Material, Submission, Task } from '../../domain/entity';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
@@ -45,7 +44,7 @@ describe('submission repo', () => {
 	describe('findById', () => {
 		it(' should return the submission with populated courseGroup', async () => {
 			const student = userFactory.build();
-			const courseGroup = courseGroupFactory.build({ students: [student] });
+			const courseGroup = courseGroupEntityFactory.build({ students: [student] });
 			const submission = submissionFactory.build({ courseGroup });
 			await em.persistAndFlush(submission);
 			em.clear();
@@ -57,8 +56,8 @@ describe('submission repo', () => {
 
 		it('should return the submission with populated task and nested lesson, course and courseGroup', async () => {
 			const student = userFactory.build();
-			const course = courseFactory.build();
-			const courseGroup = courseGroupFactory.build({ students: [student], course });
+			const course = courseEntityFactory.build();
+			const courseGroup = courseGroupEntityFactory.build({ students: [student], course });
 			const lesson = lessonFactory.build({ course, courseGroup });
 			const task = taskFactory.build({ course, lesson });
 			const submission = submissionFactory.build({ courseGroup, task });
@@ -128,11 +127,11 @@ describe('submission repo', () => {
 		});
 
 		it('should return submissions when the user is in the course group', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			await em.persistAndFlush(course);
 			const student1 = userFactory.build();
 			const student2 = userFactory.build();
-			const courseGroup = courseGroupFactory.build({ course, students: [student1, student2] });
+			const courseGroup = courseGroupEntityFactory.build({ course, students: [student1, student2] });
 			const task = taskFactory.build({ course });
 			const submission = submissionFactory.build({ student: student1, task });
 			submission.courseGroup = courseGroup;

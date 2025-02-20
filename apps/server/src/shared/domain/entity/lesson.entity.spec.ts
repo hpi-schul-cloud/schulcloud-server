@@ -1,9 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
@@ -33,7 +32,7 @@ describe('Lesson Entity', () => {
 
 		describe('when tasks are populated', () => {
 			it('it should return number of public tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson });
@@ -43,7 +42,7 @@ describe('Lesson Entity', () => {
 			});
 
 			it('should not count private tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson, private: true });
@@ -53,7 +52,7 @@ describe('Lesson Entity', () => {
 			});
 
 			it('should not count planned tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
@@ -76,7 +75,7 @@ describe('Lesson Entity', () => {
 
 		describe('when tasks are populated', () => {
 			it('it should return number of draft tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson, private: true });
 				taskFactory.build({ course, lesson, private: true });
@@ -86,7 +85,7 @@ describe('Lesson Entity', () => {
 			});
 
 			it('should not count published tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson, private: true });
@@ -96,7 +95,7 @@ describe('Lesson Entity', () => {
 			});
 
 			it('should not count planned tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson, private: true });
 				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
@@ -119,7 +118,7 @@ describe('Lesson Entity', () => {
 
 		describe('when tasks are populated', () => {
 			it('it should return number of planned tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
 				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
@@ -129,7 +128,7 @@ describe('Lesson Entity', () => {
 			});
 
 			it('should not count published tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson });
 				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
@@ -139,7 +138,7 @@ describe('Lesson Entity', () => {
 			});
 
 			it('should not count draft tasks', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build();
 				taskFactory.build({ course, lesson, private: true });
 				taskFactory.build({ course, lesson, private: false, availableDate: inOneDay });
@@ -169,7 +168,7 @@ describe('Lesson Entity', () => {
 
 	describe('getLessonLinkedTasks', () => {
 		it('should return the linked tasks to that lesson', () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build();
 			const originalTask = taskFactory.build({ course, lesson });
 
@@ -219,7 +218,7 @@ describe('Lesson Entity', () => {
 
 	describe('getSchoolId', () => {
 		it('schould return schoolId from course group', () => {
-			const courseGroup = courseGroupFactory.build();
+			const courseGroup = courseGroupEntityFactory.build();
 			const lesson = lessonFactory.build({ courseGroup });
 			const schoolId = lesson.getSchoolId();
 
@@ -227,7 +226,7 @@ describe('Lesson Entity', () => {
 		});
 
 		it('schould return schoolId from course', () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			const schoolId = lesson.getSchoolId();
 
@@ -243,7 +242,7 @@ describe('Lesson Entity', () => {
 				const studentId3 = new ObjectId().toHexString();
 				const studentIds = [studentId1, studentId2, studentId3];
 
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.buildWithId({ course });
 
 				const spy = jest.spyOn(course, 'getStudentIds').mockReturnValueOnce(studentIds);
@@ -278,7 +277,7 @@ describe('Lesson Entity', () => {
 				const studentId3 = new ObjectId().toHexString();
 				const studentIds = [studentId1, studentId2, studentId3];
 
-				const courseGroup = courseGroupFactory.build();
+				const courseGroup = courseGroupEntityFactory.build();
 				const lesson = lessonFactory.buildWithId({ course: courseGroup });
 
 				const spy = jest.spyOn(courseGroup, 'getStudentIds').mockReturnValueOnce(studentIds);

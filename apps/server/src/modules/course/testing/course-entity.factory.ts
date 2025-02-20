@@ -1,37 +1,34 @@
-import { DeepPartial } from 'fishery';
-// Remove the eslint-disable after fixing the import issue in EPIC-96
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { Course, CourseProperties } from '@modules/course/repo';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
-import { BaseFactory } from './base.factory';
-import { userFactory } from './user.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { userFactory } from '@testing/factory/user.factory';
+import { DeepPartial } from 'fishery';
+import { Course, CourseProperties } from '../repo';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
-class CourseFactory extends BaseFactory<Course, CourseProperties> {
-	isFinished(): this {
+class CourseEntityFactory extends BaseFactory<Course, CourseProperties> {
+	public isFinished(): this {
 		const untilDate = new Date(Date.now() - oneDay);
 		const params: DeepPartial<CourseProperties> = { untilDate };
 
 		return this.params(params);
 	}
 
-	isOpen(): this {
+	public isOpen(): this {
 		const untilDate = new Date(Date.now() + oneDay);
 		const params: DeepPartial<CourseProperties> = { untilDate };
 
 		return this.params(params);
 	}
 
-	studentsWithId(numberOfStudents: number): this {
+	public studentsWithId(numberOfStudents: number): this {
 		const students = userFactory.buildListWithId(numberOfStudents);
 		const params: DeepPartial<CourseProperties> = { students };
 
 		return this.params(params);
 	}
 
-	teachersWithId(numberOfTeachers: number): this {
+	public teachersWithId(numberOfTeachers: number): this {
 		const teachers = userFactory.buildListWithId(numberOfTeachers);
 		const params: DeepPartial<CourseProperties> = { teachers };
 
@@ -39,7 +36,7 @@ class CourseFactory extends BaseFactory<Course, CourseProperties> {
 	}
 }
 
-export const courseFactory = CourseFactory.define(Course, ({ sequence }) => {
+export const courseEntityFactory = CourseEntityFactory.define(Course, ({ sequence }) => {
 	return {
 		name: `course #${sequence}`,
 		description: `course #${sequence} description`,

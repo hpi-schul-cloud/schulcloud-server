@@ -5,4 +5,4 @@ export {
 	taskBoardElementFactory,
 } from './boardelement.factory';
 export { columnBoardNodeFactory } from './column-board-node.factory';
-export { courseFactory } from './courseFactory';
+export { courseFactory } from './course.factory';

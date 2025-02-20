@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonCopyService } from '@modules/lesson/service';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -14,8 +15,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import {
 	contextExternalToolFactory,
@@ -112,10 +111,10 @@ describe('course copy service', () => {
 		const setup = () => {
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ school });
-			const allCourses = courseFactory.buildList(3, { teachers: [user] });
+			const allCourses = courseEntityFactory.buildList(3, { teachers: [user] });
 			const course = allCourses[0];
 			const originalBoard = boardFactory.build({ course });
-			const courseCopy = courseFactory.buildWithId({ teachers: [user] });
+			const courseCopy = courseEntityFactory.buildWithId({ teachers: [user] });
 			const boardCopy = boardFactory.build({ course: courseCopy });
 			const schoolTool: SchoolExternalTool = schoolExternalToolFactory.build({ schoolId: school.id });
 			const tools: ContextExternalTool[] = contextExternalToolFactory.buildList(2, {
@@ -471,7 +470,7 @@ describe('course copy service', () => {
 	describe('when FEATURE_CTL_TOOLS_COPY_ENABLED is false', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const allCourses = courseFactory.buildList(3, { teachers: [user] });
+			const allCourses = courseEntityFactory.buildList(3, { teachers: [user] });
 			const course = allCourses[0];
 			const originalBoard = boardFactory.build({ course });
 
@@ -533,7 +532,7 @@ describe('course copy service', () => {
 	describe('when course is empty', () => {
 		const setup = () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			courseRepo.findById.mockResolvedValue(course);
 			courseRepo.findAllByUserId.mockResolvedValue([[course], 1]);
 			userRepo.findById.mockResolvedValue(user);
@@ -620,7 +619,11 @@ describe('course copy service', () => {
 			const substitutionTeachers = userFactory.buildList(1);
 			const students = userFactory.buildList(1);
 
-			const originalCourse = courseFactory.build({ teachers: [user, ...teachers], substitutionTeachers, students });
+			const originalCourse = courseEntityFactory.build({
+				teachers: [user, ...teachers],
+				substitutionTeachers,
+				students,
+			});
 			const originalBoard = boardFactory.build({ course: originalCourse });
 
 			courseRepo.findById.mockResolvedValue(originalCourse);
@@ -665,9 +668,9 @@ describe('course copy service', () => {
 	describe('when course contains course groups', () => {
 		const setupWithCourseGroups = () => {
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build();
+			const originalCourse = courseEntityFactory.build();
 			const originalBoard = boardFactory.build({ course: originalCourse });
-			courseGroupFactory.build({ course: originalCourse });
+			courseGroupEntityFactory.build({ course: originalCourse });
 			courseRepo.findById.mockResolvedValue(originalCourse);
 			courseRepo.findAllByUserId.mockResolvedValue([[originalCourse], 1]);
 

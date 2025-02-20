@@ -3,9 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
+import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 
@@ -29,7 +28,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should create a course by passing required properties', () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			expect(course instanceof Course).toEqual(true);
 		});
 	});
@@ -47,7 +46,7 @@ describe('CourseEntity', () => {
 
 	describe('getMetadata', () => {
 		it('should return a metadata object', () => {
-			const course = courseFactory.build({ name: 'History', color: '#445566' });
+			const course = courseEntityFactory.build({ name: 'History', color: '#445566' });
 
 			const result = course.getMetadata();
 
@@ -58,7 +57,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return only emoji as shortTitle if used as first character', () => {
-			const course = courseFactory.build({ name: '😀 History', color: '#445566' });
+			const course = courseEntityFactory.build({ name: '😀 History', color: '#445566' });
 
 			const result = course.getMetadata();
 
@@ -67,7 +66,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return emoji correctly in shortTitle if used as second character', () => {
-			const course = courseFactory.build({ name: 'A😀 History', color: '#445566' });
+			const course = courseEntityFactory.build({ name: 'A😀 History', color: '#445566' });
 
 			const result = course.getMetadata();
 
@@ -76,7 +75,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return numbers correctly as shortTitle if used as first two characters', () => {
-			const course = courseFactory.build({ name: '10 History', color: '#445566' });
+			const course = courseEntityFactory.build({ name: '10 History', color: '#445566' });
 
 			const result = course.getMetadata();
 
@@ -85,7 +84,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return correct shortTitle if course name only consists of one letter', () => {
-			const course = courseFactory.build({ name: 'A' });
+			const course = courseEntityFactory.build({ name: 'A' });
 
 			const result = course.getMetadata();
 
@@ -94,7 +93,7 @@ describe('CourseEntity', () => {
 		});
 
 		it('should return correct shortTitle if course name only consists of one number', () => {
-			const course = courseFactory.build({ name: '1' });
+			const course = courseEntityFactory.build({ name: '1' });
 
 			const result = course.getMetadata();
 
@@ -105,7 +104,7 @@ describe('CourseEntity', () => {
 		it('should include start and enddate if course has them', () => {
 			const startDate = new Date(Date.now() - 200000);
 			const untilDate = new Date(Date.now() + 200000);
-			const course = courseFactory.build({
+			const course = courseEntityFactory.build({
 				name: 'History',
 				color: '#445566',
 				startDate,
@@ -125,7 +124,7 @@ describe('CourseEntity', () => {
 
 	describe('isFinished', () => {
 		it('should always return false if no untilDate is set', () => {
-			const course = courseFactory.build({ untilDate: undefined });
+			const course = courseEntityFactory.build({ untilDate: undefined });
 
 			const result = course.isFinished();
 
@@ -134,7 +133,7 @@ describe('CourseEntity', () => {
 
 		it('should return false if the course is not finished', () => {
 			const untilDate = new Date(Date.now() + 6000);
-			const course = courseFactory.build({ untilDate });
+			const course = courseEntityFactory.build({ untilDate });
 
 			const result = course.isFinished();
 
@@ -143,7 +142,7 @@ describe('CourseEntity', () => {
 
 		it('should return false if the course is not finished', () => {
 			const untilDate = new Date(Date.now() - 6000);
-			const course = courseFactory.build({ untilDate });
+			const course = courseEntityFactory.build({ untilDate });
 
 			const result = course.isFinished();
 
@@ -154,7 +153,7 @@ describe('CourseEntity', () => {
 	describe('getCourseGroupItems', () => {
 		describe('when course groups are not populated', () => {
 			it('should throw', () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				course.courseGroups.set([orm.em.getReference(CourseGroup, new ObjectId().toHexString())]);
 
 				expect(() => course.getCourseGroupItems()).toThrow();
@@ -163,8 +162,8 @@ describe('CourseEntity', () => {
 
 		describe('when course groups are populated', () => {
 			it('should return the linked course groups to that course', () => {
-				const course = courseFactory.build();
-				const courseGroups = courseGroupFactory.buildList(2, { course });
+				const course = courseEntityFactory.build();
+				const courseGroups = courseGroupEntityFactory.buildList(2, { course });
 
 				const result = course.getCourseGroupItems();
 				expect(result.length).toEqual(2);
@@ -182,7 +181,7 @@ describe('CourseEntity', () => {
 				const students = [student1, student2, student3];
 				const studentIds = [student1.id, student2.id, student3.id];
 
-				const course = courseFactory.build({ students });
+				const course = courseEntityFactory.build({ students });
 
 				return { course, studentIds };
 			};
@@ -201,7 +200,7 @@ describe('CourseEntity', () => {
 
 		describe('when course is not populated', () => {
 			const setup = () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				Object.assign(course, { students: undefined });
 
 				return { course };
@@ -221,7 +220,7 @@ describe('CourseEntity', () => {
 		describe('when user is a subsitution teacher', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.build({ substitutionTeachers: [user] });
+				const course = courseEntityFactory.build({ substitutionTeachers: [user] });
 
 				return { course, user };
 			};
@@ -238,7 +237,7 @@ describe('CourseEntity', () => {
 		describe('when user is a not subsitution teacher.', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.build({ substitutionTeachers: [] });
+				const course = courseEntityFactory.build({ substitutionTeachers: [] });
 
 				return { course, user };
 			};
@@ -261,7 +260,7 @@ describe('CourseEntity', () => {
 				const students = [student1, student2];
 				const studentIds = [student1.id, student2.id];
 
-				const course = courseFactory.build({ students });
+				const course = courseEntityFactory.build({ students });
 
 				return { course, student1, studentIds };
 			};
@@ -285,7 +284,7 @@ describe('CourseEntity', () => {
 				const teachers = [teacher1, teacher2];
 				const teacherIds = [teacher1.id, teacher2.id];
 
-				const course = courseFactory.build({ teachers });
+				const course = courseEntityFactory.build({ teachers });
 
 				return { course, teacher1, teacherIds };
 			};
@@ -309,7 +308,7 @@ describe('CourseEntity', () => {
 				const substitutionTeachers = [substitutionTeacher1, substitutionTeacher2];
 				const substitutionTeacherIds = [substitutionTeacher1.id, substitutionTeacher2.id];
 
-				const course = courseFactory.build({ substitutionTeachers });
+				const course = courseEntityFactory.build({ substitutionTeachers });
 
 				return { course, substitutionTeacher1, substitutionTeacherIds };
 			};
@@ -330,7 +329,7 @@ describe('CourseEntity', () => {
 	describe('getStudentsList is called', () => {
 		const setup = () => {
 			const students = userFactory.buildListWithId(2);
-			const course = courseFactory.build({ students });
+			const course = courseEntityFactory.build({ students });
 			return { course, students };
 		};
 		it('should return the students of the course', () => {
@@ -346,7 +345,7 @@ describe('CourseEntity', () => {
 			expect(result[1].id).toEqual(student2.id);
 		});
 		it('should return an empty array if no students are in the course', () => {
-			const course = courseFactory.build({ students: [] });
+			const course = courseEntityFactory.build({ students: [] });
 
 			const result = course.getStudentsList();
 
@@ -357,7 +356,7 @@ describe('CourseEntity', () => {
 	describe('getTeachersList is called', () => {
 		const setup = () => {
 			const teachers = userFactory.buildListWithId(2);
-			const course = courseFactory.build({ teachers });
+			const course = courseEntityFactory.build({ teachers });
 			return { course, teachers };
 		};
 		it('should return the students of the course', () => {
@@ -373,7 +372,7 @@ describe('CourseEntity', () => {
 			expect(result[1].id).toEqual(teacher2.id);
 		});
 		it('should return an empty array if no teachers are in the course', () => {
-			const course = courseFactory.build({ teachers: [] });
+			const course = courseEntityFactory.build({ teachers: [] });
 
 			const result = course.getTeachersList();
 
@@ -384,7 +383,7 @@ describe('CourseEntity', () => {
 	describe('getSubstitutionTeacherList is called', () => {
 		const setup = () => {
 			const substitutionTeachers = userFactory.buildListWithId(2);
-			const course = courseFactory.build({ substitutionTeachers });
+			const course = courseEntityFactory.build({ substitutionTeachers });
 			return { course, substitutionTeachers };
 		};
 		it('should return the substitutionTeachers of the course', () => {
@@ -400,7 +399,7 @@ describe('CourseEntity', () => {
 			expect(result[1].id).toEqual(substitutionTeacher2.id);
 		});
 		it('should return an empty array if no substitutionTeachers are in the course', () => {
-			const course = courseFactory.build({ substitutionTeachers: [] });
+			const course = courseEntityFactory.build({ substitutionTeachers: [] });
 
 			const result = course.getSubstitutionTeachersList();
 

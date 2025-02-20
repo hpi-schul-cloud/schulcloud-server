@@ -2,8 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
+import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { CourseGroupRepo } from './coursegroup.repo';
@@ -48,8 +47,8 @@ describe('course group repo', () => {
 
 	describe('findById', () => {
 		it('should return courseGroup with populated course', async () => {
-			const course = courseFactory.build();
-			const courseGroup = courseGroupFactory.build({ course });
+			const course = courseEntityFactory.build();
+			const courseGroup = courseGroupEntityFactory.build({ course });
 			await em.persistAndFlush(courseGroup);
 			em.clear();
 
@@ -61,7 +60,7 @@ describe('course group repo', () => {
 
 	describe('findByCourses', () => {
 		it('should return the right types', async () => {
-			const courseGroup = courseGroupFactory.build();
+			const courseGroup = courseGroupEntityFactory.build();
 			await em.persistAndFlush(courseGroup);
 			em.clear();
 
@@ -73,7 +72,7 @@ describe('course group repo', () => {
 		});
 
 		it('should return right keys', async () => {
-			const courseGroup = courseGroupFactory.build();
+			const courseGroup = courseGroupEntityFactory.build();
 			await em.persistAndFlush(courseGroup);
 			em.clear();
 
@@ -85,16 +84,16 @@ describe('course group repo', () => {
 		});
 
 		it('should return course groups of requested courses.', async () => {
-			const course1 = courseFactory.build({ name: 'course #1' });
-			const course2 = courseFactory.build({ name: 'course #2' });
-			const course3 = courseFactory.build({ name: 'course #3' });
+			const course1 = courseEntityFactory.build({ name: 'course #1' });
+			const course2 = courseEntityFactory.build({ name: 'course #2' });
+			const course3 = courseEntityFactory.build({ name: 'course #3' });
 			const courses = [course1, course2, course3];
 			await em.persistAndFlush(courses);
 
 			const courseGroups = [
-				courseGroupFactory.build({ course: course1 }),
-				courseGroupFactory.build({ course: course2 }),
-				courseGroupFactory.build({ course: course3 }),
+				courseGroupEntityFactory.build({ course: course1 }),
+				courseGroupEntityFactory.build({ course: course2 }),
+				courseGroupEntityFactory.build({ course: course3 }),
 			];
 			await em.persistAndFlush(courseGroups);
 			em.clear();
@@ -105,15 +104,15 @@ describe('course group repo', () => {
 		});
 
 		it('should only return course groups when the user is a member of it', async () => {
-			const course1 = courseFactory.build({ name: 'course #1' });
-			const course2 = courseFactory.build({ name: 'course #2' });
+			const course1 = courseEntityFactory.build({ name: 'course #1' });
+			const course2 = courseEntityFactory.build({ name: 'course #2' });
 			const courses = [course1, course2];
 			await em.persistAndFlush(courses);
 
 			const courseGroups = [
-				courseGroupFactory.build({ course: course2 }),
-				courseGroupFactory.build({ course: course2 }),
-				courseGroupFactory.build({ course: course2 }),
+				courseGroupEntityFactory.build({ course: course2 }),
+				courseGroupEntityFactory.build({ course: course2 }),
+				courseGroupEntityFactory.build({ course: course2 }),
 			];
 			await em.persistAndFlush(courseGroups);
 			em.clear();
@@ -128,9 +127,9 @@ describe('course group repo', () => {
 		describe('when user is existing', () => {
 			const setup = async () => {
 				// Arrange
-				const course = courseFactory.build();
-				const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
-				const courseGroup2 = courseGroupFactory.build({ course });
+				const course = courseEntityFactory.build();
+				const courseGroup1 = courseGroupEntityFactory.studentsWithId(3).build({ course });
+				const courseGroup2 = courseGroupEntityFactory.build({ course });
 				const userId = courseGroup1.students[0].id;
 				await em.persistAndFlush([courseGroup1, courseGroup2]);
 
@@ -155,9 +154,9 @@ describe('course group repo', () => {
 		describe('when user is existing', () => {
 			const setup = async () => {
 				// Arrange
-				const course = courseFactory.build();
-				const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
-				const courseGroup2 = courseGroupFactory.build({ course });
+				const course = courseEntityFactory.build();
+				const courseGroup1 = courseGroupEntityFactory.studentsWithId(3).build({ course });
+				const courseGroup2 = courseGroupEntityFactory.build({ course });
 				const userId = courseGroup1.students[0].id;
 				await em.persistAndFlush([courseGroup1, courseGroup2]);
 

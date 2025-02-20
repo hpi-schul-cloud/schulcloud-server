@@ -1,11 +1,10 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { CourseGroupRule } from './course-group.rule';
@@ -38,8 +37,8 @@ describe('CourseGroupRule', () => {
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
-		const course = courseFactory.build({ teachers: [user] });
-		entity = courseGroupFactory.build({ course });
+		const course = courseEntityFactory.build({ teachers: [user] });
+		entity = courseGroupEntityFactory.build({ course });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
@@ -53,16 +52,16 @@ describe('CourseGroupRule', () => {
 
 	describe('Action.read', () => {
 		it('should call hasAccessToEntity on AuthorizationHelper', () => {
-			const course = courseFactory.build({ teachers: [user] });
-			entity = courseGroupFactory.build({ course });
+			const course = courseEntityFactory.build({ teachers: [user] });
+			entity = courseGroupEntityFactory.build({ course });
 			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
 			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 			expect(spy).toBeCalledWith(user, entity, ['students']);
 		});
 
 		it('should call courseRule.hasPermission', () => {
-			const course = courseFactory.build({ teachers: [user] });
-			entity = courseGroupFactory.build({ course });
+			const course = courseEntityFactory.build({ teachers: [user] });
+			entity = courseGroupEntityFactory.build({ course });
 			const spy = jest.spyOn(courseRule, 'hasPermission');
 			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 			expect(spy).toBeCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
@@ -71,16 +70,16 @@ describe('CourseGroupRule', () => {
 
 	describe('Action.write', () => {
 		it('should call hasAccessToEntity on AuthorizationHelper', () => {
-			const course = courseFactory.build({ teachers: [user] });
-			entity = courseGroupFactory.build({ course });
+			const course = courseEntityFactory.build({ teachers: [user] });
+			entity = courseGroupEntityFactory.build({ course });
 			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
 			service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
 			expect(spy).toBeCalledWith(user, entity, ['students']);
 		});
 
 		it('should call courseRule.hasPermission', () => {
-			const course = courseFactory.build({ teachers: [user] });
-			entity = courseGroupFactory.build({ course });
+			const course = courseEntityFactory.build({ teachers: [user] });
+			entity = courseGroupEntityFactory.build({ course });
 			const spy = jest.spyOn(courseRule, 'hasPermission');
 			service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
 			expect(spy).toBeCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
@@ -90,8 +89,8 @@ describe('CourseGroupRule', () => {
 	describe('User [TEACHER]', () => {
 		describe('with passed permissions', () => {
 			it('should return "true" if user in scope', () => {
-				const course = courseFactory.build({ teachers: [user] });
-				entity = courseGroupFactory.build({ course, students: [] });
+				const course = courseEntityFactory.build({ teachers: [user] });
+				entity = courseGroupEntityFactory.build({ course, students: [] });
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
@@ -99,14 +98,14 @@ describe('CourseGroupRule', () => {
 
 		describe('without permission', () => {
 			it('should return "false" if user has not permission', () => {
-				const course = courseFactory.build({ teachers: [user] });
-				entity = courseGroupFactory.build({ course });
+				const course = courseEntityFactory.build({ teachers: [user] });
+				entity = courseGroupEntityFactory.build({ course });
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 				expect(res).toBe(false);
 			});
 
 			it('should return "false" if user has not access to entity', () => {
-				entity = courseGroupFactory.build();
+				entity = courseGroupEntityFactory.build();
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 				expect(res).toBe(false);
 			});
@@ -116,8 +115,8 @@ describe('CourseGroupRule', () => {
 	describe('User [STUDENT]', () => {
 		describe('with passed permissions', () => {
 			it('should return "true" if user in scope', () => {
-				const course = courseFactory.build({ students: [] });
-				entity = courseGroupFactory.build({ course, students: [user] });
+				const course = courseEntityFactory.build({ students: [] });
+				entity = courseGroupEntityFactory.build({ course, students: [user] });
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 				expect(res).toBe(true);
 			});
@@ -125,15 +124,15 @@ describe('CourseGroupRule', () => {
 
 		describe('without permission', () => {
 			it('should return "false" if user has not permission', () => {
-				const course = courseFactory.build({ students: [] });
-				entity = courseGroupFactory.build({ course, students: [user] });
+				const course = courseEntityFactory.build({ students: [] });
+				entity = courseGroupEntityFactory.build({ course, students: [user] });
 				const res = service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [permissionC] });
 				expect(res).toBe(false);
 			});
 
 			it('should return "false" if user has not access to entity', () => {
-				const course = courseFactory.build({ students: [user] });
-				entity = courseGroupFactory.build({ course, students: [] });
+				const course = courseEntityFactory.build({ students: [user] });
+				entity = courseGroupEntityFactory.build({ course, students: [] });
 				const res = service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [permissionA] });
 				expect(res).toBe(false);
 			});

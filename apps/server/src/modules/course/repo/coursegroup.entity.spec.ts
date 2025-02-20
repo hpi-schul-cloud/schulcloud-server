@@ -1,10 +1,9 @@
 import { User } from '@shared/domain/entity/user.entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { CourseGroup } from './coursegroup.entity';
+import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { Course } from './course.entity';
+import { CourseGroup } from './coursegroup.entity';
 
 describe('CourseGroupEntity', () => {
 	beforeAll(async () => {
@@ -21,7 +20,7 @@ describe('CourseGroupEntity', () => {
 
 		it('should create a courseGroup when passing required properties', () => {
 			const name = 'someName';
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			const courseGroup = new CourseGroup({ name, course });
 
@@ -38,7 +37,7 @@ describe('CourseGroupEntity', () => {
 				const students = [student1, student2, student3];
 				const studentIds = [student1.id, student2.id, student3.id];
 
-				const courseGroup = courseGroupFactory.build({ students });
+				const courseGroup = courseGroupEntityFactory.build({ students });
 
 				return { courseGroup, studentIds };
 			};
@@ -57,7 +56,7 @@ describe('CourseGroupEntity', () => {
 
 		describe('when course group is not populated', () => {
 			const setup = () => {
-				const courseGroup = courseGroupFactory.build();
+				const courseGroup = courseGroupEntityFactory.build();
 				Object.assign(courseGroup, { students: undefined });
 
 				return { courseGroup };
@@ -80,7 +79,7 @@ describe('CourseGroupEntity', () => {
 				const students = [student1, student2];
 				const studentIds = [student1.id, student2.id];
 
-				const courseGroup = courseGroupFactory.build({ students });
+				const courseGroup = courseGroupEntityFactory.build({ students });
 
 				return { courseGroup, student1, studentIds };
 			};

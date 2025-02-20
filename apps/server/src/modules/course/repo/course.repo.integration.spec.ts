@@ -5,9 +5,8 @@ import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { userFactory } from '@testing/factory/user.factory';
+import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { Course } from './course.entity';
 import { CourseRepo } from './course.repo';
 import { CourseGroup } from './coursegroup.entity';
@@ -52,7 +51,7 @@ describe('course repo', () => {
 	describe('findAllByUserId', () => {
 		it('should return right keys', async () => {
 			const student = userFactory.build();
-			const course = courseFactory.build({ students: [student] });
+			const course = courseEntityFactory.build({ students: [student] });
 
 			await em.persistAndFlush(course);
 			em.clear();
@@ -104,8 +103,8 @@ describe('course repo', () => {
 		it('should return course of teachers', async () => {
 			const teacher = userFactory.build();
 			await em.persistAndFlush(teacher);
-			const course1 = courseFactory.build({ name: 'course #1', teachers: [teacher] });
-			const course2 = courseFactory.build({ name: 'course #2', teachers: [teacher] });
+			const course1 = courseEntityFactory.build({ name: 'course #1', teachers: [teacher] });
+			const course2 = courseEntityFactory.build({ name: 'course #2', teachers: [teacher] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
@@ -118,8 +117,8 @@ describe('course repo', () => {
 
 		it('should return course of students', async () => {
 			const student = userFactory.build();
-			const course1 = courseFactory.build({ name: 'course #1', students: [student] });
-			const course2 = courseFactory.build({ name: 'course #2', students: [student] });
+			const course1 = courseEntityFactory.build({ name: 'course #1', students: [student] });
+			const course2 = courseEntityFactory.build({ name: 'course #2', students: [student] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
@@ -133,8 +132,8 @@ describe('course repo', () => {
 		it('should return course of substitution teachers', async () => {
 			const subTeacher = userFactory.build();
 			await em.persistAndFlush(subTeacher);
-			const course1 = courseFactory.build({ name: 'course #1', substitutionTeachers: [subTeacher] });
-			const course2 = courseFactory.build({ name: 'course #2', substitutionTeachers: [subTeacher] });
+			const course1 = courseEntityFactory.build({ name: 'course #1', substitutionTeachers: [subTeacher] });
+			const course2 = courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [subTeacher] });
 
 			await em.persistAndFlush([course1, course2]);
 			em.clear();
@@ -148,9 +147,9 @@ describe('course repo', () => {
 		it('should handle mixed roles in courses', async () => {
 			const user = userFactory.build();
 			await em.persistAndFlush(user);
-			const course1 = courseFactory.build({ name: 'course #1', students: [user] });
-			const course2 = courseFactory.build({ name: 'course #2', teachers: [user] });
-			const course3 = courseFactory.build({ name: 'course #3', substitutionTeachers: [user] });
+			const course1 = courseEntityFactory.build({ name: 'course #1', students: [user] });
+			const course2 = courseEntityFactory.build({ name: 'course #2', teachers: [user] });
+			const course3 = courseEntityFactory.build({ name: 'course #3', substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course1, course2, course3]);
 			em.clear();
@@ -166,14 +165,14 @@ describe('course repo', () => {
 			const otherUser = userFactory.build();
 			await em.persistAndFlush([user, otherUser]);
 			const courses = [
-				courseFactory.build({ name: 'course #1', students: [user] }),
-				courseFactory.build({ name: 'course #2', substitutionTeachers: [user] }),
-				courseFactory.build({ name: 'course #3', teachers: [user] }),
+				courseEntityFactory.build({ name: 'course #1', students: [user] }),
+				courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [user] }),
+				courseEntityFactory.build({ name: 'course #3', teachers: [user] }),
 			];
 			const otherCourses = [
-				courseFactory.build({ name: 'course #1', students: [otherUser] }),
-				courseFactory.build({ name: 'course #2', substitutionTeachers: [otherUser] }),
-				courseFactory.build({ name: 'course #3', teachers: [otherUser] }),
+				courseEntityFactory.build({ name: 'course #1', students: [otherUser] }),
+				courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [otherUser] }),
+				courseEntityFactory.build({ name: 'course #3', teachers: [otherUser] }),
 			];
 
 			await em.persistAndFlush([...courses, ...otherCourses]);
@@ -188,17 +187,17 @@ describe('course repo', () => {
 		it('should only return courses that are currently active', async () => {
 			const student = userFactory.build();
 			const twoDaysInMilliSeconds = 172800000;
-			const course1 = courseFactory.build({
+			const course1 = courseEntityFactory.build({
 				name: 'active course',
 				students: [student],
 				untilDate: new Date(Date.now() + twoDaysInMilliSeconds),
 			});
-			const course2 = courseFactory.build({
+			const course2 = courseEntityFactory.build({
 				name: 'past course',
 				students: [student],
 				untilDate: new Date(Date.now() - twoDaysInMilliSeconds),
 			});
-			const course3 = courseFactory.build({
+			const course3 = courseEntityFactory.build({
 				name: 'timeless course',
 				students: [student],
 			});
@@ -217,7 +216,7 @@ describe('course repo', () => {
 			await em.persistAndFlush(user);
 
 			const names = ['z course', 'a course', '_ course', 'A course', '2 course', 'h course'];
-			const courses = names.map((name) => courseFactory.build({ name, students: [user] }));
+			const courses = names.map((name) => courseEntityFactory.build({ name, students: [user] }));
 
 			await em.persistAndFlush(courses);
 			em.clear();
@@ -236,7 +235,7 @@ describe('course repo', () => {
 	describe('findAllForTeacher', () => {
 		it('should find courses of teachers', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -248,7 +247,7 @@ describe('course repo', () => {
 
 		it('should find courses of teachers that are active', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -260,7 +259,7 @@ describe('course repo', () => {
 
 		it('should "not" find courses of substitution teachers', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ substitutionTeachers: [user] });
+			const course = courseEntityFactory.build({ substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -272,7 +271,7 @@ describe('course repo', () => {
 
 		it('should "not" find courses of students', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user] });
+			const course = courseEntityFactory.build({ students: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -286,7 +285,7 @@ describe('course repo', () => {
 	describe('findAllForTeacherOrSubstituteTeacher', () => {
 		it('should find courses of teachers', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -298,7 +297,7 @@ describe('course repo', () => {
 
 		it('should find courses of substitution teachers', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ substitutionTeachers: [user] });
+			const course = courseEntityFactory.build({ substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -310,7 +309,7 @@ describe('course repo', () => {
 
 		it('should "not" find courses of students', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user] });
+			const course = courseEntityFactory.build({ students: [user] });
 
 			await em.persistAndFlush([course]);
 			em.clear();
@@ -323,7 +322,7 @@ describe('course repo', () => {
 
 	describe('findOne', () => {
 		it('should find any course', async () => {
-			const course = courseFactory.build({ students: [] });
+			const course = courseEntityFactory.build({ students: [] });
 
 			await em.persistAndFlush([course]);
 
@@ -334,7 +333,7 @@ describe('course repo', () => {
 
 		it('should find course of student', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user] });
+			const course = courseEntityFactory.build({ students: [user] });
 
 			await em.persistAndFlush([course]);
 
@@ -345,7 +344,7 @@ describe('course repo', () => {
 
 		it('should find course of teacher', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 
 			await em.persistAndFlush([course]);
 
@@ -356,7 +355,7 @@ describe('course repo', () => {
 
 		it('should find course of substitutionTeacher', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ substitutionTeachers: [user] });
+			const course = courseEntityFactory.build({ substitutionTeachers: [user] });
 
 			await em.persistAndFlush([course]);
 
@@ -367,7 +366,7 @@ describe('course repo', () => {
 
 		it('should "not" find course user is not in', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			await em.persistAndFlush([course, user]);
 
@@ -379,7 +378,7 @@ describe('course repo', () => {
 
 	describe('findById', () => {
 		it('should find a course by its id', async () => {
-			const course = courseFactory.build({ name: 'important course' });
+			const course = courseEntityFactory.build({ name: 'important course' });
 			await em.persistAndFlush(course);
 			em.clear();
 
@@ -395,8 +394,8 @@ describe('course repo', () => {
 		});
 
 		it('should populate course groups', async () => {
-			const course = courseFactory.buildWithId({});
-			const courseGroup = courseGroupFactory.buildWithId({ course });
+			const course = courseEntityFactory.buildWithId({});
+			const courseGroup = courseGroupEntityFactory.buildWithId({ course });
 
 			await em.persistAndFlush([course, courseGroup]);
 			em.clear();
@@ -411,7 +410,7 @@ describe('course repo', () => {
 			const substitutionTeacher = userFactory.buildWithId();
 			const student = userFactory.buildWithId();
 
-			const course = courseFactory.buildWithId({
+			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher],
 				substitutionTeachers: [substitutionTeacher],
 				students: [student],
@@ -430,7 +429,7 @@ describe('course repo', () => {
 
 	describe('unset optional property', () => {
 		it('should remove a property that was set to undefined', async () => {
-			const course = courseFactory.build({ students: [] });
+			const course = courseEntityFactory.build({ students: [] });
 			course.copyingSince = new Date();
 			await em.persistAndFlush([course]);
 
@@ -450,10 +449,10 @@ describe('course repo', () => {
 				const user = userFactory.build();
 				const otherUser = userFactory.build();
 				await em.persistAndFlush([user, otherUser]);
-				const course1 = courseFactory.build({ name: 'course #1', students: [user, otherUser] });
-				const course2 = courseFactory.build({ name: 'course #2', substitutionTeachers: [user, otherUser] });
-				const course3 = courseFactory.build({ name: 'course #3', teachers: [user, otherUser] });
-				const course4 = courseFactory.build({ name: 'course #1', students: [otherUser] });
+				const course1 = courseEntityFactory.build({ name: 'course #1', students: [user, otherUser] });
+				const course2 = courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [user, otherUser] });
+				const course3 = courseEntityFactory.build({ name: 'course #3', teachers: [user, otherUser] });
+				const course4 = courseEntityFactory.build({ name: 'course #1', students: [otherUser] });
 
 				await em.persistAndFlush([course1, course2, course3, course4]);
 
