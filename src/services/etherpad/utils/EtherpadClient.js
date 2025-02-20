@@ -1,5 +1,4 @@
 const axios = require('axios');
-const rpErrors = require('request-promise-core/errors');
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest, Conflict } = require('../../../errors');
@@ -56,9 +55,9 @@ class EtherpadClient {
 			case 0:
 				return responseJSON;
 			case 1:
-				throw new Conflict(responseJSON.message, rpErrors.RequestError(responseJSON.message, res));
+				throw new Conflict(res);
 			default:
-				throw new BadRequest(responseJSON.message, rpErrors.RequestError(responseJSON.message, res));
+				throw new BadRequest(res);
 		}
 	}
 
