@@ -172,7 +172,15 @@ describe('Lesson Entity', () => {
 				hidden: false,
 				component: ComponentType.LERNSTORE,
 				content: {
-					resources: [new LernstoreResources('1', 'description', 'title', 'url', 'merlinReference')],
+					resources: [
+						new LernstoreResources({
+							client: 'test client',
+							description: 'test description',
+							title: 'test title',
+							url: 'test url',
+							merlinReference: 'test merlin reference',
+						}),
+					],
 				},
 			};
 			const lesson = lessonFactory.build({ contents: [expectedLernstoreContent] });

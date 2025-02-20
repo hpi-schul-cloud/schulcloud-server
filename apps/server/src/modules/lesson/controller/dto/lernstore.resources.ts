@@ -16,11 +16,11 @@ export class LernstoreResources {
 	@ApiPropertyOptional({ description: 'url' })
 	public url?: string;
 
-	constructor(client: string, description: string, title: string, url?: string, merlinReference?: string) {
-		this.client = client;
-		this.description = description;
-		this.title = title;
-		this.url = url;
-		this.merlinReference = merlinReference;
+	constructor(props: Readonly<LernstoreResources>) {
+		this.client = props.client;
+		this.description = props.description;
+		this.title = props.title;
+		this.url = props.url;
+		this.merlinReference = props.merlinReference;
 	}
 }
