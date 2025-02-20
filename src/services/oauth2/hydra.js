@@ -6,7 +6,7 @@ const mockTlsTermination = {
 
 module.exports = (hydraUrl) => {
 	return {
-		introspectOAuth2Token: (token, scope) => {
+		introspectOAuth2Token: async (token, scope) => {
 			const options = {
 				url: `${hydraUrl}/oauth2/introspect`,
 				method: 'POST',
@@ -16,7 +16,7 @@ module.exports = (hydraUrl) => {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			};
-			const res = axios(options);
+			const res = await axios(options);
 
 			return res.data;
 		},
