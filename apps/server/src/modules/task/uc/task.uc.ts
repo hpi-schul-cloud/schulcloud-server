@@ -1,5 +1,5 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { Course, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseRepo } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { LessonEntity, TaskWithStatusVo, User } from '@shared/domain/entity';
@@ -175,8 +175,8 @@ export class TaskUC {
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
 	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
-	private async getPermittedCourses(user: User, neededPermission: Action): Promise<Course[]> {
-		let permittedCourses: Course[] = [];
+	private async getPermittedCourses(user: User, neededPermission: Action): Promise<CourseEntity[]> {
+		let permittedCourses: CourseEntity[] = [];
 
 		if (neededPermission === Action.write) {
 			[permittedCourses] = await this.courseRepo.findAllForTeacherOrSubstituteTeacher(user.id);
@@ -187,7 +187,7 @@ export class TaskUC {
 		return permittedCourses;
 	}
 
-	private async getPermittedLessons(user: User, courses: Course[]): Promise<LessonEntity[]> {
+	private async getPermittedLessons(user: User, courses: CourseEntity[]): Promise<LessonEntity[]> {
 		const writeCourses = courses.filter((c) =>
 			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);

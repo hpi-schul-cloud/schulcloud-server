@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -51,7 +51,7 @@ describe(ColumnBoardCopyService.name, () => {
 		boardNodeCopyService = module.get(BoardNodeCopyService);
 		columnBoardTitleService = module.get(ColumnBoardTitleService);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterEach(() => {

@@ -1,4 +1,5 @@
 import { type AnyBoardNode, BoardExternalReferenceType, BoardNodeService, isColumnBoard } from '@modules/board';
+import { CourseEntity } from '@modules/course/repo';
 import { Group, GroupService } from '@modules/group';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
@@ -6,7 +7,6 @@ import { ToolContextType } from '../../../common/enum';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
-import { Course } from '@modules/course/repo';
 
 @Injectable()
 export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {
@@ -45,7 +45,7 @@ export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {
 	}
 
 	private async getExternalUuidFromCourse(courseId: string): Promise<string | undefined> {
-		const course: Course = await this.courseService.findById(courseId);
+		const course: CourseEntity = await this.courseService.findById(courseId);
 
 		const syncedGroup: Group | undefined = await this.getSyncedGroup(course);
 
@@ -54,7 +54,7 @@ export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {
 		return groupUuid;
 	}
 
-	private async getSyncedGroup(course: Course): Promise<Group | undefined> {
+	private async getSyncedGroup(course: CourseEntity): Promise<Group | undefined> {
 		const syncedGroupId = course.syncedWithGroup?.id;
 		if (!syncedGroupId) {
 			return undefined;

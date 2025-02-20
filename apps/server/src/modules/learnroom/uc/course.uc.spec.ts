@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
-import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,7 +23,7 @@ describe('CourseUc', () => {
 	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseUc,

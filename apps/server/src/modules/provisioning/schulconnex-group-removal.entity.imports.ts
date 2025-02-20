@@ -1,6 +1,6 @@
 import { ClassEntity } from '@modules/class/entity';
-import { Course } from '@modules/course/repo/course.entity';
-import { CourseGroup } from '@modules/course/repo/coursegroup.entity';
+import { CourseEntity } from '@modules/course/repo/course.entity';
+import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
@@ -20,8 +20,8 @@ export const ENTITIES = [
 	SchoolSystemOptionsEntity,
 	User,
 	Role,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	ClassEntity,
 	GroupEntity,
 ];

@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -36,7 +36,7 @@ describe('copy helper service', () => {
 	let copyHelperService: CopyHelperService;
 
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {

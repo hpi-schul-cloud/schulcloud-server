@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { setupEntities } from '@testing/database';
 import {
@@ -17,7 +17,7 @@ import { ContextExternalToolEntity } from './context-external-tool.entity';
 
 describe(ContextExternalToolEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('constructor', () => {

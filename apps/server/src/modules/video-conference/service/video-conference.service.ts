@@ -2,7 +2,7 @@ import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Room, RoomService } from '@modules/room';
@@ -22,7 +22,7 @@ import { VideoConferenceOptions } from '../interface';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 
-type ConferenceResource = Course | Room | TeamEntity | VideoConferenceElement;
+type ConferenceResource = CourseEntity | Room | TeamEntity | VideoConferenceElement;
 
 @Injectable()
 export class VideoConferenceService {
@@ -212,7 +212,7 @@ export class VideoConferenceService {
 
 		switch (scope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseService.findById(scopeId);
+				const course: CourseEntity = await this.courseService.findById(scopeId);
 
 				return {
 					scopeId,

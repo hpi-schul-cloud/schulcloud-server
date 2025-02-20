@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,7 +23,7 @@ describe('rooms authorisation service', () => {
 		}).compile();
 
 		service = module.get(CourseRoomsAuthorisationService);
-		await setupEntities([User, Course, CourseGroup, LessonEntity, Material, Task, Submission]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, LessonEntity, Material, Task, Submission]);
 	});
 
 	describe('hasCourseReadPermission', () => {

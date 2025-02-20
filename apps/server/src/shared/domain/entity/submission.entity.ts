@@ -1,5 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
-import type { CourseGroup } from '@modules/course/repo';
+import { CourseGroupEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
@@ -11,7 +11,7 @@ export interface SubmissionProperties {
 	school: SchoolEntity;
 	task: Task;
 	student?: User;
-	courseGroup?: CourseGroup;
+	courseGroup?: CourseGroupEntity;
 	teamMembers?: User[];
 	comment: string;
 	submitted?: boolean;
@@ -38,9 +38,9 @@ export class Submission extends BaseEntityWithTimestamps {
 	@ManyToOne('User', { fieldName: 'studentId', nullable: true })
 	student?: User;
 
-	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
+	@ManyToOne(() => CourseGroupEntity, { fieldName: 'courseGroupId', nullable: true })
 	@Index()
-	courseGroup?: CourseGroup;
+	courseGroup?: CourseGroupEntity;
 
 	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
 	@Index()

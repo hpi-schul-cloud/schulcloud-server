@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseGroupEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -13,7 +13,7 @@ import { User } from './user.entity';
 
 describe('Submission entity', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	beforeEach(() => {

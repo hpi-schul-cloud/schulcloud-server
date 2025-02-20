@@ -9,7 +9,7 @@ import type { TaskParent } from '../../../shared/domain/entity/task.entity';
 import type { User } from '../../../shared/domain/entity/user.entity';
 import { EntityWithSchool } from '../../../shared/domain/interface/entity';
 import { EntityId } from '../../../shared/domain/types';
-import { CourseGroup } from './coursegroup.entity';
+import { CourseGroupEntity } from './coursegroup.entity';
 
 export enum SyncAttribute {
 	TEACHERS = 'teachers',
@@ -70,7 +70,7 @@ export class UsersList {
 }
 
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
+export class CourseEntity extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string;
 
@@ -93,8 +93,8 @@ export class Course extends BaseEntityWithTimestamps implements EntityWithSchool
 	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
-	@OneToMany('CourseGroup', 'course', { orphanRemoval: true })
-	courseGroups = new Collection<CourseGroup>(this);
+	@OneToMany(() => CourseGroupEntity, 'course', { orphanRemoval: true })
+	courseGroups = new Collection<CourseGroupEntity>(this);
 
 	// TODO: string color format
 	@Property()
@@ -149,17 +149,17 @@ export class Course extends BaseEntityWithTimestamps implements EntityWithSchool
 	}
 
 	public getStudentIds(): EntityId[] {
-		const studentIds = Course.extractIds(this.students);
+		const studentIds = CourseEntity.extractIds(this.students);
 		return studentIds;
 	}
 
 	public getTeacherIds(): EntityId[] {
-		const teacherIds = Course.extractIds(this.teachers);
+		const teacherIds = CourseEntity.extractIds(this.teachers);
 		return teacherIds;
 	}
 
 	public getSubstitutionTeacherIds(): EntityId[] {
-		const substitutionTeacherIds = Course.extractIds(this.substitutionTeachers);
+		const substitutionTeacherIds = CourseEntity.extractIds(this.substitutionTeachers);
 		return substitutionTeacherIds;
 	}
 
@@ -179,7 +179,7 @@ export class Course extends BaseEntityWithTimestamps implements EntityWithSchool
 	public getStudentsList(): UsersList[] {
 		const users = this.students.getItems();
 		if (users.length) {
-			const usersList = Course.extractUserList(users);
+			const usersList = CourseEntity.extractUserList(users);
 			return usersList;
 		}
 		return [];
@@ -188,7 +188,7 @@ export class Course extends BaseEntityWithTimestamps implements EntityWithSchool
 	public getTeachersList(): UsersList[] {
 		const users = this.teachers.getItems();
 		if (users.length) {
-			const usersList = Course.extractUserList(users);
+			const usersList = CourseEntity.extractUserList(users);
 			return usersList;
 		}
 		return [];
@@ -197,7 +197,7 @@ export class Course extends BaseEntityWithTimestamps implements EntityWithSchool
 	public getSubstitutionTeachersList(): UsersList[] {
 		const users = this.substitutionTeachers.getItems();
 		if (users.length) {
-			const usersList = Course.extractUserList(users);
+			const usersList = CourseEntity.extractUserList(users);
 			return usersList;
 		}
 		return [];
@@ -220,7 +220,7 @@ export class Course extends BaseEntityWithTimestamps implements EntityWithSchool
 		return isSubstitutionTeacher;
 	}
 
-	public getCourseGroupItems(): CourseGroup[] {
+	public getCourseGroupItems(): CourseGroupEntity[] {
 		if (!this.courseGroups.isInitialized(true)) {
 			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
 		}

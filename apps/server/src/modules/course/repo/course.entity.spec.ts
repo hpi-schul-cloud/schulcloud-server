@@ -5,8 +5,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
-import { Course } from './course.entity';
-import { CourseGroup } from './coursegroup.entity';
+import { CourseEntity } from './course.entity';
+import { CourseGroupEntity } from './coursegroup.entity';
 
 const DEFAULT = {
 	color: '#ACACAC',
@@ -17,26 +17,26 @@ describe('CourseEntity', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([Course, CourseGroup]);
+		orm = await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
-			const test = () => new Course();
+			const test = () => new CourseEntity();
 			expect(test).toThrow();
 		});
 
 		it('should create a course by passing required properties', () => {
 			const course = courseEntityFactory.build();
-			expect(course instanceof Course).toEqual(true);
+			expect(course instanceof CourseEntity).toEqual(true);
 		});
 	});
 
 	describe('defaults', () => {
 		it('should return defaults values', () => {
 			const school = schoolEntityFactory.build();
-			const course = new Course({ school });
+			const course = new CourseEntity({ school });
 
 			expect(course.name).toEqual(DEFAULT.name);
 			expect(course.description).toEqual(undefined);
@@ -154,7 +154,7 @@ describe('CourseEntity', () => {
 		describe('when course groups are not populated', () => {
 			it('should throw', () => {
 				const course = courseEntityFactory.build();
-				course.courseGroups.set([orm.em.getReference(CourseGroup, new ObjectId().toHexString())]);
+				course.courseGroups.set([orm.em.getReference(CourseGroupEntity, new ObjectId().toHexString())]);
 
 				expect(() => course.getCourseGroupItems()).toThrow();
 			});

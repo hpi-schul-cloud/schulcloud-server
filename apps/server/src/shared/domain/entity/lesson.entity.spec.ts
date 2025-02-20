@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
@@ -17,7 +17,7 @@ describe('Lesson Entity', () => {
 	const inOneDay = new Date(Date.now() + 8.64e7);
 
 	beforeAll(async () => {
-		orm = await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
+		orm = await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('numberOfPublishedTasks', () => {

@@ -1,9 +1,9 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { Course } from './course.entity';
+import { CourseEntity } from './course.entity';
 
-export class CourseScope extends Scope<Course> {
+export class CourseScope extends Scope<CourseEntity> {
 	public forAllGroupTypes(userId: EntityId): this {
 		const isStudent = { students: userId };
 		const isTeacher = { teachers: userId };
@@ -34,7 +34,7 @@ export class CourseScope extends Scope<Course> {
 
 	public forActiveCourses(): this {
 		const now = new Date();
-		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<Course>;
+		const noUntilDate = { untilDate: { $exists: false } } as FilterQuery<CourseEntity>;
 		const untilDateInFuture = { untilDate: { $gte: now } };
 
 		this.addQuery({ $or: [noUntilDate, untilDateInFuture] });
@@ -56,7 +56,7 @@ export class CourseScope extends Scope<Course> {
 
 	public forArchivedCourses(): this {
 		const now = new Date();
-		const untilDateExists = { untilDate: { $exists: true } } as FilterQuery<Course>;
+		const untilDateExists = { untilDate: { $exists: true } } as FilterQuery<CourseEntity>;
 		const untilDateInPast = { untilDate: { $lt: now } };
 
 		this.addQuery({ $and: [untilDateExists, untilDateInPast] });

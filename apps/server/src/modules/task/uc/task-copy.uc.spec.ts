@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
@@ -32,7 +32,7 @@ describe('task copy uc', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [

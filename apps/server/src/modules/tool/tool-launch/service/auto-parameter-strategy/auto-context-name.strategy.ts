@@ -5,7 +5,7 @@ import {
 	ColumnBoard,
 	MediaBoard,
 } from '@modules/board';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -47,7 +47,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 	}
 
 	private async getCourseValue(courseId: EntityId): Promise<string> {
-		const course: Course = await this.courseService.findById(courseId);
+		const course: CourseEntity = await this.courseService.findById(courseId);
 
 		return course.name;
 	}

@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
@@ -19,7 +19,7 @@ describe('LessonRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [LessonEntity, Material, Task, Submission, Course, CourseGroup],
+					entities: [LessonEntity, Material, Task, Submission, CourseEntity, CourseGroupEntity],
 				}),
 			],
 			providers: [LessonRepo],

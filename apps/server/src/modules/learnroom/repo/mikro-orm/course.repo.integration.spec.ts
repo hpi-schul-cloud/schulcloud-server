@@ -1,7 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { Course as CourseEntity, CourseFeatures, CourseGroup, SyncAttribute } from '@modules/course/repo';
+import { CourseEntity, CourseFeatures, CourseGroupEntity, SyncAttribute } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { groupEntityFactory, groupFactory } from '@modules/group/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -23,7 +23,7 @@ describe(CourseMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroup, User] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity, User] })],
 			providers: [{ provide: COURSE_REPO, useClass: CourseMikroOrmRepo }],
 		}).compile();
 

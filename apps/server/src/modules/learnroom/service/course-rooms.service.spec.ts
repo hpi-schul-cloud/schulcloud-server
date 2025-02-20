@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
@@ -32,8 +32,8 @@ describe('rooms service', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			LessonEntity,
 			Material,
 			Task,

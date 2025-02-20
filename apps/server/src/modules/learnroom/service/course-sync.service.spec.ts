@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseGroup, SyncAttribute } from '@modules/course/repo';
+import { CourseGroupEntity, SyncAttribute } from '@modules/course/repo';
 import { Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
@@ -45,7 +45,7 @@ describe(CourseSyncService.name, () => {
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
 		courseRepo = module.get(COURSE_REPO);
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, Course, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {

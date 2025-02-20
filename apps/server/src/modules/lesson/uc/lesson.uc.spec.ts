@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom/service';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -44,7 +44,7 @@ describe('LessonUC', () => {
 		courseService = module.get(CourseService);
 		authorizationService = module.get(AuthorizationService);
 
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {

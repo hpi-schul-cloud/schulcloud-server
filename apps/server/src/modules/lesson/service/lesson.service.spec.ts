@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -31,7 +31,7 @@ describe('LessonService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		const orm = await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [

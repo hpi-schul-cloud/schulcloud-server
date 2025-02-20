@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -17,7 +17,7 @@ describe('rolename mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [],

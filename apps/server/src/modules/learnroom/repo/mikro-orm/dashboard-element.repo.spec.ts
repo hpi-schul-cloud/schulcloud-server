@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -17,7 +17,7 @@ describe(DashboardElementRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardGridElementEntity, DashboardEntity, Course, User, CourseGroup],
+					entities: [DashboardGridElementEntity, DashboardEntity, CourseEntity, User, CourseGroupEntity],
 				}),
 			],
 			providers: [DashboardElementRepo],

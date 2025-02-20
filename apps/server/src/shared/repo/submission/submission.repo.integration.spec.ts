@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -20,7 +20,7 @@ describe('submission repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Submission, Task, LessonEntity, Course, CourseGroup, Material],
+					entities: [Submission, Task, LessonEntity, CourseEntity, CourseGroupEntity, Material],
 				}),
 			],
 			providers: [SubmissionRepo],

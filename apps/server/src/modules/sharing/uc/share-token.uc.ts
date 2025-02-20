@@ -9,7 +9,7 @@ import {
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyStatus } from '@modules/copy-helper';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
@@ -242,7 +242,7 @@ export class ShareTokenUC {
 		user: User,
 		courseId: EntityId,
 		permission: Permission
-	): Promise<{ course: Course }> {
+	): Promise<{ course: CourseEntity }> {
 		const course = await this.courseService.findById(courseId);
 		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([permission]));
 

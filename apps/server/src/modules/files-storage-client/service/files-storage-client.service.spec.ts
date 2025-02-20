@@ -3,7 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -32,7 +32,7 @@ describe('FilesStorageClientAdapterService', () => {
 	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
+		const orm = await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

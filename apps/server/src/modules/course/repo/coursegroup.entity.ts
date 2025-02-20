@@ -6,17 +6,17 @@ import type { TaskParent } from '../../../shared/domain/entity/task.entity';
 import type { User } from '../../../shared/domain/entity/user.entity';
 import { EntityWithSchool } from '../../../shared/domain/interface';
 import { EntityId } from '../../../shared/domain/types';
-import type { Course } from './course.entity';
+import { CourseEntity } from './course.entity';
 
 export interface CourseGroupProperties {
 	name: string;
-	course: Course;
+	course: CourseEntity;
 	students?: User[];
 }
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroup extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
+export class CourseGroupEntity extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string;
 
@@ -25,8 +25,8 @@ export class CourseGroup extends BaseEntityWithTimestamps implements EntityWithS
 	students = new Collection<User>(this);
 
 	@Index()
-	@ManyToOne('Course', { fieldName: 'courseId' })
-	course: Course;
+	@ManyToOne(() => CourseEntity, { fieldName: 'courseId' })
+	course: CourseEntity;
 
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()

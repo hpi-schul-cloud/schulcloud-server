@@ -2,7 +2,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { BoardNodeFactory, BoardNodeService } from '@modules/board';
 import { LinkElement, RichTextElement } from '@modules/board/domain';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
@@ -39,7 +39,7 @@ describe('CommonCartridgeImportService', () => {
 	const objectContainingTitle = (title: string) => expect.objectContaining({ title });
 
 	beforeEach(async () => {
-		orm = await setupEntities([User, Course, CourseGroup]);
+		orm = await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeImportService,

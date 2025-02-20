@@ -4,7 +4,7 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -33,7 +33,7 @@ describe('SubmissionRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User, Submission, Task, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Submission, Task, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

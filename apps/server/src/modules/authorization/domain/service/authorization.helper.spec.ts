@@ -1,5 +1,6 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { courseFactory } from '@modules/learnroom/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -16,7 +17,7 @@ describe('AuthorizationHelper', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, Task, LessonEntity, Submission, Material]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Submission, Material]);
 	});
 
 	afterEach(() => {
@@ -170,7 +171,7 @@ describe('AuthorizationHelper', () => {
 		describe('when only one prop is given and prop is an Array', () => {
 			it('should return true if user is contained in prop', () => {
 				const user = userFactory.build();
-				const course = courseEntityFactory.build({ studentIds: [user.id] });
+				const course = courseFactory.build({ studentIds: [user.id] });
 
 				const permissions = service.hasAccessToEntity(user, course, ['students']);
 
@@ -179,7 +180,7 @@ describe('AuthorizationHelper', () => {
 
 			it('should return false if user is not contained in prop', () => {
 				const user = userFactory.build();
-				const course = courseEntityFactory.build({ studentIds: [user.id] });
+				const course = courseFactory.build({ studentIds: [user.id] });
 
 				const permissions = service.hasAccessToEntity(user, course, ['teachers']);
 

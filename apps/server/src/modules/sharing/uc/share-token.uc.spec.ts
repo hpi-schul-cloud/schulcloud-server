@@ -6,7 +6,7 @@ import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardSe
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
 import { boardNodeAuthorizableFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
@@ -121,7 +121,7 @@ describe('ShareTokenUC', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		schoolService = module.get(SchoolService);
 
-		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {

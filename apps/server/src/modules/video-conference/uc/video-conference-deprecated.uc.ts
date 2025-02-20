@@ -3,7 +3,7 @@ import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
@@ -334,7 +334,7 @@ export class VideoConferenceDeprecatedUc {
 	): Promise<{ scopeInfo: ScopeInfo; object: AuthorizableObject }> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseService.findById(refId);
+				const course: CourseEntity = await this.courseService.findById(refId);
 
 				return {
 					scopeInfo: {

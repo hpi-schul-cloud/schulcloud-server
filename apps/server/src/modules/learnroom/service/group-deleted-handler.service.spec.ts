@@ -2,7 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course as CourseEntity, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { GroupDeletedEvent } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -32,7 +32,7 @@ describe(GroupDeletedHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([CourseEntity, CourseGroup]),
+					useValue: await setupEntities([CourseEntity, CourseGroupEntity]),
 				},
 			],
 		}).compile();

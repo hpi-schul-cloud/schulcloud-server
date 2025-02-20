@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
 import { DashboardResponse } from '../controller/dto';
@@ -7,7 +7,7 @@ import { DashboardMapper } from './dashboard.mapper';
 
 describe('dashboard mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	it('should map the required properties correctly', () => {

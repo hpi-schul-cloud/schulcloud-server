@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
@@ -31,7 +31,7 @@ describe('lesson copy uc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, LessonEntity, Material, Task, Submission]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, LessonEntity, Material, Task, Submission]);
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,

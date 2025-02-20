@@ -2,11 +2,11 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { DeepPartial } from 'fishery';
-import { Course, CourseProperties } from '../repo';
+import { CourseEntity, CourseProperties } from '../repo';
 
 const oneDay = 24 * 60 * 60 * 1000;
 
-class CourseEntityFactory extends BaseFactory<Course, CourseProperties> {
+class CourseEntityFactory extends BaseFactory<CourseEntity, CourseProperties> {
 	public isFinished(): this {
 		const untilDate = new Date(Date.now() - oneDay);
 		const params: DeepPartial<CourseProperties> = { untilDate };
@@ -36,7 +36,7 @@ class CourseEntityFactory extends BaseFactory<Course, CourseProperties> {
 	}
 }
 
-export const courseEntityFactory = CourseEntityFactory.define(Course, ({ sequence }) => {
+export const courseEntityFactory = CourseEntityFactory.define(CourseEntity, ({ sequence }) => {
 	return {
 		name: `course #${sequence}`,
 		description: `course #${sequence} description`,

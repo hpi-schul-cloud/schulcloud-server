@@ -5,13 +5,13 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
-import { CourseGroup } from '@modules/course/repo';
+import { CourseGroupEntity } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { CourseRule } from './course.rule';
 
 @Injectable()
-export class CourseGroupRule implements Rule<CourseGroup> {
+export class CourseGroupRule implements Rule<CourseGroupEntity> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		private readonly courseRule: CourseRule,
@@ -21,12 +21,12 @@ export class CourseGroupRule implements Rule<CourseGroup> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof CourseGroup;
+		const isMatched = object instanceof CourseGroupEntity;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: CourseGroup, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
 		const { requiredPermissions } = context;
 
 		const hasAllPermissions = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);

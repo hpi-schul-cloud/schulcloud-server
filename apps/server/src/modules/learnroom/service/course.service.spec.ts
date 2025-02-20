@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { Course as CourseEntity, CourseGroup, CourseRepo as LegacyCourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo as LegacyCourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
@@ -29,7 +29,7 @@ describe('CourseService', () => {
 	let legacyCourseRepo: DeepMocked<LegacyCourseRepo>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User, CourseEntity, CourseGroup]);
+		const orm = await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseService,

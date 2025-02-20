@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
@@ -27,7 +27,7 @@ describe(TaskUrlHandler.name, () => {
 
 		taskService = module.get(TaskService);
 		taskUrlHandler = module.get(TaskUrlHandler);
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {

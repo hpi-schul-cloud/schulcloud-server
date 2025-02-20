@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { Course, CourseGroup, CourseGroupRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseGroupRepo } from '@modules/course/repo';
 import { courseGroupEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
@@ -28,7 +28,7 @@ describe('CourseGroupService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User, Course, CourseGroup]);
+		const orm = await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupService,

@@ -7,9 +7,9 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
-import { Course } from './course.entity';
+import { CourseEntity } from './course.entity';
 import { CourseRepo } from './course.repo';
-import { CourseGroup } from './coursegroup.entity';
+import { CourseGroupEntity } from './coursegroup.entity';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
 	const ids2 = arr2.map((o) => o.id);
@@ -24,7 +24,7 @@ describe('course repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [Course, CourseGroup] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity] })],
 			providers: [CourseRepo],
 		}).compile();
 		repo = module.get(CourseRepo);
@@ -45,7 +45,7 @@ describe('course repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Course);
+		expect(repo.entityName).toBe(CourseEntity);
 	});
 
 	describe('findAllByUserId', () => {

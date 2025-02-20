@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { CourseGroup, CourseGroupRepo } from '@modules/course/repo';
+import { CourseGroupEntity, CourseGroupRepo } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -35,7 +35,7 @@ export class CourseGroupService implements DeletionService, IEventHandler<UserDe
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findAllCourseGroupsByUserId(userId: EntityId): Promise<Counted<CourseGroup[]>> {
+	public async findAllCourseGroupsByUserId(userId: EntityId): Promise<Counted<CourseGroupEntity[]>> {
 		const [courseGroups, count] = await this.repo.findByUserId(userId);
 
 		return [courseGroups, count];
@@ -74,7 +74,7 @@ export class CourseGroupService implements DeletionService, IEventHandler<UserDe
 		return result;
 	}
 
-	private getCourseGroupsId(courseGroups: CourseGroup[]): EntityId[] {
+	private getCourseGroupsId(courseGroups: CourseGroupEntity[]): EntityId[] {
 		return courseGroups.map((courseGroup) => courseGroup.id);
 	}
 }

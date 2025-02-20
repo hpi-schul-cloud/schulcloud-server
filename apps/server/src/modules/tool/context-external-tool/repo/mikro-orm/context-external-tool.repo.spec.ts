@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -33,8 +33,8 @@ describe(ContextExternalToolRepo.name, () => {
 						SchoolExternalToolEntity,
 						ExternalToolEntity,
 						User,
-						Course,
-						CourseGroup,
+						CourseEntity,
+						CourseGroupEntity,
 					],
 				}),
 			],

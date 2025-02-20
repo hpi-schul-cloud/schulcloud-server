@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ColumnBoardService } from '@modules/board/service';
 import { columnBoardFactory } from '@modules/board/testing';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom/service';
 import { LessonService } from '@modules/lesson/service';
@@ -69,7 +69,7 @@ describe('ShareTokenService', () => {
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
 		columnBoardService = await module.get(ColumnBoardService);
-		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {

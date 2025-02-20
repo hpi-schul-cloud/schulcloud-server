@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -40,7 +40,7 @@ describe('dashboard uc', () => {
 		repo = module.get(DASHBOARD_REPO);
 		courseRepo = module.get(CourseRepo);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterEach(() => {
@@ -66,7 +66,7 @@ describe('dashboard uc', () => {
 			const dashboardRepoSpy = jest
 				.spyOn(repo, 'getUsersDashboard')
 				.mockImplementation(() => Promise.resolve(dashboard));
-			const courses = new Array(5).map(() => ({} as Course));
+			const courses = new Array(5).map(() => ({} as CourseEntity));
 			const courseRepoSpy = jest
 				.spyOn(courseRepo, 'findAllByUserId')
 				.mockImplementation(() => Promise.resolve([courses, 5]));

@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -80,8 +80,8 @@ describe('rooms usecase', () => {
 
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			Task,
 			Submission,
 			LessonEntity,

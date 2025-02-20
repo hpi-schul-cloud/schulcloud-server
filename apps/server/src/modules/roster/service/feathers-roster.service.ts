@@ -1,4 +1,4 @@
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom/service';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -85,7 +85,7 @@ export class FeathersRosterService {
 	}
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
-		const courses: Course[] = await this.getCourses(pseudonym, oauth2ClientId);
+		const courses: CourseEntity[] = await this.getCourses(pseudonym, oauth2ClientId);
 
 		const userGroups: UserGroups = {
 			data: {
@@ -102,7 +102,7 @@ export class FeathersRosterService {
 		return userGroups;
 	}
 
-	private async getCourses(pseudonym: string, oauth2ClientId: string): Promise<Course[]> {
+	private async getCourses(pseudonym: string, oauth2ClientId: string): Promise<CourseEntity[]> {
 		const pseudonymContext: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
 		const user: UserDO = await this.userService.findById(pseudonymContext.userId);
 
@@ -112,14 +112,14 @@ export class FeathersRosterService {
 			externalTool.id
 		);
 
-		let courses: Course[] = await this.courseService.findAllByUserId(pseudonymContext.userId);
+		let courses: CourseEntity[] = await this.courseService.findAllByUserId(pseudonymContext.userId);
 		courses = await this.filterCoursesByToolAvailability(courses, schoolExternalTool);
 
 		return courses;
 	}
 
 	public async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
-		const course: Course = await this.courseService.findById(courseId);
+		const course: CourseEntity = await this.courseService.findById(courseId);
 
 		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 		const schoolExternalTool: SchoolExternalTool = await this.validateSchoolExternalTool(
@@ -185,13 +185,13 @@ export class FeathersRosterService {
 	}
 
 	private async filterCoursesByToolAvailability(
-		courses: Course[],
+		courses: CourseEntity[],
 		schoolExternalTool: SchoolExternalTool
-	): Promise<Course[]> {
-		const validCourses: Course[] = [];
+	): Promise<CourseEntity[]> {
+		const validCourses: CourseEntity[] = [];
 
 		await Promise.all(
-			courses.map(async (course: Course): Promise<void> => {
+			courses.map(async (course: CourseEntity): Promise<void> => {
 				const isExternalToolReferencedInCourse: boolean = await this.isExternalToolReferencedInCourse(
 					course,
 					schoolExternalTool
@@ -207,7 +207,7 @@ export class FeathersRosterService {
 	}
 
 	private async isExternalToolReferencedInCourse(
-		course: Course,
+		course: CourseEntity,
 		schoolExternalTool: SchoolExternalTool
 	): Promise<boolean> {
 		const contextExternalToolsInCourse: ContextExternalTool[] =
@@ -299,7 +299,10 @@ export class FeathersRosterService {
 		return schoolExternalTools[0];
 	}
 
-	private async validateContextExternalTools(course: Course, schoolExternalTool: SchoolExternalTool): Promise<void> {
+	private async validateContextExternalTools(
+		course: CourseEntity,
+		schoolExternalTool: SchoolExternalTool
+	): Promise<void> {
 		const isExternalToolReferencedInCourse: boolean = await this.isExternalToolReferencedInCourse(
 			course,
 			schoolExternalTool

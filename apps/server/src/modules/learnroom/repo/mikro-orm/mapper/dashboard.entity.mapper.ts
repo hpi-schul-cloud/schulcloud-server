@@ -1,5 +1,5 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
-import { Course as CourseEntity, CourseType } from '@modules/course/repo';
+import { CourseEntity, CourseType } from '@modules/course/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';

@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@modules/board';
-import { Course, CourseFeatures, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseFeatures, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
@@ -29,7 +29,7 @@ describe('BoardContextApiHelperService', () => {
 		};
 
 	beforeEach(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextApiHelperService,

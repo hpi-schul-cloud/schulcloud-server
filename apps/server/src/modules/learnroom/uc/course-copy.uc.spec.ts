@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -21,7 +21,7 @@ describe('course copy uc', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyUC,

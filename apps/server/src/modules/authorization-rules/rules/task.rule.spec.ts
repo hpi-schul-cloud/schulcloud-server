@@ -1,6 +1,6 @@
 import { DeepPartial } from '@mikro-orm/core';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
@@ -26,7 +26,7 @@ describe('TaskRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, Task, LessonEntity, Material, Submission]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Material, Submission]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

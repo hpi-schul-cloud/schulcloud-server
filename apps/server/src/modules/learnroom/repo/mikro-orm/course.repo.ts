@@ -1,5 +1,5 @@
 import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
-import { Course as CourseEntity, CourseScope } from '@modules/course/repo';
+import { CourseEntity, CourseScope } from '@modules/course/repo';
 import { Group } from '@modules/group';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardLayout } from '@modules/board';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
@@ -19,7 +19,7 @@ describe('room board response mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [RoomBoardResponseMapper],

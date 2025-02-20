@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardCommonToolService, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
 import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -24,7 +24,7 @@ describe(AutoContextNameStrategy.name, () => {
 	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -70,7 +70,7 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				const course: Course = courseEntityFactory.buildWithId(
+				const course: CourseEntity = courseEntityFactory.buildWithId(
 					{
 						name: 'testName',
 					},
@@ -106,7 +106,7 @@ describe(AutoContextNameStrategy.name, () => {
 					},
 				});
 
-				const course: Course = courseEntityFactory.buildWithId({
+				const course: CourseEntity = courseEntityFactory.buildWithId({
 					name: 'testName',
 				});
 

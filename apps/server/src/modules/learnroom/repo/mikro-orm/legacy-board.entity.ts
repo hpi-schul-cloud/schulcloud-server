@@ -1,5 +1,5 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -12,7 +12,7 @@ import { TaskBoardElement } from './task-board-element.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];
-	course: Course;
+	course: CourseEntity;
 };
 
 @Entity({ tableName: 'board' })
@@ -24,7 +24,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	}
 
 	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
-	course: IdentifiedReference<Course>;
+	course: IdentifiedReference<CourseEntity>;
 
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);

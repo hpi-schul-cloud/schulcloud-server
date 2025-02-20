@@ -4,29 +4,29 @@ import { EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { CourseGroup } from './coursegroup.entity';
+import { CourseGroupEntity } from './coursegroup.entity';
 
 @Injectable()
-export class CourseGroupRepo extends BaseRepo<CourseGroup> {
-	get entityName(): EntityName<CourseGroup> {
-		return CourseGroup;
+export class CourseGroupRepo extends BaseRepo<CourseGroupEntity> {
+	get entityName(): EntityName<CourseGroupEntity> {
+		return CourseGroupEntity;
 	}
 
-	public async findById(id: string): Promise<CourseGroup> {
+	public async findById(id: string): Promise<CourseGroupEntity> {
 		const courseGroup = await super.findById(id);
 		await this._em.populate(courseGroup, ['course']);
 		return courseGroup;
 	}
 
-	public async findByCourseIds(courseIds: EntityId[]): Promise<Counted<CourseGroup[]>> {
-		const [courseGroups, count] = await this._em.findAndCount(CourseGroup, {
+	public async findByCourseIds(courseIds: EntityId[]): Promise<Counted<CourseGroupEntity[]>> {
+		const [courseGroups, count] = await this._em.findAndCount(CourseGroupEntity, {
 			course: { $in: courseIds },
 		});
 		return [courseGroups, count];
 	}
 
-	public async findByUserId(userId: EntityId): Promise<Counted<CourseGroup[]>> {
-		const [courseGroups, count] = await this._em.findAndCount<CourseGroup>(CourseGroup, {
+	public async findByUserId(userId: EntityId): Promise<Counted<CourseGroupEntity[]>> {
+		const [courseGroups, count] = await this._em.findAndCount<CourseGroupEntity>(CourseGroupEntity, {
 			students: new ObjectId(userId),
 		});
 		return [courseGroups, count];

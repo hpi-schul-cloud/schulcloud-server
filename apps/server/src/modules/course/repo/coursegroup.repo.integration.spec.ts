@@ -3,8 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
-import { Course } from './course.entity';
-import { CourseGroup } from './coursegroup.entity';
+import { CourseEntity } from './course.entity';
+import { CourseGroupEntity } from './coursegroup.entity';
 import { CourseGroupRepo } from './coursegroup.repo';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
@@ -20,7 +20,7 @@ describe('course group repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [Course, CourseGroup] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity] })],
 			providers: [CourseGroupRepo],
 		}).compile();
 		repo = module.get(CourseGroupRepo);
@@ -32,8 +32,8 @@ describe('course group repo', () => {
 	});
 
 	afterEach(async () => {
-		await em.nativeDelete(Course, {});
-		await em.nativeDelete(CourseGroup, {});
+		await em.nativeDelete(CourseEntity, {});
+		await em.nativeDelete(CourseGroupEntity, {});
 	});
 
 	it('should be defined', () => {
@@ -42,7 +42,7 @@ describe('course group repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(CourseGroup);
+		expect(repo.entityName).toBe(CourseGroupEntity);
 	});
 
 	describe('findById', () => {
@@ -68,7 +68,7 @@ describe('course group repo', () => {
 
 			expect(result).toBeInstanceOf(Array);
 			expect(typeof count).toEqual('number');
-			expect(result[0]).toBeInstanceOf(CourseGroup);
+			expect(result[0]).toBeInstanceOf(CourseGroupEntity);
 		});
 
 		it('should return right keys', async () => {

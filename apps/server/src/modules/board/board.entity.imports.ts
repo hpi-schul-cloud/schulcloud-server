@@ -1,8 +1,7 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
-import { Course } from '@modules/course/repo/course.entity';
-import { CourseGroup } from '@modules/course/repo/coursegroup.entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { GroupEntity } from '@modules/group/entity';
@@ -65,8 +64,8 @@ export const ENTITIES = [
 	TaskBoardElement,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	CourseNews,
 	DashboardGridElementEntity,
 	DashboardEntity,

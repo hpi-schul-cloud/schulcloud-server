@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CopyApiResponse } from '@modules/copy-helper';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
@@ -264,7 +264,7 @@ describe('Course Rooms Controller (API)', () => {
 				const body = response.body as CopyApiResponse;
 				expect(body.id).toBeDefined();
 
-				expect(() => em.findOneOrFail(Course, body.id as string)).not.toThrow();
+				expect(() => em.findOneOrFail(CourseEntity, body.id as string)).not.toThrow();
 			});
 
 			it('should persist board of room copy', async () => {

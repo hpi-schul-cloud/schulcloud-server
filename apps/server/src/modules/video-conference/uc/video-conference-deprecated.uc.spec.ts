@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationService } from '@modules/authorization';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
@@ -70,7 +70,7 @@ describe('VideoConferenceUc', () => {
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	const hostUrl = 'https://localhost:4000';
-	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
+	const course: CourseEntity = { id: 'courseId', name: 'courseName' } as CourseEntity;
 	const eventId = 'eventId';
 	const event: CalendarEventDto = new CalendarEventDto({
 		title: 'eventTitle',

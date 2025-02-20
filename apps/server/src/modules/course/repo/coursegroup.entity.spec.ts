@@ -2,18 +2,18 @@ import { User } from '@shared/domain/entity/user.entity';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
-import { Course } from './course.entity';
-import { CourseGroup } from './coursegroup.entity';
+import { CourseEntity } from './course.entity';
+import { CourseGroupEntity } from './coursegroup.entity';
 
 describe('CourseGroupEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('constructor', () => {
 		it('should throw an error if constructor is called without arguments', () => {
 			// @ts-expect-error: Test case
-			const test = () => new CourseGroup();
+			const test = () => new CourseGroupEntity();
 
 			expect(test).toThrow();
 		});
@@ -22,9 +22,9 @@ describe('CourseGroupEntity', () => {
 			const name = 'someName';
 			const course = courseEntityFactory.build();
 
-			const courseGroup = new CourseGroup({ name, course });
+			const courseGroup = new CourseGroupEntity({ name, course });
 
-			expect(courseGroup instanceof CourseGroup).toEqual(true);
+			expect(courseGroup instanceof CourseGroupEntity).toEqual(true);
 		});
 	});
 

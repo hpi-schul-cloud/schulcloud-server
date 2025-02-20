@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Course as CourseEntity } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { groupEntityFactory } from '@modules/group/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';

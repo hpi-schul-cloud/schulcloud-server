@@ -1,5 +1,5 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -16,13 +16,13 @@ describe('CourseGroupRule', () => {
 	let injectionService: AuthorizationInjectionService;
 	let courseRule: CourseRule;
 	let user: User;
-	let entity: CourseGroup;
+	let entity: CourseGroupEntity;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [AuthorizationHelper, CourseRule, CourseGroupRule, AuthorizationInjectionService],

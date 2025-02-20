@@ -10,7 +10,7 @@ import {
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
@@ -205,7 +205,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should save the course tools with the correct external school id', async () => {
@@ -216,7 +216,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse: CourseEntity = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
 							contextId: new ObjectId(copiedCourse.id),
@@ -256,7 +256,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should not save the course tools', async () => {
@@ -266,7 +266,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse: CourseEntity = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
 							contextId: new ObjectId(copiedCourse.id),
@@ -279,7 +279,7 @@ describe(`Share Token Import (API)`, () => {
 
 			describe('when the course has boards with tool elements', () => {
 				const setupBoardEntitiesWithTools = (
-					course: Course,
+					course: CourseEntity,
 					boardToolOne: ContextExternalToolEntity,
 					boardToolTwo: ContextExternalToolEntity
 				) => {
@@ -356,7 +356,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should save the copied board', async () => {
@@ -366,7 +366,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
 							type: BoardNodeType.COLUMN_BOARD,
 						});
@@ -442,7 +442,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should save the copied board', async () => {
@@ -452,7 +452,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
 							type: BoardNodeType.COLUMN_BOARD,
 						});

@@ -2,7 +2,7 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
 import { mediaBoardEntityFactory } from '@modules/board/testing';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
@@ -68,7 +68,7 @@ describe('ToolLaunchController (API)', () => {
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
+				const course: CourseEntity = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
 				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
@@ -136,7 +136,7 @@ describe('ToolLaunchController (API)', () => {
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
+				const course: CourseEntity = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
 				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
@@ -185,7 +185,7 @@ describe('ToolLaunchController (API)', () => {
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.CONTEXT_TOOL_USER,
 					]);
-					const course: Course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
+					const course: CourseEntity = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
 					const externalToolEntity = externalToolEntityFactory.buildWithId({
 						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
@@ -234,7 +234,7 @@ describe('ToolLaunchController (API)', () => {
 					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 						Permission.CONTEXT_TOOL_USER,
 					]);
-					const course: Course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
+					const course: CourseEntity = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
 					const externalToolEntity = externalToolEntityFactory.buildWithId({
 						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
@@ -286,7 +286,7 @@ describe('ToolLaunchController (API)', () => {
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school: usersSchool }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course: Course = courseEntityFactory.buildWithId({ school: usersSchool, teachers: [teacherUser] });
+				const course: CourseEntity = courseEntityFactory.buildWithId({ school: usersSchool, teachers: [teacherUser] });
 
 				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),

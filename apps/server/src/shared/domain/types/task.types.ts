@@ -1,4 +1,4 @@
-import type { Course } from '@modules/course/repo';
+import type { CourseEntity } from '@modules/course/repo';
 import type { SchoolEntity } from '@modules/school/repo';
 import type { LessonEntity, Submission, User } from '../entity';
 import type { InputFormat } from './input-format.types';
@@ -22,7 +22,7 @@ export interface TaskCreate extends ITask {
 }
 
 export interface TaskProperties extends ITask {
-	course?: Course;
+	course?: CourseEntity;
 	lesson?: LessonEntity;
 	creator: User;
 	school: SchoolEntity;

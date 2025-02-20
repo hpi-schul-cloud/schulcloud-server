@@ -1,6 +1,6 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
-import { Course, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseRepo } from '@modules/course/repo';
 import { RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { PaginationParams } from '@shared/controller/dto';
@@ -18,7 +18,7 @@ export class CourseUc {
 		private readonly roleService: RoleService
 	) {}
 
-	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<Course[]>> {
+	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<CourseEntity[]>> {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
 	}
 
@@ -31,18 +31,18 @@ export class CourseUc {
 		return role.permissions ?? [];
 	}
 
-	public async findCourseById(courseId: EntityId): Promise<Course> {
+	public async findCourseById(courseId: EntityId): Promise<CourseEntity> {
 		const course = await this.courseService.findById(courseId);
 
 		return course;
 	}
 
-	public async createCourse(currentUser: ICurrentUser, name: string): Promise<Course> {
+	public async createCourse(currentUser: ICurrentUser, name: string): Promise<CourseEntity> {
 		const user = await this.authService.getUserWithPermissions(currentUser.userId);
 
 		this.authService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
-		const course = new Course({ teachers: [user], school: user.school, name });
+		const course = new CourseEntity({ teachers: [user], school: user.school, name });
 		const savedCourse = await this.courseService.create(course);
 
 		return savedCourse;

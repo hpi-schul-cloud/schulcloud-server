@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
@@ -70,7 +70,7 @@ describe(DashboardService.name, () => {
 		dashboardElementRepo = module.get(DashboardElementRepo);
 		eventBus = module.get(EventBus);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {

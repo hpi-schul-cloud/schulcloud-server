@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonCopyService } from '@modules/lesson/service';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -44,7 +44,7 @@ describe('course copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, LegacyBoard, LegacyBoardElement]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, LegacyBoard, LegacyBoardElement]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyService,
@@ -188,7 +188,7 @@ describe('course copy service', () => {
 		it('should call board copy service', async () => {
 			const { course, originalBoard, user, courseCopyName } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			const expectedDestinationCourse = expect.objectContaining({ name: courseCopyName }) as Course;
+			const expectedDestinationCourse = expect.objectContaining({ name: courseCopyName }) as CourseEntity;
 			expect(boardCopyService.copyBoard).toBeCalledWith(
 				expect.objectContaining({ originalBoard, destinationCourse: expectedDestinationCourse, user })
 			);
@@ -257,7 +257,7 @@ describe('course copy service', () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
 
-			expect(status.title).toEqual((status.copyEntity as Course).name);
+			expect(status.title).toEqual((status.copyEntity as CourseEntity).name);
 		});
 
 		it('should set static statuses (metadata, usergroup, timegroup)', async () => {
@@ -291,7 +291,7 @@ describe('course copy service', () => {
 		it('should assign user as teacher', async () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.teachers ?? []).toContain(user);
 		});
@@ -304,7 +304,7 @@ describe('course copy service', () => {
 			userRepo.findById.mockResolvedValue(targetUser);
 
 			const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.school.name).toEqual(targetUser.school.name);
 		});
@@ -312,7 +312,7 @@ describe('course copy service', () => {
 		it('should set start date of course', async () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.startDate).toEqual(user.school.currentYear?.startDate);
 		});
@@ -321,7 +321,7 @@ describe('course copy service', () => {
 			const { course, user } = setup();
 			user.school.currentYear = undefined;
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.startDate).toEqual(undefined);
 			expect(courseCopy.untilDate).toEqual(undefined);
@@ -330,7 +330,7 @@ describe('course copy service', () => {
 		it('should set end date of course', async () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.untilDate).toEqual(user.school.currentYear?.endDate);
 		});
@@ -338,7 +338,7 @@ describe('course copy service', () => {
 		it('should set color of course', async () => {
 			const { course, user } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.color).toEqual(course.color);
 		});
@@ -356,7 +356,7 @@ describe('course copy service', () => {
 		it('should copy all ctl tools', async () => {
 			const { course, user, tools } = setup();
 			const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(contextExternalToolService.copyContextExternalTool).toHaveBeenCalledWith(
 				tools[0],
@@ -559,7 +559,7 @@ describe('course copy service', () => {
 				const targetUser = userFactory.build({ school: destinationSchool });
 				userRepo.findById.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
+				const courseCopy = status.copyEntity as CourseEntity;
 
 				expect(courseCopy.teachers).toContain(targetUser);
 			});
@@ -570,7 +570,7 @@ describe('course copy service', () => {
 				const targetUser = userFactory.build({ school: destinationSchool });
 				userRepo.findById.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
+				const courseCopy = status.copyEntity as CourseEntity;
 
 				expect(courseCopy.school.name).toEqual(destinationSchool.name);
 			});
@@ -578,7 +578,7 @@ describe('course copy service', () => {
 			it('should set start date of course', async () => {
 				const { course, user } = setup();
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
+				const courseCopy = status.copyEntity as CourseEntity;
 
 				expect(courseCopy.startDate).toEqual(user.school.currentYear?.startDate);
 			});
@@ -587,7 +587,7 @@ describe('course copy service', () => {
 				const { course, user } = setup();
 				user.school.currentYear = undefined;
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
+				const courseCopy = status.copyEntity as CourseEntity;
 
 				expect(courseCopy.startDate).toBeUndefined();
 				expect(courseCopy.untilDate).toBeUndefined();
@@ -596,7 +596,7 @@ describe('course copy service', () => {
 			it('should set end date of course', async () => {
 				const { course, user } = setup();
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
+				const courseCopy = status.copyEntity as CourseEntity;
 
 				expect(courseCopy.untilDate).toEqual(user.school.currentYear?.endDate);
 			});
@@ -604,7 +604,7 @@ describe('course copy service', () => {
 			it('should set color of course', async () => {
 				const { course, user } = setup();
 				const status = await service.copyCourse({ userId: user.id, courseId: course.id });
-				const courseCopy = status.copyEntity as Course;
+				const courseCopy = status.copyEntity as CourseEntity;
 
 				expect(courseCopy.color).toEqual(course.color);
 			});
@@ -643,7 +643,7 @@ describe('course copy service', () => {
 		it('should not set any students in the copy', async () => {
 			const { originalCourse, user } = setupWithAdditionalUsers();
 			const status = await service.copyCourse({ userId: user.id, courseId: originalCourse.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.students.length).toEqual(0);
 		});
@@ -651,7 +651,7 @@ describe('course copy service', () => {
 		it('should not set any additional teachers', async () => {
 			const { originalCourse, user } = setupWithAdditionalUsers();
 			const status = await service.copyCourse({ userId: user.id, courseId: originalCourse.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.teachers.length).toEqual(1);
 		});
@@ -659,7 +659,7 @@ describe('course copy service', () => {
 		it('should not set any substitution Teachers in the copy', async () => {
 			const { originalCourse, user } = setupWithAdditionalUsers();
 			const status = await service.copyCourse({ userId: user.id, courseId: originalCourse.id });
-			const courseCopy = status.copyEntity as Course;
+			const courseCopy = status.copyEntity as CourseEntity;
 
 			expect(courseCopy.substitutionTeachers.length).toEqual(0);
 		});

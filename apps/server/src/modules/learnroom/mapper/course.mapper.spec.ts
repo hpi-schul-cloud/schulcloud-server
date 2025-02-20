@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
 import { CreateCourseResponse } from '../controller/dto';
@@ -6,7 +6,7 @@ import { CourseMapper } from './course.mapper';
 
 describe(CourseMapper.name, () => {
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('mapToCreateCourseResponse', () => {

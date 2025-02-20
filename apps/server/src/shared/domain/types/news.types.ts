@@ -1,4 +1,4 @@
-import type { Course } from '@modules/course/repo';
+import type { CourseEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import type { TeamEntity } from '../entity/team.entity';
 import { EntityId } from './entity-id';
@@ -26,4 +26,4 @@ export interface INewsScope {
 	unpublished?: boolean;
 }
 
-export type NewsTarget = SchoolEntity | TeamEntity | Course;
+export type NewsTarget = SchoolEntity | TeamEntity | CourseEntity;

@@ -1,7 +1,7 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo';
 import { ClassEntity } from '@modules/class/entity';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
@@ -34,8 +34,8 @@ export const ENTITIES = [
 	StorageProviderEntity,
 	FederalStateEntity,
 	User,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	ClassEntity,
 	GroupEntity,
 	ExternalToolEntity,

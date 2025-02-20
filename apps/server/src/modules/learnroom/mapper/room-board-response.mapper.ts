@@ -1,4 +1,4 @@
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
 import { TaskWithStatusVo } from '@shared/domain/entity';
 import {
@@ -59,7 +59,7 @@ export class RoomBoardResponseMapper {
 			status: boardTaskStatus,
 		});
 
-		const taskCourse = boardTask.course as Course;
+		const taskCourse = boardTask.course as CourseEntity;
 		mappedTask.courseName = taskCourse.name;
 		mappedTask.availableDate = boardTask.availableDate;
 		mappedTask.dueDate = boardTask.dueDate;

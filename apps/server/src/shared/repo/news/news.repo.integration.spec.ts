@@ -1,6 +1,6 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseNews, News, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
@@ -27,7 +27,7 @@ describe('NewsRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [News, TeamEntity, Course, CourseGroup, CourseNews, SchoolNews, TeamNews],
+					entities: [News, TeamEntity, CourseEntity, CourseGroupEntity, CourseNews, SchoolNews, TeamNews],
 				}),
 			],
 			providers: [NewsRepo],

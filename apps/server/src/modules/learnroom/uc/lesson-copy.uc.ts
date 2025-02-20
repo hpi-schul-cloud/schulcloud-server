@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
-import { Course, CourseRepo } from '@modules/course/repo';
+import { CourseEntity, CourseRepo } from '@modules/course/repo';
 import { LessonCopyParentParams, LessonCopyService, LessonService } from '@modules/lesson';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LessonEntity, User } from '@shared/domain/entity';
@@ -60,7 +60,7 @@ export class LessonCopyUC {
 		}
 	}
 
-	private checkDestinationCourseAuthorization(user: User, destinationCourse: Course): void {
+	private checkDestinationCourseAuthorization(user: User, destinationCourse: CourseEntity): void {
 		const contextCanWrite = AuthorizationContextBuilder.write([]);
 		this.authorisation.checkPermission(user, destinationCourse, contextCanWrite);
 	}

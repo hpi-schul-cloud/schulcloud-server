@@ -5,7 +5,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
@@ -122,7 +122,7 @@ describe(VideoConferenceService.name, () => {
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		configService = module.get(ConfigService);
 
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('canGuestJoin', () => {
@@ -979,7 +979,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return scope information for a course', async () => {
 				const { userId, scopeId } = setup();
 				const conferenceScope: VideoConferenceScope = VideoConferenceScope.COURSE;
-				const course: Course = courseEntityFactory.buildWithId({ name: 'Course' });
+				const course: CourseEntity = courseEntityFactory.buildWithId({ name: 'Course' });
 				course.id = scopeId;
 				courseService.findById.mockResolvedValue(course);
 

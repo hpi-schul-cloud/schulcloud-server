@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,7 +20,7 @@ describe('dashboard model mapper', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardEntity, DashboardGridElementEntity, User, Course, CourseGroup],
+					entities: [DashboardEntity, DashboardGridElementEntity, User, CourseEntity, CourseGroupEntity],
 				}),
 			],
 			providers: [DashboardModelMapper],
@@ -95,7 +95,7 @@ describe('dashboard model mapper', () => {
 			const element = mapped.gridElements[0];
 			expect(element).toBeInstanceOf(DashboardGridElementEntity);
 			expect(element.references.length).toBeGreaterThan(0);
-			expect(element.references[0]).toBeInstanceOf(Course);
+			expect(element.references[0]).toBeInstanceOf(CourseEntity);
 			const reference = element.references[0];
 			expect(['English', 'German', 'Math'].includes(reference.name)).toEqual(true);
 		});

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardNodeService } from '@modules/board';
 import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Group, GroupService } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
@@ -26,7 +26,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 	let boardNodeService: DeepMocked<BoardNodeService>;
 
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -73,7 +73,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 						},
 					});
 					const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-					const course: Course = courseEntityFactory.buildWithId(
+					const course: CourseEntity = courseEntityFactory.buildWithId(
 						{
 							name: 'Synced Course',
 							syncedWithGroup: groupEntity,
@@ -118,7 +118,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 						},
 					});
 					const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-					const course: Course = courseEntityFactory.buildWithId(
+					const course: CourseEntity = courseEntityFactory.buildWithId(
 						{
 							name: 'Synced Course',
 							syncedWithGroup: groupEntity,
@@ -162,7 +162,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 							type: ToolContextType.COURSE,
 						},
 					});
-					const course: Course = courseEntityFactory.buildWithId(
+					const course: CourseEntity = courseEntityFactory.buildWithId(
 						{
 							name: 'Synced Course',
 							syncedWithGroup: undefined,
@@ -202,7 +202,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 						},
 					});
 					const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-					const course: Course = courseEntityFactory.buildWithId(
+					const course: CourseEntity = courseEntityFactory.buildWithId(
 						{
 							name: 'Synced Course',
 							syncedWithGroup: groupEntity,
@@ -298,7 +298,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 						},
 					});
 					const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-					const course: Course = courseEntityFactory.buildWithId(
+					const course: CourseEntity = courseEntityFactory.buildWithId(
 						{
 							name: 'Synced Course',
 							syncedWithGroup: groupEntity,
@@ -354,7 +354,7 @@ describe(AutoGroupExternalUuidStrategy.name, () => {
 							type: ToolContextType.BOARD_ELEMENT,
 						},
 					});
-					const course: Course = courseEntityFactory.buildWithId(
+					const course: CourseEntity = courseEntityFactory.buildWithId(
 						{
 							name: 'Synced Course',
 							syncedWithGroup: undefined,

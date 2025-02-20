@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
@@ -7,7 +7,7 @@ import { Dashboard, GridElement } from '../../domain/do/dashboard';
 
 describe('dashboard entity', () => {
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('constructor', () => {

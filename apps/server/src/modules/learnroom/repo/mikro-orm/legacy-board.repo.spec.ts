@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -25,9 +25,9 @@ describe('LegacyRoomBoardRepo', () => {
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
 						LegacyBoard,
-						Course,
+						CourseEntity,
 						LegacyBoardElement,
-						CourseGroup,
+						CourseGroupEntity,
 						SchoolEntity,
 						Submission,
 						Task,

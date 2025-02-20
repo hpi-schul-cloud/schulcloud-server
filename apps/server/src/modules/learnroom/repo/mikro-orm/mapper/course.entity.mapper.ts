@@ -1,7 +1,7 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
-import { Course as CourseEntity, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { User as UserEntity } from '@shared/domain/entity';
@@ -12,7 +12,7 @@ export class CourseEntityMapper {
 	public static mapEntityToDo(entity: CourseEntity): Course {
 		const courseGroupIds: EntityId[] = entity.courseGroups
 			.getItems()
-			.map((courseGroup: CourseGroup): EntityId => courseGroup.id);
+			.map((courseGroup: CourseGroupEntity): EntityId => courseGroup.id);
 
 		const classIds: EntityId[] = entity.classes.getItems().map((clazz: ClassEntity): EntityId => clazz.id);
 		const groupIds: EntityId[] = entity.groups.getItems().map((group: GroupEntity): EntityId => group.id);
@@ -50,8 +50,8 @@ export class CourseEntityMapper {
 	public static mapDoToEntityData(domainObject: Course, em: EntityManager): EntityData<CourseEntity> {
 		const props: CourseProps = domainObject.getProps();
 		const school: SchoolEntity = em.getReference(SchoolEntity, props.schoolId);
-		const courseGroups: CourseGroup[] = props.courseGroupIds.map(
-			(id: EntityId): CourseGroup => em.getReference(CourseGroup, id)
+		const courseGroups: CourseGroupEntity[] = props.courseGroupIds.map(
+			(id: EntityId): CourseGroupEntity => em.getReference(CourseGroupEntity, id)
 		);
 
 		const classes: ClassEntity[] = props.classIds.map((id: EntityId): ClassEntity => em.getReference(ClassEntity, id));

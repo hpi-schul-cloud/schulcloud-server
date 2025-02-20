@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { AuthorizationService } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
@@ -56,8 +56,8 @@ describe(RoomBoardDTOFactory.name, () => {
 		mapper = module.get(RoomBoardDTOFactory);
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			LessonEntity,
 			Material,
 			Task,
@@ -100,7 +100,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let tasks: Task[];
 
 			beforeEach(() => {
@@ -172,7 +172,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let tasks: Task[];
 
 			beforeEach(() => {
@@ -211,7 +211,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let lessons: LessonEntity[];
 
 			beforeEach(() => {
@@ -250,7 +250,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let lesson: LessonEntity;
 			const inOneDay = new Date(Date.now() + 8.64e7);
 
@@ -332,7 +332,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let lessons: LessonEntity[];
 
 			beforeEach(() => {

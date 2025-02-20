@@ -1,5 +1,5 @@
 import { columnBoardFactory } from '@modules/board/testing';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { BadRequestException } from '@nestjs/common';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
@@ -20,8 +20,8 @@ describe('Board Entity', () => {
 	beforeAll(async () => {
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			LessonEntity,
 			Material,
 			Task,

@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
@@ -7,7 +7,15 @@ import { LessonBoardElement } from './lesson-board-element.entity';
 
 describe('LessonBoardElementEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([LessonBoardElement, LessonEntity, Material, Course, CourseGroup, Task, Submission]);
+		await setupEntities([
+			LessonBoardElement,
+			LessonEntity,
+			Material,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+		]);
 	});
 
 	describe('constructor', () => {

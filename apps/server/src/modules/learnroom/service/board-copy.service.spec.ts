@@ -5,7 +5,7 @@ import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
 import { columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
@@ -44,8 +44,8 @@ describe('board copy service', () => {
 	beforeAll(async () => {
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			Task,
 			Submission,
 			LessonEntity,

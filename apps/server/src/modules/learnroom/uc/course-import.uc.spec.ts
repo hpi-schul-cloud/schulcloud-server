@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { AuthorizationService } from '@modules/authorization';
-import { Course, CourseGroup } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -24,7 +24,7 @@ describe('CourseImportUc', () => {
 	let courseImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities([User, Course, CourseGroup]);
+		orm = await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseImportUc,

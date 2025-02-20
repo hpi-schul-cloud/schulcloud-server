@@ -1,5 +1,5 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { LessonEntity, Task, User } from '@shared/domain/entity';
@@ -8,7 +8,7 @@ import { TaskRepo } from '@shared/repo/task';
 
 type TaskCopyParams = {
 	originalTaskId: EntityId;
-	destinationCourse?: Course;
+	destinationCourse?: CourseEntity;
 	destinationLesson?: LessonEntity;
 	user: User;
 	copyName?: string;
@@ -43,7 +43,7 @@ export class TaskCopyService {
 		params: TaskCopyParams,
 		originalTask: Task,
 		user: User,
-		destinationCourse: Course | undefined,
+		destinationCourse: CourseEntity | undefined,
 		destinationLesson: LessonEntity | undefined
 	) {
 		const taskCopy = new Task({

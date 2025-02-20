@@ -1,5 +1,5 @@
 import { EntityDTO } from '@mikro-orm/core';
-import { Course } from '@modules/course/repo';
+import { CourseEntity } from '@modules/course/repo';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Role, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
@@ -9,25 +9,25 @@ export class RoleNameMapper {
 		return roles.some((role) => role.name === RoleName.SUPERHERO);
 	}
 
-	private static isAdministrator(roles: EntityDTO<Role>[], user: User, course: Course): boolean {
+	private static isAdministrator(roles: EntityDTO<Role>[], user: User, course: CourseEntity): boolean {
 		const belongsToSameSchool = user.school.id === course.school.id;
 		const isAdministrator = roles.some((role) => role.name === RoleName.ADMINISTRATOR);
 		return belongsToSameSchool && isAdministrator;
 	}
 
-	private static isTeacher(user: User, course: Course): boolean {
+	private static isTeacher(user: User, course: CourseEntity): boolean {
 		return course.getTeacherIds().includes(user.id);
 	}
 
-	private static isSubstitutionTeacher(user: User, course: Course): boolean {
+	private static isSubstitutionTeacher(user: User, course: CourseEntity): boolean {
 		return course.getSubstitutionTeacherIds().includes(user.id);
 	}
 
-	private static isStudent(user: User, course: Course): boolean {
+	private static isStudent(user: User, course: CourseEntity): boolean {
 		return course.getStudentIds().includes(user.id);
 	}
 
-	static mapToRoleName(user: User, course: Course): RoleName {
+	static mapToRoleName(user: User, course: CourseEntity): RoleName {
 		if (RoleNameMapper.isSuperHero(user.roles.toArray())) return RoleName.SUPERHERO;
 		if (RoleNameMapper.isAdministrator(user.roles.toArray(), user, course)) return RoleName.ADMINISTRATOR;
 		if (RoleNameMapper.isTeacher(user, course)) return RoleName.TEACHER;
