@@ -6,10 +6,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 // admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { TestApiClient } from '@testing/test-api-client';
+import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
-import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
+import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../entity';
+import { SchoolExternalToolEntity } from '../../repo';
 import { schoolExternalToolConfigurationStatusFactory } from '../../testing';
 import { SchoolExternalToolPostParams, SchoolExternalToolResponse } from '../dto';
 

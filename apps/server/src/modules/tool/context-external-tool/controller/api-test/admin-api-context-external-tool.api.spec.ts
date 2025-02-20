@@ -7,13 +7,12 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { courseFactory } from '@testing/factory/course.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { ToolContextType } from '../../../common/enum';
+import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ExternalToolResponse } from '../../../external-tool/controller/dto';
-import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
+import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity } from '../../entity';
+import { ContextExternalToolEntity } from '../../repo';
 import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
 
 describe('AdminApiContextExternalTool (API)', () => {
@@ -88,7 +87,7 @@ describe('AdminApiContextExternalTool (API)', () => {
 						}),
 					],
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					tool: externalToolEntity,
 					school,
 					schoolParameters: [],
