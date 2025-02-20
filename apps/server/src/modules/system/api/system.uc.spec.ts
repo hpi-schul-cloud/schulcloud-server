@@ -8,8 +8,7 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { SystemDeletedEvent, SystemQuery, SystemType } from '../domain';
-import { SystemService } from '../service';
+import { SystemDeletedEvent, SystemQuery, SystemService, SystemType } from '../domain';
 import { systemFactory } from '../testing';
 import { SystemUc } from './system.uc';
 

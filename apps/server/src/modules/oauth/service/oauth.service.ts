@@ -6,7 +6,7 @@ import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
 import { SchoolFeature } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
-import { OauthConfigEntity } from '@modules/system/entity';
+import { OauthConfigEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';

@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolFeature, SchoolPurpose } from '@modules/school/domain';
 import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';
 import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { LanguageType } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import { federalStateFactory } from './factory/federal-state.factory';

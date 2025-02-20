@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { System, SystemQuery, SystemRepo } from '../../domain';
-import { SystemEntity } from '../../entity';
 import { SystemEntityMapper } from './mapper';
 import { SystemScope } from './scope';
+import { SystemEntity } from './system.entity';
 
 @Injectable()
 export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntity> implements SystemRepo {

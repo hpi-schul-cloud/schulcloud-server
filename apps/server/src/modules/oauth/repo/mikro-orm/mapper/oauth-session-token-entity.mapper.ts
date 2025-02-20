@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { User } from '@shared/domain/entity';
 import { OauthSessionToken } from '../../../domain';
 import { OauthSessionTokenEntity, OauthSessionTokenEntityProps } from '../../../entity';

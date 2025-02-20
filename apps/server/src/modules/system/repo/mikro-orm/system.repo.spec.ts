@@ -5,7 +5,6 @@ import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
-import { SystemEntity } from '../../entity';
 import {
 	systemEntityFactory,
 	systemFactory,
@@ -14,6 +13,7 @@ import {
 	systemOidcConfigFactory,
 } from '../../testing';
 import { SystemEntityMapper } from './mapper';
+import { SystemEntity } from './system.entity';
 import { SystemMikroOrmRepo } from './system.repo';
 
 describe(SystemMikroOrmRepo.name, () => {

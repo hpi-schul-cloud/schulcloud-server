@@ -10,7 +10,7 @@ import { SchoolFeature } from '@modules/school/domain';
 import { SchoolEntity } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';

@@ -10,7 +10,7 @@ import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { SchoolFeature } from '@modules/school/domain';
 import { System } from '@modules/system';
-import { OauthConfigEntity } from '@modules/system/entity';
+import { OauthConfigEntity } from '@modules/system/repo';
 import { SystemService } from '@modules/system/service';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';

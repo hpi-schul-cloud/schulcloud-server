@@ -1,8 +1,7 @@
 import { IdentityManagementModule } from '@infra/identity-management/identity-management.module';
 import { Module } from '@nestjs/common';
-import { SYSTEM_REPO } from './domain';
+import { SYSTEM_REPO, SystemService } from './domain';
 import { SystemMikroOrmRepo } from './repo';
-import { SystemService } from './service';
 
 @Module({
 	imports: [IdentityManagementModule],
