@@ -4,6 +4,7 @@ import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { Consent } from '@shared/domain/domainobject/consent';
@@ -61,7 +62,7 @@ export class TspProvisioningService {
 
 		const updatedUsers = users.map((user, index) => {
 			const oauthDataDto = oauthDataDtos[index];
-			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], schoolIds[index], user);
+			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], schoolIds[index], false, user);
 		});
 
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
@@ -156,12 +157,12 @@ export class TspProvisioningService {
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
 
-		const user = this.createOrUpdateUser(data.externalUser, roleRefs, school.id, existingUser);
-		if (!user) {
-			throw new BadDataLoggableException(`Couldn't process user`, {
-				externalId: data.externalUser.externalId,
-			});
-		}
+		const user = this.createOrUpdateUser(data.externalUser, roleRefs, school.id, true, existingUser) as UserDO; // TODO REMOVE AFTER PROBLEMS ON TSP ARE RESOLVED
+		// if (!user) {
+		// 	throw new BadDataLoggableException(`Couldn't process user`, {
+		// 		externalId: data.externalUser.externalId,
+		// 	});
+		// }
 		const savedUser = await this.userService.save(user);
 
 		const account = await this.accountService.findByUserId(savedUser.id ?? '');
@@ -175,9 +176,15 @@ export class TspProvisioningService {
 		externalUser: ExternalUserDto,
 		roleRefs: RoleReference[],
 		schoolId: string,
+		isProvisioning: boolean, // TODO REMOVE AFTER PROBLEMS ON TSP ARE RESOLVED
 		existingUser?: UserDO | null
 	): UserDO | undefined {
 		if (!existingUser) {
+			// TODO REMOVE AFTER PROBLEMS ON TSP ARE RESOLVED
+			if (isProvisioning) {
+				throw new ValidationError('Creating new accounts is currently not possible');
+			}
+
 			if (!externalUser.firstName || !externalUser.lastName) {
 				return undefined;
 			}
