@@ -170,7 +170,7 @@ describe('Lesson Entity', () => {
 			const expectedLernstoreContent: ComponentProperties = {
 				title: 'test component',
 				hidden: false,
-				component: ComponentType.RESOURCES,
+				component: ComponentType.LERNSTORE,
 				content: {
 					resources: [new LernstoreResources('1', 'description', 'title', 'url', 'merlinReference')],
 				},

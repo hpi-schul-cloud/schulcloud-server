@@ -310,7 +310,7 @@ describe('lesson copy service', () => {
 				const contentTwo: ComponentProperties = {
 					title: 'title component 2',
 					hidden: false,
-					component: ComponentType.RESOURCES,
+					component: ComponentType.LERNSTORE,
 					content: {
 						resources: [
 							{
@@ -471,7 +471,7 @@ describe('lesson copy service', () => {
 			const lernStoreContent: ComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
-				component: ComponentType.RESOURCES,
+				component: ComponentType.LERNSTORE,
 				content: {
 					resources: [
 						{
@@ -531,7 +531,7 @@ describe('lesson copy service', () => {
 			const lernStoreContent: ComponentProperties = {
 				title: 'text component 1',
 				hidden: false,
-				component: ComponentType.RESOURCES,
+				component: ComponentType.LERNSTORE,
 			};
 			const user = userFactory.build();
 			const originalCourse = courseFactory.build({ school: user.school });

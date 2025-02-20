@@ -129,7 +129,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			};
 			const lessonWithLernstore = lessonFactory.build({
 				course,
-				contents: [{ ...contents, component: ComponentType.RESOURCES, content: contentLernstore }],
+				contents: [{ ...contents, component: ComponentType.LERNSTORE, content: contentLernstore }],
 			});
 
 			await em.persistAndFlush([
@@ -220,7 +220,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 
 			const body = response.body as LessonResponse;
 			const componentProps = body.contents[0] as ComponentProperties;
-			expect(componentProps.component).toEqual(ComponentType.RESOURCES);
+			expect(componentProps.component).toEqual(ComponentType.LERNSTORE);
 			expect(componentProps.content).toEqual(contentLernstore);
 		});
 	});

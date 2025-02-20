@@ -23,7 +23,7 @@ export enum ComponentType {
 	ETHERPAD = 'Etherpad',
 	GEOGEBRA = 'geoGebra',
 	INTERNAL = 'internal',
-	RESOURCES = 'resources', // lernstore
+	LERNSTORE = 'resources',
 	TEXT = 'text',
 }
 
@@ -59,7 +59,7 @@ export type ComponentProperties = {
 	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: ComponentInternalProperties }
-	| { component: ComponentType.RESOURCES; content?: ComponentLernstoreProperties }
+	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
 );
 
 export interface LessonParent {
