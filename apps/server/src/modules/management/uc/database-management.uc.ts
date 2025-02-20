@@ -4,7 +4,6 @@ import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } fr
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
-import type { Collection } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { SystemEntity } from '@modules/system/entity';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -351,7 +350,7 @@ export class DatabaseManagementUc {
 
 	private async createGroupUniqueIndex(): Promise<void> {
 		const indexName = 'groupExternalSourceUniqueIndex';
-		const collection: Collection = this.databaseManagementService.getDatabaseCollection('groups');
+		const collection = this.databaseManagementService.getDatabaseCollection('groups');
 		const indexExists: boolean = await collection.indexExists(indexName);
 
 		if (indexExists) {
