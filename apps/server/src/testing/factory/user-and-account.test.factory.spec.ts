@@ -2,7 +2,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { schoolEntityFactory } from '@modules/school/testing';#
+import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
