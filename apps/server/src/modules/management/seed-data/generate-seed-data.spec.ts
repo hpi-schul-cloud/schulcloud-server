@@ -1,4 +1,5 @@
-import { Role, SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@modules/school/repo';
+import { Role } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { generateSeedData } from './generate-seed-data';
 import * as roleModule from './roles';

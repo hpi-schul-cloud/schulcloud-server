@@ -3,20 +3,21 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
-import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
+import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../entity';
+import { SchoolExternalToolEntity } from '../../repo';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
 	CustomParameterEntryParam,
@@ -57,7 +58,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[POST] tools/school-external-tools', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -158,7 +159,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[DELETE] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -222,7 +223,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -316,7 +317,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -400,7 +401,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[PUT] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolEntityFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,

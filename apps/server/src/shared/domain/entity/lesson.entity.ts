@@ -1,6 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { LearnroomElement } from '@shared/domain/interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -73,7 +72,7 @@ export interface LessonParent {
 }
 
 @Entity({ tableName: 'lessons' })
-export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomElement, TaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent {
 	@Property()
 	name: string;
 

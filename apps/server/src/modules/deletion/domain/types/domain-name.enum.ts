@@ -1,4 +1,4 @@
-export const enum DomainName {
+export enum DomainName {
 	ACCOUNT = 'account',
 	BOARD = 'board',
 	CLASS = 'class',

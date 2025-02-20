@@ -1,16 +1,13 @@
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
-import { MediaSchoolLicense } from '@modules/school-license';
-import { SchoolLicenseEntity } from '@modules/school-license/entity';
+import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
+import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import { SystemEntity } from '@modules/system/entity/system.entity';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/repo';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
-import { FederalStateEntity } from '@shared/domain/entity/federal-state.entity';
 import { Role } from '@shared/domain/entity/role.entity';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SchoolYearEntity } from '@shared/domain/entity/schoolyear.entity';
 import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { User } from '@shared/domain/entity/user.entity';
@@ -32,5 +29,5 @@ export const ENTITIES = [
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
 	SchoolLicenseEntity,
-	MediaSchoolLicense,
+	MediaSchoolLicenseEntity,
 ];

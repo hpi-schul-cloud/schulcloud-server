@@ -1,8 +1,8 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { BadRequestException } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import {
 	FilterImportUserParams,
