@@ -13,8 +13,9 @@ import {
 	CommonCartridgeImportOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '@modules/common-cartridge';
+import { Course } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CourseService } from './course.service';
 

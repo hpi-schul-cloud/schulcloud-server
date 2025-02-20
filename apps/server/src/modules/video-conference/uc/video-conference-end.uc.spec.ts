@@ -4,7 +4,6 @@ import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import {} from '@shared/domain/entity';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';

@@ -1,9 +1,9 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import type { Course } from '@modules/course/repo/course.entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { EntityId } from '../types';
 import { NewsTarget, NewsTargetModel } from '../types/news.types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { Course } from './course.entity';
 import type { TeamEntity } from './team.entity';
 import type { User } from './user.entity';
 

@@ -5,6 +5,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { CourseService } from '@modules/learnroom/service';
@@ -19,7 +20,7 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
-import { Course, CourseGroup, TeamUserEntity, User } from '@shared/domain/entity';
+import { TeamUserEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';

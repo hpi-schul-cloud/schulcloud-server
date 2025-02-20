@@ -5,11 +5,10 @@ import {
 	ColumnBoard,
 	MediaBoard,
 } from '@modules/board';
+import { Course } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-
 import { CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';

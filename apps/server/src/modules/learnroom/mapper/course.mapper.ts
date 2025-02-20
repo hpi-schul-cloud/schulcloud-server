@@ -1,4 +1,4 @@
-import { Course } from '@shared/domain/entity';
+import { Course } from '@modules/course/repo';
 import { CourseMetadataResponse, CreateCourseResponse } from '../controller/dto';
 import { CourseCommonCartridgeMetadataResponse } from '../controller/dto/course-cc-metadata.response';
 

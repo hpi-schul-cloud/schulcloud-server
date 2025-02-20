@@ -1,9 +1,10 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
+import { Course as CourseEntity, CourseGroup } from '@modules/course/repo';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolEntity } from '@modules/school/repo';
-import { Course as CourseEntity, CourseGroup, User as UserEntity } from '@shared/domain/entity';
+import { User as UserEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { Course, CourseProps } from '../../../domain';
 

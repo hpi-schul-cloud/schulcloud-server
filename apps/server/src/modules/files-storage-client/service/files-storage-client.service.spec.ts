@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course, CourseGroup } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -15,7 +16,7 @@ import { StorageLocation } from '@modules/files-storage/interface';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';

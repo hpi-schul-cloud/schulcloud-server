@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,8 +14,6 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-	Course,
-	CourseGroup,
 	LessonEntity,
 	Material,
 	Submission,

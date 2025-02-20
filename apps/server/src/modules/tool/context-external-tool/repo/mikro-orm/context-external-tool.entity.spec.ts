@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import {
 	CustomParameterLocation,

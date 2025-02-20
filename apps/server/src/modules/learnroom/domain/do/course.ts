@@ -1,5 +1,5 @@
+import { CourseFeatures, SyncAttribute } from '@modules/course/repo';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CourseFeatures, SyncAttribute } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 export interface CourseProps extends AuthorizableObject {

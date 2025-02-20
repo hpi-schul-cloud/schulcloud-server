@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';

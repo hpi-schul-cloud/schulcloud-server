@@ -1,4 +1,4 @@
-import { CourseGroup, CourseGroupProperties } from '@shared/domain/entity';
+import { CourseGroup, CourseGroupProperties } from '@modules/course/repo';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';

@@ -4,6 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFactory } from '@modules/board/testing';
 
+import { Course, CourseGroup, CourseGroup } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom/service';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
@@ -23,7 +24,6 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';

@@ -1,10 +1,11 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing';
+import { Course as CourseEntity, CourseFeatures, CourseGroup, SyncAttribute } from '@modules/course/repo';
 import { groupEntityFactory, groupFactory } from '@modules/group/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course as CourseEntity, CourseFeatures, CourseGroup, SyncAttribute, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';

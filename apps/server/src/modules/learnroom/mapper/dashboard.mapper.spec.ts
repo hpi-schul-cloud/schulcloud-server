@@ -1,4 +1,4 @@
-import { Course, CourseGroup } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { DashboardResponse } from '../controller/dto';

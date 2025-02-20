@@ -1,12 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller/dto';
-
-import { CourseRepo } from '@modules/course/repo';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo/task';

@@ -1,5 +1,5 @@
+import { Course, CourseGroup } from '@modules/course/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { ObjectId } from 'bson';

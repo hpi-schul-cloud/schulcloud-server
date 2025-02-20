@@ -1,4 +1,5 @@
-import { Course as CourseEntity, CourseMetadata, CourseType, LessonEntity, Task } from '@shared/domain/entity';
+import { Course as CourseEntity, CourseMetadata, CourseType } from '@modules/course/repo';
+import { LessonEntity, Task } from '@shared/domain/entity';
 import type { ColumnBoardNode } from '../repo';
 
 export type Learnroom = CourseEntity;

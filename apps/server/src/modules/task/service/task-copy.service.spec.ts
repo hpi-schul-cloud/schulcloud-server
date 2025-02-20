@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';

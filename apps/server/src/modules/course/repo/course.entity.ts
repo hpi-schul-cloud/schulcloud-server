@@ -3,13 +3,13 @@ import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
-import { EntityWithSchool } from '../interface/entity';
-import { EntityId } from '../types';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '../../../shared/domain/entity/base.entity';
+import type { LessonParent } from '../../../shared/domain/entity/lesson.entity';
+import type { TaskParent } from '../../../shared/domain/entity/task.entity';
+import type { User } from '../../../shared/domain/entity/user.entity';
+import { EntityWithSchool } from '../../../shared/domain/interface/entity';
+import { EntityId } from '../../../shared/domain/types';
 import { CourseGroup } from './coursegroup.entity';
-import type { LessonParent } from './lesson.entity';
-import type { TaskParent } from './task.entity';
-import type { User } from './user.entity';
 
 export enum SyncAttribute {
 	TEACHERS = 'teachers',

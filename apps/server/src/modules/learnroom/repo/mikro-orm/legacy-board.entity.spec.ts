@@ -1,6 +1,7 @@
 import { columnBoardFactory } from '@modules/board/testing';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { BadRequestException } from '@nestjs/common';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';

@@ -1,7 +1,8 @@
+import { SyncAttribute } from '@modules/course/repo';
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
 import { Inject, Injectable } from '@nestjs/common';
-import { SyncAttribute, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {

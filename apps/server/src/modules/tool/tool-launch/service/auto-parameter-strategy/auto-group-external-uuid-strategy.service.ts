@@ -2,11 +2,11 @@ import { type AnyBoardNode, BoardExternalReferenceType, BoardNodeService, isColu
 import { Group, GroupService } from '@modules/group';
 import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain/entity';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
+import { Course } from '@modules/course/repo';
 
 @Injectable()
 export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {

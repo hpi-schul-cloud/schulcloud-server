@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { Course, CourseGroup } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -14,16 +15,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ComponentProperties,
-	ComponentType,
-	Course,
-	CourseGroup,
-	LessonEntity,
-	Material,
-	Submission,
-	Task,
-} from '@shared/domain/entity';
+import { ComponentProperties, ComponentType, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { LessonRepo } from '../repository';

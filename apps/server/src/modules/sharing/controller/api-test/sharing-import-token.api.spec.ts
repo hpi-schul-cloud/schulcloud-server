@@ -10,6 +10,7 @@ import {
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { Course } from '@modules/course/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
@@ -18,7 +19,6 @@ import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';

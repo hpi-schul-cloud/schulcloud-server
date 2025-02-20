@@ -1,17 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import {
-	Course,
-	CourseGroup,
-	CourseNews,
-	News,
-	NewsProperties,
-	SchoolNews,
-	TeamEntity,
-	TeamNews,
-	User,
-} from '@shared/domain/entity';
+import { CourseNews, News, NewsProperties, SchoolNews, TeamEntity, TeamNews, User } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';

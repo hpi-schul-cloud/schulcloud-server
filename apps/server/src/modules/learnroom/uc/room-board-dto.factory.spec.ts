@@ -2,17 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { AuthorizationService } from '@modules/authorization';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	CourseGroup,
-	LessonEntity,
-	Material,
-	Submission,
-	Task,
-	TaskWithStatusVo,
-	User,
-} from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';

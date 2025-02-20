@@ -1,5 +1,6 @@
+import { Course } from '@modules/course/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Task, User } from '@shared/domain/entity';
 
 export enum TaskParentPermission {
 	read,
@@ -8,20 +9,20 @@ export enum TaskParentPermission {
 
 @Injectable()
 export class CourseRoomsAuthorisationService {
-	hasCourseWritePermission(user: User, course: Course): boolean {
+	public hasCourseWritePermission(user: User, course: Course): boolean {
 		const hasPermission = course.substitutionTeachers.contains(user) || course.teachers.contains(user);
 
 		return hasPermission;
 	}
 
-	hasCourseReadPermission(user: User, course: Course): boolean {
+	public hasCourseReadPermission(user: User, course: Course): boolean {
 		const hasPermission =
 			course.students.contains(user) || course.substitutionTeachers.contains(user) || course.teachers.contains(user);
 
 		return hasPermission;
 	}
 
-	hasTaskReadPermission(user: User, task: Task): boolean {
+	public hasTaskReadPermission(user: User, task: Task): boolean {
 		const isCreator = task.creator === user;
 		let hasCoursePermission = false;
 
@@ -42,7 +43,7 @@ export class CourseRoomsAuthorisationService {
 		return hasPermission;
 	}
 
-	hasLessonReadPermission(user: User, lesson: LessonEntity): boolean {
+	public hasLessonReadPermission(user: User, lesson: LessonEntity): boolean {
 		let hasCoursePermission = false;
 		hasCoursePermission = this.hasCourseReadPermission(user, lesson.course);
 		if (lesson.hidden) {

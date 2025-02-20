@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseRepo } from '@modules/course/repo';
+import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';

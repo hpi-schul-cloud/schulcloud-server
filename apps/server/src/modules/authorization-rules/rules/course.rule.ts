@@ -5,9 +5,10 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
+import { Course as CourseEntity } from '@modules/course/repo';
 import { Course } from '@modules/learnroom/domain';
 import { Injectable } from '@nestjs/common';
-import { Course as CourseEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 
 @Injectable()

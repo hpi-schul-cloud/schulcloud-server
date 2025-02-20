@@ -1,10 +1,10 @@
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import { CourseFeatures } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { SchoolFeature } from '@modules/school/domain';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { CourseFeatures } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardFeature } from '../board/domain';
 import { LegacySchoolService } from '../legacy-school';

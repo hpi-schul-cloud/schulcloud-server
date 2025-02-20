@@ -4,7 +4,6 @@ import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
-import {} from '@shared/domain/entity';
 import { Permission, VideoConferenceScope } from '@shared/domain/interface';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';

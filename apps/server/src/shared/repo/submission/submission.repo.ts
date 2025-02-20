@@ -1,6 +1,7 @@
 import { FilterQuery } from '@mikro-orm/core';
+import { CourseGroup } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
-import { CourseGroup, Submission } from '@shared/domain/entity';
+import { Submission } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 

@@ -1,9 +1,10 @@
 import { AuthorizationContext, AuthorizationService, ForbiddenLoggableException } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
+import { Course } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';

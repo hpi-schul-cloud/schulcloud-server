@@ -1,12 +1,13 @@
 import { LegacyLogger } from '@core/logger';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { Course } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
-import { Course, isLesson, isTask, LessonEntity, Task, User } from '@shared/domain/entity';
+import { isLesson, isTask, LessonEntity, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { sortBy } from 'lodash';
 import {

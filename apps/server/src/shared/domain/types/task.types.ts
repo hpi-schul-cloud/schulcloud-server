@@ -1,5 +1,6 @@
-import { SchoolEntity } from '@modules/school/repo';
-import type { Course, LessonEntity, Submission, User } from '../entity';
+import type { Course } from '@modules/course/repo';
+import type { SchoolEntity } from '@modules/school/repo';
+import type { LessonEntity, Submission, User } from '../entity';
 import type { InputFormat } from './input-format.types';
 
 interface ITask {

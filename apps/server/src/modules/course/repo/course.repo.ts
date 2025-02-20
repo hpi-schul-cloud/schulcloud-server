@@ -1,9 +1,9 @@
 import { QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { Course } from './course.entity';
 import { CourseScope } from './course.scope';
 
 @Injectable()

@@ -1,4 +1,5 @@
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@modules/course/repo';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { SubmissionStatusResponse } from '../controller/dto';

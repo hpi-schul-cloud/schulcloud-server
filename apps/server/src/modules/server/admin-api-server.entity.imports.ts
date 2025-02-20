@@ -1,6 +1,7 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo';
 import { ClassEntity } from '@modules/class/entity';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
@@ -13,8 +14,6 @@ import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import {
-	Course,
-	CourseGroup,
 	CourseNews,
 	News,
 	Role,

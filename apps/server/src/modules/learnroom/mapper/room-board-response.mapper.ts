@@ -1,5 +1,6 @@
+import { Course } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
-import { Course, TaskWithStatusVo } from '@shared/domain/entity';
+import { TaskWithStatusVo } from '@shared/domain/entity';
 import {
 	BoardElementResponse,
 	BoardLessonResponse,

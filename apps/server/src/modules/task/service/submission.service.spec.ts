@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { MikroORM } from '@mikro-orm/core';
+import { Course, CourseGroup } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -13,7 +14,7 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { setupEntities } from '@testing/database';

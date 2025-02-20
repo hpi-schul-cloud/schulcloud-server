@@ -9,6 +9,7 @@ import {
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyStatus } from '@modules/copy-helper';
+import { Course } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
@@ -18,7 +19,7 @@ import { SchoolService } from '@modules/school';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { Course, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {

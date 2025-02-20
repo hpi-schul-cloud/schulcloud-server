@@ -1,9 +1,8 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { Course } from './course.entity';
-import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import type { TaskParent } from './task.entity';
 import { Task } from './task.entity';

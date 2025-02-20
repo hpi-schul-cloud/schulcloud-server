@@ -1,7 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardLayout } from '@modules/board';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { taskFactory } from '@testing/factory/task.factory';
