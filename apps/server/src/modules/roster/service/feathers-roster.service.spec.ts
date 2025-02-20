@@ -3,8 +3,7 @@ import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFactory } from '@modules/board/testing';
-
-import { Course, CourseGroup, CourseGroup } from '@modules/course/repo';
+import { Course, CourseGroup } from '@modules/course/repo';
 import { CourseService } from '@modules/learnroom/service';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
