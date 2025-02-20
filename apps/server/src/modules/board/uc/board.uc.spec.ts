@@ -4,14 +4,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { userFactory, userFactory } from '@testing/factory/user.factory';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -108,7 +108,7 @@ describe(BoardUc.name, () => {
 	describe('createBoard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			return { user, course };
 		};
@@ -491,7 +491,7 @@ describe(BoardUc.name, () => {
 		it('should call authorization to check course permissions', async () => {
 			const { user, boardId } = setup();
 
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			// TODO should not use course repo
 			courseRepo.findById.mockResolvedValueOnce(course);
 

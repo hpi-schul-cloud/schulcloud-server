@@ -10,13 +10,13 @@ import {
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
@@ -77,7 +77,7 @@ describe('ToolPermissionHelper', () => {
 		describe('when a context external tool for context "course" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					contextRef: new ContextRef({
 						id: course.id,
@@ -238,7 +238,7 @@ describe('ToolPermissionHelper', () => {
 		describe('when a school external tool for context "course" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextRef = new ContextRef({
 					id: course.id,

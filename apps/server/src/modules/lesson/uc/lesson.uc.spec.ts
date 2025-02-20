@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { LessonService } from '../service';
@@ -87,7 +87,7 @@ describe('LessonUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findOneForUser.mockResolvedValueOnce(course);
 
 				const lesson = lessonFactory.buildWithId({ course });
@@ -140,7 +140,7 @@ describe('LessonUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findOneForUser.mockResolvedValueOnce(course);
 
 				const lesson = lessonFactory.buildWithId({ course });

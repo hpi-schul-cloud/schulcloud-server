@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -10,7 +11,6 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
@@ -238,7 +238,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
 				const task = taskFactory.finished(user).build();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
@@ -300,7 +300,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const task = taskFactory.finished(user).build({ course });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -379,7 +379,7 @@ describe('TaskUC', () => {
 				const user = setupUser(permissions);
 				const user2 = setupUser([]);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });
@@ -496,7 +496,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const course = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task = taskFactory.build({ course });
 
@@ -526,7 +526,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });

@@ -6,13 +6,13 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client/
 import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { BoardExternalReferenceType } from '../../domain/types';
 import { columnBoardFactory } from '../../testing/column-board.factory';
 import { BoardNodeService } from '../board-node.service';
 import { ColumnBoardCopyService, CopyColumnBoardParams } from './column-board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
+import { courseEntityFactory } from '@modules/course/testing';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(ColumnBoardCopyService.name, () => {
@@ -66,7 +66,7 @@ describe(ColumnBoardCopyService.name, () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 			const targetSchoolId = new ObjectId().toHexString();
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const originalBoard = columnBoardFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
@@ -170,7 +170,7 @@ describe(ColumnBoardCopyService.name, () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 			const targetSchoolId = new ObjectId().toHexString();
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const originalBoard = columnBoardFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});

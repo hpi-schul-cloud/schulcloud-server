@@ -1,9 +1,8 @@
 import { Course, CourseGroup } from '@modules/course/repo';
-import { courseFactory } from '@modules/learnroom/testing';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -171,7 +170,7 @@ describe('AuthorizationHelper', () => {
 		describe('when only one prop is given and prop is an Array', () => {
 			it('should return true if user is contained in prop', () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ studentIds: [user.id] });
+				const course = courseEntityFactory.build({ studentIds: [user.id] });
 
 				const permissions = service.hasAccessToEntity(user, course, ['students']);
 
@@ -180,7 +179,7 @@ describe('AuthorizationHelper', () => {
 
 			it('should return false if user is not contained in prop', () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ studentIds: [user.id] });
+				const course = courseEntityFactory.build({ studentIds: [user.id] });
 
 				const permissions = service.hasAccessToEntity(user, course, ['teachers']);
 

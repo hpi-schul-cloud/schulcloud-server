@@ -2,7 +2,7 @@ import { BaseFactory } from '@testing/factory/base.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { DeepPartial } from 'fishery';
 import { CourseGroup, CourseGroupProperties } from '../repo';
-import { courseFactory } from './course-entity.factory';
+import { courseEntityFactory } from './course-entity.factory';
 
 class CourseGroupEntityFactory extends BaseFactory<CourseGroup, CourseGroupProperties> {
 	public studentsWithId(numberOfStudents: number): this {
@@ -16,6 +16,6 @@ class CourseGroupEntityFactory extends BaseFactory<CourseGroup, CourseGroupPrope
 export const courseGroupEntityFactory = CourseGroupEntityFactory.define(CourseGroup, ({ sequence }) => {
 	return {
 		name: `courseGroup #${sequence}`,
-		course: courseFactory.build(),
+		course: courseEntityFactory.build(),
 	};
 });

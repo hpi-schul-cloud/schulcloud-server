@@ -4,12 +4,12 @@ import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules
 import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
@@ -52,7 +52,7 @@ describe('course copy uc', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 
 				return {
 					userId: user.id,
@@ -73,8 +73,8 @@ describe('course copy uc', () => {
 			const setup = () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
-				const courseCopy = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
+				const courseCopy = courseEntityFactory.buildWithId({ teachers: [user] });
 
 				const status = {
 					title: 'courseCopy',
@@ -128,7 +128,7 @@ describe('course copy uc', () => {
 			const setupWithCourseForbidden = () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				authorization.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 
 				return { user, course };

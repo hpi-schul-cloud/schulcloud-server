@@ -1,7 +1,7 @@
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { ObjectId } from 'bson';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 
@@ -17,7 +17,7 @@ describe('dashboard entity', () => {
 					{
 						pos: { x: 1, y: 2 },
 						gridElement: GridElement.FromPersistedGroup('elementId', 'title', [
-							courseFactory.buildWithId({ name: 'Mathe' }),
+							courseEntityFactory.buildWithId({ name: 'Mathe' }),
 						]),
 					},
 				],
@@ -51,7 +51,7 @@ describe('dashboard entity', () => {
 		});
 
 		it('when testGrid contains element, getGrid should return that element', () => {
-			const mock = courseFactory.buildWithId({ name: 'Mathe' });
+			const mock = courseEntityFactory.buildWithId({ name: 'Mathe' });
 			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
@@ -76,7 +76,10 @@ describe('dashboard entity', () => {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', courseFactory.buildWithId({ name: 'Mathe' })),
+						gridElement: GridElement.FromPersistedReference(
+							'elementId',
+							courseEntityFactory.buildWithId({ name: 'Mathe' })
+						),
 					},
 				],
 				userId: 'userId',
@@ -94,8 +97,14 @@ describe('dashboard entity', () => {
 		});
 
 		it('when the new position is taken, it should merge the elements into a group', () => {
-			const movedElement = GridElement.FromPersistedReference('tomove', courseFactory.buildWithId({ name: 'Mathe' }));
-			const targetElement = GridElement.FromPersistedReference('target', courseFactory.buildWithId({ name: 'Mathe' }));
+			const movedElement = GridElement.FromPersistedReference(
+				'tomove',
+				courseEntityFactory.buildWithId({ name: 'Mathe' })
+			);
+			const targetElement = GridElement.FromPersistedReference(
+				'target',
+				courseEntityFactory.buildWithId({ name: 'Mathe' })
+			);
 			const dashboard = new Dashboard('someid', {
 				grid: [
 					{ pos: { x: 1, y: 2 }, gridElement: movedElement },
@@ -111,9 +120,9 @@ describe('dashboard entity', () => {
 
 		it('should ungroup a reference from a group', () => {
 			const element = GridElement.FromPersistedGroup('target', 'grouptitle', [
-				courseFactory.buildWithId({ name: 'Mathe' }),
-				courseFactory.buildWithId({ name: 'Mathe1' }),
-				courseFactory.buildWithId({ name: 'Mathe2' }),
+				courseEntityFactory.buildWithId({ name: 'Mathe' }),
+				courseEntityFactory.buildWithId({ name: 'Mathe1' }),
+				courseEntityFactory.buildWithId({ name: 'Mathe2' }),
 			]);
 			const dashboard = new Dashboard('someid', {
 				grid: [{ pos: { x: 1, y: 2 }, gridElement: element }],
@@ -132,7 +141,7 @@ describe('dashboard entity', () => {
 					{
 						pos: { x: 0, y: 2 },
 						gridElement: GridElement.FromPersistedGroup('elementId', 'title', [
-							courseFactory.buildWithId({ name: 'Mathe' }),
+							courseEntityFactory.buildWithId({ name: 'Mathe' }),
 						]),
 					},
 				],
@@ -145,7 +154,7 @@ describe('dashboard entity', () => {
 
 	describe('getElement', () => {
 		it('getElement should return correct value', () => {
-			const mock = courseFactory.buildWithId({ name: 'Mathe' });
+			const mock = courseEntityFactory.buildWithId({ name: 'Mathe' });
 			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
@@ -184,15 +193,15 @@ describe('dashboard entity', () => {
 			});
 
 			dashboard.setLearnRooms([
-				courseFactory.buildWithId({ name: 'Mathe' }),
-				courseFactory.buildWithId({ name: 'Mathe1' }),
+				courseEntityFactory.buildWithId({ name: 'Mathe' }),
+				courseEntityFactory.buildWithId({ name: 'Mathe1' }),
 			]);
 
 			expect(dashboard.getGrid().length).toEqual(2);
 		});
 
 		it('should put new elements into first available positions', () => {
-			const existingRoom = courseFactory.buildWithId({ name: 'Mathe' });
+			const existingRoom = courseEntityFactory.buildWithId({ name: 'Mathe' });
 			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
@@ -203,7 +212,7 @@ describe('dashboard entity', () => {
 				userId: 'userId',
 			});
 
-			dashboard.setLearnRooms([courseFactory.buildWithId(), existingRoom]);
+			dashboard.setLearnRooms([courseEntityFactory.buildWithId(), existingRoom]);
 
 			expect(dashboard.getGrid().length).toEqual(2);
 			expect(dashboard.getGrid()[1].pos).toEqual({ x: 1, y: 0 });
@@ -211,7 +220,7 @@ describe('dashboard entity', () => {
 
 		it('should not change any received rooms that are already on the board', () => {
 			const id = new ObjectId();
-			const room = courseFactory.buildWithId({ name: 'Mathe' }, id.toHexString());
+			const room = courseEntityFactory.buildWithId({ name: 'Mathe' }, id.toHexString());
 			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
@@ -230,21 +239,21 @@ describe('dashboard entity', () => {
 		});
 
 		it('should remove any rooms that are on the dashboard, but not in the received list', () => {
-			const room = courseFactory.buildWithId({ name: 'Mathe' });
+			const room = courseEntityFactory.buildWithId({ name: 'Mathe' });
 			const dashboard = new Dashboard('someid', {
 				grid: [
 					{
 						pos: { x: 0, y: 2 },
 						gridElement: GridElement.FromPersistedGroup('groupId', 'grouptitle', [
 							room,
-							courseFactory.buildWithId({ name: 'Mathe' }),
+							courseEntityFactory.buildWithId({ name: 'Mathe' }),
 						]),
 					},
 					{
 						pos: { x: 0, y: 2 },
 						gridElement: GridElement.FromPersistedReference(
 							'singleElement',
-							courseFactory.buildWithId({ name: 'Mathe' })
+							courseEntityFactory.buildWithId({ name: 'Mathe' })
 						),
 					},
 				],

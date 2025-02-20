@@ -4,6 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -12,7 +13,6 @@ import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/e
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -95,7 +95,7 @@ describe('task copy uc', () => {
 			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId({ teachers: [user] });
+			const course = courseEntityFactory.buildWithId({ teachers: [user] });
 			const lesson = lessonFactory.buildWithId({ course });
 			const allTasks = taskFactory.buildList(3, { course });
 			const task = allTasks[0];
@@ -264,7 +264,7 @@ describe('task copy uc', () => {
 					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 					const user = userFactory.buildWithId();
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const lesson = lessonFactory.buildWithId({ course });
 					const task = taskFactory.buildWithId();
 
@@ -295,7 +295,7 @@ describe('task copy uc', () => {
 					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 					const user = userFactory.buildWithId();
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const task = taskFactory.buildWithId();
 
 					userRepo.findById.mockResolvedValueOnce(user);
@@ -366,7 +366,7 @@ describe('task copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId();
 

@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
@@ -116,7 +116,7 @@ describe('ShareTokenController', () => {
 		const setup = () => {
 			const currentUser = currentUserFactory.build();
 			const token = 'ctuW1FG0RsTo';
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const status: CopyStatus = {
 				id: '634d78fc28c2e527f9255119',
 				title: 'Spanisch',

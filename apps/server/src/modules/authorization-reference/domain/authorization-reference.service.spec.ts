@@ -7,11 +7,11 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { AuthorizationReferenceService } from './authorization-reference.service';
 import { ReferenceLoader } from './reference.loader';
@@ -98,7 +98,7 @@ describe('AuthorizationReferenceService', () => {
 
 	describe('hasPermissionByReferences', () => {
 		const setupData = () => {
-			const entity = courseFactory.buildWithId();
+			const entity = courseEntityFactory.buildWithId();
 			const user = userFactory.buildWithId();
 			const context = AuthorizationContextBuilder.read([]);
 			const entityName = AuthorizableReferenceType.Course;

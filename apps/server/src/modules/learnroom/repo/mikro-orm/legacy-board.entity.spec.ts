@@ -1,9 +1,9 @@
 import { columnBoardFactory } from '@modules/board/testing';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { BadRequestException } from '@nestjs/common';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import {
@@ -220,7 +220,7 @@ describe('Board Entity', () => {
 
 		describe('when board element has an invalid type', () => {
 			it('should throw an error', () => {
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const board = boardFactory.buildWithId({ references: [] });
 
 				// @ts-expect-error invalid target type

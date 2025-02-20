@@ -3,12 +3,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { CourseService } from '../service';
@@ -63,7 +63,7 @@ describe('CourseUc', () => {
 
 	describe('findAllByUser', () => {
 		const setup = () => {
-			const courses = courseFactory.buildList(5);
+			const courses = courseEntityFactory.buildList(5);
 			const pagination = { skip: 1, limit: 2 };
 
 			return { courses, pagination };
@@ -90,7 +90,7 @@ describe('CourseUc', () => {
 	describe('getUserPermissionByCourseId', () => {
 		const setup = () => {
 			const { teacherUser } = UserAndAccountTestFactory.buildTeacher({}, []);
-			const course = courseFactory.buildWithId({
+			const course = courseEntityFactory.buildWithId({
 				teachers: [teacherUser],
 			});
 
@@ -117,7 +117,7 @@ describe('CourseUc', () => {
 
 	describe('findCourseById', () => {
 		const setup = () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
 			return { course };
 		};

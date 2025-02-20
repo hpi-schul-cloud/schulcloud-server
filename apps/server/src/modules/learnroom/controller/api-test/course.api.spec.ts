@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Course as CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { groupEntityFactory } from '@modules/group/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { readFile } from 'node:fs/promises';
@@ -56,7 +56,7 @@ describe('Course Controller (API)', () => {
 		const setup = () => {
 			const student = createStudent();
 			const teacher = createTeacher();
-			const course = courseFactory.buildWithId({
+			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [student.user],
 			});
@@ -125,7 +125,7 @@ describe('Course Controller (API)', () => {
 			const setup = async () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
 					syncedWithGroup: group,
 				});
@@ -156,7 +156,7 @@ describe('Course Controller (API)', () => {
 			const setup = async () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
 					syncedWithGroup: group,
 				});
@@ -188,7 +188,7 @@ describe('Course Controller (API)', () => {
 	describe('[GET] /courses/:courseId/user-permissions', () => {
 		const setup = () => {
 			const teacher = createTeacher();
-			const course = courseFactory.buildWithId({
+			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [],
 			});
@@ -217,7 +217,7 @@ describe('Course Controller (API)', () => {
 			const setup = async () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
 				});
 
@@ -249,7 +249,7 @@ describe('Course Controller (API)', () => {
 			const setup = async () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
 				});
 
@@ -281,7 +281,7 @@ describe('Course Controller (API)', () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
 				const otherGroup = groupEntityFactory.buildWithId();
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
 					syncedWithGroup: otherGroup,
 				});
@@ -321,7 +321,7 @@ describe('Course Controller (API)', () => {
 			const setup = async () => {
 				const teacher = createTeacher();
 				const group = groupEntityFactory.buildWithId();
-				const course = courseFactory.build({
+				const course = courseEntityFactory.build({
 					teachers: [teacher.user],
 				});
 
@@ -354,7 +354,7 @@ describe('Course Controller (API)', () => {
 	describe('[GET] /courses/:courseId/cc-metadata', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
-			const course = courseFactory.buildWithId({
+			const course = courseEntityFactory.buildWithId({
 				teachers: [teacher.user],
 				students: [],
 			});
@@ -380,7 +380,7 @@ describe('Course Controller (API)', () => {
 	describe('[POST] /courses', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			await em.persistAndFlush([teacher.account, teacher.user]);
 			em.clear();

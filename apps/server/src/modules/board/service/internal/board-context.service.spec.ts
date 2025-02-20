@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -10,7 +11,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
@@ -114,7 +114,7 @@ describe(BoardContextService.name, () => {
 			describe('when teachers are associated with the course', () => {
 				const setup = () => {
 					const teacher = userFactory.build();
-					const course = courseFactory.buildWithId({ teachers: [teacher] });
+					const course = courseEntityFactory.buildWithId({ teachers: [teacher] });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
@@ -143,7 +143,7 @@ describe(BoardContextService.name, () => {
 			describe('when substitution teachers are associated with the course', () => {
 				const setup = () => {
 					const substitutionTeacher = userFactory.build();
-					const course = courseFactory.buildWithId({ substitutionTeachers: [substitutionTeacher] });
+					const course = courseEntityFactory.buildWithId({ substitutionTeachers: [substitutionTeacher] });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
@@ -172,7 +172,7 @@ describe(BoardContextService.name, () => {
 			describe('when students are associated with the course', () => {
 				const setup = () => {
 					const student = userFactory.build();
-					const course = courseFactory.buildWithId({ students: [student] });
+					const course = courseEntityFactory.buildWithId({ students: [student] });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
@@ -200,7 +200,7 @@ describe(BoardContextService.name, () => {
 
 			describe('when evaluating the course context', () => {
 				const setup = () => {
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});

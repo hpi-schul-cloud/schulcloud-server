@@ -1,9 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { DashboardElementRepo } from './dashboard-element.repo';
 import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
@@ -50,7 +50,7 @@ describe(DashboardElementRepo.name, () => {
 		const setup = async () => {
 			const user1 = userFactory.build();
 			const user2 = userFactory.build();
-			const course = courseFactory.build({ students: [user1], name: 'Mathe' });
+			const course = courseEntityFactory.build({ students: [user1], name: 'Mathe' });
 			await em.persistAndFlush([user1, course]);
 
 			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: user1 });

@@ -1,13 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@modules/board';
 import { Course, CourseFeatures, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { BoardFeature } from '../board/domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';
 import { LegacySchoolService } from '../legacy-school';
@@ -76,7 +76,7 @@ describe('BoardContextApiHelperService', () => {
 	describe('getSchoolIdForBoardNode', () => {
 		it('should return schoolId for course context', async () => {
 			const school = schoolEntityFactory.build();
-			const course = courseFactory.build({ school });
+			const course = courseEntityFactory.build({ school });
 			const card = cardFactory.build();
 			const column = columnFactory.build({ children: [card] });
 			const columnBoard = columnBoardFactory.build({
@@ -113,7 +113,7 @@ describe('BoardContextApiHelperService', () => {
 	describe('getFeaturesForBoardNode', () => {
 		describe('when context is course', () => {
 			const setup = () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const column = columnFactory.build();
 				const columnBoard = columnBoardFactory.build({
 					context: { type: BoardExternalReferenceType.Course, id: 'course.id' },
@@ -192,7 +192,7 @@ describe('BoardContextApiHelperService', () => {
 				it('should not return feature', async () => {
 					const { boardNode } = setup();
 
-					const course = courseFactory.build();
+					const course = courseEntityFactory.build();
 					courseService.findById.mockResolvedValueOnce(course);
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
 					config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
@@ -208,7 +208,7 @@ describe('BoardContextApiHelperService', () => {
 				it('should not return feature', async () => {
 					const { boardNode } = setup();
 
-					const course = courseFactory.build();
+					const course = courseEntityFactory.build();
 					courseService.findById.mockResolvedValueOnce(course);
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
 					config.FEATURE_VIDEOCONFERENCE_ENABLED = false;

@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -22,7 +23,6 @@ import {
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
@@ -91,8 +91,8 @@ describe('lesson copy service', () => {
 		describe('when copying a lesson within original course', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
@@ -239,8 +239,8 @@ describe('lesson copy service', () => {
 
 		describe('when copying into a different course', () => {
 			it('should set destination course as course of the copy', async () => {
-				const originalCourse = courseFactory.build({});
-				const destinationCourse = courseFactory.buildWithId();
+				const originalCourse = courseEntityFactory.build({});
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const user = userFactory.build({});
 				const originalLesson = lessonFactory.build({ course: originalCourse });
 				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
@@ -259,8 +259,8 @@ describe('lesson copy service', () => {
 		describe('when lesson contains no content', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
@@ -323,8 +323,8 @@ describe('lesson copy service', () => {
 					},
 				};
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 					contents: [contentOne, contentTwo],
@@ -408,8 +408,8 @@ describe('lesson copy service', () => {
 				},
 			};
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalCourse = courseEntityFactory.build({ school: user.school });
+			const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 			const originalLesson = lessonFactory.build({
 				course: originalCourse,
 				contents: [textContent],
@@ -484,8 +484,8 @@ describe('lesson copy service', () => {
 				},
 			};
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalCourse = courseEntityFactory.build({ school: user.school });
+			const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 			const originalLesson = lessonFactory.build({
 				course: originalCourse,
 				contents: [lernStoreContent],
@@ -533,8 +533,8 @@ describe('lesson copy service', () => {
 				component: ComponentType.LERNSTORE,
 			};
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalCourse = courseEntityFactory.build({ school: user.school });
+			const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 			const originalLesson = lessonFactory.build({
 				course: originalCourse,
 				contents: [lernStoreContent],
@@ -585,8 +585,8 @@ describe('lesson copy service', () => {
 				},
 			};
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalCourse = courseEntityFactory.build({ school: user.school });
+			const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 			const originalLesson = lessonFactory.build({
 				course: originalCourse,
 				contents: [geoGebraContent],
@@ -660,8 +660,8 @@ describe('lesson copy service', () => {
 		describe('when no tasks are linked to the original lesson', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
@@ -689,8 +689,8 @@ describe('lesson copy service', () => {
 		describe('when a single task is linked to the original lesson', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
@@ -757,8 +757,8 @@ describe('lesson copy service', () => {
 		describe('when mupltiple tasks are linked to the original lesson', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
@@ -820,8 +820,8 @@ describe('lesson copy service', () => {
 				},
 			};
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalCourse = courseEntityFactory.build({ school: user.school });
+			const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 			const originalLesson = lessonFactory.build({
 				course: originalCourse,
 				contents: [etherpadContent],
@@ -931,8 +931,8 @@ describe('lesson copy service', () => {
 	describe('when lesson contains embedded task element', () => {
 		const setup = () => {
 			const user = userFactory.build();
-			const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-			const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+			const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+			const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 			const embeddedTaskContent: ComponentProperties = {
 				title: 'title',
 				hidden: false,
@@ -1004,8 +1004,8 @@ describe('lesson copy service', () => {
 		describe('when no materials are linked to the original lesson', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
@@ -1036,8 +1036,8 @@ describe('lesson copy service', () => {
 		describe('when a single material is linked to the original lesson', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalMaterial = materialFactory.build();
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
@@ -1122,8 +1122,8 @@ describe('lesson copy service', () => {
 		describe('when mupltiple materials are linked to the original lesson', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const originalCourse = courseFactory.build({ school: user.school, teachers: [user] });
-				const destinationCourse = courseFactory.build({ school: user.school, teachers: [user] });
+				const originalCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.build({ school: user.school, teachers: [user] });
 				const originalMaterial = materialFactory.buildList(2);
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,

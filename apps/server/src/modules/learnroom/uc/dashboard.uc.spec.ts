@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Course, CourseGroup, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 import { DashboardUc } from './dashboard.uc';
@@ -96,7 +96,7 @@ describe('dashboard uc', () => {
 							pos: { x: 1, y: 2 },
 							gridElement: GridElement.FromPersistedReference(
 								'elementId',
-								courseFactory.buildWithId({ name: 'Mathe' })
+								courseEntityFactory.buildWithId({ name: 'Mathe' })
 							),
 						},
 					],
@@ -119,7 +119,7 @@ describe('dashboard uc', () => {
 									pos: { x: 1, y: 2 },
 									gridElement: GridElement.FromPersistedReference(
 										'elementId',
-										courseFactory.buildWithId({ name: 'Mathe' })
+										courseEntityFactory.buildWithId({ name: 'Mathe' })
 									),
 								},
 							],
@@ -142,7 +142,7 @@ describe('dashboard uc', () => {
 								pos: { x: 1, y: 2 },
 								gridElement: GridElement.FromPersistedReference(
 									'elementId',
-									courseFactory.buildWithId({ name: 'Mathe' })
+									courseEntityFactory.buildWithId({ name: 'Mathe' })
 								),
 							},
 						],
@@ -164,8 +164,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 3, y: 4 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-								courseFactory.buildWithId({ name: 'Mathe' }),
-								courseFactory.buildWithId({ name: 'German' }),
+								courseEntityFactory.buildWithId({ name: 'Mathe' }),
+								courseEntityFactory.buildWithId({ name: 'German' }),
 							]),
 						},
 					],
@@ -188,8 +188,8 @@ describe('dashboard uc', () => {
 								{
 									pos: { x: 3, y: 4 },
 									gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-										courseFactory.buildWithId({ name: 'Mathe' }),
-										courseFactory.buildWithId({ name: 'German' }),
+										courseEntityFactory.buildWithId({ name: 'Mathe' }),
+										courseEntityFactory.buildWithId({ name: 'German' }),
 									]),
 								},
 							],
@@ -211,8 +211,8 @@ describe('dashboard uc', () => {
 							{
 								pos: { x: 3, y: 4 },
 								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-									courseFactory.buildWithId({ name: 'Mathe' }),
-									courseFactory.buildWithId({ name: 'German' }),
+									courseEntityFactory.buildWithId({ name: 'Mathe' }),
+									courseEntityFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],

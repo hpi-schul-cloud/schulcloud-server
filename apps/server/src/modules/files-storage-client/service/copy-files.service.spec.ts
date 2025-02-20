@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -13,7 +14,6 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { CopyFilesService } from './copy-files.service';
@@ -75,7 +75,7 @@ describe('copy files service', () => {
 		describe('copy files of lesson', () => {
 			const lessonSetup = () => {
 				const { school, imageHTML1, imageHTML2 } = setup();
-				const originalCourse = courseFactory.build({ school });
+				const originalCourse = courseEntityFactory.build({ school });
 				const textContent: ComponentProperties = {
 					title: '',
 					hidden: false,

@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Course as CourseEntity, CourseGroup, CourseRepo as LegacyCourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -15,7 +16,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { CourseService } from './course.service';
@@ -92,9 +92,9 @@ describe('CourseService', () => {
 		describe('when finding by userId', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course1 = courseFactory.buildWithId({ students: [user] });
-				const course2 = courseFactory.buildWithId({ teachers: [user] });
-				const course3 = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const course1 = courseEntityFactory.buildWithId({ students: [user] });
+				const course2 = courseEntityFactory.buildWithId({ teachers: [user] });
+				const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const allCourses = [course1, course2, course3];
 
 				userRepo.findById.mockResolvedValue(user);
@@ -128,9 +128,9 @@ describe('CourseService', () => {
 	describe('when deleting by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const course1 = courseFactory.buildWithId({ students: [user] });
-			const course2 = courseFactory.buildWithId({ teachers: [user] });
-			const course3 = courseFactory.buildWithId({ substitutionTeachers: [user] });
+			const course1 = courseEntityFactory.buildWithId({ students: [user] });
+			const course2 = courseEntityFactory.buildWithId({ teachers: [user] });
+			const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 			const allCourses = [course1, course2, course3];
 
 			userRepo.findById.mockResolvedValue(user);
@@ -179,7 +179,7 @@ describe('CourseService', () => {
 	describe('create', () => {
 		describe('when creating new Course', () => {
 			const setup = () => {
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				legacyCourseRepo.createCourse.mockResolvedValueOnce(course);
 

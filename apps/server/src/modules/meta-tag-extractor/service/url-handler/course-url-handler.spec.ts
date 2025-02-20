@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CourseService } from '@modules/learnroom';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { ObjectId } from 'bson';
 import { MetaDataEntityType } from '../../types';
 import { CourseUrlHandler } from './course-url-handler';
@@ -44,7 +44,7 @@ describe(CourseUrlHandler.name, () => {
 
 			it('should take the title from the course name', async () => {
 				const name = 'My Course';
-				const course = courseFactory.buildWithId({ name });
+				const course = courseEntityFactory.buildWithId({ name });
 				const url = new URL(`https://localhost/course-rooms/${course.id}`);
 
 				courseService.findById.mockResolvedValueOnce(course);

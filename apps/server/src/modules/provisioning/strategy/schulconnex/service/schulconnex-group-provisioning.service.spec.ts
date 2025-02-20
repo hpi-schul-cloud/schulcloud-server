@@ -1,11 +1,11 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { CourseDoService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
-import { courseFactory } from '@modules/learnroom/testing';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -778,7 +778,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					const externalUserId = 'externalUserId';
 					const role: RoleReference = roleFactory.buildWithId();
 					const user: UserDO = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
-					const course: Course = courseFactory.build();
+					const course: Course = courseEntityFactory.build();
 
 					const firstExistingGroup: Group = groupFactory.build({
 						users: [{ userId: user.id as string, roleId: role.id }],
@@ -991,7 +991,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				const group = groupFactory.build({
 					users: [{ userId, roleId: role.id }],
 				});
-				const course = courseFactory.build({ syncedWithGroup: group.id });
+				const course = courseEntityFactory.build({ syncedWithGroup: group.id });
 
 				groupService.findById.mockResolvedValueOnce(group);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);

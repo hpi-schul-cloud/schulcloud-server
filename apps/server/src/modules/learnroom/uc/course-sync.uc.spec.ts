@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { courseEntityFactory } from '@modules/course/testing';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,7 +10,6 @@ import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
 import { CourseDoService } from '../service';
 import { CourseSyncService } from '../service/course-sync.service';
-import { courseFactory } from '../testing';
 import { CourseSyncUc } from './course-sync.uc';
 
 describe(CourseSyncUc.name, () => {
@@ -65,7 +65,7 @@ describe(CourseSyncUc.name, () => {
 		describe('when a user stops a synchronization of a course with a group', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 
 				courseService.findById.mockResolvedValueOnce(course);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -102,7 +102,7 @@ describe(CourseSyncUc.name, () => {
 		describe('when a user starts a synchronization of a course with a group', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const group = groupFactory.build();
 
 				courseService.findById.mockResolvedValueOnce(course);

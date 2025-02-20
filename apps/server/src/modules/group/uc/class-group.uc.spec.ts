@@ -10,9 +10,7 @@ import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
 import { ClassGroupUc } from '@modules/group/uc/class-group.uc';
-import { Course } from '@modules/learnroom/domain';
 import { CourseDoService } from '@modules/learnroom/service/course-do.service';
-import { courseFactory } from '@modules/learnroom/testing';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
@@ -40,6 +38,7 @@ import { GroupService } from '../service';
 import { groupFactory } from '../testing';
 import { ClassInfoDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
+import { courseFactory } from '@modules/learnroom/testing';
 
 describe('ClassGroupUc', () => {
 	let module: TestingModule;
@@ -222,7 +221,7 @@ describe('ClassGroupUc', () => {
 						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
 					],
 				});
-				const synchronizedCourse: Course = courseFactory.build({ syncedWithGroup: group.id });
+				const synchronizedCourse = courseFactory.build({ syncedWithGroup: group.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				schoolService.getCurrentYear.mockResolvedValueOnce(schoolYearDo);

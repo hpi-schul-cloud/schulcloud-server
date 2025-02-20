@@ -1,5 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/entity';
@@ -11,7 +12,6 @@ import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
@@ -523,7 +523,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithCourseGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedCourseGroup,
 				});
 
@@ -537,7 +537,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithClassGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedClassGroup,
 				});
 

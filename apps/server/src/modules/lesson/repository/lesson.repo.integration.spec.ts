@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
@@ -43,7 +43,7 @@ describe('LessonRepo', () => {
 
 	describe('findById', () => {
 		it('should find the lesson', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([course, lesson]);
 			em.clear();
@@ -54,7 +54,7 @@ describe('LessonRepo', () => {
 			expect(resultLesson.name).toEqual(lesson.name);
 		});
 		it('should populate course', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([course, lesson]);
 			em.clear();
@@ -63,7 +63,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should populate tasks', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
 			await em.persistAndFlush([course, lesson, ...tasks]);
@@ -85,8 +85,8 @@ describe('LessonRepo', () => {
 	});
 	describe('findAllByCourseIds', () => {
 		it('should find lessons by course ids', async () => {
-			const course1 = courseFactory.build();
-			const course2 = courseFactory.build();
+			const course1 = courseEntityFactory.build();
+			const course2 = courseEntityFactory.build();
 			const lesson1 = lessonFactory.build({ course: course1 });
 			const lesson2 = lessonFactory.build({ course: course2 });
 
@@ -98,7 +98,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should not find lessons with no course assigned', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson1 = lessonFactory.build({ course });
 			const lesson2 = lessonFactory.build({});
 
@@ -110,7 +110,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should not find hidden lessons', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course, hidden: true });
 
 			await em.persistAndFlush([lesson]);
@@ -121,7 +121,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should find hidden lessons', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course, hidden: true });
 
 			await em.persistAndFlush([lesson]);
@@ -132,7 +132,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should order by position', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lessons = [
 				lessonFactory.build({ course, position: 2 }),
 				lessonFactory.build({ course, position: 0 }),
@@ -146,7 +146,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should populate tasks', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			const tasks = [taskFactory.build({ course, lesson }), taskFactory.draft().build({ course, lesson })];
 			await em.persistAndFlush([course, lesson, ...tasks]);
@@ -157,7 +157,7 @@ describe('LessonRepo', () => {
 		});
 
 		it('should populate materials', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const material = materialFactory.build();
 			const lesson = lessonFactory.build({ course, materials: [material] });
 			await em.persistAndFlush([lesson, material]);

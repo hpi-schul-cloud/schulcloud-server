@@ -1,6 +1,6 @@
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { CreateCourseResponse } from '../controller/dto';
 import { CourseMapper } from './course.mapper';
 
@@ -11,7 +11,7 @@ describe(CourseMapper.name, () => {
 
 	describe('mapToCreateCourseResponse', () => {
 		const setup = () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			return { course };
 		};

@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -16,7 +17,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -171,7 +171,7 @@ describe('TaskService', () => {
 		describe('when tasks where user is parent, and when task has course', () => {
 			const setup = () => {
 				const creator = userFactory.buildWithId();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const taskWithCourse = taskFactory.buildWithId({ creator, course });
 
 				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
@@ -243,7 +243,7 @@ describe('TaskService', () => {
 		const setup = () => {
 			const creator = userFactory.buildWithId();
 			const taskWithoutCourse = taskFactory.buildWithId({ creator });
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const taskWithCourse = taskFactory.buildWithId({ creator, course });
 			const finishedTask = taskFactory.finished(creator).buildWithId();
 

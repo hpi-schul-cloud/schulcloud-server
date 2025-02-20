@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Dashboard, GridElement } from '../../../domain/do/dashboard';
 import { LearnroomMetadata, LearnroomTypes } from '../../../types';
@@ -38,7 +38,7 @@ describe('dashboard model mapper', () => {
 		it('should map dashboard with elements and groups to entity', async () => {
 			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: userFactory.build() });
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user], name: 'German' });
+			const course = courseEntityFactory.build({ students: [user], name: 'German' });
 
 			const element = new DashboardGridElementEntity({
 				id: new ObjectId().toString(),
@@ -72,15 +72,15 @@ describe('dashboard model mapper', () => {
 					{
 						pos: { x: 1, y: 2 },
 						gridElement: GridElement.FromPersistedGroup(new ObjectId().toString(), 'languages', [
-							courseFactory.build({ students: [user], name: 'English' }),
-							courseFactory.build({ students: [user], name: 'German' }),
+							courseEntityFactory.build({ students: [user], name: 'English' }),
+							courseEntityFactory.build({ students: [user], name: 'German' }),
 						]),
 					},
 					{
 						pos: { x: 1, y: 4 },
 						gridElement: GridElement.FromPersistedReference(
 							new ObjectId().toString(),
-							courseFactory.build({ students: [user], name: 'Math' })
+							courseEntityFactory.build({ students: [user], name: 'Math' })
 						),
 					},
 				],
@@ -114,7 +114,7 @@ describe('dashboard model mapper', () => {
 					id: oldElementId,
 					xPos: 1,
 					yPos: 1,
-					references: [courseFactory.build({ students: [user] })],
+					references: [courseEntityFactory.build({ students: [user] })],
 					dashboard: originalDashboard,
 				})
 			);
@@ -123,7 +123,7 @@ describe('dashboard model mapper', () => {
 					id: elementId,
 					xPos: 1,
 					yPos: 2,
-					references: [courseFactory.build({ students: [user] })],
+					references: [courseEntityFactory.build({ students: [user] })],
 					dashboard: originalDashboard,
 				})
 			);
@@ -133,11 +133,14 @@ describe('dashboard model mapper', () => {
 				grid: [
 					{
 						pos: { x: 2, y: 1 },
-						gridElement: GridElement.FromPersistedReference(elementId, courseFactory.build({ students: [user] })),
+						gridElement: GridElement.FromPersistedReference(elementId, courseEntityFactory.build({ students: [user] })),
 					},
 					{
 						pos: { x: 2, y: 2 },
-						gridElement: GridElement.FromPersistedReference(newElementId, courseFactory.build({ students: [user] })),
+						gridElement: GridElement.FromPersistedReference(
+							newElementId,
+							courseEntityFactory.build({ students: [user] })
+						),
 					},
 				],
 				userId: user.id,

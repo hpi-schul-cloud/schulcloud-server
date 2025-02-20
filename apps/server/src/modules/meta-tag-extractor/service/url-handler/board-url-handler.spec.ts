@@ -2,8 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
 import { cardFactory, columnBoardFactory } from '@modules/board/testing';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CourseDoService } from '@modules/learnroom';
-import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MetaData, MetaDataEntityType } from '../../types';
 import { BoardUrlHandler } from './board-url-handler';
@@ -38,7 +38,7 @@ describe(BoardUrlHandler.name, () => {
 	describe('getMetaData', () => {
 		describe('when the url fits a board', () => {
 			const setup = () => {
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const board = columnBoardFactory.build({
 					title: 'My Board',
 					context: { type: BoardExternalReferenceType.Course, id: course.id },

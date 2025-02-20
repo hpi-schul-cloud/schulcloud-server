@@ -1,9 +1,9 @@
 import { Course, CourseGroup } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { userFactory } from '@testing/factory/user.factory';
@@ -27,7 +27,7 @@ describe('rolename mapper', () => {
 	const setup = () => {
 		const teacherUser = userFactory.asTeacher().buildWithId();
 		const studentUser = userFactory.asStudent().buildWithId();
-		const course = courseFactory.buildWithId({
+		const course = courseEntityFactory.buildWithId({
 			teachers: [teacherUser],
 			students: [studentUser],
 		});
@@ -36,7 +36,7 @@ describe('rolename mapper', () => {
 	};
 	it('should map teacher correctly', () => {
 		const { teacherUser } = UserAndAccountTestFactory.buildTeacher({}, []);
-		const course = courseFactory.build({
+		const course = courseEntityFactory.build({
 			teachers: [teacherUser],
 		});
 		const value = RoleNameMapper.mapToRoleName(teacherUser, course);
