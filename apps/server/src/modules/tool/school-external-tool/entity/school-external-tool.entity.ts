@@ -1,4 +1,4 @@
-import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { SchoolEntity } from '@modules/school/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -18,6 +18,7 @@ export interface SchoolExternalToolEntityProps {
 }
 
 @Entity({ tableName: 'school-external-tools' })
+@Unique({ properties: ['tool', 'school'] })
 export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne()
 	tool: ExternalToolEntity;
