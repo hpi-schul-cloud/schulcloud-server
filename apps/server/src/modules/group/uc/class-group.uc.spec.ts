@@ -10,7 +10,6 @@ import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
 import { ClassGroupUc } from '@modules/group/uc/class-group.uc';
-import { Course } from '@modules/learnroom/domain';
 import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { ProvisioningConfig } from '@modules/provisioning';
@@ -18,9 +17,8 @@ import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { roleDtoFactory } from '@modules/role/testing';
 import { School, SchoolService, SchoolYearService } from '@modules/school/domain';
-import { SchoolYearEntity } from '@modules/school/repo';
 import { schoolFactory, schoolYearDoFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { System, SystemService } from '@modules/system';
+import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
@@ -129,8 +127,8 @@ describe('ClassGroupUc', () => {
 	describe('findAllClasses', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build();
-				const user: User = userFactory.buildWithId();
+				const school = schoolFactory.build();
+				const user = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -158,44 +156,44 @@ describe('ClassGroupUc', () => {
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
 				const schoolYearDo = schoolYearDoFactory.build();
-				const school: School = schoolFactory.build({
+				const school = schoolFactory.build({
 					currentYear: schoolYearDo,
 				});
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+				const teacherRole = roleDtoFactory.buildWithId({
 					id: teacherUser.roles[0].id,
 					name: teacherUser.roles[0].name,
 				});
-				const studentRole: RoleDto = roleDtoFactory.buildWithId({
+				const studentRole = roleDtoFactory.buildWithId({
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const teacherUserDo: UserDo = userDoFactory.buildWithId({
+				const teacherUserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDo = userDoFactory.buildWithId({
+				const studentUserDo = userDoFactory.buildWithId({
 					id: studentUser.id,
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
 
 				const { startDate } = schoolYearDo.getProps();
-				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({ startDate });
-				const nextSchoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId({
+				const schoolYear = schoolYearEntityFactory.buildWithId({ startDate });
+				const nextSchoolYear = schoolYearEntityFactory.buildWithId({
 					startDate: schoolYear.endDate,
 				});
 
-				const clazz: Class = classFactory.build({
+				const clazz = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const successorClass: Class = classFactory.build({
+				const successorClass = classFactory.build({
 					name: 'NEW',
 					teacherIds: [teacherUser.id],
 					year: nextSchoolYear.id,
@@ -206,15 +204,15 @@ describe('ClassGroupUc', () => {
 					year: undefined,
 				});
 
-				const system: System = systemFactory.withOauthConfig().build({
+				const system = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
 				});
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					name: 'B',
 					users: [{ userId: teacherUser.id, roleId: teacherUser.roles[0].id }],
 					externalSource: undefined,
 				});
-				const groupWithSystem: Group = groupFactory.build({
+				const groupWithSystem = groupFactory.build({
 					name: 'C',
 					externalSource: { externalId: 'externalId', systemId: system.id },
 					users: [
@@ -222,7 +220,7 @@ describe('ClassGroupUc', () => {
 						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
 					],
 				});
-				const synchronizedCourse: Course = courseFactory.build({ syncedWithGroup: group.id });
+				const synchronizedCourse = courseFactory.build({ syncedWithGroup: group.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				schoolService.getCurrentYear.mockResolvedValueOnce(schoolYearDo);
@@ -330,7 +328,7 @@ describe('ClassGroupUc', () => {
 						synchronizedCourse,
 					} = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined);
+					const result = await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
@@ -414,7 +412,7 @@ describe('ClassGroupUc', () => {
 						synchronizedCourse,
 					} = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+					const result = await uc.findAllClasses(
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
@@ -473,7 +471,7 @@ describe('ClassGroupUc', () => {
 				it('should return the selected page', async () => {
 					const { teacherUser, group, synchronizedCourse } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+					const result = await uc.findAllClasses(
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
@@ -502,11 +500,7 @@ describe('ClassGroupUc', () => {
 				it('should only return classes from next school year', async () => {
 					const { teacherUser, successorClass, nextSchoolYear } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
-						teacherUser.id,
-						teacherUser.school.id,
-						SchoolYearQueryType.NEXT_YEAR
-					);
+					const result = await uc.findAllClasses(teacherUser.id, teacherUser.school.id, SchoolYearQueryType.NEXT_YEAR);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
@@ -532,7 +526,7 @@ describe('ClassGroupUc', () => {
 				it('should only return classes from previous school years', async () => {
 					const { teacherUser } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+					const result = await uc.findAllClasses(
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.PREVIOUS_YEARS
@@ -559,34 +553,34 @@ describe('ClassGroupUc', () => {
 
 		describe('when accessing as an admin', () => {
 			const setup = (generateClasses = false) => {
-				const school: School = schoolFactory.build();
+				const school = schoolFactory.build();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { adminUser } = UserAndAccountTestFactory.buildAdmin();
-				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+				const teacherRole = roleDtoFactory.buildWithId({
 					id: teacherUser.roles[0].id,
 					name: teacherUser.roles[0].name,
 				});
-				const studentRole: RoleDto = roleDtoFactory.buildWithId({
+				const studentRole = roleDtoFactory.buildWithId({
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const adminUserDo: UserDo = userDoFactory.buildWithId({
+				const adminUserDo = userDoFactory.buildWithId({
 					id: adminUser.id,
 					lastName: adminUser.lastName,
 					roles: [{ id: adminUser.roles[0].id, name: adminUser.roles[0].name }],
 				});
-				const teacherUserDo: UserDo = userDoFactory.buildWithId({
+				const teacherUserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDo = userDoFactory.buildWithId({
+				const studentUserDo = userDoFactory.buildWithId({
 					id: studentUser.id,
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
-				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
+				const schoolYear = schoolYearEntityFactory.buildWithId();
 				let clazzes: Class[] = [];
 				if (generateClasses) {
 					clazzes = classFactory.buildList(11, {
@@ -596,21 +590,21 @@ describe('ClassGroupUc', () => {
 						year: schoolYear.id,
 					});
 				}
-				const clazz: Class = classFactory.build({
+				const clazz = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: System = systemFactory.withOauthConfig().build({
+				const system = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
 				});
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					name: 'B',
 					users: [{ userId: teacherUser.id, roleId: teacherUser.roles[0].id }],
 					externalSource: undefined,
 				});
-				const groupWithSystem: Group = groupFactory.build({
+				const groupWithSystem = groupFactory.build({
 					name: 'C',
 					externalSource: { externalId: 'externalId', systemId: system.id },
 					users: [
@@ -715,7 +709,7 @@ describe('ClassGroupUc', () => {
 				it('should return all classes sorted by name', async () => {
 					const { adminUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id);
+					const result = await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
 					expect(result).toEqual<Page<ClassInfoDto>>({
 						data: [
@@ -767,7 +761,7 @@ describe('ClassGroupUc', () => {
 				it('should return all classes sorted by external source name in descending order', async () => {
 					const { adminUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+					const result = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
@@ -815,7 +809,7 @@ describe('ClassGroupUc', () => {
 				it('should return the selected page', async () => {
 					const { adminUser, group } = setup();
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+					const result = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
 						undefined,
@@ -842,7 +836,7 @@ describe('ClassGroupUc', () => {
 				it('should return classes with expected limit', async () => {
 					const { adminUser } = setup(true);
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id, undefined, {
+					const result = await uc.findAllClasses(adminUser.id, adminUser.school.id, undefined, {
 						skip: 0,
 						limit: 5,
 					});
@@ -853,7 +847,7 @@ describe('ClassGroupUc', () => {
 				it('should return all classes without limit', async () => {
 					const { adminUser } = setup(true);
 
-					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id, undefined, {
+					const result = await uc.findAllClasses(adminUser.id, adminUser.school.id, undefined, {
 						skip: 0,
 						limit: -1,
 					});
@@ -865,34 +859,34 @@ describe('ClassGroupUc', () => {
 
 		describe('when accessing as a teacher with elevated rights', () => {
 			const setup = (generateClasses = false) => {
-				const school: School = schoolFactory.build();
+				const school = schoolFactory.build();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { adminUser } = UserAndAccountTestFactory.buildAdmin();
-				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+				const teacherRole = roleDtoFactory.buildWithId({
 					id: teacherUser.roles[0].id,
 					name: teacherUser.roles[0].name,
 				});
-				const studentRole: RoleDto = roleDtoFactory.buildWithId({
+				const studentRole = roleDtoFactory.buildWithId({
 					id: studentUser.roles[0].id,
 					name: studentUser.roles[0].name,
 				});
-				const adminUserDo: UserDo = userDoFactory.buildWithId({
+				const adminUserDo = userDoFactory.buildWithId({
 					id: adminUser.id,
 					lastName: adminUser.lastName,
 					roles: [{ id: adminUser.roles[0].id, name: adminUser.roles[0].name }],
 				});
-				const teacherUserDo: UserDo = userDoFactory.buildWithId({
+				const teacherUserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
-				const studentUserDo: UserDo = userDoFactory.buildWithId({
+				const studentUserDo = userDoFactory.buildWithId({
 					id: studentUser.id,
 					lastName: studentUser.lastName,
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
-				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
+				const schoolYear = schoolYearEntityFactory.buildWithId();
 				let clazzes: Class[] = [];
 				if (generateClasses) {
 					clazzes = classFactory.buildList(11, {
@@ -902,21 +896,21 @@ describe('ClassGroupUc', () => {
 						year: schoolYear.id,
 					});
 				}
-				const clazz: Class = classFactory.build({
+				const clazz = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: System = systemFactory.withOauthConfig().build({
+				const system = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
 				});
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					name: 'B',
 					users: [{ userId: teacherUser.id, roleId: teacherUser.roles[0].id }],
 					externalSource: undefined,
 				});
-				const groupWithSystem: Group = groupFactory.build({
+				const groupWithSystem = groupFactory.build({
 					name: 'C',
 					externalSource: { externalId: 'externalId', systemId: system.id },
 					users: [
@@ -1021,32 +1015,32 @@ describe('ClassGroupUc', () => {
 
 		describe('when class has a user referenced which is not existing', () => {
 			const setup = () => {
-				const school: School = schoolFactory.build();
+				const school = schoolFactory.build();
 				const notFoundReferenceId = new ObjectId().toHexString();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+				const teacherRole = roleDtoFactory.buildWithId({
 					id: teacherUser.roles[0].id,
 					name: teacherUser.roles[0].name,
 				});
 
-				const teacherUserDo: UserDo = userDoFactory.buildWithId({
+				const teacherUserDo = userDoFactory.buildWithId({
 					id: teacherUser.id,
 					lastName: teacherUser.lastName,
 					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
 				});
 
-				const schoolYear: SchoolYearEntity = schoolYearEntityFactory.buildWithId();
-				const clazz: Class = classFactory.build({
+				const schoolYear = schoolYearEntityFactory.buildWithId();
+				const clazz = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id, notFoundReferenceId],
 					source: 'LDAP',
 					year: schoolYear.id,
 				});
-				const system: System = systemFactory.withOauthConfig().build({
+				const system = systemFactory.withOauthConfig().build({
 					displayName: 'External System',
 				});
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					name: 'B',
 					users: [
 						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },

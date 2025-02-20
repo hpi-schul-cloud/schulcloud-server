@@ -25,13 +25,13 @@ export class MigrationCheckService {
 			return false;
 		}
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(school.id);
+		const userLoginMigration = await this.userLoginMigrationRepo.findBySchoolId(school.id);
 
 		if (!userLoginMigration || !this.isMigrationActive(userLoginMigration)) {
 			return false;
 		}
 
-		const user: UserDo | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const user = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (this.isUserMigrated(user, userLoginMigration)) {
 			return false;

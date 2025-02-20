@@ -71,8 +71,8 @@ export class FeathersRosterService {
 	) {}
 
 	public async getUsersMetadata(pseudonym: string): Promise<UserMetadata> {
-		const loadedPseudonym: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
-		const user: UserDo = await this.userService.findById(loadedPseudonym.userId);
+		const loadedPseudonym = await this.findPseudonymByPseudonym(pseudonym);
+		const user = await this.userService.findById(loadedPseudonym.userId);
 
 		const userMetadata: UserMetadata = {
 			data: {
@@ -86,9 +86,9 @@ export class FeathersRosterService {
 	}
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
-		const courses: Course[] = await this.getCourses(pseudonym, oauth2ClientId);
+		const courses = await this.getCourses(pseudonym, oauth2ClientId);
 
-		const userGroups: UserGroups = {
+		const userGroups = {
 			data: {
 				groups: courses.map((course) => {
 					return {
@@ -104,16 +104,13 @@ export class FeathersRosterService {
 	}
 
 	private async getCourses(pseudonym: string, oauth2ClientId: string): Promise<Course[]> {
-		const pseudonymContext: Pseudonym = await this.findPseudonymByPseudonym(pseudonym);
-		const user: UserDo = await this.userService.findById(pseudonymContext.userId);
+		const pseudonymContext = await this.findPseudonymByPseudonym(pseudonym);
+		const user = await this.userService.findById(pseudonymContext.userId);
 
-		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
-		const schoolExternalTool: SchoolExternalTool = await this.validateSchoolExternalTool(
-			user.schoolId,
-			externalTool.id
-		);
+		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
+		const schoolExternalTool = await this.validateSchoolExternalTool(user.schoolId, externalTool.id);
 
-		let courses: Course[] = await this.courseService.findAllByUserId(pseudonymContext.userId);
+		let courses = await this.courseService.findAllByUserId(pseudonymContext.userId);
 		courses = await this.filterCoursesByToolAvailability(courses, schoolExternalTool);
 
 		return courses;
@@ -122,11 +119,8 @@ export class FeathersRosterService {
 	public async getGroup(courseId: EntityId, oauth2ClientId: string): Promise<Group> {
 		const course: Course = await this.courseService.findById(courseId);
 
-		const externalTool: ExternalTool = await this.validateAndGetExternalTool(oauth2ClientId);
-		const schoolExternalTool: SchoolExternalTool = await this.validateSchoolExternalTool(
-			course.school.id,
-			externalTool.id
-		);
+		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
+		const schoolExternalTool = await this.validateSchoolExternalTool(course.school.id, externalTool.id);
 		await this.validateContextExternalTools(course, schoolExternalTool);
 
 		const [studentEntities, teacherEntities, substitutionTeacherEntities] = await Promise.all([
@@ -147,9 +141,9 @@ export class FeathersRosterService {
 			this.getAndPseudonyms(substitutionTeachers, externalTool),
 		]);
 
-		const allTeacherPseudonyms: Pseudonym[] = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
+		const allTeacherPseudonyms = teacherPseudonyms.concat(substitutionTeacherPseudonyms);
 
-		const group: Group = {
+		const group = {
 			data: {
 				students: studentPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
 				teachers: allTeacherPseudonyms.map((pseudonym: Pseudonym) => this.mapPseudonymToUserData(pseudonym)),
@@ -176,7 +170,7 @@ export class FeathersRosterService {
 	}
 
 	private async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym> {
-		const loadedPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
+		const loadedPseudonym = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
 
 		if (!loadedPseudonym) {
 			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
@@ -251,33 +245,29 @@ export class FeathersRosterService {
 		columnBoard: ColumnBoard,
 		schoolExternalTool: SchoolExternalTool
 	): Promise<boolean> {
-		const elements: ExternalToolElement[] = columnBoard.getChildrenOfType(ExternalToolElement);
+		const elements = columnBoard.getChildrenOfType(ExternalToolElement);
 
-		const hasRequestedTool: boolean[] = await Promise.all(
+		const hasRequestedTool = await Promise.all(
 			elements.map(async (element: ExternalToolElement): Promise<boolean> => {
 				if (!element.contextExternalToolId) {
 					return false;
 				}
 
-				const contextExternalTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
-					element.contextExternalToolId
-				);
+				const contextExternalTool = await this.contextExternalToolService.findById(element.contextExternalToolId);
 
-				const isRequestedTool: boolean = contextExternalTool?.schoolToolRef.schoolToolId === schoolExternalTool.id;
+				const isRequestedTool = contextExternalTool?.schoolToolRef.schoolToolId === schoolExternalTool.id;
 
 				return isRequestedTool;
 			})
 		);
 
-		const hasTool: boolean = hasRequestedTool.some(Boolean);
+		const hasTool = hasRequestedTool.some(Boolean);
 
 		return hasTool;
 	}
 
 	private async validateAndGetExternalTool(oauth2ClientId: string): Promise<ExternalTool> {
-		const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			oauth2ClientId
-		);
+		const externalTool = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(oauth2ClientId);
 
 		if (!externalTool || !externalTool.id || externalTool.isDeactivated) {
 			throw new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': oauth2ClientId });
@@ -287,7 +277,7 @@ export class FeathersRosterService {
 	}
 
 	private async validateSchoolExternalTool(schoolId: EntityId, toolId: string): Promise<SchoolExternalTool> {
-		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
+		const schoolExternalTools = await this.schoolExternalToolService.findSchoolExternalTools({
 			schoolId,
 			toolId,
 			isDeactivated: false,
@@ -301,10 +291,7 @@ export class FeathersRosterService {
 	}
 
 	private async validateContextExternalTools(course: Course, schoolExternalTool: SchoolExternalTool): Promise<void> {
-		const isExternalToolReferencedInCourse: boolean = await this.isExternalToolReferencedInCourse(
-			course,
-			schoolExternalTool
-		);
+		const isExternalToolReferencedInCourse = await this.isExternalToolReferencedInCourse(course, schoolExternalTool);
 
 		if (!isExternalToolReferencedInCourse) {
 			throw new NotFoundLoggableException(ContextExternalTool.name, { contextId: course.id });
@@ -312,7 +299,7 @@ export class FeathersRosterService {
 	}
 
 	private mapPseudonymToUserData(pseudonym: Pseudonym): UserData {
-		const userData: UserData = {
+		const userData = {
 			user_id: pseudonym.pseudonym,
 			username: this.pseudonymService.getIframeSubject(pseudonym.pseudonym),
 		};

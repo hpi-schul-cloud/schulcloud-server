@@ -92,7 +92,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findByIdOrNull(id: string): Promise<UserDo | null> {
-		const userDO: UserDo | null = await this.userDORepo.findByIdOrNull(id, true);
+		const userDO = await this.userDORepo.findByIdOrNull(id, true);
 
 		return userDO;
 	}
@@ -110,7 +110,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findUsers(query: UserQuery, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
-		const users: Page<UserDo> = await this.userDORepo.find(query, options);
+		const users = await this.userDORepo.find(query, options);
 
 		return users;
 	}
@@ -170,7 +170,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			});
 
 		await this.userDORepo.saveAll(users);
-		return Promise.resolve();
 	}
 
 	public async removeSecondarySchoolFromUsers(userIds: string[], schoolId: EntityId): Promise<void> {
@@ -181,7 +180,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		});
 
 		await this.userDORepo.saveAll(users);
-		return Promise.resolve();
 	}
 
 	public async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDo | null> {
@@ -197,13 +195,13 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async getDisplayName(user: UserDo): Promise<string> {
-		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
-		const isProtectedUser: boolean = user.roles.some(
+		const protectedRoles = await this.roleService.getProtectedRoles();
+		const isProtectedUser = user.roles.some(
 			(roleRef: RoleReference): boolean =>
-				!!protectedRoles.find((protectedRole: RoleDto): boolean => roleRef.id === protectedRole.id)
+				!!protectedRoles.find((protectedRole: RoleDto) => roleRef.id === protectedRole.id)
 		);
 
-		const displayName: string = isProtectedUser ? user.lastName : `${user.firstName} ${user.lastName}`;
+		const displayName = isProtectedUser ? user.lastName : `${user.firstName} ${user.lastName}`;
 
 		return displayName;
 	}
@@ -217,7 +215,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return true;
 	}
 
-	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
+	private checkAvailableLanguages(language: LanguageType): void {
 		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
 			throw new BadRequestException('Language is not activated.');
 		}
@@ -228,7 +226,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
 
-		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
+		const userToDelete = await this.userRepo.findByIdOrNull(userId, true);
 
 		if (userToDelete === null) {
 			const result = DomainDeletionReportBuilder.build(DomainName.USER, [
@@ -291,7 +289,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
-		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
+		const users = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
 
 		return users;
 	}

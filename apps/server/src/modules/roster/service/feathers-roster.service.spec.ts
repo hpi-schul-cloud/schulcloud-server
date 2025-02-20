@@ -3,7 +3,6 @@ import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFactory } from '@modules/board/testing';
-
 import { CourseService } from '@modules/learnroom/service';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
@@ -24,7 +23,6 @@ import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Pseudonym } from '@shared/domain/domainobject';
 import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -110,10 +108,8 @@ describe('FeathersRosterService', () => {
 	describe('getUsersMetadata', () => {
 		describe('when pseudonym is given', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
+				const pseudonym = pseudonymFactory.build();
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const iFrameSubject = 'iFrameSubject';
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
@@ -168,7 +164,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when pseudonym does not exists', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.build();
+				const pseudonym = pseudonymFactory.build();
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(null);
 
@@ -190,10 +186,8 @@ describe('FeathersRosterService', () => {
 
 		describe('when user does not exists', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.build();
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
+				const pseudonym = pseudonymFactory.build();
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockRejectedValueOnce(new DatabaseObjectNotFoundException(new Error()));
@@ -217,24 +211,22 @@ describe('FeathersRosterService', () => {
 	describe('getUserGroups', () => {
 		describe('when the tool is active in a course', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
-				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
+				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
-				const courseA: Course = courseFactory.buildWithId();
-				const courseB: Course = courseFactory.buildWithId();
-				const courseC: Course = courseFactory.buildWithId();
-				const courses: Course[] = [courseA, courseB, courseC];
+				const courseA = courseFactory.buildWithId();
+				const courseB = courseFactory.buildWithId();
+				const courseC = courseFactory.buildWithId();
+				const courses = [courseA, courseB, courseC];
 
 				const clientId = 'testClientId';
-				const externalTool: ExternalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
 				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
@@ -291,20 +283,18 @@ describe('FeathersRosterService', () => {
 
 		describe('when the tool is active in a column board of a course', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
-				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
+				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
-				const courseA: Course = courseFactory.buildWithId();
-				const courseB: Course = courseFactory.buildWithId();
-				const courseC: Course = courseFactory.buildWithId();
-				const courses: Course[] = [courseA, courseB, courseC];
+				const courseA = courseFactory.buildWithId();
+				const courseB = courseFactory.buildWithId();
+				const courseC = courseFactory.buildWithId();
+				const courses = [courseA, courseB, courseC];
 
 				const clientId = 'testClientId';
-				const externalTool: ExternalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
-				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const otherExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
@@ -328,7 +318,7 @@ describe('FeathersRosterService', () => {
 					context: { id: courseA.id, type: BoardExternalReferenceType.Course },
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
@@ -337,7 +327,7 @@ describe('FeathersRosterService', () => {
 						}),
 					});
 				externalToolElement.contextExternalToolId = contextExternalTool.id;
-				const otherContextExternalTool: ContextExternalTool = contextExternalToolFactory
+				const otherContextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(otherSchoolExternalTool.id, otherSchoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
@@ -399,7 +389,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when pseudonym does not exists', () => {
 			const setup = () => {
-				const pseudonym: Pseudonym = pseudonymFactory.build();
+				const pseudonym = pseudonymFactory.build();
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(null);
 
@@ -421,10 +411,8 @@ describe('FeathersRosterService', () => {
 
 		describe('when the external tool does not exist', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
-				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
+				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
@@ -446,10 +434,8 @@ describe('FeathersRosterService', () => {
 
 		describe('when the external tool is deactivated', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
-				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
+				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				const clientId = 'testClientId';
 				const externalTool: ExternalTool = externalToolFactory
@@ -477,13 +463,11 @@ describe('FeathersRosterService', () => {
 
 		describe('when the school external tool does not exist or is deactivated', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
-					.build();
-				const pseudonym: Pseudonym = pseudonymFactory.build({ userId: user.id });
+				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
+				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				const clientId = 'testClientId';
-				const externalTool: ExternalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 
 				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
@@ -512,41 +496,41 @@ describe('FeathersRosterService', () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
 
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
 				});
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
-				const student1: UserDo = userDoFactory.build({ id: studentUser.id });
-				const student1Pseudonym: Pseudonym = pseudonymFactory.build({
+				const student1 = userDoFactory.build({ id: studentUser.id });
+				const student1Pseudonym = pseudonymFactory.build({
 					userId: student1.id,
 					toolId: externalTool.id,
 				});
 
 				const { studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-				const student2: UserDo = userDoFactory.build({ id: studentUser2.id });
-				const student2Pseudonym: Pseudonym = pseudonymFactory.build({
+				const student2 = userDoFactory.build({ id: studentUser2.id });
+				const student2Pseudonym = pseudonymFactory.build({
 					userId: student2.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const teacher: UserDo = userDoFactory.build({ id: teacherUser.id });
-				const teacherPseudonym: Pseudonym = pseudonymFactory.build({
+				const teacher = userDoFactory.build({ id: teacherUser.id });
+				const teacherPseudonym = pseudonymFactory.build({
 					userId: teacher.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser: substitutionTeacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const substitutionTeacher: UserDo = userDoFactory.build({ id: substitutionTeacherUser.id });
-				const substitutionTeacherPseudonym: Pseudonym = pseudonymFactory.build({
+				const substitutionTeacher = userDoFactory.build({ id: substitutionTeacherUser.id });
+				const substitutionTeacherPseudonym = pseudonymFactory.build({
 					userId: substitutionTeacher.id,
 					toolId: externalTool.id,
 				});
 
-				const courseA: Course = courseFactory.buildWithId({
+				const courseA = courseFactory.buildWithId({
 					school: schoolEntity,
 					students: [studentUser, studentUser2],
 					teachers: [teacherUser],
@@ -555,7 +539,7 @@ describe('FeathersRosterService', () => {
 					groups: [],
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
@@ -697,8 +681,8 @@ describe('FeathersRosterService', () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const school = legacySchoolDoFactory.build({ id: schoolEntity.id });
 
-				const externalTool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId();
-				const otherExternalTool: ExternalTool = externalToolFactory.buildWithId();
+				const externalTool = externalToolFactory.withOauth2Config().buildWithId();
+				const otherExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
@@ -709,34 +693,34 @@ describe('FeathersRosterService', () => {
 				});
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
-				const student1: UserDo = userDoFactory.build({ id: studentUser.id });
-				const student1Pseudonym: Pseudonym = pseudonymFactory.build({
+				const student1 = userDoFactory.build({ id: studentUser.id });
+				const student1Pseudonym = pseudonymFactory.build({
 					userId: student1.id,
 					toolId: externalTool.id,
 				});
 
 				const { studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent();
-				const student2: UserDo = userDoFactory.build({ id: studentUser2.id });
-				const student2Pseudonym: Pseudonym = pseudonymFactory.build({
+				const student2 = userDoFactory.build({ id: studentUser2.id });
+				const student2Pseudonym = pseudonymFactory.build({
 					userId: student2.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const teacher: UserDo = userDoFactory.build({ id: teacherUser.id });
-				const teacherPseudonym: Pseudonym = pseudonymFactory.build({
+				const teacher = userDoFactory.build({ id: teacherUser.id });
+				const teacherPseudonym = pseudonymFactory.build({
 					userId: teacher.id,
 					toolId: externalTool.id,
 				});
 
 				const { teacherUser: substitutionTeacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const substitutionTeacher: UserDo = userDoFactory.build({ id: substitutionTeacherUser.id });
-				const substitutionTeacherPseudonym: Pseudonym = pseudonymFactory.build({
+				const substitutionTeacher = userDoFactory.build({ id: substitutionTeacherUser.id });
+				const substitutionTeacherPseudonym = pseudonymFactory.build({
 					userId: substitutionTeacher.id,
 					toolId: externalTool.id,
 				});
 
-				const courseA: Course = courseFactory.buildWithId({
+				const courseA = courseFactory.buildWithId({
 					school: schoolEntity,
 					students: [studentUser, studentUser2],
 					teachers: [teacherUser],
@@ -759,7 +743,7 @@ describe('FeathersRosterService', () => {
 					context: { id: courseA.id, type: BoardExternalReferenceType.Course },
 				});
 
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
+				const contextExternalTool = contextExternalToolFactory
 					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
 					.buildWithId({
 						contextRef: new ContextRef({
@@ -857,7 +841,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when invalid oauth2Client was given and external tool was not found', () => {
 			const setup = () => {
-				const course: Course = courseFactory.buildWithId();
+				const course = courseFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(null);
@@ -878,8 +862,8 @@ describe('FeathersRosterService', () => {
 
 		describe('when the external tool is deactivated', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId({ isDeactivated: true });
-				const course: Course = courseFactory.buildWithId();
+				const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
+				const course = courseFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
@@ -900,9 +884,9 @@ describe('FeathersRosterService', () => {
 
 		describe('when no school external tool was found which belongs to the external tool', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const externalToolId: string = externalTool.id;
-				const course: Course = courseFactory.buildWithId();
+				const externalTool = externalToolFactory.buildWithId();
+				const externalToolId = externalTool.id;
+				const course = courseFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
@@ -926,9 +910,9 @@ describe('FeathersRosterService', () => {
 
 		describe('when no context external tool was found which belongs to the course', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const course: Course = courseFactory.buildWithId();
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const course = courseFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);

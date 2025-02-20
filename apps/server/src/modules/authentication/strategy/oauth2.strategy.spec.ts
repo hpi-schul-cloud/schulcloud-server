@@ -1,8 +1,8 @@
+/* eslint-disable filename-rules/match */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OauthSessionToken, OauthSessionTokenService, OAuthTokenDto } from '@modules/oauth';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
@@ -60,8 +60,8 @@ describe(Oauth2Strategy.name, () => {
 	describe('validate', () => {
 		describe('when a valid code is provided', () => {
 			const setup = () => {
-				const systemId: EntityId = 'systemId';
-				const user: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
+				const systemId = 'systemId';
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
 				const account = accountDoFactory.build();
 				const expiryDate = new Date();
 
@@ -149,7 +149,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when no account was found', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
@@ -177,7 +177,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when account is deactivated', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
 						idToken: 'idToken',
@@ -186,7 +186,7 @@ describe(Oauth2Strategy.name, () => {
 					})
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
-				const account: Account = new Account({
+				const account = new Account({
 					id: 'accountId',
 					createdAt: new Date(),
 					updatedAt: new Date(),

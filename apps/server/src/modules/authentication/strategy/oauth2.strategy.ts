@@ -1,13 +1,7 @@
+/* eslint-disable filename-rules/match */
 import type { ICurrentUser } from '@infra/auth-guard';
-import { Account, AccountService } from '@modules/account';
-import {
-	OAuthService,
-	OauthSessionToken,
-	OauthSessionTokenFactory,
-	OauthSessionTokenService,
-	OAuthTokenDto,
-} from '@modules/oauth';
-import type { UserDo } from '@modules/user/domain';
+import { AccountService } from '@modules/account';
+import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
@@ -33,15 +27,15 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { systemId, redirectUri, code } = request.body;
 
-		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
+		const tokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
-		const user: UserDo | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
+		const user = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (!user || !user.id) {
 			throw new SchoolInMigrationLoggableException();
 		}
 
-		const account: Account | null = await this.accountService.findByUserId(user.id);
+		const account = await this.accountService.findByUserId(user.id);
 		if (!account) {
 			throw new AccountNotFoundLoggableException();
 		}
@@ -58,12 +52,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 
 		await this.oauthSessionTokenService.save(oauthSessionToken);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
-			account.id,
-			user,
-			systemId,
-			tokenDto.idToken
-		);
+		const currentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, systemId, tokenDto.idToken);
 
 		return currentUser;
 	}

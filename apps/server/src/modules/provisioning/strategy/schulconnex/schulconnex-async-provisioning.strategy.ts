@@ -47,7 +47,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 			school = await this.schulconnexSchoolProvisioningService.provisionExternalSchool(data.externalSchool, systemId);
 		}
 
-		const user: UserDo = await this.schulconnexUserProvisioningService.provisionExternalUser(
+		const user = await this.schulconnexUserProvisioningService.provisionExternalUser(
 			data.externalUser,
 			systemId,
 			school?.id
@@ -73,7 +73,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 		if (!user?.id) {
 			throw new NotFoundLoggableException(UserDo.name, { externalId: data.externalUser.externalId });
 		}
-		const userId: string = user.id;
+		const userId = user.id;
 		const { systemId } = data.system;
 
 		let externalGroups: ExternalGroupDto[] = [];
@@ -87,8 +87,8 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 
 		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups({ userId, systemId });
 
-		const groupsWithoutUser: Group[] = existingGroupsOfUser.data.filter((existingGroupFromSystem: Group) => {
-			const isUserInGroup: boolean = externalGroups.some(
+		const groupsWithoutUser = existingGroupsOfUser.data.filter((existingGroupFromSystem: Group) => {
+			const isUserInGroup = externalGroups.some(
 				(externalGroup: ExternalGroupDto) =>
 					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
 			);
@@ -96,21 +96,19 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 			return !isUserInGroup;
 		});
 
-		const removalPromises: Promise<void>[] = groupsWithoutUser.map(async (group: Group): Promise<void> => {
+		const removalPromises = groupsWithoutUser.map(async (group: Group): Promise<void> => {
 			await this.schulconnexGroupProvisioningProducer.removeUserFromGroup({
 				userId,
 				groupId: group.id,
 			});
 		});
-		const provisioningPromises: Promise<void>[] = externalGroups.map(
-			async (externalGroup: ExternalGroupDto): Promise<void> => {
-				await this.schulconnexGroupProvisioningProducer.provisonGroup({
-					systemId,
-					externalGroup,
-					externalSchool: data.externalSchool,
-				});
-			}
-		);
+		const provisioningPromises = externalGroups.map(async (externalGroup: ExternalGroupDto): Promise<void> => {
+			await this.schulconnexGroupProvisioningProducer.provisonGroup({
+				systemId,
+				externalGroup,
+				externalSchool: data.externalSchool,
+			});
+		});
 
 		await Promise.all(removalPromises);
 		await Promise.all(provisioningPromises);

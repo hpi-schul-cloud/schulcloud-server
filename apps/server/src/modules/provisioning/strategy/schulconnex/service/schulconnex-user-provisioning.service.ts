@@ -23,9 +23,9 @@ export class SchulconnexUserProvisioningService {
 		systemId: EntityId,
 		schoolId?: string
 	): Promise<UserDo> {
-		const foundUser: UserDo | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
+		const foundUser = await this.userService.findByExternalId(externalUser.externalId, systemId);
 
-		const roleRefs: RoleReference[] | undefined = await this.createRoleReferences(externalUser.roles);
+		const roleRefs = await this.createRoleReferences(externalUser.roles);
 		if (!roleRefs?.length) {
 			throw new UserRoleUnknownLoggableException(externalUser);
 		}
@@ -43,7 +43,7 @@ export class SchulconnexUserProvisioningService {
 			user = this.createUser(externalUser, schoolId, roleRefs);
 		}
 
-		const savedUser: UserDo = await this.userService.save(user);
+		const savedUser = await this.userService.save(user);
 
 		if (createNewAccount) {
 			await this.accountService.saveWithValidation({
@@ -59,8 +59,8 @@ export class SchulconnexUserProvisioningService {
 
 	private async createRoleReferences(roles?: RoleName[]): Promise<RoleReference[] | undefined> {
 		if (roles?.length) {
-			const foundRoles: RoleDto[] = await this.roleService.findByNames(roles);
-			const roleRefs: RoleReference[] = foundRoles.map(
+			const foundRoles = await this.roleService.findByNames(roles);
+			const roleRefs = foundRoles.map(
 				(role: RoleDto): RoleReference => new RoleReference({ id: role.id, name: role.name })
 			);
 
@@ -76,7 +76,7 @@ export class SchulconnexUserProvisioningService {
 		roleRefs?: RoleReference[],
 		schoolId?: string
 	): UserDo {
-		const user: UserDo = foundUser;
+		const user = foundUser;
 		user.firstName = externalUser.firstName ?? foundUser.firstName;
 		user.preferredName = externalUser.preferredName ?? foundUser.preferredName;
 		user.lastName = externalUser.lastName ?? foundUser.lastName;
@@ -89,7 +89,7 @@ export class SchulconnexUserProvisioningService {
 	}
 
 	private createUser(externalUser: ExternalUserDto, schoolId: string, roleRefs?: RoleReference[]): UserDo {
-		const user: UserDo = new UserDo({
+		const user = new UserDo({
 			externalId: externalUser.externalId,
 			firstName: externalUser.firstName ?? '',
 			preferredName: externalUser.preferredName,

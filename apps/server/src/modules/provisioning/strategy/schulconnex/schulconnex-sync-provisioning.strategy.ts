@@ -2,7 +2,6 @@ import { Logger } from '@core/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Group, GroupService } from '@modules/group';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -51,7 +50,7 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 			);
 		}
 
-		const user: UserDo = await this.schulconnexUserProvisioningService.provisionExternalUser(
+		const user = await this.schulconnexUserProvisioningService.provisionExternalUser(
 			data.externalUser,
 			data.system.systemId,
 			school?.id
@@ -79,7 +78,7 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 		await this.removeUserFromGroups(data);
 
 		if (data.externalGroups) {
-			let groups: ExternalGroupDto[] = data.externalGroups;
+			let groups = data.externalGroups;
 
 			groups = await this.schulconnexGroupProvisioningService.filterExternalGroups(
 				groups,
@@ -87,27 +86,25 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 				data.system.systemId
 			);
 
-			const groupProvisioningPromises: Promise<unknown>[] = groups.map(
-				async (externalGroup: ExternalGroupDto): Promise<void> => {
-					const existingGroup: Group | null = await this.groupService.findByExternalSource(
-						externalGroup.externalId,
-						data.system.systemId
-					);
+			const groupProvisioningPromises = groups.map(async (externalGroup: ExternalGroupDto): Promise<void> => {
+				const existingGroup = await this.groupService.findByExternalSource(
+					externalGroup.externalId,
+					data.system.systemId
+				);
 
-					const provisionedGroup: Group | null = await this.schulconnexGroupProvisioningService.provisionExternalGroup(
-						externalGroup,
-						data.externalSchool,
-						data.system.systemId
-					);
+				const provisionedGroup = await this.schulconnexGroupProvisioningService.provisionExternalGroup(
+					externalGroup,
+					data.externalSchool,
+					data.system.systemId
+				);
 
-					if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
-						await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(
-							provisionedGroup,
-							existingGroup ?? undefined
-						);
-					}
+				if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
+					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(
+						provisionedGroup,
+						existingGroup ?? undefined
+					);
 				}
-			);
+			});
 
 			await Promise.all(groupProvisioningPromises);
 		}
@@ -119,19 +116,16 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 	}
 
 	private async removeUserFromGroups(data: OauthDataDto): Promise<void> {
-		const removedFromGroups: Group[] =
-			await this.schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation(
-				data.externalUser.externalId,
-				data.externalGroups ?? [],
-				data.system.systemId
-			);
+		const removedFromGroups = await this.schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation(
+			data.externalUser.externalId,
+			data.externalGroups ?? [],
+			data.system.systemId
+		);
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
-			const courseSyncPromises: Promise<unknown>[] = removedFromGroups.map(
-				async (removedFromGroup: Group): Promise<void> => {
-					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);
-				}
-			);
+			const courseSyncPromises = removedFromGroups.map(async (removedFromGroup: Group): Promise<void> => {
+				await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);
+			});
 
 			await Promise.all(courseSyncPromises);
 		}

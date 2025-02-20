@@ -201,7 +201,7 @@ describe(SchoolMigrationService.name, () => {
 					externalId: sourceExternalId,
 				});
 
-				const user: UserDo = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+				const user = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
 
 				userService.findById.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -237,7 +237,7 @@ describe(SchoolMigrationService.name, () => {
 					previousExternalId: sourceExternalId,
 				});
 
-				const user: UserDo = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+				const user = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
 
 				userService.findById.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -273,7 +273,7 @@ describe(SchoolMigrationService.name, () => {
 					externalId: sourceExternalId,
 				});
 
-				const user: UserDo = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
+				const user = userDoFactory.build({ id: new ObjectId().toHexString(), schoolId: school.id });
 
 				userService.findById.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -311,7 +311,7 @@ describe(SchoolMigrationService.name, () => {
 					finishedAt: new Date('2023-05-03'),
 				});
 
-				const users: UserDo[] = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
+				const users = userDoFactory.buildListWithId(3, { outdatedSince: undefined });
 
 				userService.findUsers.mockResolvedValue(new Page(users, users.length));
 
@@ -346,7 +346,7 @@ describe(SchoolMigrationService.name, () => {
 					finishedAt: new Date('2023-05-03'),
 				});
 
-				const users: UserDo[] = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
+				const users = userDoFactory.buildListWithId(3, { outdatedSince: new Date('2023-05-02') });
 
 				userService.findUsers.mockResolvedValue(new Page(users, users.length));
 
@@ -372,7 +372,7 @@ describe(SchoolMigrationService.name, () => {
 	describe('hasSchoolMigratedUser', () => {
 		describe('when school will be loaded', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration = userLoginMigrationDOFactory.build();
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 
 				return {
@@ -391,7 +391,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when users will be loaded', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration = userLoginMigrationDOFactory.build();
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
 
@@ -428,7 +428,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when the school has migrated user', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration = userLoginMigrationDOFactory.build();
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 				userService.findUsers.mockResolvedValue(new Page([userDoFactory.build()], 1));
 			};
@@ -444,7 +444,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when the school has no migrated user', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration = userLoginMigrationDOFactory.build();
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 				userService.findUsers.mockResolvedValue(new Page([], 0));
 			};
@@ -466,7 +466,7 @@ describe(SchoolMigrationService.name, () => {
 					systems: undefined,
 				});
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration = userLoginMigrationDOFactory.build();
 
 				return {
 					school,
@@ -477,7 +477,7 @@ describe(SchoolMigrationService.name, () => {
 			it('should return false', () => {
 				const { school, userLoginMigration } = setup();
 
-				const result: boolean = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
+				const result = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
 
 				expect(result).toEqual(false);
 			});
@@ -489,7 +489,7 @@ describe(SchoolMigrationService.name, () => {
 					systems: ['system-1'],
 				});
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+				const userLoginMigration = userLoginMigrationDOFactory.build({
 					targetSystemId: 'system-100',
 				});
 
@@ -502,7 +502,7 @@ describe(SchoolMigrationService.name, () => {
 			it('should return false', () => {
 				const { school, userLoginMigration } = setup();
 
-				const result: boolean = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
+				const result = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
 
 				expect(result).toEqual(false);
 			});
@@ -514,7 +514,7 @@ describe(SchoolMigrationService.name, () => {
 					systems: ['system-1'],
 				});
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+				const userLoginMigration = userLoginMigrationDOFactory.build({
 					targetSystemId: 'system-1',
 				});
 
@@ -527,7 +527,7 @@ describe(SchoolMigrationService.name, () => {
 			it('should return true', () => {
 				const { school, userLoginMigration } = setup();
 
-				const result: boolean = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
+				const result = service.hasSchoolMigratedInMigrationPhase(school, userLoginMigration);
 
 				expect(result).toEqual(true);
 			});

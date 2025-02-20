@@ -4,11 +4,9 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { Authorization } from 'oauth-1.0a';
@@ -25,7 +23,6 @@ import {
 	ltiDeepLinkFactory,
 	ltiDeepLinkTokenFactory,
 } from '../../../context-external-tool/testing';
-import { ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
@@ -39,7 +36,6 @@ import {
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
 import { Lti11ToolLaunchStrategy } from './lti11-tool-launch.strategy';
-import { ToolLaunchParams } from './tool-launch-params.interface';
 
 describe(Lti11ToolLaunchStrategy.name, () => {
 	let module: TestingModule;
@@ -133,7 +129,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					const mockSecret = 'mockSecret';
 					const launchPresentationLocale = 'de-DE';
 
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: mockKey,
 							secret: mockSecret,
@@ -142,16 +138,16 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							launch_presentation_locale: launchPresentationLocale,
 						})
 						.build();
-					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+					const schoolExternalTool = schoolExternalToolFactory.build();
+					const contextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const user: UserDo = userDoFactory.buildWithId({
+					const user = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -182,7 +178,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain lti key and secret without location', async () => {
 					const { data, mockKey, decrypted } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -195,7 +191,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain mandatory lti attributes', async () => {
 					const { data, contextExternalTool, launchPresentationLocale } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -227,7 +223,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when lti privacyPermission is public', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -235,18 +231,18 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							privacy_permission: LtiPrivacyPermission.PUBLIC,
 						})
 						.build();
-					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+					const schoolExternalTool = schoolExternalToolFactory.build();
+					const contextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
 					const userEmail = 'user@email.com';
-					const user: UserDo = userDoFactory.buildWithId(
+					const user = userDoFactory.buildWithId(
 						{
 							email: userEmail,
 							roles: [
@@ -279,7 +275,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain all user related attributes', async () => {
 					const { data, userId, userDisplayName, userEmail } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -306,7 +302,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when lti privacyPermission is name', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -314,17 +310,17 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							privacy_permission: LtiPrivacyPermission.NAME,
 						})
 						.build();
-					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+					const schoolExternalTool = schoolExternalToolFactory.build();
+					const contextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId(
+					const userId = new ObjectId().toHexString();
+					const user = userDoFactory.buildWithId(
 						{
 							roles: [
 								{
@@ -355,7 +351,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain the user name and id', async () => {
 					const { data, userId, userDisplayName } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -380,7 +376,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when lti privacyPermission is email', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -391,15 +387,15 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
 					const userEmail = 'user@email.com';
-					const user: UserDo = userDoFactory.buildWithId(
+					const user = userDoFactory.buildWithId(
 						{
 							email: userEmail,
 							roles: [
@@ -428,7 +424,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain the user email and id', async () => {
 					const { data, userId, userEmail } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -453,7 +449,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when lti privacyPermission is pseudonymous', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -461,16 +457,16 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
 						})
 						.build();
-					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+					const schoolExternalTool = schoolExternalToolFactory.build();
+					const contextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const user: UserDo = userDoFactory.buildWithId({
+					const user = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -483,7 +479,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						],
 					});
 
-					const pseudonym: Pseudonym = pseudonymFactory.build();
+					const pseudonym = pseudonymFactory.build();
 
 					userService.findById.mockResolvedValue(user);
 					pseudonymService.findOrCreatePseudonym.mockResolvedValue(pseudonym);
@@ -497,7 +493,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain the pseudonymised user id', async () => {
 					const { data, pseudonym } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -524,7 +520,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when lti privacyPermission is anonymous', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -535,13 +531,13 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const user: UserDo = userDoFactory.buildWithId({
+					const user = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -564,7 +560,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should not contain user related information', async () => {
 					const { data } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 					expect(result).not.toEqual(
 						expect.arrayContaining([
@@ -579,7 +575,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when context external tool id is undefined', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -587,19 +583,19 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 						})
 						.build();
-					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+					const schoolExternalTool = schoolExternalToolFactory.build();
 					const pseudoContextExternalTool = {
 						...contextExternalToolFactory.build().getProps(),
 						id: undefined,
 					};
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool: pseudoContextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const user: UserDo = userDoFactory.buildWithId({
+					const user = userDoFactory.buildWithId({
 						roles: [
 							{
 								id: 'roleId1',
@@ -634,7 +630,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		describe('when lti messageType is content item selection request', () => {
 			describe('when no content is linked to the tool', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -645,14 +641,14 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 					const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+					const userId = new ObjectId().toHexString();
+					const user = userDoFactory.buildWithId(undefined, userId);
 					const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build();
 
 					const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
@@ -675,7 +671,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain the attributes for a content item selection request', async () => {
 					const { data, userId, callbackUrl, ltiDeepLinkToken } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -693,7 +689,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							}),
 							new PropertyData({
 								name: 'resource_link_id',
-								value: data.contextExternalTool.id as string,
+								value: data.contextExternalTool.id,
 								location: PropertyLocation.BODY,
 							}),
 							new PropertyData({
@@ -755,7 +751,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				const setup = () => {
 					const launchPresentationLocale = 'de-DE';
 
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -764,7 +760,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 							launch_presentation_locale: launchPresentationLocale,
 						})
 						.build();
-					const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+					const schoolExternalTool = schoolExternalToolFactory.build();
 					const ltiDeepLinkParameter = new CustomParameterEntry({ name: 'dl_param', value: 'dl_value' });
 					const ltiDeepLink = ltiDeepLinkFactory.build({
 						mediaType: 'application/vnd.ims.lti.v1.ltilink',
@@ -774,14 +770,14 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						ltiDeepLink,
 					});
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+					const userId = new ObjectId().toHexString();
+					const user = userDoFactory.buildWithId(undefined, userId);
 
 					userService.findById.mockResolvedValue(user);
 					const decrypted = 'decryptedSecret';
@@ -799,7 +795,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should contain the attributes for a basic lti launch request with the additional attributes from the deep link', async () => {
 					const { data, userId, contextExternalTool, launchPresentationLocale, ltiDeepLinkParameter } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
 
 					expect(result).toEqual(
 						expect.arrayContaining([
@@ -836,7 +832,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when the linked content does not require an lti launch', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -853,14 +849,14 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						ltiDeepLink,
 					});
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+					const userId = new ObjectId().toHexString();
+					const user = userDoFactory.buildWithId(undefined, userId);
 
 					userService.findById.mockResolvedValue(user);
 					const decrypted = 'decryptedSecret';
@@ -876,7 +872,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				it('should not contain parameters', async () => {
 					const { data, userId } = setup();
 
-					const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+					const result = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
 
 					expect(result).toEqual([]);
 				});
@@ -884,7 +880,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 			describe('when the tool is not permanent', () => {
 				const setup = () => {
-					const externalTool: ExternalTool = externalToolFactory
+					const externalTool = externalToolFactory
 						.withLti11Config({
 							key: 'mockKey',
 							secret: 'mockSecret',
@@ -898,14 +894,14 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 						id: undefined,
 					};
 
-					const data: ToolLaunchParams = {
+					const data = {
 						contextExternalTool: pseudoContextExternalTool,
 						schoolExternalTool,
 						externalTool,
 					};
 
-					const userId: string = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+					const userId = new ObjectId().toHexString();
+					const user = userDoFactory.buildWithId(undefined, userId);
 
 					userService.findById.mockResolvedValue(user);
 					const decrypted = 'decryptedSecret';
@@ -931,21 +927,21 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when the lti message type is unknown', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory
+				const externalTool = externalToolFactory
 					.withLti11Config({
 						lti_message_type: 'unknown' as unknown as LtiMessageType,
 					})
 					.build();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool = contextExternalToolFactory.build();
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
 
-				const userId: string = new ObjectId().toHexString();
+				const userId = new ObjectId().toHexString();
 
 				return {
 					data,
@@ -965,11 +961,11 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when tool config is not lti', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.build();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+				const externalTool = externalToolFactory.build();
+				const schoolExternalTool = schoolExternalToolFactory.build();
+				const contextExternalTool = contextExternalToolFactory.build();
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -997,31 +993,31 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 	describe('buildToolLaunchRequestPayload', () => {
 		describe('when key and secret are provided', () => {
 			const setup = () => {
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
 				});
 
-				const property3: PropertyData = new PropertyData({
+				const property3 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.PATH,
 				});
 
 				const mockKey = 'mockKey';
-				const keyProperty: PropertyData = new PropertyData({
+				const keyProperty = new PropertyData({
 					name: 'key',
 					value: mockKey,
 				});
 
-				const secretProperty: PropertyData = new PropertyData({
+				const secretProperty = new PropertyData({
 					name: 'secret',
 					value: 'mockSecret',
 				});
@@ -1051,7 +1047,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should return a OAuth1 signed payload', () => {
 				const { properties, signedPayload } = setup();
 
-				const payload: string | null = strategy.buildToolLaunchRequestPayload('url', properties);
+				const payload = strategy.buildToolLaunchRequestPayload('url', properties);
 
 				expect(payload).toEqual(JSON.stringify(signedPayload));
 			});
@@ -1073,19 +1069,19 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when key or secret is missing', () => {
 			const setup = () => {
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
 				});
 
-				const property3: PropertyData = new PropertyData({
+				const property3 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.PATH,
@@ -1115,7 +1111,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 	describe('determineLaunchRequestMethod', () => {
 		it('should return POST', () => {
-			const result: LaunchRequestMethod = strategy.determineLaunchRequestMethod([]);
+			const result = strategy.determineLaunchRequestMethod([]);
 
 			expect(result).toEqual(LaunchRequestMethod.POST);
 		});
@@ -1124,8 +1120,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 	describe('createLaunchRequest', () => {
 		describe('when lti message type is content item selection request and no content is selected', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ id: userId });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1152,25 +1148,25 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					},
 				});
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
 
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
 				});
 
-				const signedPayload: Authorization = {
+				const signedPayload = {
 					oauth_consumer_key: 'mockKey',
 					oauth_nonce: 'nonce',
 					oauth_signature: 'signature',
@@ -1196,7 +1192,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should create a post request with a signed payload and open in a new tab', async () => {
 				const { signedPayload, data, userId } = setup();
 
-				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+				const result = await strategy.createLaunchRequest(userId, data);
 
 				expect(result).toEqual<ToolLaunchRequest>({
 					method: LaunchRequestMethod.POST,
@@ -1210,8 +1206,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when there is a deep link with a url', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ id: userId });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1231,7 +1227,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				});
 
 				const contextExternalToolId = 'contextExternalToolId';
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalTool = contextExternalToolFactory.build({
 					id: contextExternalToolId,
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -1243,19 +1239,19 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					ltiDeepLink,
 				});
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
 
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
@@ -1288,7 +1284,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should use the deep link url', async () => {
 				const { signedPayload, data, userId, ltiDeepLink } = setup();
 
-				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+				const result = await strategy.createLaunchRequest(userId, data);
 
 				expect(result).toEqual<ToolLaunchRequest>({
 					method: LaunchRequestMethod.POST,
@@ -1302,8 +1298,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when there is a deep link resource that does not require an lti launch', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ id: userId });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1323,7 +1319,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				});
 
 				const contextExternalToolId = 'contextExternalToolId';
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalTool = contextExternalToolFactory.build({
 					id: contextExternalToolId,
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -1335,7 +1331,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					ltiDeepLink,
 				});
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
@@ -1355,7 +1351,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should use the GET method without a payload', async () => {
 				const { data, userId } = setup();
 
-				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+				const result = await strategy.createLaunchRequest(userId, data);
 
 				expect(result).toEqual<ToolLaunchRequest>({
 					method: LaunchRequestMethod.GET,
@@ -1369,8 +1365,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when there is a deep link resource of type lti assignment', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ id: userId });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1402,25 +1398,25 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					ltiDeepLink,
 				});
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
 
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
 				});
 
-				const signedPayload: Authorization = {
+				const signedPayload = {
 					oauth_consumer_key: 'mockKey',
 					oauth_nonce: 'nonce',
 					oauth_signature: 'signature',
@@ -1447,7 +1443,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should create a post request with a signed payload', async () => {
 				const { signedPayload, data, userId } = setup();
 
-				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+				const result = await strategy.createLaunchRequest(userId, data);
 
 				expect(result).toEqual<ToolLaunchRequest>({
 					method: LaunchRequestMethod.POST,
@@ -1461,8 +1457,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when there is a deep link resource of type lti link', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ id: userId });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				const externalTool = externalToolFactory
 					.withLti11Config({
@@ -1482,7 +1478,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				});
 
 				const contextExternalToolId = 'contextExternalToolId';
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalTool = contextExternalToolFactory.build({
 					id: contextExternalToolId,
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -1494,25 +1490,25 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					ltiDeepLink,
 				});
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
 
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
 				});
 
-				const signedPayload: Authorization = {
+				const signedPayload = {
 					oauth_consumer_key: 'mockKey',
 					oauth_nonce: 'nonce',
 					oauth_signature: 'signature',
@@ -1539,7 +1535,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should create a post request with a signed payload', async () => {
 				const { signedPayload, data, userId } = setup();
 
-				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+				const result = await strategy.createLaunchRequest(userId, data);
 
 				expect(result).toEqual<ToolLaunchRequest>({
 					method: LaunchRequestMethod.POST,
@@ -1553,8 +1549,8 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 
 		describe('when lti message type is basic lti launch request', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ id: userId });
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				const mockKey = 'mockKey';
 				const mockSecret = 'mockSecret';
@@ -1576,7 +1572,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 				const schoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool.id });
 
 				const contextExternalToolId = 'contextExternalToolId';
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build({
+				const contextExternalTool = contextExternalToolFactory.build({
 					id: contextExternalToolId,
 					schoolToolRef: {
 						schoolToolId: schoolExternalTool.id,
@@ -1587,25 +1583,25 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					},
 				});
 
-				const data: ToolLaunchParams = {
+				const data = {
 					contextExternalTool,
 					schoolExternalTool,
 					externalTool,
 				};
 
-				const property1: PropertyData = new PropertyData({
+				const property1 = new PropertyData({
 					name: 'param1',
 					value: 'value1',
 					location: PropertyLocation.BODY,
 				});
 
-				const property2: PropertyData = new PropertyData({
+				const property2 = new PropertyData({
 					name: 'param2',
 					value: 'value2',
 					location: PropertyLocation.BODY,
 				});
 
-				const signedPayload: Authorization = {
+				const signedPayload = {
 					oauth_consumer_key: 'mockKey',
 					oauth_nonce: 'nonce',
 					oauth_signature: 'signature',
@@ -1631,7 +1627,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should create a post request with a signed payload', async () => {
 				const { signedPayload, data, userId } = setup();
 
-				const result: ToolLaunchRequest = await strategy.createLaunchRequest(userId, data);
+				const result = await strategy.createLaunchRequest(userId, data);
 
 				expect(result).toEqual<ToolLaunchRequest>({
 					method: LaunchRequestMethod.POST,

@@ -4,12 +4,11 @@ import { Account, AccountService } from '@modules/account';
 import { OauthConfigMissingLoggableException, OAuthService, OauthSessionTokenService } from '@modules/oauth';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { AxiosError, AxiosHeaders, AxiosRequestConfig } from 'axios';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { firstValueFrom } from 'rxjs';
 import { EndSessionEndpointNotFoundLoggableException, ExternalSystemLogoutFailedLoggableException } from '../errors';
 import { AccountSystemMismatchLoggableException, InvalidTokenLoggableException } from '../loggable';
@@ -27,13 +26,13 @@ export class LogoutService {
 	) {}
 
 	public async getAccountFromLogoutToken(logoutToken: string): Promise<Account> {
-		const decodedLogoutToken: JwtPayload | null = jwt.decode(logoutToken, { json: true });
+		const decodedLogoutToken = jwt.decode(logoutToken, { json: true });
 
 		if (!decodedLogoutToken || !decodedLogoutToken.iss || !decodedLogoutToken.sub) {
 			throw new InvalidTokenLoggableException();
 		}
 
-		const system: System | null = await this.systemService.findByOauth2Issuer(decodedLogoutToken.iss);
+		const system = await this.systemService.findByOauth2Issuer(decodedLogoutToken.iss);
 
 		if (!system?.oauthConfig) {
 			throw new NotFoundLoggableException(System.name, { 'oauthConfig.issuer': decodedLogoutToken.iss });
@@ -41,15 +40,15 @@ export class LogoutService {
 
 		await this.oauthService.validateLogoutToken(logoutToken, system.oauthConfig);
 
-		const externalId: string = decodedLogoutToken.sub;
+		const externalId = decodedLogoutToken.sub;
 
-		const user: UserDo | null = await this.userService.findByExternalId(externalId, system.id);
+		const user = await this.userService.findByExternalId(externalId, system.id);
 
 		if (!user?.id) {
 			throw new NotFoundLoggableException('User', { externalId, systemId: system.id });
 		}
 
-		const account: Account | null = await this.accountService.findByUserId(user.id);
+		const account = await this.accountService.findByUserId(user.id);
 
 		if (!account) {
 			throw new NotFoundLoggableException(Account.name, { userId: user.id });

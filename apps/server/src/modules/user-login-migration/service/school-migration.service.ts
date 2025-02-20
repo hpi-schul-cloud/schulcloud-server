@@ -4,7 +4,7 @@ import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import { performance } from 'perf_hooks';
 import {
@@ -27,7 +27,7 @@ export class SchoolMigrationService {
 		externalId: string,
 		targetSystemId: string
 	): Promise<void> {
-		const schoolDOCopy: LegacySchoolDo = new LegacySchoolDo({ ...existingSchool });
+		const schoolDOCopy = new LegacySchoolDo({ ...existingSchool });
 
 		try {
 			await this.doMigration(externalId, existingSchool, targetSystemId);
@@ -66,12 +66,12 @@ export class SchoolMigrationService {
 		externalId: string,
 		officialSchoolNumber: string
 	): Promise<LegacySchoolDo | null> {
-		const user: UserDo = await this.userService.findById(userId);
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(user.schoolId);
+		const user = await this.userService.findById(userId);
+		const school = await this.schoolService.getSchoolById(user.schoolId);
 
 		this.checkOfficialSchoolNumbersMatch(school, officialSchoolNumber);
 
-		const schoolMigrated: boolean = this.hasSchoolMigrated(school.externalId, externalId);
+		const schoolMigrated = this.hasSchoolMigrated(school.externalId, externalId);
 
 		if (schoolMigrated) {
 			return null;
@@ -90,7 +90,7 @@ export class SchoolMigrationService {
 	}
 
 	public hasSchoolMigrated(sourceExternalId: string | undefined, targetExternalId: string): boolean {
-		const isExternalIdEquivalent: boolean = sourceExternalId === targetExternalId;
+		const isExternalIdEquivalent = sourceExternalId === targetExternalId;
 
 		return isExternalIdEquivalent;
 	}
@@ -109,9 +109,9 @@ export class SchoolMigrationService {
 	}
 
 	public async markUnmigratedUsersAsOutdated(userLoginMigration: UserLoginMigrationDO): Promise<void> {
-		const startTime: number = performance.now();
+		const startTime = performance.now();
 
-		const notMigratedUsers: Page<UserDo> = await this.userService.findUsers({
+		const notMigratedUsers = await this.userService.findUsers({
 			schoolId: userLoginMigration.schoolId,
 			isOutdated: false,
 			lastLoginSystemChangeSmallerThan: userLoginMigration.startedAt,
@@ -123,7 +123,7 @@ export class SchoolMigrationService {
 
 		await this.userService.saveAll(notMigratedUsers.data);
 
-		const endTime: number = performance.now();
+		const endTime = performance.now();
 		this.legacyLogger.warn(
 			`markUnmigratedUsersAsOutdated for schoolId ${userLoginMigration.schoolId} took ${
 				endTime - startTime
@@ -132,9 +132,9 @@ export class SchoolMigrationService {
 	}
 
 	public async unmarkOutdatedUsers(userLoginMigration: UserLoginMigrationDO): Promise<void> {
-		const startTime: number = performance.now();
+		const startTime = performance.now();
 
-		const migratedUsers: Page<UserDo> = await this.userService.findUsers({
+		const migratedUsers = await this.userService.findUsers({
 			schoolId: userLoginMigration.schoolId,
 			outdatedSince: userLoginMigration.closedAt,
 		});
@@ -145,20 +145,20 @@ export class SchoolMigrationService {
 
 		await this.userService.saveAll(migratedUsers.data);
 
-		const endTime: number = performance.now();
+		const endTime = performance.now();
 		this.legacyLogger.warn(
 			`unmarkOutdatedUsers for schoolId ${userLoginMigration.schoolId} took ${endTime - startTime} milliseconds`
 		);
 	}
 
 	public async hasSchoolMigratedUser(schoolId: string): Promise<boolean> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+		const userLoginMigration = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		if (!userLoginMigration) {
 			return false;
 		}
 
-		const users: Page<UserDo> = await this.userService.findUsers({
+		const users = await this.userService.findUsers({
 			lastLoginSystemChangeBetweenStart: userLoginMigration.startedAt,
 			lastLoginSystemChangeBetweenEnd: userLoginMigration.closedAt,
 		});

@@ -1,9 +1,7 @@
 import { Logger } from '@core/logger';
-import { Account, AccountService } from '@modules/account';
+import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import {
 	UserLoginMigrationNotFoundLoggableException,
@@ -22,11 +20,9 @@ export class UserLoginMigrationRollbackService {
 	) {}
 
 	public async rollbackUser(targetUserId: EntityId): Promise<void> {
-		const user: UserDo = await this.userService.findById(targetUserId);
-		const account: Account = await this.accountService.findByUserIdOrFail(targetUserId);
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			user.schoolId
-		);
+		const user = await this.userService.findById(targetUserId);
+		const account = await this.accountService.findByUserIdOrFail(targetUserId);
+		const userLoginMigration = await this.userLoginMigrationService.findMigrationBySchool(user.schoolId);
 
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(user.schoolId);

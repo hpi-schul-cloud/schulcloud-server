@@ -7,7 +7,6 @@ import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -68,7 +67,6 @@ describe(ToolConfigurationStatusService.name, () => {
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
 		userService = module.get(UserService);
-
 		configService = module.get(ConfigService);
 	});
 
@@ -96,7 +94,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -120,7 +118,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return latest tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -159,10 +157,9 @@ describe(ToolConfigurationStatusService.name, () => {
 
 			describe('when validation of SchoolExternalTool throws an error', () => {
 				const setup = () => {
-					const userId: string = new ObjectId().toHexString();
-
+					const userId = new ObjectId().toHexString();
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -187,7 +184,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return outdated tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -226,10 +223,9 @@ describe(ToolConfigurationStatusService.name, () => {
 
 			describe('when validation of ContextExternalTool throws an error', () => {
 				const setup = () => {
-					const userId: string = new ObjectId().toHexString();
-
+					const userId = new ObjectId().toHexString();
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -254,7 +250,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return outdated tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -296,7 +292,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -321,7 +317,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return outdated tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -360,10 +356,9 @@ describe(ToolConfigurationStatusService.name, () => {
 
 			describe('when validation of ContextExternalTool throws at least 1 missing value on mandatory parameter errors', () => {
 				const setup = () => {
-					const userId: string = new ObjectId().toHexString();
-
+					const userId = new ObjectId().toHexString();
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const customParameter = customParameterFactory.build();
 					const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -393,7 +388,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return incomplete as tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -416,7 +411,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const customParameter = customParameterFactory.build();
 					const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -434,6 +429,7 @@ describe(ToolConfigurationStatusService.name, () => {
 
 					userService.findById.mockResolvedValueOnce(user);
 					mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([]);
+
 					return {
 						externalTool,
 						schoolExternalTool,
@@ -445,7 +441,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return incomplete operational as tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -468,7 +464,7 @@ describe(ToolConfigurationStatusService.name, () => {
 					const userId: string = new ObjectId().toHexString();
 
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const customParameter = customParameterFactory.build();
 					const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
@@ -498,7 +494,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return incomplete operational as tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -518,10 +514,9 @@ describe(ToolConfigurationStatusService.name, () => {
 
 			describe('when SchoolExternalTool is deactivated', () => {
 				const setup = () => {
-					const userId: string = new ObjectId().toHexString();
-
+					const userId = new ObjectId().toHexString();
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId();
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -547,7 +542,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return status is deactivated', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -567,10 +562,9 @@ describe(ToolConfigurationStatusService.name, () => {
 
 			describe('when externalTool is deactivated', () => {
 				const setup = () => {
-					const userId: string = new ObjectId().toHexString();
-
+					const userId = new ObjectId().toHexString();
 					const schoolId = new ObjectId().toHexString();
-					const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+					const user = userDoFactory.buildWithId({ id: userId, schoolId });
 					const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
 					const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 						toolId: externalTool.id,
@@ -595,7 +589,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				it('should return deactivated tool status', async () => {
 					const { externalTool, schoolExternalTool, contextExternalTool, userId } = setup();
 
-					const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					const status = await service.determineToolConfigurationStatus(
 						externalTool,
 						schoolExternalTool,
 						contextExternalTool,
@@ -625,10 +619,9 @@ describe(ToolConfigurationStatusService.name, () => {
 				});
 				describe('when license feature is enabled and user has no license for externalTool', () => {
 					const setup = () => {
-						const userId: string = new ObjectId().toHexString();
-
+						const userId = new ObjectId().toHexString();
 						const schoolId = new ObjectId().toHexString();
-						const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+						const user = userDoFactory.buildWithId({ id: userId, schoolId });
 						userService.findById.mockResolvedValueOnce(user);
 
 						const externalTool = externalToolFactory.withMedium().buildWithId();
@@ -693,10 +686,9 @@ describe(ToolConfigurationStatusService.name, () => {
 				});
 				describe('when license feature is enabled and user school has no license for externalTool', () => {
 					const setup = () => {
-						const userId: string = new ObjectId().toHexString();
-
+						const userId = new ObjectId().toHexString();
 						const schoolId = new ObjectId().toHexString();
-						const user: UserDo = userDoFactory.buildWithId({ id: userId, schoolId });
+						const user = userDoFactory.buildWithId({ id: userId, schoolId });
 						userService.findById.mockResolvedValueOnce(user);
 
 						const externalTool = externalToolFactory.withMedium().buildWithId();

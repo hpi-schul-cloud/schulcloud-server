@@ -1,7 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
-import { RoleReference } from '@shared/domain/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { groupFactory } from '../testing';
 import { Group } from './group';
@@ -12,7 +10,7 @@ describe(Group.name, () => {
 		describe('when the user is in the group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+				const user = userDoFactory.buildWithId(undefined, userId);
 				const groupUser1 = new GroupUser({
 					userId: user.id as string,
 					roleId: new ObjectId().toHexString(),
@@ -54,12 +52,12 @@ describe(Group.name, () => {
 		describe('when the user is not in the group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+				const user = userDoFactory.buildWithId(undefined, userId);
 				const groupUser2 = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
 				});
-				const group: Group = groupFactory.build({
+				const group = groupFactory.build({
 					users: [groupUser2],
 				});
 
@@ -83,8 +81,8 @@ describe(Group.name, () => {
 		describe('when the group is empty', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
-				const group: Group = groupFactory.build({ users: [] });
+				const user = userDoFactory.buildWithId(undefined, userId);
+				const group = groupFactory.build({ users: [] });
 
 				return {
 					userId,
@@ -106,7 +104,7 @@ describe(Group.name, () => {
 	describe('isEmpty', () => {
 		describe('when no users in group exist', () => {
 			const setup = () => {
-				const group: Group = groupFactory.build({ users: [] });
+				const group = groupFactory.build({ users: [] });
 
 				return {
 					group,
@@ -125,9 +123,9 @@ describe(Group.name, () => {
 		describe('when users in group exist', () => {
 			const setup = () => {
 				const externalUserId = 'externalUserId';
-				const role: RoleReference = roleFactory.buildWithId();
-				const user: UserDo = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
-				const group: Group = groupFactory.build({ users: [{ userId: user.id as string, roleId: role.id }] });
+				const role = roleFactory.buildWithId();
+				const user = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+				const group = groupFactory.build({ users: [{ userId: user.id as string, roleId: role.id }] });
 
 				return {
 					group,
@@ -147,7 +145,7 @@ describe(Group.name, () => {
 	describe('addUser', () => {
 		describe('when the user already exists in the group', () => {
 			const setup = () => {
-				const existingUser: GroupUser = new GroupUser({
+				const existingUser = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
 				});
@@ -172,7 +170,7 @@ describe(Group.name, () => {
 
 		describe('when the user does not exist in the group', () => {
 			const setup = () => {
-				const newUser: GroupUser = new GroupUser({
+				const newUser = new GroupUser({
 					userId: new ObjectId().toHexString(),
 					roleId: new ObjectId().toHexString(),
 				});

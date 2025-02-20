@@ -18,14 +18,14 @@ export class UserMigrationService {
 		private readonly logger: Logger
 	) {}
 
-	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
+	public async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
 		await this.checkForExternalIdDuplicatesAndThrow(externalUserId, targetSystemId);
 
-		const userDO: UserDo = await this.userService.findById(currentUserId);
-		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
+		const userDO = await this.userService.findById(currentUserId);
+		const account = await this.accountService.findByUserIdOrFail(currentUserId);
 
-		const userDOCopy: UserDo = new UserDo({ ...userDO });
-		const accountCopy: Account = new Account(account.getProps());
+		const userDOCopy = new UserDo({ ...userDO });
+		const accountCopy = new Account(account.getProps());
 
 		try {
 			await this.doMigration(userDO, externalUserId, account, targetSystemId);
@@ -36,13 +36,13 @@ export class UserMigrationService {
 		}
 	}
 
-	async updateExternalUserId(userId: string, newExternalUserId: string): Promise<void> {
-		const userDO: UserDo = await this.userService.findById(userId);
+	public async updateExternalUserId(userId: string, newExternalUserId: string): Promise<void> {
+		const userDO = await this.userService.findById(userId);
 		userDO.externalId = newExternalUserId;
 		await this.userService.save(userDO);
 	}
 
-	hasUserMigratedInMigrationPhase(userDO: UserDo, userLoginMigrationDO: UserLoginMigrationDO): boolean {
+	public hasUserMigratedInMigrationPhase(userDO: UserDo, userLoginMigrationDO: UserLoginMigrationDO): boolean {
 		if (!userDO.externalId || !userDO.lastLoginSystemChange || userLoginMigrationDO.closedAt) {
 			return false;
 		}
@@ -73,8 +73,8 @@ export class UserMigrationService {
 		}
 	}
 
-	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId) {
-		const existingUser: UserDo | null = await this.userService.findByExternalId(externalUserId, targetSystemId);
+	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId): Promise<void> {
+		const existingUser = await this.userService.findByExternalId(externalUserId, targetSystemId);
 		if (existingUser) {
 			throw new UserLoginMigrationUserAlreadyMigratedLoggableException(externalUserId);
 		}

@@ -1,5 +1,4 @@
 import { schoolEntityFactory } from '@modules/school/testing';
-import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ValidationError } from '@shared/common/error';
@@ -167,7 +166,7 @@ describe('CurrentUserMapper', () => {
 
 		describe('when userDO is valid and a systemId is provided', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					id: 'mockUserId',
 					createdAt: new Date(),
 					updatedAt: new Date(),

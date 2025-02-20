@@ -5,7 +5,6 @@ import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
@@ -67,7 +66,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 			const systemId = 'systemId';
 			const schoolId = 'schoolId';
 			const birthday = new Date('2023-11-17');
-			const existingUser: UserDo = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
+			const existingUser = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'existingFirstName',
 					preferredName: 'existingPreferredName',
@@ -79,7 +78,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				},
 				'userId'
 			);
-			const savedUser: UserDo = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
+			const savedUser = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
 				{
 					firstName: 'firstName',
 					preferredName: 'preferredName',
@@ -91,7 +90,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				},
 				'userId'
 			);
-			const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+			const externalUser = externalUserDtoFactory.build({
 				externalId: 'externalUserId',
 				firstName: 'firstName',
 				preferredName: 'preferredName',
@@ -100,11 +99,11 @@ describe(SchulconnexUserProvisioningService.name, () => {
 				roles: [RoleName.USER],
 				birthday,
 			});
-			const minimalViableExternalUser: ExternalUserDto = new ExternalUserDto({
+			const minimalViableExternalUser = new ExternalUserDto({
 				externalId: 'externalUserId',
 				roles: [RoleName.USER],
 			});
-			const userRole: RoleDto = new RoleDto({
+			const userRole = new RoleDto({
 				id: new ObjectId().toHexString(),
 				name: RoleName.USER,
 			});
@@ -164,7 +163,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 					userService.findByExternalId.mockResolvedValue(null);
 
-					const result: UserDo = await service.provisionExternalUser(minimalViableExternalUser, systemId, schoolId);
+					const result = await service.provisionExternalUser(minimalViableExternalUser, systemId, schoolId);
 
 					expect(result).toEqual(savedUser);
 				});
@@ -175,14 +174,14 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 				userService.findByExternalId.mockResolvedValue(null);
 
-				const result: UserDo = await service.provisionExternalUser(externalUser, systemId, schoolId);
+				const result = await service.provisionExternalUser(externalUser, systemId, schoolId);
 
 				expect(result).toEqual(savedUser);
 			});
 
 			it('should create a new account', async () => {
 				const { externalUser, schoolId, systemId, hash } = setupUser();
-				const account: AccountSave = {
+				const account = {
 					userId: 'userId',
 					username: hash,
 					systemId,
@@ -202,7 +201,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 					userService.findByExternalId.mockResolvedValue(null);
 
-					const promise: Promise<UserDo> = service.provisionExternalUser(externalUser, 'systemId', undefined);
+					const promise = service.provisionExternalUser(externalUser, 'systemId', undefined);
 
 					await expect(promise).rejects.toThrow(SchoolMissingLoggableException);
 				});
@@ -225,7 +224,7 @@ describe(SchulconnexUserProvisioningService.name, () => {
 
 				userService.findByExternalId.mockResolvedValue(existingUser);
 
-				const result: UserDo = await service.provisionExternalUser(externalUser, systemId, schoolId);
+				const result = await service.provisionExternalUser(externalUser, systemId, schoolId);
 
 				expect(result).toEqual(savedUser);
 			});

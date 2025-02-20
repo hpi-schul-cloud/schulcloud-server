@@ -5,14 +5,12 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolFeature } from '@modules/school/domain';
-import { System, SystemService } from '@modules/system';
+import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import {
@@ -82,10 +80,10 @@ describe(UserLoginMigrationService.name, () => {
 	describe('findMigrationByUser', () => {
 		describe('when using a query with user id and the users school is in migration and the user has not migrated yet', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId(undefined, userId);
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration = new UserLoginMigrationDO({
 					schoolId: user.schoolId,
 					startedAt: new Date('2023-04-08'),
 					targetSystemId: 'targetSystemId',
@@ -104,7 +102,7 @@ describe(UserLoginMigrationService.name, () => {
 				it('should return the users migration with a source system', async () => {
 					const { userId, userLoginMigration } = setup();
 
-					const result: UserLoginMigrationDO | null = await service.findMigrationByUser(userId);
+					const result = await service.findMigrationByUser(userId);
 
 					expect(result).toEqual<UserLoginMigrationDO>(userLoginMigration);
 				});
@@ -113,10 +111,10 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when using a query with user id and the users school is in migration, but the user has already migrated', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId({ lastLoginSystemChange: new Date('2023-04-06') }, userId);
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({ lastLoginSystemChange: new Date('2023-04-06') }, userId);
 
-				const userLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const userLoginMigration = new UserLoginMigrationDO({
 					schoolId: user.schoolId,
 					startedAt: new Date('2023-04-05'),
 					targetSystemId: 'targetSystemId',
@@ -134,7 +132,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return null', async () => {
 				const { userId } = setup();
 
-				const result: UserLoginMigrationDO | null = await service.findMigrationByUser(userId);
+				const result = await service.findMigrationByUser(userId);
 
 				expect(result).toBeNull();
 			});
@@ -142,8 +140,8 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when using a query with user id and there is no migration for the user', () => {
 			const setup = () => {
-				const userId: string = new ObjectId().toHexString();
-				const user: UserDo = userDoFactory.buildWithId(undefined, userId);
+				const userId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId(undefined, userId);
 
 				userService.findById.mockResolvedValue(user);
 				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
@@ -156,7 +154,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return null', async () => {
 				const { userId } = setup();
 
-				const result: UserLoginMigrationDO | null = await service.findMigrationByUser(userId);
+				const result = await service.findMigrationByUser(userId);
 
 				expect(result).toBeNull();
 			});
@@ -166,16 +164,16 @@ describe(UserLoginMigrationService.name, () => {
 	describe('startMigration', () => {
 		describe('when schoolId is given', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId(undefined, schoolId);
 
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: System = systemFactory.withOauthConfig().build({
+				const targetSystemId = new ObjectId().toHexString();
+				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
 					alias: 'SANIS',
 				});
 
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+				const userLoginMigrationDO = userLoginMigrationDOFactory.build({
 					targetSystemId,
 					schoolId,
 					startedAt: mockedDate,
@@ -204,7 +202,7 @@ describe(UserLoginMigrationService.name, () => {
 
 			it('should return UserLoginMigration with start date and target system', async () => {
 				const { schoolId, targetSystemId } = setup();
-				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const expected = userLoginMigrationDOFactory.buildWithId({
 					id: new ObjectId().toHexString(),
 					targetSystemId,
 					schoolId,
@@ -212,7 +210,7 @@ describe(UserLoginMigrationService.name, () => {
 				});
 				userLoginMigrationRepo.save.mockResolvedValue(expected);
 
-				const result: UserLoginMigrationDO = await service.startMigration(schoolId);
+				const result = await service.startMigration(schoolId);
 
 				expect(result).toEqual(expected);
 			});
@@ -220,15 +218,15 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the school has systems', () => {
 			const setup = () => {
-				const sourceSystemId: EntityId = new ObjectId().toHexString();
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: System = systemFactory.withOauthConfig().build({
+				const sourceSystemId = new ObjectId().toHexString();
+				const targetSystemId = new ObjectId().toHexString();
+				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
 					alias: 'SANIS',
 				});
 
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				systemService.find.mockResolvedValue([system]);
@@ -243,7 +241,7 @@ describe(UserLoginMigrationService.name, () => {
 
 			it('should save the UserLoginMigration with start date, target system and source system', async () => {
 				const { schoolId, targetSystemId, sourceSystemId } = setup();
-				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const expected = userLoginMigrationDOFactory.buildWithId({
 					id: new ObjectId().toHexString(),
 					sourceSystemId,
 					targetSystemId,
@@ -252,7 +250,7 @@ describe(UserLoginMigrationService.name, () => {
 				});
 				userLoginMigrationRepo.save.mockResolvedValue(expected);
 
-				const result: UserLoginMigrationDO = await service.startMigration(schoolId);
+				const result = await service.startMigration(schoolId);
 
 				expect(result).toEqual(expected);
 			});
@@ -260,11 +258,11 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the school has schoolfeatures', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId(undefined, schoolId);
 
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: System = systemFactory.withOauthConfig().build({
+				const targetSystemId = new ObjectId().toHexString();
+				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
 					alias: 'SANIS',
 				});
@@ -281,7 +279,7 @@ describe(UserLoginMigrationService.name, () => {
 
 			it('should add the OAUTH_PROVISIONING_ENABLED feature to the schools feature list', async () => {
 				const { schoolId, school } = setup();
-				const existingFeature: SchoolFeature = 'otherFeature' as SchoolFeature;
+				const existingFeature = 'otherFeature' as SchoolFeature;
 				school.features = [existingFeature];
 
 				await service.startMigration(schoolId);
@@ -296,11 +294,11 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the school has no features yet', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined }, schoolId);
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId({ features: undefined }, schoolId);
 
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: System = systemFactory.withOauthConfig().build({
+				const targetSystemId = new ObjectId().toHexString();
+				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
 					alias: 'SANIS',
 				});
@@ -329,8 +327,8 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when creating a new migration but the SANIS system does not exist', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId(undefined, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				systemService.find.mockResolvedValue([]);
@@ -352,14 +350,14 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when creating a new migration but the SANIS system and schools login system are the same', () => {
 			const setup = () => {
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: System = systemFactory.withOauthConfig().build({
+				const targetSystemId = new ObjectId().toHexString();
+				const system = systemFactory.withOauthConfig().build({
 					id: targetSystemId,
 					alias: 'SANIS',
 				});
 
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [targetSystemId] }, schoolId);
+				const schoolId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.buildWithId({ systems: [targetSystemId] }, schoolId);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				systemService.find.mockResolvedValue([system]);
@@ -409,7 +407,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return the UserLoginMigration', async () => {
 				const { schoolId, userLoginMigration } = setup();
 
-				const result: UserLoginMigrationDO | null = await service.findMigrationBySchool(schoolId);
+				const result = await service.findMigrationBySchool(schoolId);
 
 				expect(result).toEqual(userLoginMigration);
 			});
@@ -429,7 +427,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return null', async () => {
 				const { schoolId } = setup();
 
-				const result: UserLoginMigrationDO | null = await service.findMigrationBySchool(schoolId);
+				const result = await service.findMigrationBySchool(schoolId);
 
 				expect(result).toBeNull();
 			});
@@ -439,7 +437,7 @@ describe(UserLoginMigrationService.name, () => {
 	describe('deleteUserLoginMigration', () => {
 		describe('when a userLoginMigration is given', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build();
+				const userLoginMigration = userLoginMigrationDOFactory.build();
 
 				return {
 					userLoginMigration,
@@ -459,12 +457,12 @@ describe(UserLoginMigrationService.name, () => {
 	describe('restartMigration', () => {
 		describe('when the migration can be restarted', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 					closedAt: mockedDate,
 					finishedAt: finishDate,
 				});
-				const restartedUserLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+				const restartedUserLoginMigration = new UserLoginMigrationDO({
 					...userLoginMigration,
 					closedAt: undefined,
 					finishedAt: undefined,
@@ -489,7 +487,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return the migration', async () => {
 				const { userLoginMigration, restartedUserLoginMigration } = setup();
 
-				const result: UserLoginMigrationDO = await service.restartMigration({ ...userLoginMigration });
+				const result = await service.restartMigration({ ...userLoginMigration });
 
 				expect(result).toEqual(restartedUserLoginMigration);
 			});
@@ -497,7 +495,7 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the migration is still running', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 				});
 
@@ -517,7 +515,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return the migration', async () => {
 				const { userLoginMigration } = setup();
 
-				const result: UserLoginMigrationDO = await service.restartMigration({ ...userLoginMigration });
+				const result = await service.restartMigration({ ...userLoginMigration });
 
 				expect(result).toEqual(userLoginMigration);
 			});
@@ -525,7 +523,7 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the grace period for the user login migration is expired', () => {
 			const setup = () => {
-				const dateInThePast: Date = new Date(mockedDate.getTime() - 100);
+				const dateInThePast = new Date(mockedDate.getTime() - 100);
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					closedAt: dateInThePast,
 					finishedAt: dateInThePast,
@@ -558,7 +556,7 @@ describe(UserLoginMigrationService.name, () => {
 	describe('setMigrationMandatory', () => {
 		describe('when migration is set to mandatory', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 					mandatorySince: undefined,
 				});
@@ -584,7 +582,7 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when migration is set to optional', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 					mandatorySince: mockedDate,
 				});
@@ -608,7 +606,7 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the grace period for the user login migration is expired', () => {
 			const setup = () => {
-				const dateInThePast: Date = new Date(mockedDate.getTime() - 100);
+				const dateInThePast = new Date(mockedDate.getTime() - 100);
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					closedAt: dateInThePast,
 					finishedAt: dateInThePast,
@@ -639,7 +637,7 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when migration is closed', () => {
 			const setup = () => {
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					closedAt: new Date(2023, 5),
 				});
 
@@ -698,7 +696,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return the closed user login migration', async () => {
 				const { userLoginMigration, closedUserLoginMigration } = setup();
 
-				const result: UserLoginMigrationDO = await service.closeMigration({ ...userLoginMigration });
+				const result = await service.closeMigration({ ...userLoginMigration });
 
 				expect(result).toEqual(closedUserLoginMigration);
 			});
@@ -727,7 +725,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return the already closed user login migration', async () => {
 				const { userLoginMigration } = setup();
 
-				const result: UserLoginMigrationDO = await service.closeMigration({ ...userLoginMigration });
+				const result = await service.closeMigration({ ...userLoginMigration });
 
 				expect(result).toEqual(userLoginMigration);
 			});
@@ -735,7 +733,7 @@ describe(UserLoginMigrationService.name, () => {
 
 		describe('when the grace period for the user login migration is expired', () => {
 			const setup = () => {
-				const dateInThePast: Date = new Date(mockedDate.getTime() - 100);
+				const dateInThePast = new Date(mockedDate.getTime() - 100);
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					closedAt: dateInThePast,
 					finishedAt: dateInThePast,
@@ -782,7 +780,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return true', () => {
 				const { userLoginMigration } = setup();
 
-				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+				const result = service.hasMigrationClosed(userLoginMigration);
 
 				expect(result).toEqual(true);
 			});
@@ -791,7 +789,7 @@ describe(UserLoginMigrationService.name, () => {
 		describe('when migration is not closed', () => {
 			const setup = () => {
 				const closedAt = undefined;
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					closedAt,
 				});
 
@@ -803,7 +801,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return false', () => {
 				const { userLoginMigration } = setup();
 
-				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+				const result = service.hasMigrationClosed(userLoginMigration);
 
 				expect(result).toEqual(false);
 			});
@@ -825,7 +823,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should return false', () => {
 				const { userLoginMigration } = setup();
 
-				const result: boolean = service.hasMigrationClosed(userLoginMigration);
+				const result = service.hasMigrationClosed(userLoginMigration);
 
 				expect(result).toEqual(false);
 			});

@@ -12,13 +12,12 @@ import { userDoFactory, userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
-import { Page } from '@shared/domain/domainobject/page';
 import { Role } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { UserDiscoverableQuery, UserQuery } from '../../service/user-query.type';
+import { UserDiscoverableQuery } from '../../service/user-query.type';
 import { UserDORepo } from './user-do.repo';
 import { User } from './user.entity';
 
@@ -61,32 +60,32 @@ describe('UserRepo', () => {
 
 	describe('findById', () => {
 		it('should find user without populating roles', async () => {
-			const user: User = userFactory.buildWithId();
+			const user = userFactory.buildWithId();
 
 			await em.persistAndFlush(user);
 
-			const result: UserDo = await repo.findById(user.id);
+			const result = await repo.findById(user.id);
 
 			expect(result.id).toEqual(user.id);
 			expect(result.roles).toEqual([]);
 		});
 
 		it('should find user and populate roles', async () => {
-			const roles3: Role[] = roleFactory.buildList(1);
+			const roles3 = roleFactory.buildList(1);
 			await em.persistAndFlush(roles3);
 
-			const roles2: Role[] = roleFactory.buildList(1, { roles: roles3 });
+			const roles2 = roleFactory.buildList(1, { roles: roles3 });
 			await em.persistAndFlush(roles2);
 
-			const roles1: Role[] = roleFactory.buildList(1, { roles: roles2 });
+			const roles1 = roleFactory.buildList(1, { roles: roles2 });
 			await em.persistAndFlush(roles1);
 
-			const user: User = userFactory.build({ roles: roles1 });
+			const user = userFactory.build({ roles: roles1 });
 			await em.persistAndFlush([user]);
 
 			em.clear();
 
-			const result: UserDo = await repo.findById(user.id, true);
+			const result = await repo.findById(user.id, true);
 
 			expect(result.id).toEqual(user.id);
 			expect(result.roles).toEqual([
@@ -106,7 +105,7 @@ describe('UserRepo', () => {
 
 			em.clear();
 
-			const result: UserDo = await repo.findById(user.id, true);
+			const result = await repo.findById(user.id, true);
 
 			expect(result.secondarySchools).toEqual([{ schoolId: school.id, role: { id: role.id, name: role.name } }]);
 		});
@@ -133,7 +132,7 @@ describe('UserRepo', () => {
 			});
 
 			it('should find a user by its external id', async () => {
-				const result: UserDo | null = await repo.findByExternalId(user.externalId as string, system.id);
+				const result = await repo.findByExternalId(user.externalId as string, system.id);
 
 				expect(result).toEqual(
 					expect.objectContaining({
@@ -147,7 +146,7 @@ describe('UserRepo', () => {
 			it('should return null if no user with external id was found', async () => {
 				await em.nativeDelete(User, {});
 
-				const result: UserDo | null = await repo.findByExternalId(user.externalId as string, system.id);
+				const result = await repo.findByExternalId(user.externalId as string, system.id);
 
 				expect(result).toBeNull();
 			});
@@ -155,7 +154,7 @@ describe('UserRepo', () => {
 			it('should return null if school has no corresponding system', async () => {
 				school.systems.removeAll();
 
-				const result: UserDo | null = await repo.findByExternalId(user.externalId as string, system.id);
+				const result = await repo.findByExternalId(user.externalId as string, system.id);
 
 				expect(result).toBeNull();
 			});
@@ -200,7 +199,7 @@ describe('UserRepo', () => {
 		});
 
 		it('should find a user by its external id', async () => {
-			const result: UserDo = await repo.findByExternalIdOrFail(user.externalId as string, system.id);
+			const result = await repo.findByExternalIdOrFail(user.externalId as string, system.id);
 
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -239,15 +238,13 @@ describe('UserRepo', () => {
 			await em.persistAndFlush([user]);
 			em.clear();
 
-			let result: UserDo[];
-
-			result = await repo.findByEmail('USER@example.COM');
+			const result = await repo.findByEmail('USER@example.COM');
 			expect(result).toHaveLength(1);
 			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 
-			result = await repo.findByEmail('user@example.com');
-			expect(result).toHaveLength(1);
-			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+			const result2 = await repo.findByEmail('user@example.com');
+			expect(result2).toHaveLength(1);
+			expect(result2[0]).toEqual(expect.objectContaining({ email: originalUsername }));
 		});
 
 		it('should not find by wildcard', async () => {
@@ -256,13 +253,11 @@ describe('UserRepo', () => {
 			await em.persistAndFlush([user]);
 			em.clear();
 
-			let result: UserDo[];
-
-			result = await repo.findByEmail('USER@EXAMPLECCOM');
+			const result = await repo.findByEmail('USER@EXAMPLECCOM');
 			expect(result).toHaveLength(0);
 
-			result = await repo.findByEmail('.*');
-			expect(result).toHaveLength(0);
+			const result2 = await repo.findByEmail('.*');
+			expect(result2).toHaveLength(0);
 		});
 
 		it('should populate the roles', async () => {
@@ -314,7 +309,7 @@ describe('UserRepo', () => {
 				},
 				id.toHexString()
 			);
-			const role: Role = roleFactory.buildWithId();
+			const role = roleFactory.buildWithId();
 			testEntity.roles.add(role);
 			testEntity.firstNameSearchValues = ['em'];
 			testEntity.lastNameSearchValues = ['em'];
@@ -324,7 +319,7 @@ describe('UserRepo', () => {
 			testEntity.lastLoginSystemChange = new Date();
 			testEntity.previousExternalId = 'someId';
 
-			const userDO: UserDo = repo.mapEntityToDO(testEntity);
+			const userDO = repo.mapEntityToDO(testEntity);
 
 			expect(userDO).toEqual(
 				expect.objectContaining({
@@ -371,35 +366,33 @@ describe('UserRepo', () => {
 
 	describe('mapDOToEntityProperties', () => {
 		it('should map DO to Entity Properties', () => {
-			const testDO: UserDo = userDoFactory
-				.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.USER }])
-				.buildWithId(
-					{
-						email: 'email@email.email',
-						firstName: 'firstName',
-						lastName: 'lastName',
-						preferredName: 'preferredName',
-						schoolId: new ObjectId().toHexString(),
-						secondarySchools: [
-							{
-								schoolId: new ObjectId().toHexString(),
-								role: { id: new ObjectId().toHexString(), name: RoleName.USER },
-							},
-						],
-						ldapDn: 'ldapDn',
-						externalId: 'externalId',
-						language: LanguageType.DE,
-						forcePasswordChange: false,
-						preferences: { firstLogin: true },
-						outdatedSince: new Date(),
-						lastLoginSystemChange: new Date(),
-						previousExternalId: 'someId',
-						birthday: new Date(),
-					},
-					'testId'
-				);
+			const testDO = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.USER }]).buildWithId(
+				{
+					email: 'email@email.email',
+					firstName: 'firstName',
+					lastName: 'lastName',
+					preferredName: 'preferredName',
+					schoolId: new ObjectId().toHexString(),
+					secondarySchools: [
+						{
+							schoolId: new ObjectId().toHexString(),
+							role: { id: new ObjectId().toHexString(), name: RoleName.USER },
+						},
+					],
+					ldapDn: 'ldapDn',
+					externalId: 'externalId',
+					language: LanguageType.DE,
+					forcePasswordChange: false,
+					preferences: { firstLogin: true },
+					outdatedSince: new Date(),
+					lastLoginSystemChange: new Date(),
+					previousExternalId: 'someId',
+					birthday: new Date(),
+				},
+				'testId'
+			);
 
-			const result: EntityData<User> = repo.mapDOToEntityProperties(testDO);
+			const result = repo.mapDOToEntityProperties(testDO);
 
 			expect(result).toEqual<EntityData<User>>({
 				email: testDO.email,
@@ -443,7 +436,7 @@ describe('UserRepo', () => {
 					const userWithSchoolAndMultipleRoles = userFactory.buildWithId({ school, roles: [role, otherRole] });
 					const userWithDifferentSchool = userFactory.buildWithId({ school: otherSchool, roles: [role] });
 					const userWithDifferentRole = userFactory.buildWithId({ school, roles: [otherRole] });
-					const query: UserQuery = {
+					const query = {
 						schoolId: school.id,
 						roleId: role.id,
 					};
@@ -599,7 +592,7 @@ describe('UserRepo', () => {
 		});
 
 		const setupFind = async () => {
-			const query: UserQuery = {
+			const query = {
 				schoolId: undefined,
 				isOutdated: undefined,
 				lastLoginSystemChangeSmallerThan: undefined,
@@ -613,10 +606,10 @@ describe('UserRepo', () => {
 			await em.nativeDelete(User, {});
 			await em.nativeDelete(SchoolEntity, {});
 
-			const userA: User = userFactory.buildWithId({ firstName: 'A' });
-			const userB: User = userFactory.buildWithId({ firstName: 'B' });
-			const userC: User = userFactory.buildWithId({ firstName: 'C' });
-			const users: User[] = [userA, userB, userC];
+			const userA = userFactory.buildWithId({ firstName: 'A' });
+			const userB = userFactory.buildWithId({ firstName: 'B' });
+			const userC = userFactory.buildWithId({ firstName: 'C' });
+			const users = [userA, userB, userC];
 			await em.persistAndFlush(users);
 
 			const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
@@ -663,7 +656,7 @@ describe('UserRepo', () => {
 				it('should return all users ', async () => {
 					const { query, users } = await setupFind();
 
-					const page: Page<UserDo> = await repo.find(query, undefined);
+					const page = await repo.find(query, undefined);
 
 					expect(page.data.length).toBe(users.length);
 				});
@@ -691,7 +684,7 @@ describe('UserRepo', () => {
 					const { query, options } = await setupFind();
 					options.pagination = { limit: 1 };
 
-					const page: Page<UserDo> = await repo.find(query, options);
+					const page = await repo.find(query, options);
 
 					expect(page.data.length).toBe(1);
 				});
@@ -702,7 +695,7 @@ describe('UserRepo', () => {
 					const { query, options } = await setupFind();
 					options.pagination = { limit: 1, skip: 3 };
 
-					const page: Page<UserDo> = await repo.find(query, options);
+					const page = await repo.find(query, options);
 
 					expect(page.data.length).toBe(0);
 				});
@@ -713,7 +706,7 @@ describe('UserRepo', () => {
 			it('should return users ordered by default _id when no order is specified', async () => {
 				const { query, options, users } = await setupFind();
 
-				const page: Page<UserDo> = await repo.find(query, options);
+				const page = await repo.find(query, options);
 
 				expect(page.data[0].id).toEqual(users[0].id);
 				expect(page.data[1].id).toEqual(users[1].id);
@@ -723,7 +716,7 @@ describe('UserRepo', () => {
 
 		describe('scope', () => {
 			const setup = async () => {
-				const query: UserQuery = {
+				const query = {
 					schoolId: 'schoolId',
 					isOutdated: true,
 					lastLoginSystemChangeSmallerThan: new Date(),
@@ -737,10 +730,10 @@ describe('UserRepo', () => {
 				await em.nativeDelete(User, {});
 				await em.nativeDelete(SchoolEntity, {});
 
-				const userA: User = userFactory.buildWithId({ firstName: 'A' });
-				const userB: User = userFactory.buildWithId({ firstName: 'B' });
-				const userC: User = userFactory.buildWithId({ firstName: 'C' });
-				const users: User[] = [userA, userB, userC];
+				const userA = userFactory.buildWithId({ firstName: 'A' });
+				const userB = userFactory.buildWithId({ firstName: 'B' });
+				const userC = userFactory.buildWithId({ firstName: 'C' });
+				const users = [userA, userB, userC];
 				await em.persistAndFlush(users);
 
 				const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
@@ -811,7 +804,7 @@ describe('UserRepo', () => {
 			it('should return null', async () => {
 				const { id } = setup();
 
-				const result: UserDo | null = await repo.findByIdOrNull(id);
+				const result = await repo.findByIdOrNull(id);
 
 				expect(result).toBeNull();
 			});
@@ -819,9 +812,9 @@ describe('UserRepo', () => {
 
 		describe('when user was found', () => {
 			const setup = async () => {
-				const role: Role = roleFactory.build();
+				const role = roleFactory.build();
 
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const user = userFactory.buildWithId({ roles: [role] });
 
 				await em.persistAndFlush([user, role]);
 				em.clear();
@@ -832,7 +825,7 @@ describe('UserRepo', () => {
 			it('should return user with role', async () => {
 				const { user, role } = await setup();
 
-				const result: UserDo | null = await repo.findByIdOrNull(user.id, true);
+				const result = await repo.findByIdOrNull(user.id, true);
 
 				expect(result?.id).toEqual(user.id);
 				expect(result?.roles).toEqual([
@@ -850,7 +843,7 @@ describe('UserRepo', () => {
 			const setup = async () => {
 				const tspUid = new ObjectId().toHexString();
 
-				const user: User = userFactory.buildWithId({
+				const user = userFactory.buildWithId({
 					sourceOptions: new UserSourceOptions({
 						tspUid,
 					}),
