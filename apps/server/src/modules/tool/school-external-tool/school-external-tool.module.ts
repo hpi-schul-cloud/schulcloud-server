@@ -4,11 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolRule } from './authorization/school-external-tool.rule';
-import {
-	SchoolExternalToolAuthorizableService,
-	SchoolExternalToolService,
-	SchoolExternalToolValidationService,
-} from './service';
+import { SchoolExternalToolAuthorizableService, SchoolExternalToolService } from './service';
 
 @Module({
 	imports: [
@@ -17,12 +13,7 @@ import {
 		AuthorizationModule,
 		MediaSourceModule,
 	],
-	providers: [
-		SchoolExternalToolService,
-		SchoolExternalToolValidationService,
-		SchoolExternalToolRule,
-		SchoolExternalToolAuthorizableService,
-	],
-	exports: [SchoolExternalToolService, SchoolExternalToolValidationService],
+	providers: [SchoolExternalToolService, SchoolExternalToolRule, SchoolExternalToolAuthorizableService],
+	exports: [SchoolExternalToolService],
 })
 export class SchoolExternalToolModule {}

@@ -1,11 +1,12 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { BoardContextApiHelperService } from '@modules/board-context/board-context-api-helper.service';
 import { BoardFeature } from '@modules/board/domain';
 import { LegacySchoolService } from '@modules/legacy-school/service';
+import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 
