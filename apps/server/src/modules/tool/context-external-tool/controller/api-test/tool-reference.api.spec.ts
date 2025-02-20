@@ -12,11 +12,9 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, LtiMessageType, ToolContextType } from '../../../common/enum';
-import { ExternalToolEntity } from '../../../external-tool/entity';
 import { customParameterFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../repo';
 import {
 	contextExternalToolConfigurationStatusResponseFactory,
 	contextExternalToolEntityFactory,
@@ -66,8 +64,8 @@ describe('ToolReferenceController (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId();
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -116,7 +114,7 @@ describe('ToolReferenceController (API)', () => {
 				]);
 				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const thumbnailFileRecord = fileRecordFactory.build();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
 					parameters: [
 						customParameterFactory.build({
@@ -135,7 +133,7 @@ describe('ToolReferenceController (API)', () => {
 						fileRecord: thumbnailFileRecord,
 					},
 				});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -213,8 +211,8 @@ describe('ToolReferenceController (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const externalToolEntity = externalToolEntityFactory.buildWithId();
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
@@ -260,7 +258,7 @@ describe('ToolReferenceController (API)', () => {
 				]);
 				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const thumbnailFileRecord = fileRecordFactory.build();
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
+				const externalToolEntity = externalToolEntityFactory
 					.withLti11Config({
 						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
 					})
@@ -283,7 +281,7 @@ describe('ToolReferenceController (API)', () => {
 							fileRecord: thumbnailFileRecord,
 						},
 					});
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
 					tool: externalToolEntity,
 				});
