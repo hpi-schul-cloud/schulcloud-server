@@ -1,7 +1,7 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 
@@ -18,7 +18,7 @@ export class MigrationCheckService {
 		systemId: EntityId,
 		officialSchoolNumber: string
 	): Promise<boolean> {
-		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school?.id) {
 			return false;

@@ -103,6 +103,20 @@ describe('ColumnBoardService', () => {
 		expect(boardNodeService.delete).toHaveBeenCalledWith(columnBoard);
 	});
 
+	it('should delete ColumnBoards by external reference', async () => {
+		const columnBoard = columnBoardFactory.build();
+		repo.findByExternalReference.mockResolvedValueOnce([columnBoard]);
+		const reference: BoardExternalReference = {
+			type: BoardExternalReferenceType.Room,
+			id: '42',
+		};
+
+		await service.deleteByExternalReference(reference);
+
+		expect(repo.findByExternalReference).toHaveBeenCalledWith(reference, undefined);
+		expect(boardNodeService.delete).toHaveBeenCalledWith(columnBoard);
+	});
+
 	it('should copy ColumnBoard', async () => {
 		const copyStatus: CopyStatus = { status: CopyStatusEnum.SUCCESS, type: CopyElementType.COLUMNBOARD };
 		columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(copyStatus);

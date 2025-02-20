@@ -1,6 +1,6 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -38,7 +38,7 @@ export class CloseUserLoginMigrationUc {
 			userLoginMigration
 		);
 
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		const school = await this.schoolService.getSchoolById(schoolId);
 
 		const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigratedInMigrationPhase(
 			school,

@@ -20,7 +20,7 @@ import { Configuration, FileApi } from './generated';
 				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 
 				const config = new Configuration({
-					accessToken: JwtExtractor.extractJwtFromRequest(request),
+					accessToken: JwtExtractor.extractJwtFromRequestOrFail(request),
 					basePath: `${basePath}/api/v3`,
 				});
 

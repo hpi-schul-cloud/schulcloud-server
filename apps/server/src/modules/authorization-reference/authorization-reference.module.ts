@@ -1,10 +1,10 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { InstanceModule } from '@modules/instance';
+import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
 import { CourseGroupRepo } from '@shared/repo/coursegroup';
-import { LegacySchoolRepo } from '@shared/repo/school';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
 import { UserRepo } from '@shared/repo/user';

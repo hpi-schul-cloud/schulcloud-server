@@ -5,10 +5,9 @@ import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { SchoolService } from '@modules/school';
 import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
-import { schoolFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolFactory } from '@modules/school/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import {
@@ -301,7 +300,7 @@ describe(MediaSchoolLicenseService.name, () => {
 	describe('updateMediaSchoolLicenses', () => {
 		describe('when school id is given', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateFactory.build();
+				const federalStateEntity = federalStateEntityFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				const schoolId = new ObjectId().toHexString();
 				const school = schoolFactory.build({ id: schoolId, federalState, officialSchoolNumber: '00100' });
@@ -353,7 +352,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when school with federal state abbreviation and official school number was found ', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateFactory.build();
+				const federalStateEntity = federalStateEntityFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				const schoolId = new ObjectId().toHexString();
 				const school = schoolFactory.build({ id: schoolId, federalState, officialSchoolNumber: '00100' });
@@ -382,7 +381,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when school with federal state abbreviation and without official school number was found ', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateFactory.build();
+				const federalStateEntity = federalStateEntityFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				const school = schoolFactory.build({ officialSchoolNumber: undefined, federalState });
 
@@ -404,7 +403,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when media source was found ', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateFactory.build();
+				const federalStateEntity = federalStateEntityFactory.build();
 				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				const school = schoolFactory.build({ officialSchoolNumber: '00100', federalState });
 				const mediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS });

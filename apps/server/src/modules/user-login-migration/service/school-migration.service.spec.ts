@@ -2,11 +2,12 @@ import { LegacyLogger, Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
@@ -67,7 +68,7 @@ describe(SchoolMigrationService.name, () => {
 	describe('migrateSchool', () => {
 		describe('when a school without systems successfully migrates', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -101,7 +102,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when a school with systems successfully migrates', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -135,7 +136,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when saving to the database fails', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber: 'officialSchoolNumber',
@@ -192,7 +193,7 @@ describe(SchoolMigrationService.name, () => {
 				const officialSchoolNumber = 'officialSchoolNumber';
 				const sourceExternalId = 'sourceExternalId';
 				const targetExternalId = 'targetExternalId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber,
@@ -227,7 +228,7 @@ describe(SchoolMigrationService.name, () => {
 				const officialSchoolNumber = 'officialSchoolNumber';
 				const sourceExternalId = 'sourceExternalId';
 				const targetExternalId = 'targetExternalId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber,
@@ -264,7 +265,7 @@ describe(SchoolMigrationService.name, () => {
 				const otherOfficialSchoolNumber = 'notTheSameOfficialSchoolNumber';
 				const sourceExternalId = 'sourceExternalId';
 				const targetExternalId = 'targetExternalId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({
+				const school = legacySchoolDoFactory.buildWithId({
 					id: 'schoolId',
 					name: 'schoolName',
 					officialSchoolNumber,
@@ -460,7 +461,7 @@ describe(SchoolMigrationService.name, () => {
 	describe('hasSchoolMigratedInMigrationPhase', () => {
 		describe('when school has no systems', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					systems: undefined,
 				});
 
@@ -483,7 +484,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when school does not have the target system', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					systems: ['system-1'],
 				});
 
@@ -508,7 +509,7 @@ describe(SchoolMigrationService.name, () => {
 
 		describe('when the school has the target system', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					systems: ['system-1'],
 				});
 

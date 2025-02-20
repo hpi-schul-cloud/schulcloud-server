@@ -1,9 +1,9 @@
-import { ContextExternalToolType } from '../../context-external-tool/entity';
+import { type ContextExternalToolType } from '../../context-external-tool/repo';
 
 export class ExternalToolMetadata {
-	schoolExternalToolCount: number;
+	public schoolExternalToolCount: number;
 
-	contextExternalToolCountPerContext: Record<ContextExternalToolType, number>;
+	public contextExternalToolCountPerContext: Record<ContextExternalToolType, number>;
 
 	constructor(externalToolMetadata: ExternalToolMetadata) {
 		this.schoolExternalToolCount = externalToolMetadata.schoolExternalToolCount;

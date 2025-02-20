@@ -1,6 +1,5 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { AutoParameterStrategy } from './auto-parameter.strategy';
@@ -14,7 +13,7 @@ export class AutoSchoolNumberStrategy implements AutoParameterStrategy {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+		const school = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
 
 		return school.officialSchoolNumber;
 	}

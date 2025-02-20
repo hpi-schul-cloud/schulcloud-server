@@ -11,15 +11,15 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, LegacySchoolDo, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { ExternalSource, Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
@@ -359,7 +359,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			const setup = () => {
 				const externalGroupDto: ExternalGroupDto = externalGroupDtoFactory.build({ otherUsers: undefined });
 				const systemId = 'systemId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				userService.findByExternalId.mockResolvedValue(null);
 				schoolService.getSchoolByExternalId.mockResolvedValue(school);
@@ -389,7 +389,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 		describe('when provisioning a new group with other group members', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: 'schoolId' });
+				const school = legacySchoolDoFactory.build({ id: 'schoolId' });
 				const student: UserDO = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.build({ id: new ObjectId().toHexString(), externalId: 'studentExternalId' });

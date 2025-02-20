@@ -28,7 +28,6 @@ _Please remember that the service itself does not check whether it is a validate
 - ExternalToolValidationService
 
 - SchoolExternalToolService
-- SchoolExternalToolValidationService
 
 - ContextExternalToolService
 - ContextExternalToolValidationService

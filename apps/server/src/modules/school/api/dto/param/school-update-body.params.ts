@@ -1,11 +1,12 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { LanguageType, Permission } from '@shared/domain/interface';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
 import {
 	FileStorageType,
+	SchoolFeature,
 	SchoolPermissions,
 	SchoolUpdateBody,
 	StudentPermission,

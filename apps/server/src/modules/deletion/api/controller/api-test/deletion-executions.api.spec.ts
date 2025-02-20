@@ -17,7 +17,6 @@ describe(`deletionExecution (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -27,6 +26,7 @@ describe(`deletionExecution (api)`, () => {
 	describe('executeDeletions', () => {
 		describe('when execute deletionRequests with default limit', () => {
 			it('should return status 204', async () => {
+				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 				const response = await testApiClient.post('');
 
 				expect(response.status).toEqual(204);
@@ -35,17 +35,17 @@ describe(`deletionExecution (api)`, () => {
 
 		describe('without token', () => {
 			it('should refuse with wrong token', async () => {
-				const client = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
+				testApiClient = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
 
-				const response = await client.post('');
+				const response = await testApiClient.post('');
 
 				expect(response.status).toEqual(401);
 			});
 
 			it('should refuse without token', async () => {
-				const client = new TestApiClient(app, baseRouteName, '', true);
+				testApiClient = new TestApiClient(app, baseRouteName, '', true);
 
-				const response = await client.post('');
+				const response = await testApiClient.post('');
 
 				expect(response.status).toEqual(401);
 			});

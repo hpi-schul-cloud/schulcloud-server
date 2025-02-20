@@ -2,11 +2,11 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';
 import { UserRepo } from '@shared/repo/user';
+import { LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { LegacyBoardRepo } from '../repo';
 
 @Injectable()
 export class CourseRoomsUc {
@@ -19,7 +19,7 @@ export class CourseRoomsUc {
 		private readonly roomsService: CourseRoomsService
 	) {}
 
-	async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
+	public async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userRepo.findById(userId, true);
 		// TODO no authorisation check here?
 		const course = await this.courseRepo.findOne(roomId, userId);
@@ -32,7 +32,7 @@ export class CourseRoomsUc {
 		return roomBoardDTO;
 	}
 
-	async updateVisibilityOfLegacyBoardElement(
+	public async updateVisibilityOfLegacyBoardElement(
 		roomId: EntityId,
 		elementId: EntityId,
 		userId: EntityId,
@@ -66,7 +66,7 @@ export class CourseRoomsUc {
 		// await this.columnBoardService.updateBoardVisibility(columbBoardId, visibility);
 	}
 */
-	async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
+	public async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
 		const user = await this.userRepo.findById(userId);
 		const course = await this.courseRepo.findOne(roomId, userId);
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {

@@ -1,6 +1,6 @@
 import { BaseFactory } from '@testing/factory/base.factory';
 import { CustomParameterEntry } from '../../common/domain';
-import { LtiDeepLinkEmbeddable } from '../entity';
+import { LtiDeepLinkEmbeddable } from '../repo';
 
 export const ltiDeepLinkEmbeddableFactory = BaseFactory.define<LtiDeepLinkEmbeddable, LtiDeepLinkEmbeddable>(
 	LtiDeepLinkEmbeddable,

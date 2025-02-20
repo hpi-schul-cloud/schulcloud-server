@@ -34,7 +34,7 @@ export class FilesStorageClientAdapter {
 			// const response = await this.api.download(fileRecordId, fileName, undefined, {
 			// 	responseType: 'arraybuffer',
 			// });
-			const token = JwtExtractor.extractJwtFromRequest(this.req);
+			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
 			const url = new URL(
 				`${this.configService.getOrThrow<string>(
 					'FILES_STORAGE__SERVICE_BASE_URL'

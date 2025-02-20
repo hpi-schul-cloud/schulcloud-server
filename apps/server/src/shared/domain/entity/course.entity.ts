@@ -1,19 +1,34 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
+import { SchoolEntity } from '@modules/school/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
-import { Learnroom } from '../interface/learnroom';
 import { EntityWithSchool } from '../interface/entity';
-import { EntityId, LearnroomMetadata, LearnroomTypes } from '../types';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CourseGroup } from './coursegroup.entity';
 import type { LessonParent } from './lesson.entity';
-import { SchoolEntity } from './school.entity';
 import type { TaskParent } from './task.entity';
 import type { User } from './user.entity';
 
 export enum SyncAttribute {
 	TEACHERS = 'teachers',
+}
+
+export enum CourseType {
+	'Course' = 'course',
+}
+
+export interface CourseMetadata {
+	id: string;
+	type: CourseType;
+	title: string;
+	shortTitle: string;
+	displayColor: string;
+	startDate?: Date;
+	untilDate?: Date;
+	copyingSince?: Date;
+	isSynchronized: boolean;
 }
 
 export interface CourseProperties {
@@ -55,7 +70,7 @@ export class UsersList {
 }
 
 @Entity({ tableName: 'courses' })
-export class Course extends BaseEntityWithTimestamps implements Learnroom, EntityWithSchool, TaskParent, LessonParent {
+export class Course extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
 	@Property()
 	name: string;
 
@@ -226,10 +241,10 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		return firstChar + secondChar;
 	}
 
-	public getMetadata(): LearnroomMetadata {
+	public getMetadata(): CourseMetadata {
 		return {
 			id: this.id,
-			type: LearnroomTypes.Course,
+			type: CourseType.Course,
 			title: this.name,
 			shortTitle: this.getShortTitle(),
 			displayColor: this.color,

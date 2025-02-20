@@ -1,11 +1,11 @@
+import { EntityData } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceMapper } from '@modules/media-source/repo';
-import { SchoolEntity } from '@shared/domain/entity';
-import { EntityData } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { MediaSchoolLicenseEntity } from '../../entity';
+import { SchoolEntity } from '@modules/school/repo';
 import { MediaSchoolLicense } from '../../domain';
+import { MediaSchoolLicenseEntity } from '../../entity';
 import { SchoolLicenseType } from '../../enum';
 
 export class MediaSchoolLicenseEntityMapper {

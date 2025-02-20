@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { LtiDeepLinkToken } from '../../domain';
-import { LtiDeepLinkTokenEntity } from '../../entity';
 import { ltiDeepLinkTokenEntityFactory, ltiDeepLinkTokenFactory } from '../../testing';
 import { LTI_DEEP_LINK_TOKEN_REPO } from '../lti-deep-link-token.repo.interface';
 import { LtiDeepLinkTokenMikroOrmRepo } from './lti-deep-link-token.repo';
 import { LtiDeepLinkTokenEntityMapper } from './mapper';
+import { LtiDeepLinkTokenEntity } from './lti-deep-link-token.entity';
 
 describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 	let module: TestingModule;

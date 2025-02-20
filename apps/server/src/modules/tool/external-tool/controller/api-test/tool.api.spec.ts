@@ -3,14 +3,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { FileRecordResponse } from '@modules/files-storage/controller/dto';
 import { instanceEntityFactory } from '@modules/instance/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -22,10 +20,10 @@ import {
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolEntity } from '../../entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { ExternalToolEntity } from '../../repo';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
 	ExternalToolBulkCreateParams,
@@ -802,26 +800,26 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.build({ id: toolId });
 
-				const school: SchoolEntity = schoolEntityFactory.build();
-				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
+				const school = schoolEntityFactory.build();
+				const schoolExternalToolEntities = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
 				});
 
 				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
-					schoolTool: schoolExternalToolEntitys[0],
+					schoolTool: schoolExternalToolEntities[0],
 					contextType: ContextExternalToolType.COURSE,
 					contextId: new ObjectId().toHexString(),
 				});
 
 				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
-					schoolTool: schoolExternalToolEntitys[1],
+					schoolTool: schoolExternalToolEntities[1],
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					contextId: new ObjectId().toHexString(),
 				});
 
 				const mediaBoardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildListWithId(2, {
-					schoolTool: schoolExternalToolEntitys[1],
+					schoolTool: schoolExternalToolEntities[1],
 					contextType: ContextExternalToolType.MEDIA_BOARD,
 					contextId: new ObjectId().toHexString(),
 				});
@@ -837,7 +835,7 @@ describe('ToolController (API)', () => {
 					adminUser,
 					school,
 					externalToolEntity,
-					...schoolExternalToolEntitys,
+					...schoolExternalToolEntities,
 					...courseTools,
 					...boardTools,
 					...mediaBoardTools,

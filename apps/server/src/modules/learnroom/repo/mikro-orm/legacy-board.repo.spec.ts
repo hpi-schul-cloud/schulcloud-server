@@ -1,12 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, SchoolEntity, Submission, Task } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-
-import { MongoMemoryDatabaseModule } from '@testing/database';
-
 import { boardFactory, lessonBoardElementFactory, taskBoardElementFactory } from '../../testing';
 import { LegacyBoardElement } from './legacy-board-element.entity';
 import { LegacyBoard } from './legacy-board.entity';

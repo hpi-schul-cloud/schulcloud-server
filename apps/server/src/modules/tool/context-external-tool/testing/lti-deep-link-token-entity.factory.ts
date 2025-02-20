@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { UUID } from 'bson';
-import { LtiDeepLinkTokenEntity, LtiDeepLinkTokenEntityProps } from '../entity';
+import { LtiDeepLinkTokenEntity, LtiDeepLinkTokenEntityProps } from '../repo';
 
 export const ltiDeepLinkTokenEntityFactory = BaseFactory.define<LtiDeepLinkTokenEntity, LtiDeepLinkTokenEntityProps>(
 	LtiDeepLinkTokenEntity,

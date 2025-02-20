@@ -3,13 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { ClassEntity } from '@modules/class/entity';
+import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
+import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, SchoolYearEntity, User } from '@shared/domain/entity';
+import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
@@ -36,7 +36,7 @@ describe('users admin repo', () => {
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	const setupDb = async () => {
-		currentYear = schoolYearFactory.withStartYear(2002).buildWithId();
+		currentYear = schoolYearEntityFactory.withStartYear(2002).buildWithId();
 		school = schoolEntityFactory.buildWithId({ currentYear });
 
 		const adminRoles = roleFactory.build({

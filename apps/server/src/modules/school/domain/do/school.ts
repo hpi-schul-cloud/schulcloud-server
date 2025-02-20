@@ -1,8 +1,8 @@
 import { ValidationError } from '@shared/common/error';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { LanguageType } from '@shared/domain/interface';
-import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, InstanceFeature, SchoolPermissions } from '../type';
+import { EntityId } from '@shared/domain/types';
+import { FileStorageType, InstanceFeature, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
 import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';

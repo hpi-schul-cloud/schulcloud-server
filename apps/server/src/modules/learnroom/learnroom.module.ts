@@ -13,12 +13,18 @@ import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CourseRepo } from '@shared/repo/course';
 import { CourseGroupRepo } from '@shared/repo/coursegroup';
-import { DashboardElementRepo, DashboardModelMapper, DashboardRepo } from '@shared/repo/dashboard';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
-import { ColumnBoardNodeRepo, LegacyBoardRepo } from './repo';
+import {
+	ColumnBoardNodeRepo,
+	DashboardElementRepo,
+	DashboardModelMapper,
+	DashboardRepo,
+	LegacyBoardRepo,
+} from './repo';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
+import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import {
 	BoardCopyService,
 	CommonCartridgeImportService,
@@ -53,7 +59,7 @@ import {
 	],
 	providers: [
 		{
-			provide: 'DASHBOARD_REPO',
+			provide: DASHBOARD_REPO,
 			useClass: DashboardRepo,
 		},
 		BoardCopyService,

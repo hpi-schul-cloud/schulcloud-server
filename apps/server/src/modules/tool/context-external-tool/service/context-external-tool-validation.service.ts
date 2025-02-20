@@ -15,7 +15,7 @@ export class ContextExternalToolValidationService {
 		private readonly commonToolValidationService: CommonToolValidationService
 	) {}
 
-	async validate(contextExternalTool: ContextExternalTool): Promise<void> {
+	public async validate(contextExternalTool: ContextExternalTool): Promise<void> {
 		const loadedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
 			contextExternalTool.schoolToolRef.schoolToolId
 		);

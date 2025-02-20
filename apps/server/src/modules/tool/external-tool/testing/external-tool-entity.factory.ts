@@ -18,7 +18,7 @@ import {
 	ExternalToolMediumEntity,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-} from '../entity';
+} from '../repo';
 
 export const basicToolConfigEntityFactory = BaseFactory.define<BasicToolConfigEntity, BasicToolConfigEntity>(
 	BasicToolConfigEntity,

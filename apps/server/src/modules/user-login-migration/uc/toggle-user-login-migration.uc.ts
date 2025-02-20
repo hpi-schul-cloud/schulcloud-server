@@ -1,11 +1,11 @@
+import { Logger } from '@core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import { UserLoginMigrationMandatoryLoggable, UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 
@@ -38,7 +38,7 @@ export class ToggleUserLoginMigrationUc {
 
 	private async checkPermission(userId: string, schoolId: string): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		const school = await this.schoolService.getSchoolById(schoolId);
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);

@@ -15,13 +15,14 @@ import {
 import { Inject, Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
-import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
+import { DashboardElementRepo } from '../repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
 export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
-		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
+		@Inject(DASHBOARD_REPO) private readonly dashboardRepo: IDashboardRepo,
 		private readonly dashboardElementRepo: DashboardElementRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,

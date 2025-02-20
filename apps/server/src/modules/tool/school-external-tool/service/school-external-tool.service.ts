@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { CommonToolDeleteService, CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
+import { SchoolExternalToolRepo } from '../repo';
 
 @Injectable()
 export class SchoolExternalToolService {

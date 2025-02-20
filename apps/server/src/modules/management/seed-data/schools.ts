@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/dot-notation */
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolFeature, SchoolPurpose } from '@modules/school/domain';
 import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';
+import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/entity';
-import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { DeepPartial } from 'fishery';
 import { federalStateFactory } from './factory/federal-state.factory';
 import { schoolEntityFactory } from './factory/school.entity.factory';

@@ -1,9 +1,10 @@
 import { Logger } from '@core/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Group, GroupService } from '@modules/group';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { GroupProvisioningInfoLoggable } from '../../loggable';

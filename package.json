@@ -40,7 +40,6 @@
 		"mocha": "cross-env NODE_ENV=test mocha --exit --timeout 15000",
 		"mocha-watch": "cross-env NODE_ENV=test mocha",
 		"mocha-inspect": "cross-env NODE_ENV=test mocha --inspect --no-timeout --exit",
-		"mocha-metrics": "cross-env NODE_ENV=test mocha \"test/routes/*.metrics.js\" --exclude \"{test,src}/**/*.test.{js,ts}\" --no-timeout --exit",
 		"migration:up": "npm run nest:start:console -- database migration --up",
 		"migration:up:prod": "npm run nest:start:console:prod -- database migration --up",
 		"migration:down": "npm run nest:start:console -- database migration --down",

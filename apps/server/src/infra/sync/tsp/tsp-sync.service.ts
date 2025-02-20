@@ -1,14 +1,12 @@
-import { FederalStateService, SchoolYearService } from '@modules/legacy-school';
 import { FederalStateNames } from '@modules/legacy-school/types';
 import { School, SchoolService } from '@modules/school';
-import { FederalState, FileStorageType } from '@modules/school/domain';
+import { FederalState, FederalStateService, FileStorageType, SchoolYearService } from '@modules/school/domain';
 import { SchoolFactory } from '@modules/school/domain/factory';
-import { SchoolPermissions } from '@modules/school/domain/type';
+import { SchoolFeature, SchoolPermissions } from '@modules/school/domain/type';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
 import { System, SystemService, SystemType } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SchoolFeature } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { TspSystemNotFoundLoggableException } from './loggable/tsp-system-not-found.loggable-exception';
 

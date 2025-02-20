@@ -1,12 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course as CourseEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CourseSortProps, CourseStatus } from '../../domain';
@@ -58,11 +57,11 @@ describe('Course Info Controller (API)', () => {
 				const admin = createAdmin();
 				const school = schoolEntityFactory.buildWithId({});
 
-				const currentCourses: CourseEntity[] = courseFactory.buildList(5, {
+				const currentCourses = courseFactory.buildList(5, {
 					school,
 					untilDate: new Date('2045-07-31T23:59:59'),
 				});
-				const archivedCourses: CourseEntity[] = courseFactory.buildList(10, {
+				const archivedCourses = courseFactory.buildList(10, {
 					school,
 					untilDate: new Date('2024-07-31T23:59:59'),
 				});

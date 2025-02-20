@@ -1,21 +1,17 @@
 import { faker } from '@faker-js/faker';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { countyEmbeddableFactory, federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { countyEmbeddableFactory } from '@testing/factory/county.embeddable.factory';
-import { federalStateFactory as federalStateEntityFactory } from '@testing/factory/federal-state.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { schoolYearFactory as schoolYearEntityFactory } from '@testing/factory/schoolyear.factory';
-import { FileStorageType, SCHOOL_REPO } from '../../domain';
-import { federalStateFactory, schoolFactory } from '../../testing';
+import { FileStorageType, SCHOOL_REPO, SchoolFeature, SchoolPurpose } from '../../domain';
+import { federalStateDoFactory, schoolEntityFactory, schoolFactory } from '../../testing';
 import { countyFactory } from '../../testing/county.factory';
 import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
+import { SchoolEntity } from './school.entity';
 import { SchoolMikroOrmRepo } from './school.repo';
 
 describe('SchoolMikroOrmRepo', () => {
@@ -64,7 +60,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when query is given', () => {
 			const setup = async () => {
-				const federalState = federalStateFactory.build();
+				const federalState = federalStateDoFactory.build();
 				const externalId = faker.string.uuid();
 				const systems = systemEntityFactory.buildList(1);
 				const entity1 = schoolEntityFactory.build({ federalState, externalId, systems });

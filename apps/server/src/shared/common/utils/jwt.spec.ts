@@ -60,7 +60,7 @@ describe('JwtExtractor', () => {
 			it('should return the jwt', () => {
 				const token = setup();
 
-				const result = JwtExtractor.extractJwtFromRequest(request);
+				const result = JwtExtractor.extractJwtFromRequestOrFail(request);
 
 				expect(result).toEqual(token);
 			});
@@ -74,7 +74,7 @@ describe('JwtExtractor', () => {
 			it('should throw an UnauthorizedException', () => {
 				setup();
 
-				expect(() => JwtExtractor.extractJwtFromRequest(request)).toThrow(UnauthorizedException);
+				expect(() => JwtExtractor.extractJwtFromRequestOrFail(request)).toThrow(UnauthorizedException);
 			});
 		});
 	});

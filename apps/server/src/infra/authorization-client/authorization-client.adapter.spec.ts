@@ -240,49 +240,6 @@ describe(AuthorizationClientAdapter.name, () => {
 			});
 		});
 
-		describe('when authorization header is without "Bearer " at the start', () => {
-			const setup = () => {
-				const params = {
-					context: {
-						action: AuthorizationContextParamsAction.READ,
-						requiredPermissions,
-					},
-					referenceType: AuthorizationBodyParamsReferenceType.COURSES,
-					referenceId: 'someReferenceId',
-				};
-
-				const response = createMock<AxiosResponse<AuthorizedReponse>>({
-					data: {
-						isAuthorized: true,
-						userId: 'userId',
-					},
-				});
-				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockResolvedValueOnce(response);
-
-				const request = createMock<Request>({
-					headers: {
-						authorization: jwtToken,
-					},
-				});
-				const adapter = new AuthorizationClientAdapter(authorizationApi, request);
-
-				return { params, adapter };
-			};
-
-			it('should forward the JWT as bearer token', async () => {
-				const { params, adapter } = setup();
-
-				const expectedOptions = { headers: { authorization: `Bearer ${jwtToken}` } };
-
-				await adapter.hasPermissionsByReference(params.referenceType, params.referenceId, params.context);
-
-				expect(authorizationApi.authorizationReferenceControllerAuthorizeByReference).toHaveBeenCalledWith(
-					params,
-					expectedOptions
-				);
-			});
-		});
-
 		describe('when no JWT token is found', () => {
 			const setup = () => {
 				const params = {
