@@ -8,7 +8,7 @@ class MerlinTokenGenerator {
 	}
 
 	async post(options) {
-		const res = axios(options);
+		const res = await axios(options);
 
 		return res.data;
 	}
