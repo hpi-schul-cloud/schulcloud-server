@@ -30,14 +30,6 @@ export interface GroupEntityProps {
 }
 
 @Entity({ tableName: 'groups' })
-@Index({
-	options: {
-		'externalSource.externalId': 1,
-		'externalSource.system': 1,
-		unique: true,
-		partialFilterExpression: { externalSource: { $exists: true } },
-	},
-})
 export class GroupEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
