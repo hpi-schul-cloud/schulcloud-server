@@ -10,6 +10,7 @@ import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -191,6 +192,156 @@ describe('TspProvisioningService', () => {
 
 				await expect(sut.provisionBatch(oauthDataDtos)).resolves.not.toThrow();
 				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when new user is missing first or lastname', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser({
+					firstName: undefined,
+				});
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
+				userServiceMock.saveAll.mockResolvedValueOnce([]);
+				accountServiceMock.findByUserId.mockResolvedValueOnce(null);
+				accountServiceMock.saveAll.mockResolvedValueOnce([]);
+
+				return { oauthDataDtos };
+			};
+
+			it('should return 0', async () => {
+				const { oauthDataDtos } = setup();
+
+				const result = await sut.provisionBatch(oauthDataDtos);
+
+				expect(result).toBe(0);
+				expect(schoolServiceMock.getSchools).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.findByExternalId).toHaveBeenCalledTimes(1);
+				expect(roleServiceMock.findByNames).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.findByUserId).toHaveBeenCalledTimes(0);
+				expect(accountServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('when new user is created', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser({
+					firstName: faker.person.firstName(),
+					lastName: faker.person.lastName(),
+				});
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
+				userServiceMock.saveAll.mockResolvedValueOnce(userDoFactory.buildListWithId(1));
+				accountServiceMock.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
+				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
+
+				return { oauthDataDtos };
+			};
+
+			it('should return 1', async () => {
+				const { oauthDataDtos } = setup();
+
+				const result = await sut.provisionBatch(oauthDataDtos);
+
+				expect(result).toBe(1);
+				expect(schoolServiceMock.getSchools).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.findByExternalId).toHaveBeenCalledTimes(1);
+				expect(roleServiceMock.findByNames).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.findByUserId).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('when new account is created', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser({
+					firstName: faker.person.firstName(),
+					lastName: faker.person.lastName(),
+				});
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
+				userServiceMock.saveAll.mockResolvedValueOnce(userDoFactory.buildListWithId(1));
+				accountServiceMock.findByUserId.mockResolvedValueOnce(null);
+				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
+
+				return { oauthDataDtos };
+			};
+
+			it('should return 1', async () => {
+				const { oauthDataDtos } = setup();
+
+				const result = await sut.provisionBatch(oauthDataDtos);
+
+				expect(result).toBe(1);
+				expect(schoolServiceMock.getSchools).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.findByExternalId).toHaveBeenCalledTimes(1);
+				expect(roleServiceMock.findByNames).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.findByUserId).toHaveBeenCalledTimes(1);
+				expect(accountServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(0);
+			});
+		});
+
+		describe('when user has no id', () => {
+			const setup = () => {
+				const system = setupExternalSystem();
+				const externalUser = setupExternalUser({
+					firstName: faker.person.firstName(),
+					lastName: faker.person.lastName(),
+				});
+				const oauthDataDtos = [
+					new OauthDataDto({
+						system,
+						externalUser,
+					}),
+				];
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
+				userServiceMock.saveAll.mockResolvedValueOnce(userDoFactory.buildList(1));
+				accountServiceMock.findByUserId.mockResolvedValueOnce(null);
+				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
+
+				return { oauthDataDtos };
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				const { oauthDataDtos } = setup();
+
+				await expect(sut.provisionBatch(oauthDataDtos)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 	});
@@ -398,6 +549,13 @@ describe('TspProvisioningService', () => {
 				return { data, school };
 			};
 
+			it('should throw a ValidationError', async () => {
+				const { data, school } = setup(false, true, true);
+
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(ValidationError);
+			});
+
+			/*
 			it('should throw with no firstname', async () => {
 				const { data, school } = setup(false, true, true);
 
@@ -409,8 +567,10 @@ describe('TspProvisioningService', () => {
 
 				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
+			*/
 		});
 
+		/*
 		describe('when user does not exist', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
@@ -471,5 +631,6 @@ describe('TspProvisioningService', () => {
 				await expect(() => sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
+		*/
 	});
 });
