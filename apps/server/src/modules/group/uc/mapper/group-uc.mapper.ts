@@ -1,47 +1,66 @@
-import { Class } from '@modules/class/domain';
+import { Class } from '@modules/class';
 import { Course } from '@modules/learnroom/domain';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { RoleName } from '@shared/domain/interface';
 import { Group } from '../../domain';
-import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
-import { ClassRootType } from '../dto/class-root-type';
+import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser, ClassRootType } from '../dto';
 
 export class GroupUcMapper {
 	public static mapGroupToClassInfoDto(
 		group: Group,
-		resolvedUsers: ResolvedGroupUser[],
+		resolvedGroupUsers: ResolvedGroupUser[],
 		synchronizedCourses: Course[],
 		system?: System
 	): ClassInfoDto {
-		const mapped: ClassInfoDto = new ClassInfoDto({
+		const students = GroupUcMapper.filterGroupUsersByRole(resolvedGroupUsers, RoleName.STUDENT);
+		const teachers = GroupUcMapper.filterGroupUsersByRole(resolvedGroupUsers, RoleName.TEACHER);
+		const teacherNames = GroupUcMapper.getLastNamesOfGroupUsers(teachers);
+		const synchronizedCourseInfoDtos = GroupUcMapper.mapCourseToCourseInfoDtos(synchronizedCourses);
+
+		const classInfoDtos = new ClassInfoDto({
 			id: group.id,
 			type: ClassRootType.GROUP,
 			name: group.name,
 			externalSourceName: system?.displayName,
-			teacherNames: resolvedUsers
-				.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === RoleName.TEACHER)
-				.map((groupUser: ResolvedGroupUser) => groupUser.user.lastName),
-			studentCount: resolvedUsers.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === RoleName.STUDENT)
-				.length,
-			synchronizedCourses: synchronizedCourses.map(
-				(course: Course): CourseInfoDto =>
-					new CourseInfoDto({
-						id: course.id,
-						name: course.name,
-					})
-			),
+			teacherNames,
+			studentCount: students.length,
+			synchronizedCourses: synchronizedCourseInfoDtos, // Naming of key synchronizedCourses is wrong, this are only infos not the course it self.
 		});
 
-		return mapped;
+		return classInfoDtos;
+	}
+
+	private static mapCourseToCourseInfoDtos(courses: Course[]): CourseInfoDto[] {
+		const courseInfoDtos = courses.map(
+			(course: Course): CourseInfoDto =>
+				new CourseInfoDto({
+					id: course.id,
+					name: course.name,
+				})
+		);
+
+		return courseInfoDtos;
+	}
+
+	private static getLastNamesOfGroupUsers(groupUsers: ResolvedGroupUser[]): string[] {
+		const lastNames = groupUsers.map((groupUser: ResolvedGroupUser) => groupUser.user.lastName);
+
+		return lastNames;
+	}
+
+	private static filterGroupUsersByRole(groupUsers: ResolvedGroupUser[], role: RoleName): ResolvedGroupUser[] {
+		const filteredGroupUsers = groupUsers.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === role);
+
+		return filteredGroupUsers;
 	}
 
 	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDo[], schoolYear?: SchoolYearEntity): ClassInfoDto {
 		const name = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 		const isUpgradable = clazz.gradeLevel !== 13 && !clazz.successor;
 
-		const mapped: ClassInfoDto = new ClassInfoDto({
+		const mapped = new ClassInfoDto({
 			id: clazz.id,
 			type: ClassRootType.CLASS,
 			name,
