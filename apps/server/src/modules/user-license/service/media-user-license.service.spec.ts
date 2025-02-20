@@ -81,15 +81,15 @@ describe(MediaUserLicenseService.name, () => {
 
 				await service.saveAll(mediaUserLicenses);
 
-				expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicenses);
+				expect(mediaUserLicenseRepo.saveAll).toHaveBeenCalledWith(mediaUserLicenses);
 			});
 
 			it('should return the media user licenses', async () => {
 				const { mediaUserLicenses } = setup();
 
-				await service.saveAll(mediaUserLicenses);
+				const result = await service.saveAll(mediaUserLicenses);
 
-				expect(mediaUserLicenseRepo.save).toHaveBeenCalledWith(mediaUserLicenses);
+				expect(result).toEqual(mediaUserLicenses);
 			});
 		});
 	});
