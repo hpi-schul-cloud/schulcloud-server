@@ -9,6 +9,7 @@ import {
 	RabbitMqURI,
 	SchulconnexProvisioningExchange,
 } from './rabbitmq.config';
+import { AmqpConnectionManagerOptions } from 'amqp-connection-manager/dist/types/AmqpConnectionManager';
 
 /**
  * https://www.npmjs.com/package/@golevelup/nestjs-rabbitmq#usage
@@ -46,6 +47,9 @@ const imports = [
 			},
 		],
 		uri: RabbitMqURI,
+		connectionManagerOptions: {
+			heartbeatIntervalInSeconds: Configuration.get('RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS') as number,
+		},
 	}),
 ];
 @Global()
