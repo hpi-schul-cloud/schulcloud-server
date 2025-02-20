@@ -152,7 +152,7 @@ export class DeletionBatchService {
 	}
 
 	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
-	public async getUsersCountByRoles(userIds: EntityId[]): Promise<UsersCountByRole[]> {
+	private async getUsersCountByRoles(userIds: EntityId[]): Promise<UsersCountByRole[]> {
 		const usersByRole = await this.deletionBatchUsersRepo.countUsersByRole(userIds);
 
 		return usersByRole;
