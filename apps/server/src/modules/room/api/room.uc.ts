@@ -101,6 +101,10 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		await this.checkRoomAuthorization(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
+		await this.columnBoardService.deleteByExternalReference({
+			type: BoardExternalReferenceType.Room,
+			id: roomId,
+		});
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
