@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { TspUserInfo } from '@infra/sync';
 import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { ClassService } from '@modules/class';
+import { ClassService, ClassSourceOptions } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
@@ -80,7 +81,7 @@ describe('TspProvisioningService', () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('provisionBatch', () => {
+	describe('provisionUserBatch', () => {
 		describe('when batch is provisioned', () => {
 			const setup = () => {
 				const system = provisioningSystemDtoFactory.build();
@@ -142,6 +143,177 @@ describe('TspProvisioningService', () => {
 				const { oauthDataDtos } = setup();
 
 				await expect(sut.provisionUserBatch(oauthDataDtos, new Map())).rejects.toThrow(NotFoundLoggableException);
+			});
+		});
+	});
+
+	describe('provisionClassBatch', () => {
+		describe('when class does not exist', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const externalTeacher = externalUserDtoFactory.build();
+				const externalStudent = externalUserDtoFactory.build();
+
+				const classId = faker.string.uuid();
+				const externalClass = externalClassDtoFactory.build({
+					externalId: classId,
+				});
+
+				const usersOfClasses = new Map([
+					[
+						classId,
+						[
+							{
+								externalId: externalTeacher.externalId,
+								role: RoleName.TEACHER,
+							} as TspUserInfo,
+							{
+								externalId: externalStudent.externalId,
+								role: RoleName.STUDENT,
+							} as TspUserInfo,
+						],
+					],
+				]);
+
+				classServiceMock.findClassesForSchool.mockResolvedValueOnce([]);
+				userServiceMock.findMultipleByExternalIds
+					.mockResolvedValueOnce([faker.string.uuid()])
+					.mockResolvedValueOnce([faker.string.uuid()]);
+
+				return { school, externalClasses: [externalClass], usersOfClasses };
+			};
+
+			it('should create class', async () => {
+				const { school, externalClasses, usersOfClasses } = setup();
+
+				const result = await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
+				expect(result.classCreationCount).toBe(1);
+				expect(result.classUpdateCount).toBe(0);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when class already exist', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const externalTeacher = externalUserDtoFactory.build();
+				const externalStudent = externalUserDtoFactory.build();
+
+				const classId = faker.string.uuid();
+				const externalClass = externalClassDtoFactory.build({
+					externalId: classId,
+				});
+
+				const usersOfClasses = new Map([
+					[
+						classId,
+						[
+							{
+								externalId: externalTeacher.externalId,
+								role: RoleName.TEACHER,
+							} as TspUserInfo,
+							{
+								externalId: externalStudent.externalId,
+								role: RoleName.STUDENT,
+							} as TspUserInfo,
+						],
+					],
+				]);
+
+				classServiceMock.findClassesForSchool.mockResolvedValueOnce(
+					classFactory.buildList(1, {
+						sourceOptions: new ClassSourceOptions({
+							tspUid: classId,
+						}),
+					})
+				);
+				userServiceMock.findMultipleByExternalIds
+					.mockResolvedValueOnce([faker.string.uuid()])
+					.mockResolvedValueOnce([faker.string.uuid()]);
+
+				return { school, externalClasses: [externalClass], usersOfClasses };
+			};
+
+			it('should update class', async () => {
+				const { school, externalClasses, usersOfClasses } = setup();
+
+				const result = await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
+				expect(result.classCreationCount).toBe(0);
+				expect(result.classUpdateCount).toBe(1);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when the batch is for a full sync', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const externalTeacher = externalUserDtoFactory.build();
+				const externalStudent = externalUserDtoFactory.build();
+
+				const classId = faker.string.uuid();
+				const externalClass = externalClassDtoFactory.build({
+					externalId: classId,
+				});
+
+				const usersOfClasses = new Map([
+					[
+						classId,
+						[
+							{
+								externalId: externalTeacher.externalId,
+								role: RoleName.TEACHER,
+							} as TspUserInfo,
+							{
+								externalId: externalStudent.externalId,
+								role: RoleName.STUDENT,
+							} as TspUserInfo,
+						],
+					],
+				]);
+
+				classServiceMock.findClassesForSchool.mockResolvedValueOnce(
+					classFactory.buildList(1, {
+						sourceOptions: new ClassSourceOptions({
+							tspUid: classId,
+						}),
+						userIds: [faker.string.uuid(), faker.string.uuid(), faker.string.uuid()],
+						teacherIds: [faker.string.uuid()],
+					})
+				);
+
+				const newUserId = faker.string.uuid();
+				const newTeacherId = faker.string.uuid();
+
+				const externalUserMappings = new Map([
+					[externalStudent.externalId, newUserId],
+					[externalTeacher.externalId, newTeacherId],
+				]);
+
+				userServiceMock.findMultipleByExternalIds.mockImplementation((externalIds) =>
+					Promise.resolve(
+						externalIds.map((externalId) => externalUserMappings.get(externalId)).filter((id) => id !== undefined)
+					)
+				);
+
+				return { school, externalClasses: [externalClass], usersOfClasses, newUserId, newTeacherId };
+			};
+
+			it('should clear the participants of the classes and set new ones', async () => {
+				const { school, externalClasses, usersOfClasses, newUserId, newTeacherId } = setup();
+
+				const result = await sut.provisionClassBatch(school, externalClasses, usersOfClasses, true);
+				expect(result.classCreationCount).toBe(0);
+				expect(result.classUpdateCount).toBe(1);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(classServiceMock.save).toHaveBeenCalledWith([
+					expect.objectContaining({
+						userIds: [newUserId],
+						teacherIds: [newTeacherId],
+					}),
+				]);
 			});
 		});
 	});
