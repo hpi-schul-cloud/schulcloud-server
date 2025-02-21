@@ -176,7 +176,7 @@ export class LessonCopyService {
 					status: CopyStatusEnum.SUCCESS,
 				});
 			}
-			if (element.component === ComponentType.RESOURCES) {
+			if (element.component === ComponentType.LERNSTORE) {
 				const lernstoreContent = this.copyLernStore(element);
 				copiedContent.push(lernstoreContent);
 				copiedContentStatus.push({
@@ -240,7 +240,7 @@ export class LessonCopyService {
 		const lernstore: ComponentProperties = {
 			title: element.title,
 			hidden: element.hidden,
-			component: ComponentType.RESOURCES,
+			component: ComponentType.LERNSTORE,
 			user: element.user, // TODO should be params.user - but that made the server crash, but property is normally undefined
 		};
 

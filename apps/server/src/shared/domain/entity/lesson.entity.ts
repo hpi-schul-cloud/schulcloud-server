@@ -1,6 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { LessonResources } from '@modules/lesson/controller/dto/lesson-resources.model';
+import { LernstoreResources } from '@modules/lesson/controller';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
@@ -23,7 +23,7 @@ export enum ComponentType {
 	ETHERPAD = 'Etherpad',
 	GEOGEBRA = 'geoGebra',
 	INTERNAL = 'internal',
-	RESOURCES = 'resources',
+	LERNSTORE = 'resources',
 	TEXT = 'text',
 }
 
@@ -36,7 +36,7 @@ export interface ComponentGeogebraProperties {
 }
 
 export interface ComponentLernstoreProperties {
-	resources: Array<LessonResources>;
+	resources: Array<LernstoreResources>;
 }
 
 export interface ComponentEtherpadProperties {
@@ -59,7 +59,7 @@ export type ComponentProperties = {
 	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }
 	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
 	| { component: ComponentType.INTERNAL; content: ComponentInternalProperties }
-	| { component: ComponentType.RESOURCES; content?: ComponentLernstoreProperties }
+	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
 );
 
 export interface LessonParent {

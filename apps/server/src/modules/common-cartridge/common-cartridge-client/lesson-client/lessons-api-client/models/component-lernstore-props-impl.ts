@@ -15,7 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { LessonResources } from './lesson-resources';
+import type { LernstoreResources } from './lernstore-resources';
 
 /**
  * 
@@ -25,9 +25,9 @@ import type { LessonResources } from './lesson-resources';
 export interface ComponentLernstorePropsImpl {
     /**
      * resources of a Lernstore component
-     * @type {Array<LessonResources>}
+     * @type {Array<LernstoreResources>}
      * @memberof ComponentLernstorePropsImpl
      */
-    'resources': Array<LessonResources>;
+    'resources': Array<LernstoreResources>;
 }
 
