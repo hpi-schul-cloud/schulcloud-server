@@ -7,7 +7,6 @@ import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -66,7 +65,7 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {VideoConferenceOptions} options
 	 * @returns {Promise<VideoConference<BBBCreateResponse>>}
 	 */
-	async create(
+	public async create(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId,
@@ -77,7 +76,7 @@ export class VideoConferenceDeprecatedUc {
 		await this.throwOnFeaturesDisabled(schoolId);
 		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, object);
+		const bbbRole = await this.checkPermission(userId, object);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(
@@ -86,7 +85,7 @@ export class VideoConferenceDeprecatedUc {
 			);
 		}
 
-		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
+		const configBuilder = new BBBCreateConfigBuilder({
 			name: VideoConferenceDeprecatedUc.sanitizeString(scopeInfo.title),
 			meetingID: refId,
 		}).withLogoutUrl(scopeInfo.logoutUrl);
@@ -114,7 +113,7 @@ export class VideoConferenceDeprecatedUc {
 		}
 		await this.videoConferenceRepo.save(vcDo);
 
-		const bbbResponse: BBBResponse<BBBCreateResponse> = await this.bbbService.create(configBuilder.build());
+		const bbbResponse = await this.bbbService.create(configBuilder.build());
 
 		return new VideoConference<BBBCreateResponse>({
 			state: VideoConferenceState.NOT_STARTED,
@@ -130,7 +129,7 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @returns {Promise<VideoConferenceJoinDTO>}
 	 */
-	async join(
+	public async join(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
@@ -141,17 +140,17 @@ export class VideoConferenceDeprecatedUc {
 
 		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, object);
+		const bbbRole = await this.checkPermission(userId, object);
 
-		const resolvedUser: UserDo = await this.userService.findById(userId);
-		const configBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
+		const resolvedUser = await this.userService.findById(userId);
+		const configBuilder = new BBBJoinConfigBuilder({
 			fullName: VideoConferenceDeprecatedUc.sanitizeString(`${resolvedUser.firstName} ${resolvedUser.lastName}`),
 			meetingID: refId,
 			role: bbbRole,
 		});
 
-		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
-		const vcDO: VideoConferenceDO = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
+		const isGuest = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const vcDO = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
 
 		if (isGuest) {
@@ -169,7 +168,7 @@ export class VideoConferenceDeprecatedUc {
 			);
 		}
 
-		const url: string = await this.bbbService.join(configBuilder.build());
+		const url = await this.bbbService.join(configBuilder.build());
 
 		return new VideoConferenceJoin({
 			state: VideoConferenceState.RUNNING,
@@ -185,7 +184,7 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @returns {BBBResponse<BBBBaseMeetingConfig>}
 	 */
-	async getMeetingInfo(
+	public async getMeetingInfo(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
@@ -196,9 +195,9 @@ export class VideoConferenceDeprecatedUc {
 
 		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, object);
+		const bbbRole = await this.checkPermission(userId, object);
 
-		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+		const config = new BBBBaseMeetingConfig({
 			meetingID: refId,
 		});
 
@@ -207,7 +206,7 @@ export class VideoConferenceDeprecatedUc {
 			.then((vcDO: VideoConferenceDO) => vcDO.options)
 			.catch(() => defaultVideoConferenceOptions);
 
-		const response: VideoConferenceInfo = await this.bbbService
+		const response = await this.bbbService
 			.getMeetingInfo(config)
 			.then(
 				(bbbResponse: BBBResponse<BBBMeetingInfoResponse>) =>
@@ -227,7 +226,7 @@ export class VideoConferenceDeprecatedUc {
 					})
 			);
 
-		const isGuest: boolean = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const isGuest = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 
 		if (!this.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
 			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
@@ -262,7 +261,7 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
 	 * @returns {Promise<VideoConference<BBBBaseResponse>>}
 	 */
-	async end(
+	public async end(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		refId: EntityId
@@ -273,17 +272,17 @@ export class VideoConferenceDeprecatedUc {
 
 		const { object } = await this.getScopeInfo(userId, conferenceScope, refId);
 
-		const bbbRole: BBBRole = await this.checkPermission(userId, object);
+		const bbbRole = await this.checkPermission(userId, object);
 
 		if (bbbRole !== BBBRole.MODERATOR) {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 		}
 
-		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+		const config = new BBBBaseMeetingConfig({
 			meetingID: refId,
 		});
 
-		const bbbResponse: BBBResponse<BBBBaseResponse> = await this.bbbService.end(config);
+		const bbbResponse = await this.bbbService.end(config);
 
 		return new VideoConference<BBBBaseResponse>({
 			state: VideoConferenceState.FINISHED,

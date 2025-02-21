@@ -194,6 +194,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return user;
 	}
 
+	/** @deprecated Please put this methode to do and do role check as part of authorisation in used context. */
 	public async getDisplayName(user: UserDo): Promise<string> {
 		const protectedRoles = await this.roleService.getProtectedRoles();
 		const isProtectedUser = user.roles.some(

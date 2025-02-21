@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,7 +8,7 @@ import { VideoConferenceScope } from '@shared/domain/interface';
 import { BBBBaseResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { BBBService, VideoConferenceService } from '../service';
-import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
+import { ScopeInfo, VideoConferenceState } from './dto';
 import { VideoConferenceEndUc } from './video-conference-end.uc';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -62,8 +61,8 @@ describe('VideoConferenceEndUc', () => {
 	describe('end', () => {
 		describe('when user is not moderator', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory.buildWithId();
-				const currentUserId: string = user.id as string;
+				const user = userDoFactory.buildWithId();
+				const currentUserId = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
@@ -98,7 +97,7 @@ describe('VideoConferenceEndUc', () => {
 
 		describe('when user is moderator', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {
@@ -158,7 +157,7 @@ describe('VideoConferenceEndUc', () => {
 			it('should end a video conference', async () => {
 				const { currentUserId, scope, bbbEndResponse } = setup();
 
-				const result: VideoConference<BBBBaseResponse> = await uc.end(currentUserId, scope);
+				const result = await uc.end(currentUserId, scope);
 
 				expect(result.state).toBe(VideoConferenceState.FINISHED);
 				expect(result.bbbResponse).toBe(bbbEndResponse);
@@ -167,7 +166,7 @@ describe('VideoConferenceEndUc', () => {
 
 		describe('feature check', () => {
 			const setup = (scopeName: VideoConferenceScope) => {
-				const user: UserDo = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: scopeName, id: new ObjectId().toHexString() };
 				const scopeInfo: ScopeInfo = {
@@ -177,7 +176,7 @@ describe('VideoConferenceEndUc', () => {
 					logoutUrl: 'logoutUrl',
 				};
 
-				const bbbEndResponse: BBBResponse<BBBBaseResponse> = {
+				const bbbEndResponse = {
 					response: {
 						returncode: BBBStatus.SUCCESS,
 					} as BBBBaseResponse,

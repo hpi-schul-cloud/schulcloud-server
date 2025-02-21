@@ -1,7 +1,5 @@
 import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { VideoConferenceDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BBBJoinConfigBuilder, BBBRole, BBBService } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
@@ -28,15 +26,15 @@ export class VideoConferenceJoinUc {
 			scope.scope
 		);
 
-		const user: UserDo = await this.userService.findById(currentUserId);
+		const user = await this.userService.findById(currentUserId);
 
-		const joinBuilder: BBBJoinConfigBuilder = new BBBJoinConfigBuilder({
+		const joinBuilder = new BBBJoinConfigBuilder({
 			fullName: this.videoConferenceService.sanitizeString(`${user.firstName} ${user.lastName}`),
 			meetingID: scope.id,
 			role,
 		}).withUserId(currentUserId);
 
-		const videoConference: VideoConferenceDO = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+		const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
 			scope.id,
 			scope.scope
 		);
@@ -56,9 +54,9 @@ export class VideoConferenceJoinUc {
 			);
 		}
 
-		const url: string = await this.bbbService.join(joinBuilder.build());
+		const url = await this.bbbService.join(joinBuilder.build());
 
-		const videoConferenceJoin: VideoConferenceJoin = new VideoConferenceJoin({
+		const videoConferenceJoin = new VideoConferenceJoin({
 			state: VideoConferenceState.RUNNING,
 			permission: PermissionMapping[role],
 			url,

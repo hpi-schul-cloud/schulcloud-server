@@ -1,14 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '@shared/domain/interface';
 import { BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
-import { VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
-import { ScopeInfo, ScopeRef } from './dto';
 import { VideoConferenceCreateUc } from './video-conference-create.uc';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -76,25 +73,25 @@ describe('VideoConferenceCreateUc', () => {
 		describe('when meeting is not running', () => {
 			describe('when user role is moderator', () => {
 				const setup = () => {
-					const user: UserDo = userDoFactory.buildWithId();
-					const currentUserId: string = user.id as string;
+					const user = userDoFactory.buildWithId();
+					const currentUserId = user.id as string;
 
-					const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 
-					const options: VideoConferenceOptions = {
+					const options = {
 						everyAttendeeJoinsMuted: true,
 						everybodyJoinsAsModerator: true,
 						moderatorMustApproveJoinRequests: true,
 					};
 
-					const scopeInfo: ScopeInfo = {
+					const scopeInfo = {
 						scopeId: scope.id,
 						scopeName: VideoConferenceScope.COURSE,
 						title: 'title',
 						logoutUrl: 'logoutUrl',
 					};
 
-					const bbbCreateResponse: BBBResponse<BBBCreateResponse> = createBbbCreateSuccessResponse(scope.id);
+					const bbbCreateResponse = createBbbCreateSuccessResponse(scope.id);
 
 					bbbService.getMeetingInfo.mockRejectedValue(new Error('Meeting not found'));
 					videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
@@ -150,18 +147,18 @@ describe('VideoConferenceCreateUc', () => {
 
 			describe('and user role is not moderator', () => {
 				const setup = () => {
-					const user: UserDo = userDoFactory.buildWithId();
-					const currentUserId: string = user.id as string;
+					const user = userDoFactory.buildWithId();
+					const currentUserId = user.id as string;
 
-					const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 
-					const options: VideoConferenceOptions = {
+					const options = {
 						everyAttendeeJoinsMuted: true,
 						everybodyJoinsAsModerator: true,
 						moderatorMustApproveJoinRequests: true,
 					};
 
-					const scopeInfo: ScopeInfo = {
+					const scopeInfo = {
 						scopeId: scope.id,
 						scopeName: VideoConferenceScope.COURSE,
 						title: 'title',
@@ -187,12 +184,12 @@ describe('VideoConferenceCreateUc', () => {
 
 		describe('when meeting is running', () => {
 			const setup = () => {
-				const user: UserDo = userDoFactory.buildWithId();
-				const currentUserId: string = user.id as string;
+				const user = userDoFactory.buildWithId();
+				const currentUserId = user.id as string;
 
-				const scope: ScopeRef = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
 
-				const options: VideoConferenceOptions = {
+				const options = {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
@@ -219,21 +216,21 @@ describe('VideoConferenceCreateUc', () => {
 
 		describe('feature check', () => {
 			const setup = (scopeName: VideoConferenceScope) => {
-				const user: UserDo = userDoFactory.buildWithId();
-				const currentUserId: string = user.id as string;
+				const user = userDoFactory.buildWithId();
+				const currentUserId = user.id as string;
 
-				const scope: ScopeRef = {
+				const scope = {
 					scope: scopeName,
 					id: new ObjectId().toHexString(),
 				};
 
-				const options: VideoConferenceOptions = {
+				const options = {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
 				};
 
-				const scopeInfo: ScopeInfo = {
+				const scopeInfo = {
 					scopeId: scope.id,
 					scopeName,
 					title: 'title',
