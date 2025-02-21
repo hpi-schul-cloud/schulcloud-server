@@ -144,6 +144,7 @@ export const adminPermissions = [
 	Permission.SCHOOL_TOOL_ADMIN,
 	Permission.GROUP_FULL_ADMIN,
 	Permission.USER_LOGIN_MIGRATION_ADMIN,
+	Permission.MEDIA_SCHOOL_LICENSE_ADMIN,
 ];
 
 export const superheroPermissions = [

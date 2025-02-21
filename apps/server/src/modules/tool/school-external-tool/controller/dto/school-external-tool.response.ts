@@ -1,32 +1,36 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ToolContextType } from '@modules/tool/common/enum';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { CustomParameterEntryResponse } from './custom-parameter-entry.response';
 import { SchoolExternalToolConfigurationStatusResponse } from './school-external-tool-configuration.response';
+import { SchoolExternalToolMediumResponse } from './school-external-tool-medium.response';
 
 export class SchoolExternalToolResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	name: string;
+	public name: string;
 
 	@ApiProperty()
-	toolId: string;
+	public toolId: string;
 
 	@ApiProperty()
-	schoolId: string;
+	public schoolId: string;
 
 	@ApiProperty()
-	isDeactivated: boolean;
+	public isDeactivated: boolean;
 
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
-	parameters: CustomParameterEntryResponse[];
+	public parameters: CustomParameterEntryResponse[];
 
 	@ApiProperty({ type: SchoolExternalToolConfigurationStatusResponse })
-	status: SchoolExternalToolConfigurationStatusResponse;
+	public status: SchoolExternalToolConfigurationStatusResponse;
 
 	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
-	restrictToContexts?: ToolContextType[];
+	public restrictToContexts?: ToolContextType[];
+
+	@ApiPropertyOptional({ type: SchoolExternalToolMediumResponse })
+	public medium?: SchoolExternalToolMediumResponse;
 
 	constructor(response: SchoolExternalToolResponse) {
 		this.id = response.id;
@@ -37,5 +41,6 @@ export class SchoolExternalToolResponse {
 		this.parameters = response.parameters;
 		this.status = response.status;
 		this.restrictToContexts = response.restrictToContexts;
+		this.medium = response.medium;
 	}
 }
