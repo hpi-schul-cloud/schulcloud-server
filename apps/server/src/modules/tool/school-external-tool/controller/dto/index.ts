@@ -7,3 +7,4 @@ export * from './school-external-tool-search.params';
 export * from './school-external-tool-search-list.response';
 export * from './school-external-tool-metadata.response';
 export { SchoolExternalToolConfigurationStatusResponse } from './school-external-tool-configuration.response';
+export { SchoolExternalToolMediumResponse } from './school-external-tool-medium.response';
