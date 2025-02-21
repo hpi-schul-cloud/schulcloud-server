@@ -8,7 +8,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
 import { OauthConfigEntity, SystemEntity } from '../../repo';
-import { PublicSystemListResponse, PublicSystemResponse } from '../dto';
+import { PublicSystemListResponse, PublicSystemResponse } from '../dto/response';
 
 const baseRouteName = '/systems';
 
