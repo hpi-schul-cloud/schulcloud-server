@@ -1,4 +1,4 @@
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -87,7 +87,10 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		const errors = await validate(payload);
 
 		if (errors.length > 0) {
-			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property));
+			throw new IdTokenExtractionFailureLoggableException(
+				errors.map((error) => error.property),
+				{ externalId: payload.sub }
+			);
 		}
 
 		return payload;
@@ -109,7 +112,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		if (externalUserDto.roles.length < 1) {
-			throw new IdTokenExtractionFailureLoggableException('ptscListRolle');
+			throw new IdTokenExtractionFailureLoggableException('ptscListRolle', { externalId: externalUserDto.externalId });
 		}
 
 		const externalSchoolDto = new ExternalSchoolDto({
