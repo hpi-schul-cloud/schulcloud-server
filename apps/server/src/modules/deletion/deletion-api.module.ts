@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { CalendarModule } from '@infra/calendar';
 import { ClassModule } from '@modules/class';
 import { FilesModule } from '@modules/files';
@@ -7,11 +8,13 @@ import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { TeamsModule } from '@modules/teams';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { LoggerModule } from '@core/logger';
+import { UserModule } from '@modules/user';
 import { DeletionModule } from '.';
-import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
-import { DeletionRequestsController } from './api/controller/deletion-requests.controller';
+import { DeletionExecutionController } from './api/controller/deletion-execution.controller';
+import { DeletionRequestController } from './api/controller/deletion-request.controller';
 import { DeletionRequestUc } from './api/uc';
+import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
+import { DeletionBatchController } from './api/controller/deletion-batch.controller';
 
 // The most of this imports should not be part of the api module.
 @Module({
@@ -26,8 +29,9 @@ import { DeletionRequestUc } from './api/uc';
 		PseudonymModule,
 		FilesModule,
 		RocketChatUserModule,
+		UserModule,
 	],
-	controllers: [DeletionRequestsController, DeletionExecutionsController],
-	providers: [DeletionRequestUc],
+	controllers: [DeletionRequestController, DeletionExecutionController, DeletionBatchController],
+	providers: [DeletionRequestUc, DeletionBatchUc],
 })
 export class DeletionApiModule {}
