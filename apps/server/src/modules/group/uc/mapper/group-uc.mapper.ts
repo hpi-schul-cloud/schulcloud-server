@@ -50,6 +50,12 @@ export class GroupUcMapper {
 		return lastNames;
 	}
 
+	private static getLastNamesOfUsers(users: UserDo[]): string[] {
+		const lastNames = users.map((user: UserDo) => user.lastName);
+
+		return lastNames;
+	}
+
 	private static filterGroupUsersByRole(groupUsers: ResolvedGroupUser[], role: RoleName): ResolvedGroupUser[] {
 		const filteredGroupUsers = groupUsers.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === role);
 
@@ -59,13 +65,14 @@ export class GroupUcMapper {
 	public static mapClassToClassInfoDto(clazz: Class, teachers: UserDo[], schoolYear?: SchoolYearEntity): ClassInfoDto {
 		const name = clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name;
 		const isUpgradable = clazz.gradeLevel !== 13 && !clazz.successor;
+		const teacherNames = GroupUcMapper.getLastNamesOfUsers(teachers);
 
 		const mapped = new ClassInfoDto({
 			id: clazz.id,
 			type: ClassRootType.CLASS,
 			name,
 			externalSourceName: clazz.source,
-			teacherNames: teachers.map((user: UserDo) => user.lastName),
+			teacherNames,
 			schoolYear: schoolYear?.name,
 			isUpgradable,
 			studentCount: clazz.userIds ? clazz.userIds.length : 0,
