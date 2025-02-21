@@ -181,7 +181,9 @@ describe('LessonDtoMapper', () => {
 		describe('when mapping LessonResponse to lesson DTO with lernstore content', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
-					content: { resources: [faker.internet.url(), faker.lorem.text()] } as unknown as ComponentLernstorePropsImpl,
+					content: {
+						resources: [{ url: faker.internet.url(), description: faker.lorem.text() }],
+					} as ComponentLernstorePropsImpl,
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
@@ -224,7 +226,7 @@ describe('LessonDtoMapper', () => {
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['unknown']) as unknown as LessonContentResponseComponentEnum,
+					component: faker.helpers.arrayElement(['unknown']) as LessonContentResponseComponentEnum,
 					hidden: faker.datatype.boolean(),
 				};
 

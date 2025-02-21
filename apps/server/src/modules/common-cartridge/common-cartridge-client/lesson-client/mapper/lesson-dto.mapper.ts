@@ -56,7 +56,7 @@ export class LessonDtoMapper {
 		return lessonMaterialsDto;
 	}
 
-	public static mapToLessonContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
+	private static mapToLessonContentDto(lessonContentResponse: LessonContentResponse): LessonContentDto | null {
 		switch (lessonContentResponse.component) {
 			case LessonContentResponseComponentEnum.Text:
 				return new LessonContentDto({

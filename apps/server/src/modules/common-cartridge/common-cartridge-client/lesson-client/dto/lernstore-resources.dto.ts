@@ -1,5 +1,3 @@
-import { LernstoreResources } from '../lessons-api-client';
-
 export class LernstoreResourcesDto {
 	public client: string;
 
@@ -11,7 +9,7 @@ export class LernstoreResourcesDto {
 
 	public url?: string;
 
-	constructor(props: LernstoreResources) {
+	constructor(props: LernstoreResourcesDto) {
 		this.client = props.client;
 		this.description = props.description;
 		this.merlinReference = props.merlinReference;
