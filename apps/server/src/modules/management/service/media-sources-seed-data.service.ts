@@ -45,6 +45,7 @@ export class MediaSourcesSeedDataService {
 
 			return 1;
 		}
+
 		return 0;
 	}
 
