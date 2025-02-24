@@ -6,10 +6,11 @@ import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardSe
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
 import { boardNodeAuthorizableFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
-import { CourseCopyService, CourseService } from '@modules/learnroom';
+import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';

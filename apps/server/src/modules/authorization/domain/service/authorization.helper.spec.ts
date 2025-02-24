@@ -1,6 +1,5 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
-import { courseFactory } from '@modules/learnroom/testing';
+import { courseEntityFactory, courseFactory } from '@modules/course/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';

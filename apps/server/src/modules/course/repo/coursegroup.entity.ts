@@ -6,6 +6,7 @@ import type { TaskParent } from '../../../shared/domain/entity/task.entity';
 import type { User } from '../../../shared/domain/entity/user.entity';
 import { EntityWithSchool } from '../../../shared/domain/interface';
 import { EntityId } from '../../../shared/domain/types';
+// eslint-disable-next-line import/no-cycle
 import { CourseEntity } from './course.entity';
 
 export interface CourseGroupProperties {

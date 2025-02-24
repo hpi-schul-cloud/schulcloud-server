@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,7 +13,6 @@ import { BoardNodeService } from '../board-node.service';
 import { ColumnBoardCopyService, CopyColumnBoardParams } from './column-board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
-import { courseEntityFactory } from '@modules/course/testing';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(ColumnBoardCopyService.name, () => {

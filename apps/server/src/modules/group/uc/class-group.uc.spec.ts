@@ -9,8 +9,9 @@ import {
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
+import { CourseDoService } from '@modules/course';
+import { courseFactory } from '@modules/course/testing';
 import { ClassGroupUc } from '@modules/group/uc/class-group.uc';
-import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
@@ -38,7 +39,6 @@ import { GroupService } from '../service';
 import { groupFactory } from '../testing';
 import { ClassInfoDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
-import { courseFactory } from '@modules/learnroom/testing';
 
 describe('ClassGroupUc', () => {
 	let module: TestingModule;

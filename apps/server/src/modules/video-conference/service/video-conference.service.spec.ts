@@ -5,11 +5,11 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
+import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';

@@ -1,11 +1,10 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course, CourseDoService } from '@modules/course';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { CourseDoService } from '@modules/learnroom';
-import { Course } from '@modules/learnroom/domain';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,

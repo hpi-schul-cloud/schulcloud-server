@@ -1,7 +1,6 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
-import { courseFactory } from '@modules/learnroom/testing';
+import { courseEntityFactory, courseFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';

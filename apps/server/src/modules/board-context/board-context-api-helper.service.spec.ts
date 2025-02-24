@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@modules/board';
+import { CourseService } from '@modules/course';
 import { CourseEntity, CourseFeatures, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ConfigService } from '@nestjs/config';

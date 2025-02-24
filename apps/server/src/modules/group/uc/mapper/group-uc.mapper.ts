@@ -1,5 +1,5 @@
 import { Class } from '@modules/class/domain';
-import { Course } from '@modules/learnroom/domain';
+import { Course } from '@modules/course';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { UserDO } from '@shared/domain/domainobject';

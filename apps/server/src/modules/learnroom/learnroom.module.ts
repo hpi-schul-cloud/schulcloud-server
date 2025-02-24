@@ -2,6 +2,7 @@ import { LoggerModule } from '@core/logger';
 import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
+import { CourseModule } from '@modules/course';
 import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
 import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
@@ -13,7 +14,6 @@ import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
-import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import {
 	ColumnBoardNodeRepo,
@@ -22,19 +22,14 @@ import {
 	DashboardRepo,
 	LegacyBoardRepo,
 } from './repo';
-import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
 import {
 	BoardCopyService,
 	CommonCartridgeImportService,
 	CourseCopyService,
-	CourseDoService,
 	CourseGroupService,
 	CourseRoomsService,
-	CourseService,
-	CourseSyncService,
 	DashboardService,
-	GroupDeletedHandlerService,
 } from './service';
 
 /**
@@ -43,6 +38,7 @@ import {
  */
 @Module({
 	imports: [
+		CourseModule,
 		forwardRef(() => BoardModule),
 		CopyHelperModule,
 		ContextExternalToolModule,
@@ -69,30 +65,13 @@ import {
 		CourseGroupRepo,
 		CourseGroupService,
 		CourseRepo,
-		{
-			provide: COURSE_REPO,
-			useClass: CourseMikroOrmRepo,
-		},
-		CourseService,
-		CourseDoService,
-		CourseSyncService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
 		LegacyBoardRepo,
 		CourseRoomsService,
-		GroupDeletedHandlerService,
 		ColumnBoardNodeRepo,
 	],
-	exports: [
-		CourseCopyService,
-		CourseService,
-		CourseDoService,
-		CourseSyncService,
-		CourseRoomsService,
-		CommonCartridgeImportService,
-		CourseGroupService,
-		DashboardService,
-	],
+	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService, CourseGroupService, DashboardService],
 })
 export class LearnroomModule {}

@@ -23,7 +23,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		this.course = wrap(props.course).toReference();
 	}
 
-	@OneToOne({ type: () => CourseEntity, fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
+	@OneToOne({ entity: () => CourseEntity, fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
 	course: IdentifiedReference<CourseEntity>;
 
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })

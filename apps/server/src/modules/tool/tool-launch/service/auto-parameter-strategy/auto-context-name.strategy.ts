@@ -5,8 +5,8 @@ import {
 	ColumnBoard,
 	MediaBoard,
 } from '@modules/board';
+import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
-import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterType, ToolContextType } from '../../../common/enum';

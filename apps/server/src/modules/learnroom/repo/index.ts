@@ -1,7 +1,7 @@
+export { CourseMikroOrmRepo } from '../../course/repo/course-mikro-orm.repo';
 export { ColumnBoardBoardElement } from './mikro-orm/column-board-board-element.entity';
 export { ColumnBoardNode, ColumnBoardNodeProps } from './mikro-orm/column-board-node.entity';
 export { ColumnBoardNodeRepo } from './mikro-orm/column-board-node.repo';
-export { CourseMikroOrmRepo } from './mikro-orm/course.repo';
 export { DashboardElementRepo } from './mikro-orm/dashboard-element.repo';
 export { DashboardEntity, DashboardGridElementEntity } from './mikro-orm/dashboard.entity';
 export { DashboardRepo } from './mikro-orm/dashboard.repo';

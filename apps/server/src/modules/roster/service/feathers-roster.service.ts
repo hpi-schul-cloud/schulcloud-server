@@ -1,5 +1,5 @@
+import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
-import { CourseService } from '@modules/learnroom/service';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';

@@ -1,7 +1,7 @@
 import { type AnyBoardNode, BoardExternalReferenceType, BoardNodeService, isColumnBoard } from '@modules/board';
+import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { Group, GroupService } from '@modules/group';
-import { CourseService } from '@modules/learnroom';
 import { Injectable } from '@nestjs/common';
 import { ToolContextType } from '../../../common/enum';
 import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';

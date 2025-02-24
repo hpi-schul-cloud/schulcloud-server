@@ -2,6 +2,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { BoardNodeFactory, BoardNodeService } from '@modules/board';
 import { LinkElement, RichTextElement } from '@modules/board/domain';
+import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
@@ -11,7 +12,6 @@ import { userFactory } from '@testing/factory/user.factory';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
-import { CourseService } from './course.service';
 
 describe('CommonCartridgeImportService', () => {
 	let orm: MikroORM;

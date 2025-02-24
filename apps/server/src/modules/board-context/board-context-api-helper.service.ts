@@ -1,6 +1,6 @@
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
+import { CourseService } from '@modules/course';
 import { CourseFeatures } from '@modules/course/repo';
-import { CourseService } from '@modules/learnroom';
 import { RoomService } from '@modules/room';
 import { SchoolFeature } from '@modules/school/domain';
 import { BadRequestException, Injectable } from '@nestjs/common';

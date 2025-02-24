@@ -9,9 +9,9 @@ import {
 } from '@modules/authorization';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
+import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { CourseService } from '@modules/learnroom';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';

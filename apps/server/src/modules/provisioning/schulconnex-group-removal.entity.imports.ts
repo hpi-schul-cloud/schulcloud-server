@@ -1,6 +1,5 @@
 import { ClassEntity } from '@modules/class/entity';
-import { CourseEntity } from '@modules/course/repo/course.entity';
-import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
