@@ -4,6 +4,7 @@ import { ComponentGeogebraPropsDto } from '../dto/component-geogebra-props.dto';
 import { ComponentInternalPropsDto } from '../dto/component-internal-props.dto';
 import { ComponentLernstorePropsDto } from '../dto/component-lernstore-props.dto';
 import { ComponentTextPropsDto } from '../dto/component-text-props.dto';
+import { LernstoreResourcesDto } from '../dto/lernstore-resources.dto';
 import {
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
@@ -107,9 +108,12 @@ export class LessonDtoMapper {
 		lessonContentResponse: LessonContentResponse
 	): ComponentLernstorePropsDto {
 		if (!lessonContentResponse.content) {
-			return { resources: [] };
+			return new ComponentLernstorePropsDto([]);
 		}
 
-		return new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl);
+		const lernstoreContents = lessonContentResponse.content as ComponentLernstorePropsImpl;
+		const resources = lernstoreContents.resources.map((resource) => new LernstoreResourcesDto(resource));
+
+		return new ComponentLernstorePropsDto(resources);
 	}
 }
