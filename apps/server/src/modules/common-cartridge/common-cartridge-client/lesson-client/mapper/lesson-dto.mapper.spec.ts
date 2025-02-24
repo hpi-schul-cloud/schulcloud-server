@@ -217,6 +217,42 @@ describe('LessonDtoMapper', () => {
 			});
 		});
 
+		describe('when mapping LessonResponse to lesson DTO without lernstore content', () => {
+			const setup = () => {
+				const lessonContentResponse: LessonContentResponse = {
+					content: undefined,
+					_id: faker.string.uuid(),
+					id: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+					component: faker.helpers.arrayElement(['resources']),
+					hidden: faker.datatype.boolean(),
+				};
+
+				const lessonResponse: LessonResponse = {
+					_id: faker.string.uuid(),
+					id: faker.string.uuid(),
+					name: faker.lorem.sentence(),
+					courseId: faker.string.uuid(),
+					courseGroupId: faker.string.uuid(),
+					hidden: faker.datatype.boolean(),
+					position: faker.number.int(),
+					contents: [lessonContentResponse],
+					materials: [materialResponse],
+				};
+
+				return { lessonResponse, lessonContentResponse };
+			};
+
+			it('should return LessonDto without lernstore content', () => {
+				const { lessonResponse } = setup();
+
+				const result = LessonDtoMapper.mapToLessonDto(lessonResponse);
+
+				expect(result).toBeInstanceOf(LessonDto);
+				expect(result.contents[0].component).toEqual('resources');
+			});
+		});
+
 		describe('when mapping LessonResponse to lesson DTO with an empty content', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
