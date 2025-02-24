@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import type { ProvisioningConfig } from '@modules/provisioning';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -13,7 +14,6 @@ import { User } from '@shared/domain/entity';
 import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
@@ -635,7 +635,7 @@ describe('GroupService', () => {
 
 				await service.removeUsersFromGroup('groupId', [userId]);
 
-				expect(group.removeUser).toHaveBeenCalledWith(expect.objectContaining({ id: userDo.id }));
+				expect(group.removeUser).toHaveBeenCalledWith(userDo.id);
 			});
 
 			it('should call groupRepo.save', async () => {

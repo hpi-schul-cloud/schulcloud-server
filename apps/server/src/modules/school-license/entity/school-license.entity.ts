@@ -1,6 +1,6 @@
 import { Entity, Enum, Index, ManyToOne } from '@mikro-orm/core';
+import { SchoolEntity } from '@modules/school/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { SchoolEntity } from '@shared/domain/entity';
 import { SchoolLicenseType } from '../enum';
 
 export interface SchoolLicenseProps {
