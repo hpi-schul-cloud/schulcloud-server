@@ -5,8 +5,6 @@ export class ComponentLernstorePropsDto {
 	public resources: LernstoreResourcesDto[];
 
 	constructor(lernstoreContent: ComponentLernstorePropsImpl) {
-		this.resources = lernstoreContent.resources
-			? lernstoreContent.resources.map((resource) => new LernstoreResourcesDto(resource))
-			: [];
+		this.resources = lernstoreContent.resources.map((resource) => new LernstoreResourcesDto(resource));
 	}
 }

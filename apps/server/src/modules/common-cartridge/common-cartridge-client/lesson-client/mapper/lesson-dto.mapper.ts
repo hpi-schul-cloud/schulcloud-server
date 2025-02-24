@@ -96,10 +96,20 @@ export class LessonDtoMapper {
 					title: lessonContentResponse.title,
 					component: lessonContentResponse.component,
 					hidden: lessonContentResponse.hidden,
-					content: new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl),
+					content: this.mapContentOfLernstoreElement(lessonContentResponse),
 				});
 			default:
 				return null;
 		}
+	}
+
+	private static mapContentOfLernstoreElement(
+		lessonContentResponse: LessonContentResponse
+	): ComponentLernstorePropsDto {
+		if (!lessonContentResponse.content) {
+			return { resources: [] };
+		}
+
+		return new ComponentLernstorePropsDto(lessonContentResponse.content as ComponentLernstorePropsImpl);
 	}
 }
