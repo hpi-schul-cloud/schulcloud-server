@@ -9,44 +9,58 @@ import {
 	RobjExportSchuelerMigration,
 	RobjExportSchule,
 } from '@infra/tsp-client';
+import {
+	robjExportKlasseFactory,
+	robjExportLehrerFactory,
+	robjExportLehrerMigrationFactory,
+	robjExportSchuelerFactory,
+	robjExportSchuelerMigrationFactory,
+	robjExportSchuleFactory,
+} from '@infra/tsp-client/testing';
 import { Account } from '@modules/account';
-import { ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
+import {
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '@modules/provisioning/testing';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { System } from '@modules/system';
-import { systemFactory } from '@modules/system/testing';
+import { System, SystemService, SystemType } from '@modules/system';
+import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserDo } from '@modules/user/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SyncStrategyTarget } from '../sync-strategy.types';
+import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspSchoolService } from './tsp-school.service';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
-import { TspSyncService } from './tsp-sync.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
 
 describe(TspSyncStrategy.name, () => {
 	let module: TestingModule;
 	let sut: TspSyncStrategy;
-	let tspSyncService: DeepMocked<TspSyncService>;
+	let tspSyncService: DeepMocked<TspSchoolService>;
 	let tspFetchService: DeepMocked<TspFetchService>;
 	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
 	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
 	let configService: DeepMocked<ConfigService<TspSyncConfig, true>>;
+	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TspSyncStrategy,
 				{
-					provide: TspSyncService,
-					useValue: createMock<TspSyncService>(),
+					provide: TspSchoolService,
+					useValue: createMock<TspSchoolService>(),
 				},
 				{
 					provide: TspFetchService,
@@ -76,23 +90,26 @@ describe(TspSyncStrategy.name, () => {
 					provide: TspSyncMigrationService,
 					useValue: createMock<TspSyncMigrationService>(),
 				},
+				{
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(TspSyncStrategy);
-		tspSyncService = module.get(TspSyncService);
+		tspSyncService = module.get(TspSchoolService);
 		tspFetchService = module.get(TspFetchService);
 		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
 		tspSyncMigrationService = module.get(TspSyncMigrationService);
 		configService = module.get(ConfigService);
+		systemService = module.get(SystemService);
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
 		jest.resetAllMocks();
-		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -143,9 +160,9 @@ describe(TspSyncStrategy.name, () => {
 		tspFetchService.fetchTspTeacherMigrations.mockResolvedValueOnce(params.fetchedTeacherMigrations ?? []);
 		tspFetchService.fetchTspStudentMigrations.mockResolvedValueOnce(params.fetchedStudentMigrations ?? []);
 
-		tspSyncService.findSchool.mockResolvedValue(params.foundSchool ?? undefined);
-		tspSyncService.findSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
-		tspSyncService.findTspSystemOrFail.mockResolvedValueOnce(params.foundSystem ?? systemFactory.build());
+		tspSyncService.findSchool.mockResolvedValueOnce(params.foundSchool ?? undefined);
+		tspSyncService.findAllSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
+		systemService.find.mockResolvedValueOnce(params.foundSystem ? [params.foundSystem] : []);
 
 		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
 
@@ -165,34 +182,58 @@ describe(TspSyncStrategy.name, () => {
 	describe('sync', () => {
 		describe('when sync is called', () => {
 			const setup = () => {
-				const oauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: faker.string.alpha(),
-						provisioningStrategy: SystemProvisioningStrategy.TSP,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: faker.string.alpha(),
-						roles: [],
-					}),
+				const system = systemFactory.build({
+					type: SystemType.OIDC,
+					provisioningStrategy: SystemProvisioningStrategy.TSP,
+					oauthConfig: systemOauthConfigFactory.build(),
 				});
-				const tspTeacher: RobjExportLehrerMigration = {
-					lehrerUidAlt: faker.string.alpha(),
-					lehrerUidNeu: faker.string.alpha(),
-				};
 
-				const tspStudent: RobjExportSchuelerMigration = {
-					schuelerUidAlt: faker.string.alpha(),
-					schuelerUidNeu: faker.string.alpha(),
-				};
+				const systemDto = provisioningSystemDtoFactory.build({
+					systemId: system.id,
+					provisioningStrategy: SystemProvisioningStrategy.TSP,
+				});
+
+				const externalUser = externalUserDtoFactory.build({
+					externalId: faker.string.uuid(),
+					roles: [],
+				});
+
+				const oauthDataDto = oauthDataDtoFactory.build({ system: systemDto, externalUser });
+
+				const tspTeacherMigration = robjExportLehrerMigrationFactory.build();
+
+				const tspStudentMigration = robjExportSchuelerMigrationFactory.build();
+
+				const school = schoolFactory.build();
+
+				const tspTeachers = robjExportLehrerFactory.build();
+
+				const tspStudents = robjExportSchuelerFactory.build();
+
+				const tspClasses = robjExportKlasseFactory.build();
 
 				setupMockServices({
-					fetchedStudentMigrations: [tspStudent],
-					fetchedTeacherMigrations: [tspTeacher],
+					fetchedClasses: [tspClasses],
+					fetchedTeachers: [tspTeachers],
+					fetchedStudents: [tspStudents],
+					fetchedStudentMigrations: [tspStudentMigration],
+					fetchedTeacherMigrations: [tspTeacherMigration],
 					mappedOauthDto: [oauthDataDto],
+					foundSystemSchools: [school],
+					foundSystem: system,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
 
-				return { oauthDataDto };
+				return {
+					oauthDataDto,
+					system,
+					school,
+					tspTeachers,
+					tspStudents,
+					tspClasses,
+					tspStudentMigration,
+					tspTeacherMigration,
+				};
 			};
 
 			it('should find the tsp system', async () => {
@@ -200,49 +241,66 @@ describe(TspSyncStrategy.name, () => {
 
 				await sut.sync();
 
-				expect(tspSyncService.findTspSystemOrFail).toHaveBeenCalled();
+				expect(systemService.find).toHaveBeenCalledTimes(1);
 			});
 
 			it('should migrate the legacy data', async () => {
-				setup();
+				const { oauthDataDto } = setup();
 
 				await sut.sync();
 
-				expect(tspLegacyMigrationService.migrateLegacyData).toHaveBeenCalled();
+				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalledTimes(1);
+				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalledWith(
+					oauthDataDto.system.systemId
+				);
 			});
 
 			it('should fetch the schools', async () => {
-				setup();
+				const { system } = setup();
 
 				await sut.sync();
 
-				expect(tspFetchService.fetchTspSchools).toHaveBeenCalled();
+				expect(tspFetchService.fetchTspSchools).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspSchools).toHaveBeenCalledWith(system, 1);
 			});
 
 			it('should fetch the data', async () => {
-				setup();
+				const { system } = setup();
 
 				await sut.sync();
 
-				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalled();
-				expect(tspFetchService.fetchTspStudents).toHaveBeenCalled();
-				expect(tspFetchService.fetchTspClasses).toHaveBeenCalled();
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, 10);
+
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, 10);
+
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledTimes(1);
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, 10);
 			});
 
 			it('should load all schools', async () => {
-				setup();
+				const { system } = setup();
 
 				await sut.sync();
 
-				expect(tspSyncService.findSchoolsForSystem).toHaveBeenCalled();
+				expect(tspSyncService.findAllSchoolsForSystem).toHaveBeenCalledTimes(1);
+				expect(tspSyncService.findAllSchoolsForSystem).toHaveBeenCalledWith(system);
 			});
 
 			it('should map to OauthDataDto', async () => {
-				setup();
+				const { system, school, tspTeachers, tspStudents, tspClasses } = setup();
 
 				await sut.sync();
 
-				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalled();
+				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalledTimes(1);
+				expect(tspOauthDataMapper.mapTspDataToOauthData).toHaveBeenCalledWith(
+					system,
+					[school],
+					[tspTeachers],
+					[tspStudents],
+					[tspClasses]
+				);
 			});
 
 			it('should call provisioning service with mapped OauthDataDtos', async () => {
@@ -255,88 +313,124 @@ describe(TspSyncStrategy.name, () => {
 
 			describe('when feature tsp migration is enabled', () => {
 				it('should fetch teacher migrations', async () => {
-					setup();
+					const { system } = setup();
 
 					await sut.sync();
 
-					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalled();
+					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalledTimes(1);
+					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalledWith(system);
 				});
 
 				it('should fetch student migrations', async () => {
-					setup();
+					const { system } = setup();
 
 					await sut.sync();
 
-					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalled();
+					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalledTimes(1);
+					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalledWith(system);
 				});
 
 				it('should call tspSyncMigrationService', async () => {
-					setup();
+					const { system, tspStudentMigration, tspTeacherMigration } = setup();
 
 					await sut.sync();
 
-					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalled();
+					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalledTimes(1);
+					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalledWith(
+						system,
+						new Map([
+							[tspStudentMigration.schuelerUidAlt, tspStudentMigration.schuelerUidNeu],
+							[tspTeacherMigration.lehrerUidAlt, tspTeacherMigration.lehrerUidNeu],
+						])
+					);
 				});
+			});
+		});
+
+		describe('when tsp system is not found', () => {
+			const setup = () => {
+				systemService.find.mockResolvedValueOnce([]);
+			};
+
+			it('should throw a TspSystemNotFound exception', async () => {
+				setup();
+
+				await expect(sut.sync()).rejects.toThrow();
 			});
 		});
 
 		describe('when school does not exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const system = systemFactory.build({
+					type: SystemType.OIDC,
+					provisioningStrategy: SystemProvisioningStrategy.TSP,
+					oauthConfig: systemOauthConfigFactory.build(),
+				});
+
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
 					fetchedSchools: tspSchools,
+					foundSystem: system,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
+
+				return { system, tspSchool };
 			};
 
 			it('should create the school', async () => {
-				setup();
+				const { system, tspSchool } = setup();
 
 				await sut.sync();
 
-				expect(tspSyncService.createSchool).toHaveBeenCalled();
+				expect(tspSyncService.createSchool).toHaveBeenCalledTimes(1);
+				expect(tspSyncService.createSchool).toHaveBeenCalledWith(system, tspSchool.schuleNummer, tspSchool.schuleName);
 			});
 		});
 
 		describe('when school does exist', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: faker.string.alpha(),
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
 				const tspSchools = [tspSchool];
 				const school = schoolFactory.build();
 
 				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
 					fetchedSchools: tspSchools,
 					foundSchool: school,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
+
+				return { school, tspSchool };
 			};
 
 			it('should update the school', async () => {
-				setup();
+				const { school, tspSchool } = setup();
 
 				await sut.sync();
 
-				expect(tspSyncService.updateSchool).toHaveBeenCalled();
+				expect(tspSyncService.updateSchool).toHaveBeenCalledTimes(1);
+				expect(tspSyncService.updateSchool).toHaveBeenCalledWith(school, tspSchool.schuleName);
 			});
 		});
 
 		describe('when tsp school does not have a schulnummer', () => {
 			const setup = () => {
-				const tspSchool: RobjExportSchule = {
-					schuleNummer: undefined,
-					schuleName: faker.string.alpha(),
-				};
+				const tspSchool = robjExportSchuleFactory.build();
+				tspSchool.schuleNummer = undefined;
 				const tspSchools = [tspSchool];
 
 				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
 					fetchedSchools: tspSchools,
 					configValues: [1, 10, true, 10, 1, 50],
 				});
