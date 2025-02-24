@@ -5,11 +5,11 @@ import { KeycloakAdministrationService } from '@infra/identity-management/keyclo
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { UserRepo } from '@modules/user/repo';
 import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';

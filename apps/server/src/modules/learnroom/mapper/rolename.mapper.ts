@@ -1,6 +1,7 @@
 import { EntityDTO } from '@mikro-orm/core';
+import { User } from '@modules/user/repo';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Course, Role, User } from '@shared/domain/entity';
+import { Course, Role } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 
 export class RoleNameMapper {

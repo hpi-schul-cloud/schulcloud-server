@@ -15,11 +15,11 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo } from '../repo';
@@ -43,12 +43,12 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool): Promise<Pseudonym> {
+	public async findByUserAndToolOrThrow(user: UserDo, tool: ExternalTool): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
 
-		const pseudonym: Pseudonym = await this.externalToolPseudonymRepo.findByUserIdAndToolIdOrFail(user.id, tool.id);
+		const pseudonym = await this.externalToolPseudonymRepo.findByUserIdAndToolIdOrFail(user.id, tool.id);
 
 		return pseudonym;
 	}
@@ -58,17 +58,17 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		const pseudonyms: Pseudonym[] = await this.externalToolPseudonymRepo.findByUserId(userId);
+		const pseudonyms = await this.externalToolPseudonymRepo.findByUserId(userId);
 
 		return pseudonyms;
 	}
 
-	public async findOrCreatePseudonym(user: UserDO, tool: ExternalTool): Promise<Pseudonym> {
+	public async findOrCreatePseudonym(user: UserDo, tool: ExternalTool): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
 
-		let pseudonym: Pseudonym | null = await this.externalToolPseudonymRepo.findByUserIdAndToolId(user.id, tool.id);
+		let pseudonym = await this.externalToolPseudonymRepo.findByUserIdAndToolId(user.id, tool.id);
 		if (!pseudonym) {
 			pseudonym = new Pseudonym({
 				id: new ObjectId().toHexString(),
@@ -98,7 +98,7 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		const deletedPseudonymIds: EntityId[] = await this.externalToolPseudonymRepo.deletePseudonymsByUserId(userId);
+		const deletedPseudonymIds = await this.externalToolPseudonymRepo.deletePseudonymsByUserId(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
 			DomainOperationReportBuilder.build(OperationType.DELETE, deletedPseudonymIds.length, deletedPseudonymIds),
@@ -119,13 +119,13 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 	}
 
 	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
-		const result: Pseudonym | null = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
+		const result = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
 
 		return result;
 	}
 
 	public async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
-		const result: Page<Pseudonym> = await this.externalToolPseudonymRepo.findPseudonym(query, options);
+		const result = await this.externalToolPseudonymRepo.findPseudonym(query, options);
 
 		return result;
 	}

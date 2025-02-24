@@ -1,13 +1,13 @@
-import { AccountService, Account } from '@modules/account';
-import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
+import { Account, AccountService } from '@modules/account';
+import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
+import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
-	UserMigrationDatabaseOperationFailedLoggableException,
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
+	UserMigrationDatabaseOperationFailedLoggableException,
 } from '../loggable';
 
 @Injectable()
@@ -18,14 +18,14 @@ export class UserMigrationService {
 		private readonly logger: Logger
 	) {}
 
-	async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
+	public async migrateUser(currentUserId: EntityId, externalUserId: string, targetSystemId: EntityId): Promise<void> {
 		await this.checkForExternalIdDuplicatesAndThrow(externalUserId, targetSystemId);
 
-		const userDO: UserDO = await this.userService.findById(currentUserId);
-		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
+		const userDO = await this.userService.findById(currentUserId);
+		const account = await this.accountService.findByUserIdOrFail(currentUserId);
 
-		const userDOCopy: UserDO = new UserDO({ ...userDO });
-		const accountCopy: Account = new Account(account.getProps());
+		const userDOCopy = new UserDo({ ...userDO });
+		const accountCopy = new Account(account.getProps());
 
 		try {
 			await this.doMigration(userDO, externalUserId, account, targetSystemId);
@@ -36,13 +36,13 @@ export class UserMigrationService {
 		}
 	}
 
-	async updateExternalUserId(userId: string, newExternalUserId: string): Promise<void> {
-		const userDO: UserDO = await this.userService.findById(userId);
+	public async updateExternalUserId(userId: string, newExternalUserId: string): Promise<void> {
+		const userDO = await this.userService.findById(userId);
 		userDO.externalId = newExternalUserId;
 		await this.userService.save(userDO);
 	}
 
-	hasUserMigratedInMigrationPhase(userDO: UserDO, userLoginMigrationDO: UserLoginMigrationDO): boolean {
+	public hasUserMigratedInMigrationPhase(userDO: UserDo, userLoginMigrationDO: UserLoginMigrationDO): boolean {
 		if (!userDO.externalId || !userDO.lastLoginSystemChange || userLoginMigrationDO.closedAt) {
 			return false;
 		}
@@ -50,7 +50,7 @@ export class UserMigrationService {
 	}
 
 	private async doMigration(
-		userDO: UserDO,
+		userDO: UserDo,
 		externalUserId: string,
 		account: Account,
 		targetSystemId: string
@@ -64,7 +64,7 @@ export class UserMigrationService {
 		await this.accountService.save(account);
 	}
 
-	private async tryRollbackMigration(currentUserId: EntityId, userDOCopy: UserDO, accountCopy: Account): Promise<void> {
+	private async tryRollbackMigration(currentUserId: EntityId, userDOCopy: UserDo, accountCopy: Account): Promise<void> {
 		try {
 			await this.userService.save(userDOCopy);
 			await this.accountService.save(accountCopy);
@@ -73,8 +73,8 @@ export class UserMigrationService {
 		}
 	}
 
-	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId) {
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUserId, targetSystemId);
+	private async checkForExternalIdDuplicatesAndThrow(externalUserId: string, targetSystemId: EntityId): Promise<void> {
+		const existingUser = await this.userService.findByExternalId(externalUserId, targetSystemId);
 		if (existingUser) {
 			throw new UserLoginMigrationUserAlreadyMigratedLoggableException(externalUserId);
 		}

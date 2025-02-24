@@ -6,8 +6,8 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 
 @Injectable()

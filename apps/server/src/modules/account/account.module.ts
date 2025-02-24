@@ -1,10 +1,10 @@
 import { LoggerModule } from '@core/logger/logger.module';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { SystemModule } from '@modules/system';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UserRepo } from '@shared/repo/user';
 import { AccountConfig } from './account-config';
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
@@ -20,9 +20,8 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 }
 
 @Module({
-	imports: [CqrsModule, IdentityManagementModule, SystemModule, LoggerModule],
+	imports: [CqrsModule, IdentityManagementModule, SystemModule, LoggerModule, UserModule],
 	providers: [
-		UserRepo, // should not be added as provider
 		AccountRepo,
 		AccountServiceDb,
 		AccountServiceIdm,

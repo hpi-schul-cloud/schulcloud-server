@@ -13,6 +13,7 @@ import { roomEntityFactory } from '@modules/room/testing';
 import { SchoolFeature } from '@modules/school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TargetModels, VideoConference } from '@shared/domain/entity';
@@ -20,7 +21,6 @@ import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/inter
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
