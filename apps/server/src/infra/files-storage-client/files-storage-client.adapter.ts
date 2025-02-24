@@ -69,7 +69,7 @@ export class FilesStorageClientAdapter {
 			// INFO: we need to upload the file to the files storage service without using the generated client,
 			// because the generated client does not support uploading files as FormData.
 			// const response = await this.api.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
-			const token = JwtExtractor.extractJwtFromRequest(this.req);
+			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
 			const url = new URL(
 				`${this.configService.getOrThrow<string>(
 					'FILES_STORAGE__SERVICE_BASE_URL'
@@ -81,6 +81,7 @@ export class FilesStorageClientAdapter {
 			formData.append('parentType', parentType);
 			const observable = this.httpService.post(url.toString(), formData, {
 				headers: {
+					responseType: 'arraybuffer',
 					'Content-Type': 'multipart/form-data',
 					Authorization: `Bearer ${token}`,
 				},
