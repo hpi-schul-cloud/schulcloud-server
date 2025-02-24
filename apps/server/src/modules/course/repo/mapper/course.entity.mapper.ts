@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolEntity } from '@modules/school/repo';
-import { User as UserEntity } from '@shared/domain/entity';
+import { User as UserEntity } from '@modules/user/repo';
 import { EntityId } from '@shared/domain/types';
 import { Course, CourseProps } from '../../domain';
 import { CourseEntity } from '../course.entity';

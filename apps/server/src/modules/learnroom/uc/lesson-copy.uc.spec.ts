@@ -6,14 +6,14 @@ import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/cop
 import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {

@@ -10,12 +10,11 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,

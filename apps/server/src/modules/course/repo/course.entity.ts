@@ -2,13 +2,11 @@ import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Prop
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
 import { SchoolEntity } from '@modules/school/repo';
+import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
-import { BaseEntityWithTimestamps } from '../../../shared/domain/entity/base.entity';
-import type { LessonParent } from '../../../shared/domain/entity/lesson.entity';
-import type { TaskParent } from '../../../shared/domain/entity/task.entity';
-import type { User } from '../../../shared/domain/entity/user.entity';
-import { EntityWithSchool } from '../../../shared/domain/interface/entity';
-import { EntityId } from '../../../shared/domain/types';
+import { BaseEntityWithTimestamps, LessonParent, TaskParent } from '@shared/domain/entity';
+import { EntityWithSchool } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { CourseGroupEntity } from './coursegroup.entity';
 
 export enum SyncAttribute {

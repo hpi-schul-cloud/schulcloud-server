@@ -1,9 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { CourseEntity } from './course.entity';
 import { CourseGroupEntity } from './coursegroup.entity';

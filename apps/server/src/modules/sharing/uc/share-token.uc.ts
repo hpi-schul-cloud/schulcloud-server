@@ -18,9 +18,9 @@ import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { TaskCopyService, TaskService } from '@modules/task';
+import { User } from '@modules/user/repo';
 import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {

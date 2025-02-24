@@ -1,9 +1,10 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
 import { LessonMapper } from './lesson.mapper';
 

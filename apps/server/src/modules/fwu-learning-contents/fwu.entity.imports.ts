@@ -1,3 +1,3 @@
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 
 export const TEST_ENTITIES = [User];

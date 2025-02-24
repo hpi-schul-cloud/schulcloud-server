@@ -4,17 +4,17 @@ import { Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { CourseGroupEntity, SyncAttribute } from '../../repo';
 import { courseFactory } from '../../testing';
 import { Course } from '../course.do';
+import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
 import { COURSE_REPO, CourseRepo } from '../interface';
 import { CourseSyncService } from './course-sync.service';
-import { CourseNotSynchronizedLoggableException, CourseAlreadySynchronizedLoggableException } from '../error';
 
 describe(CourseSyncService.name, () => {
 	let module: TestingModule;

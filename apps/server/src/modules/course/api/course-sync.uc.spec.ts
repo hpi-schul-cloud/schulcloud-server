@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { courseEntityFactory } from '@modules/course/testing';
+import { courseFactory } from '@modules/course/testing';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
-import { CourseSyncUc } from './course-sync.uc';
 import { CourseDoService, CourseSyncService } from '../domain';
+import { CourseSyncUc } from './course-sync.uc';
 
 describe(CourseSyncUc.name, () => {
 	let module: TestingModule;
@@ -64,7 +64,7 @@ describe(CourseSyncUc.name, () => {
 		describe('when a user stops a synchronization of a course with a group', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseEntityFactory.build();
+				const course = courseFactory.build();
 
 				courseService.findById.mockResolvedValueOnce(course);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -101,7 +101,7 @@ describe(CourseSyncUc.name, () => {
 		describe('when a user starts a synchronization of a course with a group', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseEntityFactory.build();
+				const course = courseFactory.build();
 				const group = groupFactory.build();
 
 				courseService.findById.mockResolvedValueOnce(course);

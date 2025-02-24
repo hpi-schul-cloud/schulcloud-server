@@ -15,8 +15,8 @@ import {
 } from '@modules/common-cartridge';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 
 @Injectable()

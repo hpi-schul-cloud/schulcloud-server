@@ -1,13 +1,13 @@
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
+import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { SyncAttribute } from '../../repo';
 import { Course } from '../course.do';
-import { COURSE_REPO, CourseRepo } from '../interface';
 import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
+import { COURSE_REPO, CourseRepo } from '../interface';
 
 @Injectable()
 export class CourseSyncService {

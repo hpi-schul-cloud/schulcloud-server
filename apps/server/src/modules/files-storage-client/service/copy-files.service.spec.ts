@@ -3,6 +3,7 @@ import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ComponentProperties,
@@ -11,7 +12,6 @@ import {
 	Material,
 	Submission,
 	Task,
-	User,
 } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';

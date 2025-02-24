@@ -1,11 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { Dashboard, GridElement } from '../../../domain/do/dashboard';
 import { LearnroomMetadata, LearnroomTypes } from '../../../types';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';

@@ -1,11 +1,9 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { SchoolEntity } from '@modules/school/repo';
-import { BaseEntityWithTimestamps } from '../../../shared/domain/entity/base.entity';
-import type { LessonParent } from '../../../shared/domain/entity/lesson.entity';
-import type { TaskParent } from '../../../shared/domain/entity/task.entity';
-import type { User } from '../../../shared/domain/entity/user.entity';
-import { EntityWithSchool } from '../../../shared/domain/interface';
-import { EntityId } from '../../../shared/domain/types';
+import { User } from '@modules/user/repo';
+import { BaseEntityWithTimestamps, LessonParent, TaskParent } from '@shared/domain/entity';
+import { EntityWithSchool } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 // eslint-disable-next-line import/no-cycle
 import { CourseEntity } from './course.entity';
 

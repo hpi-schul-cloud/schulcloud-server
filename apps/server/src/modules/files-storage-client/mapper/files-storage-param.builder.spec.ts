@@ -1,7 +1,8 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
-import { LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';

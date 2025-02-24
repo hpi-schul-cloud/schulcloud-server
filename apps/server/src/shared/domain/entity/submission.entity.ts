@@ -1,11 +1,11 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
 import { CourseGroupEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
+import type { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Task } from './task.entity';
-import type { User } from './user.entity';
 
 export interface SubmissionProperties {
 	school: SchoolEntity;

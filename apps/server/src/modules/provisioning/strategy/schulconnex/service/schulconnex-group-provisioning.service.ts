@@ -1,18 +1,18 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseDoService } from '@modules/course';
-import { Group, GroupFilter, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { CourseDoService } from '@modules/course';
+import { Group, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleService } from '@modules/role';
 import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, Page, UserDO } from '@shared/domain/domainobject';
+import { ExternalSource } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
@@ -34,7 +34,7 @@ export class SchulconnexGroupProvisioningService {
 		schoolId: EntityId | undefined,
 		systemId: EntityId
 	): Promise<ExternalGroupDto[]> {
-		let filteredGroups: ExternalGroupDto[] = externalGroups;
+		let filteredGroups = externalGroups;
 
 		const provisioningOptions: SchulConneXProvisioningOptions = await this.getProvisioningOptionsOrDefault(
 			schoolId,
@@ -82,10 +82,7 @@ export class SchulconnexGroupProvisioningService {
 	): Promise<Group | null> {
 		let organizationId: string | undefined;
 		if (externalSchool) {
-			const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
-				externalSchool.externalId,
-				systemId
-			);
+			const existingSchool = await this.schoolService.getSchoolByExternalId(externalSchool.externalId, systemId);
 
 			if (!existingSchool || !existingSchool.id) {
 				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup, externalSchool));
@@ -95,12 +92,9 @@ export class SchulconnexGroupProvisioningService {
 			organizationId = existingSchool.id;
 		}
 
-		const existingGroup: Group | null = await this.groupService.findByExternalSource(
-			externalGroup.externalId,
-			systemId
-		);
+		const existingGroup = await this.groupService.findByExternalSource(externalGroup.externalId, systemId);
 
-		const group: Group = new Group({
+		const group = new Group({
 			id: existingGroup?.id ?? new ObjectId().toHexString(),
 			name: externalGroup.name,
 			externalSource: new ExternalSource({
@@ -118,20 +112,20 @@ export class SchulconnexGroupProvisioningService {
 		});
 
 		if (externalGroup.otherUsers !== undefined) {
-			const otherUsers: GroupUser[] = await this.getFilteredGroupUsers(externalGroup, systemId);
+			const otherUsers = await this.getFilteredGroupUsers(externalGroup, systemId);
 
 			group.users = otherUsers;
 		}
 
-		const self: GroupUser | null = await this.getGroupUser(externalGroup.user, systemId);
+		const self = await this.getGroupUser(externalGroup.user, systemId);
 
 		if (!self) {
-			throw new NotFoundLoggableException(UserDO.name, { externalId: externalGroup.user.externalUserId });
+			throw new NotFoundLoggableException(UserDo.name, { externalId: externalGroup.user.externalUserId });
 		}
 
 		group.addUser(self);
 
-		const savedGroup: Group = await this.groupService.save(group);
+		const savedGroup = await this.groupService.save(group);
 
 		return savedGroup;
 	}
@@ -141,28 +135,28 @@ export class SchulconnexGroupProvisioningService {
 			return [];
 		}
 
-		const users: (GroupUser | null)[] = await Promise.all(
+		const users = await Promise.all(
 			externalGroup.otherUsers.map(
 				async (externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> =>
 					this.getGroupUser(externalGroupUser, systemId)
 			)
 		);
 
-		const filteredUsers: GroupUser[] = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
+		const filteredUsers = users.filter((groupUser): groupUser is GroupUser => groupUser !== null);
 
 		return filteredUsers;
 	}
 
 	private async getGroupUser(externalGroupUser: ExternalGroupUserDto, systemId: EntityId): Promise<GroupUser | null> {
-		const user: UserDO | null = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
-		const roles: RoleDto[] = await this.roleService.findByNames([externalGroupUser.roleName]);
+		const user = await this.userService.findByExternalId(externalGroupUser.externalUserId, systemId);
+		const roles = await this.roleService.findByNames([externalGroupUser.roleName]);
 
 		if (!user?.id || roles.length !== 1 || !roles[0].id) {
 			this.logger.info(new UserForGroupNotFoundLoggable(externalGroupUser));
 			return null;
 		}
 
-		const groupUser: GroupUser = new GroupUser({
+		const groupUser = new GroupUser({
 			userId: user.id,
 			roleId: roles[0].id,
 		});
@@ -175,21 +169,21 @@ export class SchulconnexGroupProvisioningService {
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
 	): Promise<Group[]> {
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const user = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user?.id) {
-			throw new NotFoundLoggableException(UserDO.name, { externalId: externalUserId });
+			throw new NotFoundLoggableException(UserDo.name, { externalId: externalUserId });
 		}
-		const userId: string = user.id;
+		const userId = user.id;
 
-		const filter: GroupFilter = { userId };
-		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups(filter);
+		const filter = { userId };
+		const existingGroupsOfUser = await this.groupService.findGroups(filter);
 
-		const groupsFromSystem: Group[] = existingGroupsOfUser.data.filter(
+		const groupsFromSystem = existingGroupsOfUser.data.filter(
 			(existingGroup: Group) => existingGroup.externalSource?.systemId === systemId
 		);
 
-		const groupsWithoutUser: Group[] = groupsFromSystem.filter((existingGroupFromSystem: Group) => {
+		const groupsWithoutUser = groupsFromSystem.filter((existingGroupFromSystem: Group) => {
 			const isUserInGroup = externalGroups.some(
 				(externalGroup: ExternalGroupDto) =>
 					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
@@ -198,31 +192,28 @@ export class SchulconnexGroupProvisioningService {
 			return !isUserInGroup;
 		});
 
-		const groupRemovePromises: Promise<Group | null>[] = groupsWithoutUser.map(
-			async (group: Group): Promise<Group | null> => {
-				group.removeUser(userId);
+		const groupRemovePromises = groupsWithoutUser.map(async (group: Group): Promise<Group | null> => {
+			group.removeUser(userId);
 
-				if (group.isEmpty()) {
-					const courses: Course[] = await this.courseService.findBySyncedGroup(group);
-					if (!courses || courses.length === 0) {
-						await this.groupService.delete(group);
-						return null;
-					}
+			if (group.isEmpty()) {
+				const courses = await this.courseService.findBySyncedGroup(group);
+				if (!courses || courses.length === 0) {
+					await this.groupService.delete(group);
+					return null;
 				}
-
-				return this.groupService.save(group);
 			}
-		);
 
-		const deletedAndModifiedGroups: (Group | null)[] = await Promise.all(groupRemovePromises);
+			return this.groupService.save(group);
+		});
 
-		const remainingGroups: Group[] = deletedAndModifiedGroups.filter((group: Group | null): group is Group => !!group);
+		const deletedAndModifiedGroups = await Promise.all(groupRemovePromises);
+		const remainingGroups = deletedAndModifiedGroups.filter((group: Group | null): group is Group => !!group);
 
 		return remainingGroups;
 	}
 
 	public async removeUserFromGroup(userId: EntityId, groupId: EntityId): Promise<Group | null> {
-		const group: Group = await this.groupService.findById(groupId);
+		const group = await this.groupService.findById(groupId);
 
 		if (!group.isMember(userId)) {
 			return null;
@@ -231,7 +222,7 @@ export class SchulconnexGroupProvisioningService {
 		group.removeUser(userId);
 
 		if (group.isEmpty()) {
-			const courses: Course[] = await this.courseService.findBySyncedGroup(group);
+			const courses = await this.courseService.findBySyncedGroup(group);
 
 			if (!courses.length) {
 				await this.groupService.delete(group);
@@ -239,7 +230,7 @@ export class SchulconnexGroupProvisioningService {
 			}
 		}
 
-		const savedGroup: Group = await this.groupService.save(group);
+		const savedGroup = await this.groupService.save(group);
 
 		return savedGroup;
 	}

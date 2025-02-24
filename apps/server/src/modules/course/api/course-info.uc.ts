@@ -1,14 +1,13 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
-import { Group, GroupService } from '@modules/group';
-import { School, SchoolService } from '@modules/school';
+import { GroupService } from '@modules/group';
+import { SchoolService } from '@modules/school';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { Page, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { IFindOptions, Pagination, Permission, SortOrder, SortOrderMap } from '@shared/domain/interface';
+import { Page } from '@shared/domain/domainobject';
+import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Course, CourseDoService, CourseFilter, CourseStatus } from '../domain';
+import { Course, CourseDoService, CourseStatus } from '../domain';
 import { CourseSortProps } from '../domain/interface/course-sort-props.enum';
 import { CourseInfoDto } from './dto';
 
@@ -31,21 +30,21 @@ export class CourseInfoUc {
 		pagination?: Pagination,
 		sortOrder: SortOrder = SortOrder.asc
 	): Promise<Page<CourseInfoDto>> {
-		const school: School = await this.schoolService.getSchoolById(schoolId);
+		const school = await this.schoolService.getSchoolById(schoolId);
 
-		const user: User = await this.authService.getUserWithPermissions(userId);
+		const user = await this.authService.getUserWithPermissions(userId);
 		this.authService.checkPermission(
 			user,
 			school,
 			AuthorizationContextBuilder.read([Permission.COURSE_ADMINISTRATION])
 		);
 
-		const order: SortOrderMap<Course> = { [sortByField]: sortOrder };
-		const filter: CourseFilter = { schoolId, status: courseStatusQueryType };
-		const options: IFindOptions<Course> = { pagination, order };
-		const courses: Page<Course> = await this.courseDoService.getCourseInfo(filter, options);
+		const order = { [sortByField]: sortOrder };
+		const filter = { schoolId, status: courseStatusQueryType };
+		const options = { pagination, order };
+		const courses = await this.courseDoService.getCourseInfo(filter, options);
 
-		const resolvedCourses: CourseInfoDto[] = await this.getCourseData(courses.data);
+		const resolvedCourses = await this.getCourseData(courses.data);
 
 		const page = new Page<CourseInfoDto>(resolvedCourses, courses.total);
 
@@ -53,12 +52,12 @@ export class CourseInfoUc {
 	}
 
 	private async getCourseData(courses: Course[]): Promise<CourseInfoDto[]> {
-		const courseInfos: CourseInfoDto[] = await Promise.all(
+		const courseInfos = await Promise.all(
 			courses.map(async (course) => {
 				const groupName = course.syncedWithGroup ? await this.getSyncedGroupName(course.syncedWithGroup) : undefined;
-				const teacherNames: string[] = await this.getCourseTeacherFullNames(course.teachers);
-				const classNames: string[] = await this.getCourseClassNamaes(course.classes);
-				const groupNames: string[] = await this.getCourseGroupNames(course.groups);
+				const teacherNames = await this.getCourseTeacherFullNames(course.teachers);
+				const classNames = await this.getCourseClassNamaes(course.classes);
+				const groupNames = await this.getCourseGroupNames(course.groups);
 
 				const mapped = new CourseInfoDto({
 					id: course.id,
@@ -76,15 +75,15 @@ export class CourseInfoUc {
 	}
 
 	private async getSyncedGroupName(groupId: EntityId): Promise<string> {
-		const group: Group = await this.groupService.findById(groupId);
+		const group = await this.groupService.findById(groupId);
 
 		return group.name;
 	}
 
 	private async getCourseTeacherFullNames(teacherIds: EntityId[]): Promise<string[]> {
-		const teacherNames: string[] = await Promise.all(
+		const teacherNames = await Promise.all(
 			teacherIds.map(async (teacherId): Promise<string> => {
-				const teacher: UserDO = await this.userService.findById(teacherId);
+				const teacher = await this.userService.findById(teacherId);
 				const fullName = teacher.firstName.concat(' ', teacher.lastName);
 
 				return fullName;
@@ -94,7 +93,7 @@ export class CourseInfoUc {
 	}
 
 	private async getCourseClassNamaes(classIds: EntityId[]): Promise<string[]> {
-		const classes: string[] = await Promise.all<Promise<string>[]>(
+		const classes = await Promise.all<Promise<string>[]>(
 			classIds.map(async (classId): Promise<string> => {
 				const clazz = await this.classService.findById(classId);
 
@@ -105,7 +104,7 @@ export class CourseInfoUc {
 	}
 
 	private async getCourseGroupNames(groupIds: EntityId[]): Promise<string[]> {
-		const groups: string[] = await Promise.all<Promise<string>[]>(
+		const groups = await Promise.all<Promise<string>[]>(
 			groupIds.map(async (groupId): Promise<string> => {
 				const group = await this.groupService.findById(groupId);
 

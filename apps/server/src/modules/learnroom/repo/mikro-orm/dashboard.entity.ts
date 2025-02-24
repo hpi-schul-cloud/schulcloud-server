@@ -10,9 +10,9 @@ import {
 	wrap,
 } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseEntity } from '@modules/course/repo/course.entity';
+import { CourseEntity } from '@modules/course/repo';
+import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { User } from '@shared/domain/entity/user.entity';
 
 export interface DashboardGridElementModelProperties {
 	id?: string;

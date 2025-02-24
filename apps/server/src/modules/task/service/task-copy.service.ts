@@ -1,8 +1,9 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { LessonEntity, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo/task';
 

@@ -3,8 +3,9 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { CourseEntity, CourseRepo } from '@modules/course/repo';
 import { LessonCopyParentParams, LessonCopyService, LessonService } from '@modules/lesson';
+import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LessonEntity, User } from '@shared/domain/entity';
+import { LessonEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { EntityId } from '@shared/domain/types';
 

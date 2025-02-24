@@ -1,6 +1,7 @@
 import { EntityDTO } from '@mikro-orm/core';
+import { User } from '@modules/user/repo';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { CourseEntity } from '../../repo';
 

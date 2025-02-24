@@ -1,6 +1,6 @@
-import { User } from '@shared/domain/entity/user.entity';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { CourseEntity } from './course.entity';
 import { CourseGroupEntity } from './coursegroup.entity';

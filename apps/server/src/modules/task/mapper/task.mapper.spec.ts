@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity, Material, Submission, Task, TaskParentDescriptions, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { LessonEntity, Material, Submission, Task, TaskParentDescriptions } from '@shared/domain/entity';
 import { InputFormat, TaskStatus, TaskUpdate } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';

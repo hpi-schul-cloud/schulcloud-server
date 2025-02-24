@@ -4,15 +4,14 @@ import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modul
 import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
 import { InstanceService } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { ReferenceLoader } from './reference.loader';
 
 describe('reference.loader', () => {

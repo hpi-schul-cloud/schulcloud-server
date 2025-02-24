@@ -6,8 +6,8 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { CourseGroupEntity } from '@modules/course/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { CourseRule } from './course.rule';
 
 @Injectable()

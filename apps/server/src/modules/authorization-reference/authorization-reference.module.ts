@@ -3,10 +3,10 @@ import { AuthorizationModule } from '@modules/authorization';
 import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
 import { InstanceModule } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { TaskRepo } from '@shared/repo/task';
-import { UserRepo } from '@shared/repo/user';
 import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 
 /**
@@ -15,10 +15,9 @@ import { AuthorizationReferenceService, ReferenceLoader } from './domain';
  * Avoid using this module and load the needed data in your use cases and then use the normal AuthorizationModule!
  */
 @Module({
-	imports: [AuthorizationModule, LoggerModule, InstanceModule],
+	imports: [AuthorizationModule, LoggerModule, InstanceModule, UserModule],
 	providers: [
 		ReferenceLoader,
-		UserRepo,
 		CourseRepo,
 		CourseGroupRepo,
 		TaskRepo,
