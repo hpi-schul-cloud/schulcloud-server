@@ -79,10 +79,10 @@ export class CommonCartridgeFileParser {
 		if (resource && organization.resourceType === CommonCartridgeResourceTypeV1P1.WEB_CONTENT) {
 			const commonCartridgeFileResource: CommonCartridgeFileResourceProps = {
 				type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-				storageLocationId: currentUser.userId,
+				storageLocationId: currentUser.schoolId,
 				storageLocation: StorageLocation.SCHOOL,
 				parentId: organization.identifier,
-				parentType: FileRecordParentType.BOARDNODES,
+				parentType: FileRecordParentType.BOARDNODES, // should be claridfied could be also a task
 				file: new File([(<CommonCartridgeFileResourceProps>resource).html as BlobPart], organization.title),
 				html: (<CommonCartridgeFileResourceProps>resource).html,
 			};
