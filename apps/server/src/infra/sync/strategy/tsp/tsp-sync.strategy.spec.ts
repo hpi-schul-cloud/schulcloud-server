@@ -19,8 +19,10 @@ import {
 } from '@infra/tsp-client/testing';
 import { Account } from '@modules/account';
 import { OauthDataDto } from '@modules/provisioning';
+import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import {
+	externalSchoolDtoFactory,
 	externalUserDtoFactory,
 	oauthDataDtoFactory,
 	provisioningSystemDtoFactory,
@@ -32,11 +34,13 @@ import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing
 import { UserDo } from '@modules/user/domain';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
-import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
+import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -141,7 +145,7 @@ describe(TspSyncStrategy.name, () => {
 		foundSystemSchools?: School[];
 		foundTspUidUser?: UserDo | null;
 		foundTspUidAccount?: Account | null;
-		mappedOauthDto?: OauthDataDto[];
+		mappedOauthDto?: { oauthDataDtos: OauthDataDto[]; usersOfClasses: Map<string, TspUserInfo[]> };
 		foundSystem?: System;
 		updatedAccount?: Account;
 		updatedUser?: UserDo;
@@ -152,6 +156,7 @@ describe(TspSyncStrategy.name, () => {
 			totalAccounts: number;
 		};
 		processBatchSize?: number;
+		classBatchResult?: { classCreationCount: number; classUpdateCount: number };
 	}) => {
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
@@ -164,7 +169,12 @@ describe(TspSyncStrategy.name, () => {
 		tspSyncService.findAllSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
 		systemService.find.mockResolvedValueOnce(params.foundSystem ? [params.foundSystem] : []);
 
-		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(params.mappedOauthDto ?? []);
+		tspOauthDataMapper.mapTspDataToOauthData.mockReturnValueOnce(
+			params.mappedOauthDto ?? {
+				oauthDataDtos: [],
+				usersOfClasses: new Map(),
+			}
+		);
 
 		params.configValues?.forEach((value) => configService.getOrThrow.mockReturnValueOnce(value));
 
@@ -176,7 +186,10 @@ describe(TspSyncStrategy.name, () => {
 			}
 		);
 
-		provisioningService.provisionBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
+		provisioningService.provisionUserBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
+		provisioningService.provisionClassBatch.mockResolvedValueOnce(
+			params.classBatchResult ?? { classCreationCount: 0, classUpdateCount: 0 }
+		);
 	};
 
 	describe('sync', () => {
@@ -198,13 +211,21 @@ describe(TspSyncStrategy.name, () => {
 					roles: [],
 				});
 
-				const oauthDataDto = oauthDataDtoFactory.build({ system: systemDto, externalUser });
+				const externalSchool = externalSchoolDtoFactory.build();
+
+				const oauthDataDto = oauthDataDtoFactory.build({ system: systemDto, externalUser, externalSchool });
 
 				const tspTeacherMigration = robjExportLehrerMigrationFactory.build();
 
 				const tspStudentMigration = robjExportSchuelerMigrationFactory.build();
 
-				const school = schoolFactory.build();
+				const tspSchool = robjExportSchuleFactory.build({
+					schuleNummer: externalSchool.externalId,
+				});
+
+				const school = schoolFactory.build({
+					externalId: tspSchool.schuleNummer,
+				});
 
 				const tspTeachers = robjExportLehrerFactory.build();
 
@@ -213,12 +234,16 @@ describe(TspSyncStrategy.name, () => {
 				const tspClasses = robjExportKlasseFactory.build();
 
 				setupMockServices({
+					fetchedSchools: [tspSchool],
 					fetchedClasses: [tspClasses],
 					fetchedTeachers: [tspTeachers],
 					fetchedStudents: [tspStudents],
 					fetchedStudentMigrations: [tspStudentMigration],
 					fetchedTeacherMigrations: [tspTeacherMigration],
-					mappedOauthDto: [oauthDataDto],
+					mappedOauthDto: {
+						oauthDataDtos: [oauthDataDto],
+						usersOfClasses: new Map(),
+					},
 					foundSystemSchools: [school],
 					foundSystem: system,
 					configValues: [1, 10, true, 10, 1, 50],
@@ -304,11 +329,22 @@ describe(TspSyncStrategy.name, () => {
 			});
 
 			it('should call provisioning service with mapped OauthDataDtos', async () => {
-				const { oauthDataDto } = setup();
+				const { oauthDataDto, school } = setup();
 
 				await sut.sync();
 
-				expect(provisioningService.provisionBatch).toHaveBeenCalledWith([oauthDataDto]);
+				expect(provisioningService.provisionUserBatch).toHaveBeenCalledWith(
+					[oauthDataDto],
+					new Map([[school.externalId, school]])
+				);
+			});
+
+			it('should call provisioning service to provision class batches', async () => {
+				setup();
+
+				await sut.sync();
+
+				expect(provisioningService.provisionClassBatch).toHaveBeenCalledTimes(1);
 			});
 
 			describe('when feature tsp migration is enabled', () => {
@@ -444,6 +480,85 @@ describe(TspSyncStrategy.name, () => {
 				expect(tspSyncService.findSchool).not.toHaveBeenCalled();
 				expect(tspSyncService.updateSchool).not.toHaveBeenCalled();
 				expect(tspSyncService.createSchool).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when school has no externalId', () => {
+			const setup = () => {
+				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
+					foundSystemSchools: schoolFactory.buildList(2),
+					configValues: [1, 10, true, 10, 1, 50],
+				});
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				setup();
+
+				await expect(() => sut.sync()).rejects.toThrow(BadDataLoggableException);
+			});
+		});
+
+		describe('when externalSchool has no externalId', () => {
+			const setup = () => {
+				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
+					foundSystemSchools: schoolFactory.buildList(1, {
+						externalId: faker.string.uuid(),
+					}),
+					mappedOauthDto: {
+						oauthDataDtos: oauthDataDtoFactory.buildList(1, {
+							externalSchool: externalSchoolDtoFactory.build({
+								externalId: undefined,
+							}),
+						}),
+						usersOfClasses: new Map(),
+					},
+					configValues: [1, 10, true, 10, 1, 50],
+				});
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				setup();
+
+				await expect(() => sut.sync()).rejects.toThrow(BadDataLoggableException);
+			});
+		});
+
+		describe('when school with externalId is not found', () => {
+			const setup = () => {
+				setupMockServices({
+					foundSystem: systemFactory.build({
+						type: SystemType.OIDC,
+						provisioningStrategy: SystemProvisioningStrategy.TSP,
+						oauthConfig: systemOauthConfigFactory.build(),
+					}),
+					foundSystemSchools: schoolFactory.buildList(1, {
+						externalId: faker.string.uuid(),
+					}),
+					mappedOauthDto: {
+						oauthDataDtos: oauthDataDtoFactory.buildList(1, {
+							externalSchool: externalSchoolDtoFactory.build(),
+						}),
+						usersOfClasses: new Map([
+							[faker.string.uuid(), [{ externalId: faker.string.uuid(), role: RoleName.TEACHER }]],
+						]),
+					},
+					configValues: [1, 10, true, 10, 1, 50],
+				});
+			};
+			it('should throw NotFoundLoggableException', async () => {
+				setup();
+
+				await expect(() => sut.sync()).rejects.toThrow(NotFoundLoggableException);
 			});
 		});
 	});
