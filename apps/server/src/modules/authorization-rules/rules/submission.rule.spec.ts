@@ -4,9 +4,11 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
@@ -14,7 +16,6 @@ import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';

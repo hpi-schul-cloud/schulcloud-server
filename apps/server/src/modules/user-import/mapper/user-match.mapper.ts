@@ -1,5 +1,5 @@
+import { User } from '@modules/user/repo';
 import { StringValidator } from '@shared/common/validator';
-import { User } from '@shared/domain/entity';
 import { UserMatchResponse, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserNameMatchFilter } from '../domain/interface';

@@ -1,7 +1,7 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { SchoolSystemOptions } from '@modules/legacy-school';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 
 @Injectable()
 export class SchoolSystemOptionsRule implements Rule<SchoolSystemOptions> {

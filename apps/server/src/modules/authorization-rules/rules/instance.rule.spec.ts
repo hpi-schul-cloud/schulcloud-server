@@ -6,11 +6,11 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { instanceFactory } from '@modules/instance/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { InstanceRule } from './instance.rule';
 
 describe(InstanceRule.name, () => {

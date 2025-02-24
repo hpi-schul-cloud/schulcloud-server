@@ -1,4 +1,11 @@
 import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
+import {
 	BoardNodeAuthorizable,
 	BoardRoles,
 	ColumnBoard,
@@ -8,17 +15,10 @@ import {
 	SubmissionItem,
 	UserWithBoardRoles,
 } from '@modules/board';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity/user.entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import {
-	AuthorizationHelper,
-	Action,
-	AuthorizationContext,
-	Rule,
-	AuthorizationInjectionService,
-} from '@modules/authorization';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {

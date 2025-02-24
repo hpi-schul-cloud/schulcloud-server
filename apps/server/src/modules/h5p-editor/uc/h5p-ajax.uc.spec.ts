@@ -3,9 +3,9 @@ import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
 import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
@@ -86,7 +86,7 @@ describe('H5P Ajax', () => {
 			};
 
 			ajaxEndpoint.getAjax.mockResolvedValueOnce(dummyResponse);
-			userService.findById.mockResolvedValueOnce({ language: LanguageType.DE } as UserDO);
+			userService.findById.mockResolvedValueOnce({ language: LanguageType.DE } as UserDo);
 
 			const result = await uc.getAjax({ action: 'content-type-cache' }, userMock);
 

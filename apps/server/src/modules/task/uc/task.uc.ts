@@ -1,7 +1,8 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LessonService } from '@modules/lesson';
+import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Course, LessonEntity, TaskWithStatusVo, User } from '@shared/domain/entity';
+import { Course, LessonEntity, TaskWithStatusVo } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo/course';

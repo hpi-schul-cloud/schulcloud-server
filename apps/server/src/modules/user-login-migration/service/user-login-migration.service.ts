@@ -6,7 +6,7 @@ import { System, SystemService } from '@modules/system';
 import { SystemType } from '@modules/system/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import {
@@ -26,14 +26,14 @@ export class UserLoginMigrationService {
 	) {}
 
 	public async startMigration(schoolId: string): Promise<UserLoginMigrationDO> {
-		const schoolDo: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		const schoolDo = await this.schoolService.getSchoolById(schoolId);
 
-		const userLoginMigrationDO: UserLoginMigrationDO = await this.createNewMigration(schoolDo);
+		const userLoginMigrationDO = await this.createNewMigration(schoolDo);
 
 		this.enableOauthMigrationFeature(schoolDo);
 		await this.schoolService.save(schoolDo);
 
-		const userLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigrationDO);
+		const userLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigrationDO);
 
 		return userLoginMigration;
 	}
@@ -48,7 +48,7 @@ export class UserLoginMigrationService {
 		userLoginMigration.closedAt = undefined;
 		userLoginMigration.finishedAt = undefined;
 
-		const updatedUserLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationRepo.save(userLoginMigration);
+		const updatedUserLoginMigration = await this.userLoginMigrationRepo.save(userLoginMigration);
 
 		return updatedUserLoginMigration;
 	}
@@ -86,7 +86,7 @@ export class UserLoginMigrationService {
 			SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
 		);
 
-		const now: Date = new Date();
+		const now = new Date();
 		const gracePeriodDuration: number = Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number;
 
 		userLoginMigration.closedAt = now;
@@ -107,15 +107,15 @@ export class UserLoginMigrationService {
 	}
 
 	private isGracePeriodExpired(userLoginMigration: UserLoginMigrationDO): boolean {
-		const isGracePeriodExpired: boolean =
+		const isGracePeriodExpired =
 			!!userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime();
 
 		return isGracePeriodExpired;
 	}
 
 	private async createNewMigration(school: LegacySchoolDo): Promise<UserLoginMigrationDO> {
-		const oauthSystems: System[] = await this.systemService.find({ types: [SystemType.OAUTH] });
-		const moinSchuleSystem: System | undefined = oauthSystems.find((system: System) => system.alias === 'SANIS');
+		const oauthSystems = await this.systemService.find({ types: [SystemType.OAUTH] });
+		const moinSchuleSystem = oauthSystems.find((system: System) => system.alias === 'SANIS');
 
 		if (!moinSchuleSystem) {
 			throw new MoinSchuleSystemNotFoundLoggableException();
@@ -123,7 +123,7 @@ export class UserLoginMigrationService {
 			throw new IdenticalUserLoginMigrationSystemLoggableException(school.id, moinSchuleSystem.id);
 		}
 
-		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
+		const userLoginMigrationDO = new UserLoginMigrationDO({
 			schoolId: school.id as string,
 			targetSystemId: moinSchuleSystem.id,
 			sourceSystemId: school.systems?.[0],
@@ -133,7 +133,8 @@ export class UserLoginMigrationService {
 		return userLoginMigrationDO;
 	}
 
-	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo) {
+	// dangour this modified directly the object it self
+	private enableOauthMigrationFeature(schoolDo: LegacySchoolDo): void {
 		if (schoolDo.features && !schoolDo.features.includes(SchoolFeature.OAUTH_PROVISIONING_ENABLED)) {
 			schoolDo.features.push(SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 		} else {
@@ -142,22 +143,22 @@ export class UserLoginMigrationService {
 	}
 
 	public async findMigrationBySchool(schoolId: string): Promise<UserLoginMigrationDO | null> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
+		const userLoginMigration = await this.userLoginMigrationRepo.findBySchoolId(schoolId);
 
 		return userLoginMigration;
 	}
 
 	public async findMigrationByUser(userId: EntityId): Promise<UserLoginMigrationDO | null> {
-		const userDO: UserDO = await this.userService.findById(userId);
+		const userDO = await this.userService.findById(userId);
 		const { schoolId } = userDO;
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.findMigrationBySchool(schoolId);
+		const userLoginMigration = await this.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			return null;
 		}
 
-		const hasUserMigrated: boolean =
+		const hasUserMigrated =
 			!!userDO.lastLoginSystemChange && userDO.lastLoginSystemChange > userLoginMigration.startedAt;
 
 		if (hasUserMigrated) {
@@ -172,8 +173,8 @@ export class UserLoginMigrationService {
 	}
 
 	public hasMigrationClosed(userLoginMigration: UserLoginMigrationDO): boolean {
-		const now: Date = new Date();
-		const hasClosed: boolean = !!userLoginMigration.closedAt && now > userLoginMigration.closedAt;
+		const now = new Date();
+		const hasClosed = !!userLoginMigration.closedAt && now > userLoginMigration.closedAt;
 		return hasClosed;
 	}
 }

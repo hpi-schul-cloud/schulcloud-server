@@ -12,6 +12,7 @@ import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/sch
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
+import { User } from '@modules/user/repo';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 
 import {
@@ -24,7 +25,6 @@ import {
 	StorageProviderEntity,
 	TeamEntity,
 	TeamNews,
-	User,
 	Task,
 	Submission,
 	LessonEntity,

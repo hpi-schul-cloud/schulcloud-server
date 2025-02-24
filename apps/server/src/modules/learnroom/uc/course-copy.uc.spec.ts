@@ -3,13 +3,14 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization-reference';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { CourseCopyService } from '../service';
 import { CourseCopyUC } from './course-copy.uc';
 

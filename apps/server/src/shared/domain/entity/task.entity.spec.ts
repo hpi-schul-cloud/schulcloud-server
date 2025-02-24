@@ -1,4 +1,6 @@
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
@@ -6,9 +8,7 @@ import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '.';
-import { User } from './user.entity';
 
 describe('Task Entity', () => {
 	beforeAll(async () => {

@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
@@ -9,7 +10,6 @@ import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TaskRepo } from './task.repo';
 
 const yesterday = new Date(Date.now() - 86400000);
