@@ -1,4 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { User } from '@modules/user/repo';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -12,7 +13,6 @@ import {
 } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { PaginationParams } from '@shared/controller/dto';
-import { User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';

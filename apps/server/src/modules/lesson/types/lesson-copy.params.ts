@@ -1,4 +1,5 @@
-import { Course, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 export type LessonCopyParams = {

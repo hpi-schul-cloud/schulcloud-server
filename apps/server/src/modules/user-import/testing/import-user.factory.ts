@@ -1,7 +1,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { ImportUser, ImportUserProperties, ImportUserRoleName, MatchCreator } from '@modules/user-import/entity';
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';

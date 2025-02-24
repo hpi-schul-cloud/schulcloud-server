@@ -3,10 +3,9 @@ import { Account, AccountService } from '@modules/account';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { System } from '@modules/system';
 import { UserService } from '@modules/user';
+import { UserDo, UserSourceOptions } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserDO } from '@shared/domain/domainobject';
-import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
 import { TspMigrationBatchSummaryLoggable } from './loggable/tsp-migration-batch-summary.loggable';
 import { TspMigrationsFetchedLoggable } from './loggable/tsp-migrations-fetched.loggable';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -68,7 +67,7 @@ export class TspSyncMigrationService {
 	private updateUsersAndAccounts(
 		systemId: string,
 		oldToNewMappings: Map<string, string>,
-		users: UserDO[],
+		users: UserDo[],
 		accountsForUserId: Map<string, Account>
 	): { usersUpdated: number; accountsUpdated: number } {
 		let usersUpdated = 0;
@@ -132,7 +131,7 @@ export class TspSyncMigrationService {
 
 	private async loadUsersAndAccounts(
 		tspUids: string[]
-	): Promise<{ users: UserDO[]; accounts: Account[]; accountsForUserId: Map<string, Account> }> {
+	): Promise<{ users: UserDo[]; accounts: Account[]; accountsForUserId: Map<string, Account> }> {
 		const users = await this.userService.findByTspUids(tspUids);
 
 		const userIds = users.map((user) => user.id ?? '');
@@ -144,8 +143,7 @@ export class TspSyncMigrationService {
 		return { users, accounts, accountsForUserId };
 	}
 
-	private async saveUsersAndAccounts(users: UserDO[], accounts: Account[]): Promise<void> {
-		// These statement should probably not be combined with Promise.all() because last time I tried the performance massively decreased.
+	private async saveUsersAndAccounts(users: UserDo[], accounts: Account[]): Promise<void> {
 		await this.userService.saveAll(users);
 		await this.accountService.saveAll(accounts);
 	}

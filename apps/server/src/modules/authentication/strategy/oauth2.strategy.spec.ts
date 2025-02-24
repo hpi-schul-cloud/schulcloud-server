@@ -1,13 +1,14 @@
+/* eslint-disable filename-rules/match */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { OAuthService, OauthSessionToken, OauthSessionTokenService, OAuthTokenDto } from '@modules/oauth';
+import { userDoFactory } from '@modules/user/testing';
+import { OAuthService, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { OauthCurrentUser } from '../interface';
 import {
 	AccountNotFoundLoggableException,
@@ -60,8 +61,8 @@ describe(Oauth2Strategy.name, () => {
 	describe('validate', () => {
 		describe('when a valid code is provided', () => {
 			const setup = () => {
-				const systemId: EntityId = 'systemId';
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
+				const systemId = 'systemId';
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
 				const account = accountDoFactory.build();
 				const expiryDate = new Date();
 
@@ -149,7 +150,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when no account was found', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
@@ -177,7 +178,7 @@ describe(Oauth2Strategy.name, () => {
 
 		describe('when account is deactivated', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
 						idToken: 'idToken',
@@ -186,7 +187,7 @@ describe(Oauth2Strategy.name, () => {
 					})
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
-				const account: Account = new Account({
+				const account = new Account({
 					id: 'accountId',
 					createdAt: new Date(),
 					updatedAt: new Date(),

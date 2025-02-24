@@ -2,10 +2,11 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { Page, UserDO } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomService } from '../domain';
@@ -14,8 +15,8 @@ import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
-import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
+import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 
 @Injectable()
 export class RoomUc {
@@ -100,6 +101,10 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		await this.checkRoomAuthorization(userId, roomId, Action.write, [Permission.ROOM_DELETE]);
+		await this.columnBoardService.deleteByExternalReference({
+			type: BoardExternalReferenceType.Room,
+			id: roomId,
+		});
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
@@ -128,7 +133,7 @@ export class RoomUc {
 		return memberResponses;
 	}
 
-	private mapToMember(member: UserWithRoomRoles, user: UserDO): RoomMemberResponse {
+	private mapToMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
 		return new RoomMemberResponse({
 			userId: member.userId,
 			firstName: user.firstName,

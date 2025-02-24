@@ -1,8 +1,8 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { User } from '@shared/domain/entity';
 import type { EntityId } from '@shared/domain/types';
 import {
 	BoardExternalReference,

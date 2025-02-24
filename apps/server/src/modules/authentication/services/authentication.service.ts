@@ -1,10 +1,10 @@
 import { Logger } from '@core/logger';
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
 import { Account, AccountService } from '@modules/account';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { User } from '@shared/domain/entity';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { AuthenticationConfig } from '../authentication-config';
