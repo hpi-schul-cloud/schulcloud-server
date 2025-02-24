@@ -1,5 +1,6 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course, CourseGroup, CourseNews, News, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
@@ -14,7 +15,6 @@ import {
 	teamNewsFactory,
 	teamUnpublishedNewsFactory,
 } from '@testing/factory/news.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { NewsRepo } from './news.repo';
 
 describe('NewsRepo', () => {

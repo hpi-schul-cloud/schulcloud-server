@@ -1,5 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
@@ -10,7 +11,6 @@ import { Course, CourseGroup, Submission } from '.';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
-import { User } from './user.entity';
 
 describe('Lesson Entity', () => {
 	let orm: MikroORM;

@@ -15,21 +15,19 @@ import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { UserDo } from '../domain';
+import { User, UserDORepo, UserRepo } from '../repo';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -185,7 +183,7 @@ describe('UserService', () => {
 
 		it('should provide information about the passed userId', async () => {
 			// Act
-			const userDto: UserDto = await service.getUser(user.id);
+			const userDto = await service.getUser(user.id);
 
 			// Assert
 			expect(userDto).toBeDefined();
@@ -196,7 +194,7 @@ describe('UserService', () => {
 
 	describe('findById', () => {
 		beforeEach(() => {
-			const userDO: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
+			const userDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
 				firstName: 'firstName',
 				lastName: 'lastName',
 				email: 'email',
@@ -207,16 +205,16 @@ describe('UserService', () => {
 		});
 
 		it('should provide the userDO', async () => {
-			const result: UserDO = await service.findById('id');
+			const result = await service.findById('id');
 
 			expect(result).toBeDefined();
-			expect(result).toBeInstanceOf(UserDO);
+			expect(result).toBeInstanceOf(UserDo);
 		});
 	});
 
 	describe('findByIds', () => {
 		beforeEach(() => {
-			const userDO: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
+			const userDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).build({
 				firstName: 'firstName',
 				lastName: 'lastName',
 				email: 'email',
@@ -231,7 +229,7 @@ describe('UserService', () => {
 
 			expect(result).toBeDefined();
 			expect(result).toHaveLength(1);
-			expect(result[0]).toBeInstanceOf(UserDO);
+			expect(result[0]).toBeInstanceOf(UserDo);
 		});
 	});
 
@@ -239,7 +237,7 @@ describe('UserService', () => {
 		describe('when a user with this id exists', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({ id: userId });
+				const user = userDoFactory.buildWithId({ id: userId });
 
 				userDORepo.findByIdOrNull.mockResolvedValue(user);
 
@@ -252,7 +250,7 @@ describe('UserService', () => {
 			it('should return the user', async () => {
 				const { user, userId } = setup();
 
-				const result: UserDO | null = await service.findByIdOrNull(userId);
+				const result = await service.findByIdOrNull(userId);
 
 				expect(result).toEqual(user);
 			});
@@ -270,7 +268,7 @@ describe('UserService', () => {
 			it('should return null', async () => {
 				const { userId } = setup();
 
-				const result: UserDO | null = await service.findByIdOrNull(userId);
+				const result = await service.findByIdOrNull(userId);
 
 				expect(result).toBeNull();
 			});
@@ -286,23 +284,23 @@ describe('UserService', () => {
 		});
 
 		it('should return only the last name when the user has a protected role', async () => {
-			const user: UserDO = userDoFactory.withRoles([{ id: role.id, name: RoleName.STUDENT }]).buildWithId({
+			const user = userDoFactory.withRoles([{ id: role.id, name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 			});
 
-			const result: string = await service.getDisplayName(user);
+			const result = await service.getDisplayName(user);
 
 			expect(result).toEqual(user.lastName);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
 		});
 
 		it('should return the first name and last name when the user has no protected role', async () => {
-			const user: UserDO = userDoFactory.withRoles([{ id: 'unprotectedId', name: RoleName.STUDENT }]).buildWithId({
+			const user = userDoFactory.withRoles([{ id: 'unprotectedId', name: RoleName.STUDENT }]).buildWithId({
 				lastName: 'lastName',
 				firstName: 'firstName',
 			});
 
-			const result: string = await service.getDisplayName(user);
+			const result = await service.getDisplayName(user);
 
 			expect(result).toEqual(`${user.firstName} ${user.lastName}`);
 			expect(roleService.getProtectedRoles).toHaveBeenCalled();
@@ -333,7 +331,7 @@ describe('UserService', () => {
 	describe('save is called', () => {
 		describe('when saving a new user', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					schoolId: 'schoolId',
@@ -358,7 +356,7 @@ describe('UserService', () => {
 			it('should return the saved user', async () => {
 				const { user } = setup();
 
-				const result: UserDO = await service.save(user);
+				const result = await service.save(user);
 
 				expect(result).toEqual(user);
 			});
@@ -368,7 +366,7 @@ describe('UserService', () => {
 	describe('findByExternalId is called', () => {
 		describe('when a user with this external id exists', () => {
 			it('should return the user', async () => {
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					schoolId: 'schoolId',
@@ -378,7 +376,7 @@ describe('UserService', () => {
 
 				userDORepo.findByExternalId.mockResolvedValue(user);
 
-				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
+				const result = await service.findByExternalId('externalId', 'systemId');
 
 				expect(result).toEqual(user);
 			});
@@ -388,7 +386,7 @@ describe('UserService', () => {
 			it('should return null', async () => {
 				userDORepo.findByExternalId.mockResolvedValue(null);
 
-				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
+				const result = await service.findByExternalId('externalId', 'systemId');
 
 				expect(result).toEqual(null);
 			});
@@ -398,11 +396,11 @@ describe('UserService', () => {
 	describe('findByEmail is called', () => {
 		describe('when a user with this email exists', () => {
 			it('should return the user', async () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 
 				userDORepo.findByEmail.mockResolvedValue([user]);
 
-				const result: UserDO[] = await service.findByEmail(user.email);
+				const result = await service.findByEmail(user.email);
 
 				expect(result).toEqual([user]);
 			});
@@ -415,7 +413,7 @@ describe('UserService', () => {
 				schoolId: 'schoolId',
 				isOutdated: true,
 			};
-			const options: IFindOptions<UserDO> = { order: { id: SortOrder.asc } };
+			const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
 
 			await service.findUsers(query, options);
 
@@ -441,7 +439,7 @@ describe('UserService', () => {
 			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 			const teachers = userDoFactory.buildListWithId(2, { schoolId: school.id, roles: [role] });
 
-			const expectedResult = new Page<UserDO>(teachers, 2);
+			const expectedResult = new Page<UserDo>(teachers, 2);
 			userDORepo.find.mockResolvedValue(expectedResult);
 			roleService.findByName.mockResolvedValue(role);
 
@@ -543,7 +541,7 @@ describe('UserService', () => {
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({
+					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
 						],
@@ -558,7 +556,7 @@ describe('UserService', () => {
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({
+					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
 						],
@@ -573,7 +571,7 @@ describe('UserService', () => {
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
 				expect(userDORepo.saveAll).toHaveBeenCalledWith([
-					expect.objectContaining<Partial<UserDO>>({
+					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestStudent.id, name: RoleName.GUESTSTUDENT } },
 						],
@@ -673,7 +671,7 @@ describe('UserService', () => {
 
 	describe('saveAll is called', () => {
 		it('should call the repo with given users', async () => {
-			const users: UserDO[] = [userDoFactory.buildWithId()];
+			const users = [userDoFactory.buildWithId()];
 
 			await service.saveAll(users);
 
@@ -786,8 +784,8 @@ describe('UserService', () => {
 	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: User = userFactory.buildWithId();
-				const userId: EntityId = user.id;
+				const user = userFactory.buildWithId();
+				const userId = user.id;
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(null);
 				userRepo.deleteUser.mockResolvedValue(0);
@@ -922,7 +920,7 @@ describe('UserService', () => {
 
 	describe('getParentEmailsFromUser', () => {
 		const setup = () => {
-			const user: User = userFactory.asStudent().buildWithId();
+			const user = userFactory.asStudent().buildWithId();
 			const parentEmail = ['test@test.eu'];
 
 			userRepo.getParentEmailsFromUser.mockResolvedValue(parentEmail);
@@ -954,7 +952,7 @@ describe('UserService', () => {
 			const setup = () => {
 				const firstName = 'Frist';
 				const lastName = 'Last';
-				const users: User[] = userFactory.buildListWithId(2, { firstName, lastName });
+				const users = userFactory.buildListWithId(2, { firstName, lastName });
 
 				userRepo.findUserBySchoolAndName.mockResolvedValue(users);
 
@@ -968,7 +966,7 @@ describe('UserService', () => {
 			it('should return a list of users', async () => {
 				const { firstName, lastName, users } = setup();
 
-				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
+				const result = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
 
 				expect(result).toEqual(users);
 			});
@@ -981,7 +979,7 @@ describe('UserService', () => {
 				const userA = userFactory.buildWithId({ externalId: '111' });
 				const userB = userFactory.buildWithId({ externalId: '222' });
 
-				const externalIds: string[] = ['111', '222'];
+				const externalIds = ['111', '222'];
 				const expectedResult = [userA.id, userB.id];
 
 				userRepo.findByExternalIds.mockResolvedValue(expectedResult);
@@ -1092,7 +1090,7 @@ describe('UserService', () => {
 			const userA = userFactory.buildWithId({ externalId: '111' });
 			const userB = userFactory.buildWithId({ externalId: '222' });
 
-			const externalIds: string[] = ['111', '222'];
+			const externalIds = ['111', '222'];
 			const foundUsers = [userA.id, userB.id];
 
 			return {

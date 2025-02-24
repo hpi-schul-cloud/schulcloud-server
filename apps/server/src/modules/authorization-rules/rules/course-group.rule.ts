@@ -5,8 +5,9 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { CourseGroup, User } from '@shared/domain/entity';
+import { CourseGroup } from '@shared/domain/entity';
 import { CourseRule } from './course.rule';
 
 @Injectable()

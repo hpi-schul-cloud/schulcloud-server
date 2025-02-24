@@ -1,6 +1,7 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
+import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { Course as CourseEntity, CourseType, User } from '@shared/domain/entity';
+import { Course as CourseEntity, CourseType } from '@shared/domain/entity';
 import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
 

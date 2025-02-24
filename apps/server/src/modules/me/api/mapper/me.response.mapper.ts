@@ -1,5 +1,6 @@
 import { School } from '@modules/school';
-import { Role, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { Role } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import {
 	MeAccountResponse,

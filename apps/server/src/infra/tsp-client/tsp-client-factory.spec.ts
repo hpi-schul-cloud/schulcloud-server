@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { OauthAdapterService } from '@modules/oauth';
+import { OauthAdapterService } from '@modules/oauth-adapter';
 import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';

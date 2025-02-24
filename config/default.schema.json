@@ -1684,6 +1684,11 @@
 			"type": "string",
 			"default": "",
 			"description": "URL for SBOM summary for SVS"
+    },
+		"FEATURE_MEDIA_METADATA_SYNC_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Feature toggle for media metadata sync."
 		}
 	},
 	"required": []

@@ -4,9 +4,9 @@ import { AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
@@ -146,6 +146,11 @@ export class ExternalToolUc {
 			...externalToolUpdateProps,
 			config: updatedConfigProps,
 		});
+
+		if (pendingExternalTool.medium && currentExternalTool.medium?.metadataModifiedAt) {
+			pendingExternalTool.medium.metadataModifiedAt = currentExternalTool.medium.metadataModifiedAt;
+		}
+
 		pendingExternalTool.logo = await this.externalToolLogoService.fetchLogo(pendingExternalTool);
 
 		await this.toolValidationService.validateUpdate(toolId, pendingExternalTool);

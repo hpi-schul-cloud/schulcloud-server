@@ -133,6 +133,7 @@ export interface ServerConfig
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	SBOM_SUMMARY_URL: string | undefined;
+	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -345,6 +346,7 @@ const config: ServerConfig = {
 	SBOM_SUMMARY_URL: Configuration.has('SBOM_SUMMARY_URL')
 		? (Configuration.get('SBOM_SUMMARY_URL') as string)
 		: undefined,
+	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

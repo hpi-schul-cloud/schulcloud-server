@@ -1,5 +1,5 @@
+import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { ImportUser } from '../entity';
 import { importUserFactory } from '../testing';

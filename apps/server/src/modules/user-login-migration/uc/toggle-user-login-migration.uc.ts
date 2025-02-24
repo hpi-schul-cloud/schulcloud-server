@@ -1,9 +1,9 @@
 import { Logger } from '@core/logger';
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationMandatoryLoggable, UserLoginMigrationNotFoundLoggableException } from '../loggable';
