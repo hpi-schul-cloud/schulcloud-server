@@ -6,6 +6,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { SchoolFeature } from '@modules/school/domain';
@@ -21,13 +22,11 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
-import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
 	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
 jest.mock('jwks-rsa', () => () => {
