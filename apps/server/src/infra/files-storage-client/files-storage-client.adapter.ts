@@ -10,6 +10,7 @@ import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { FilesStorageClientConfig } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import { fi } from '@faker-js/faker/.';
 
 @Injectable()
 export class FilesStorageClientAdapter {
@@ -82,7 +83,7 @@ export class FilesStorageClientAdapter {
 			const observable = this.httpService.post(url.toString(), formData, {
 				responseType: 'arraybuffer',
 				headers: {
-					'Content-Type': 'multipart/form-data',
+					'Content-Type': file.type,
 					Authorization: `Bearer ${token}`,
 				},
 				...options,
