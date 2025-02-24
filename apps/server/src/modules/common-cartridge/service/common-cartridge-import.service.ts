@@ -1,6 +1,6 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
@@ -29,13 +29,15 @@ export class CommonCartridgeImportService {
 		const organizations = parser.getOrganizations();
 		for await (const organization of organizations) {
 			const commonCartridgeFileResourceProps = parser.getFilesResource(organization, currentUser);
-			await this.fileStorageClient.upload(
-				currentUser.schoolId,
-				commonCartridgeFileResourceProps?.storageLocation ?? ({} as StorageLocation),
-				commonCartridgeFileResourceProps?.parentId ?? '',
-				commonCartridgeFileResourceProps?.parentType ?? ({} as FileRecordParentType),
-				new File([commonCartridgeFileResourceProps?.file ?? new ArrayBuffer(0)], organization.title)
-			);
+			if (commonCartridgeFileResourceProps) {
+				await this.fileStorageClient.upload(
+					currentUser.schoolId,
+					commonCartridgeFileResourceProps.storageLocation,
+					commonCartridgeFileResourceProps.parentId,
+					commonCartridgeFileResourceProps.parentType,
+					new File([commonCartridgeFileResourceProps.file], organization.title)
+				);
+			}
 		}
 	}
 }

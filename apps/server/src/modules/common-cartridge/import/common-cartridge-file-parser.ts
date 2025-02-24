@@ -82,7 +82,7 @@ export class CommonCartridgeFileParser {
 				storageLocationId: currentUser.schoolId,
 				storageLocation: StorageLocation.SCHOOL,
 				parentId: organization.identifier,
-				parentType: FileRecordParentType.BOARDNODES, // should be claridfied could be also a task
+				parentType: FileRecordParentType.BOARDNODES, // should be clarified could be also a task
 				file: new File([(<CommonCartridgeFileResourceProps>resource).html as BlobPart], organization.title),
 				html: (<CommonCartridgeFileResourceProps>resource).html,
 			};
