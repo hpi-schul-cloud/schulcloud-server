@@ -645,6 +645,11 @@
 			"default": 5,
 			"description": "The global prefetch count of the RabbitMQ server."
 		},
+		"RABBITMQ_HEARTBEAT_INTERVAL_IN_SECONDS": {
+			"type": "integer",
+			"default": 20,
+			"description": "Defines the time interval (in seconds) for periodic heartbeats between the client and the RabbitMQ broker to detect unresponsive connections and prevent network timeouts"
+		},
 		"LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT": {
 			"type": "number",
 			"default": 25,
