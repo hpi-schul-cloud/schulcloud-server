@@ -98,23 +98,23 @@ export class Migration20250219143707 extends Migration {
 			await this.getCollection<GroupEntity>('groups').deleteMany({ _id: { $in: remove } });
 
 			console.info('Deleted groups: ', remove.length);
-
-			console.info('Creating unique index for groups');
-
-			await this.getCollection<GroupEntity>('groups').createIndex(
-				{
-					'externalSource.externalId': 1,
-					'externalSource.system': 1,
-				},
-				{
-					name: 'groupExternalSourceUniqueIndex',
-					unique: true,
-					partialFilterExpression: { externalSource: { $exists: true } },
-				}
-			);
-
-			console.info('Unique index for groups created');
 		}
+
+		console.info('Creating unique index for groups');
+
+		await this.getCollection<GroupEntity>('groups').createIndex(
+			{
+				'externalSource.externalId': 1,
+				'externalSource.system': 1,
+			},
+			{
+				name: 'groupExternalSourceUniqueIndex',
+				unique: true,
+				partialFilterExpression: { externalSource: { $exists: true } },
+			}
+		);
+
+		console.info('Unique index for groups created');
 	}
 
 	// eslint-disable-next-line require-await,@typescript-eslint/require-await
