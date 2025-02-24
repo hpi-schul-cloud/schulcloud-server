@@ -54,7 +54,7 @@ describe(MediaMetadataSyncStrategy.name, () => {
 				return { report };
 			};
 
-			it('should start the sync for media metadata for only bilo', async () => {
+			it('should start the sync of media metadata for bilo', async () => {
 				setup();
 
 				await strategy.sync();

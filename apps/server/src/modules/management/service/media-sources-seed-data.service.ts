@@ -13,8 +13,14 @@ export class MediaSourcesSeedDataService {
 	) {}
 
 	public async import(): Promise<number> {
-		let mediaSourcesCount = 0;
+		let mediaSourcesCount = await this.seedVidisMediaSource();
 
+		mediaSourcesCount += await this.seedBiloMediaSource();
+
+		return mediaSourcesCount;
+	}
+
+	private async seedVidisMediaSource(): Promise<number> {
 		const vidisUserName: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_USERNAME');
 		const vidisPassword: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_PASSWORD');
 
@@ -37,9 +43,12 @@ export class MediaSourcesSeedDataService {
 				})
 			);
 
-			mediaSourcesCount += 1;
+			return 1;
 		}
+		return 0;
+	}
 
+	private async seedBiloMediaSource(): Promise<number> {
 		const biloClientId: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_ID');
 		const biloClientSecret: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_SECRET');
 
@@ -62,9 +71,9 @@ export class MediaSourcesSeedDataService {
 				})
 			);
 
-			mediaSourcesCount += 1;
+			return 1;
 		}
 
-		return mediaSourcesCount;
+		return 0;
 	}
 }
