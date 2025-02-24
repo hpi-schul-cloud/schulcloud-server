@@ -5,12 +5,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import {
 	SchulconnexGroupProvisioningMessage,
@@ -108,7 +107,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 	describe('getType', () => {
 		describe('when it is called', () => {
 			it('should return SCHULCONNEX_ASYNC', () => {
-				const result: SystemProvisioningStrategy = strategy.getType();
+				const result = strategy.getType();
 
 				expect(result).toEqual(SystemProvisioningStrategy.SCHULCONNEX_ASYNC);
 			});
@@ -121,7 +120,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				const externalUser = externalUserDtoFactory.build();
 				const externalSchool = externalSchoolDtoFactory.build();
 				const schoolId = new ObjectId().toHexString();
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
@@ -129,7 +128,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalSchool,
 					externalUser,
 				});
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					schoolId,
 					externalId: externalUser.externalId,
 				});
@@ -195,7 +194,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				const groupToRemove = groupFactory.build({
 					externalSource: { externalId: 'other-group', systemId },
 				});
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
@@ -205,7 +204,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalGroups: [externalGroup],
 				});
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(
+				const user = userDoFactory.buildWithId(
 					{
 						schoolId,
 						externalId: externalUser.externalId,
@@ -281,7 +280,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalLicenses: [externalLicense],
 				});
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(
+				const user = userDoFactory.buildWithId(
 					{
 						schoolId,
 						externalId: externalUser.externalId,
@@ -339,7 +338,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalLicenses: undefined,
 				});
 				const userId = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(
+				const user = userDoFactory.buildWithId(
 					{
 						schoolId,
 						externalId: externalUser.externalId,
@@ -395,7 +394,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalSchool,
 					externalUser,
 				});
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					id: undefined,
 					schoolId,
 					externalId: externalUser.externalId,
