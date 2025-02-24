@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { SystemEntity } from '@modules/system/entity';
 import { systemEntityFactory } from '@modules/system/testing';
