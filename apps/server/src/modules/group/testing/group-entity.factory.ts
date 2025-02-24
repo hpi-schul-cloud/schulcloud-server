@@ -1,10 +1,10 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ExternalSourceEmbeddable } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { userFactory } from '@modules/user/testing';
 import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { DeepPartial } from 'fishery';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '../entity';
 

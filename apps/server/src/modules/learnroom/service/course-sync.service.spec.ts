@@ -4,11 +4,12 @@ import { Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseGroup, SyncAttribute, User } from '@shared/domain/entity';
+import { CourseGroup, SyncAttribute } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import {
 	Course,
 	COURSE_REPO,

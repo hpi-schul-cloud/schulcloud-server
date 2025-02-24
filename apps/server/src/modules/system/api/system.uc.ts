@@ -1,8 +1,8 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { System, SystemDeletedEvent, SystemService, SystemType } from '../domain';

@@ -4,9 +4,10 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
-import { Course, isLesson, isTask, LessonEntity, Task, User } from '@shared/domain/entity';
+import { Course, isLesson, isTask, LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { sortBy } from 'lodash';
 import {

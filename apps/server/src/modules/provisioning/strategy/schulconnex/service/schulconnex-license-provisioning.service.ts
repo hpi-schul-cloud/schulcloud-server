@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSource } from '@modules/media-source/domain';
+import { MediaSource } from '@modules/media-source';
 import { MediaSourceService } from '@modules/media-source/service';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
 import { Injectable } from '@nestjs/common';
