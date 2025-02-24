@@ -10,7 +10,6 @@ import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { FilesStorageClientConfig } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
-import { fi } from '@faker-js/faker/.';
 
 @Injectable()
 export class FilesStorageClientAdapter {
