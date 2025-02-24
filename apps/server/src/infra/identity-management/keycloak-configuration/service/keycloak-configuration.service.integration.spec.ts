@@ -4,6 +4,8 @@ import AuthenticationExecutionExportRepresentation from '@keycloak/keycloak-admi
 import AuthenticationFlowRepresentation from '@keycloak/keycloak-admin-client/lib/defs/authenticationFlowRepresentation';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { SystemModule } from '@modules/system';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -30,11 +32,12 @@ describe('KeycloakConfigurationService Integration', () => {
 			imports: [
 				KeycloakConfigurationModule,
 				LoggerModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, SystemEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
 					validationOptions: { infer: true },
 				}),
+				SystemModule,
 			],
 		}).compile();
 		em = module.get(EntityManager);
