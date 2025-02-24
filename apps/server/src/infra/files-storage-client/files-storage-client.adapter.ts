@@ -80,8 +80,8 @@ export class FilesStorageClientAdapter {
 			formData.append('parentId', parentId);
 			formData.append('parentType', parentType);
 			const observable = this.httpService.post(url.toString(), formData, {
+				responseType: 'arraybuffer',
 				headers: {
-					responseType: 'arraybuffer',
 					'Content-Type': 'multipart/form-data',
 					Authorization: `Bearer ${token}`,
 				},
