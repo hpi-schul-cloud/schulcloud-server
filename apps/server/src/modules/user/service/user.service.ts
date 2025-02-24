@@ -21,15 +21,14 @@ import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
+import { Page, RoleReference } from '@shared/domain/domainobject';
 import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { UserDo } from '../domain';
 import { UserConfig } from '../interfaces';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
 import { UserMapper } from '../mapper/user.mapper';
+import { User, UserDORepo, UserRepo } from '../repo';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 
@@ -80,38 +79,38 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return userDto;
 	}
 
-	public async findById(id: string): Promise<UserDO> {
+	public async findById(id: string): Promise<UserDo> {
 		const userDO = await this.userDORepo.findById(id, true);
 
 		return userDO;
 	}
 
-	public async findByIds(ids: string[]): Promise<UserDO[]> {
+	public async findByIds(ids: string[]): Promise<UserDo[]> {
 		const userDOs = await this.userDORepo.findByIds(ids, true);
 
 		return userDOs;
 	}
 
-	public async findByIdOrNull(id: string): Promise<UserDO | null> {
-		const userDO: UserDO | null = await this.userDORepo.findByIdOrNull(id, true);
+	public async findByIdOrNull(id: string): Promise<UserDo | null> {
+		const userDO = await this.userDORepo.findByIdOrNull(id, true);
 
 		return userDO;
 	}
 
-	public async save(user: UserDO): Promise<UserDO> {
+	public async save(user: UserDo): Promise<UserDo> {
 		const savedUser = await this.userDORepo.save(user);
 
 		return savedUser;
 	}
 
-	public async saveAll(users: UserDO[]): Promise<UserDO[]> {
+	public async saveAll(users: UserDo[]): Promise<UserDo[]> {
 		const savedUsers = await this.userDORepo.saveAll(users);
 
 		return savedUsers;
 	}
 
-	public async findUsers(query: UserQuery, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
-		const users: Page<UserDO> = await this.userDORepo.find(query, options);
+	public async findUsers(query: UserQuery, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
+		const users = await this.userDORepo.find(query, options);
 
 		return users;
 	}
@@ -119,18 +118,18 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	public async findBySchoolRole(
 		schoolId: EntityId,
 		roleName: RoleName,
-		options?: IFindOptions<UserDO>
-	): Promise<Page<UserDO>> {
+		options?: IFindOptions<UserDo>
+	): Promise<Page<UserDo>> {
 		const role = await this.roleService.findByName(roleName);
 		const query = { schoolId, roleId: role.id };
 		const result = await this.findUsers(query, options);
 		return result;
 	}
 
-	public async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDO>): Promise<Page<UserDO>> {
+	public async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
 		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
 		if (discoverabilitySetting === 'disabled') {
-			return new Page<UserDO>([], 0);
+			return new Page<UserDo>([], 0);
 		}
 
 		const role = await this.roleService.findByName(RoleName.TEACHER);
@@ -171,7 +170,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			});
 
 		await this.userDORepo.saveAll(users);
-		return Promise.resolve();
 	}
 
 	public async removeSecondarySchoolFromUsers(userIds: string[], schoolId: EntityId): Promise<void> {
@@ -182,29 +180,29 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		});
 
 		await this.userDORepo.saveAll(users);
-		return Promise.resolve();
 	}
 
-	public async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDO | null> {
+	public async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDo | null> {
 		const user = await this.userDORepo.findByExternalId(externalId, systemId);
 
 		return user;
 	}
 
-	public async findByEmail(email: string): Promise<UserDO[]> {
+	public async findByEmail(email: string): Promise<UserDo[]> {
 		const user = await this.userDORepo.findByEmail(email);
 
 		return user;
 	}
 
-	public async getDisplayName(user: UserDO): Promise<string> {
-		const protectedRoles: RoleDto[] = await this.roleService.getProtectedRoles();
-		const isProtectedUser: boolean = user.roles.some(
+	/** @deprecated Please put this methode to do and do role check as part of authorisation in used context. */
+	public async getDisplayName(user: UserDo): Promise<string> {
+		const protectedRoles = await this.roleService.getProtectedRoles();
+		const isProtectedUser = user.roles.some(
 			(roleRef: RoleReference): boolean =>
-				!!protectedRoles.find((protectedRole: RoleDto): boolean => roleRef.id === protectedRole.id)
+				!!protectedRoles.find((protectedRole: RoleDto) => roleRef.id === protectedRole.id)
 		);
 
-		const displayName: string = isProtectedUser ? user.lastName : `${user.firstName} ${user.lastName}`;
+		const displayName = isProtectedUser ? user.lastName : `${user.firstName} ${user.lastName}`;
 
 		return displayName;
 	}
@@ -218,7 +216,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return true;
 	}
 
-	private checkAvailableLanguages(language: LanguageType): void | BadRequestException {
+	private checkAvailableLanguages(language: LanguageType): void {
 		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
 			throw new BadRequestException('Language is not activated.');
 		}
@@ -229,7 +227,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
 
-		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
+		const userToDelete = await this.userRepo.findByIdOrNull(userId, true);
 
 		if (userToDelete === null) {
 			const result = DomainDeletionReportBuilder.build(DomainName.USER, [
@@ -292,7 +290,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
-		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
+		const users = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
 
 		return users;
 	}
@@ -346,7 +344,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
 	}
 
-	public findByTspUids(tspUids: string[]): Promise<UserDO[]> {
+	public findByTspUids(tspUids: string[]): Promise<UserDo[]> {
 		const userDOs = this.userDORepo.findByTspUids(tspUids);
 
 		return userDOs;

@@ -3,13 +3,13 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Pseudonym } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
-import { userFactory } from '@testing/factory/user.factory';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
 

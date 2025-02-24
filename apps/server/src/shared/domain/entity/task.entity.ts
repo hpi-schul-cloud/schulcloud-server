@@ -1,5 +1,6 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { SchoolEntity } from '@modules/school/repo';
+import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import type { EntityWithSchool } from '../interface';
@@ -9,7 +10,6 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { LessonEntity } from './lesson.entity';
 import type { Submission } from './submission.entity';
-import { User } from './user.entity';
 
 export class TaskWithStatusVo {
 	task!: Task;

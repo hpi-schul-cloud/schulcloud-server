@@ -2,8 +2,8 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
+import { User } from '@modules/user/repo';
 import { StringValidator } from '@shared/common/validator';
-import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';

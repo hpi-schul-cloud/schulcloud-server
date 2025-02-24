@@ -1,11 +1,11 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
+import { UserRepo } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { TypeGuard } from '@shared/common/guards';
-import { UserRepo } from '@shared/repo/user';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
 import { CurrentUserMapper } from '../mapper';

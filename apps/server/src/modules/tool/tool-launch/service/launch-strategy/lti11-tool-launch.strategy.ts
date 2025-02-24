@@ -3,18 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Authorization } from 'oauth-1.0a';
 import { CustomParameterEntry } from '../../../common/domain';
-import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
+import { LtiMessageType, LtiPrivacyPermission } from '../../../common/enum';
 import { Lti11EncryptionService } from '../../../common/service';
-import {
-	LtiDeepLink,
-	LtiDeepLinkToken,
-	LtiMessageTypeNotImplementedLoggableException,
-} from '../../../context-external-tool/domain';
+import { LtiDeepLink, LtiMessageTypeNotImplementedLoggableException } from '../../../context-external-tool/domain';
 import { LtiDeepLinkingService, LtiDeepLinkTokenService } from '../../../context-external-tool/service';
 import { ExternalTool, Lti11ToolConfig } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
@@ -126,16 +121,16 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		const additionalProperties: PropertyData[] = await this.buildToolLaunchDataForLtiLaunch(
+		const additionalProperties = await this.buildToolLaunchDataForLtiLaunch(
 			userId,
 			data,
 			config,
 			LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST
 		);
 
-		const callbackUrl: string = this.ltiDeepLinkingService.getCallbackUrl(data.contextExternalTool.id);
+		const callbackUrl = this.ltiDeepLinkingService.getCallbackUrl(data.contextExternalTool.id);
 
-		const ltiDeepLinkToken: LtiDeepLinkToken = await this.ltiDeepLinkTokenService.generateToken(userId);
+		const ltiDeepLinkToken = await this.ltiDeepLinkTokenService.generateToken(userId);
 
 		additionalProperties.push(
 			new PropertyData({
@@ -191,14 +186,14 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		config: Lti11ToolConfig,
 		lti_message_type: LtiMessageType
 	): Promise<PropertyData[]> {
-		const user: UserDO = await this.userService.findById(userId);
+		const user = await this.userService.findById(userId);
 
-		const roleNames: RoleName[] = user.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
-		const ltiRoles: LtiRole[] = LtiRoleMapper.mapRolesToLtiRoles(roleNames);
+		const roleNames = user.roles.map((roleRef: RoleReference): RoleName => roleRef.name);
+		const ltiRoles = LtiRoleMapper.mapRolesToLtiRoles(roleNames);
 
 		const decrypted = this.encryptionService.decrypt(config.secret);
 
-		const additionalProperties: PropertyData[] = [
+		const additionalProperties = [
 			new PropertyData({ name: 'key', value: config.key }),
 			new PropertyData({ name: 'secret', value: decrypted }),
 
@@ -236,7 +231,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			config.privacy_permission === LtiPrivacyPermission.NAME ||
 			config.privacy_permission === LtiPrivacyPermission.PUBLIC
 		) {
-			const displayName: string = await this.userService.getDisplayName(user);
+			const displayName = await this.userService.getDisplayName(user);
 
 			additionalProperties.push(
 				new PropertyData({
@@ -261,7 +256,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		}
 
 		if (config.privacy_permission === LtiPrivacyPermission.PSEUDONYMOUS) {
-			const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalTool);
+			const pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, data.externalTool);
 
 			additionalProperties.push(
 				new PropertyData({
@@ -305,18 +300,16 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null {
-		const bodyProperties: PropertyData[] = properties.filter(
-			(property: PropertyData) => property.location === PropertyLocation.BODY
-		);
+		const bodyProperties = properties.filter((property: PropertyData) => property.location === PropertyLocation.BODY);
 		const payload: Record<string, string> = {};
 
 		for (const property of bodyProperties) {
 			payload[property.name] = property.value;
 		}
 
-		const authentication: AuthenticationValues = this.getAuthenticationValues(properties);
+		const authentication = this.getAuthenticationValues(properties);
 
-		const signedPayload: Authorization = this.lti11EncryptionService.sign(
+		const signedPayload = this.lti11EncryptionService.sign(
 			authentication.keyValue,
 			authentication.secretValue,
 			url,
@@ -327,8 +320,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	}
 
 	private getAuthenticationValues(properties: PropertyData[]): AuthenticationValues {
-		const key: PropertyData | undefined = properties.find((property: PropertyData) => property.name === 'key');
-		const secret: PropertyData | undefined = properties.find((property: PropertyData) => property.name === 'secret');
+		const key = properties.find((property: PropertyData) => property.name === 'key');
+		const secret = properties.find((property: PropertyData) => property.name === 'secret');
 
 		if (!key || !secret) {
 			throw new InternalServerErrorException(
@@ -336,7 +329,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		const authentication: AuthenticationValues = new AuthenticationValues({
+		const authentication = new AuthenticationValues({
 			keyValue: key.value,
 			secretValue: secret.value,
 		});
@@ -369,7 +362,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			url = this.buildUrl(launchData);
 		}
 
-		const isLtiLaunch: boolean =
+		const isLtiLaunch =
 			!ltiDeepLink ||
 			ltiDeepLink.mediaType === 'application/vnd.ims.lti.v1.ltilink' ||
 			ltiDeepLink.mediaType === 'application/vnd.ims.lti.v1.ltiassignment';

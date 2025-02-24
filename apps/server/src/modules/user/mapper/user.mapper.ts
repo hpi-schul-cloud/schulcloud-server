@@ -1,5 +1,6 @@
 import { UserDto } from '@modules/user/uc/dto/user.dto';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
+import { User } from '../repo';
 
 export class UserMapper {
 	static mapFromEntityToDto(entity: User): UserDto {
