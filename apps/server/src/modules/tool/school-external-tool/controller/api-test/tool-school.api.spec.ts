@@ -4,9 +4,11 @@ import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { MediaSourceLicenseType } from '@modules/media-source';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { serverConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
@@ -46,6 +48,8 @@ describe('ToolSchoolController (API)', () => {
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
+
+		serverConfig().FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -234,8 +238,20 @@ describe('ToolSchoolController (API)', () => {
 				userId: userWithMissingPermission.id,
 			});
 
+			const mediumId = 'mediumId';
+			const mediaSourceId = 'mediaSourceId';
+			const mediaSourceName = 'mediaSourceName';
+			const mediaSource = mediaSourceEntityFactory.buildWithId({
+				sourceId: mediaSourceId,
+				name: mediaSourceName,
+			});
+
 			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 				parameters: [],
+				medium: {
+					mediumId,
+					mediaSourceId,
+				},
 				isDeactivated: true,
 			});
 
@@ -256,6 +272,7 @@ describe('ToolSchoolController (API)', () => {
 				accountWithMissingPermission,
 				externalToolEntity,
 				schoolExternalToolEntity,
+				mediaSource,
 			]);
 			await em.flush();
 			em.clear();
@@ -272,6 +289,9 @@ describe('ToolSchoolController (API)', () => {
 				schoolExternalToolEntity,
 				params,
 				school,
+				mediumId,
+				mediaSourceId,
+				mediaSourceName,
 			};
 		};
 
@@ -284,7 +304,16 @@ describe('ToolSchoolController (API)', () => {
 		});
 
 		it('should return found schoolExternalTools for given school', async () => {
-			const { loggedInClient, schoolExternalToolEntity, externalToolEntity, params, school } = await setup();
+			const {
+				loggedInClient,
+				schoolExternalToolEntity,
+				externalToolEntity,
+				params,
+				mediumId,
+				mediaSourceId,
+				mediaSourceName,
+				school,
+			} = await setup();
 
 			const response = await loggedInClient.get().query(params);
 
@@ -301,6 +330,12 @@ describe('ToolSchoolController (API)', () => {
 							status: {
 								isOutdatedOnScopeSchool: true,
 								isGloballyDeactivated: true,
+							},
+							medium: {
+								mediumId,
+								mediaSourceId,
+								mediaSourceName,
+								mediaSourceLicenseType: MediaSourceLicenseType.USER_LICENSE,
 							},
 							parameters: [
 								{
