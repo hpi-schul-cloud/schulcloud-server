@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsMongoId, IsNumber, IsOptional, Min, ValidateNested } from 'class-validator';
 import { EntityId } from '@shared/domain/types';
-import { DeletionTargetRef } from '../../../domain/interface';
-import { DomainName } from '../../../domain/types';
+import { DeletionTargetRef } from '../../../../domain/interface';
+import { DomainName } from '../../../../domain/types';
 
 export class DeletionTargetRefProps implements DeletionTargetRef {
 	@IsEnum(DomainName)
@@ -18,7 +18,7 @@ export class DeletionTargetRefProps implements DeletionTargetRef {
 	public id!: EntityId;
 }
 
-export class DeletionRequestBodyProps {
+export class DeletionRequestBodyParams {
 	@ValidateNested()
 	@ApiProperty({
 		required: true,
