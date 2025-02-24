@@ -166,5 +166,37 @@ describe(FilesStorageClientAdapter.name, () => {
 				expect(result?.parentId).toEqual(parentId);
 			});
 		});
+
+		describe('when upload fails', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = faker.helpers.arrayElement(Object.values(StorageLocation.SCHOOL)) as StorageLocation;
+				const parentId = 'parent-id';
+				const parentType = faker.helpers.arrayElement(Object.values(FileRecordParentType));
+				const file = new File([], 'test.txt', { type: 'text/plain', lastModified: Date.now() });
+				const options = { headers: { Authorization: `Bearer ${faker.string.alphanumeric(42)}` } };
+
+				httpServiceMock.post.mockReturnValue(throwError(() => new Error('error')));
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file,
+					options,
+				};
+			};
+
+			it('should return null', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, file, options } = setup();
+
+				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+
+				expect(result).toBeNull();
+				expect(errorLoggerMock.error).toBeCalled();
+			});
+		});
 	});
 });

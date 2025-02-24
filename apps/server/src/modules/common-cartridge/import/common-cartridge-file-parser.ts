@@ -70,7 +70,7 @@ export class CommonCartridgeFileParser {
 
 		if (
 			resource &&
-			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
+			organization.resourceType === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
 			organization.path.endsWith('.html')
 		) {
 			return undefined;
