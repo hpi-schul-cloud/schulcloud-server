@@ -130,7 +130,7 @@
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
 		"pregenerate-client:files-storage-api": "rimraf ./apps/server/src/infra/files-storage-client/generated",
 		"generate-client:files-storage-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key files-storage-api",
-		"pregenerate-client:lessons-api": "rimraf ./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/lesson-api-client",
+		"pregenerate-client:lessons-api": "rimraf ./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/lessons-api-client",
 		"generate-client:lessons-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key lessons-api",
 		"pregenerate-client:courses-api": "rimraf ./apps/server/src/infra/courses-client/generated",
 		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api",
