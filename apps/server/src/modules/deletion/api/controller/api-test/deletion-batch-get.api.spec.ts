@@ -4,10 +4,9 @@ import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
 import { userFactory } from '@modules/user/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
-import { deletionBatchEntityFactory } from '../../../repo/entity/testing';
-import { DeletionBatchListResponse } from '../dto/response/deletion-batch-list.response';
-// import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
+import { deletionBatchEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
+import { DeletionBatchListResponse } from '../dto/response/deletion-batch-list.response'; // barrel file
 
 const baseRouteName = '/deletion-batches';
 
