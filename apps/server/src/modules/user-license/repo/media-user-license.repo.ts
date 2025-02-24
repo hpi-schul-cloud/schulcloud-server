@@ -1,5 +1,5 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { MediaSource } from '@modules/media-source/domain';
+import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceMapper } from '@modules/media-source/repo';
 import { User } from '@modules/user/repo';

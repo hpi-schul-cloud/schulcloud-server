@@ -5,6 +5,7 @@ import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionServ
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { SchoolFeature } from '@modules/school/domain';
@@ -19,13 +20,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
-import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
 	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
 jest.mock('jwks-rsa', () => () => {

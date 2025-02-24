@@ -15,10 +15,14 @@ export class MediaSourceOauthConfigEmbeddable {
 	@Enum({ nullable: false })
 	public method: MediaSourceAuthMethod;
 
+	@Property()
+	public baseUrl: string;
+
 	constructor(props: MediaSourceOauthConfigEmbeddable) {
 		this.clientId = props.clientId;
 		this.clientSecret = props.clientSecret;
 		this.authEndpoint = props.authEndpoint;
 		this.method = props.method;
+		this.baseUrl = props.baseUrl;
 	}
 }

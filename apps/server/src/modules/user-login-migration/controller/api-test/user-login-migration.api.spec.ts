@@ -2,7 +2,7 @@ import { ErrorResponse } from '@core/error/dto';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { SchulconnexPoliciesInfoResponse, SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
