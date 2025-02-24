@@ -87,7 +87,10 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		const errors = await validate(payload);
 
 		if (errors.length > 0) {
-			throw new IdTokenExtractionFailureLoggableException(errors.map((error) => error.property));
+			throw new IdTokenExtractionFailureLoggableException(
+				errors.map((error) => error.property),
+				{ externalId: payload.sub }
+			);
 		}
 
 		return payload;
@@ -109,7 +112,7 @@ export class TspProvisioningStrategy extends ProvisioningStrategy {
 		});
 
 		if (externalUserDto.roles.length < 1) {
-			throw new IdTokenExtractionFailureLoggableException('ptscListRolle');
+			throw new IdTokenExtractionFailureLoggableException('ptscListRolle', { externalId: externalUserDto.externalId });
 		}
 
 		const externalSchoolDto = new ExternalSchoolDto({
