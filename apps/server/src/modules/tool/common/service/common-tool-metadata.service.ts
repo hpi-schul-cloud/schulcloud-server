@@ -1,12 +1,11 @@
 import { BoardCommonToolService } from '@modules/board';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolType } from '../../context-external-tool/entity';
+import { ContextExternalToolRepo, ContextExternalToolType } from '../../context-external-tool/repo';
 import { ExternalToolMetadata } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
 import { ToolContextType } from '../enum';
 import { ToolContextMapper } from '../mapper/tool-context.mapper';
 
@@ -19,7 +18,7 @@ export class CommonToolMetadataService {
 		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
-	async getMetadataForExternalTool(toolId: EntityId): Promise<ExternalToolMetadata> {
+	public async getMetadataForExternalTool(toolId: EntityId): Promise<ExternalToolMetadata> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolToolRepo.findByExternalToolId(toolId);
 
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
@@ -31,7 +30,7 @@ export class CommonToolMetadataService {
 		return externalToolMetadata;
 	}
 
-	async getMetadataForSchoolExternalTool(schoolExternalToolId: EntityId): Promise<SchoolExternalToolMetadata> {
+	public async getMetadataForSchoolExternalTool(schoolExternalToolId: EntityId): Promise<SchoolExternalToolMetadata> {
 		const externalToolMetadata: ExternalToolMetadata = await this.getMetadata([schoolExternalToolId]);
 
 		const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({

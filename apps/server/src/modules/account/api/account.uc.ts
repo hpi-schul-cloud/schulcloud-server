@@ -1,8 +1,9 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationService } from '@modules/authorization';
+import { SchoolEntity } from '@modules/school/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AccountService } from '..';

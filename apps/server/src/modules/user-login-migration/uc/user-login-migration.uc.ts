@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -7,23 +8,22 @@ import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
 	SchoolMigrationSuccessfulLoggable,
 	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationInvalidAdminLoggableException,
+	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
+	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
+	UserMigrationCorrectionSuccessfulLoggable,
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
-	UserMigrationCorrectionSuccessfulLoggable,
-	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
-	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
-	UserLoginMigrationInvalidAdminLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationQuery } from './dto';
@@ -111,7 +111,7 @@ export class UserLoginMigrationUc {
 				throw new ExternalSchoolNumberMissingLoggableException(data.externalSchool.externalId);
 			}
 
-			const schoolToMigrate: LegacySchoolDo | null = await this.schoolMigrationService.getSchoolForMigration(
+			const schoolToMigrate = await this.schoolMigrationService.getSchoolForMigration(
 				currentUserId,
 				data.externalSchool.externalId,
 				data.externalSchool.officialSchoolNumber
@@ -169,7 +169,7 @@ export class UserLoginMigrationUc {
 			schoolAdminUser.schoolId
 		);
 
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolAdminUser.schoolId);
+		const school = await this.schoolService.getSchoolById(schoolAdminUser.schoolId);
 
 		const hasSchoolMigrated: boolean = this.schoolMigrationService.hasSchoolMigrated(
 			school.externalId,
@@ -220,7 +220,7 @@ export class UserLoginMigrationUc {
 			);
 		}
 
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(userToMigrate.schoolId);
+		const school = await this.schoolService.getSchoolById(userToMigrate.schoolId);
 
 		const hasSchoolMigratedInCurrentMigration: boolean = this.schoolMigrationService.hasSchoolMigratedInMigrationPhase(
 			school,

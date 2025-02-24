@@ -1,17 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FederalStateService, SchoolFeature, SchoolYearService } from '@modules/school/domain';
+import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { SchoolFeature } from '@shared/domain/types';
-import { LegacySchoolRepo } from '@shared/repo/school';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { StorageProviderRepo } from '@shared/repo/storageprovider';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolYearFactory } from '@testing/factory/schoolyear.factory';
+import { setupEntities } from '@testing/database';
 import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { FederalStateService } from './federal-state.service';
+import { LegacySchoolDo } from '../domain';
+import { LegacySchoolRepo } from '../repo';
+import { legacySchoolDoFactory } from '../testing';
 import { LegacySchoolService } from './legacy-school.service';
-import { SchoolYearService } from './school-year.service';
 import { SchoolValidationService } from './validation/school-validation.service';
 
 describe('LegacySchoolService', () => {
@@ -58,7 +56,7 @@ describe('LegacySchoolService', () => {
 		federalStateService = module.get(FederalStateService);
 		schoolYearService = module.get(SchoolYearService);
 
-		await setupEntities();
+		await setupEntities([StorageProviderEntity]);
 	});
 
 	afterAll(async () => {
@@ -375,8 +373,8 @@ describe('LegacySchoolService', () => {
 			const setup = () => {
 				const name = 'Hogwarts';
 				const federalStateName = 'maybescottland?';
-				const federalState = federalStateFactory.build({ name: federalStateName });
-				const year = schoolYearFactory.build();
+				const federalState = federalStateEntityFactory.build({ name: federalStateName });
+				const year = schoolYearEntityFactory.build();
 				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 				const storageProvider = storageProviderFactory.build();
@@ -427,8 +425,8 @@ describe('LegacySchoolService', () => {
 			const setup = () => {
 				const name = 'Hogwarts';
 				const federalStateName = 'maybescottland?';
-				const federalState = federalStateFactory.build({ name: federalStateName });
-				const year = schoolYearFactory.build();
+				const federalState = federalStateEntityFactory.build({ name: federalStateName });
+				const year = schoolYearEntityFactory.build();
 				federalStateService.findFederalStateByName.mockResolvedValue(federalState);
 				schoolYearService.getCurrentOrNextSchoolYear.mockResolvedValue(year);
 				storageProviderRepo.findAll.mockResolvedValue([]);

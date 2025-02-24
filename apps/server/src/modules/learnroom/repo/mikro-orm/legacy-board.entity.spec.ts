@@ -1,9 +1,10 @@
 import { columnBoardFactory } from '@modules/board/testing';
 import { BadRequestException } from '@nestjs/common';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -11,10 +12,22 @@ import {
 	lessonBoardElementFactory,
 	taskBoardElementFactory,
 } from '../../testing';
+import { LegacyBoardElement } from './legacy-board-element.entity';
+import { LegacyBoard } from './legacy-board.entity';
 
 describe('Board Entity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([
+			User,
+			Course,
+			CourseGroup,
+			LessonEntity,
+			Material,
+			Task,
+			Submission,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
 	});
 
 	describe('getByTargetId', () => {

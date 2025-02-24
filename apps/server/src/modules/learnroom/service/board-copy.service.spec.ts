@@ -10,13 +10,14 @@ import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardRepo } from '../repo';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -40,7 +41,18 @@ describe('board copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([
+			User,
+			Course,
+			CourseGroup,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				BoardCopyService,

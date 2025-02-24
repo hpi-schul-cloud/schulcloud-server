@@ -10,15 +10,15 @@ import { BadRequestException, ForbiddenException, InternalServerErrorException }
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { RoleReference, UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
-import { Course, Role, TeamEntity } from '@shared/domain/entity';
+import { Course, Role, TeamEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
 import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -105,7 +105,7 @@ describe('VideoConferenceUc', () => {
 			}
 		});
 
-		await setupEntities();
+		await setupEntities([User, Role]);
 
 		module = await Test.createTestingModule({
 			providers: [

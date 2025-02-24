@@ -1,12 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { AuthorizationService } from '@modules/authorization';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { setupEntities } from '@testing/database';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { MediaSchoolLicenseService } from '../service';
+import { mediaSchoolLicenseFactory } from '../testing';
 import { MediaSchoolLicenseUc } from './media-school-license.uc';
 
 describe(MediaSchoolLicenseUc.name, () => {
@@ -16,7 +18,7 @@ describe(MediaSchoolLicenseUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -52,8 +54,8 @@ describe(MediaSchoolLicenseUc.name, () => {
 					const school = schoolEntityFactory.build();
 					const user = userFactory.asAdmin([Permission.MEDIA_SCHOOL_LICENSE_ADMIN]).buildWithId({ school });
 
-					authorizationService.getUserWithPermissions.mockResolvedValue(user);
-					authorizationService.checkAllPermissions.mockImplementation(() => {
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					authorizationService.checkAllPermissions.mockImplementationOnce(() => {
 						void Promise.resolve();
 					});
 
@@ -76,8 +78,8 @@ describe(MediaSchoolLicenseUc.name, () => {
 					const school = schoolEntityFactory.build();
 					const user = userFactory.buildWithId({ school });
 
-					authorizationService.getUserWithPermissions.mockResolvedValue(user);
-					authorizationService.checkAllPermissions.mockImplementation(() => {
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+					authorizationService.checkAllPermissions.mockImplementationOnce(() => {
 						throw new UnauthorizedException();
 					});
 
@@ -92,6 +94,67 @@ describe(MediaSchoolLicenseUc.name, () => {
 					await expect(uc.updateMediaSchoolLicenses(user.id, user.school.id)).rejects.toThrow(UnauthorizedException);
 					expect(mediaSchoolLicenseService.updateMediaSchoolLicenses).not.toHaveBeenCalled();
 				});
+			});
+		});
+	});
+
+	describe('updateMediaSchoolLicenses', () => {
+		describe('when the user has permission', () => {
+			const setup = () => {
+				const school = schoolEntityFactory.build();
+				const user = userFactory.asAdmin().buildWithId({ school });
+				const licenses = mediaSchoolLicenseFactory.buildList(2);
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce(licenses);
+
+				return {
+					user,
+					licenses,
+				};
+			};
+
+			it('should check for permissions', async () => {
+				const { user } = setup();
+
+				await uc.getMediaSchoolLicensesForSchool(user.id, user.school.id);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
+					Permission.MEDIA_SCHOOL_LICENSE_ADMIN,
+				]);
+			});
+
+			it('should return licenses', async () => {
+				const { user, licenses } = setup();
+
+				const result = await uc.getMediaSchoolLicensesForSchool(user.id, user.school.id);
+
+				expect(result).toEqual(licenses);
+			});
+		});
+
+		describe('when the user has no permission', () => {
+			const setup = () => {
+				const school = schoolEntityFactory.build();
+				const user = userFactory.asTeacher().buildWithId({ school });
+
+				const error = new UnauthorizedException();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkAllPermissions.mockImplementationOnce(() => {
+					throw error;
+				});
+
+				return {
+					user,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, error } = setup();
+
+				await expect(uc.getMediaSchoolLicensesForSchool(user.id, user.school.id)).rejects.toThrow(error);
 			});
 		});
 	});

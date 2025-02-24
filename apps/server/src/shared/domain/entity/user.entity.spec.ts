@@ -1,13 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { Role, SchoolEntity } from '.';
 import { LanguageType, Permission, RoleName } from '../interface';
+import { Role } from './role.entity';
 import { User } from './user.entity';
 
 describe('User Entity', () => {
@@ -17,7 +18,7 @@ describe('User Entity', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([User]);
 	});
 
 	describe('constructor', () => {

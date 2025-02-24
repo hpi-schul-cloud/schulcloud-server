@@ -11,29 +11,16 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement } from '@shared/domain/entity';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
+import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
+import { courseFactory } from '@testing/factory/course.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
-
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
+import { Dashboard, GridElement } from '../domain/do/dashboard';
+import { DashboardElementRepo } from '../repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 describe(DashboardService.name, () => {
 	let module: TestingModule;
@@ -44,7 +31,7 @@ describe(DashboardService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				DashboardService,
@@ -53,7 +40,7 @@ describe(DashboardService.name, () => {
 					useValue: createMock<UserRepo>(),
 				},
 				{
-					provide: 'DASHBOARD_REPO',
+					provide: DASHBOARD_REPO,
 					useValue: createMock<DashboardService>(),
 				},
 				{
@@ -78,9 +65,11 @@ describe(DashboardService.name, () => {
 		}).compile();
 		dashboardService = module.get(DashboardService);
 		userRepo = module.get(UserRepo);
-		dashboardRepo = module.get('DASHBOARD_REPO');
+		dashboardRepo = module.get(DASHBOARD_REPO);
 		dashboardElementRepo = module.get(DashboardElementRepo);
 		eventBus = module.get(EventBus);
+
+		await setupEntities([Course, CourseGroup]);
 	});
 
 	afterAll(async () => {
@@ -95,11 +84,11 @@ describe(DashboardService.name, () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const dashboardId = new ObjectId().toHexString();
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+						gridElement: GridElement.FromPersistedReference('elementId', courseFactory.buildWithId({ name: 'Mathe' })),
 					},
 				],
 				userId: user.id,

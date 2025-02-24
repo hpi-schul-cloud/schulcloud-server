@@ -1,9 +1,12 @@
+import { LegacyLogger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { OAuthTokenDto, OauthAdapterService, AuthenticationCodeGrantTokenRequest } from '@modules/oauth-adapter';
 import { TokenRequestMapper } from '@modules/oauth-adapter/mapper/token-request.mapper';
 import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
+import { SchoolFeature } from '@modules/school/domain';
 import { System, SystemService } from '@modules/system';
 import { OauthConfigEntity } from '@modules/system/entity';
 import { UserService } from '@modules/user';
@@ -11,9 +14,8 @@ import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { isObject } from '@nestjs/common/utils/shared.utils';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
+import { UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
 	OauthConfigMissingLoggableException,

@@ -1,18 +1,18 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
-import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Role, Submission, Task, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { SchoolExternalToolEntity } from '../../school-external-tool/repo';
+import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';
+import { ContextExternalTool } from '../domain';
+import { ContextExternalToolEntity } from '../repo';
+import { contextExternalToolEntityFactory } from '../testing';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 
 describe('ContextExternalToolRule', () => {
@@ -21,7 +21,7 @@ describe('ContextExternalToolRule', () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

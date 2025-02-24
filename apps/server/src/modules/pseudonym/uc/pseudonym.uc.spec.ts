@@ -1,14 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { legacySchoolDoFactory, pseudonymFactory } from '@testing/factory/domainobject';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { Pseudonym } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
+import { pseudonymFactory } from '@testing/factory/domainobject';
 import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
 
@@ -21,7 +22,7 @@ describe('PseudonymUc', () => {
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -59,9 +60,10 @@ describe('PseudonymUc', () => {
 		describe('when valid user and params are given', () => {
 			const setup = () => {
 				const userId = 'userId';
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
-				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user: User = userFactory.buildWithId({ school: schoolEntity });
+				const school = legacySchoolDoFactory.buildWithId();
+
+				const schoolEntity = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school: schoolEntity });
 				user.school = schoolEntity;
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build({ userId: user.id }));
 
@@ -117,8 +119,8 @@ describe('PseudonymUc', () => {
 		describe('when user is not authorized', () => {
 			const setup = () => {
 				const userId = 'userId';
-				const user: User = userFactory.buildWithId();
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				user.school = school;
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
 

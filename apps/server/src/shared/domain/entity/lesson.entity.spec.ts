@@ -1,21 +1,23 @@
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { ComponentProperties, ComponentType } from './lesson.entity';
+import { Course, CourseGroup, Submission } from '.';
+import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Task } from './task.entity';
+import { User } from './user.entity';
 
 describe('Lesson Entity', () => {
 	let orm: MikroORM;
 	const inOneDay = new Date(Date.now() + 8.64e7);
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
 	});
 
 	describe('numberOfPublishedTasks', () => {
