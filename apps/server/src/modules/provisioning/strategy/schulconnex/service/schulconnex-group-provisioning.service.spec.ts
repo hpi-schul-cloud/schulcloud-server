@@ -10,6 +10,7 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
@@ -21,7 +22,6 @@ import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
-import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../../../testing';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
 describe(SchulconnexGroupProvisioningService.name, () => {
