@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { UserImportService } from '@modules/user-import';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { CloseMigrationWizardUc } from './close-migration-wizard.uc';
