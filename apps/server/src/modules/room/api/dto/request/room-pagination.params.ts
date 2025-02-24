@@ -4,6 +4,6 @@ import { IsInt } from 'class-validator';
 
 export class RoomPaginationParams extends PaginationParams {
 	@IsInt()
-	@ApiPropertyOptional({ description: 'Page limit, defaults to 10.' })
+	@ApiPropertyOptional({ description: 'Page limit, defaults to 1000.' })
 	override limit?: number = 1000;
 }
