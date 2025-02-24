@@ -59,6 +59,20 @@ export class Migration20250220084015 extends Migration {
 			await this.getCollection<SchoolExternalToolEntity>('school-external-tools').deleteMany({ _id: { $in: remove } });
 
 			console.info('Deleted school external tools: ', remove.length);
+
+			console.info('Creating unique index for school external tools');
+
+			await this.getCollection<SchoolExternalToolEntity>('school-external-tools').createIndex(
+				{
+					tool: 1,
+					school: 1,
+				},
+				{
+					unique: true,
+				}
+			);
+
+			console.info('Unique index for school external tools created');
 		}
 	}
 

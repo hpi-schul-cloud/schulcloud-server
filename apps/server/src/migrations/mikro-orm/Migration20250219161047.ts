@@ -70,6 +70,19 @@ export class Migration20250219161047 extends Migration {
 			await this.getCollection<MediaSourceEntity>('media-sources').deleteMany({ _id: { $in: remove } });
 
 			console.info('Deleted media sources: ', remove.length);
+
+			console.info('Creating unique index for media sources');
+
+			await this.getCollection<MediaSourceEntity>('media-sources').createIndex(
+				{
+					sourceId: 1,
+				},
+				{
+					unique: true,
+				}
+			);
+
+			console.info('Unique index for media sources created');
 		}
 	}
 
