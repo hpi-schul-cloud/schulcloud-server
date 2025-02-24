@@ -10,7 +10,6 @@ import { SchoolModule } from '@modules/school';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRepo } from '@shared/repo/course';
-import { UserRepo } from '@shared/repo/user';
 import { CourseRoomsController } from './controller/course-rooms.controller';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
@@ -70,7 +69,6 @@ import {
 		},
 		DashboardModelMapper,
 		CourseRepo,
-		UserRepo,
 		LegacyBoardRepo,
 	],
 })

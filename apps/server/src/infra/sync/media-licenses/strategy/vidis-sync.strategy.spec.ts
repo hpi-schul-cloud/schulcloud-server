@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { MediaSourceNotFoundLoggableException } from '@modules/school-license/loggable';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
-import { MediaSourceForSyncNotFoundLoggableException } from '../loggable';
 import { VidisFetchService, VidisSyncService } from '../service';
 import { vidisOfferItemFactory } from '../testing';
 import { VidisSyncStrategy } from './vidis-sync.strategy';
@@ -107,9 +107,7 @@ describe(VidisSyncService.name, () => {
 
 				const promise = strategy.sync();
 
-				await expect(promise).rejects.toThrow(
-					new MediaSourceForSyncNotFoundLoggableException(MediaSourceDataFormat.VIDIS)
-				);
+				await expect(promise).rejects.toThrow(new MediaSourceNotFoundLoggableException(MediaSourceDataFormat.VIDIS));
 			});
 		});
 	});
