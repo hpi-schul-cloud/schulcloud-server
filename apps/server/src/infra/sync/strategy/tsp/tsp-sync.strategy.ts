@@ -180,8 +180,10 @@ export class TspSyncStrategy extends SyncStrategy {
 		usersOfClasses: Map<string, TspUserInfo[]>
 	): Promise<void> {
 		let totalClassCreationCount = 0;
-		let totalClassUpdatenCount = 0;
+		let totalClassUpdateCount = 0;
 		const fullSync = this.configService.getOrThrow('TSP_SYNC_DATA_DAYS_TO_FETCH', { infer: true }) === -1;
+
+		// Each batch should be processed after another
 		for await (const [schoolExternalId, classes] of classesForSchools.entries()) {
 			const school = schoolsByExternalId.get(schoolExternalId);
 			if (!school) {
@@ -196,13 +198,13 @@ export class TspSyncStrategy extends SyncStrategy {
 				usersOfClasses,
 				fullSync
 			);
-			totalClassUpdatenCount += classUpdateCount;
+			totalClassUpdateCount += classUpdateCount;
 			totalClassCreationCount += classCreationCount;
 
 			this.logger.info(new TspClassSyncBatchLoggable(classUpdateCount, classCreationCount, schoolExternalId));
 		}
 
-		this.logger.info(new TspClassSyncSummaryLoggable(totalClassUpdatenCount, totalClassCreationCount));
+		this.logger.info(new TspClassSyncSummaryLoggable(totalClassUpdateCount, totalClassCreationCount));
 	}
 
 	private createBatches<T>(batchSize: number, data: T[]): T[][] {
