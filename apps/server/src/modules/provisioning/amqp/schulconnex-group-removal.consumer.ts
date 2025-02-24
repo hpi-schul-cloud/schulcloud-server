@@ -32,6 +32,7 @@ export class SchulconnexGroupRemovalConsumer {
 		@RabbitPayload()
 		payload: SchulconnexGroupRemovalMessage
 	): Promise<void> {
+		// is the | null still correct?
 		const removedFromGroup: Group | null = await this.schulconnexGroupProvisioningService.removeUserFromGroup(
 			payload.userId,
 			payload.groupId

@@ -20,6 +20,7 @@ import {
 } from './service';
 
 @Injectable()
+// "Sync" -> "Synchronous"
 export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisioningStrategy {
 	constructor(
 		private readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,

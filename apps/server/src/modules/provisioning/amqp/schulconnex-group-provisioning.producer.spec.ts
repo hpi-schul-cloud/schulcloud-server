@@ -39,6 +39,7 @@ describe(SchulconnexGroupProvisioningProducer.name, () => {
 	describe('provisonGroup', () => {
 		describe('when sending a message', () => {
 			const setup = () => {
+				// there should be a test factory for such objects
 				const message: SchulconnexGroupProvisioningMessage = {
 					systemId: new ObjectId().toHexString(),
 					externalSchool: externalSchoolDtoFactory.build(),

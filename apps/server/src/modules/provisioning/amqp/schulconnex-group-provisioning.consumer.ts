@@ -33,11 +33,13 @@ export class SchulconnexGroupProvisioningConsumer {
 		@RabbitPayload()
 		payload: SchulconnexGroupProvisioningMessage
 	): Promise<void> {
+		// is the | null still correct?
 		const existingGroup: Group | null = await this.groupService.findByExternalSource(
 			payload.externalGroup.externalId,
 			payload.systemId
 		);
 
+		// is the | null still correct?
 		const provisionedGroup: Group | null = await this.schulconnexGroupProvisioningService.provisionExternalGroup(
 			payload.externalGroup,
 			payload.externalSchool,
