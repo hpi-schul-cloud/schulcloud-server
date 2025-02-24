@@ -153,4 +153,108 @@ describe(DeletionRequestScope.name, () => {
 			});
 		});
 	});
+
+	describe('byUserIdsAndRegistered', () => {
+		const setup = () => {
+			const userIds = ['user1', 'user2'];
+			const expectedQuery = {
+				status: StatusModel.REGISTERED,
+				$and: [{ targetRefId: { $in: userIds } }],
+			};
+
+			return {
+				userIds,
+				expectedQuery,
+			};
+		};
+
+		describe('when userIds are set', () => {
+			it('should add query', () => {
+				const { userIds, expectedQuery } = setup();
+
+				const result = scope.byUserIdsAndRegistered(userIds);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQuery);
+			});
+		});
+	});
+
+	describe('byUserIdsAndFailed', () => {
+		const setup = () => {
+			const userIds = ['user1', 'user2'];
+			const expectedQuery = {
+				status: StatusModel.FAILED,
+				$and: [{ targetRefId: { $in: userIds } }],
+			};
+
+			return {
+				userIds,
+				expectedQuery,
+			};
+		};
+
+		describe('when userIds are set', () => {
+			it('should add query', () => {
+				const { userIds, expectedQuery } = setup();
+
+				const result = scope.byUserIdsAndFailed(userIds);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQuery);
+			});
+		});
+	});
+
+	describe('byUserIdsAndPending', () => {
+		const setup = () => {
+			const userIds = ['user1', 'user2'];
+			const expectedQuery = {
+				status: StatusModel.PENDING,
+				$and: [{ targetRefId: { $in: userIds } }],
+			};
+
+			return {
+				userIds,
+				expectedQuery,
+			};
+		};
+
+		describe('when userIds are set', () => {
+			it('should add query', () => {
+				const { userIds, expectedQuery } = setup();
+
+				const result = scope.byUserIdsAndPending(userIds);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQuery);
+			});
+		});
+	});
+
+	describe('byUserIdsAndSuccess', () => {
+		const setup = () => {
+			const userIds = ['user1', 'user2'];
+			const expectedQuery = {
+				status: StatusModel.SUCCESS,
+				$and: [{ targetRefId: { $in: userIds } }],
+			};
+
+			return {
+				userIds,
+				expectedQuery,
+			};
+		};
+
+		describe('when userIds are set', () => {
+			it('should add query', () => {
+				const { userIds, expectedQuery } = setup();
+
+				const result = scope.byUserIdsAndSuccess(userIds);
+
+				expect(result).toBeInstanceOf(DeletionRequestScope);
+				expect(scope.query).toEqual(expectedQuery);
+			});
+		});
+	});
 });

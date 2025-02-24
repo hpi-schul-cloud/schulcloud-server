@@ -9,7 +9,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import crypto from 'crypto-js';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../entity';
+import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
 import {
 	contextExternalToolEntityFactory,
 	Lti11DeepLinkParamsFactory,

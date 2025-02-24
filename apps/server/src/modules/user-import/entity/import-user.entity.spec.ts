@@ -1,6 +1,6 @@
+import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { userFactory } from '@testing/factory/user.factory';
 import { importUserFactory } from '../testing';
 import { MatchCreator } from './import-user.entity';

@@ -1,4 +1,4 @@
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolMigrationDatabaseOperationFailedLoggableException } from './school-migration-database-operation-failed.loggable-exception';
 
 describe(SchoolMigrationDatabaseOperationFailedLoggableException.name, () => {
