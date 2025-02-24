@@ -109,8 +109,8 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
 					method: 'POST',
 					auth: {
-						user: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
-						pass: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
+						username: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
+						password: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
 					},
 					data: {
 						download_uri: signedUrl,
