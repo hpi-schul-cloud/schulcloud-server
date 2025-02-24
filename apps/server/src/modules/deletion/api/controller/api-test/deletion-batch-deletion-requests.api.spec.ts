@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
-import { userFactory } from '@testing/factory/user.factory';
+import { userFactory } from '@modules/user/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { deletionBatchEntityFactory } from '../../../repo/entity/testing';

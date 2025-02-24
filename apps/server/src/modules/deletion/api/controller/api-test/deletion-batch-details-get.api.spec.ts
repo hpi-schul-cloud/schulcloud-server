@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
-import { userFactory } from '@testing/factory/user.factory';
+import { userFactory } from '@modules/user/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@shared/domain/interface';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
