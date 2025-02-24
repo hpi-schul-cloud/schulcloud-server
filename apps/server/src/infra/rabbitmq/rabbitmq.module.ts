@@ -5,6 +5,7 @@ import {
 	AntivirusExchange,
 	FilesPreviewExchange,
 	FilesStorageExchange,
+	HeartBeatIntervalInSeconds,
 	MailSendExchange,
 	RabbitMqURI,
 	SchulconnexProvisioningExchange,
@@ -46,6 +47,9 @@ const imports = [
 			},
 		],
 		uri: RabbitMqURI,
+		connectionManagerOptions: {
+			heartbeatIntervalInSeconds: HeartBeatIntervalInSeconds,
+		},
 	}),
 ];
 @Global()
@@ -63,7 +67,7 @@ export class RabbitMQWrapperModule {}
 export class RabbitMQWrapperTestModule implements OnModuleDestroy {
 	constructor(private readonly amqpConnectionManager: AmqpConnectionManager) {}
 
-	// In tests we need to close connections when the module is destroyed.
+	// In tests, we need to close connections when the module is destroyed.
 	public async onModuleDestroy(): Promise<void> {
 		await Promise.all(
 			this.amqpConnectionManager.getConnections().map((connection) => connection.managedConnection.close())
