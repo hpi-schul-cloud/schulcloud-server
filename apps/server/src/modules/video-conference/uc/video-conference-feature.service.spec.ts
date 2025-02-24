@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ForbiddenException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
+import { ForbiddenException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { VideoConferenceScope } from '@shared/domain/interface';
 import { VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
@@ -95,7 +95,7 @@ describe(VideoConferenceFeatureService.name, () => {
 
 	describe('when scope is course', () => {
 		const setup = () => {
-			userService.findById.mockResolvedValueOnce({ schoolId: 'schoolId' } as UserDO);
+			userService.findById.mockResolvedValueOnce({ schoolId: 'schoolId' } as UserDo);
 			const userId = 'userId';
 			const scope: ScopeRef = {
 				scope: VideoConferenceScope.COURSE,

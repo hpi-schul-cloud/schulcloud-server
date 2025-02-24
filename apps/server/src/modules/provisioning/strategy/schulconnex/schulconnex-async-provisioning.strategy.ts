@@ -2,10 +2,11 @@ import { Logger } from '@core/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { Group, GroupService } from '@modules/group';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, UserDO } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
@@ -46,7 +47,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 			school = await this.schulconnexSchoolProvisioningService.provisionExternalSchool(data.externalSchool, systemId);
 		}
 
-		const user: UserDO = await this.schulconnexUserProvisioningService.provisionExternalUser(
+		const user = await this.schulconnexUserProvisioningService.provisionExternalUser(
 			data.externalUser,
 			systemId,
 			school?.id
@@ -68,11 +69,11 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 		return new ProvisioningDto({ externalUserId: data.externalUser.externalId });
 	}
 
-	private async provisionGroups(data: OauthDataDto, user: UserDO, school?: LegacySchoolDo): Promise<void> {
+	private async provisionGroups(data: OauthDataDto, user: UserDo, school?: LegacySchoolDo): Promise<void> {
 		if (!user?.id) {
-			throw new NotFoundLoggableException(UserDO.name, { externalId: data.externalUser.externalId });
+			throw new NotFoundLoggableException(UserDo.name, { externalId: data.externalUser.externalId });
 		}
-		const userId: string = user.id;
+		const userId = user.id;
 		const { systemId } = data.system;
 
 		let externalGroups: ExternalGroupDto[] = [];
@@ -86,8 +87,8 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 
 		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups({ userId, systemId });
 
-		const groupsWithoutUser: Group[] = existingGroupsOfUser.data.filter((existingGroupFromSystem: Group) => {
-			const isUserInGroup: boolean = externalGroups.some(
+		const groupsWithoutUser = existingGroupsOfUser.data.filter((existingGroupFromSystem: Group) => {
+			const isUserInGroup = externalGroups.some(
 				(externalGroup: ExternalGroupDto) =>
 					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
 			);
@@ -95,21 +96,19 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 			return !isUserInGroup;
 		});
 
-		const removalPromises: Promise<void>[] = groupsWithoutUser.map(async (group: Group): Promise<void> => {
+		const removalPromises = groupsWithoutUser.map(async (group: Group): Promise<void> => {
 			await this.schulconnexGroupProvisioningProducer.removeUserFromGroup({
 				userId,
 				groupId: group.id,
 			});
 		});
-		const provisioningPromises: Promise<void>[] = externalGroups.map(
-			async (externalGroup: ExternalGroupDto): Promise<void> => {
-				await this.schulconnexGroupProvisioningProducer.provisonGroup({
-					systemId,
-					externalGroup,
-					externalSchool: data.externalSchool,
-				});
-			}
-		);
+		const provisioningPromises = externalGroups.map(async (externalGroup: ExternalGroupDto): Promise<void> => {
+			await this.schulconnexGroupProvisioningProducer.provisonGroup({
+				systemId,
+				externalGroup,
+				externalSchool: data.externalSchool,
+			});
+		});
 
 		await Promise.all(removalPromises);
 		await Promise.all(provisioningPromises);

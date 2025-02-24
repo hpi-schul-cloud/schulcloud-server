@@ -1,6 +1,7 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { TeamEntity, TeamUserEntity, User } from '@shared/domain/entity';
+import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
 
 @Injectable()
 export class TeamRule implements Rule<TeamEntity> {

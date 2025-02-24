@@ -1,9 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from 'bson';
-import { UserService } from '@modules/user';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { UserDO } from '@shared/domain/domainobject';
+import { UserService, UserDo } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { RoleName } from '@shared/domain/interface';
 import { DeletionBatchUc } from './deletion-batch.uc';
 import { DeletionBatchService, CreateDeletionBatchParams } from '../../domain/service';
@@ -44,11 +43,11 @@ describe('DeletionBatchUc', () => {
 	describe('createDeletionBatch', () => {
 		describe('when contains students, teachers, and invalid ids', () => {
 			const setup = () => {
-				const student: UserDO = userDoFactory.buildWithId({
+				const student: UserDo = userDoFactory.buildWithId({
 					id: new ObjectId().toHexString(),
 					roles: [{ id: 'roleid', name: RoleName.STUDENT }],
 				});
-				const teacher: UserDO = userDoFactory.buildWithId({
+				const teacher: UserDo = userDoFactory.buildWithId({
 					id: new ObjectId().toHexString(),
 					roles: [{ id: 'roleid', name: RoleName.TEACHER }],
 				});

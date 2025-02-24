@@ -4,16 +4,16 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { LessonCopyService, LessonService } from '@modules/lesson';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { LessonCopyUC } from './lesson-copy.uc';
 
 describe('lesson copy uc', () => {

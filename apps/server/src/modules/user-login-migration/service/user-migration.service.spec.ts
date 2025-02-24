@@ -3,11 +3,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,
@@ -71,7 +71,7 @@ describe(UserMigrationService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetExternalId = 'newUserExternalId';
 				const sourceExternalId = 'currentUserExternalId';
-				const user: UserDO = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: mockDate,
 					updatedAt: mockDate,
@@ -85,7 +85,7 @@ describe(UserMigrationService.name, () => {
 
 				const accountId = new ObjectId().toHexString();
 				const sourceSystemId = new ObjectId().toHexString();
-				const accountDto: Account = new Account({
+				const accountDto = new Account({
 					id: accountId,
 					updatedAt: new Date(),
 					createdAt: new Date(),
@@ -160,7 +160,7 @@ describe(UserMigrationService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetExternalId = 'newUserExternalId';
 				const sourceExternalId = 'currentUserExternalId';
-				const user: UserDO = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: mockDate,
 					updatedAt: mockDate,
@@ -241,12 +241,11 @@ describe(UserMigrationService.name, () => {
 		describe('when user is already migrated', () => {
 			const setup = () => {
 				const targetSystemId = new ObjectId().toHexString();
-
 				const role = roleFactory.buildWithId();
 				const userId = new ObjectId().toHexString();
 				const targetExternalId = 'newUserExternalId';
 				const sourceExternalId = 'currentUserExternalId';
-				const user: UserDO = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					id: userId,
 					createdAt: mockDate,
 					updatedAt: mockDate,
@@ -295,7 +294,7 @@ describe(UserMigrationService.name, () => {
 	describe('hasUserMigratedInMigrationPhase', () => {
 		describe('when user has no external id', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					lastLoginSystemChange: new Date(),
 					externalId: undefined,
 				});
@@ -313,7 +312,7 @@ describe(UserMigrationService.name, () => {
 			it('should return false', () => {
 				const { user, userLoginMigration } = setup();
 
-				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+				const result = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
 
 				expect(result).toEqual(false);
 			});
@@ -321,12 +320,12 @@ describe(UserMigrationService.name, () => {
 
 		describe('when login system of the user was never changed', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					lastLoginSystemChange: undefined,
 					externalId: 'externalId',
 				});
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.build({
+				const userLoginMigration = userLoginMigrationDOFactory.build({
 					closedAt: undefined,
 				});
 
@@ -339,7 +338,7 @@ describe(UserMigrationService.name, () => {
 			it('should return false', () => {
 				const { user, userLoginMigration } = setup();
 
-				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+				const result = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
 
 				expect(result).toEqual(false);
 			});
@@ -347,7 +346,7 @@ describe(UserMigrationService.name, () => {
 
 		describe('when the migration had been closed', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					lastLoginSystemChange: new Date(),
 					externalId: 'externalId',
 				});
@@ -367,7 +366,7 @@ describe(UserMigrationService.name, () => {
 			it('should return false', () => {
 				const { user, userLoginMigration } = setup();
 
-				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+				const result = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
 
 				expect(result).toEqual(false);
 			});
@@ -375,7 +374,7 @@ describe(UserMigrationService.name, () => {
 
 		describe('when the user had been migrated in the current active migration', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					lastLoginSystemChange: new Date(),
 					externalId: 'externalId',
 				});
@@ -396,7 +395,7 @@ describe(UserMigrationService.name, () => {
 			it('should return true', () => {
 				const { user, userLoginMigration } = setup();
 
-				const result: boolean = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
+				const result = service.hasUserMigratedInMigrationPhase(user, userLoginMigration);
 
 				expect(result).toEqual(true);
 			});

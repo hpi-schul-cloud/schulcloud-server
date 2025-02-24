@@ -1,8 +1,7 @@
+import { BaseDO, RoleReference } from '@shared/domain/domainobject';
+import { Consent } from '@shared/domain/domainobject/consent';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BaseDO } from './base.do';
-import { Consent } from './consent';
-import { RoleReference } from './role-reference';
 import { UserSourceOptions } from './user-source-options.do';
 
 export class SecondarySchoolReference {
@@ -16,7 +15,7 @@ export class SecondarySchoolReference {
 	}
 }
 
-export class UserDO extends BaseDO {
+export class UserDo extends BaseDO {
 	createdAt?: Date;
 
 	updatedAt?: Date;
@@ -69,7 +68,7 @@ export class UserDO extends BaseDO {
 
 	sourceOptions?: UserSourceOptions;
 
-	constructor(domainObject: UserDO) {
+	constructor(domainObject: UserDo) {
 		super(domainObject.id);
 
 		this.createdAt = domainObject.createdAt;

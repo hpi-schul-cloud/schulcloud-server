@@ -2,10 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { Injectable } from '@nestjs/common';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { User } from './user.entity';
 import { UserScope } from './user.scope';
 
 @Injectable()

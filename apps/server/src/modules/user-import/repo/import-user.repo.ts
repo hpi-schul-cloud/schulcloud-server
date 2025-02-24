@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';

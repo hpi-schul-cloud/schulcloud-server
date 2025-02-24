@@ -1,8 +1,8 @@
-import { UserDiscoverableQuery } from '@modules/user/service/user-query.type';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';
+import { UserDiscoverableQuery } from '../../service/user-query.type';
+import { User } from './user.entity';
 
 export class UserScope extends Scope<User> {
 	isOutdated(isOutdated?: boolean): UserScope {
