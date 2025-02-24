@@ -9,11 +9,11 @@ import { roleDtoFactory } from '@modules/role/testing';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { BadDataLoggableException } from '../loggable';
 import {
 	externalClassDtoFactory,

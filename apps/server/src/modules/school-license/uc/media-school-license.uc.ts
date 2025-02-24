@@ -1,6 +1,5 @@
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { MediaSchoolLicense } from '../domain';
@@ -14,7 +13,7 @@ export class MediaSchoolLicenseUc {
 	) {}
 
 	public async updateMediaSchoolLicenses(currentUserId: string, schoolId: EntityId): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 
 		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SCHOOL_LICENSE_ADMIN]);
 
@@ -25,13 +24,11 @@ export class MediaSchoolLicenseUc {
 		currentUserId: string,
 		schoolId: EntityId
 	): Promise<MediaSchoolLicense[]> {
-		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 
 		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SCHOOL_LICENSE_ADMIN]);
 
-		const licenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(
-			schoolId
-		);
+		const licenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
 		return licenses;
 	}

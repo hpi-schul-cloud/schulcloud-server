@@ -1,6 +1,6 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
 

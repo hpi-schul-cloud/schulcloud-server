@@ -2,11 +2,11 @@ import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import { UserService } from '@modules/user';
+import { UserService, UserDo } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleReference } from '@shared/domain/domainobject';
 import { Consent } from '@shared/domain/domainobject/consent';
 import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
 import { UserConsent } from '@shared/domain/domainobject/user-consent';
@@ -103,7 +103,7 @@ export class TspProvisioningService {
 		return schools[0];
 	}
 
-	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDO): Promise<void> {
+	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDo): Promise<void> {
 		const promises = classes.map(async (clazz) => {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(school.id, clazz.externalId);
 
@@ -117,7 +117,7 @@ export class TspProvisioningService {
 		await Promise.all(promises);
 	}
 
-	private async updateClass(currentClass: Class, clazz: ExternalClassDto, school: School, user: UserDO): Promise<void> {
+	private async updateClass(currentClass: Class, clazz: ExternalClassDto, school: School, user: UserDo): Promise<void> {
 		TypeGuard.requireKeys(
 			user,
 			['id'],
@@ -140,7 +140,7 @@ export class TspProvisioningService {
 		await this.classService.save(currentClass);
 	}
 
-	private async createClass(clazz: ExternalClassDto, school: School, user: UserDO): Promise<void> {
+	private async createClass(clazz: ExternalClassDto, school: School, user: UserDo): Promise<void> {
 		TypeGuard.requireKeys(
 			user,
 			['id'],
@@ -160,7 +160,7 @@ export class TspProvisioningService {
 		await this.classService.save(newClass);
 	}
 
-	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDO> {
+	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDo> {
 		TypeGuard.requireKeys(
 			data,
 			['externalSchool'],
@@ -187,14 +187,14 @@ export class TspProvisioningService {
 		externalUser: ExternalUserDto,
 		roleRefs: RoleReference[],
 		schoolId: string,
-		existingUser?: UserDO | null
-	): UserDO | undefined {
+		existingUser?: UserDo | null
+	): UserDo | undefined {
 		if (!existingUser) {
 			if (!externalUser.firstName || !externalUser.lastName) {
 				return undefined;
 			}
 
-			const newUser = new UserDO({
+			const newUser = new UserDo({
 				roles: roleRefs,
 				schoolId,
 				firstName: externalUser.firstName,
@@ -220,7 +220,7 @@ export class TspProvisioningService {
 		return existingUser;
 	}
 
-	private createOrUpdateAccount(systemId: string, user: UserDO, account: Account | null): AccountSave {
+	private createOrUpdateAccount(systemId: string, user: UserDo, account: Account | null): AccountSave {
 		TypeGuard.requireKeys(
 			user,
 			['id'],
@@ -262,7 +262,7 @@ export class TspProvisioningService {
 		return email.toLowerCase();
 	}
 
-	private createTspConsent(user: UserDO): void {
+	private createTspConsent(user: UserDo): void {
 		const userConsent = new UserConsent({
 			form: 'digital',
 			privacyConsent: true,

@@ -4,10 +4,10 @@ import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { UserSourceOptions } from '@modules/user/domain';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserSourceOptions } from '@shared/domain/domainobject/user-source-options.do';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 
