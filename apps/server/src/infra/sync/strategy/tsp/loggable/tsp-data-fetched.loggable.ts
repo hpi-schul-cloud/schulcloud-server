@@ -9,8 +9,15 @@ export class TspDataFetchedLoggable implements Loggable {
 	) {}
 
 	public getLogMessage(): LogMessage {
-		const message: LogMessage = {
-			message: `Fetched ${this.tspTeacherCount} teachers, ${this.tspStudentCount} students and ${this.tspClassesCount} classes for the last ${this.daysFetched} days from TSP`,
+		let message: string;
+		if (this.daysFetched === -1) {
+			message = `Fetched ${this.tspTeacherCount} teachers, ${this.tspStudentCount} students and ${this.tspClassesCount} classes for full sync from TSP.`;
+		} else {
+			message = `Fetched ${this.tspTeacherCount} teachers, ${this.tspStudentCount} students and ${this.tspClassesCount} classes for the last ${this.daysFetched} days from TSP`;
+		}
+
+		const logMessage: LogMessage = {
+			message,
 			data: {
 				tspTeacherCount: this.tspTeacherCount,
 				tspStudentCount: this.tspStudentCount,
@@ -19,6 +26,6 @@ export class TspDataFetchedLoggable implements Loggable {
 			},
 		};
 
-		return message;
+		return logMessage;
 	}
 }

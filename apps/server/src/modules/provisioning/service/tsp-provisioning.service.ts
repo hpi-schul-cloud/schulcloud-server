@@ -1,10 +1,10 @@
 import { Account, AccountSave, AccountService } from '@modules/account';
-import { ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
+import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserService, UserDo } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Consent } from '@shared/domain/domainobject/consent';
@@ -94,74 +94,85 @@ export class TspProvisioningService {
 	}
 
 	public async findSchoolOrFail(system: ProvisioningSystemDto, school: ExternalSchoolDto): Promise<School> {
-		const schools = await this.schoolService.getSchools({
-			systemId: system.systemId,
-			externalId: school.externalId,
-		});
+		const schools = await this.schoolService.getSchools({ systemId: system.systemId, externalId: school.externalId });
 
 		if (schools.length !== 1) {
-			throw new NotFoundLoggableException(School.name, {
-				systemId: system.systemId,
-				externalId: school.externalId,
-			});
+			throw new NotFoundLoggableException(School.name, { systemId: system.systemId, externalId: school.externalId });
 		}
 
 		return schools[0];
 	}
 
 	public async provisionClasses(school: School, classes: ExternalClassDto[], user: UserDo): Promise<void> {
-		if (!user.id)
-			throw new BadDataLoggableException('User ID is missing', {
-				externalId: user.externalId,
-			});
-
-		for await (const clazz of classes) {
+		const promises = classes.map(async (clazz) => {
 			const currentClass = await this.classService.findClassWithSchoolIdAndExternalId(school.id, clazz.externalId);
 
 			if (currentClass) {
-				// Case: Class exists -> update class
-				currentClass.schoolId = school.id;
-				currentClass.name = clazz.name ?? currentClass.name;
-				currentClass.year = school.currentYear?.id;
-				currentClass.source = this.ENTITY_SOURCE;
-				currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
-
-				if (user.roles.some((role) => role.name === RoleName.TEACHER)) currentClass.addTeacher(user.id);
-				if (user.roles.some((role) => role.name === RoleName.STUDENT)) currentClass.addUser(user.id);
-
-				await this.classService.save(currentClass);
+				await this.updateClass(currentClass, clazz, school, user);
 			} else {
-				// Case: Class does not exist yet -> create new class
-				const newClass = ClassFactory.create({
-					name: clazz.name,
-					schoolId: school.id,
-					year: school.currentYear?.id,
-					teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
-					userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
-					source: this.ENTITY_SOURCE,
-					sourceOptions: new ClassSourceOptions({ tspUid: clazz.externalId }),
-				});
-
-				await this.classService.save(newClass);
+				await this.createClass(clazz, school, user);
 			}
+		});
+
+		await Promise.all(promises);
+	}
+
+	private async updateClass(currentClass: Class, clazz: ExternalClassDto, school: School, user: UserDo): Promise<void> {
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('User ID is missing', { externalId: user.externalId })
+		);
+
+		currentClass.schoolId = school.id;
+		currentClass.name = clazz.name ?? currentClass.name;
+		currentClass.year = school.currentYear?.id;
+		currentClass.source = this.ENTITY_SOURCE;
+		currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
+
+		if (user.roles.some((role) => role.name === RoleName.TEACHER)) {
+			currentClass.addTeacher(user.id);
 		}
+		if (user.roles.some((role) => role.name === RoleName.STUDENT)) {
+			currentClass.addUser(user.id);
+		}
+
+		await this.classService.save(currentClass);
+	}
+
+	private async createClass(clazz: ExternalClassDto, school: School, user: UserDo): Promise<void> {
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('User ID is missing', { externalId: user.externalId })
+		);
+
+		const newClass = ClassFactory.create({
+			name: clazz.name,
+			schoolId: school.id,
+			year: school.currentYear?.id,
+			teacherIds: user.roles.some((role) => role.name === RoleName.TEACHER) ? [user.id] : [],
+			userIds: user.roles.some((role) => role.name === RoleName.STUDENT) ? [user.id] : [],
+			source: this.ENTITY_SOURCE,
+			sourceOptions: new ClassSourceOptions({ tspUid: clazz.externalId }),
+		});
+
+		await this.classService.save(newClass);
 	}
 
 	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDo> {
-		if (!data.externalSchool) {
-			throw new BadDataLoggableException('External school is missing for user', {
-				externalId: data.externalUser.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			data,
+			['externalSchool'],
+			new BadDataLoggableException('External school is missing for user', { externalId: data.externalUser.externalId })
+		);
 
 		const existingUser = await this.userService.findByExternalId(data.externalUser.externalId, data.system.systemId);
 		const roleRefs = await this.getRoleReferencesForUser(data.externalUser);
 
 		const user = this.createOrUpdateUser(data.externalUser, roleRefs, school.id, existingUser);
 		if (!user) {
-			throw new BadDataLoggableException(`Couldn't process user`, {
-				externalId: data.externalUser.externalId,
-			});
+			throw new BadDataLoggableException(`Couldn't process user`, { externalId: data.externalUser.externalId });
 		}
 		const savedUser = await this.userService.save(user);
 
@@ -210,11 +221,11 @@ export class TspProvisioningService {
 	}
 
 	private createOrUpdateAccount(systemId: string, user: UserDo, account: Account | null): AccountSave {
-		if (!user.id) {
-			throw new BadDataLoggableException('user ID is missing', {
-				externalId: user.externalId,
-			});
-		}
+		TypeGuard.requireKeys(
+			user,
+			['id'],
+			new BadDataLoggableException('user ID is missing', { externalId: user.externalId })
+		);
 
 		if (account) {
 			const updated = new AccountSave({
