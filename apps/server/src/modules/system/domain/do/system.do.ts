@@ -1,9 +1,9 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { LdapConfig } from './ldap-config';
-import { OauthConfig } from './oauth-config';
-import { OidcConfig } from './oidc-config';
-import { SystemType } from './system-type.enum';
+import { LdapConfig } from '../ldap-config';
+import { OauthConfig } from '../oauth-config';
+import { OidcConfig } from '../oidc-config';
+import { SystemType } from '../type/system-type.enum';
 
 export interface SystemProps extends AuthorizableObject {
 	type: string;

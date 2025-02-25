@@ -1,5 +1,5 @@
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ExternalSourceEmbeddable } from '@modules/system/entity';
+import { ExternalSourceEmbeddable } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userFactory } from '@modules/user/testing';
 import { RoleName } from '@shared/domain/interface';

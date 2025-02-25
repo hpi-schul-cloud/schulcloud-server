@@ -1,4 +1,4 @@
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';

@@ -7,7 +7,7 @@ import {
 	schoolYearEntityFactory,
 } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';

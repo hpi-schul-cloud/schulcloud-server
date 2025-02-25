@@ -1,14 +1,8 @@
-import {
-	LdapConfigEntity,
-	OauthConfigEntity,
-	OidcConfigEntity,
-	SystemEntity,
-	SystemEntityProps,
-} from '@modules/system/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
+import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity, SystemEntityProps } from '../repo';
 
 export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEntity, OauthConfigEntity>(
 	OauthConfigEntity,

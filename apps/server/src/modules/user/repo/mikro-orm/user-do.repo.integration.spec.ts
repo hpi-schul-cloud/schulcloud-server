@@ -5,7 +5,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserDo, UserSourceOptions } from '@modules/user/domain';
 import { userDoFactory, userFactory } from '@modules/user/testing';
