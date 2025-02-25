@@ -9,43 +9,37 @@ import {
 	ComponentType,
 } from '@shared/domain/entity/lesson.entity';
 import { EntityId } from '@shared/domain/types';
+import { LernstoreResources } from './lernstore.resources';
 
-// eslint problem will be solved in EW-1090
 class ComponentTextPropsImpl implements ComponentTextProperties {
 	@ApiProperty({ nullable: false })
-	text!: string;
+	public text!: string;
 }
 
 class ComponentEtherpadPropsImpl implements ComponentEtherpadProperties {
 	@ApiProperty({ nullable: false, description: 'description of a Etherpad component' })
-	description!: string;
+	public description!: string;
 
 	@ApiProperty({ nullable: false, description: 'title of a Etherpad component' })
-	title!: string;
+	public title!: string;
 
 	@ApiProperty({ nullable: false, description: 'url of a Etherpad component' })
-	url!: string;
+	public url!: string;
 }
 
 class ComponentGeogebraPropsImpl implements ComponentGeogebraProperties {
 	@ApiProperty({ nullable: false, description: 'materialId of a Geogebra component' })
-	materialId!: string;
+	public materialId!: string;
 }
 
 class ComponentInternalPropsImpl implements ComponentInternalProperties {
 	@ApiProperty({ nullable: false, description: 'url of a Internal component' })
-	url!: string;
+	public url!: string;
 }
 
 class ComponentLernstorePropsImpl implements ComponentLernstoreProperties {
-	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component' })
-	resources!: {
-		client: string;
-		description: string;
-		merlinReference?: string;
-		title: string;
-		url: string;
-	}[];
+	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component', type: [LernstoreResources] })
+	public resources!: LernstoreResources[];
 }
 @ApiExtraModels(
 	ComponentTextPropsImpl,
@@ -74,7 +68,7 @@ export class LessonContentResponse {
 			{ $ref: getSchemaPath(ComponentLernstorePropsImpl) },
 		],
 	})
-	content?:
+	public content?:
 		| ComponentTextPropsImpl
 		| ComponentEtherpadPropsImpl
 		| ComponentGeogebraPropsImpl
@@ -86,22 +80,22 @@ export class LessonContentResponse {
 		pattern: '[a-f0-9]{24}',
 		deprecated: true,
 	})
-	_id?: EntityId;
+	public _id?: EntityId;
 
 	@ApiProperty({
 		description: 'The id of the Material entity',
 		pattern: '[a-f0-9]{24}',
 	})
-	id?: EntityId;
+	public id?: EntityId;
 
 	@ApiProperty({
 		description: 'Title of the Material entity',
 	})
-	title: string;
+	public title: string;
 
 	@ApiProperty({ enum: ComponentType })
-	component: ComponentType;
+	public component: ComponentType;
 
 	@ApiProperty()
-	hidden: boolean;
+	public hidden: boolean;
 }

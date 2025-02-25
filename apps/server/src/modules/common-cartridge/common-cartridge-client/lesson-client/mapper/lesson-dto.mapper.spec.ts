@@ -4,14 +4,13 @@ import {
 	LessonContentResponse,
 	LessonResponse,
 	LessonLinkedTaskResponse,
-	LessonLinkedTaskResponseDescriptionInputFormat,
+	LessonLinkedTaskResponseDescriptionInputFormatEnum,
 	ComponentEtherpadPropsImpl,
 	ComponentGeogebraPropsImpl,
 	ComponentInternalPropsImpl,
 	ComponentTextPropsImpl,
 	ComponentLernstorePropsImpl,
-	ComponentNexboardPropsImpl,
-	LessonContentResponseComponent,
+	LessonContentResponseComponentEnum,
 } from '../lessons-api-client';
 import { LessonDtoMapper } from './lesson-dto.mapper';
 import { LessonDto } from '../dto';
@@ -19,7 +18,6 @@ import { ComponentGeogebraPropsDto } from '../dto/component-geogebra-props.dto';
 import { ComponentTextPropsDto } from '../dto/component-text-props.dto';
 import { ComponentInternalPropsDto } from '../dto/component-internal-props.dto';
 import { ComponentLernstorePropsDto } from '../dto/component-lernstore-props.dto';
-import { ComponentNexboardPropsDto } from '../dto/component-nexboard-props-dto';
 
 describe('LessonDtoMapper', () => {
 	describe('mapToLessonDto', () => {
@@ -183,7 +181,9 @@ describe('LessonDtoMapper', () => {
 		describe('when mapping LessonResponse to lesson DTO with lernstore content', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
-					content: { resources: [faker.internet.url(), faker.lorem.text()] } as ComponentLernstorePropsImpl,
+					content: {
+						resources: [{ url: faker.internet.url(), description: faker.lorem.text() }],
+					} as ComponentLernstorePropsImpl,
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
@@ -217,19 +217,14 @@ describe('LessonDtoMapper', () => {
 			});
 		});
 
-		describe('when mapping LessonResponse to lesson DTO with next board content', () => {
+		describe('when mapping LessonResponse to lesson DTO without lernstore content', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
-					content: {
-						board: faker.lorem.text(),
-						description: faker.lorem.word(),
-						title: faker.lorem.text(),
-						url: faker.internet.url(),
-					} as ComponentNexboardPropsImpl,
+					content: undefined,
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['neXboard']),
+					component: faker.helpers.arrayElement(['resources']),
 					hidden: faker.datatype.boolean(),
 				};
 
@@ -248,14 +243,13 @@ describe('LessonDtoMapper', () => {
 				return { lessonResponse, lessonContentResponse };
 			};
 
-			it('should return LessonDto with nexboard content', () => {
+			it('should return LessonDto without lernstore content', () => {
 				const { lessonResponse } = setup();
 
 				const result = LessonDtoMapper.mapToLessonDto(lessonResponse);
 
 				expect(result).toBeInstanceOf(LessonDto);
-				expect(result.contents[0].component).toEqual('neXboard');
-				expect(result.contents[0].content).toBeInstanceOf(ComponentNexboardPropsDto);
+				expect(result.contents[0].component).toEqual('resources');
 			});
 		});
 
@@ -263,15 +257,12 @@ describe('LessonDtoMapper', () => {
 			const setup = () => {
 				const lessonContentResponse: LessonContentResponse = {
 					content: {
-						board: faker.lorem.text(),
-						description: faker.lorem.word(),
-						title: faker.lorem.text(),
-						url: faker.internet.url(),
-					} as ComponentNexboardPropsImpl,
+						text: faker.lorem.text(),
+					} as ComponentTextPropsImpl,
 					_id: faker.string.uuid(),
 					id: faker.string.uuid(),
 					title: faker.lorem.sentence(),
-					component: faker.helpers.arrayElement(['unknown']) as unknown as LessonContentResponseComponent,
+					component: faker.helpers.arrayElement(['unknown']) as LessonContentResponseComponentEnum,
 					hidden: faker.datatype.boolean(),
 				};
 
@@ -306,7 +297,7 @@ describe('LessonDtoMapper', () => {
 				const lessonLinkedTaskResponse: LessonLinkedTaskResponse = {
 					name: faker.lorem.sentence(),
 					description: faker.lorem.sentence(),
-					descriptionInputFormat: LessonLinkedTaskResponseDescriptionInputFormat.PLAIN_TEXT,
+					descriptionInputFormat: LessonLinkedTaskResponseDescriptionInputFormatEnum.PlainText,
 					availableDate: faker.date.recent().toString(),
 					dueDate: faker.date.future().toString(),
 					private: faker.datatype.boolean(),
