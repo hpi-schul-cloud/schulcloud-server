@@ -2,6 +2,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { LernstoreResources } from '@modules/lesson/controller';
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
@@ -163,6 +164,28 @@ describe('Lesson Entity', () => {
 			const lesson = lessonFactory.build({ contents: [expectedTextContent] });
 			const result = lesson.getLessonComponents();
 			expect(result).toEqual([expectedTextContent]);
+		});
+
+		it('should return full lernstore component', () => {
+			const expectedLernstoreContent: ComponentProperties = {
+				title: 'test component',
+				hidden: false,
+				component: ComponentType.LERNSTORE,
+				content: {
+					resources: [
+						new LernstoreResources({
+							client: 'test client',
+							description: 'test description',
+							title: 'test title',
+							url: 'test url',
+							merlinReference: 'test merlin reference',
+						}),
+					],
+				},
+			};
+			const lesson = lessonFactory.build({ contents: [expectedLernstoreContent] });
+			const result = lesson.getLessonComponents();
+			expect(result).toEqual([expectedLernstoreContent]);
 		});
 	});
 

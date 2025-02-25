@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { TspUserInfo } from '@infra/sync';
 import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { ClassService } from '@modules/class';
+import { ClassService, ClassSourceOptions } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
@@ -13,10 +14,15 @@ import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleName } from '@shared/domain/interface';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { roleFactory } from '@testing/factory/role.factory';
-import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
+import {
+	externalClassDtoFactory,
+	externalSchoolDtoFactory,
+	externalUserDtoFactory,
+	oauthDataDtoFactory,
+	provisioningSystemDtoFactory,
+} from '../testing';
 import { TspProvisioningService } from './tsp-provisioning.service';
 
 describe('TspProvisioningService', () => {
@@ -27,27 +33,6 @@ describe('TspProvisioningService', () => {
 	let roleServiceMock: DeepMocked<RoleService>;
 	let userServiceMock: DeepMocked<UserService>;
 	let accountServiceMock: DeepMocked<AccountService>;
-
-	const setupExternalSystem = (props?: Partial<ProvisioningSystemDto>) => {
-		const baseProps = { systemId: faker.string.uuid(), provisioningStrategy: SystemProvisioningStrategy.TSP };
-
-		return new ProvisioningSystemDto({ ...baseProps, ...props });
-	};
-	const setupExternalSchool = (props?: Partial<ExternalSchoolDto>) => {
-		const baseProps = { externalId: faker.string.uuid(), name: faker.string.sample() };
-
-		return new ExternalSchoolDto({ ...baseProps, ...props });
-	};
-	const setupExternalClass = (props?: Partial<ExternalClassDto>) => {
-		const baseProps = { externalId: faker.string.uuid(), name: faker.string.sample() };
-
-		return new ExternalClassDto({ ...baseProps, ...props });
-	};
-	const setupExternalUser = (props?: Partial<ExternalUserDto>) => {
-		const baseProps = { externalId: faker.string.uuid(), username: faker.internet.userName(), roles: [] };
-
-		return new ExternalUserDto({ ...baseProps, ...props });
-	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -84,49 +69,52 @@ describe('TspProvisioningService', () => {
 		accountServiceMock = module.get(AccountService);
 	});
 
-	afterAll(async () => {
-		await module.close();
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
-	beforeEach(() => {
-		jest.resetAllMocks();
-		jest.restoreAllMocks();
-		jest.clearAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('provisionBatch', () => {
+	describe('provisionUserBatch', () => {
 		describe('when batch is provisioned', () => {
 			const setup = () => {
-				const system = setupExternalSystem();
-				const externalUser = setupExternalUser();
-				const oauthDataDtos = [
-					new OauthDataDto({
-						system,
-						externalUser,
-					}),
-				];
+				const system = provisioningSystemDtoFactory.build();
+				const externalUser = externalUserDtoFactory.build();
+				const externalSchool = externalSchoolDtoFactory.build();
 
-				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
+				const oauthDataDto = oauthDataDtoFactory.build({
+					system,
+					externalUser,
+					externalSchool,
+				});
+				const oauthDataDtos = [oauthDataDto];
+
+				const school = schoolFactory.build({
+					externalId: externalSchool.externalId,
+				});
+				const schools = new Map([[externalSchool.externalId, school]]);
+
 				userServiceMock.findByExternalId.mockResolvedValueOnce(userDoFactory.build());
 				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
 				userServiceMock.saveAll.mockResolvedValueOnce(userDoFactory.buildListWithId(1));
 				accountServiceMock.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
 				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
 
-				return { oauthDataDtos };
+				return { oauthDataDtos, schools };
 			};
 
 			it('should return number of provisioned users and call services with available data', async () => {
-				const { oauthDataDtos } = setup();
+				const { oauthDataDtos, schools } = setup();
 
-				const result = await sut.provisionBatch(oauthDataDtos);
+				const result = await sut.provisionUserBatch(oauthDataDtos, schools);
 
 				expect(result).toBe(1);
-				expect(schoolServiceMock.getSchools).toHaveBeenCalledTimes(1);
 				expect(userServiceMock.findByExternalId).toHaveBeenCalledTimes(1);
 				expect(roleServiceMock.findByNames).toHaveBeenCalledTimes(1);
 				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(1);
@@ -138,16 +126,15 @@ describe('TspProvisioningService', () => {
 
 		describe('when school is not found for an external id', () => {
 			const setup = () => {
-				const system = setupExternalSystem();
-				const externalUser = setupExternalUser();
-				const oauthDataDtos = [
-					new OauthDataDto({
-						system,
-						externalUser,
-					}),
-				];
+				const system = provisioningSystemDtoFactory.build();
+				const externalUser = externalUserDtoFactory.build();
+				const oauthDataDto = oauthDataDtoFactory.build({
+					system,
+					externalUser,
+				});
+				const oauthDataDtos = [oauthDataDto];
 
-				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
 
 				return { oauthDataDtos };
 			};
@@ -155,42 +142,178 @@ describe('TspProvisioningService', () => {
 			it('should throw NotFoundLoggableException', async () => {
 				const { oauthDataDtos } = setup();
 
-				await expect(sut.provisionBatch(oauthDataDtos)).rejects.toThrow(NotFoundLoggableException);
+				await expect(sut.provisionUserBatch(oauthDataDtos, new Map())).rejects.toThrow(NotFoundLoggableException);
+			});
+		});
+	});
+
+	describe('provisionClassBatch', () => {
+		describe('when class does not exist', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const externalTeacher = externalUserDtoFactory.build();
+				const externalStudent = externalUserDtoFactory.build();
+
+				const classId = faker.string.uuid();
+				const externalClass = externalClassDtoFactory.build({
+					externalId: classId,
+				});
+
+				const usersOfClasses = new Map([
+					[
+						classId,
+						[
+							{
+								externalId: externalTeacher.externalId,
+								role: RoleName.TEACHER,
+							} as TspUserInfo,
+							{
+								externalId: externalStudent.externalId,
+								role: RoleName.STUDENT,
+							} as TspUserInfo,
+						],
+					],
+				]);
+
+				classServiceMock.findClassesForSchool.mockResolvedValueOnce([]);
+				userServiceMock.findMultipleByExternalIds
+					.mockResolvedValueOnce([faker.string.uuid()])
+					.mockResolvedValueOnce([faker.string.uuid()]);
+
+				return { school, externalClasses: [externalClass], usersOfClasses };
+			};
+
+			it('should create class', async () => {
+				const { school, externalClasses, usersOfClasses } = setup();
+
+				const result = await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
+				expect(result.classCreationCount).toBe(1);
+				expect(result.classUpdateCount).toBe(0);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
 
-		describe('when user has classes', () => {
+		describe('when class already exist', () => {
 			const setup = () => {
-				const system = setupExternalSystem();
-				const externalUser = setupExternalUser();
-				const externalClasses = [setupExternalClass()];
-				const oauthDataDtos = [
-					new OauthDataDto({
-						system,
-						externalUser,
-						externalClasses,
-					}),
-				];
+				const school = schoolFactory.build();
 
-				schoolServiceMock.getSchools.mockResolvedValueOnce(schoolFactory.buildList(1));
-				userServiceMock.findByExternalId.mockResolvedValueOnce(userDoFactory.build());
-				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
-				userServiceMock.saveAll.mockResolvedValueOnce([
-					userDoFactory.buildWithId({
-						externalId: externalUser.externalId,
-					}),
+				const externalTeacher = externalUserDtoFactory.build();
+				const externalStudent = externalUserDtoFactory.build();
+
+				const classId = faker.string.uuid();
+				const externalClass = externalClassDtoFactory.build({
+					externalId: classId,
+				});
+
+				const usersOfClasses = new Map([
+					[
+						classId,
+						[
+							{
+								externalId: externalTeacher.externalId,
+								role: RoleName.TEACHER,
+							} as TspUserInfo,
+							{
+								externalId: externalStudent.externalId,
+								role: RoleName.STUDENT,
+							} as TspUserInfo,
+						],
+					],
 				]);
-				accountServiceMock.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
-				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
 
-				return { oauthDataDtos };
+				classServiceMock.findClassesForSchool.mockResolvedValueOnce(
+					classFactory.buildList(1, {
+						sourceOptions: new ClassSourceOptions({
+							tspUid: classId,
+						}),
+					})
+				);
+				userServiceMock.findMultipleByExternalIds
+					.mockResolvedValueOnce([faker.string.uuid()])
+					.mockResolvedValueOnce([faker.string.uuid()]);
+
+				return { school, externalClasses: [externalClass], usersOfClasses };
 			};
 
-			it('should provision the classes', async () => {
-				const { oauthDataDtos } = setup();
+			it('should update class', async () => {
+				const { school, externalClasses, usersOfClasses } = setup();
 
-				await expect(sut.provisionBatch(oauthDataDtos)).resolves.not.toThrow();
-				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(1);
+				const result = await sut.provisionClassBatch(school, externalClasses, usersOfClasses, false);
+				expect(result.classCreationCount).toBe(0);
+				expect(result.classUpdateCount).toBe(1);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when the batch is for a full sync', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				const externalTeacher = externalUserDtoFactory.build();
+				const externalStudent = externalUserDtoFactory.build();
+
+				const classId = faker.string.uuid();
+				const externalClass = externalClassDtoFactory.build({
+					externalId: classId,
+				});
+
+				const usersOfClasses = new Map([
+					[
+						classId,
+						[
+							{
+								externalId: externalTeacher.externalId,
+								role: RoleName.TEACHER,
+							} as TspUserInfo,
+							{
+								externalId: externalStudent.externalId,
+								role: RoleName.STUDENT,
+							} as TspUserInfo,
+						],
+					],
+				]);
+
+				classServiceMock.findClassesForSchool.mockResolvedValueOnce(
+					classFactory.buildList(1, {
+						sourceOptions: new ClassSourceOptions({
+							tspUid: classId,
+						}),
+						userIds: [faker.string.uuid(), faker.string.uuid(), faker.string.uuid()],
+						teacherIds: [faker.string.uuid()],
+					})
+				);
+
+				const newUserId = faker.string.uuid();
+				const newTeacherId = faker.string.uuid();
+
+				const externalUserMappings = new Map([
+					[externalStudent.externalId, newUserId],
+					[externalTeacher.externalId, newTeacherId],
+				]);
+
+				userServiceMock.findMultipleByExternalIds.mockImplementation((externalIds) =>
+					Promise.resolve(
+						externalIds.map((externalId) => externalUserMappings.get(externalId)).filter((id) => id !== undefined)
+					)
+				);
+
+				return { school, externalClasses: [externalClass], usersOfClasses, newUserId, newTeacherId };
+			};
+
+			it('should clear the participants of the classes and set new ones', async () => {
+				const { school, externalClasses, usersOfClasses, newUserId, newTeacherId } = setup();
+
+				const result = await sut.provisionClassBatch(school, externalClasses, usersOfClasses, true);
+				expect(result.classCreationCount).toBe(0);
+				expect(result.classUpdateCount).toBe(1);
+				expect(classServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(classServiceMock.save).toHaveBeenCalledWith([
+					expect.objectContaining({
+						userIds: [newUserId],
+						teacherIds: [newTeacherId],
+					}),
+				]);
 			});
 		});
 	});
@@ -198,8 +321,8 @@ describe('TspProvisioningService', () => {
 	describe('findSchoolOrFail', () => {
 		describe('when school is found', () => {
 			const setup = () => {
-				const system = setupExternalSystem();
-				const externalSchool = setupExternalSchool();
+				const system = provisioningSystemDtoFactory.build();
+				const externalSchool = externalSchoolDtoFactory.build();
 				const school = schoolFactory.build();
 
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
@@ -218,8 +341,8 @@ describe('TspProvisioningService', () => {
 
 		describe('when school is not found', () => {
 			const setup = () => {
-				const system = setupExternalSystem();
-				const externalSchool = setupExternalSchool();
+				const system = provisioningSystemDtoFactory.build();
+				const externalSchool = externalSchoolDtoFactory.build();
 
 				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
 
@@ -235,11 +358,29 @@ describe('TspProvisioningService', () => {
 	});
 
 	describe('provisionClasses', () => {
-		describe('when user ID is missing', () => {
+		describe('when user ID is missing and class exists', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const classes = [setupExternalClass()];
+				const classes = [externalClassDtoFactory.build()];
 				const user = userDoFactory.build();
+
+				return { school, classes, user };
+			};
+
+			it('should throw', async () => {
+				const { school, classes, user } = setup();
+
+				await expect(sut.provisionClasses(school, classes, user)).rejects.toThrow(BadDataLoggableException);
+			});
+		});
+
+		describe('when user ID is missing and class does not exist', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const classes = [externalClassDtoFactory.build()];
+				const user = userDoFactory.build();
+
+				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
 
 				return { school, classes, user };
 			};
@@ -254,13 +395,13 @@ describe('TspProvisioningService', () => {
 		describe('when class exists', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const classes = [setupExternalClass()];
+				const classes = [externalClassDtoFactory.build()];
 				const clazz = classFactory.build();
 				const user = userDoFactory.buildWithId({
 					roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
 				});
 
-				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValue(clazz);
+				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(clazz);
 
 				return { school, classes, user };
 			};
@@ -277,12 +418,12 @@ describe('TspProvisioningService', () => {
 		describe('when class does not exist', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const classes = [setupExternalClass()];
+				const classes = [externalClassDtoFactory.build()];
 				const user = userDoFactory.buildWithId({
 					roles: [roleFactory.build({ name: RoleName.TEACHER }), roleFactory.build({ name: RoleName.STUDENT })],
 				});
 
-				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValue(null);
+				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
 
 				return { school, classes, user };
 			};
@@ -300,9 +441,9 @@ describe('TspProvisioningService', () => {
 	describe('provisionUser', () => {
 		describe('when external school is missing', () => {
 			const setup = () => {
-				const data = new OauthDataDto({
-					system: setupExternalSystem(),
-					externalUser: setupExternalUser(),
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalSchool: undefined,
 				});
 				const school = schoolFactory.build();
 
@@ -319,10 +460,10 @@ describe('TspProvisioningService', () => {
 		describe('when user exists and school is the same', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const data = new OauthDataDto({
-					system: setupExternalSystem(),
-					externalUser: setupExternalUser(),
-					externalSchool: setupExternalSchool({
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build(),
+					externalSchool: externalSchoolDtoFactory.build({
 						externalId: school.externalId,
 					}),
 				});
@@ -349,10 +490,10 @@ describe('TspProvisioningService', () => {
 		describe('when user exists and school is different', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const data = new OauthDataDto({
-					system: setupExternalSystem(),
-					externalUser: setupExternalUser(),
-					externalSchool: setupExternalSchool(),
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build(),
+					externalSchool: externalSchoolDtoFactory.build(),
 				});
 				const user = userDoFactory.build({ id: faker.string.uuid() });
 				const roles = [
@@ -360,10 +501,10 @@ describe('TspProvisioningService', () => {
 					roleDtoFactory.build({ name: RoleName.STUDENT }),
 				];
 
-				userServiceMock.findByExternalId.mockResolvedValue(user);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue(roles);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce(roles);
 
 				return { data, school };
 			};
@@ -381,19 +522,19 @@ describe('TspProvisioningService', () => {
 		describe('when user does not exist and has no firstname, lastname and email', () => {
 			const setup = (withFirstname: boolean, withLastname: boolean, withEmail: boolean) => {
 				const school = schoolFactory.build();
-				const data = new OauthDataDto({
-					system: setupExternalSystem(),
-					externalUser: setupExternalUser({
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build({
 						firstName: withFirstname ? faker.person.firstName() : undefined,
 						lastName: withLastname ? faker.person.lastName() : undefined,
 						email: withEmail ? faker.internet.email() : undefined,
 					}),
-					externalSchool: setupExternalSchool(),
+					externalSchool: externalSchoolDtoFactory.build(),
 				});
 
-				userServiceMock.findByExternalId.mockResolvedValue(null);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue([]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
 				return { data, school };
 			};
@@ -414,21 +555,21 @@ describe('TspProvisioningService', () => {
 		describe('when user does not exist', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const data = new OauthDataDto({
-					system: setupExternalSystem(),
-					externalUser: setupExternalUser({
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build({
 						firstName: faker.person.firstName(),
 						lastName: faker.person.lastName(),
 						email: faker.internet.email(),
 					}),
-					externalSchool: setupExternalSchool(),
+					externalSchool: externalSchoolDtoFactory.build(),
 				});
 				const user = userDoFactory.build({ id: faker.string.uuid(), roles: [] });
 
-				userServiceMock.findByExternalId.mockResolvedValue(null);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue([]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
 				return { data, school };
 			};
@@ -446,21 +587,21 @@ describe('TspProvisioningService', () => {
 		describe('when user id is not set after create', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
-				const data = new OauthDataDto({
-					system: setupExternalSystem(),
-					externalUser: setupExternalUser({
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build({
 						firstName: faker.person.firstName(),
 						lastName: faker.person.lastName(),
 						email: faker.internet.email(),
 					}),
-					externalSchool: setupExternalSchool(),
+					externalSchool: externalSchoolDtoFactory.build(),
 				});
 				const user = userDoFactory.build({ id: undefined, roles: [] });
 
-				userServiceMock.findByExternalId.mockResolvedValue(null);
-				userServiceMock.save.mockResolvedValue(user);
-				schoolServiceMock.getSchools.mockResolvedValue([school]);
-				roleServiceMock.findByNames.mockResolvedValue([]);
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
 				return { data, school };
 			};

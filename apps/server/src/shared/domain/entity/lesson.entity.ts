@@ -1,6 +1,7 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { InternalServerErrorException } from '@nestjs/common';
+import { LernstoreResources } from '@modules/lesson/controller';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Material } from './materials.entity';
@@ -34,13 +35,7 @@ export interface ComponentGeogebraProperties {
 }
 
 export interface ComponentLernstoreProperties {
-	resources: {
-		client: string;
-		description: string;
-		merlinReference?: string;
-		title: string;
-		url: string;
-	}[];
+	resources: Array<LernstoreResources>;
 }
 
 export interface ComponentEtherpadProperties {
