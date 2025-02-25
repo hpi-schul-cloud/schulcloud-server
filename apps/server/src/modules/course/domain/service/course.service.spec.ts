@@ -110,7 +110,7 @@ describe('CourseService', () => {
 
 				await courseService.findAllCoursesByUserId(user.id);
 
-				expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
+				expect(courseRepo.findAllByUserId).toBeCalledWith(user.id, undefined, undefined);
 			});
 
 			it('should return array of courses with userId', async () => {

@@ -1,5 +1,5 @@
+import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { DeepPartial } from 'fishery';
 import { CourseGroupEntity, CourseGroupProperties } from '../repo';
 import { courseEntityFactory } from './course-entity.factory';

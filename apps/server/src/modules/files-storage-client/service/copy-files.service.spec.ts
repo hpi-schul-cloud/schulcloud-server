@@ -5,14 +5,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ComponentProperties,
-	ComponentType,
-	LessonEntity,
-	Material,
-	Submission,
-	Task,
-} from '@shared/domain/entity';
+import { ComponentProperties, ComponentType, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';

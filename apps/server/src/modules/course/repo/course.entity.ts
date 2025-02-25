@@ -7,7 +7,8 @@ import { InternalServerErrorException } from '@nestjs/common/exceptions/internal
 import { BaseEntityWithTimestamps, LessonParent, TaskParent } from '@shared/domain/entity';
 import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseGroupEntity } from './coursegroup.entity';
+// eslint-disable-next-line import/no-cycle
+import { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export enum SyncAttribute {
 	TEACHERS = 'teachers',

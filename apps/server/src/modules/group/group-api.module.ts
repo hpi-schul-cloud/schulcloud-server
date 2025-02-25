@@ -2,7 +2,7 @@ import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { ClassModule } from '@modules/class';
 import { CourseModule } from '@modules/course';
-import { LearnroomModule } from '@modules/learnroom';
+import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system';
@@ -18,12 +18,12 @@ import { ClassGroupUc, GroupUc } from './uc';
 		ClassModule,
 		UserModule,
 		RoleModule,
-		CourseModule,
+		LegacySchoolModule,
 		SchoolModule,
 		AuthorizationModule,
 		SystemModule,
 		LoggerModule,
-		LearnroomModule,
+		CourseModule,
 	],
 	controllers: [GroupController],
 	providers: [GroupUc, ClassGroupUc],

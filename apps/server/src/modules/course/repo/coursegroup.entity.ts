@@ -5,7 +5,7 @@ import { BaseEntityWithTimestamps, LessonParent, TaskParent } from '@shared/doma
 import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 // eslint-disable-next-line import/no-cycle
-import { CourseEntity } from './course.entity';
+import { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export interface CourseGroupProperties {
 	name: string;

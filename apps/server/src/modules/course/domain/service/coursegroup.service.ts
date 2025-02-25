@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
-import { CourseGroupEntity, CourseGroupRepo } from '@modules/course/repo';
+import { CourseGroupRepo, CourseGroupEntity } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,

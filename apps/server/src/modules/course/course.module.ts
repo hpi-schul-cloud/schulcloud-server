@@ -2,8 +2,15 @@ import { LoggerModule } from '@core/logger';
 import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { COURSE_REPO, CourseDoService, CourseService, CourseSyncService } from './domain';
-import { CourseRepo } from './repo';
+import {
+	COURSE_REPO,
+	CourseDoService,
+	CourseGroupService,
+	CourseService,
+	CourseSyncService,
+	GroupDeletedHandlerService,
+} from './domain';
+import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
 
 @Module({
@@ -11,6 +18,7 @@ import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
 	providers: [
 		CourseService,
 		CourseRepo,
+		CourseGroupRepo,
 		CourseSyncService,
 		{
 			provide: COURSE_REPO,
@@ -19,6 +27,8 @@ import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
 		CourseService,
 		CourseDoService,
 		CourseSyncService,
+		CourseGroupService,
+		GroupDeletedHandlerService,
 	],
 	exports: [CourseService, CourseSyncService, CourseDoService],
 })

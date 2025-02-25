@@ -3,7 +3,7 @@ import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
-import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
+import { CourseRepo } from '@modules/course/repo';
 import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
 import { RoleModule } from '@modules/role';
@@ -27,7 +27,6 @@ import {
 	BoardCopyService,
 	CommonCartridgeImportService,
 	CourseCopyService,
-	CourseGroupService,
 	CourseRoomsService,
 	DashboardService,
 } from './service';
@@ -62,8 +61,6 @@ import {
 		CommonCartridgeImportService,
 		CommonCartridgeImportMapper,
 		CourseCopyService,
-		CourseGroupRepo,
-		CourseGroupService,
 		CourseRepo,
 		DashboardElementRepo,
 		DashboardModelMapper,
@@ -72,6 +69,6 @@ import {
 		CourseRoomsService,
 		ColumnBoardNodeRepo,
 	],
-	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService, CourseGroupService, DashboardService],
+	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService, DashboardService],
 })
 export class LearnroomModule {}

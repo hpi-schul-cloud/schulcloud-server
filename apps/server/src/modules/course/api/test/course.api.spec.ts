@@ -8,7 +8,6 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Course } from '../../domain';
 import { CourseEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';
 import { CourseMetadataListResponse } from '../dto';
@@ -121,7 +120,7 @@ describe('Course Controller (API)', () => {
 
 				const response = await loggedInClient.post(`${course.id}/stop-sync`);
 
-				const result: Course = await em.findOneOrFail(CourseEntity, course.id);
+				const result = await em.findOneOrFail(CourseEntity, course.id);
 				expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
 				expect(result.syncedWithGroup).toBeUndefined();
 			});

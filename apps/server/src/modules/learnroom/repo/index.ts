@@ -1,4 +1,3 @@
-export { CourseMikroOrmRepo } from '../../course/repo/course-mikro-orm.repo';
 export { ColumnBoardBoardElement } from './mikro-orm/column-board-board-element.entity';
 export { ColumnBoardNode, ColumnBoardNodeProps } from './mikro-orm/column-board-node.entity';
 export { ColumnBoardNodeRepo } from './mikro-orm/column-board-node.repo';
