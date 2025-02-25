@@ -122,20 +122,37 @@ describe(TspOauthDataMapper.name, () => {
 					location: undefined,
 				});
 
-				const expected = [
-					oauthDataDtoFactory.build({
-						system: provisioningSystemDto,
-						externalUser: externalTeacherUserDto,
-						externalClasses: [externalClassDto],
-						externalSchool: externalSchoolDto,
-					}),
-					oauthDataDtoFactory.build({
-						system: provisioningSystemDto,
-						externalUser: externalStudentUserDto,
-						externalClasses: [externalClassDto],
-						externalSchool: externalSchoolDto,
-					}),
-				];
+				const expected = {
+					oauthDataDtos: [
+						oauthDataDtoFactory.build({
+							system: provisioningSystemDto,
+							externalUser: externalTeacherUserDto,
+							externalClasses: [externalClassDto],
+							externalSchool: externalSchoolDto,
+						}),
+						oauthDataDtoFactory.build({
+							system: provisioningSystemDto,
+							externalUser: externalStudentUserDto,
+							externalClasses: [externalClassDto],
+							externalSchool: externalSchoolDto,
+						}),
+					],
+					usersOfClasses: new Map([
+						[
+							tspClass.klasseId ?? '',
+							[
+								{
+									externalId: tspTeacher.lehrerUid,
+									role: RoleName.TEACHER,
+								},
+								{
+									externalId: tspStudent.schuelerUid,
+									role: RoleName.STUDENT,
+								},
+							],
+						],
+					]),
+				};
 
 				return { system, school, tspTeachers, tspStudents, tspClasses, expected };
 			};

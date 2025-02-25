@@ -1,3 +1,3 @@
 export * from './media-licenses';
-export { TspSyncConfig, TspSyncStrategy } from './strategy/tsp';
+export { TspSyncConfig, TspSyncStrategy, TspUserInfo } from './strategy/tsp';
 export * from './media-metadata';
