@@ -1,13 +1,13 @@
 import { LegacyLogger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OAuthTokenDto, OauthAdapterService, AuthenticationCodeGrantTokenRequest } from '@modules/oauth-adapter';
+import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthAdapterService } from '@modules/oauth-adapter';
 import { TokenRequestMapper } from '@modules/oauth-adapter/mapper/token-request.mapper';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
 import { SchoolFeature } from '@modules/school/domain';
 import { SystemService } from '@modules/system';
-import { OauthConfigEntity } from '@modules/system/entity';
-import { UserService, UserDo } from '@modules/user';
+import { OauthConfigEntity } from '@modules/system/repo';
+import { UserDo, UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';

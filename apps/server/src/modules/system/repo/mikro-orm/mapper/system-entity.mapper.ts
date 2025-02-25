@@ -1,6 +1,6 @@
 import { EntityData } from '@mikro-orm/core';
 import { LdapConfig, OauthConfig, OidcConfig, System, SystemProps } from '../../../domain';
-import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity } from '../../../entity';
+import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity } from '../system.entity';
 
 export class SystemEntityMapper {
 	public static mapToDo(entity: SystemEntity): System {

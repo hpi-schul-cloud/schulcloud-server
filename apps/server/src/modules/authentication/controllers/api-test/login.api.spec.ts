@@ -4,7 +4,7 @@ import { accountFactory } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';

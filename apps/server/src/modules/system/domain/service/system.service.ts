@@ -1,7 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { System, SYSTEM_REPO, SystemQuery, SystemRepo } from '../domain';
+import { System } from '../do';
+import { SYSTEM_REPO, SystemRepo } from '../interface';
+import { SystemQuery } from '../query';
 
 @Injectable()
 export class SystemService {

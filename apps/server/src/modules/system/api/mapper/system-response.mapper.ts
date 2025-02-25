@@ -1,5 +1,5 @@
 import { OauthConfig, System } from '../../domain';
-import { OauthConfigResponse, PublicSystemListResponse, PublicSystemResponse } from '../dto';
+import { OauthConfigResponse, PublicSystemListResponse, PublicSystemResponse } from '../dto/response';
 
 export class SystemResponseMapper {
 	static mapFromDtoToListResponse(systems: System[]): PublicSystemListResponse {

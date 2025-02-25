@@ -6,7 +6,7 @@ import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { type SystemEntity } from '@modules/system/entity';
+import { type SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { ImportUser } from '@modules/user-import/entity';
 import { importUserFactory } from '@modules/user-import/testing';

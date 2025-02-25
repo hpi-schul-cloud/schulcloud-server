@@ -7,8 +7,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
-import { OauthConfigEntity, SystemEntity } from '../../entity';
-import { PublicSystemListResponse, PublicSystemResponse } from '../dto';
+import { OauthConfigEntity, SystemEntity } from '../../repo';
+import { PublicSystemListResponse, PublicSystemResponse } from '../dto/response';
 
 const baseRouteName = '/systems';
 
