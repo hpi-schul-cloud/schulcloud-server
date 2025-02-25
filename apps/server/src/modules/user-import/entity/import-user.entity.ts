@@ -1,6 +1,6 @@
 import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
 import { SchoolEntity } from '@modules/school/repo';
-import { SystemEntity } from '@modules/system/entity/system.entity';
+import { SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityReference, BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityWithSchool, RoleName } from '@shared/domain/interface';

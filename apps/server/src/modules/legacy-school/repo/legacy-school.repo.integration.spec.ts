@@ -4,7 +4,7 @@ import { EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { InternalServerErrorException } from '@nestjs/common';

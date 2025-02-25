@@ -2,9 +2,10 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Controller, Delete, Get, HttpCode, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiForbiddenResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { System } from '../domain';
-import { SystemUc } from '../uc/system.uc';
-import { PublicSystemListResponse, PublicSystemResponse, SystemFilterParams, SystemIdParams } from './dto';
-import { SystemResponseMapper } from './mapper/system-response.mapper';
+import { SystemFilterParams, SystemIdParams } from './dto/param';
+import { PublicSystemListResponse, PublicSystemResponse } from './dto/response';
+import { SystemResponseMapper } from './mapper';
+import { SystemUc } from './system.uc';
 
 @ApiTags('Systems')
 @Controller('systems')

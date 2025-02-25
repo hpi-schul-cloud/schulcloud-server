@@ -8,8 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { SystemDeletedEvent, SystemQuery, SystemType } from '../domain';
-import { SystemService } from '../service';
+import { SystemDeletedEvent, SystemQuery, SystemService, SystemType } from '../domain';
 import { systemFactory } from '../testing';
 import { SystemUc } from './system.uc';
 

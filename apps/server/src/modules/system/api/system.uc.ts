@@ -5,8 +5,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { System, SystemDeletedEvent, SystemType } from '../domain';
-import { SystemService } from '../service';
+import { System, SystemDeletedEvent, SystemService, SystemType } from '../domain';
 
 @Injectable()
 export class SystemUc {

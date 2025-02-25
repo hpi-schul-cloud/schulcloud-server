@@ -17,32 +17,38 @@
 /**
  * 
  * @export
- * @interface ComponentNexboardPropsImpl
+ * @interface LernstoreResources
  */
-export interface ComponentNexboardPropsImpl {
+export interface LernstoreResources {
     /**
-     * board of a Nexboard component
+     * client
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof LernstoreResources
      */
-    'board': string;
+    'client': string;
     /**
-     * description of a Nexboard component
+     * description
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof LernstoreResources
      */
     'description': string;
     /**
-     * title of a Nexboard component
+     * merlinReference
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof LernstoreResources
+     */
+    'merlinReference'?: string;
+    /**
+     * title
+     * @type {string}
+     * @memberof LernstoreResources
      */
     'title': string;
     /**
-     * url of a Nexboard component
+     * url
      * @type {string}
-     * @memberof ComponentNexboardPropsImpl
+     * @memberof LernstoreResources
      */
-    'url': string;
+    'url'?: string;
 }
 

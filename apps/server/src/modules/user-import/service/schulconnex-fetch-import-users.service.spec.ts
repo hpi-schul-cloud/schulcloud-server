@@ -3,7 +3,7 @@ import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-c
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
