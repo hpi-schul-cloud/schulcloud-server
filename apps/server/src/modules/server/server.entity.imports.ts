@@ -32,7 +32,7 @@ import {
 	SchoolYearEntity,
 } from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
-import { SystemEntity } from '@modules/system/entity/system.entity';
+import { SystemEntity } from '@modules/system/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';

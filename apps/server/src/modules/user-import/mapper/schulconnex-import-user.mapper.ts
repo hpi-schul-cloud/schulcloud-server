@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
 import { SchoolEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { RoleName } from '@shared/domain/interface';
 import { ImportUser } from '../entity';
 
