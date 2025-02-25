@@ -163,7 +163,7 @@
 		"@hendt/xml2json": "^1.0.3",
 		"@hpi-schul-cloud/commons": "^1.3.4",
 		"@keycloak/keycloak-admin-client": "^25.0.1",
-		"@lumieducation/h5p-server": "^9.3.2",
+		"@lumieducation/h5p-server": "^9.3.3",
 		"@mikro-orm/cli": "5.6.16",
 		"@mikro-orm/core": "5.6.16",
 		"@mikro-orm/migrations-mongodb": "5.6.16",
