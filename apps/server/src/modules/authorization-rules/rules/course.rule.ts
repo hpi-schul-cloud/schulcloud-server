@@ -6,8 +6,9 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { Course } from '@modules/learnroom/domain';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Course as CourseEntity, User } from '@shared/domain/entity';
+import { Course as CourseEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 
 @Injectable()

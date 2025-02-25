@@ -1,8 +1,8 @@
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { MatchType, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { MatchCreator } from '../entity';

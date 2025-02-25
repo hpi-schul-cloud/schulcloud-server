@@ -1,4 +1,5 @@
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';
 import { LegacyBoardElementType } from './legacy-board-element.entity';

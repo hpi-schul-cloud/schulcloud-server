@@ -1,5 +1,5 @@
 import { schoolEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { setupEntities } from '@testing/database';
 import { School } from '../../../domain';
 import { SchoolEntity } from '../school.entity';

@@ -10,7 +10,7 @@ import { ClassMapper } from './mapper';
 export class ClassesRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findAllBySchoolId(schoolId: EntityId): Promise<Class[]> {
+	public async findAllBySchoolId(schoolId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, { schoolId: new ObjectId(schoolId) });
 
 		const mapped: Class[] = ClassMapper.mapToDOs(classes);
@@ -18,7 +18,7 @@ export class ClassesRepo {
 		return mapped;
 	}
 
-	async findClassWithSchoolIdAndExternalId(schoolId: EntityId, externalId: string): Promise<Class | null> {
+	public async findClassWithSchoolIdAndExternalId(schoolId: EntityId, externalId: string): Promise<Class | null> {
 		const result = await this.em.findOne(ClassEntity, {
 			schoolId: new ObjectId(schoolId),
 			sourceOptions: { tspUid: externalId },
@@ -28,7 +28,7 @@ export class ClassesRepo {
 		return mapped;
 	}
 
-	async findAllByUserId(userId: EntityId): Promise<Class[]> {
+	public async findAllByUserId(userId: EntityId): Promise<Class[]> {
 		const classes: ClassEntity[] = await this.em.find(ClassEntity, {
 			$or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }],
 		});
@@ -38,7 +38,7 @@ export class ClassesRepo {
 		return mapped;
 	}
 
-	async save(classes: Class | Class[]): Promise<void> {
+	public async save(classes: Class | Class[]): Promise<void> {
 		const entities: ClassEntity[] = Array.isArray(classes)
 			? classes.map((aclass: Class): ClassEntity => ClassMapper.mapToEntity(aclass))
 			: [ClassMapper.mapToEntity(classes)];
@@ -47,7 +47,7 @@ export class ClassesRepo {
 		await this.em.flush();
 	}
 
-	async updateMany(classes: Class[]): Promise<void> {
+	public async updateMany(classes: Class[]): Promise<void> {
 		const classMap: Map<string, Class> = new Map<string, Class>(
 			classes.map((clazz: Class): [string, Class] => [clazz.id, clazz])
 		);

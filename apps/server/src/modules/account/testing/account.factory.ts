@@ -1,9 +1,9 @@
 /* istanbul ignore file */
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity, IdmAccountProperties } from '@modules/account/domain/entity/account.entity';
+import { User } from '@modules/user/repo';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 

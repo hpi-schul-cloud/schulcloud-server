@@ -2,14 +2,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
-import { userFactory } from '@testing/factory/user.factory';
+import { userFactory } from '@modules/user/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@shared/domain/interface';
-import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
-import { DeletionBatchEntity } from '../../../repo/entity';
-import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response';
-import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing';
-import { StatusModel } from '../../../domain/types';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
+import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
+import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response'; // barrel file
+import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
+import { StatusModel } from '../../../domain/types'; // barrel file
 
 const baseRouteName = '/deletion-batches';
 

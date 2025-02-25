@@ -5,7 +5,7 @@ import { DefaultEncryptionService, LdapEncryptionService, SymmetricKeyEncryption
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, StorageProviderEntity } from '@shared/domain/entity';

@@ -34,12 +34,13 @@ import {
 	SchoolYearEntity,
 } from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
-import { SystemEntity } from '@modules/system/entity/system.entity';
+import { SystemEntity } from '@modules/system/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { User } from '@modules/user/repo';
 import { Course } from '@shared/domain/entity/course.entity';
 import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
@@ -51,7 +52,6 @@ import { Submission } from '@shared/domain/entity/submission.entity';
 import { Task } from '@shared/domain/entity/task.entity';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { User } from '@shared/domain/entity/user.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
 export const ENTITIES = [

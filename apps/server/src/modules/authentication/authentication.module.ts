@@ -13,7 +13,6 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { UserRepo } from '@shared/repo/user';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { AuthenticationConfig } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
@@ -67,7 +66,6 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		EncryptionModule,
 	],
 	providers: [
-		UserRepo,
 		LegacySchoolRepo,
 		LocalStrategy,
 		AuthenticationService,
