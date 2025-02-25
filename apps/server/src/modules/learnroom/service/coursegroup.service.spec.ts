@@ -9,13 +9,14 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { CourseGroupRepo } from '@shared/repo/coursegroup';
-import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { ObjectId } from 'bson';
 import { CourseGroupService } from './coursegroup.service';
 
@@ -27,7 +28,7 @@ describe('CourseGroupService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User, Course, CourseGroup]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupService,

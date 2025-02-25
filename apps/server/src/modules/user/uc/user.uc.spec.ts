@@ -1,14 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UserService } from '@modules/user/service/user.service';
+import { userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { LanguageType, Permission } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { User, UserRepo } from '../repo';
+import { UserService } from '../service';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {
@@ -43,7 +42,7 @@ describe('UserUc', () => {
 		userUc = module.get(UserUc);
 		userRepo = module.get(UserRepo);
 		config = module.get(ConfigService);
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	it('should be defined', () => {

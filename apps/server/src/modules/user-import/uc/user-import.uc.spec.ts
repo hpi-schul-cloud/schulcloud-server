@@ -4,28 +4,27 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { SchoolFeature } from '@modules/school/domain';
+import { SchoolEntity } from '@modules/school/repo';
+import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
+import { User, UserRepo } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { Counted, SchoolFeature } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user';
-import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { federalStateFactory } from '@testing/factory/federal-state.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { Counted } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
@@ -33,6 +32,7 @@ import {
 	UserAlreadyMigratedLoggable,
 	UserMigrationFailedLoggable,
 } from '../loggable';
+import { UserLoginMigrationNotActiveLoggableException } from '../loggable/user-login-migration-not-active.loggable-exception';
 import { ImportUserRepo } from '../repo';
 import { UserImportService } from '../service';
 import { importUserFactory } from '../testing';
@@ -68,7 +68,7 @@ describe('[ImportUserModule]', () => {
 		};
 
 		beforeAll(async () => {
-			await setupEntities();
+			await setupEntities([User]);
 
 			module = await Test.createTestingModule({
 				providers: [
@@ -166,7 +166,7 @@ describe('[ImportUserModule]', () => {
 				school && school.systems.isInitialized()
 					? school.systems.getItems().map((system: SystemEntity) => system.id)
 					: [];
-			const federalState = school ? school.federalState : federalStateFactory.build();
+			const federalState = school ? school.federalState : federalStateEntityFactory.build();
 
 			return new LegacySchoolDo({
 				id,

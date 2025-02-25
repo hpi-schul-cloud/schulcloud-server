@@ -1,4 +1,4 @@
-import { SchoolEntity, SchoolProperties } from '@shared/domain/entity';
+import { SchoolEntity, SchoolProperties } from '@modules/school/repo';
 import { BaseFactory } from './base.factory';
 import { federalStateFactory } from './federal-state.factory';
 import { schoolYearFactory } from './schoolyear.factory';

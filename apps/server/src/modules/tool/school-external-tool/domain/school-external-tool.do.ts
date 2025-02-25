@@ -1,7 +1,8 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { ToolContextType } from '@modules/tool/common/enum';
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { CustomParameterEntry } from '../../common/domain';
 import { SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
+import { SchoolExternalToolMedium } from './school-external-tool-medium';
 
 export interface SchoolExternalToolProps extends AuthorizableObject {
 	id: string;
@@ -19,6 +20,8 @@ export interface SchoolExternalToolProps extends AuthorizableObject {
 	status?: SchoolExternalToolConfigurationStatus;
 
 	restrictToContexts?: ToolContextType[];
+
+	medium?: SchoolExternalToolMedium;
 }
 
 export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
@@ -56,5 +59,9 @@ export class SchoolExternalTool extends DomainObject<SchoolExternalToolProps> {
 
 	get restrictToContexts(): ToolContextType[] | undefined {
 		return this.props.restrictToContexts;
+	}
+
+	get medium(): SchoolExternalToolMedium | undefined {
+		return this.props.medium;
 	}
 }

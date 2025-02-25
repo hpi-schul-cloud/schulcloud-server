@@ -2,9 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
 import { DeletionRequestRepo } from '../../repo';
+import { DeletionRequestEntity } from '../../repo/entity';
 import { deletionRequestFactory, deletionTestConfig } from '../testing';
 import { DomainName, StatusModel } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
@@ -31,7 +32,7 @@ describe(DeletionRequestService.name, () => {
 		deletionRequestRepo = module.get(DeletionRequestRepo);
 		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([DeletionRequestEntity]);
 
 		jest.useFakeTimers().setSystemTime(new Date());
 	});
@@ -177,6 +178,146 @@ describe(DeletionRequestService.name, () => {
 				const result = await service.findInProgressCount();
 
 				expect(result).toEqual(count);
+			});
+		});
+	});
+
+	describe('findByStatusAndTargetRefId', () => {
+		describe('when status is registered', () => {
+			const setup = () => {
+				const status = StatusModel.REGISTERED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findRegisteredByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findRegisteredByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findRegisteredByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is pending', () => {
+			const setup = () => {
+				const status = StatusModel.PENDING;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findPendingByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findPendingByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findPendingByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is failed', () => {
+			const setup = () => {
+				const status = StatusModel.FAILED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findFailedByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findFailedByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findFailedByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is success', () => {
+			const setup = () => {
+				const status = StatusModel.SUCCESS;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequest1 = deletionRequestFactory.build({ status });
+
+				deletionRequestRepo.findSuccessfulByTargetRefId.mockResolvedValue([deletionRequest1]);
+
+				const deletionRequests = [deletionRequest1];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should call deletionRequestRepo.findSuccessfulByTargetRefId with required parameter', async () => {
+				const { status, targetRefIds } = setup();
+
+				await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(deletionRequestRepo.findSuccessfulByTargetRefId).toBeCalledWith(targetRefIds);
+			});
+
+			it('should return deletionRequests', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
+			});
+		});
+
+		describe('when status is anything else', () => {
+			const setup = () => {
+				const status = StatusModel.FINISHED;
+				const targetRefIds = ['653e4833cc39e5907a1e18d2'];
+
+				const deletionRequests = [];
+
+				return { deletionRequests, status, targetRefIds };
+			};
+
+			it('should return empty array', async () => {
+				const { deletionRequests, status, targetRefIds } = setup();
+				const result = await service.findByStatusAndTargetRefId(status, targetRefIds);
+
+				expect(result).toEqual(deletionRequests);
 			});
 		});
 	});

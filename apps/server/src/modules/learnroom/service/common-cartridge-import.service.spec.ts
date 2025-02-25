@@ -2,10 +2,12 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { BoardNodeFactory, BoardNodeService } from '@modules/board';
 import { LinkElement, RichTextElement } from '@modules/board/domain';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
@@ -37,7 +39,7 @@ describe('CommonCartridgeImportService', () => {
 	const objectContainingTitle = (title: string) => expect.objectContaining({ title });
 
 	beforeEach(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([User, Course, CourseGroup]);
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeImportService,

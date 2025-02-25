@@ -3,8 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { User } from '@modules/user/repo';
 import { ApiValidationError } from '@shared/common/error';
-import { User } from '@shared/domain/entity';
 import { LanguageType } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';

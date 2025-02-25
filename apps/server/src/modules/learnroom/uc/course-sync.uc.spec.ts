@@ -2,10 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { CourseDoService } from '../service';
 import { CourseSyncService } from '../service/course-sync.service';
 import { courseFactory } from '../testing';
@@ -49,7 +50,7 @@ describe(CourseSyncUc.name, () => {
 		groupService = module.get(GroupService);
 		courseSyncService = module.get(CourseSyncService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {

@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { MetaData, MetaDataEntityType } from '../types';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
@@ -47,7 +46,6 @@ describe(MetaTagInternalUrlService.name, () => {
 		courseUrlHandler = module.get(CourseUrlHandler);
 		boardUrlHandler = module.get(BoardUrlHandler);
 		service = module.get(MetaTagInternalUrlService);
-		await setupEntities();
 	});
 
 	afterAll(async () => {

@@ -1,16 +1,17 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
-import { legacySchoolDoFactory, userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
+import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 import { ToggleUserLoginMigrationUc } from './toggle-user-login-migration.uc';
@@ -51,7 +52,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(LegacySchoolService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterAll(async () => {
@@ -72,7 +73,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -124,7 +125,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -171,7 +172,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -193,7 +194,7 @@ describe(ToggleUserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);

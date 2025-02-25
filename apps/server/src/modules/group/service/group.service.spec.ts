@@ -3,7 +3,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import type { ProvisioningConfig } from '@modules/provisioning';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,10 +14,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
 import { GroupRepo } from '../repo';
 import { groupFactory } from '../testing';
@@ -30,7 +30,7 @@ describe('GroupService', () => {
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -634,7 +634,7 @@ describe('GroupService', () => {
 
 				await service.removeUsersFromGroup('groupId', [userId]);
 
-				expect(group.removeUser).toHaveBeenCalledWith(expect.objectContaining({ id: userDo.id }));
+				expect(group.removeUser).toHaveBeenCalledWith(userDo.id);
 			});
 
 			it('should call groupRepo.save', async () => {

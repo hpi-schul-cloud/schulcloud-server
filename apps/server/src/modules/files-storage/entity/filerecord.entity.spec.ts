@@ -1,7 +1,7 @@
 import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ErrorType } from '../error';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { fileRecordFactory } from '../testing';

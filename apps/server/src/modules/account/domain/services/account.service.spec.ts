@@ -11,7 +11,10 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -21,11 +24,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { User } from '@shared/domain/entity';
-import { UserRepo } from '@shared/repo/user';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
@@ -72,7 +71,7 @@ describe('AccountService', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([AccountEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

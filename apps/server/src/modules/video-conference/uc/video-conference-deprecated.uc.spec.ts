@@ -6,22 +6,23 @@ import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
+import { User } from '@modules/user/repo';
+import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { RoleReference, UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { RoleReference, VideoConferenceDO } from '@shared/domain/domainobject';
 import { Course, Role, TeamEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { setupEntities } from '@testing/setup-entities';
 import {
 	BBBBaseMeetingConfig,
-	BBBBaseResponse,
 	BBBCreateConfigBuilder,
 	BBBCreateResponse,
 	BBBJoinConfigBuilder,
@@ -34,7 +35,7 @@ import {
 } from '../bbb';
 import { ErrorStatus } from '../error/error-status.enum';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
-import { ScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
 class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {
@@ -81,7 +82,7 @@ describe('VideoConferenceUc', () => {
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
 	let team: TeamEntity;
-	let user: UserDO;
+	let user: UserDo;
 
 	let defaultRole: Role;
 	let expertRoleCourse: Role;
@@ -105,7 +106,7 @@ describe('VideoConferenceUc', () => {
 			}
 		});
 
-		await setupEntities();
+		await setupEntities([User, Role]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -230,7 +231,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 			authorizationService.hasPermission.mockReturnValueOnce(false);
 			// Act
-			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', course);
+			const bbbRole = await useCase.checkPermissionSpec('userId', course);
 
 			// Assert
 			expect(bbbRole).toEqual(BBBRole.MODERATOR);
@@ -242,7 +243,7 @@ describe('VideoConferenceUc', () => {
 			authorizationService.hasPermission.mockReturnValueOnce(true);
 
 			// Act
-			const bbbRole: BBBRole = await useCase.checkPermissionSpec('userId', course);
+			const bbbRole = await useCase.checkPermissionSpec('userId', course);
 
 			// Assert
 			expect(bbbRole).toEqual(BBBRole.VIEWER);
@@ -458,11 +459,7 @@ describe('VideoConferenceUc', () => {
 			bbbService.join.mockResolvedValue(joinUrl);
 
 			// Act
-			const result: VideoConferenceJoin = await useCase.join(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id
-			);
+			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(course.id, VideoConferenceScope.COURSE);
@@ -482,7 +479,7 @@ describe('VideoConferenceUc', () => {
 			bbbService.join.mockResolvedValue(joinUrl);
 
 			// Act
-			const result: VideoConferenceJoin = await useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId);
+			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId);
 
 			// Assert
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
@@ -507,11 +504,7 @@ describe('VideoConferenceUc', () => {
 			builderCourse.asGuest(true);
 
 			// Act
-			const result: VideoConferenceJoin = await useCase.join(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id
-			);
+			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(course.id, VideoConferenceScope.COURSE);
@@ -535,7 +528,7 @@ describe('VideoConferenceUc', () => {
 			builderEvent.asGuest(true);
 
 			// Act
-			const result: VideoConferenceJoin = await useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId);
+			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.EVENT, eventId);
 
 			// Assert
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
@@ -588,11 +581,7 @@ describe('VideoConferenceUc', () => {
 			builderCourse.withRole(BBBRole.MODERATOR);
 
 			// Act
-			const result: VideoConferenceJoin = await useCase.join(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id
-			);
+			const result = await useCase.join(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(course.id, VideoConferenceScope.COURSE);
@@ -606,11 +595,11 @@ describe('VideoConferenceUc', () => {
 	});
 
 	describe('end', () => {
-		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+		const config = new BBBBaseMeetingConfig({
 			meetingID: course.id,
 		});
 
-		const bbbResponse: BBBResponse<BBBBaseResponse> = {
+		const bbbResponse = {
 			response: {
 				returncode: BBBStatus.SUCCESS,
 				messageKey: 'test message key',
@@ -634,11 +623,7 @@ describe('VideoConferenceUc', () => {
 			bbbService.end.mockResolvedValue(bbbResponse);
 
 			// Act
-			const result: VideoConference<BBBBaseResponse> = await useCase.end(
-				defaultCurrentUser,
-				VideoConferenceScope.COURSE,
-				course.id
-			);
+			const result = await useCase.end(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
 			expect(bbbService.end).toHaveBeenCalledWith(config);
@@ -650,11 +635,11 @@ describe('VideoConferenceUc', () => {
 	});
 
 	describe('getMeetingInfo', () => {
-		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
+		const config = new BBBBaseMeetingConfig({
 			meetingID: course.id,
 		});
 
-		const bbbResponse: BBBResponse<BBBMeetingInfoResponse> = {
+		const bbbResponse = {
 			response: {
 				returncode: BBBStatus.SUCCESS,
 				messageKey: 'test message key',

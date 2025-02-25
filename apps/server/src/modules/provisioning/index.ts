@@ -1,5 +1,21 @@
-export * from './provisioning.module';
-export * from './dto';
-export * from './service/provisioning.service';
-export * from './strategy';
+export {
+	ExternalClassDto,
+	ExternalGroupDto,
+	ExternalGroupUserDto,
+	ExternalLicenseDto,
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+	ProvisioningDto,
+	ProvisioningSystemDto,
+} from './dto';
 export { ProvisioningConfig } from './provisioning.config';
+export { ProvisioningModule } from './provisioning.module';
+export { ProvisioningService } from './service/provisioning.service';
+export {
+	IservProvisioningStrategy,
+	OidcMockProvisioningStrategy,
+	ProvisioningStrategy,
+	SchulconnexResponseMapper,
+} from './strategy';

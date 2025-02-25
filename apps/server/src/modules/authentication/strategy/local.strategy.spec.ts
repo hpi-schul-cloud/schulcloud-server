@@ -2,13 +2,12 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
@@ -26,7 +25,7 @@ describe('LocalStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
 		configServiceMock = createMock<ConfigService>();

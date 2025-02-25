@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { extractJwtFromHeader } from '@shared/common/utils';
+import { JwtExtractor } from '@shared/common/utils';
 import { RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
 import {
@@ -60,12 +60,6 @@ export class AuthorizationClientAdapter {
 	}
 
 	private getJwt(): string {
-		const jwt = extractJwtFromHeader(this.request) || this.request.headers.authorization;
-
-		if (!jwt) {
-			throw new Error('Authentication is required.');
-		}
-
-		return jwt;
+		return JwtExtractor.extractJwtFromRequestOrFail(this.request);
 	}
 }

@@ -1,12 +1,12 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { SchoolEntity } from '@modules/school/repo';
+import type { User } from '@modules/user/repo';
 import { EntityWithSchool } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import type { LessonParent } from './lesson.entity';
-import { SchoolEntity } from './school.entity';
 import type { TaskParent } from './task.entity';
-import type { User } from './user.entity';
 
 export interface CourseGroupProperties {
 	name: string;

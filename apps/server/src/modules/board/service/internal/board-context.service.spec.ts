@@ -5,13 +5,15 @@ import { groupFactory } from '@modules/group/testing';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
@@ -41,7 +43,7 @@ describe(BoardContextService.name, () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		courseRepo = module.get(CourseRepo);
 
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 	});
 
 	afterEach(() => {

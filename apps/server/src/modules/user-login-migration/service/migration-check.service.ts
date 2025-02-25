@@ -1,7 +1,8 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
+import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 
@@ -18,19 +19,19 @@ export class MigrationCheckService {
 		systemId: EntityId,
 		officialSchoolNumber: string
 	): Promise<boolean> {
-		const school: LegacySchoolDo | null = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
+		const school = await this.schoolService.getSchoolBySchoolNumber(officialSchoolNumber);
 
 		if (!school?.id) {
 			return false;
 		}
 
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationRepo.findBySchoolId(school.id);
+		const userLoginMigration = await this.userLoginMigrationRepo.findBySchoolId(school.id);
 
 		if (!userLoginMigration || !this.isMigrationActive(userLoginMigration)) {
 			return false;
 		}
 
-		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
+		const user = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (this.isUserMigrated(user, userLoginMigration)) {
 			return false;
@@ -39,7 +40,7 @@ export class MigrationCheckService {
 		return true;
 	}
 
-	private isUserMigrated(user: UserDO | null, userLoginMigration: UserLoginMigrationDO): boolean {
+	private isUserMigrated(user: UserDo | null, userLoginMigration: UserLoginMigrationDO): boolean {
 		return (
 			!!user && user.lastLoginSystemChange !== undefined && user.lastLoginSystemChange > userLoginMigration.startedAt
 		);

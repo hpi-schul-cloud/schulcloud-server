@@ -2,13 +2,15 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { AuthorizationService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeImportService } from '../service';
 import { CourseImportUc } from './course-import.uc';
@@ -22,7 +24,7 @@ describe('CourseImportUc', () => {
 	let courseImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities();
+		orm = await setupEntities([User, Course, CourseGroup]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseImportUc,

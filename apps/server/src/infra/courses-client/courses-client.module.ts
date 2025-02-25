@@ -15,7 +15,7 @@ import { Configuration, CoursesApi } from './generated';
 			scope: Scope.REQUEST,
 			useFactory: (configService: ConfigService<CoursesClientConfig, true>, request: Request): CoursesApi => {
 				const basePath = configService.getOrThrow<string>('API_HOST');
-				const accessToken = JwtExtractor.extractJwtFromRequest(request);
+				const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
 				const configuration = new Configuration({
 					basePath: `${basePath}/v3`,
 					accessToken,

@@ -5,16 +5,15 @@ import { PseudonymService } from '@modules/pseudonym';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
 import { NextcloudStrategy } from './nextcloud.strategy';
@@ -81,7 +80,7 @@ describe('NextCloudStrategy', () => {
 		userService = module.get(UserService);
 		externalToolService = module.get(ExternalToolService);
 
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	afterEach(() => {
@@ -357,12 +356,12 @@ describe('NextCloudStrategy', () => {
 	describe('updateTeamUsersInGroup', () => {
 		describe('when user was added to a team', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
-				const userDo: UserDO = userDoFactory.build({ id: user.id });
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const userDo = userDoFactory.build({ id: user.id });
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
 
-				const pseudonym: Pseudonym = pseudonymFactory.build({
+				const pseudonym = pseudonymFactory.build({
 					userId: user.id,
 					toolId: externalTool.id,
 					pseudonym: `ps${user.id}`,
@@ -439,7 +438,7 @@ describe('NextCloudStrategy', () => {
 
 		describe('when user was removed from a team', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [];
 				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
 
@@ -503,7 +502,7 @@ describe('NextCloudStrategy', () => {
 
 		describe('when no pseudonym for the user was found', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [
 					{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id },
 					{ userId: 'invalidId', schoolId: 'someSchool', roleId: 'someRole' },
@@ -546,7 +545,7 @@ describe('NextCloudStrategy', () => {
 
 		describe('when the external tool was not found', () => {
 			const setup = () => {
-				const user: User = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
+				const user = userFactory.withRoleByName(RoleName.TEAMMEMBER).buildWithId();
 				const teamUsers: TeamUserDto[] = [{ userId: user.id, schoolId: user.school.id, roleId: user.roles[0].id }];
 
 				const groupId = 'groupId';

@@ -1,10 +1,11 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { UserRule } from './user.rule';
 
 describe('UserRule', () => {
@@ -19,7 +20,7 @@ describe('UserRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [AuthorizationHelper, UserRule, AuthorizationInjectionService],

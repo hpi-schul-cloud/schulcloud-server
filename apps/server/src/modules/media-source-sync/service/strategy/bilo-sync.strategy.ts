@@ -3,12 +3,14 @@ import { Logger } from '@core/logger';
 import { Injectable } from '@nestjs/common';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
-import { ExternalTool, ExternalToolMedium, ExternalToolService } from '@modules/tool';
-import { MediaMetadataDto } from '../../dto';
+import { ExternalToolService } from '@modules/tool';
+import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
-import { MediaMetadataMapper } from '../../mapper';
 import { MediaSourceSyncOperation } from '../../types';
+import { MediaMetadataDto } from '../../dto';
+import { MediaMetadataMapper } from '../../mapper';
+
 
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {

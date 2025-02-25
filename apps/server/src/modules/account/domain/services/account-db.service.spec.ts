@@ -1,15 +1,16 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
@@ -66,7 +67,7 @@ describe('AccountDbService', () => {
 		configServiceMock = module.get(ConfigService);
 		idmServiceMock = module.get(IdentityManagementService);
 
-		await setupEntities();
+		await setupEntities([AccountEntity, User]);
 	});
 
 	beforeEach(() => {

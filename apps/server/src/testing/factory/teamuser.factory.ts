@@ -1,9 +1,12 @@
+// Remove the eslint-disable after fixing the import issue in EPIC-96
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { schoolEntityFactory } from '@modules/school/testing';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { userFactory } from '@modules/user/testing';
 import { Role, TeamUserEntity } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
-import { schoolEntityFactory } from './school-entity.factory';
-import { userFactory } from './user.factory';
 
 class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserEntity> {
 	withRoleAndUserId(role: Role, userId: string): this {

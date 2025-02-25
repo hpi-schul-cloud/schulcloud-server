@@ -1,17 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { randomUUID } from 'crypto';
-import { Class } from '../domain';
-import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';
 import { ClassMapper } from './mapper';
+import { ClassEntity } from '../entity';
 
 describe(ClassesRepo.name, () => {
 	let module: TestingModule;
@@ -47,8 +45,8 @@ describe(ClassesRepo.name, () => {
 
 		describe('when school has classes', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const classes: ClassEntity[] = classEntityFactory.buildListWithId(3, { schoolId: school.id });
+				const school = schoolEntityFactory.buildWithId();
+				const classes = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
 				await em.persistAndFlush(classes);
 				em.clear();
@@ -62,7 +60,7 @@ describe(ClassesRepo.name, () => {
 			it('should find classes with particular userId', async () => {
 				const { school } = await setup();
 
-				const result: Class[] = await repo.findAllBySchoolId(school.id);
+				const result = await repo.findAllBySchoolId(school.id);
 
 				expect(result.length).toEqual(3);
 			});
@@ -81,11 +79,9 @@ describe(ClassesRepo.name, () => {
 		describe('when user is in classes', () => {
 			const setup = async () => {
 				const testUser = new ObjectId();
-				const class1: ClassEntity = classEntityFactory.withUserIds([testUser, new ObjectId()]).buildWithId();
-				const class2: ClassEntity = classEntityFactory
-					.withUserIds([new ObjectId()])
-					.buildWithId({ teacherIds: [testUser] });
-				const class3: ClassEntity = classEntityFactory.withUserIds([new ObjectId(), new ObjectId()]).buildWithId();
+				const class1 = classEntityFactory.withUserIds([testUser, new ObjectId()]).buildWithId();
+				const class2 = classEntityFactory.withUserIds([new ObjectId()]).buildWithId({ teacherIds: [testUser] });
+				const class3 = classEntityFactory.withUserIds([new ObjectId(), new ObjectId()]).buildWithId();
 
 				await em.persistAndFlush([class1, class2, class3]);
 				em.clear();
@@ -117,9 +113,9 @@ describe(ClassesRepo.name, () => {
 				const testUser1 = new ObjectId();
 				const testUser2 = new ObjectId();
 				const testUser3 = new ObjectId();
-				const class1: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser2]).buildWithId();
-				const class2: ClassEntity = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
-				const class3: ClassEntity = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
+				const class1 = classEntityFactory.withUserIds([testUser1, testUser2]).buildWithId();
+				const class2 = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
+				const class3 = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
 
 				await em.persistAndFlush([class1, class2, class3]);
 				em.clear();
@@ -139,8 +135,8 @@ describe(ClassesRepo.name, () => {
 				class1.userIds = [testUser2];
 				class2.userIds = [testUser3];
 
-				const updatedArray: ClassEntity[] = [class1, class2];
-				const domainObjectsArray: Class[] = ClassMapper.mapToDOs(updatedArray);
+				const updatedArray = [class1, class2];
+				const domainObjectsArray = ClassMapper.mapToDOs(updatedArray);
 
 				await repo.updateMany(domainObjectsArray);
 
@@ -157,8 +153,8 @@ describe(ClassesRepo.name, () => {
 
 		describe('when updating a class that does not exist', () => {
 			const setup = async () => {
-				const class1: ClassEntity = classEntityFactory.buildWithId();
-				const class2: ClassEntity = classEntityFactory.buildWithId();
+				const class1 = classEntityFactory.buildWithId();
+				const class2 = classEntityFactory.buildWithId();
 
 				await em.persistAndFlush([class1]);
 				em.clear();
@@ -172,8 +168,8 @@ describe(ClassesRepo.name, () => {
 			it('should throw an error', async () => {
 				const { class1, class2 } = await setup();
 
-				const updatedArray: ClassEntity[] = [class1, class2];
-				const domainObjectsArray: Class[] = ClassMapper.mapToDOs(updatedArray);
+				const updatedArray = [class1, class2];
+				const domainObjectsArray = ClassMapper.mapToDOs(updatedArray);
 
 				await expect(repo.updateMany(domainObjectsArray)).rejects.toThrow(NotFoundLoggableException);
 			});
@@ -191,7 +187,7 @@ describe(ClassesRepo.name, () => {
 
 		describe('when class is in classes', () => {
 			const setup = async () => {
-				const class1: ClassEntity = classEntityFactory.buildWithId();
+				const class1 = classEntityFactory.buildWithId();
 				await em.persistAndFlush([class1]);
 				em.clear();
 
@@ -235,7 +231,7 @@ describe(ClassesRepo.name, () => {
 					class1.sourceOptions?.tspUid || ''
 				);
 
-				expect(result).toEqual<Class>(ClassMapper.mapToDO(class1));
+				expect(result).toEqual(ClassMapper.mapToDO(class1));
 			});
 		});
 

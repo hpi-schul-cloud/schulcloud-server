@@ -1,15 +1,17 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StorageLocation } from '@modules/files-storage/interface';
+import { User } from '@modules/user/repo';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
 import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('CopyFilesOfParentParamBuilder', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {

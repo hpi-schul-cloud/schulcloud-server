@@ -1,16 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFilesService } from '@modules/files-storage-client';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Task } from '@shared/domain/entity';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
@@ -24,7 +25,7 @@ describe('task copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyService,

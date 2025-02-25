@@ -1,13 +1,13 @@
 import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
+import type { User } from '@modules/user/repo';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import type { User } from '@shared/domain/entity';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Request } from 'express';
@@ -205,11 +205,7 @@ describe('Me Controller (API)', () => {
 					});
 
 					const expectedResponse = mapToMeResponseObject(studentUser, studentAccount, expectedPermissions);
-					expectedResponse.system = {
-						id: system.id,
-						name: system.displayName,
-						hasEndSessionEndpoint: !!system.oauthConfig?.endSessionEndpoint,
-					};
+					expectedResponse.systemId = system.id;
 
 					return { loggedInClient, expectedResponse };
 				};

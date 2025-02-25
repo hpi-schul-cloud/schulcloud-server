@@ -1,11 +1,13 @@
+import { User } from '@modules/user/repo';
+import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { LegacyBoardElementType } from './legacy-board-element.entity';
 import { TaskBoardElement } from './task-board-element.entity';
 
 describe('TaskBoardElementEntity', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
 	});
 
 	describe('constructor', () => {

@@ -1,4 +1,4 @@
-const rp = require('request-promise-native');
+const axios = require('axios');
 const url = require('url');
 const moment = require('moment');
 const { JWE, JWK, JWS } = require('jose');
@@ -219,15 +219,16 @@ class TspApi {
 	 */
 	async request(path, lastChange = new Date(0)) {
 		const lastChangeDate = moment(lastChange).format('YYYY-MM-DD HH:mm:ss.SSS');
-
-		const requestUrl = url.resolve(BASE_URL, path);
-		const response = await rp(requestUrl, {
+		const options = {
+			url: url.resolve(BASE_URL, path),
 			headers: this.getHeaders(),
-			qs: {
+			params: {
 				dtLetzteAenderung: lastChangeDate,
 			},
-		});
-		return JSON.parse(response);
+		};
+		const response = await axios(options);
+
+		return response.data;
 	}
 }
 

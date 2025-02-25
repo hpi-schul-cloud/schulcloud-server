@@ -1,9 +1,12 @@
+// Remove the eslint-disable after fixing the import issue in EPIC-96
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { schoolEntityFactory } from '@modules/school/testing';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { userFactory } from '@modules/user/testing';
 import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
-import { schoolEntityFactory } from './school-entity.factory';
 import { teamFactory } from './team.factory';
-import { userFactory } from './user.factory';
 
 export const schoolNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(SchoolNews, ({ sequence }) => {
 	return {

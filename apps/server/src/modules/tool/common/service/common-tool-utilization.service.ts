@@ -1,12 +1,12 @@
 import { BoardCommonToolService } from '@modules/board';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolRepo } from '@shared/repo/contextexternaltool';
-import { SchoolExternalToolRepo } from '@shared/repo/schoolexternaltool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolType } from '../../context-external-tool/entity';
+import { ContextExternalToolRepo, ContextExternalToolType } from '../../context-external-tool/repo';
+import { ExternalToolMetadata } from '../../external-tool/domain';
 import { ExternalToolUtilization } from '../../external-tool/domain';
 import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
 import { ToolContextType } from '../enum';
 import { ToolContextMapper } from '../mapper/tool-context.mapper';
 
@@ -19,7 +19,7 @@ export class CommonToolUtilizationService {
 		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
-	async getUtilizationForExternalTool(toolId: EntityId): Promise<ExternalToolUtilization> {
+	public 	async getUtilizationForExternalTool(toolId: EntityId): Promise<ExternalToolUtilization> {
 		const schoolExternalTools: SchoolExternalTool[] = await this.schoolToolRepo.findByExternalToolId(toolId);
 
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
@@ -31,7 +31,7 @@ export class CommonToolUtilizationService {
 		return externalToolUtilization;
 	}
 
-	async getUtilizationForSchoolExternalTool(schoolExternalToolId: EntityId): Promise<SchoolExternalToolMetadata> {
+	public async getUtilizationForSchoolExternalTool(schoolExternalToolId: EntityId): Promise<SchoolExternalToolMetadata> {
 		const externalToolUtilization: ExternalToolUtilization = await this.getUtilization([schoolExternalToolId]);
 
 		const schoolExternalToolMetadata: SchoolExternalToolMetadata = new SchoolExternalToolMetadata({

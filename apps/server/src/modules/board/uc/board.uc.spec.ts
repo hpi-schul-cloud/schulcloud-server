@@ -5,12 +5,14 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Course, CourseGroup } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { CourseRepo } from '@shared/repo/course';
+import { setupEntities } from '@testing/database';
 import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -83,7 +85,7 @@ describe(BoardUc.name, () => {
 		courseRepo = module.get(CourseRepo);
 		boardNodeFactory = module.get(BoardNodeFactory);
 		boardContextApiHelperService = module.get(BoardContextApiHelperService);
-		await setupEntities();
+		await setupEntities([User, Course, CourseGroup]);
 	});
 
 	afterAll(async () => {

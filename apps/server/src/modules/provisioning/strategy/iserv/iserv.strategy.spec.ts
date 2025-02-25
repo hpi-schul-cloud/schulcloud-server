@@ -1,17 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import {
 	IdTokenExtractionFailureLoggableException,
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory } from '@testing/factory/domainobject';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
@@ -60,7 +59,7 @@ describe('IservProvisioningStrategy', () => {
 	describe('getType is called', () => {
 		describe('when it is called', () => {
 			it('should return type ISERV', () => {
-				const result: SystemProvisioningStrategy = strategy.getType();
+				const result = strategy.getType();
 
 				expect(result).toEqual(SystemProvisioningStrategy.ISERV);
 			});
@@ -71,7 +70,7 @@ describe('IservProvisioningStrategy', () => {
 		const setup = () => {
 			const userUUID = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 			const email = 'abc@def.de';
-			const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
+			const input = new OauthDataStrategyInputDto({
 				system: new ProvisioningSystemDto({
 					systemId: 'systemId',
 					provisioningStrategy: SystemProvisioningStrategy.ISERV,
@@ -90,11 +89,11 @@ describe('IservProvisioningStrategy', () => {
 		describe('when the operation succeeds', () => {
 			it('should return the user data', async () => {
 				const { input, userUUID, email } = setup();
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
-				const roleDto: RoleDto = new RoleDto({
+				const school = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const roleDto = new RoleDto({
 					id: new ObjectId().toHexString(),
 					name: RoleName.STUDENT,
 				});
@@ -105,7 +104,7 @@ describe('IservProvisioningStrategy', () => {
 				userService.findByExternalId.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValue(school);
 
-				const result: OauthDataDto = await strategy.getData(input);
+				const result = await strategy.getData(input);
 
 				expect(result).toEqual<OauthDataDto>({
 					system: input.system,
@@ -140,8 +139,8 @@ describe('IservProvisioningStrategy', () => {
 		describe('when no user with the externalId is found', () => {
 			it('should throw an error with code sso_user_notfound and additional information', async () => {
 				const { input, userUUID, email } = setup();
-				const schoolId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId({
+				const schoolId = new ObjectId().toHexString();
+				const user = userDoFactory.buildWithId({
 					externalId: userUUID,
 					schoolId,
 				});
@@ -179,7 +178,7 @@ describe('IservProvisioningStrategy', () => {
 		describe('when oauth data is provided', () => {
 			it('should return a provisioning dto with the external user id', async () => {
 				const userUUID = 'aef1f4fd-c323-466e-962b-a84354c0e713';
-				const data: OauthDataDto = new OauthDataDto({
+				const data = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.ISERV,
@@ -187,7 +186,7 @@ describe('IservProvisioningStrategy', () => {
 					externalUser: new ExternalUserDto({ externalId: userUUID, roles: [] }),
 				});
 
-				const result: ProvisioningDto = await strategy.apply(data);
+				const result = await strategy.apply(data);
 
 				expect(result).toEqual<ProvisioningDto>({
 					externalUserId: userUUID,

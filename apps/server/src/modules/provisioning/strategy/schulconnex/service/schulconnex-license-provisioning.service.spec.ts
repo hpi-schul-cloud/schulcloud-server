@@ -3,10 +3,10 @@ import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User as UserEntity } from '@shared/domain/entity';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ExternalLicenseDto } from '../../../dto';
 import { SchulconnexLicenseProvisioningService } from './schulconnex-license-provisioning.service';
 
@@ -18,7 +18,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 	let mediaSourceService: DeepMocked<MediaSourceService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				SchulconnexLicenseProvisioningService,
@@ -59,7 +59,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 		describe('when new external licenses are provided', () => {
 			const setup = () => {
-				const user: UserEntity = userFactory.build();
+				const user: User = userFactory.build();
 
 				const newExternalLicense1: ExternalLicenseDto = {
 					mediumId: 'newMediumId',
@@ -129,7 +129,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 		describe('when a license is expired', () => {
 			const setup = () => {
-				const user: UserEntity = userFactory.build();
+				const user: User = userFactory.build();
 
 				const activeExternalLicense: ExternalLicenseDto = {
 					mediumId: 'activeMediumId',

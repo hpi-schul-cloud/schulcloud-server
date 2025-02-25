@@ -2,13 +2,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import type { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
+import { User } from '@modules/user/repo';
 import { UserService } from '@modules/user/service/user.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { IFindOptions, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -155,8 +155,8 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 		for (const userId of userIds) {
 			const user = users.find((u) => u.id === userId);
-			if (!user) throw new BadRequestException('Unknown userId.');
-			group.removeUser(user);
+			if (!user?.id) throw new BadRequestException('Unknown userId.');
+			group.removeUser(user.id);
 		}
 
 		await this.save(group);

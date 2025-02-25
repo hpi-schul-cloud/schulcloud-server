@@ -1,15 +1,15 @@
-import { UserMapper } from '@modules/user/mapper/user.mapper';
-import { UserDto } from '@modules/user/uc/dto/user.dto';
-import { User } from '@shared/domain/entity';
+import { userFactory } from '@modules/user/testing';
+import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { User } from '../repo';
+import { UserDto } from '../uc/dto/user.dto';
+import { UserMapper } from './user.mapper';
 
 describe('UserMapper', () => {
 	let userEntity: User;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	beforeEach(() => {

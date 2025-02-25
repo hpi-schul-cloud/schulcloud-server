@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { BoardExternalReferenceType } from '@modules/board';
 import {
@@ -11,17 +10,17 @@ import {
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { SchoolFeature } from '@modules/school/domain';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, TargetModels, User, VideoConference } from '@shared/domain/entity';
+import { TargetModels, VideoConference } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -947,13 +946,13 @@ describe('VideoConferenceController (API)', () => {
 							name: RoleName.ROOMVIEWER,
 							permissions: [Permission.ROOM_VIEW],
 						});
-						const expertRole: Role = roleFactory.buildWithId({
+						const expertRole = roleFactory.buildWithId({
 							name: RoleName.EXPERT,
 							permissions: [Permission.JOIN_MEETING],
 						});
 
-						const expertUser: User = userFactory.buildWithId({ school, roles: [expertRole] });
-						const expertAccount: AccountEntity = accountFactory.buildWithId({ userId: expertUser.id });
+						const expertUser = userFactory.buildWithId({ school, roles: [expertRole] });
+						const expertAccount = accountFactory.buildWithId({ userId: expertUser.id });
 
 						const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 						const userGroup = groupEntityFactory.buildWithId({

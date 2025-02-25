@@ -1,3 +1,4 @@
+import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ConsoleWriterModule } from '@infra/console';
@@ -18,17 +19,18 @@ import { SyncConsole } from './console/sync.console';
 import { VidisFetchService, VidisSyncService, VidisSyncStrategy } from './media-licenses';
 import { MediaMetadataSyncStrategy } from './media-metadata';
 import { SyncService } from './service/sync.service';
-import { TspFetchService } from './tsp/tsp-fetch.service';
-import { TspLegacyMigrationService } from './tsp/tsp-legacy-migration.service';
-import { TspOauthDataMapper } from './tsp/tsp-oauth-data.mapper';
-import { TspSyncMigrationService } from './tsp/tsp-sync-migration.service';
-import { TspSyncService } from './tsp/tsp-sync.service';
-import { TspSyncStrategy } from './tsp/tsp-sync.strategy';
+import { TspFetchService } from './strategy/tsp/tsp-fetch.service';
+import { TspLegacyMigrationService } from './strategy/tsp/tsp-legacy-migration.service';
+import { TspOauthDataMapper } from './strategy/tsp/tsp-oauth-data.mapper';
+import { TspSyncMigrationService } from './strategy/tsp/tsp-sync-migration.service';
+import { TspSchoolService } from './strategy/tsp/tsp-school.service';
+import { TspSyncStrategy } from './strategy/tsp/tsp-sync.strategy';
 import { SyncUc } from './uc/sync.uc';
 
 @Module({
 	imports: [
 		LoggerModule,
+		ErrorModule,
 		ConsoleWriterModule,
 		SystemModule,
 		SchoolModule,
@@ -61,7 +63,7 @@ import { SyncUc } from './uc/sync.uc';
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
 			? [
 					TspSyncStrategy,
-					TspSyncService,
+					TspSchoolService,
 					TspOauthDataMapper,
 					TspFetchService,
 					TspLegacyMigrationService,
