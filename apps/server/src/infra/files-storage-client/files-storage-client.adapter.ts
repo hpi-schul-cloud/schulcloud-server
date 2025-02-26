@@ -82,7 +82,7 @@ export class FilesStorageClientAdapter {
 			const observable = this.httpService.post(url.toString(), formData, {
 				responseType: 'arraybuffer',
 				headers: {
-					'Content-Type': file.type,
+					'Content-Type': 'multipart/form-data',
 					Authorization: `Bearer ${token}`,
 				},
 				...options,

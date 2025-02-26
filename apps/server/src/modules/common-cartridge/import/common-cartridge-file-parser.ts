@@ -79,7 +79,7 @@ export class CommonCartridgeFileParser {
 		if (resource && organization.resourceType === CommonCartridgeResourceTypeV1P1.WEB_CONTENT) {
 			const commonCartridgeFileResource: CommonCartridgeFileResourceProps = {
 				type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-				storageLocationId: currentUser.schoolId,
+				storageLocationId: currentUser.userId,
 				storageLocation: StorageLocation.SCHOOL,
 				parentId: organization.identifier,
 				parentType: FileRecordParentType.BOARDNODES, // should be clarified could be also a task
