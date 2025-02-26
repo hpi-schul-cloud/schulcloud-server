@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils/jwt';
-import { AxiosError, RawAxiosRequestConfig } from 'axios';
+import { AxiosError } from 'axios';
 import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { FilesStorageClientConfig } from './files-storage-client.config';
@@ -62,8 +62,7 @@ export class FilesStorageClientAdapter {
 		storageLocation: StorageLocation,
 		parentId: string,
 		parentType: FileRecordParentType,
-		file: File,
-		options?: RawAxiosRequestConfig
+		file: File
 	): Promise<FileRecordResponse | null> {
 		try {
 			// INFO: we need to upload the file to the files storage service without using the generated client,
@@ -85,12 +84,10 @@ export class FilesStorageClientAdapter {
 					'Content-Type': 'multipart/form-data',
 					Authorization: `Bearer ${token}`,
 				},
-				...options,
 			});
 			const response = await lastValueFrom(observable);
-			const data = response.data as FileRecordResponse;
 
-			return data;
+			return response.data as FileRecordResponse;
 		} catch (error: unknown) {
 			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
 
