@@ -18,8 +18,8 @@ import {
 	columnEntityFactory,
 	richTextElementEntityFactory,
 } from '../../testing';
+import { CardUc } from '../../uc/card.uc';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
-import { CardUc } from '@modules/board/uc';
 
 describe(BoardCollaborationGateway.name, () => {
 	let app: INestApplication;
