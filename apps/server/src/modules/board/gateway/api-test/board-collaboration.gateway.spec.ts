@@ -19,6 +19,7 @@ import {
 	richTextElementEntityFactory,
 } from '../../testing';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
+import { CardUc } from '@modules/board/uc';
 
 describe(BoardCollaborationGateway.name, () => {
 	let app: INestApplication;
@@ -536,12 +537,16 @@ describe(BoardCollaborationGateway.name, () => {
 		});
 
 		describe('when an error is thrown', () => {
-			// the error cannot be provoked easily anymore because passing a column id
-			// ignores the id now
-			it.skip('should answer with failure', async () => {
+			it('should answer with failure', async () => {
 				const { cardNodes, columnNode } = await setup();
 
-				// passing a column id instead of a card id to force an error
+				const uc = app.get(CardUc);
+				// currently, an error here is unlikely as the code simply returns an empty array in most cases.
+				// still, we need to test that errorhandling in the gateway works as expected
+				jest.spyOn(uc, 'findCards').mockImplementationOnce(() => {
+					throw new Error('error');
+				});
+
 				ioClient.emit('fetch-card-request', { cardIds: [cardNodes[0].id, columnNode.id] });
 				const failure = await waitForEvent(ioClient, 'fetch-card-failure');
 
