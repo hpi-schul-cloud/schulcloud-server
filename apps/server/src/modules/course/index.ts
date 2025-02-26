@@ -1,2 +1,2 @@
 export * from './course.module';
-export * from './domain';
+export { Course, CourseDoService, CourseService, CourseSyncService } from './domain';

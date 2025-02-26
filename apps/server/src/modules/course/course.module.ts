@@ -16,10 +16,8 @@ import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
 @Module({
 	imports: [RoleModule, LoggerModule, CqrsModule],
 	providers: [
-		CourseService,
 		CourseRepo,
 		CourseGroupRepo,
-		CourseSyncService,
 		{
 			provide: COURSE_REPO,
 			useClass: CourseMikroOrmRepo,

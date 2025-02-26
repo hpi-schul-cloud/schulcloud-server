@@ -22,7 +22,6 @@ import {
 	CourseImportUc,
 	CourseRoomsAuthorisationService,
 	CourseRoomsUc,
-	CourseSyncUc,
 	DashboardUc,
 	LessonCopyUC,
 	RoomBoardDTOFactory,
@@ -56,7 +55,6 @@ import {
 		CourseCopyUC,
 		CourseRoomsAuthorisationService,
 		CourseImportUc,
-		CourseSyncUc,
 		// FIXME Refactor UCs to use services and remove these imports
 		{
 			provide: DASHBOARD_REPO,
