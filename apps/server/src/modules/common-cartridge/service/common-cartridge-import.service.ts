@@ -31,7 +31,7 @@ export class CommonCartridgeImportService {
 			const commonCartridgeFileResourceProps = parser.getFilesResource(organization, currentUser);
 			if (commonCartridgeFileResourceProps) {
 				await this.fileStorageClient.upload(
-					currentUser.schoolId,
+					currentUser.userId,
 					commonCartridgeFileResourceProps.storageLocation,
 					commonCartridgeFileResourceProps.parentId,
 					commonCartridgeFileResourceProps.parentType,
