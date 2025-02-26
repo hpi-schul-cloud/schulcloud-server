@@ -5,9 +5,9 @@ import { EntityId } from '@shared/domain/types';
 import { UserSourceOptions } from './user-source-options.do';
 
 export class SecondarySchoolReference {
-	schoolId: EntityId;
+	public schoolId: EntityId;
 
-	role: RoleReference;
+	public role: RoleReference;
 
 	constructor(props: SecondarySchoolReference) {
 		this.schoolId = props.schoolId;
@@ -16,57 +16,59 @@ export class SecondarySchoolReference {
 }
 
 export class UserDo extends BaseDO {
-	createdAt?: Date;
+	public createdAt?: Date;
 
-	updatedAt?: Date;
+	public updatedAt?: Date;
 
-	email: string;
+	public email: string;
 
-	firstName: string;
+	public firstName: string;
 
-	lastName: string;
+	public lastName: string;
 
-	preferredName?: string;
+	public preferredName?: string;
 
-	roles: RoleReference[];
+	public roles: RoleReference[];
 
-	schoolId: EntityId;
+	public schoolId: EntityId;
 
-	schoolName?: string;
+	public schoolName?: string;
 
-	secondarySchools: SecondarySchoolReference[];
+	public secondarySchools: SecondarySchoolReference[];
 
-	ldapDn?: string;
+	public ldapDn?: string;
 
-	externalId?: string;
+	public externalId?: string;
 
-	importHash?: string;
+	public importHash?: string;
 
-	firstNameSearchValues?: string[];
+	public firstNameSearchValues?: string[];
 
-	lastNameSearchValues?: string[];
+	public lastNameSearchValues?: string[];
 
-	emailSearchValues?: string[];
+	public emailSearchValues?: string[];
 
-	language?: LanguageType;
+	public language?: LanguageType;
 
-	forcePasswordChange?: boolean;
+	public forcePasswordChange?: boolean;
 
-	discoverable?: boolean;
+	public discoverable?: boolean;
 
-	preferences?: Record<string, unknown>;
+	public preferences?: Record<string, unknown>;
 
-	lastLoginSystemChange?: Date;
+	public lastLoginSystemChange?: Date;
 
-	outdatedSince?: Date;
+	public outdatedSince?: Date;
 
-	previousExternalId?: string;
+	public previousExternalId?: string;
 
-	birthday?: Date;
+	public birthday?: Date;
 
-	consent?: Consent;
+	public consent?: Consent;
 
-	sourceOptions?: UserSourceOptions;
+	public sourceOptions?: UserSourceOptions;
+
+	public lastSyncedAt?: Date;
 
 	constructor(domainObject: UserDo) {
 		super(domainObject.id);
@@ -97,5 +99,6 @@ export class UserDo extends BaseDO {
 		this.birthday = domainObject.birthday;
 		this.consent = domainObject.consent;
 		this.sourceOptions = domainObject.sourceOptions;
+		this.lastSyncedAt = domainObject.lastSyncedAt;
 	}
 }
