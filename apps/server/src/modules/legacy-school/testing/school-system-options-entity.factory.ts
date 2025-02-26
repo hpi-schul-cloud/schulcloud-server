@@ -10,7 +10,7 @@ export const schoolSystemOptionsEntityFactory = BaseFactory.define<
 >(SchoolSystemOptionsEntity, () => {
 	return {
 		school: schoolEntityFactory.buildWithId(),
-		system: systemEntityFactory.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }),
+		system: systemEntityFactory.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY }),
 		provisioningOptions: {
 			groupProvisioningOtherEnabled: false,
 			groupProvisioningCoursesEnabled: false,
