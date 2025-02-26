@@ -227,8 +227,8 @@ export class ConfigResponse {
 	@ApiProperty()
 	public FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 
-	@ApiProperty()
-	public LICENSE_SUMMARY_URL: string | undefined;
+	@ApiPropertyOptional()
+	public LICENSE_SUMMARY_URL?: string;
 
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
