@@ -15,7 +15,7 @@ class CourseCalendarService {
 	remove(id, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${Configuration.get('CALENDAR_URI')}/scopes/${id}`,
+			url: `${Configuration.get('CALENDAR_URI')}/scopes/${id}`,
 			method: 'DELETE',
 			headers: {
 				Authorization: userId,
