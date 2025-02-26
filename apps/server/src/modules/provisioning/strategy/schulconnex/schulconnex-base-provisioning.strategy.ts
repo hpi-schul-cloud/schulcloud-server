@@ -63,7 +63,7 @@ export abstract class SchulconnexBaseProvisioningStrategy extends ProvisioningSt
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+		if (this.configService.get('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')) {
 			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);

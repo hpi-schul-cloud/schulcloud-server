@@ -4,26 +4,26 @@ import { GroupRoleUnknownLoggable } from './group-role-unknown.loggable';
 describe('GroupRoleUnknownLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const sanisSonstigeGruppenzugehoerigeResponse: SchulconnexSonstigeGruppenzugehoerigeResponse = {
+			const sonstigeGruppenzugehoerigeResponse: SchulconnexSonstigeGruppenzugehoerigeResponse = {
 				ktid: 'ktid',
 				rollen: [SchulconnexGroupRole.TEACHER],
 			};
 
-			const loggable = new GroupRoleUnknownLoggable(sanisSonstigeGruppenzugehoerigeResponse);
+			const loggable = new GroupRoleUnknownLoggable(sonstigeGruppenzugehoerigeResponse);
 
-			return { loggable, sanisSonstigeGruppenzugehoerigeResponse };
+			return { loggable, sonstigeGruppenzugehoerigeResponse };
 		};
 
 		it('should return a loggable message', () => {
-			const { loggable, sanisSonstigeGruppenzugehoerigeResponse } = setup();
+			const { loggable, sonstigeGruppenzugehoerigeResponse } = setup();
 
 			const message = loggable.getLogMessage();
 
 			expect(message).toEqual({
 				message: 'Unable to add unknown user to group during provisioning.',
 				data: {
-					externalUserId: sanisSonstigeGruppenzugehoerigeResponse.ktid,
-					externalRoleName: sanisSonstigeGruppenzugehoerigeResponse.rollen?.[0],
+					externalUserId: sonstigeGruppenzugehoerigeResponse.ktid,
+					externalRoleName: sonstigeGruppenzugehoerigeResponse.rollen?.[0],
 				},
 			});
 		});

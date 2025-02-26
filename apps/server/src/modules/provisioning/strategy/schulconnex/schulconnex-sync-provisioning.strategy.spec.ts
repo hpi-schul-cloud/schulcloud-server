@@ -104,7 +104,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 	});
 
 	beforeEach(() => {
-		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+		config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = false;
 		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = false;
 		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
 	});
@@ -122,7 +122,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 			it('should return type SANIS', () => {
 				const result = strategy.getType();
 
-				expect(result).toEqual(SystemProvisioningStrategy.SANIS);
+				expect(result).toEqual(SystemProvisioningStrategy.SCHULCONNEX_LEGACY);
 			});
 		});
 	});
@@ -239,7 +239,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups = externalGroupDtoFactory.buildList(2);
@@ -297,7 +297,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 		describe('when group data is provided, but the feature is disabled', () => {
 			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = false;
 
 				const externalUserId = 'externalUserId';
 				const oauthData = new OauthDataDto({
@@ -339,7 +339,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 		describe('when group data is not provided', () => {
 			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
 				const oauthData = new OauthDataDto({
@@ -378,7 +378,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 		describe('when an existing group gets provisioned', () => {
 			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
@@ -426,7 +426,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 		describe('when a new group is provisioned', () => {
 			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
@@ -469,7 +469,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 		describe('when a user was removed from a group', () => {
 			const setup = () => {
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';

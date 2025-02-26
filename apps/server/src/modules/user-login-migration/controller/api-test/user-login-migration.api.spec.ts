@@ -472,7 +472,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const targetSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
 				query.code = 'code';
@@ -540,7 +540,7 @@ describe('UserLoginMigrationController (API)', () => {
 			const setup = async () => {
 				const targetSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
-					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 				const query: Oauth2MigrationParams = new Oauth2MigrationParams();
 				query.code = 'code';
@@ -1447,7 +1447,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1559,7 +1559,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1648,7 +1648,7 @@ describe('UserLoginMigrationController (API)', () => {
 					const setup = async () => {
 						const targetSystem: SystemEntity = systemEntityFactory
 							.withOauthConfig()
-							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1724,7 +1724,7 @@ describe('UserLoginMigrationController (API)', () => {
 					const setup = async () => {
 						const targetSystem: SystemEntity = systemEntityFactory
 							.withOauthConfig()
-							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+							.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 						const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1790,7 +1790,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -1875,7 +1875,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const setup = async () => {
 					const targetSystem: SystemEntity = systemEntityFactory
 						.withOauthConfig()
-						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SANIS });
+						.buildWithId({ alias: 'SANIS', provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY });
 
 					const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 

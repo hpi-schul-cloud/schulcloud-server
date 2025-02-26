@@ -38,7 +38,7 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 	}
 
 	public override getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.SANIS;
+		return SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
 	}
 
 	public override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
@@ -56,7 +56,7 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 			school?.id
 		);
 
-		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+		if (this.configService.get('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')) {
 			await this.provisionGroups(data, school);
 		}
 

@@ -6,7 +6,7 @@ import { ProvisioningSystemInputMapper } from './provisioning-system-input.mappe
 describe('SchoolUcMapper', () => {
 	describe('mapToInternal', () => {
 		it('should map provisioningStrategy', () => {
-			const provisioningStrategy = SystemProvisioningStrategy.SANIS;
+			const provisioningStrategy = SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
 			const system = systemFactory.build({
 				provisioningStrategy,
 				provisioningUrl: 'https://prov.url',
