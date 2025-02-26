@@ -37,6 +37,7 @@ const fileStorageConfig: FileStorageConfig = {
 	...defaultConfig,
 	...jwtAuthGuardConfig,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
+	JSON_LOG_FORMAT: Configuration.get('JSON_LOG_FORMAT') as boolean,
 };
 
 // The configurations lookup

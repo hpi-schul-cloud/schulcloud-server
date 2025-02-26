@@ -16,7 +16,7 @@ describe(ShdUserCreateTokenLoggable.name, () => {
 			const message = loggable.getLogMessage();
 
 			expect(message).toEqual({
-				message: `The support employee with the Id supportUserId has created  a short live JWT for the user with the Id targetUserId. The JWT expires expires in 0.16666666666666666 minutes`,
+				message: `The support employee with the Id supportUserId has created a short live JWT for the user with the Id targetUserId. The JWT expires expires in 0.16666666666666666 minutes`,
 				data: {},
 			});
 		});
