@@ -1,8 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserService, UserDo } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -247,7 +246,7 @@ export class RoomUc {
 	}
 
 	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_ENABLED')) {
+		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
 		}
 	}
