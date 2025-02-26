@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseDoService } from '@modules/course';
 import { Group, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
-import { CourseDoService } from '@modules/learnroom';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,

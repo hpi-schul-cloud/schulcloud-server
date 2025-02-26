@@ -101,8 +101,9 @@ class ConsentVersionService {
 
 	async remove(id, params) {
 		const consent = await this.app.service('consentVersionsModel').remove(id, prepareInternalParams(params));
+
 		if (consent.consentDataId) {
-			this.app.service('base64Files').remove({ _id: consent.consentDataId });
+			await this.app.service('base64Files').remove({ _id: consent.consentDataId });
 		}
 		return consent;
 	}

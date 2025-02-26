@@ -1,18 +1,21 @@
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '.';
+import { LessonEntity } from './lesson.entity';
+import { Material } from './materials.entity';
+import { Submission } from './submission.entity';
+import { Task } from './task.entity';
 
 describe('Task Entity', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	beforeEach(() => {
@@ -278,7 +281,7 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const maxSubmission = 3;
 				const user = userFactory.buildWithId();
-				const course = courseFactory.studentsWithId(maxSubmission).buildWithId();
+				const course = courseEntityFactory.studentsWithId(maxSubmission).buildWithId();
 				const task = taskFactory.buildWithId({ creator: user, course });
 
 				return { task, user, maxSubmission };
@@ -299,7 +302,7 @@ describe('Task Entity', () => {
 			const setup = () => {
 				const maxSubmission = 3;
 				const user = userFactory.buildWithId();
-				const courseGroup = courseGroupFactory.studentsWithId(maxSubmission).buildWithId();
+				const courseGroup = courseGroupEntityFactory.studentsWithId(maxSubmission).buildWithId();
 				const lesson = lessonFactory.buildWithId({ courseGroup });
 				const task = taskFactory.buildWithId({ creator: user, lesson });
 
@@ -318,7 +321,7 @@ describe('Task Entity', () => {
 		describe('when parent is a lesson in a course', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.studentsWithId(3).buildWithId();
+				const course = courseEntityFactory.studentsWithId(3).buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId({ creator: user, lesson });
 
@@ -488,7 +491,7 @@ describe('Task Entity', () => {
 		describe('when user is a submissionTeacher in parent that is a course', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const course = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const task = taskFactory.isPublished().buildWithId({ creator: user, course });
 
 				return { task, user };
@@ -698,7 +701,7 @@ describe('Task Entity', () => {
 		describe('when user is a submissionTeacher in parent that is a course', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const course = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const task = taskFactory.isPublished().buildWithId({ creator: user, course });
 
 				return { task, user };
@@ -717,7 +720,7 @@ describe('Task Entity', () => {
 	describe('getParentData', () => {
 		describe('when a course is set', () => {
 			it('should return the name, id and color of the course', () => {
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const task = taskFactory.buildWithId({ course });
 
 				const result = task.getParentData();
@@ -729,7 +732,7 @@ describe('Task Entity', () => {
 
 			describe('when a lesson is set', () => {
 				it('should return the lesson name as description', () => {
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const lesson = lessonFactory.buildWithId({ course });
 					const task = taskFactory.buildWithId({ course, lesson });
 
@@ -740,7 +743,7 @@ describe('Task Entity', () => {
 			});
 			describe('when no lesson is set', () => {
 				it('should return an empty string as description', () => {
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const task = taskFactory.buildWithId({ course });
 
 					const result = task.getParentData();

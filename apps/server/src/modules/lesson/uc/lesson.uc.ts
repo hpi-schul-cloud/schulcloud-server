@@ -1,5 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import { LessonEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';

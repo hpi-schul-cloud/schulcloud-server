@@ -1,6 +1,7 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { GroupEntity } from '@modules/group/entity';
@@ -40,8 +41,6 @@ import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/rep
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { User } from '@modules/user/repo';
-import { Course } from '@shared/domain/entity/course.entity';
-import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
@@ -65,8 +64,8 @@ export const ENTITIES = [
 	TaskBoardElement,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	CourseNews,
 	DashboardGridElementEntity,
 	DashboardEntity,

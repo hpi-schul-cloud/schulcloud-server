@@ -6,8 +6,11 @@ import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardSe
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
 import { boardNodeAuthorizableFactory, columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
-import { CourseCopyService, CourseService } from '@modules/learnroom';
+import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -19,10 +22,9 @@ import { userFactory } from '@modules/user/testing';
 import { BadRequestException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
@@ -121,7 +123,7 @@ describe('ShareTokenUC', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		schoolService = module.get(SchoolService);
 
-		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {
@@ -142,7 +144,7 @@ describe('ShareTokenUC', () => {
 		describe('when parent is a course', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				courseService.findById.mockResolvedValueOnce(course);
@@ -405,7 +407,7 @@ describe('ShareTokenUC', () => {
 			const setup = () => {
 				const schoolEntity = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school: schoolEntity });
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				courseService.findById.mockResolvedValueOnce(course);
@@ -437,7 +439,7 @@ describe('ShareTokenUC', () => {
 			it('should call the service', async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
 				await uc.createShareToken(
@@ -469,7 +471,7 @@ describe('ShareTokenUC', () => {
 		describe('when an expiration timespan is given', () => {
 			it('should pass the expiration date to the service', async () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const payload = {
 					parentId: course.id,
 					parentType: ShareTokenParentType.Course,
@@ -491,7 +493,7 @@ describe('ShareTokenUC', () => {
 
 		it('should return service result', async () => {
 			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const shareToken = shareTokenDOFactory.build();
 
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -516,7 +518,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const payload: ShareTokenPayload = {
 					parentType: ShareTokenParentType.Course,
 					parentId: course.id,
@@ -569,7 +571,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const payload: ShareTokenPayload = {
 					parentType: ShareTokenParentType.Lesson,
@@ -623,7 +625,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const task = taskFactory.buildWithId({ course });
 				const payload: ShareTokenPayload = {
 					parentType: ShareTokenParentType.Task,
@@ -675,7 +677,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const columnBoard = columnBoardFactory.build();
 				const payload: ShareTokenPayload = {
 					parentType: ShareTokenParentType.ColumnBoard,
@@ -814,7 +816,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const payload: ShareTokenPayload = {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -846,7 +848,7 @@ describe('ShareTokenUC', () => {
 				const shareToken = shareTokenDOFactory.build();
 				service.lookupToken.mockResolvedValueOnce(shareToken);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
@@ -912,7 +914,7 @@ describe('ShareTokenUC', () => {
 
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findById.mockResolvedValueOnce(course);
 				const lesson = lessonFactory.buildWithId({ course });
 
@@ -999,7 +1001,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findById.mockResolvedValueOnce(course);
 				const task = taskFactory.buildWithId({ course });
 				const status: CopyStatus = {
@@ -1082,7 +1084,7 @@ describe('ShareTokenUC', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findById.mockResolvedValue(course);
 
 				const columnBoard = columnBoardFactory.build();
@@ -1161,7 +1163,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const payload: ShareTokenPayload = {
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
@@ -1192,7 +1194,7 @@ describe('ShareTokenUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
@@ -1229,7 +1231,7 @@ describe('ShareTokenUC', () => {
 				const user = userFactory.buildWithId({ school });
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,

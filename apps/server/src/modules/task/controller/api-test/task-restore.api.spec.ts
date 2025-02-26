@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -52,7 +52,7 @@ describe('Task Controller (API)', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
 			const student = createStudent();
-			const course = courseFactory.build({
+			const course = courseEntityFactory.build({
 				teachers: [teacher.user],
 				students: [student.user],
 			});

@@ -3,7 +3,8 @@ import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
@@ -11,7 +12,7 @@ import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { Course, TeamEntity, TeamUserEntity } from '@shared/domain/entity';
+import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
@@ -334,7 +335,7 @@ export class VideoConferenceDeprecatedUc {
 	): Promise<{ scopeInfo: ScopeInfo; object: AuthorizableObject }> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
-				const course: Course = await this.courseService.findById(refId);
+				const course: CourseEntity = await this.courseService.findById(refId);
 
 				return {
 					scopeInfo: {

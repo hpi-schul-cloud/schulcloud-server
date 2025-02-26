@@ -1,10 +1,9 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { LernstoreResources } from '@modules/lesson/controller';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
-import type { Course } from './course.entity';
-import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
 import type { TaskParent } from './task.entity';
 import { Task } from './task.entity';
@@ -12,8 +11,8 @@ import { Task } from './task.entity';
 export interface LessonProperties {
 	name: string;
 	hidden: boolean;
-	course: Course;
-	courseGroup?: CourseGroup;
+	course: CourseEntity;
+	courseGroup?: CourseGroupEntity;
 	position?: number;
 	contents: ComponentProperties[] | [];
 	materials?: Material[];
@@ -76,11 +75,11 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 	hidden = false;
 
 	@Index()
-	@ManyToOne('Course', { fieldName: 'courseId' })
-	course: Course;
+	@ManyToOne(() => CourseEntity, { fieldName: 'courseId' })
+	course: CourseEntity;
 
-	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
-	courseGroup?: CourseGroup;
+	@ManyToOne(() => CourseGroupEntity, { fieldName: 'courseGroupId', nullable: true })
+	courseGroup?: CourseGroupEntity;
 
 	@Property()
 	position: number;

@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { ObjectId } from 'bson';
 import { MetaDataEntityType } from '../../types';
 import { CourseUrlHandler } from './course-url-handler';
@@ -27,7 +28,7 @@ describe(CourseUrlHandler.name, () => {
 		courseService = module.get(CourseService);
 		courseUrlHandler = module.get(CourseUrlHandler);
 
-		await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {
@@ -43,7 +44,7 @@ describe(CourseUrlHandler.name, () => {
 
 			it('should take the title from the course name', async () => {
 				const name = 'My Course';
-				const course = courseFactory.buildWithId({ name });
+				const course = courseEntityFactory.buildWithId({ name });
 				const url = new URL(`https://localhost/course-rooms/${course.id}`);
 
 				courseService.findById.mockResolvedValueOnce(course);

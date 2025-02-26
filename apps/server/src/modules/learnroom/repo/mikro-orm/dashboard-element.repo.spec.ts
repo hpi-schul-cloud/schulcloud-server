@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { DashboardElementRepo } from './dashboard-element.repo';
 import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
 
@@ -17,7 +17,7 @@ describe(DashboardElementRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardGridElementEntity, DashboardEntity, Course, User, CourseGroup],
+					entities: [DashboardGridElementEntity, DashboardEntity, CourseEntity, User, CourseGroupEntity],
 				}),
 			],
 			providers: [DashboardElementRepo],
@@ -50,7 +50,7 @@ describe(DashboardElementRepo.name, () => {
 		const setup = async () => {
 			const user1 = userFactory.build();
 			const user2 = userFactory.build();
-			const course = courseFactory.build({ students: [user1], name: 'Mathe' });
+			const course = courseEntityFactory.build({ students: [user1], name: 'Mathe' });
 			await em.persistAndFlush([user1, course]);
 
 			const dashboard = new DashboardEntity({ id: new ObjectId().toString(), user: user1 });

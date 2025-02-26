@@ -5,9 +5,11 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -21,13 +23,11 @@ import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceDO } from '@shared/domain/domainobject';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
 import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
 import { teamUserFactory } from '@testing/factory/teamuser.factory';
@@ -120,7 +120,7 @@ describe(VideoConferenceService.name, () => {
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		configService = module.get(ConfigService);
 
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('canGuestJoin', () => {
@@ -434,7 +434,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has START_MEETING permission and is in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const entity = courseFactory.buildWithId();
+				const entity = courseEntityFactory.buildWithId();
 				const conferenceScope = VideoConferenceScope.COURSE;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -609,7 +609,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has JOIN_MEETING permission and is in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const entity = courseFactory.buildWithId();
+				const entity = courseEntityFactory.buildWithId();
 				const conferenceScope = VideoConferenceScope.COURSE;
 
 				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(true);
@@ -756,7 +756,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has neither START_MEETING nor JOIN_MEETING permission in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const entity = courseFactory.buildWithId();
+				const entity = courseEntityFactory.buildWithId();
 				const conferenceScope = VideoConferenceScope.COURSE;
 
 				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(false);
@@ -977,7 +977,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return scope information for a course', async () => {
 				const { userId, scopeId } = setup();
 				const conferenceScope = VideoConferenceScope.COURSE;
-				const course = courseFactory.buildWithId({ name: 'Course' });
+				const course = courseEntityFactory.buildWithId({ name: 'Course' });
 				course.id = scopeId;
 				courseService.findById.mockResolvedValue(course);
 
@@ -1128,7 +1128,7 @@ describe(VideoConferenceService.name, () => {
 				.mockResolvedValueOnce(boardNodeAuthorizable)
 				.mockResolvedValueOnce(boardNodeAuthorizable);
 
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
 
 			configService.get.mockReturnValue('https://api.example.com');
@@ -1149,7 +1149,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call courseRepo.findById', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.COURSE);
 				userService.findById.mockResolvedValue(user);
-				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
+				courseService.findById.mockResolvedValue(courseEntityFactory.buildWithId({ name: 'Course' }));
 
 				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
 
@@ -1167,7 +1167,7 @@ describe(VideoConferenceService.name, () => {
 
 			it('should return the user role and guest status for a course conference', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.COURSE);
-				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
+				courseService.findById.mockResolvedValue(courseEntityFactory.buildWithId({ name: 'Course' }));
 				userService.findById.mockResolvedValue(user);
 
 				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);

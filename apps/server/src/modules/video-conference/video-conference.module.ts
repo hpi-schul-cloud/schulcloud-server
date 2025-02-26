@@ -3,7 +3,7 @@ import { CalendarModule } from '@infra/calendar';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
 import { BoardModule } from '@modules/board';
-import { LearnroomModule } from '@modules/learnroom';
+import { CourseModule } from '@modules/course';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { RoomModule } from '@modules/room';
@@ -31,7 +31,7 @@ import { VideoConferenceDeprecatedUc } from './uc';
 		RoomMembershipModule,
 		RoomModule,
 		UserModule,
-		LearnroomModule,
+		CourseModule,
 		UserModule,
 	],
 	providers: [

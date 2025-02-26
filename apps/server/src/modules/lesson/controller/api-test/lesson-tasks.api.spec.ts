@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -33,7 +33,7 @@ describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/
 	describe('when lesson exists', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 			const lesson = lessonFactory.build({ course });
 			const tasks = taskFactory.buildList(3, { creator: teacherUser, lesson });
 

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardNodeService, Card, ColumnBoard } from '@modules/board';
-import { CourseDoService } from '@modules/learnroom';
+import { CourseDoService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData, MetaDataEntityType } from '../../types';

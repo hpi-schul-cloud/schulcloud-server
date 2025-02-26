@@ -3,7 +3,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
@@ -13,7 +14,7 @@ import { BadRequestException, ForbiddenException, InternalServerErrorException }
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { RoleReference, VideoConferenceDO } from '@shared/domain/domainobject';
-import { Course, Role, TeamEntity } from '@shared/domain/entity';
+import { Role, TeamEntity } from '@shared/domain/entity';
 import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
@@ -70,7 +71,7 @@ describe('VideoConferenceUc', () => {
 	let schoolService: DeepMocked<LegacySchoolService>;
 
 	const hostUrl = 'https://localhost:4000';
-	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
+	const course: CourseEntity = { id: 'courseId', name: 'courseName' } as CourseEntity;
 	const eventId = 'eventId';
 	const event: CalendarEventDto = new CalendarEventDto({
 		title: 'eventTitle',

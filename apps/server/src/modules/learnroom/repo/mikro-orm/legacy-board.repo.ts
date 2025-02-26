@@ -1,6 +1,6 @@
+import { CourseEntity } from '@modules/course/repo';
 import { ColumnBoardBoardElement, LegacyBoard } from '@modules/learnroom/repo';
 import { Injectable } from '@nestjs/common';
-import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { LessonBoardElement } from './lesson-board-element.entity';
@@ -28,7 +28,7 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 	}
 
 	private async createBoardForCourse(courseId: EntityId): Promise<LegacyBoard> {
-		const course = await this._em.findOneOrFail(Course, courseId);
+		const course = await this._em.findOneOrFail(CourseEntity, courseId);
 		const board = new LegacyBoard({ course, references: [] });
 		await this._em.persistAndFlush(board);
 		return board;

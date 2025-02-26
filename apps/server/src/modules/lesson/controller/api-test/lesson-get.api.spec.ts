@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,8 +12,6 @@ import {
 	ComponentTextProperties,
 	ComponentType,
 } from '@shared/domain/entity';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -42,7 +41,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	describe('when user is a valid teacher', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 			const material = materialFactory.buildWithId();
 			const lesson = lessonFactory.build({ course, materials: [material] });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
@@ -84,7 +83,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	describe('when lesson has contents', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 
 			const userId = new ObjectId().toHexString();
 			const contents = { title: 'title', hidden: false, user: userId };
@@ -228,7 +227,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	describe('when user is a valid student', () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.buildWithId({ students: [studentUser] });
+			const course = courseEntityFactory.buildWithId({ students: [studentUser] });
 			const lesson = lessonFactory.build({ course });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 
@@ -259,7 +258,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	describe('when user is not authorized', () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.buildWithId({ students: [] });
+			const course = courseEntityFactory.buildWithId({ students: [] });
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([studentAccount, studentUser, course, lesson]);
 
@@ -277,8 +276,8 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	describe('when lesson belongs to a courseGroup', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.buildWithId({ teachers: [teacherUser] });
-			const courseGroup = courseGroupFactory.buildWithId({ course });
+			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
+			const courseGroup = courseGroupEntityFactory.buildWithId({ course });
 			const lesson = lessonFactory.build({ courseGroup });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, courseGroup, lesson]);
 

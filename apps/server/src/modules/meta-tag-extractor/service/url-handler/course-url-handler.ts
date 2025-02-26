@@ -1,4 +1,4 @@
-import { CourseService } from '@modules/learnroom';
+import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import type { UrlHandler } from '../../interface/url-handler';
 import { MetaData, MetaDataEntityType } from '../../types';

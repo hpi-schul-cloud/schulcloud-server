@@ -1,14 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
-import {
-	Course,
-	CourseGroup,
-	LessonEntity,
-	Material,
-	Submission,
-	Task,
-	TaskParentDescriptions,
-} from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task, TaskParentDescriptions } from '@shared/domain/entity';
 import { InputFormat, TaskStatus, TaskUpdate } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';
@@ -50,7 +43,7 @@ const createExpectedResponse = (task: Task, status: TaskStatus, descriptions: Ta
 
 describe('task.mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	describe('mapToResponse', () => {

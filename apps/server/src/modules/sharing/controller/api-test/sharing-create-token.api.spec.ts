@@ -1,10 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
@@ -38,7 +38,7 @@ describe(`share token creation (api)`, () => {
 			await cleanupCollections(em);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 			em.clear();
@@ -67,7 +67,7 @@ describe(`share token creation (api)`, () => {
 			await cleanupCollections(em);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 			await em.persistAndFlush([teacherAccount, teacherUser, course]);
 			em.clear();
@@ -166,7 +166,7 @@ describe(`share token creation (api)`, () => {
 				await cleanupCollections(em);
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 				em.clear();
@@ -280,7 +280,7 @@ describe(`share token creation (api)`, () => {
 				await cleanupCollections(em);
 
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 				await em.persistAndFlush([teacherAccount, teacherUser, course]);
 				em.clear();

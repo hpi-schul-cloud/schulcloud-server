@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -55,7 +55,7 @@ describe('Task controller (API)', () => {
 
 		it('should "not" find task if the user is not part of the parent anymore.', async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [] });
+			const course = courseEntityFactory.build({ teachers: [] });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
 			await em.persistAndFlush([task, teacherAccount, teacherUser]);
@@ -70,7 +70,7 @@ describe('Task controller (API)', () => {
 
 		it('should return finished tasks of user', async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
 			await em.persistAndFlush([task, teacherAccount, teacherUser]);
@@ -85,7 +85,7 @@ describe('Task controller (API)', () => {
 
 		it('should return status for privileged members if user has write permission in for tasks', async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ substitutionTeachers: [teacherUser] });
+			const course = courseEntityFactory.build({ substitutionTeachers: [teacherUser] });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
 			await em.persistAndFlush([task, teacherAccount, teacherUser]);
@@ -189,7 +189,7 @@ describe('Task controller (API)', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.isFinished().build({ teachers: [studentUser] });
+					const course = courseEntityFactory.isFinished().build({ teachers: [studentUser] });
 
 					return { course, studentAccount, studentUser };
 				};
@@ -329,7 +329,7 @@ describe('Task controller (API)', () => {
 			describe('when courses are open', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.isOpen().build({ teachers: [studentUser] });
+					const course = courseEntityFactory.isOpen().build({ teachers: [studentUser] });
 
 					return { course, studentAccount, studentUser };
 				};
@@ -471,7 +471,7 @@ describe('Task controller (API)', () => {
 			describe('when courses are finised', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.isFinished().build({ students: [studentUser] });
+					const course = courseEntityFactory.isFinished().build({ students: [studentUser] });
 
 					return { course, studentAccount, studentUser };
 				};
@@ -611,7 +611,7 @@ describe('Task controller (API)', () => {
 			describe('when courses are open', () => {
 				const setup = () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.isOpen().build({ students: [studentUser] });
+					const course = courseEntityFactory.isOpen().build({ students: [studentUser] });
 
 					return { course, studentAccount, studentUser };
 				};

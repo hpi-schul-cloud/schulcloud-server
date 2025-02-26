@@ -1,7 +1,8 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { User } from '@modules/user/repo';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
@@ -9,7 +10,7 @@ import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('FileParamBuilder', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
+		await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
 	});
 
 	it('Should throw for not supported parent type', () => {
