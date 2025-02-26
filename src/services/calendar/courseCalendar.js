@@ -8,10 +8,6 @@ class CourseCalendarService {
 		this.app = app;
 	}
 
-	async send(options) {
-		return axios(options);
-	}
-
 	remove(id, params) {
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
