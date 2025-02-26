@@ -21,21 +21,26 @@ export class CommonCartridgeImportService {
 	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
 		const courseName = parser.getTitle() ?? 'Untitled Course';
 
-		await this.coursesClient.createCourse({ title: courseName });
 		await this.uploadCourseFiles(parser, currentUser);
+		await this.coursesClient.createCourse({ title: courseName });
 	}
 
 	private async uploadCourseFiles(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
 		const organizations = parser.getOrganizations();
+
 		for await (const organization of organizations) {
 			const commonCartridgeFileResourceProps = parser.getFilesResource(organization, currentUser);
 			if (commonCartridgeFileResourceProps) {
+				const filePropertyBag: FilePropertyBag = {
+					lastModified: Date.now(),
+					type: commonCartridgeFileResourceProps.type,
+				};
 				await this.fileStorageClient.upload(
-					currentUser.userId,
+					currentUser.schoolId,
 					commonCartridgeFileResourceProps.storageLocation,
 					commonCartridgeFileResourceProps.parentId,
 					commonCartridgeFileResourceProps.parentType,
-					new File([commonCartridgeFileResourceProps.file], organization.title)
+					new File([commonCartridgeFileResourceProps.file], organization.title, filePropertyBag)
 				);
 			}
 		}

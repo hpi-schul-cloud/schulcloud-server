@@ -77,13 +77,21 @@ export class CommonCartridgeFileParser {
 		}
 
 		if (resource && organization.resourceType === CommonCartridgeResourceTypeV1P1.WEB_CONTENT) {
+			const filePropertyBag: FilePropertyBag = {
+				lastModified: Date.now(),
+				type: resource.type,
+			};
 			const commonCartridgeFileResource: CommonCartridgeFileResourceProps = {
 				type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-				storageLocationId: currentUser.userId,
+				storageLocationId: currentUser.schoolId,
 				storageLocation: StorageLocation.SCHOOL,
 				parentId: organization.identifier,
 				parentType: FileRecordParentType.BOARDNODES, // should be clarified could be also a task
-				file: new File([(<CommonCartridgeFileResourceProps>resource).html as BlobPart], organization.title),
+				file: new File(
+					[(<CommonCartridgeFileResourceProps>resource).file as BlobPart],
+					organization.title,
+					filePropertyBag
+				),
 				html: (<CommonCartridgeFileResourceProps>resource).html,
 			};
 			return commonCartridgeFileResource;
