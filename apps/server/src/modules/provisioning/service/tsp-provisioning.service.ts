@@ -225,6 +225,7 @@ export class TspProvisioningService {
 				birthday: externalUser.birthday,
 				externalId: externalUser.externalId,
 				secondarySchools: [],
+				lastSyncedAt: new Date(),
 			});
 
 			this.createTspConsent(newUser);
@@ -238,6 +239,7 @@ export class TspProvisioningService {
 		existingUser.lastName = externalUser.lastName || existingUser.lastName;
 		existingUser.email = externalUser.email || existingUser.email;
 		existingUser.birthday = externalUser.birthday;
+		existingUser.lastSyncedAt = new Date();
 
 		return existingUser;
 	}
