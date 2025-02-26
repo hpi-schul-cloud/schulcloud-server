@@ -165,6 +165,7 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
 			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
+			lastSyncedAt: entity.lastSyncedAt,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -213,6 +214,7 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 			sourceOptions: entityDO.sourceOptions
 				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
 				: undefined,
+			lastSyncedAt: entityDO.lastSyncedAt,
 		};
 	}
 
