@@ -3,13 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { BoardExternalReferenceType } from '@modules/board';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '@modules/board/testing';
+import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import {
@@ -64,7 +64,7 @@ describe('ToolConfigurationController (API)', () => {
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 
-				const course = courseFactory.buildWithId({ teachers: [studentUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [studentUser], school });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool = externalToolEntityFactory.buildWithId({
@@ -121,7 +121,7 @@ describe('ToolConfigurationController (API)', () => {
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 				const board = columnBoardEntityFactory.build({
 					context: { type: BoardExternalReferenceType.Course, id: course.id },
 				});
@@ -254,7 +254,7 @@ describe('ToolConfigurationController (API)', () => {
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course = courseFactory.buildWithId({ teachers: [teacherUser], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school });
 
 				const externalTool = externalToolEntityFactory.buildWithId();
 
@@ -289,7 +289,7 @@ describe('ToolConfigurationController (API)', () => {
 				const user = userFactory.buildWithId({ school, roles: [] });
 				const account = accountFactory.buildWithId({ userId: user.id });
 
-				const course = courseFactory.buildWithId({ teachers: [user], school });
+				const course = courseEntityFactory.buildWithId({ teachers: [user], school });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool = externalToolEntityFactory.buildWithId({
@@ -551,7 +551,7 @@ describe('ToolConfigurationController (API)', () => {
 				const school = schoolEntityFactory.build();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.SCHOOL_TOOL_ADMIN]);
 				// user is not part of the course
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const externalTool = externalToolEntityFactory.build();
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					school,
@@ -596,7 +596,7 @@ describe('ToolConfigurationController (API)', () => {
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
 
-				const course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool = externalToolEntityFactory.buildWithId({
@@ -675,7 +675,7 @@ describe('ToolConfigurationController (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_ADMIN,
 				]);
-				const course = courseFactory.build({ school, teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school, teachers: [teacherUser] });
 				const externalTool = externalToolEntityFactory.build({ isHidden: true });
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
 					school,
