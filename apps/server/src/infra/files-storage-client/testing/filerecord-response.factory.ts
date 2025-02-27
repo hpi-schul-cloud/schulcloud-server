@@ -9,7 +9,7 @@ export const fileRecordResponseFactory = Factory.define<FileRecordResponse>(({ s
 		parentId: new ObjectId().toHexString(),
 		url: 'https://test.com/',
 		securityCheckStatus: FileRecordScanStatus.PENDING,
-		size: Math.round(Math.random() * 100000),
+		size: 1000,
 		creatorId: new ObjectId().toHexString(),
 		mimeType: 'application/octet-stream',
 		parentType: FileRecordParentType.COURSES,
