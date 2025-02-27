@@ -23,6 +23,7 @@ import { ValidationErrorLoggableException } from '@shared/common/loggable-except
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
+import { randomUUID } from 'crypto';
 import {
 	ExternalGroupDto,
 	ExternalLicenseDto,
@@ -119,7 +120,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -241,7 +242,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -293,7 +294,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -342,7 +343,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -383,7 +384,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl: undefined,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -433,7 +434,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user = new ExternalUserDto({
@@ -488,7 +489,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
