@@ -497,7 +497,7 @@ describe(ExternalToolRepo.name, () => {
 					expect.arrayContaining(
 						externalToolDOs.map((externalToolDO: ExternalTool) => {
 							const entity = externalToolEntityFactory.buildWithId(
-								ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO, em),
+								ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO),
 								externalToolDO.id
 							);
 							entity.createdAt = expect.any(Date) as unknown as Date;
@@ -537,7 +537,7 @@ describe(ExternalToolRepo.name, () => {
 
 				const externalToolEntities: ExternalToolEntity[] = existingTools.map((externalToolDO: ExternalTool) =>
 					externalToolEntityFactory.buildWithId(
-						ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO, em),
+						ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO),
 						externalToolDO.id
 					)
 				);
@@ -571,7 +571,7 @@ describe(ExternalToolRepo.name, () => {
 					expect.arrayContaining(
 						externalToolDOs.map((externalToolDO: ExternalTool) => {
 							const entity = externalToolEntityFactory.buildWithId(
-								ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO, em),
+								ExternalToolRepoMapper.mapDOToEntityProperties(externalToolDO),
 								externalToolDO.id
 							);
 							entity.createdAt = expect.any(Date) as unknown as Date;
