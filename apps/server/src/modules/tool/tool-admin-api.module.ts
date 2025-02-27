@@ -1,3 +1,4 @@
+import { BoardModule } from '@modules/board';
 import { Module } from '@nestjs/common';
 import { AdminApiContextExternalToolController } from './context-external-tool/controller';
 import { AdminApiContextExternalToolUc } from './context-external-tool/uc';
@@ -9,7 +10,7 @@ import { AdminApiSchoolExternalToolUc } from './school-external-tool/uc';
 import { ToolModule } from './tool.module';
 
 @Module({
-	imports: [ToolModule],
+	imports: [ToolModule, BoardModule],
 	controllers: [
 		AdminApiExternalToolController,
 		AdminApiSchoolExternalToolController,

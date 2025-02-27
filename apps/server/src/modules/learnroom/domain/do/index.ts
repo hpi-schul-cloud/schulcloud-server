@@ -1,1 +1,1 @@
-export { Course, CourseProps } from './course';
+export * from './dashboard';

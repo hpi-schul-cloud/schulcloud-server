@@ -1,6 +1,7 @@
 import { FilterQuery } from '@mikro-orm/core';
+import { CourseGroupEntity } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
-import { CourseGroup, Submission } from '@shared/domain/entity';
+import { Submission } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 
@@ -35,7 +36,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 	}
 
 	private async byUserIdQuery(userId: EntityId): Promise<FilterQuery<Submission>> {
-		const courseGroupsOfUser = await this._em.find(CourseGroup, { students: userId });
+		const courseGroupsOfUser = await this._em.find(CourseGroupEntity, { students: userId });
 		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };
 		return query;
 	}
