@@ -169,10 +169,8 @@ export class RoomUc {
 		this.checkUserInRoom(ownershipContext);
 		this.checkUserIsStudent(ownershipContext);
 
-		await Promise.all([
-			this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER),
-			this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN),
-		]);
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [currentUserId], RoleName.ROOMADMIN);
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, [targetUserId], RoleName.ROOMOWNER);
 	}
 
 	public async leaveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
