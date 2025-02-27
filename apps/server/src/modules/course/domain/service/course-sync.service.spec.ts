@@ -67,13 +67,13 @@ describe(CourseSyncService.name, () => {
 
 				await service.stopSynchronization(course);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith([
+				expect(courseDoService.save).toHaveBeenCalledWith(
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: undefined,
 						excludeFromSync: undefined,
-					}),
-				]);
+					})
+				);
 			});
 		});
 

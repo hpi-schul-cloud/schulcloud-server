@@ -83,6 +83,34 @@ describe(CourseDoService.name, () => {
 		});
 	});
 
+	describe('save', () => {
+		const setup = () => {
+			const course: Course = courseFactory.build();
+
+			courseRepo.save.mockResolvedValueOnce(course);
+
+			return {
+				course,
+			};
+		};
+
+		it('should save all courses', async () => {
+			const { course } = setup();
+
+			await service.save(course);
+
+			expect(courseRepo.save).toHaveBeenCalledWith(course);
+		});
+
+		it('should return the saved courses', async () => {
+			const { course } = setup();
+
+			const result = await service.save(course);
+
+			expect(result).toEqual(course);
+		});
+	});
+
 	describe('saveAll', () => {
 		const setup = () => {
 			const course: Course = courseFactory.build();

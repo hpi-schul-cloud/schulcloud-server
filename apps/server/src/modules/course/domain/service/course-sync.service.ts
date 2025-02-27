@@ -41,7 +41,7 @@ export class CourseSyncService {
 		course.syncedWithGroup = undefined;
 		course.excludeFromSync = undefined;
 
-		await this.courseService.saveAll([course]);
+		await this.courseService.save(course);
 	}
 
 	public async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
