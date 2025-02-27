@@ -43,13 +43,15 @@ export class Migration20250220084015 extends Migration {
 
 			console.info(`Processing school external tool ${keep.toHexString()} - removing: ${remove.toString()}`);
 
-			const contextExternalTool = await this.getCollection<ContextExternalToolEntity>('user-licenses').updateMany(
+			const contextExternalTool = await this.getCollection<ContextExternalToolEntity>(
+				'context-external-tools'
+			).updateMany(
 				{
-					mediaSource: { $in: remove },
+					schoolTool: { $in: remove },
 				},
 				{
 					$set: {
-						mediaSource: keep,
+						schoolTool: keep,
 					},
 				}
 			);

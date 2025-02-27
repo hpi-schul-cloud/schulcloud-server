@@ -67,22 +67,22 @@ export class Migration20250219143707 extends Migration {
 
 			// Replaces all entries of 'remove' from 'groups' with 'keep'
 			const groupsInCourse = await this.getCollection<CourseEntity>('courses').countDocuments({
-				groups: { $in: remove },
+				groupIds: { $in: remove },
 			});
 			await this.getCollection<CourseEntity>('courses')
 				.aggregate([
-					{ $match: { groups: { $in: remove } } },
+					{ $match: { groupIds: { $in: remove } } },
 					{
 						$set: {
-							groups: {
+							groupIds: {
 								$map: {
-									input: '$groups',
-									as: 'group',
+									input: '$groupIds',
+									as: 'groupId',
 									in: {
 										$cond: {
-											if: { $in: ['$$group', remove] },
+											if: { $in: ['$$groupId', remove] },
 											then: keep,
-											else: '$$group',
+											else: '$$groupId',
 										},
 									},
 								},
