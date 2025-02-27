@@ -132,6 +132,8 @@ export interface ServerConfig
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
+	LICENSE_SUMMARY_URL: string | undefined;
+	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -341,6 +343,10 @@ const config: ServerConfig = {
 	SANIS_CLIENT_SECRET: Configuration.has('SANIS_CLIENT_SECRET')
 		? (Configuration.get('SANIS_CLIENT_SECRET') as string)
 		: undefined,
+	LICENSE_SUMMARY_URL: Configuration.has('LICENSE_SUMMARY_URL')
+		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
+		: undefined,
+	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
 };
 
 export const serverConfig = () => config;

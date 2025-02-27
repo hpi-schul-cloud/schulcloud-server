@@ -1,4 +1,4 @@
-import { MediaSource, MediumIdentifier } from '@modules/media-source/domain';
+import { MediaSource, MediumIdentifier } from '@modules/media-source';
 import { UserLicense, UserLicenseProps } from './user-license';
 
 export interface MediaUserLicenseProps extends UserLicenseProps, MediumIdentifier {}

@@ -5,22 +5,22 @@ import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { OAuthService, OAuthTokenDto } from '@modules/oauth';
+import { OAuthService } from '@modules/oauth';
+import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, RoleReference, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
+import { Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,
@@ -123,7 +123,7 @@ describe(UserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 
-				const migrations: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const migrations = userLoginMigrationDOFactory.buildWithId({
 					schoolId: 'schoolId',
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -137,7 +137,7 @@ describe(UserLoginMigrationUc.name, () => {
 			it('should return a page response with data', async () => {
 				const { userId, migrations } = setup();
 
-				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
+				const result = await uc.getMigrations(userId, { userId });
 
 				expect(result).toEqual<Page<UserLoginMigrationDO>>({
 					data: [migrations],
@@ -158,7 +158,7 @@ describe(UserLoginMigrationUc.name, () => {
 			it('should return a page response without data', async () => {
 				const { userId } = setup();
 
-				const result: Page<UserLoginMigrationDO> = await uc.getMigrations(userId, { userId });
+				const result = await uc.getMigrations(userId, { userId });
 
 				expect(result).toEqual<Page<UserLoginMigrationDO>>({
 					data: [],
@@ -191,7 +191,7 @@ describe(UserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
 
-				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const migration = userLoginMigrationDOFactory.buildWithId({
 					schoolId,
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -251,7 +251,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 				const user = userFactory.buildWithId();
 
-				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const migration = userLoginMigrationDOFactory.buildWithId({
 					schoolId,
 					targetSystemId: 'targetSystemId',
 					startedAt: new Date(),
@@ -281,7 +281,7 @@ describe(UserLoginMigrationUc.name, () => {
 	describe('migrate', () => {
 		describe('when user migrates from one to another system', () => {
 			const setup = () => {
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -289,7 +289,7 @@ describe(UserLoginMigrationUc.name, () => {
 					externalUser: externalUserDtoFactory.build(),
 				});
 
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+				const tokenDto = new OAuthTokenDto({
 					idToken: 'idToken',
 					refreshToken: 'refreshToken',
 					accessToken: 'accessToken',
@@ -361,7 +361,7 @@ describe(UserLoginMigrationUc.name, () => {
 					externalId: 'oldSchoolExternalId',
 				});
 
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -373,7 +373,7 @@ describe(UserLoginMigrationUc.name, () => {
 						name: 'schoolName',
 					}),
 				});
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+				const tokenDto = new OAuthTokenDto({
 					idToken: 'idToken',
 					refreshToken: 'refreshToken',
 					accessToken: 'accessToken',
@@ -424,7 +424,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when external school and official school number is defined and school is already migrated', () => {
 			const setup = () => {
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -437,7 +437,7 @@ describe(UserLoginMigrationUc.name, () => {
 					}),
 				});
 
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+				const tokenDto = new OAuthTokenDto({
 					idToken: 'idToken',
 					refreshToken: 'refreshToken',
 					accessToken: 'accessToken',
@@ -471,7 +471,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when external school is not defined', () => {
 			const setup = () => {
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -479,7 +479,7 @@ describe(UserLoginMigrationUc.name, () => {
 					externalUser: externalUserDtoFactory.build(),
 				});
 
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+				const tokenDto = new OAuthTokenDto({
 					idToken: 'idToken',
 					refreshToken: 'refreshToken',
 					accessToken: 'accessToken',
@@ -510,7 +510,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when a external school is defined, but has no official school number', () => {
 			const setup = () => {
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -522,7 +522,7 @@ describe(UserLoginMigrationUc.name, () => {
 					}),
 				});
 
-				const tokenDto: OAuthTokenDto = new OAuthTokenDto({
+				const tokenDto = new OAuthTokenDto({
 					idToken: 'idToken',
 					refreshToken: 'refreshToken',
 					accessToken: 'accessToken',
@@ -899,7 +899,7 @@ describe(UserLoginMigrationUc.name, () => {
 			const setup = () => {
 				const school = legacySchoolDoFactory.buildWithId();
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -907,7 +907,7 @@ describe(UserLoginMigrationUc.name, () => {
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 
-				const user: UserDO = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -1009,7 +1009,7 @@ describe(UserLoginMigrationUc.name, () => {
 						school: schoolEntityFactory.buildWithId({}, school.id),
 					});
 
-					const user: UserDO = userDoFactory.buildWithId({
+					const user = userDoFactory.buildWithId({
 						schoolId: school.id,
 					});
 
@@ -1137,7 +1137,7 @@ describe(UserLoginMigrationUc.name, () => {
 					externalId,
 				});
 
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
 					schoolId: school.id,
 				});
 
@@ -1345,7 +1345,7 @@ describe(UserLoginMigrationUc.name, () => {
 					school: schoolEntityFactory.buildWithId({}, school.id),
 				});
 
-				const user: UserDO = userDoFactory.buildWithId({
+				const user = userDoFactory.buildWithId({
 					schoolId: school.id,
 				});
 

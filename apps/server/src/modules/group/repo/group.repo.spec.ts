@@ -1,18 +1,19 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';
@@ -27,7 +28,7 @@ describe(GroupRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [GroupEntity, SchoolEntity, User, SystemEntity, Course, CourseGroup],
+					entities: [GroupEntity, SchoolEntity, User, SystemEntity, CourseEntity, CourseGroupEntity],
 				}),
 			],
 			providers: [GroupRepo],
@@ -522,7 +523,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithCourseGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedCourseGroup,
 				});
 
@@ -536,7 +537,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithClassGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedClassGroup,
 				});
 

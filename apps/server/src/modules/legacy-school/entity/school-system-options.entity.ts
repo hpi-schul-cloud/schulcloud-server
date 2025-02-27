@@ -1,6 +1,6 @@
 import { Embedded, Entity, ManyToOne, Unique } from '@mikro-orm/core';
 import { SchoolEntity } from '@modules/school/repo';
-import { SystemEntity } from '@modules/system/entity';
+import { SystemEntity } from '@modules/system/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ProvisioningOptionsInterface } from '../interface';

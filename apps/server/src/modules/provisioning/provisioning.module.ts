@@ -2,8 +2,8 @@ import { LoggerModule } from '@core/logger';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
+import { CourseModule } from '@modules/course';
 import { GroupModule } from '@modules/group';
-import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { RoleModule } from '@modules/role';
@@ -44,7 +44,7 @@ import {
 		SystemModule,
 		LoggerModule,
 		GroupModule,
-		LearnroomModule,
+		CourseModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
 		SchoolLicenseModule,

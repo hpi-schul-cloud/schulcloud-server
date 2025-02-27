@@ -1,6 +1,8 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -9,13 +11,11 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { User, UserRepo } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
-import { UserRepo } from '@shared/repo/user';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
@@ -69,7 +69,7 @@ describe(DashboardService.name, () => {
 		dashboardElementRepo = module.get(DashboardElementRepo);
 		eventBus = module.get(EventBus);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {
@@ -88,7 +88,10 @@ describe(DashboardService.name, () => {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', courseFactory.buildWithId({ name: 'Mathe' })),
+						gridElement: GridElement.FromPersistedReference(
+							'elementId',
+							courseEntityFactory.buildWithId({ name: 'Mathe' })
+						),
 					},
 				],
 				userId: user.id,

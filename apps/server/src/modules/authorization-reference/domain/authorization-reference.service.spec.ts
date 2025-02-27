@@ -6,12 +6,13 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { AuthorizationReferenceService } from './authorization-reference.service';
 import { ReferenceLoader } from './reference.loader';
 
@@ -21,7 +22,7 @@ describe('AuthorizationReferenceService', () => {
 	let loader: DeepMocked<ReferenceLoader>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -97,7 +98,7 @@ describe('AuthorizationReferenceService', () => {
 
 	describe('hasPermissionByReferences', () => {
 		const setupData = () => {
-			const entity = courseFactory.buildWithId();
+			const entity = courseEntityFactory.buildWithId();
 			const user = userFactory.buildWithId();
 			const context = AuthorizationContextBuilder.read([]);
 			const entityName = AuthorizableReferenceType.Course;

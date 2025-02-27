@@ -1,6 +1,6 @@
 import { Entity, Enum, Index, ManyToOne } from '@mikro-orm/core';
+import { User as UserEntity } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { User as UserEntity } from '@shared/domain/entity/user.entity';
 import { EntityId } from '@shared/domain/types';
 import { UserLicenseType } from '../enum';
 

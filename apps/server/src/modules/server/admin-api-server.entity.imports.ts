@@ -1,9 +1,11 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo';
 import { ClassEntity } from '@modules/class/entity';
-import { DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
+import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
@@ -12,17 +14,20 @@ import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/sch
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
+import { User } from '@modules/user/repo';
+
 import {
-	Course,
-	CourseGroup,
 	CourseNews,
+	LessonEntity,
+	Material,
 	News,
 	Role,
 	SchoolNews,
 	StorageProviderEntity,
+	Submission,
+	Task,
 	TeamEntity,
 	TeamNews,
-	User,
 } from '@shared/domain/entity';
 
 export const ENTITIES = [
@@ -30,13 +35,14 @@ export const ENTITIES = [
 	Role,
 	DeletionRequestEntity,
 	DeletionLogEntity,
+	DeletionBatchEntity,
 	SchoolEntity,
 	SchoolYearEntity,
 	StorageProviderEntity,
 	FederalStateEntity,
 	User,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	ClassEntity,
 	GroupEntity,
 	ExternalToolEntity,
@@ -54,6 +60,12 @@ export const ENTITIES = [
 	LtiDeepLinkTokenEntity,
 	BoardNodeEntity,
 	RoomMembershipEntity,
+	Task,
+	Submission,
+	DashboardEntity,
+	DashboardGridElementEntity,
+	LessonEntity,
+	Material,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

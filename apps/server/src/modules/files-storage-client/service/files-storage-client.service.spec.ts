@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -13,9 +14,10 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
@@ -31,7 +33,7 @@ describe('FilesStorageClientAdapterService', () => {
 	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
+		const orm = await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

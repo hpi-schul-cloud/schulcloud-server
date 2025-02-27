@@ -1,9 +1,9 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { MediaSource } from '@modules/media-source/domain';
+import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceMapper } from '@modules/media-source/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MediaUserLicense } from '../domain';

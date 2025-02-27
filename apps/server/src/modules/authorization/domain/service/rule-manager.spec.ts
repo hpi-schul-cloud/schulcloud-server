@@ -1,10 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { RuleManager } from '.';
 import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationInjectionService } from './authorization-injection.service';
@@ -14,7 +15,7 @@ describe('RuleManager', () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 
 		const module = await Test.createTestingModule({
 			providers: [
@@ -50,7 +51,7 @@ describe('RuleManager', () => {
 		describe('when one Rule is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const object = courseFactory.build();
+				const object = courseEntityFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
 				const applicableRule = buildApplicableRule();
@@ -82,7 +83,7 @@ describe('RuleManager', () => {
 		describe('when no rule is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const object = courseFactory.build();
+				const object = courseEntityFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
 				injectionService.getAuthorizationRules.mockReturnValueOnce([
@@ -103,7 +104,7 @@ describe('RuleManager', () => {
 		describe('when more than one rule is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const object = courseFactory.build();
+				const object = courseEntityFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
 				injectionService.getAuthorizationRules.mockReturnValueOnce([buildApplicableRule(), buildApplicableRule()]);

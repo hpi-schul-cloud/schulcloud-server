@@ -1,13 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom/service';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { LessonService } from '../service';
 import { LessonUC } from './lesson.uc';
 
@@ -43,7 +45,7 @@ describe('LessonUC', () => {
 		courseService = module.get(CourseService);
 		authorizationService = module.get(AuthorizationService);
 
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {
@@ -86,7 +88,7 @@ describe('LessonUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findOneForUser.mockResolvedValueOnce(course);
 
 				const lesson = lessonFactory.buildWithId({ course });
@@ -139,7 +141,7 @@ describe('LessonUC', () => {
 				const user = userFactory.buildWithId();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				courseService.findOneForUser.mockResolvedValueOnce(course);
 
 				const lesson = lessonFactory.buildWithId({ course });
