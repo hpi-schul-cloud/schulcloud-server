@@ -1,21 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import {
-	Course,
-	CourseGroup,
-	CourseNews,
-	News,
-	NewsProperties,
-	SchoolNews,
-	TeamEntity,
-	TeamNews,
-	User,
-} from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { CourseNews, News, NewsProperties, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import {
 	CreateNewsParams,
 	FilterNewsParams,
@@ -117,7 +109,7 @@ const getExpectedNewsResponse = (
 
 describe('NewsMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('mapToResponse', () => {
@@ -134,7 +126,7 @@ describe('NewsMapper', () => {
 		it('should correctly map course news to dto', () => {
 			const school = schoolEntityFactory.build();
 			const creator = userFactory.build();
-			const course = courseFactory.build({ school });
+			const course = courseEntityFactory.build({ school });
 			const newsProps = { title: 'test title', content: 'test content' };
 			const courseNews = createNews(newsProps, CourseNews, school, creator, course);
 

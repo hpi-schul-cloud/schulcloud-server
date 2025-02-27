@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { MediaSource } from '../domain';
+import { MediaSource } from '../do';
 import { MediaSourceDataFormat } from '../enum';
 import { MediaSourceRepo } from '../repo';
 

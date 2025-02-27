@@ -3,12 +3,12 @@ export {
 	OauthConfig,
 	OidcConfig,
 	System,
-	SystemProps,
-	SYSTEM_REPO, // Repo and token of it should not be exported
-	SystemRepo,
-	SystemType,
+	SYSTEM_REPO,
 	SystemDeletedEvent,
+	SystemProps, // Repo and token of it should not be exported
+	SystemRepo,
+	SystemService,
+	SystemType,
 } from './domain';
-export { SystemService } from './service';
-export { SystemModule } from './system.module';
 export { SystemConfig } from './system.config';
+export { SystemModule } from './system.module';

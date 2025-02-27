@@ -1,5 +1,5 @@
 import { ColumnBoardService } from '@modules/board';
-import { CourseService } from '@modules/learnroom/service';
+import { CourseService } from '@modules/course';
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';

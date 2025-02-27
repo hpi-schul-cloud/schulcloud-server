@@ -13,7 +13,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { UserRepo } from '@shared/repo/user';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { UserModule } from '../user';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
@@ -67,9 +66,9 @@ const createJwtOptions = () => {
 		UserModule,
 		HttpModule,
 		EncryptionModule,
+		UserModule,
 	],
 	providers: [
-		UserRepo,
 		LegacySchoolRepo,
 		LocalStrategy,
 		AuthenticationService,

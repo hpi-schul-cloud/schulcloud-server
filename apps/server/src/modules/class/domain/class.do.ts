@@ -91,7 +91,7 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.updatedAt;
 	}
 
-	public addTeacher(teacherId: EntityId) {
+	public addTeacher(teacherId: EntityId): void {
 		if (this.teacherIds.includes(teacherId)) {
 			return;
 		}
@@ -99,7 +99,7 @@ export class Class extends DomainObject<ClassProps> {
 		this.props.teacherIds.push(teacherId);
 	}
 
-	public addUser(userId: EntityId) {
+	public addUser(userId: EntityId): void {
 		if (this.userIds.includes(userId)) {
 			return;
 		}
@@ -107,8 +107,13 @@ export class Class extends DomainObject<ClassProps> {
 		this.props.userIds.push(userId);
 	}
 
-	public removeUser(userId: string) {
+	public removeUser(userId: string): void {
 		this.props.userIds = this.props.userIds?.filter((userId1) => userId1 !== userId);
+	}
+
+	public clearParticipants(): void {
+		this.props.teacherIds = [];
+		this.props.userIds = [];
 	}
 
 	public getClassFullName(): string {

@@ -2,13 +2,13 @@ import { LegacyLogger } from '@core/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
+import { CourseRepo } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { CreateBoardBodyParams } from '../controller/dto';
 import {
 	BoardExternalReference,

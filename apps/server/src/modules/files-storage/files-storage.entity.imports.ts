@@ -1,4 +1,4 @@
-import { User } from '@shared/domain/entity';
+import { User } from '@modules/user/repo';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
 
 export const ENTITIES = [FileRecord, FileRecordSecurityCheck];

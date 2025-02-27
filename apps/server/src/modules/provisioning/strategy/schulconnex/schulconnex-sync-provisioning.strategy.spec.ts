@@ -2,16 +2,15 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupService } from '@modules/group';
+import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { ExternalGroupDto, ExternalSchoolDto, OauthDataDto, ProvisioningDto, ProvisioningSystemDto } from '../../dto';
+import { ExternalSchoolDto, OauthDataDto, ProvisioningDto, ProvisioningSystemDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
@@ -121,7 +120,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 	describe('getType', () => {
 		describe('when it is called', () => {
 			it('should return type SANIS', () => {
-				const result: SystemProvisioningStrategy = strategy.getType();
+				const result = strategy.getType();
 
 				expect(result).toEqual(SystemProvisioningStrategy.SANIS);
 			});
@@ -134,7 +133,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				const externalUserId = 'externalUserId';
 				const externalSchoolId = 'externalSchoolId';
 				const schoolId = 'schoolId';
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -145,7 +144,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					}),
 					externalUser: externalUserDtoFactory.build(),
 				});
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					email: 'email',
@@ -184,7 +183,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				const externalUserId = 'externalUserId';
 				const externalSchoolId = 'externalSchoolId';
 				const schoolId = 'schoolId';
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -195,7 +194,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					}),
 					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
 				});
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					firstName: 'firstName',
 					lastName: 'lastName',
 					email: 'email',
@@ -232,7 +231,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 			it('should return the users external id', async () => {
 				const { oauthData } = setup();
 
-				const result: ProvisioningDto = await strategy.apply(oauthData);
+				const result = await strategy.apply(oauthData);
 
 				expect(result).toEqual(new ProvisioningDto({ externalUserId: oauthData.externalUser.externalId }));
 			});
@@ -243,8 +242,8 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
-				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const externalGroups = externalGroupDtoFactory.buildList(2);
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -254,7 +253,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
@@ -301,7 +300,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
 
 				const externalUserId = 'externalUserId';
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -310,7 +309,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups: externalGroupDtoFactory.buildList(2),
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
@@ -343,7 +342,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -352,7 +351,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups: undefined,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
@@ -383,8 +382,8 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
-				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const externalGroups = externalGroupDtoFactory.buildList(2);
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -394,11 +393,11 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
-				const existingGroup: Group = groupFactory.build();
-				const updatedGroup: Group = groupFactory.build();
+				const existingGroup = groupFactory.build();
+				const updatedGroup = groupFactory.build();
 
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
 				schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([]);
@@ -431,8 +430,8 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
-				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const externalGroups = externalGroupDtoFactory.buildList(2);
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -442,10 +441,10 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups,
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
-				const updatedGroup: Group = groupFactory.build();
+				const updatedGroup = groupFactory.build();
 
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
 				schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([]);
@@ -474,7 +473,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 
 				const externalUserId = 'externalUserId';
-				const oauthData: OauthDataDto = new OauthDataDto({
+				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -484,10 +483,10 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					externalGroups: [],
 				});
 
-				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
-				const group: Group = groupFactory.build();
+				const group = groupFactory.build();
 
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
 				schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([group]);
@@ -521,7 +520,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 						externalUser: externalUserDtoFactory.build(),
 						externalLicenses: [],
 					});
-					const user: UserDO = userDoFactory.build({
+					const user = userDoFactory.build({
 						id: new ObjectId().toHexString(),
 					});
 
@@ -560,7 +559,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 			describe('when the feature is disabled', () => {
 				const setup = () => {
-					const oauthData: OauthDataDto = new OauthDataDto({
+					const oauthData = new OauthDataDto({
 						system: new ProvisioningSystemDto({
 							systemId: new ObjectId().toHexString(),
 							provisioningStrategy: SystemProvisioningStrategy.OIDC,
@@ -568,7 +567,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 						externalUser: externalUserDtoFactory.build(),
 						externalLicenses: [],
 					});
-					const user: UserDO = userDoFactory.build({
+					const user = userDoFactory.build({
 						id: new ObjectId().toHexString(),
 					});
 

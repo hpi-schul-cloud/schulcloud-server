@@ -9,11 +9,11 @@ import {
 	columnBoardEntityFactory,
 	columnEntityFactory,
 } from '@modules/board/testing';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 
@@ -108,7 +108,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when no session for user exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 
 					await em.persistAndFlush([studentAccount, studentUser, course]);
 
@@ -173,7 +173,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when other sessions for user already exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 
 					await em.persistAndFlush([studentUser, course]);
 
@@ -244,7 +244,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 			describe('when session for user already exists', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 
 					await em.persistAndFlush([studentUser, course]);
 

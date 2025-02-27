@@ -1,15 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
-import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { LessonEntity, Material, Submission, Task } from '../../domain/entity';
+import { SortOrder } from '../../domain/interface';
 import { TaskRepo } from './task.repo';
 
 const yesterday = new Date(Date.now() - 86400000);
@@ -24,7 +24,7 @@ describe('TaskRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Task, Course, CourseGroup, LessonEntity, Submission, Material],
+					entities: [Task, CourseEntity, CourseGroupEntity, LessonEntity, Submission, Material],
 				}),
 			],
 			providers: [TaskRepo],
@@ -52,8 +52,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a user', () => {
 				const setup = async () => {
 					const creator = userFactory.build();
-					const course = courseFactory.build();
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build();
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.build({ creator, submissions: [submission] });
@@ -79,8 +79,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a course', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.build({ course, submissions: [submission] });
@@ -107,9 +107,9 @@ describe('TaskRepo', () => {
 			describe('when task parent is a course lesson', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
+					const course = courseEntityFactory.build({ teachers: [user] });
 					const lesson = lessonFactory.build({ course });
-					const courseGroup = courseGroupFactory.build({ course });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.build({ lesson, submissions: [submission] });
@@ -137,8 +137,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a coursegroup lesson', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const lesson = lessonFactory.build({ courseGroup });
 					const submission = submissionFactory.build({ courseGroup });
 
@@ -182,7 +182,7 @@ describe('TaskRepo', () => {
 
 			it('should not find tasks with a course assigned', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: teacher, course });
 
 				await em.persistAndFlush([task]);
@@ -195,7 +195,7 @@ describe('TaskRepo', () => {
 
 			it('should not find tasks with a lesson assigned', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: teacher, lesson });
 
@@ -211,8 +211,8 @@ describe('TaskRepo', () => {
 		describe('find by courses', () => {
 			it('should find tasks by course ids', async () => {
 				const teacher = userFactory.build();
-				const course1 = courseFactory.build();
-				const course2 = courseFactory.build();
+				const course1 = courseEntityFactory.build();
+				const course2 = courseEntityFactory.build();
 				const task1 = taskFactory.build({ creator: teacher, course: course1 });
 				const task2 = taskFactory.build({ creator: teacher, course: course2 });
 
@@ -226,7 +226,7 @@ describe('TaskRepo', () => {
 
 			it('should not find tasks with no course assigned', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task1 = taskFactory.build({ creator: teacher, course });
 				const task2 = taskFactory.build({ creator: teacher });
 
@@ -240,7 +240,7 @@ describe('TaskRepo', () => {
 
 			it('should not find tasks with a lesson assigned', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: teacher, course, lesson });
 
@@ -254,7 +254,7 @@ describe('TaskRepo', () => {
 
 			it('should not find private tasks', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: user, course, private: true });
 
 				await em.persistAndFlush([task]);
@@ -269,7 +269,7 @@ describe('TaskRepo', () => {
 		describe('find by lessons', () => {
 			it('should find tasks by lesson ids', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson1 = lessonFactory.build({ course, hidden: false });
 				const lesson2 = lessonFactory.build({ course, hidden: false });
 				const task1 = taskFactory.build({ creator: teacher, course, lesson: lesson1 });
@@ -285,7 +285,7 @@ describe('TaskRepo', () => {
 
 			it('should not find tasks with no lesson assigned', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task1 = taskFactory.build({ creator: teacher, course, lesson });
 				const task2 = taskFactory.build({ creator: teacher, course });
@@ -301,7 +301,7 @@ describe('TaskRepo', () => {
 
 			it('should not find private tasks', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: user, course, lesson, private: true });
 
@@ -318,8 +318,8 @@ describe('TaskRepo', () => {
 			it('should find tasks by teacher and courses', async () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();
-				const course1 = courseFactory.build();
-				const course2 = courseFactory.build();
+				const course1 = courseEntityFactory.build();
+				const course2 = courseEntityFactory.build();
 				const task1 = taskFactory.build({ creator: teacher1 });
 				const task2 = taskFactory.build({ creator: teacher2 });
 				const task3 = taskFactory.build({ creator: teacher1, course: course1 });
@@ -340,7 +340,7 @@ describe('TaskRepo', () => {
 
 			it('should not find tasks with a lesson assigned', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: teacher, course, lesson });
 
@@ -354,7 +354,7 @@ describe('TaskRepo', () => {
 
 			it('should find private tasks created by the user', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: user, course, private: true });
 
 				await em.persistAndFlush([task]);
@@ -368,7 +368,7 @@ describe('TaskRepo', () => {
 			it('should not find private tasks created by other users', async () => {
 				const user = userFactory.build();
 				const otherUser = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: otherUser, course, private: true });
 
 				await em.persistAndFlush([user, task]);
@@ -381,7 +381,7 @@ describe('TaskRepo', () => {
 
 			it('should find unavailable tasks created by the user', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
 
 				await em.persistAndFlush([task]);
@@ -397,7 +397,7 @@ describe('TaskRepo', () => {
 			it('should find tasks by teacher and lessons', async () => {
 				const teacher1 = userFactory.build();
 				const teacher2 = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson1 = lessonFactory.build({ course, hidden: false });
 				const lesson2 = lessonFactory.build({ course, hidden: false });
 				const task1 = taskFactory.build({ creator: teacher1 });
@@ -421,7 +421,7 @@ describe('TaskRepo', () => {
 			it('should not find private tasks created by other users', async () => {
 				const user = userFactory.build();
 				const otherUser = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: otherUser, course, private: true });
 
@@ -437,8 +437,8 @@ describe('TaskRepo', () => {
 		describe('find by courses and lessons', () => {
 			it('should find tasks by courses and lessons', async () => {
 				const teacher = userFactory.build();
-				const course1 = courseFactory.build({ name: 'course #1' });
-				const course2 = courseFactory.build({ name: 'course #2' });
+				const course1 = courseEntityFactory.build({ name: 'course #1' });
+				const course2 = courseEntityFactory.build({ name: 'course #2' });
 				const lesson = lessonFactory.build({ course: course2, hidden: false });
 				const task1 = taskFactory.build({ creator: teacher, course: course1 });
 				const task2 = taskFactory.build({ creator: teacher, course: course2, lesson });
@@ -458,7 +458,7 @@ describe('TaskRepo', () => {
 
 			it('should not find private tasks created by other users', async () => {
 				const otherUser = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: otherUser, course, private: true });
 
@@ -594,7 +594,7 @@ describe('TaskRepo', () => {
 
 				it('should return only available tasks created by other users', async () => {
 					const teacher = userFactory.build();
-					const course = courseFactory.build();
+					const course = courseEntityFactory.build();
 					const task1 = taskFactory.build({ creator: teacher, course, availableDate: yesterday });
 					const task2 = taskFactory.build({ creator: teacher, course, availableDate: tomorrow });
 
@@ -693,7 +693,7 @@ describe('TaskRepo', () => {
 		describe('return value', () => {
 			it('should populate the course', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: teacher, course });
 
 				await em.persistAndFlush([task]);
@@ -707,7 +707,7 @@ describe('TaskRepo', () => {
 
 			it('should populate the lesson', async () => {
 				const teacher = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course, hidden: false });
 				const task = taskFactory.build({ creator: teacher, course, lesson });
 
@@ -722,7 +722,7 @@ describe('TaskRepo', () => {
 			it('should populate the list of submissions', async () => {
 				const teacher = userFactory.build();
 				const student = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ creator: teacher, course });
 				task.submissions.add(submissionFactory.build({ task, student }));
 
@@ -741,7 +741,7 @@ describe('TaskRepo', () => {
 			it('should find task when the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator] });
+				const course = courseEntityFactory.build({ teachers: [creator] });
 				const task = taskFactory.build({ creator, course, finished: [creator] });
 
 				await em.persistAndFlush([task]);
@@ -756,7 +756,7 @@ describe('TaskRepo', () => {
 			it('should "not" find task when teacher that is "not" the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator, teacher] });
+				const course = courseEntityFactory.build({ teachers: [creator, teacher] });
 				const task = taskFactory.build({ creator, course, finished: [teacher] });
 
 				await em.persistAndFlush([task]);
@@ -771,7 +771,7 @@ describe('TaskRepo', () => {
 			it('should "not" find task when substitiution teacher that is "not" the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
+				const course = courseEntityFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
 				const task = taskFactory.build({ creator, course, finished: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
@@ -786,7 +786,7 @@ describe('TaskRepo', () => {
 			it('should "not" find task when student moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator], students: [student] });
+				const course = courseEntityFactory.build({ teachers: [creator], students: [student] });
 				const task = taskFactory.build({ creator, course, finished: [student] });
 
 				await em.persistAndFlush([task]);
@@ -803,7 +803,7 @@ describe('TaskRepo', () => {
 			it('should not find task when the task creator has moved it to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator] });
+				const course = courseEntityFactory.build({ teachers: [creator] });
 				const task = taskFactory.build({ creator, course, finished: [creator] });
 
 				await em.persistAndFlush([task]);
@@ -818,7 +818,7 @@ describe('TaskRepo', () => {
 			it('should find task when teacher that is not the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const teacher = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator, teacher] });
+				const course = courseEntityFactory.build({ teachers: [creator, teacher] });
 				const task = taskFactory.build({ creator, course, finished: [teacher] });
 
 				await em.persistAndFlush([task]);
@@ -833,7 +833,7 @@ describe('TaskRepo', () => {
 			it('should find task when substitiution teacher that is not the creator moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const substitutionTeacher = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
+				const course = courseEntityFactory.build({ teachers: [creator], substitutionTeachers: [substitutionTeacher] });
 				const task = taskFactory.build({ creator, course, finished: [substitutionTeacher] });
 
 				await em.persistAndFlush([task]);
@@ -848,7 +848,7 @@ describe('TaskRepo', () => {
 			it('should find task when student moved this task to archived', async () => {
 				const creator = userFactory.build();
 				const student = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator], students: [student] });
+				const course = courseEntityFactory.build({ teachers: [creator], students: [student] });
 				const task = taskFactory.build({ creator, course, finished: [student] });
 
 				await em.persistAndFlush([task]);
@@ -867,8 +867,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a user', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build();
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build();
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.finished(user).build({ creator: user, submissions: [submission] });
@@ -903,8 +903,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a course', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.finished(user).build({ course, submissions: [submission] });
@@ -937,9 +937,9 @@ describe('TaskRepo', () => {
 			describe('when task parent is a course lesson', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
+					const course = courseEntityFactory.build({ teachers: [user] });
 					const lesson = lessonFactory.build({ course });
-					const courseGroup = courseGroupFactory.build({ course });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.finished(user).build({ lesson, submissions: [submission] });
@@ -973,8 +973,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a coursegroup lesson', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const lesson = lessonFactory.build({ courseGroup });
 					const submission = submissionFactory.build({ courseGroup });
 
@@ -1010,7 +1010,7 @@ describe('TaskRepo', () => {
 		describe('when course is finished', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const course = courseFactory.isFinished().build();
+				const course = courseEntityFactory.isFinished().build();
 
 				return { user, course };
 			};
@@ -1148,7 +1148,7 @@ describe('TaskRepo', () => {
 		describe('when course is open', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const course = courseFactory.isOpen().build({ students: [user] });
+				const course = courseEntityFactory.isOpen().build({ students: [user] });
 
 				return { user, course };
 			};
@@ -1287,7 +1287,7 @@ describe('TaskRepo', () => {
 			const setup = () => {
 				const untilDate = undefined;
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate, students: [user] });
+				const course = courseEntityFactory.build({ untilDate, students: [user] });
 
 				return { user, course };
 			};
@@ -1333,7 +1333,7 @@ describe('TaskRepo', () => {
 		describe('when parent is "not" passed', () => {
 			it('should "not" find finished tasks', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [] });
+				const course = courseEntityFactory.build({ students: [] });
 				const task = taskFactory.finished(user).build({ course });
 
 				await em.persistAndFlush([task]);
@@ -1352,7 +1352,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find finished tasks of creator', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ course, finished: [user], creator: user });
 				await em.persistAndFlush([task]);
 				em.clear();
@@ -1370,7 +1370,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find finished tasks of creator with lesson', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const lesson = lessonFactory.build({ course });
 				const task = taskFactory.build({ course, lesson, finished: [user], creator: user });
 				await em.persistAndFlush([task]);
@@ -1484,7 +1484,7 @@ describe('TaskRepo', () => {
 		describe('when pagination is passed', () => {
 			const setup = (taskCount: number) => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ untilDate: undefined });
+				const course = courseEntityFactory.build({ untilDate: undefined });
 				const tasks = taskFactory.buildList(taskCount, { course, finished: [user] });
 
 				return { user, course, tasks };
@@ -1556,7 +1556,7 @@ describe('TaskRepo', () => {
 
 		it('should sort result by newest dueDate', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ untilDate: undefined });
+			const course = courseEntityFactory.build({ untilDate: undefined });
 
 			const dateSec = (sec) => new Date(Date.now() - sec * 1000);
 			const task1 = taskFactory.build({ course, finished: [user], dueDate: dateSec(60) });
@@ -1583,7 +1583,7 @@ describe('TaskRepo', () => {
 
 		it('should sort it by _id if dueDate is similar.', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ untilDate: undefined });
+			const course = courseEntityFactory.build({ untilDate: undefined });
 
 			const dueDate = new Date();
 			const task1 = taskFactory.build({ course, finished: [user], dueDate });
@@ -1607,7 +1607,7 @@ describe('TaskRepo', () => {
 
 		it('should populate course', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user], name: 'test' });
+			const course = courseEntityFactory.build({ teachers: [user], name: 'test' });
 			const task = taskFactory.finished(user).build({ course });
 
 			await em.persistAndFlush([task]);
@@ -1627,7 +1627,7 @@ describe('TaskRepo', () => {
 
 		it('should populate lesson', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ teachers: [user] });
+			const course = courseEntityFactory.build({ teachers: [user] });
 			const lesson = lessonFactory.build({ course, name: 'test' });
 			const task = taskFactory.finished(user).build({ course, lesson });
 
@@ -1648,7 +1648,7 @@ describe('TaskRepo', () => {
 
 		it('should populate submissions of task', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user] });
+			const course = courseEntityFactory.build({ students: [user] });
 			const lesson = lessonFactory.build({ course });
 			const task = taskFactory.finished(user).build({ course, lesson });
 			const submission = submissionFactory.build({ task, student: user, comment: 'test' });
@@ -1671,128 +1671,9 @@ describe('TaskRepo', () => {
 	});
 
 	describe('findBySingleParent', () => {
-		/* need to be fixed input params or names not correctly
-		describe('given populates are set correctly', () => {
-			describe('when task parent is a user', () => {
-				const setup = async () => {
-					const creator = userFactory.build();
-					const course = courseFactory.build();
-					const courseGroup = courseGroupFactory.build({ course });
-					const submission = submissionFactory.build({ courseGroup });
-
-					const task = taskFactory.build({ creator, submissions: [submission] });
-
-					await em.persistAndFlush([task]);
-					em.clear();
-
-					return { creator };
-				};
-
-				it('should populate all elements correctly', async () => {
-					const { creator } = await setup();
-
-					const [result, total] = await repo.findBySingleParent({ creatorId: creator.id });
-					const task = result[0];
-
-					expect(total).toEqual(1);
-					expect(task.submissions).toBeDefined();
-					expect(task.submissions[0].courseGroup).toBeDefined();
-				});
-			});
-
-			describe('when task parent is a course', () => {
-				const setup = async () => {
-					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
-					const submission = submissionFactory.build({ courseGroup });
-
-					const task = taskFactory.build({ course, submissions: [submission] });
-
-					await em.persistAndFlush([task]);
-					em.clear();
-
-					return { course };
-				};
-
-				it('should populate all elements correctly', async () => {
-					const { course } = await setup();
-
-					const [result, total] = await repo.findBySingleParent({ courseId: course.id });
-					const task = result[0];
-
-					expect(total).toEqual(1);
-					expect(task.course).toBeDefined();
-					expect(task.submissions).toBeDefined();
-					expect(task.submissions[0].courseGroup).toBeDefined();
-				});
-			});
-
-			describe('when task parent is a course lesson', () => {
-				const setup = async () => {
-					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const lesson = lessonFactory.build({ course });
-					const courseGroup = courseGroupFactory.build({ course });
-					const submission = submissionFactory.build({ courseGroup });
-
-					const task = taskFactory.build({ lesson, submissions: [submission] });
-
-					await em.persistAndFlush([task]);
-					em.clear();
-
-					return { lesson };
-				};
-
-				it('should populate all elements correctly', async () => {
-					const { lesson } = await setup();
-
-					const [result, total] = await repo.findBySingleParent({ lessonId: lesson.id });
-					const task = result[0];
-
-					expect(total).toEqual(1);
-					expect(task.lesson).toBeDefined();
-					expect(task.lesson?.course).toBeDefined();
-					expect(task.submissions).toBeDefined();
-					expect(task.submissions[0].courseGroup).toBeDefined();
-				});
-			});
-
-			describe('when task parent is a coursegroup lesson', () => {
-				const setup = async () => {
-					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
-					const lesson = lessonFactory.build({ courseGroup });
-					const submission = submissionFactory.build({ courseGroup });
-
-					const task = taskFactory.build({ lesson, submissions: [submission] });
-
-					await em.persistAndFlush([task]);
-					em.clear();
-
-					return { lesson };
-				};
-
-				it('should populate all elements correctly', async () => {
-					const { lesson } = await setup();
-
-					const [result, total] = await repo.findBySingleParent({ lessonId: lesson.id });
-					const task = result[0];
-
-					expect(total).toEqual(1);
-					expect(task.lesson).toBeDefined();
-					expect(task.lesson?.courseGroup).toBeDefined();
-					expect(task.submissions).toBeDefined();
-					expect(task.submissions[0].courseGroup).toBeDefined();
-				});
-			});
-		});
-		*/
-
 		it('should find all published tasks in course', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const task = taskFactory.build({ course });
 
 			await em.persistAndFlush([user, course, task]);
@@ -1804,7 +1685,7 @@ describe('TaskRepo', () => {
 
 		it('should "not" find tasks out of course', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const task = taskFactory.build();
 
 			await em.persistAndFlush([user, course, task]);
@@ -1816,7 +1697,7 @@ describe('TaskRepo', () => {
 
 		it('should find drafts', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const task = taskFactory.draft().build({ creator: user, course });
 
 			await em.persistAndFlush([user, course, task]);
@@ -1828,7 +1709,7 @@ describe('TaskRepo', () => {
 
 		it('should "not" find tasks of a lesson in the course', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const lesson = lessonFactory.build({ course });
 			const task = taskFactory.build({ course, lesson });
 
@@ -1841,7 +1722,7 @@ describe('TaskRepo', () => {
 
 		it('should find all published future tasks in course', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const threeWeeksinMilliseconds = 1.814e9;
 			const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
@@ -1854,7 +1735,7 @@ describe('TaskRepo', () => {
 
 		it('should "not" find all published future tasks in course', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const threeWeeksinMilliseconds = 1.814e9;
 			const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
@@ -1868,7 +1749,7 @@ describe('TaskRepo', () => {
 		describe('when drafts are included', () => {
 			it('should return draft', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.draft().build({ course, creator: user });
 
 				await em.persistAndFlush([user, course, task]);
@@ -1880,7 +1761,7 @@ describe('TaskRepo', () => {
 
 			it('should also find published task', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([user, course, task]);
@@ -1894,7 +1775,7 @@ describe('TaskRepo', () => {
 		describe('when drafts are excluded', () => {
 			it('should "not" return draft', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.draft().build({ course, creator: user });
 
 				await em.persistAndFlush([user, course, task]);
@@ -1906,7 +1787,7 @@ describe('TaskRepo', () => {
 
 			it('should find published tasks in course', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([user, course, task]);
@@ -1920,7 +1801,7 @@ describe('TaskRepo', () => {
 		describe('when future drafts are present', () => {
 			it('should return future draft', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const threeWeeksinMilliseconds = 1.814e9;
 				const task = taskFactory
 					.draft()
@@ -1935,7 +1816,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" return future draft', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const threeWeeksinMilliseconds = 1.814e9;
 				const task = taskFactory
 					.draft()
@@ -1952,7 +1833,7 @@ describe('TaskRepo', () => {
 		describe('when future drafts are excluded', () => {
 			it('should find published future tasks in course', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const threeWeeksinMilliseconds = 1.814e9;
 				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
@@ -1965,7 +1846,7 @@ describe('TaskRepo', () => {
 
 			it('should "not" find published future tasks in course', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const threeWeeksinMilliseconds = 1.814e9;
 				const task = taskFactory.build({ course, availableDate: new Date(Date.now() + threeWeeksinMilliseconds) });
 
@@ -1986,8 +1867,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a user', () => {
 				const setup = async () => {
 					const creator = userFactory.build();
-					const course = courseFactory.build();
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build();
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.build({ creator, submissions: [submission] });
@@ -2011,8 +1892,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a course', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.build({ course, submissions: [submission] });
@@ -2037,9 +1918,9 @@ describe('TaskRepo', () => {
 			describe('when task parent is a course lesson', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
+					const course = courseEntityFactory.build({ teachers: [user] });
 					const lesson = lessonFactory.build({ course });
-					const courseGroup = courseGroupFactory.build({ course });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const submission = submissionFactory.build({ courseGroup });
 
 					const task = taskFactory.build({ lesson, submissions: [submission] });
@@ -2065,8 +1946,8 @@ describe('TaskRepo', () => {
 			describe('when task parent is a coursegroup lesson', () => {
 				const setup = async () => {
 					const user = userFactory.build();
-					const course = courseFactory.build({ teachers: [user] });
-					const courseGroup = courseGroupFactory.build({ course });
+					const course = courseEntityFactory.build({ teachers: [user] });
+					const courseGroup = courseGroupEntityFactory.build({ course });
 					const lesson = lessonFactory.build({ courseGroup });
 					const submission = submissionFactory.build({ courseGroup });
 
@@ -2112,7 +1993,7 @@ describe('TaskRepo', () => {
 		describe('when searching by creatorId', () => {
 			const setup = async () => {
 				const creator = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator] });
+				const course = courseEntityFactory.build({ teachers: [creator] });
 				const task = taskFactory.build({ creator });
 				const taskWithCourse = taskFactory.build({ course, creator });
 
@@ -2138,7 +2019,7 @@ describe('TaskRepo', () => {
 				const creator = userFactory.build();
 				const task = taskFactory.build({ creator });
 
-				const course = courseFactory.build({ teachers: [creator] });
+				const course = courseEntityFactory.build({ teachers: [creator] });
 				const taskWithCourse = taskFactory.build({ course, creator });
 
 				const lesson = lessonFactory.build({ course });
@@ -2164,7 +2045,7 @@ describe('TaskRepo', () => {
 		describe('when searching by userId', () => {
 			const setup = async () => {
 				const creator = userFactory.build();
-				const course = courseFactory.build({ teachers: [creator] });
+				const course = courseEntityFactory.build({ teachers: [creator] });
 				const taskWithFinished = taskFactory.build({ creator, course, finished: [creator] });
 				const taskWithoutFinished = taskFactory.build({ creator, course });
 

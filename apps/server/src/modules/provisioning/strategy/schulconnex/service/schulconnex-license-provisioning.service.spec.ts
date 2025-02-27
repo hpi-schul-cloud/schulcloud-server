@@ -3,10 +3,10 @@ import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { ExternalLicenseDto } from '../../../dto';
 import { SchulconnexLicenseProvisioningService } from './schulconnex-license-provisioning.service';
 
