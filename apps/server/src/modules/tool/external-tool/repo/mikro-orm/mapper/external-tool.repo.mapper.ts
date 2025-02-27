@@ -1,5 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
-import { FileRecord } from '@modules/files-storage/entity';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { CustomParameter, CustomParameterEntry } from '../../../../common/domain';
 import { CustomParameterEntryEntity } from '../../../../common/entity';
@@ -47,8 +46,8 @@ export class ExternalToolRepoMapper {
 			thumbnail: entity.thumbnail
 				? new FileRecordRef({
 						uploadUrl: entity.thumbnail.uploadUrl,
-						fileRecordId: entity.thumbnail.fileRecord.id,
-						fileName: entity.thumbnail.fileRecord.name,
+						fileRecordId: entity.thumbnail.fileRecord.toHexString(),
+						fileName: entity.thumbnail.fileName,
 				  })
 				: undefined,
 			config,
@@ -105,7 +104,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	public static mapDOToEntityProperties(domainObject: ExternalTool, em: EntityManager): ExternalToolEntityProps {
+	public static mapDOToEntityProperties(domainObject: ExternalTool): ExternalToolEntityProps {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (domainObject.config.type) {
 			case ToolConfigType.BASIC:
@@ -131,8 +130,9 @@ export class ExternalToolRepoMapper {
 			logoBase64: domainObject.logo,
 			thumbnail: domainObject.thumbnail
 				? new FileRecordRefEmbeddable({
-						fileRecord: em.getReference(FileRecord, domainObject.thumbnail.fileRecordId),
+						fileRecord: new ObjectId(domainObject.thumbnail.fileRecordId),
 						uploadUrl: domainObject.thumbnail.uploadUrl,
+						fileName: domainObject.thumbnail.fileName,
 				  })
 				: undefined,
 			config,

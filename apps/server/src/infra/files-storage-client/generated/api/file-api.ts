@@ -24,9 +24,13 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { ApiValidationError } from '../models';
 // @ts-ignore
+import type { FileRecordListResponse } from '../models';
+// @ts-ignore
 import type { FileRecordParentType } from '../models';
 // @ts-ignore
 import type { FileRecordResponse } from '../models';
+// @ts-ignore
+import type { FileUrlParams } from '../models';
 // @ts-ignore
 import type { StorageLocation } from '../models';
 /**
@@ -35,6 +39,94 @@ import type { StorageLocation } from '../models';
  */
 export const FileApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * 
+         * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteByParent: async (storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'storageLocationId' is not null or undefined
+            assertParamExists('deleteByParent', 'storageLocationId', storageLocationId)
+            // verify required parameter 'storageLocation' is not null or undefined
+            assertParamExists('deleteByParent', 'storageLocation', storageLocation)
+            // verify required parameter 'parentId' is not null or undefined
+            assertParamExists('deleteByParent', 'parentId', parentId)
+            // verify required parameter 'parentType' is not null or undefined
+            assertParamExists('deleteByParent', 'parentType', parentType)
+            const localVarPath = `/file/delete/{storageLocation}/{storageLocationId}/{parentType}/{parentId}`
+                .replace(`{${"storageLocationId"}}`, encodeURIComponent(String(storageLocationId)))
+                .replace(`{${"storageLocation"}}`, encodeURIComponent(String(storageLocation)))
+                .replace(`{${"parentId"}}`, encodeURIComponent(String(parentId)))
+                .replace(`{${"parentType"}}`, encodeURIComponent(String(parentType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+         * @param {string} fileRecordId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteFile: async (fileRecordId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'fileRecordId' is not null or undefined
+            assertParamExists('deleteFile', 'fileRecordId', fileRecordId)
+            const localVarPath = `/file/delete/{fileRecordId}`
+                .replace(`{${"fileRecordId"}}`, encodeURIComponent(String(fileRecordId)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary Streamable download of a binary file.
@@ -143,6 +235,62 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
                 options: localVarRequestOptions,
             };
         },
+        /**
+         * 
+         * @summary Upload file from url
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {FileUrlParams} fileUrlParams 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadFromUrl: async (storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, fileUrlParams: FileUrlParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'storageLocationId' is not null or undefined
+            assertParamExists('uploadFromUrl', 'storageLocationId', storageLocationId)
+            // verify required parameter 'storageLocation' is not null or undefined
+            assertParamExists('uploadFromUrl', 'storageLocation', storageLocation)
+            // verify required parameter 'parentId' is not null or undefined
+            assertParamExists('uploadFromUrl', 'parentId', parentId)
+            // verify required parameter 'parentType' is not null or undefined
+            assertParamExists('uploadFromUrl', 'parentType', parentType)
+            // verify required parameter 'fileUrlParams' is not null or undefined
+            assertParamExists('uploadFromUrl', 'fileUrlParams', fileUrlParams)
+            const localVarPath = `/file/upload-from-url/{storageLocation}/{storageLocationId}/{parentType}/{parentId}`
+                .replace(`{${"storageLocationId"}}`, encodeURIComponent(String(storageLocationId)))
+                .replace(`{${"storageLocation"}}`, encodeURIComponent(String(storageLocation)))
+                .replace(`{${"parentId"}}`, encodeURIComponent(String(parentId)))
+                .replace(`{${"parentType"}}`, encodeURIComponent(String(parentType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(fileUrlParams, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
     }
 };
 
@@ -153,6 +301,35 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
 export const FileApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = FileApiAxiosParamCreator(configuration)
     return {
+        /**
+         * 
+         * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteByParent(storageLocationId, storageLocation, parentId, parentType, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.deleteByParent']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+         * @param {string} fileRecordId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async deleteFile(fileRecordId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteFile(fileRecordId, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.deleteFile']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
         /**
          * 
          * @summary Streamable download of a binary file.
@@ -185,6 +362,23 @@ export const FileApiFp = function(configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['FileApi.upload']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @summary Upload file from url
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {FileUrlParams} fileUrlParams 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async uploadFromUrl(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, fileUrlParams: FileUrlParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadFromUrl(storageLocationId, storageLocation, parentId, parentType, fileUrlParams, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.uploadFromUrl']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -195,6 +389,29 @@ export const FileApiFp = function(configuration?: Configuration) {
 export const FileApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = FileApiFp(configuration)
     return {
+        /**
+         * 
+         * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: any): AxiosPromise<FileRecordListResponse> {
+            return localVarFp.deleteByParent(storageLocationId, storageLocation, parentId, parentType, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+         * @param {string} fileRecordId 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        deleteFile(fileRecordId: string, options?: any): AxiosPromise<FileRecordResponse> {
+            return localVarFp.deleteFile(fileRecordId, options).then((request) => request(axios, basePath));
+        },
         /**
          * 
          * @summary Streamable download of a binary file.
@@ -221,6 +438,20 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
         upload(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, file: File, options?: any): AxiosPromise<FileRecordResponse> {
             return localVarFp.upload(storageLocationId, storageLocation, parentId, parentType, file, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Upload file from url
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {FileUrlParams} fileUrlParams 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadFromUrl(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, fileUrlParams: FileUrlParams, options?: any): AxiosPromise<FileRecordResponse> {
+            return localVarFp.uploadFromUrl(storageLocationId, storageLocation, parentId, parentType, fileUrlParams, options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -230,6 +461,29 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
  * @interface FileApi
  */
 export interface FileApiInterface {
+    /**
+     * 
+     * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
+     * @param {string} storageLocationId 
+     * @param {StorageLocation} storageLocation 
+     * @param {string} parentId 
+     * @param {FileRecordParentType} parentType 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApiInterface
+     */
+    deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordListResponse>;
+
+    /**
+     * 
+     * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+     * @param {string} fileRecordId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApiInterface
+     */
+    deleteFile(fileRecordId: string, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordResponse>;
+
     /**
      * 
      * @summary Streamable download of a binary file.
@@ -256,6 +510,20 @@ export interface FileApiInterface {
      */
     upload(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, file: File, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordResponse>;
 
+    /**
+     * 
+     * @summary Upload file from url
+     * @param {string} storageLocationId 
+     * @param {StorageLocation} storageLocation 
+     * @param {string} parentId 
+     * @param {FileRecordParentType} parentType 
+     * @param {FileUrlParams} fileUrlParams 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApiInterface
+     */
+    uploadFromUrl(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, fileUrlParams: FileUrlParams, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordResponse>;
+
 }
 
 /**
@@ -265,6 +533,33 @@ export interface FileApiInterface {
  * @extends {BaseAPI}
  */
 export class FileApi extends BaseAPI implements FileApiInterface {
+    /**
+     * 
+     * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
+     * @param {string} storageLocationId 
+     * @param {StorageLocation} storageLocation 
+     * @param {string} parentId 
+     * @param {FileRecordParentType} parentType 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).deleteByParent(storageLocationId, storageLocation, parentId, parentType, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Mark a single file for deletion. The files are permanently deleted after a certain time.
+     * @param {string} fileRecordId 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public deleteFile(fileRecordId: string, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).deleteFile(fileRecordId, options).then((request) => request(this.axios, this.basePath));
+    }
+
     /**
      * 
      * @summary Streamable download of a binary file.
@@ -293,6 +588,22 @@ export class FileApi extends BaseAPI implements FileApiInterface {
      */
     public upload(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, file: File, options?: RawAxiosRequestConfig) {
         return FileApiFp(this.configuration).upload(storageLocationId, storageLocation, parentId, parentType, file, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Upload file from url
+     * @param {string} storageLocationId 
+     * @param {StorageLocation} storageLocation 
+     * @param {string} parentId 
+     * @param {FileRecordParentType} parentType 
+     * @param {FileUrlParams} fileUrlParams 
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public uploadFromUrl(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, fileUrlParams: FileUrlParams, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).uploadFromUrl(storageLocationId, storageLocation, parentId, parentType, fileUrlParams, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

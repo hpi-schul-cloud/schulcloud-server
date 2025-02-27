@@ -24,17 +24,17 @@ export class FileRecordParams {
 }
 
 export class FileUrlParams {
-	@ApiProperty({ type: 'string' })
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	url!: string;
 
-	@ApiProperty({ type: 'string' })
+	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
 	fileName!: string;
 
-	@ApiProperty({ type: 'string' })
+	@ApiPropertyOptional()
 	@Allow()
 	headers?: Record<string, string>;
 }
