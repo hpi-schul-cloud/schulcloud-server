@@ -1,20 +1,17 @@
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { SyncAttribute } from '../../repo';
 import { Course } from '../course.do';
 import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
-import { COURSE_REPO, CourseRepo } from '../interface';
+import { CourseDoService } from './course-do.service';
 
 @Injectable()
 export class CourseSyncService {
-	constructor(
-		@Inject(COURSE_REPO) private readonly courseRepo: CourseRepo,
-		private readonly roleService: RoleService
-	) {}
+	constructor(private readonly courseService: CourseDoService, private readonly roleService: RoleService) {}
 
 	public async startSynchronization(course: Course, group: Group, user: User): Promise<void> {
 		if (course.syncedWithGroup) {
@@ -44,11 +41,11 @@ export class CourseSyncService {
 		course.syncedWithGroup = undefined;
 		course.excludeFromSync = undefined;
 
-		await this.courseRepo.save(course);
+		await this.courseService.saveAll([course]);
 	}
 
 	public async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
-		const courses: Course[] = await this.courseRepo.findBySyncedGroup(newGroup);
+		const courses: Course[] = await this.courseService.findBySyncedGroup(newGroup);
 
 		await this.synchronize(courses, newGroup, oldGroup);
 	}
@@ -99,6 +96,6 @@ export class CourseSyncService {
 			course.substitutionTeachers = filteredSubstituteTeacherIds;
 		}
 
-		await this.courseRepo.saveAll(courses);
+		await this.courseService.saveAll(courses);
 	}
 }
