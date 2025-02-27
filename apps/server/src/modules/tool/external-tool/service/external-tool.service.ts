@@ -5,9 +5,6 @@ import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { MediaSourceDataFormat } from '@modules/media-source';
-import { MediaMetadataDto } from '@modules/media-source-sync/dto';
-import { MediaSourceAdapterService } from '../../../media-source-adapter/service';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
@@ -22,8 +19,7 @@ export class ExternalToolService {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly mapper: ExternalToolServiceMapper,
 		private readonly legacyLogger: LegacyLogger,
-		private readonly commonToolDeleteService: CommonToolDeleteService,
-		private readonly mediaSourceAdapterService: MediaSourceAdapterService
+		private readonly commonToolDeleteService: CommonToolDeleteService
 	) {}
 
 	public async createExternalTool(externalTool: ExternalTool): Promise<ExternalTool> {
@@ -123,18 +119,6 @@ export class ExternalToolService {
 		const updatedExternalTools = await this.externalToolRepo.saveAll(externalTools);
 
 		return updatedExternalTools;
-	}
-
-	public async getMediaMetadataForExternalTool(
-		mediumId: string,
-		mediaSourceFormat: MediaSourceDataFormat | undefined
-	): Promise<MediaMetadataDto> {
-		const mediaMetadataDto: MediaMetadataDto = await this.mediaSourceAdapterService.fetchMediumMetadata(
-			mediumId,
-			mediaSourceFormat
-		);
-
-		return mediaMetadataDto;
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

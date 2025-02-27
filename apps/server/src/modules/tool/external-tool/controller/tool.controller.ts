@@ -31,6 +31,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { LegacyLogger } from '@core/logger';
 import { Response } from 'express';
+import { MediaMetadataDto } from '../../../media-source-sync';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolUtilization } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
@@ -268,7 +269,7 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolMediumParams
 	): Promise<ExternalToolMediumMetadataResponse> {
-		const externalToolMetadata = await this.externalToolUc.getMetadataForExternalToolFromMediaSource(
+		const externalToolMetadata: MediaMetadataDto = await this.externalToolUc.getMetadataForExternalToolFromMediaSource(
 			currentUser.userId,
 			params.mediumId,
 			params.format

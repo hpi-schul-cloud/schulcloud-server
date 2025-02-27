@@ -1,6 +1,8 @@
 import { BiloMediaQueryDataResponse } from '@infra/bilo-client';
+import { Injectable } from '@nestjs/common';
 import { MediaMetadataDto } from '../dto';
 
+@Injectable()
 export class MediaMetadataMapper {
 	public static mapToMediaMetadata(metadataItem: BiloMediaQueryDataResponse): MediaMetadataDto {
 		const mediaMetadata: MediaMetadataDto = new MediaMetadataDto({

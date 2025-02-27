@@ -6,7 +6,7 @@ import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolRepo } from '../../context-external-tool/repo';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolUtilization } from '../../external-tool/domain';
-import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolUtilization } from '../../school-external-tool/domain';
 import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { CommonToolUtilizationService } from './common-tool-utilization.service';
@@ -119,11 +119,11 @@ describe(CommonToolUtilizationService.name, () => {
 			it('should return 0 usages for all contexts', async () => {
 				setup();
 
-				const result: SchoolExternalToolMetadata = await service.getUtilizationForSchoolExternalTool(
+				const result: SchoolExternalToolUtilization = await service.getUtilizationForSchoolExternalTool(
 					new ObjectId().toHexString()
 				);
 
-				expect(result).toEqual<SchoolExternalToolMetadata>({
+				expect(result).toEqual<SchoolExternalToolUtilization>({
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
@@ -146,11 +146,11 @@ describe(CommonToolUtilizationService.name, () => {
 			it('should return the amount of usages for all contexts', async () => {
 				setup();
 
-				const result: SchoolExternalToolMetadata = await service.getUtilizationForSchoolExternalTool(
+				const result: SchoolExternalToolUtilization = await service.getUtilizationForSchoolExternalTool(
 					new ObjectId().toHexString()
 				);
 
-				expect(result).toEqual<SchoolExternalToolMetadata>({
+				expect(result).toEqual<SchoolExternalToolUtilization>({
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,

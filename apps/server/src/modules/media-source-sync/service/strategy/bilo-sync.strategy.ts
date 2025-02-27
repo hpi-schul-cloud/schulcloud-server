@@ -11,7 +11,6 @@ import { MediaSourceSyncOperation } from '../../types';
 import { MediaMetadataDto } from '../../dto';
 import { MediaMetadataMapper } from '../../mapper';
 
-
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(

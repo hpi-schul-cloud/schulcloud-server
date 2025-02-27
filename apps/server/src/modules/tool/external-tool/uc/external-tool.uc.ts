@@ -10,7 +10,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { MediaSourceDataFormat } from '@modules/media-source';
-import { MediaMetadataDto } from '@modules/media-source-sync/dto';
+import { MediaMetadataDto, MediaSourceSyncService } from '@modules/media-source-sync';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import {
@@ -41,10 +41,11 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolUtilizationService,
+		private readonly commonToolUtilizationService: CommonToolUtilizationService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
+		private readonly mediaSourceSyncService: MediaSourceSyncService
 	) {}
 
 	public async createExternalTool(
@@ -213,7 +214,7 @@ export class ExternalToolUc {
 		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const metadata: ExternalToolUtilization = await this.commonToolMetadataService.getUtilizationForExternalTool(
+		const metadata: ExternalToolUtilization = await this.commonToolUtilizationService.getUtilizationForExternalTool(
 			toolId
 		);
 
@@ -282,12 +283,12 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
-		const mediaMetadata: MediaMetadataDto = await this.externalToolService.getMediaMetadataForExternalTool(
+		const mediaMetadataDto: MediaMetadataDto = await this.mediaSourceSyncService.fetchMediumMetadata(
 			mediumId,
 			mediaSourceFormat
 		);
 
-		return mediaMetadata;
+		return mediaMetadataDto;
 	}
 
 	private encryptLtiSecret(

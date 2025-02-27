@@ -451,7 +451,7 @@ describe('SchoolExternalToolUc', () => {
 			it('should check the permissions of the user', async () => {
 				const { user, toolId, school } = setupMetadata();
 
-				await uc.getMetadataForSchoolExternalTool(user.id, toolId);
+				await uc.getUtilizationForSchoolExternalTool(user.id, toolId);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -483,7 +483,7 @@ describe('SchoolExternalToolUc', () => {
 			it('should call the service to get metadata', async () => {
 				const { toolId, user } = setupMetadata();
 
-				await uc.getMetadataForSchoolExternalTool(user.id, toolId);
+				await uc.getUtilizationForSchoolExternalTool(user.id, toolId);
 
 				expect(commonToolUtilizationService.getUtilizationForSchoolExternalTool).toHaveBeenCalledWith(toolId);
 			});

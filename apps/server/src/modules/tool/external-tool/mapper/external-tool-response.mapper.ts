@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { MediaMetadataDto } from '../../../media-source-sync/dto';
+import { MediaMetadataDto } from '../../../media-source-sync';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -20,14 +20,7 @@ import {
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	ExternalToolMedium,
-	ExternalToolMediumMetadata,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '../domain';
+import { BasicToolConfig, ExternalTool, ExternalToolMedium, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolImportResult } from '../uc';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {

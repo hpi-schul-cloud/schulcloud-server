@@ -10,6 +10,7 @@ import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { LearnroomModule } from '@modules/learnroom';
+import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { CommonToolModule } from './common';
 import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
 import { ToolContextController, ToolDeepLinkController } from './context-external-tool/controller';
@@ -40,6 +41,7 @@ import { ToolModule } from './tool.module';
 		UserLicenseModule,
 		SchoolLicenseModule,
 		EncryptionModule,
+		MediaSourceSyncModule,
 	],
 	controllers: [
 		ToolLaunchController,

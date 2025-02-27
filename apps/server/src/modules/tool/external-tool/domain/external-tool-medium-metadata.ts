@@ -1,15 +1,15 @@
 export class ExternalToolMediumMetadata {
 	name: string;
 
-	description: string | undefined;
+	description?: string;
 
-	publisher: string | undefined;
+	publisher?: string;
 
-	logoUrl: string | undefined;
+	logoUrl?: string;
 
-	previewLogoUrl: string | undefined;
+	previewLogoUrl?: string;
 
-	modified: string | undefined;
+	modified?: string;
 
 	constructor(response: ExternalToolMediumMetadata) {
 		this.name = response.name;

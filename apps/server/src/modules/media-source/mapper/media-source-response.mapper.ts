@@ -1,6 +1,8 @@
+import { Injectable } from '@nestjs/common';
 import { MediaSourceListResponse, MediaSourceResponse } from '../api/response';
 import { MediaSource } from '../do';
 
+@Injectable()
 export class MediaSourceResponseMapper {
 	static mapToMediaSourceResponse(mediaSource: MediaSource): MediaSourceResponse {
 		const response: MediaSourceResponse = new MediaSourceResponse({

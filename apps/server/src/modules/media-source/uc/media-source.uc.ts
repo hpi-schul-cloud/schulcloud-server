@@ -1,18 +1,19 @@
-import { User } from '@shared/domain/entity';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizationService } from '../../authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { MediaSource } from '../do';
 import { MediaSourceService } from '../service';
 
+@Injectable()
 export class MediaSourceUc {
 	constructor(
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly authorizationService: AuthorizationService
+		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService
 	) {}
 
 	public async getMediaSourceList(userId: EntityId): Promise<MediaSource[]> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SOURCE_ADMIN]);
 

@@ -1211,7 +1211,7 @@ describe(ExternalToolUc.name, () => {
 		});
 	});
 
-	describe('getMetadataForExternalTool', () => {
+	describe('getUtilizationForExternalTool', () => {
 		describe('when authorize user', () => {
 			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
