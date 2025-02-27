@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -6,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { DateToString } from '@testing/date-to-string';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
@@ -62,7 +62,7 @@ describe('ToolReferenceController (API)', () => {
 				const schoolWithoutTool = schoolEntityFactory.buildWithId();
 				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity = externalToolEntityFactory.buildWithId();
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -111,7 +111,7 @@ describe('ToolReferenceController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
 				const fileRecordId = new ObjectId();
 				const fileName = 'test.png';
 				const externalToolEntity = externalToolEntityFactory.buildWithId({
@@ -215,7 +215,7 @@ describe('ToolReferenceController (API)', () => {
 				const schoolWithoutTool = schoolEntityFactory.buildWithId();
 				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity = externalToolEntityFactory.buildWithId();
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -261,7 +261,7 @@ describe('ToolReferenceController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
 				const fileRecordId = new ObjectId();
 				const fileName = 'test.png';
 				const externalToolEntity = externalToolEntityFactory

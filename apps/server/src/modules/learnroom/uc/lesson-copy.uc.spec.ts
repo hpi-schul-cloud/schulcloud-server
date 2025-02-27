@@ -3,16 +3,16 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { User, UserRepo } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo/course';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { LessonCopyUC } from './lesson-copy.uc';
 
@@ -31,7 +31,7 @@ describe('lesson copy uc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Course, CourseGroup, LessonEntity, Material, Task, Submission]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, LessonEntity, Material, Task, Submission]);
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,
@@ -86,7 +86,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', false);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const lesson = lessonFactory.build({ course });
 
 				const parentParams = { courseId: course.id, userId: user.id };
@@ -112,7 +112,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const allLessons = lessonFactory.buildList(3, { course });
 				const copy = lessonFactory.buildWithId({ course });
 
@@ -169,7 +169,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user] });
+				const course = courseEntityFactory.buildWithId({ teachers: [user] });
 				const allLessons = lessonFactory.buildList(3, { course });
 				const copy = lessonFactory.buildWithId({ course });
 
@@ -295,7 +295,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId();
 
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
@@ -326,7 +326,7 @@ describe('lesson copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId();
 
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
