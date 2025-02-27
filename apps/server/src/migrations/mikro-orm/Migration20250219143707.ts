@@ -72,6 +72,7 @@ export class Migration20250219143707 extends Migration {
 			await this.getCollection<CourseEntity>('courses')
 				.aggregate([
 					{ $match: { groupIds: { $in: remove } } },
+					// Replaces unwanted group ids from "remove" with "keep"
 					{
 						$set: {
 							groupIds: {
@@ -83,6 +84,24 @@ export class Migration20250219143707 extends Migration {
 											if: { $in: ['$$groupId', remove] },
 											then: keep,
 											else: '$$groupId',
+										},
+									},
+								},
+							},
+						},
+					},
+					// Makes entries of groupIds unique
+					{
+						$set: {
+							groupIds: {
+								$reduce: {
+									input: '$groupIds',
+									initialValue: [],
+									in: {
+										$cond: {
+											if: { $in: ['$$this', '$$value'] },
+											then: '$$value',
+											else: { $concatArrays: ['$$value', ['$$this']] },
 										},
 									},
 								},
