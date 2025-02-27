@@ -1,5 +1,5 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { MediumIdentifier } from '@modules/media-source/domain';
+import { MediumIdentifier } from '@modules/media-source';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 
 export class SchoolExternalToolCreatedLoggable implements Loggable {

@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
-import { MediumIdentifier } from '@modules/media-source/domain';
+import { MediumIdentifier } from '@modules/media-source';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { ExternalToolService } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
