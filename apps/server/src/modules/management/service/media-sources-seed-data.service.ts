@@ -13,22 +13,15 @@ export class MediaSourcesSeedDataService {
 	) {}
 
 	public async import(): Promise<number> {
-		let mediaSourcesCount = await this.seedVidisMediaSource();
+		const mediaSources: MediaSource[] = [];
 
-		mediaSourcesCount += await this.seedBiloMediaSource();
-
-		return mediaSourcesCount;
-	}
-
-	private async seedVidisMediaSource(): Promise<number> {
 		const vidisUserName: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_USERNAME');
 		const vidisPassword: string | undefined = this.configService.get<string>('MEDIA_SOURCE_VIDIS_PASSWORD');
-
 		if (vidisUserName && vidisPassword) {
 			const encryptedVidisUserName: string = this.defaultEncryptionService.encrypt(vidisUserName);
 			const encryptedVidisPassword: string = this.defaultEncryptionService.encrypt(vidisPassword);
 
-			await this.mediaSourceService.saveAll([
+			mediaSources.push(
 				new MediaSource({
 					id: '675b0b71553441da9a893bf9',
 					name: 'VIDIS',
@@ -40,23 +33,16 @@ export class MediaSourcesSeedDataService {
 						baseUrl: 'https://service-stage.vidis.schule/o/vidis-rest',
 						region: 'test-region',
 					},
-				}),
-			]);
-
-			return 1;
+				})
+			);
 		}
 
-		return 0;
-	}
-
-	private async seedBiloMediaSource(): Promise<number> {
 		const biloClientId: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_ID');
 		const biloClientSecret: string | undefined = this.configService.get<string>('MEDIA_SOURCE_BILO_CLIENT_SECRET');
-
 		if (biloClientId && biloClientSecret) {
 			const encryptedBiloClientSecret: string = this.defaultEncryptionService.encrypt(biloClientSecret);
 
-			await this.mediaSourceService.save(
+			mediaSources.push(
 				new MediaSource({
 					id: '679b870e987d8f9a40c1bcbb',
 					name: 'Bildungslogin',
@@ -71,10 +57,12 @@ export class MediaSourcesSeedDataService {
 					},
 				})
 			);
-
-			return 1;
 		}
 
-		return 0;
+		if (mediaSources.length > 0) {
+			await this.mediaSourceService.saveAll(mediaSources);
+		}
+
+		return mediaSources.length;
 	}
 }
