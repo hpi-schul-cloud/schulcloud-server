@@ -1,7 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
-import { CourseEntity, CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
 import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -14,7 +15,7 @@ import { TaskCopyParentParams } from '../types';
 @Injectable()
 export class TaskCopyUC {
 	constructor(
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
@@ -99,7 +100,7 @@ export class TaskCopyUC {
 			return undefined;
 		}
 
-		const destinationCourse = await this.courseRepo.findById(courseId);
+		const destinationCourse = await this.courseService.findById(courseId);
 
 		return destinationCourse;
 	}
