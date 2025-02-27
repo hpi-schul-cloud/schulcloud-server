@@ -6,8 +6,8 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { System } from '@modules/system';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 
 @Injectable()
 export class SystemRule implements Rule<System> {

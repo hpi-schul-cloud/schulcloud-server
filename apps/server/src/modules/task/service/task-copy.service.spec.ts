@@ -1,16 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
@@ -24,7 +26,7 @@ describe('task copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyService,
@@ -61,7 +63,7 @@ describe('task copy service', () => {
 			const setup = () => {
 				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
-				const destinationCourse = courseFactory.buildWithId({ school, teachers: [user] });
+				const destinationCourse = courseEntityFactory.buildWithId({ school, teachers: [user] });
 				const destinationLesson = lessonFactory.buildWithId({ course: destinationCourse });
 				const originalTask = taskFactory.buildWithId({
 					course: destinationCourse,
@@ -292,9 +294,9 @@ describe('task copy service', () => {
 			it('should set the school of the copy to the school of the user', async () => {
 				const originalSchool = schoolEntityFactory.buildWithId();
 				const destinationSchool = schoolEntityFactory.buildWithId();
-				const originalCourse = courseFactory.build({ school: originalSchool });
+				const originalCourse = courseEntityFactory.build({ school: originalSchool });
 				const originalLesson = lessonFactory.build({ course: originalCourse });
-				const destinationCourse = courseFactory.buildWithId({ school: destinationSchool });
+				const destinationCourse = courseEntityFactory.buildWithId({ school: destinationSchool });
 				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({ school: destinationSchool });
 				const originalTask = taskFactory.buildWithId({
@@ -317,9 +319,9 @@ describe('task copy service', () => {
 
 		describe('when copying into a different course', () => {
 			const setup = () => {
-				const originalCourse = courseFactory.build({});
+				const originalCourse = courseEntityFactory.build({});
 				const originalLesson = lessonFactory.build({ course: originalCourse });
-				const destinationCourse = courseFactory.buildWithId({});
+				const destinationCourse = courseEntityFactory.buildWithId({});
 				const destinationLesson = lessonFactory.build({ course: destinationCourse });
 				const user = userFactory.build({});
 				const originalTask = taskFactory.buildWithId({ course: originalCourse, lesson: originalLesson });
@@ -415,7 +417,7 @@ describe('task copy service', () => {
 
 				const description = `<p>Some images: ${imageHTML1} ${imageHTML2}</p>`;
 				const user = userFactory.build({});
-				const originalCourse = courseFactory.build();
+				const originalCourse = courseEntityFactory.build();
 				const originalTask = taskFactory.buildWithId({ creator: user, description, course: originalCourse });
 				taskRepo.findById.mockResolvedValueOnce(originalTask);
 				return { school, file1, file2, user, originalTask };

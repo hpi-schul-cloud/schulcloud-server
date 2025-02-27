@@ -1,6 +1,8 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -10,15 +12,15 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { ObjectId } from 'bson';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
@@ -32,7 +34,7 @@ describe('TaskService', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		const orm = await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -170,7 +172,7 @@ describe('TaskService', () => {
 		describe('when tasks where user is parent, and when task has course', () => {
 			const setup = () => {
 				const creator = userFactory.buildWithId();
-				const course = courseFactory.build();
+				const course = courseEntityFactory.build();
 				const taskWithCourse = taskFactory.buildWithId({ creator, course });
 
 				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
@@ -242,7 +244,7 @@ describe('TaskService', () => {
 		const setup = () => {
 			const creator = userFactory.buildWithId();
 			const taskWithoutCourse = taskFactory.buildWithId({ creator });
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const taskWithCourse = taskFactory.buildWithId({ creator, course });
 			const finishedTask = taskFactory.finished(creator).buildWithId();
 

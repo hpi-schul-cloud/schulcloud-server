@@ -71,6 +71,23 @@ export class Migration20250219161047 extends Migration {
 
 			console.info('Deleted media sources: ', remove.length);
 		}
+
+		console.info('Dropping existing non-unique index for media sources');
+
+		await this.getCollection<MediaSourceEntity>('media-sources').dropIndex('sourceId_1');
+
+		console.info('Creating unique index for media sources');
+
+		await this.getCollection<MediaSourceEntity>('media-sources').createIndex(
+			{
+				sourceId: 1,
+			},
+			{
+				unique: true,
+			}
+		);
+
+		console.info('Unique index for media sources created');
 	}
 
 	// eslint-disable-next-line require-await,@typescript-eslint/require-await

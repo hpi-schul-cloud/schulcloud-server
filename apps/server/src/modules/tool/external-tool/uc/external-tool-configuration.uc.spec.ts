@@ -4,13 +4,13 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { School, SchoolService } from '@modules/school';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userFactory } from '@testing/factory/user.factory';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool';

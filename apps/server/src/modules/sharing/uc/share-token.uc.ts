@@ -9,16 +9,18 @@ import {
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyStatus } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
-import { CourseCopyService, CourseService } from '@modules/learnroom';
+import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { TaskCopyService, TaskService } from '@modules/task';
+import { User } from '@modules/user/repo';
 import { BadRequestException, Injectable, NotImplementedException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { Course, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -241,7 +243,7 @@ export class ShareTokenUC {
 		user: User,
 		courseId: EntityId,
 		permission: Permission
-	): Promise<{ course: Course }> {
+	): Promise<{ course: CourseEntity }> {
 		const course = await this.courseService.findById(courseId);
 		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([permission]));
 

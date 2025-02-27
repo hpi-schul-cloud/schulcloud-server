@@ -13,10 +13,11 @@ import {
 	CommonCartridgeImportOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '@modules/common-cartridge';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Course, User } from '@shared/domain/entity';
 import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
-import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeImportService {
@@ -29,13 +30,13 @@ export class CommonCartridgeImportService {
 
 	public async importFile(user: User, file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
-		const course = new Course({ teachers: [user], school: user.school, name: parser.getTitle() });
+		const course = new CourseEntity({ teachers: [user], school: user.school, name: parser.getTitle() });
 
 		await this.courseService.create(course);
 		await this.createColumnBoards(parser, course);
 	}
 
-	private async createColumnBoards(parser: CommonCartridgeFileParser, course: Course): Promise<void> {
+	private async createColumnBoards(parser: CommonCartridgeFileParser, course: CourseEntity): Promise<void> {
 		const organizations = parser.getOrganizations();
 		const boards = organizations.filter((organization) => organization.pathDepth === 0);
 
@@ -46,7 +47,7 @@ export class CommonCartridgeImportService {
 
 	private async createColumnBoard(
 		parser: CommonCartridgeFileParser,
-		course: Course,
+		course: CourseEntity,
 		boardProps: CommonCartridgeImportOrganizationProps,
 		organizations: CommonCartridgeImportOrganizationProps[]
 	): Promise<void> {

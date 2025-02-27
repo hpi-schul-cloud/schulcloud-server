@@ -1,22 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller/dto';
-
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 
@@ -36,7 +36,7 @@ describe('TaskUC', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			imports: [],
@@ -239,7 +239,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
 				const task = taskFactory.finished(user).build();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
@@ -301,7 +301,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const task = taskFactory.finished(user).build({ course });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -380,7 +380,7 @@ describe('TaskUC', () => {
 				const user = setupUser(permissions);
 				const user2 = setupUser([]);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });
@@ -497,7 +497,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const course = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task = taskFactory.build({ course });
 
@@ -527,7 +527,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });

@@ -1,4 +1,6 @@
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, User } from '@shared/domain/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { User } from '@modules/user/repo';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { SubmissionStatusResponse } from '../controller/dto';
@@ -6,7 +8,7 @@ import { SubmissionMapper } from './submission.mapper';
 
 describe('Submission Mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	describe('mapToStatusResponse', () => {

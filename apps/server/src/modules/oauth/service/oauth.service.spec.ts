@@ -4,30 +4,27 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { SchoolFeature } from '@modules/school/domain';
 import { System } from '@modules/system';
-import { OauthConfigEntity } from '@modules/system/entity';
-import { SystemService } from '@modules/system/service';
+import { SystemService } from '@modules/system/domain';
+import { OauthConfigEntity } from '@modules/system/repo';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { userDoFactory } from '@testing/factory/user.do.factory';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
-import { OAuthTokenDto } from '../interface';
 import {
 	OauthConfigMissingLoggableException,
 	TokenInvalidLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
 jest.mock('jwks-rsa', () => () => {
@@ -137,7 +134,7 @@ describe('OAuthService', () => {
 	describe('requestToken', () => {
 		const setupRequest = () => {
 			const code = '43534543jnj543342jn2';
-			const oauthToken: OAuthTokenDto = {
+			const oauthToken = {
 				accessToken: 'accessToken',
 				idToken: 'idToken',
 				refreshToken: 'refreshToken',
@@ -159,7 +156,7 @@ describe('OAuthService', () => {
 			it('should get token from the external server', async () => {
 				const { code, oauthToken } = setupRequest();
 
-				const result: OAuthTokenDto = await service.requestToken(code, testOauthConfig, 'redirectUri');
+				const result = await service.requestToken(code, testOauthConfig, 'redirectUri');
 
 				expect(result).toEqual<OAuthTokenDto>({
 					idToken: oauthToken.idToken,
@@ -198,7 +195,7 @@ describe('OAuthService', () => {
 		describe('when the token is valid', () => {
 			const setup = () => {
 				const secret = 'secret';
-				const jwtPayload: JwtPayload = {
+				const jwtPayload = {
 					sub: 'externalUserId',
 					iss: 'externalSystem',
 					events: { 'http://schemas.openid.net/event/backchannel-logout': {} },
@@ -250,7 +247,7 @@ describe('OAuthService', () => {
 		describe('when the token does not contain the backchannel-logout event', () => {
 			const setup = () => {
 				const secret = 'secret';
-				const jwtPayload: JwtPayload = { sub: 'externalUserId', iss: 'externalSystem' };
+				const jwtPayload = { sub: 'externalUserId', iss: 'externalSystem' };
 				const oauthConfig = systemOauthConfigFactory.build();
 
 				oauthAdapterService.getPublicKey.mockResolvedValue(secret);
@@ -275,7 +272,7 @@ describe('OAuthService', () => {
 		describe('when the token has a nonce', () => {
 			const setup = () => {
 				const secret = 'secret';
-				const jwtPayload: JwtPayload = {
+				const jwtPayload = {
 					sub: 'externalUserId',
 					iss: 'externalSystem',
 					events: { 'http://schemas.openid.net/event/backchannel-logout': {} },
@@ -307,15 +304,15 @@ describe('OAuthService', () => {
 		const setup = () => {
 			const authCode = '43534543jnj543342jn2';
 
-			const system: System = systemFactory.withOauthConfig().build({
+			const system = systemFactory.withOauthConfig().build({
 				displayName: 'External System',
 			});
 
-			const ldapSystem: System = systemFactory.withLdapConfig().build({
+			const ldapSystem = systemFactory.withLdapConfig().build({
 				displayName: 'External System',
 			});
 
-			const oauthToken: OAuthTokenDto = {
+			const oauthToken = {
 				accessToken: 'accessToken',
 				idToken: 'idToken',
 				refreshToken: 'refreshToken',
@@ -337,7 +334,7 @@ describe('OAuthService', () => {
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
 				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 
-				const result: OAuthTokenDto = await service.authenticateUser(system.id, 'redirectUri', authCode);
+				const result = await service.authenticateUser(system.id, 'redirectUri', authCode);
 
 				expect(result).toEqual<OAuthTokenDto>({
 					accessToken: oauthToken.accessToken,
@@ -368,12 +365,12 @@ describe('OAuthService', () => {
 				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
 
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -424,7 +421,7 @@ describe('OAuthService', () => {
 				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -466,12 +463,12 @@ describe('OAuthService', () => {
 				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
 
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -527,19 +524,19 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
 					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -595,19 +592,19 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
 					features: [],
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -663,14 +660,14 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
 					features: [],
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -725,14 +722,14 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
 					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,
@@ -787,19 +784,19 @@ describe('OAuthService', () => {
 				const externalSchoolId = 'externalSchoolId';
 				const officialSchoolNumber = 'officialSchoolNumber';
 
-				const user: UserDO = userDoFactory.build({
+				const user = userDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalUserId,
 				});
 
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+				const school = legacySchoolDoFactory.build({
 					id: new ObjectId().toHexString(),
 					externalId: externalSchoolId,
 					officialSchoolNumber,
 					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 				});
 
-				const provisioningData: OauthDataDto = new OauthDataDto({
+				const provisioningData = new OauthDataDto({
 					system: {
 						systemId,
 						provisioningStrategy: SystemProvisioningStrategy.SANIS,

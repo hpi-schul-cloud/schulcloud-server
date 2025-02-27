@@ -1,10 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { boardFactory, lessonBoardElementFactory, taskBoardElementFactory } from '../../testing';
 import { LegacyBoardElement } from './legacy-board-element.entity';
@@ -24,9 +25,9 @@ describe('LegacyRoomBoardRepo', () => {
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
 						LegacyBoard,
-						Course,
+						CourseEntity,
 						LegacyBoardElement,
-						CourseGroup,
+						CourseGroupEntity,
 						SchoolEntity,
 						Submission,
 						Task,
@@ -58,7 +59,7 @@ describe('LegacyRoomBoardRepo', () => {
 
 	describe('findByCourseId', () => {
 		it('should return existing board', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			const taskElement = taskBoardElementFactory.build({ target: { course } });
 			const lessonElement = lessonBoardElementFactory.build({ target: { course } });
 			const board = boardFactory.build({ course, references: [taskElement, lessonElement] });
@@ -71,7 +72,7 @@ describe('LegacyRoomBoardRepo', () => {
 		});
 
 		it('should return fresh board if none exists yet', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			await em.persistAndFlush(course);
 			em.clear();
 			const result = await repo.findByCourseId(course.id);

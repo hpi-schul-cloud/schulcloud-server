@@ -729,7 +729,7 @@ describe('TypeGuard', () => {
 				const example: ExampleObjectType = { id: 1, name: 'John Doe' };
 
 				expect(() => TypeGuard.checkKeysInInstance(example, ['email'])).toThrowError(
-					'Object lacks this property: email. '
+					'Object lacks these properties: email.'
 				);
 			});
 
@@ -737,8 +737,26 @@ describe('TypeGuard', () => {
 				const example: ExampleObjectType = { id: 1, name: 'John Doe' };
 
 				expect(() => TypeGuard.checkKeysInInstance(example, ['email'])).toThrowError(
-					'Object lacks this property: email. '
+					'Object lacks these properties: email.'
 				);
+			});
+		});
+	});
+
+	describe('requireKeys', () => {
+		describe('when passing value is an object that has the requested keys', () => {
+			it('should not throw', () => {
+				const example: ExampleObjectType = { name: 'abc' };
+
+				expect(() => TypeGuard.requireKeys(example, ['name'])).not.toThrow();
+			});
+		});
+
+		describe('when passing value and keys do not match', () => {
+			it('should throw an error', () => {
+				const example: ExampleObjectType = { id: 1, name: 'John Doe' };
+
+				expect(() => TypeGuard.requireKeys(example, ['email'])).toThrowError('Object lacks these properties: email.');
 			});
 		});
 	});

@@ -2,12 +2,13 @@ import { LoggerModule } from '@core/logger';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
+import { CourseModule } from '@modules/course';
 import { GroupModule } from '@modules/group';
-import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { SystemModule } from '@modules/system/system.module';
 import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
@@ -43,9 +44,10 @@ import {
 		SystemModule,
 		LoggerModule,
 		GroupModule,
-		LearnroomModule,
+		CourseModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
+		SchoolLicenseModule,
 		MediaSourceModule,
 		ExternalToolModule,
 		SchoolExternalToolModule,

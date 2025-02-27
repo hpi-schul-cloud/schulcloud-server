@@ -2,14 +2,15 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { AuthorizationService } from '@modules/authorization';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeImportService } from '../service';
 import { CourseImportUc } from './course-import.uc';
@@ -23,7 +24,7 @@ describe('CourseImportUc', () => {
 	let courseImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
-		orm = await setupEntities([User, Course, CourseGroup]);
+		orm = await setupEntities([User, CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseImportUc,
@@ -65,7 +66,7 @@ describe('CourseImportUc', () => {
 		describe('when the feature is enabled', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const file = Buffer.from('');
 
 				configServiceMock.getOrThrow.mockReturnValue(true);

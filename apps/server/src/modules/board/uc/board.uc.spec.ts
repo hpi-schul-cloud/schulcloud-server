@@ -3,15 +3,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
+import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo/course';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -84,7 +84,7 @@ describe(BoardUc.name, () => {
 		courseRepo = module.get(CourseRepo);
 		boardNodeFactory = module.get(BoardNodeFactory);
 		boardContextApiHelperService = module.get(BoardContextApiHelperService);
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {
@@ -108,7 +108,7 @@ describe(BoardUc.name, () => {
 	describe('createBoard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			return { user, course };
 		};
@@ -491,7 +491,7 @@ describe(BoardUc.name, () => {
 		it('should call authorization to check course permissions', async () => {
 			const { user, boardId } = setup();
 
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			// TODO should not use course repo
 			courseRepo.findById.mockResolvedValueOnce(course);
 

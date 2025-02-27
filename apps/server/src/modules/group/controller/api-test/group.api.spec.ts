@@ -1,15 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing';
+import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName, SortOrder } from '@shared/domain/interface';
-import { courseFactory } from '@testing/factory/course.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { GroupEntityTypes } from '../../entity';
 import { groupEntityFactory } from '../../testing';
@@ -73,7 +73,7 @@ describe('Group (API)', () => {
 						},
 					],
 				});
-				const course = courseFactory.buildWithId({ syncedWithGroup: group });
+				const course = courseEntityFactory.buildWithId({ syncedWithGroup: group });
 
 				await em.persistAndFlush([
 					school,
@@ -300,7 +300,7 @@ describe('Group (API)', () => {
 					type: GroupEntityTypes.COURSE,
 				});
 
-				const syncedCourse = courseFactory.build({
+				const syncedCourse = courseEntityFactory.build({
 					school,
 					syncedWithGroup: groupInSchool,
 				});
@@ -477,7 +477,7 @@ describe('Group (API)', () => {
 					type: GroupEntityTypes.COURSE,
 				});
 
-				const syncedCourse = courseFactory.build({
+				const syncedCourse = courseEntityFactory.build({
 					school,
 					syncedWithGroup: teachersGroup,
 				});

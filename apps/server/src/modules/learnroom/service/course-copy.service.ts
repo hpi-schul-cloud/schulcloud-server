@@ -1,4 +1,5 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity, CourseRepo } from '@modules/course/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
 import {
 	ContextExternalTool,
@@ -7,18 +8,16 @@ import {
 } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
+import { User, UserRepo } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
-import { UserRepo } from '@shared/repo/user';
+import { LegacyBoardRepo } from '../repo';
 import { BoardCopyService } from './board-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
-import { LegacyBoardRepo } from '../repo';
 
 type CourseCopyParams = {
-	originalCourse: Course;
+	originalCourse: CourseEntity;
 	user: User;
 	copyName?: string;
 };
@@ -54,7 +53,7 @@ export class CourseCopyService {
 
 		// handle potential name conflict
 		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
-		const existingNames = existingCourses.map((course: Course) => course.name);
+		const existingNames = existingCourses.map((course: CourseEntity) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
 		// copy course and board
@@ -98,9 +97,9 @@ export class CourseCopyService {
 		return courseStatus;
 	}
 
-	private async copyCourseEntity(params: CourseCopyParams): Promise<Course> {
+	private async copyCourseEntity(params: CourseCopyParams): Promise<CourseEntity> {
 		const { originalCourse, user, copyName } = params;
-		const courseCopy = new Course({
+		const courseCopy = new CourseEntity({
 			school: user.school,
 			name: copyName,
 			color: originalCourse.color,
@@ -114,15 +113,15 @@ export class CourseCopyService {
 		return courseCopy;
 	}
 
-	private async finishCourseCopying(courseCopy: Course) {
+	private async finishCourseCopying(courseCopy: CourseEntity) {
 		delete courseCopy.copyingSince;
 		await this.courseRepo.save(courseCopy);
 		return courseCopy;
 	}
 
 	private deriveCourseStatus(
-		originalCourse: Course,
-		courseCopy: Course,
+		originalCourse: CourseEntity,
+		courseCopy: CourseEntity,
 		boardStatus: CopyStatus,
 		courseToolsCopyStatus: CopyStatus | null
 	): CopyStatus {

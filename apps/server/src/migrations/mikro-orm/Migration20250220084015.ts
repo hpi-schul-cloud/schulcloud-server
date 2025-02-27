@@ -43,13 +43,15 @@ export class Migration20250220084015 extends Migration {
 
 			console.info(`Processing school external tool ${keep.toHexString()} - removing: ${remove.toString()}`);
 
-			const contextExternalTool = await this.getCollection<ContextExternalToolEntity>('user-licenses').updateMany(
+			const contextExternalTool = await this.getCollection<ContextExternalToolEntity>(
+				'context-external-tools'
+			).updateMany(
 				{
-					mediaSource: { $in: remove },
+					schoolTool: { $in: remove },
 				},
 				{
 					$set: {
-						mediaSource: keep,
+						schoolTool: keep,
 					},
 				}
 			);
@@ -60,6 +62,20 @@ export class Migration20250220084015 extends Migration {
 
 			console.info('Deleted school external tools: ', remove.length);
 		}
+
+		console.info('Creating unique index for school external tools');
+
+		await this.getCollection<SchoolExternalToolEntity>('school-external-tools').createIndex(
+			{
+				tool: 1,
+				school: 1,
+			},
+			{
+				unique: true,
+			}
+		);
+
+		console.info('Unique index for school external tools created');
 	}
 
 	// eslint-disable-next-line require-await,@typescript-eslint/require-await

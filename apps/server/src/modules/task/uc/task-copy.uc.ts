@@ -1,11 +1,12 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { CourseEntity, CourseRepo } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
+import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
+import { LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { TaskRepo } from '@shared/repo/task';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
@@ -26,11 +27,12 @@ export class TaskCopyUC {
 
 		// i put it to promise all, it do not look like any more information can be expose over errors if it is called between the authorizations
 		// TODO: Add try catch around it with throw BadRequest invalid data
-		const [authorizableUser, originalTask, destinationCourse]: [User, Task, Course | undefined] = await Promise.all([
-			this.authorisation.getUserWithPermissions(userId),
-			this.taskRepo.findById(taskId),
-			this.getDestinationCourse(parentParams.courseId),
-		]);
+		const [authorizableUser, originalTask, destinationCourse]: [User, Task, CourseEntity | undefined] =
+			await Promise.all([
+				this.authorisation.getUserWithPermissions(userId),
+				this.taskRepo.findById(taskId),
+				this.getDestinationCourse(parentParams.courseId),
+			]);
 
 		this.checkOriginalTaskAuthorization(authorizableUser, originalTask);
 
@@ -69,7 +71,7 @@ export class TaskCopyUC {
 		}
 	}
 
-	private checkDestinationCourseAuthorisation(authorizableUser: User, destinationCourse: Course): void {
+	private checkDestinationCourseAuthorisation(authorizableUser: User, destinationCourse: CourseEntity): void {
 		const context = AuthorizationContextBuilder.write([]);
 		this.authorisation.checkPermission(authorizableUser, destinationCourse, context);
 	}
@@ -92,7 +94,7 @@ export class TaskCopyUC {
 		return this.copyHelperService.deriveCopyName(originalTaskName, existingNames);
 	}
 
-	private async getDestinationCourse(courseId: string | undefined): Promise<Course | undefined> {
+	private async getDestinationCourse(courseId: string | undefined): Promise<CourseEntity | undefined> {
 		if (courseId === undefined) {
 			return undefined;
 		}

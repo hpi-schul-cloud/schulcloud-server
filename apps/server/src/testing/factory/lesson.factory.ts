@@ -1,35 +1,17 @@
-import { ComponentProperties, Course, LessonEntity, LessonProperties } from '@shared/domain/entity';
-
+// Remove the eslint-disable after fixing the import issue in EPIC-96
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity, LessonProperties } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
-import { courseFactory } from './course.factory';
 
 class LessonFactory extends BaseFactory<LessonEntity, LessonProperties> {}
 
-export const lessonFactory = LessonFactory.define<LessonEntity, LessonProperties>(
-	LessonEntity,
-	({ sequence, params }) => {
-		let course: Course;
-		if (params.course) {
-			course = params.course as Course;
-		} else {
-			course = courseFactory.build();
-		}
-
-		const contents: ComponentProperties[] = [];
-		if (params.contents) {
-			params.contents.forEach((element) => {
-				contents.push(element);
-			});
-		}
-
-		const hidden = params.hidden || false;
-
-		return {
-			name: `lesson #${sequence}`,
-			course,
-			contents,
-			hidden,
-			materials: [],
-		};
-	}
-);
+export const lessonFactory = LessonFactory.define(LessonEntity, ({ sequence }) => {
+	return {
+		name: `lesson #${sequence}`,
+		course: courseEntityFactory.build(),
+		contents: [],
+		hidden: false,
+		materials: [],
+	};
+});

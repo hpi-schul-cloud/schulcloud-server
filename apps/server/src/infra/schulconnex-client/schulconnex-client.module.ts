@@ -1,4 +1,4 @@
-import { OauthAdapterService } from '@modules/oauth/service';
+import { OauthAdapterService } from '@modules/oauth-adapter';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

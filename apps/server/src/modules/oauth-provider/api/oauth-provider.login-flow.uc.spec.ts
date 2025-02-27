@@ -1,23 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { PseudonymService } from '@modules/pseudonym';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { pseudonymFactory } from '@testing/factory/domainobject';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { ProviderLoginResponse, ProviderRedirectResponse } from '../domain';
+import { ProviderRedirectResponse } from '../domain';
 import { OauthProviderLoginFlowService } from '../domain/service/oauth-provider.login-flow.service';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 import { providerLoginResponseFactory } from '../testing';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from './dto';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 
 describe(OauthProviderLoginFlowUc.name, () => {
@@ -30,7 +26,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let userService: DeepMocked<UserService>;
 
-	const pseudonym: Pseudonym = pseudonymFactory.build({
+	const pseudonym = pseudonymFactory.build({
 		pseudonym: 'pseudonym',
 		toolId: 'toolId',
 		userId: 'userId',
@@ -83,7 +79,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 	describe('getLoginRequest', () => {
 		describe('when fetching a login request', () => {
 			const setup = () => {
-				const providerLoginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+				const providerLoginResponse = providerLoginResponseFactory.build({
 					challenge: 'challenge',
 					client: {
 						client_id: 'clientId',
@@ -107,7 +103,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			it('should get the login request', async () => {
 				const { providerLoginResponse } = setup();
 
-				const result: ProviderLoginResponse = await uc.getLoginRequest('challenge');
+				const result = await uc.getLoginRequest('challenge');
 
 				expect(oauthProviderService.getLoginRequest).toHaveBeenCalledWith('challenge');
 				expect(result).toEqual(providerLoginResponse);
@@ -118,14 +114,14 @@ describe(OauthProviderLoginFlowUc.name, () => {
 	describe('patchLoginRequest', () => {
 		describe('when the login was accepted for an external tool', () => {
 			const setup = () => {
-				const query: AcceptQuery = { accept: true };
+				const query = { accept: true };
 
-				const loginRequestBodyMock: LoginRequestBody = {
+				const loginRequestBodyMock = {
 					remember: true,
 					remember_for: 0,
 				};
 
-				const providerLoginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+				const providerLoginResponse = providerLoginResponseFactory.build({
 					challenge: 'challenge',
 					client: {
 						client_id: 'clientId',
@@ -139,8 +135,8 @@ describe(OauthProviderLoginFlowUc.name, () => {
 					subject: 'subject',
 				});
 
-				const user: UserDO = userDoFactory.buildWithId();
-				const tool: ExternalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).buildWithId();
+				const user = userDoFactory.buildWithId();
+				const tool = externalToolFactory.withOauth2Config({ skipConsent: true }).buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -192,12 +188,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			it('should return a redirect', async () => {
 				const { query, loginRequestBodyMock } = setup();
 
-				const result: ProviderRedirectResponse = await uc.patchLoginRequest(
-					'userId',
-					'challenge',
-					loginRequestBodyMock,
-					query
-				);
+				const result = await uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
 
 				expect(result).toEqual(redirectResponse);
 			});
@@ -205,14 +196,14 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 		describe('when the tool is Nextcloud', () => {
 			const setup = () => {
-				const query: AcceptQuery = { accept: true };
+				const query = { accept: true };
 
-				const loginRequestBodyMock: LoginRequestBody = {
+				const loginRequestBodyMock = {
 					remember: true,
 					remember_for: 0,
 				};
 
-				const providerLoginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+				const providerLoginResponse = providerLoginResponseFactory.build({
 					challenge: 'challenge',
 					client: {
 						client_id: 'clientId',
@@ -226,7 +217,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 					subject: 'subject',
 				});
 
-				const tool: ExternalTool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
+				const tool = externalToolFactory.withOauth2Config().buildWithId({ name: 'SchulcloudNextcloud' });
 
 				const user = userFactory.buildWithId();
 
@@ -255,14 +246,14 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 		describe('when the loaded tool has no id', () => {
 			const setup = () => {
-				const query: AcceptQuery = { accept: true };
+				const query = { accept: true };
 
-				const loginRequestBodyMock: LoginRequestBody = {
+				const loginRequestBodyMock = {
 					remember: true,
 					remember_for: 0,
 				};
 
-				const providerLoginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+				const providerLoginResponse = providerLoginResponseFactory.build({
 					challenge: 'challenge',
 					client: {
 						client_id: 'clientId',
@@ -276,7 +267,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 					subject: 'subject',
 				});
 
-				const tool: ExternalTool = externalToolFactory.withOauth2Config().build({ id: undefined });
+				const tool = externalToolFactory.withOauth2Config().build({ id: undefined });
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -298,14 +289,14 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 		describe('when the required tool does not has a oauth2 config', () => {
 			const setup = () => {
-				const query: AcceptQuery = { accept: true };
+				const query = { accept: true };
 
-				const loginRequestBodyMock: LoginRequestBody = {
+				const loginRequestBodyMock = {
 					remember: true,
 					remember_for: 0,
 				};
 
-				const providerLoginResponse: ProviderLoginResponse = providerLoginResponseFactory.build({
+				const providerLoginResponse = providerLoginResponseFactory.build({
 					challenge: 'challenge',
 					client: {
 						client_id: 'clientId',
@@ -319,7 +310,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 					subject: 'subject',
 				});
 
-				const tool: ExternalTool = externalToolFactory.buildWithId();
+				const tool = externalToolFactory.buildWithId();
 
 				oauthProviderService.getLoginRequest.mockResolvedValue(providerLoginResponse);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);
@@ -348,8 +339,8 @@ describe(OauthProviderLoginFlowUc.name, () => {
 
 		describe('when the login was rejected', () => {
 			const setup = () => {
-				const query: AcceptQuery = { accept: false };
-				const rejectBody: OAuthRejectableBody = {
+				const query = { accept: false };
+				const rejectBody = {
 					error: 'error',
 					error_debug: 'error_debug',
 					error_description: 'error_description',
@@ -376,7 +367,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			it('should return a redirect response', async () => {
 				const { query, rejectBody } = setup();
 
-				const result: ProviderRedirectResponse = await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
+				const result = await uc.patchLoginRequest('userId', 'challenge', rejectBody, query);
 
 				expect(result).toStrictEqual(redirectResponse);
 			});

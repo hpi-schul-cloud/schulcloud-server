@@ -67,22 +67,41 @@ export class Migration20250219143707 extends Migration {
 
 			// Replaces all entries of 'remove' from 'groups' with 'keep'
 			const groupsInCourse = await this.getCollection<CourseEntity>('courses').countDocuments({
-				groups: { $in: remove },
+				groupIds: { $in: remove },
 			});
 			await this.getCollection<CourseEntity>('courses')
 				.aggregate([
-					{ $match: { groups: { $in: remove } } },
+					{ $match: { groupIds: { $in: remove } } },
+					// Replaces unwanted group ids from "remove" with "keep"
 					{
 						$set: {
-							groups: {
+							groupIds: {
 								$map: {
-									input: '$groups',
-									as: 'group',
+									input: '$groupIds',
+									as: 'groupId',
 									in: {
 										$cond: {
-											if: { $in: ['$$group', remove] },
+											if: { $in: ['$$groupId', remove] },
 											then: keep,
-											else: '$$group',
+											else: '$$groupId',
+										},
+									},
+								},
+							},
+						},
+					},
+					// Makes entries of groupIds unique
+					{
+						$set: {
+							groupIds: {
+								$reduce: {
+									input: '$groupIds',
+									initialValue: [],
+									in: {
+										$cond: {
+											if: { $in: ['$$this', '$$value'] },
+											then: '$$value',
+											else: { $concatArrays: ['$$value', ['$$this']] },
 										},
 									},
 								},
@@ -99,6 +118,22 @@ export class Migration20250219143707 extends Migration {
 
 			console.info('Deleted groups: ', remove.length);
 		}
+
+		console.info('Creating unique index for groups');
+
+		await this.getCollection<GroupEntity>('groups').createIndex(
+			{
+				'externalSource.externalId': 1,
+				'externalSource.system': 1,
+			},
+			{
+				name: 'groupExternalSourceUniqueIndex',
+				unique: true,
+				partialFilterExpression: { externalSource: { $exists: true } },
+			}
+		);
+
+		console.info('Unique index for groups created');
 	}
 
 	// eslint-disable-next-line require-await,@typescript-eslint/require-await
