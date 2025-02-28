@@ -196,11 +196,11 @@ export class RoomUc {
 		currentUserId: EntityId,
 		targetUserId: EntityId
 	): Promise<OwnershipContext> {
-		const [targetUser, xyzContext] = await Promise.all([
-			this.userService.findById(targetUserId),
+		const [roomContext, targetUser] = await Promise.all([
 			this.getRoomContext(roomId, currentUserId),
+			this.userService.findById(targetUserId),
 		]);
-		const context = { ...xyzContext, targetUser };
+		const context = { ...roomContext, targetUser };
 
 		return context;
 	}
