@@ -206,9 +206,9 @@ export class RoomUc {
 	}
 
 	private async getRoomContext(roomId: EntityId, currentUserId: EntityId): Promise<BaseContext> {
-		const [currentUser, roomAuthorizable] = await Promise.all([
-			this.authorizationService.getUserWithPermissions(currentUserId),
+		const [roomAuthorizable, currentUser] = await Promise.all([
 			this.roomMembershipService.getRoomMembershipAuthorizable(roomId),
+			this.authorizationService.getUserWithPermissions(currentUserId),
 		]);
 
 		const context = { roomAuthorizable, currentUser };
@@ -217,7 +217,9 @@ export class RoomUc {
 	}
 
 	private checkUserInRoom(context: OwnershipContext): void {
-		if (context.roomAuthorizable.members.find((member) => member.userId === context.targetUser.id) === undefined) {
+		const { targetUser, roomAuthorizable } = context;
+		const isRoomMember = roomAuthorizable.members.find((member) => member.userId === targetUser.id);
+		if (isRoomMember === undefined) {
 			throw new CantPassOwnershipToUserNotInRoomLoggableException({
 				roomId: context.roomAuthorizable.roomId,
 				currentUserId: context.currentUser.id,
