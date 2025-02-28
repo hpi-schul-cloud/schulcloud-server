@@ -1,6 +1,7 @@
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
+import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
@@ -27,4 +28,6 @@ export const ENTITIES = [
 	MediaSourceEntity,
 	UserLicenseEntity,
 	MediaUserLicenseEntity,
+	SchoolLicenseEntity,
+	MediaSchoolLicenseEntity,
 ];

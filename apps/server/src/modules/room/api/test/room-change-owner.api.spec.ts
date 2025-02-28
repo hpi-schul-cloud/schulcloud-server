@@ -182,6 +182,7 @@ describe('Room Controller (API)', () => {
 			it('should return error when targeting a user that is not in the room', async () => {
 				const { loggedInClient, room, owner, teacherRole } = await setupRoomWithMembers();
 				const targetUser = userFactory.buildWithId({ school: owner.school, roles: [teacherRole] });
+				await em.persistAndFlush(targetUser);
 
 				const response = await loggedInClient.patch(`/${room.id}/members/pass-ownership`, {
 					userId: targetUser.id,

@@ -1,8 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { CourseEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Course, LessonEntity, Task, TaskWithStatusVo } from '@shared/domain/entity';
+import { LessonEntity, Task, TaskWithStatusVo } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
 import {
@@ -22,7 +23,7 @@ import {
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 class DtoCreator {
-	room: Course;
+	room: CourseEntity;
 
 	board: LegacyBoard;
 
@@ -39,7 +40,7 @@ class DtoCreator {
 		authorisationService,
 		roomsAuthorisationService,
 	}: {
-		room: Course;
+		room: CourseEntity;
 		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
@@ -188,7 +189,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: Course; board: LegacyBoard; user: User }): RoomBoardDTO {
+	createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,

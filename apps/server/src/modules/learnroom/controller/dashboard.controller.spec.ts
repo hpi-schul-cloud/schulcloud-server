@@ -1,8 +1,8 @@
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Dashboard, GridElement, GridPosition } from '../domain/do/dashboard';
 import { DashboardUc } from '../uc/dashboard.uc';
@@ -41,7 +41,7 @@ describe('dashboard uc', () => {
 		uc = module.get(DashboardUc);
 		controller = module.get(DashboardController);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('getUsersDashboard', () => {
@@ -74,8 +74,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 1, y: 3 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'groupTitle', [
-								courseFactory.buildWithId({ name: 'Mathe' }),
-								courseFactory.buildWithId({ name: 'German' }),
+								courseEntityFactory.buildWithId({ name: 'Mathe' }),
+								courseEntityFactory.buildWithId({ name: 'German' }),
 							]),
 						},
 					],
@@ -113,7 +113,7 @@ describe('dashboard uc', () => {
 								pos: to,
 								gridElement: GridElement.FromPersistedReference(
 									'elementId',
-									courseFactory.buildWithId({ name: 'Mathe' })
+									courseEntityFactory.buildWithId({ name: 'Mathe' })
 								),
 							},
 						],
@@ -140,7 +140,7 @@ describe('dashboard uc', () => {
 								pos: to,
 								gridElement: GridElement.FromPersistedReference(
 									'elementId',
-									courseFactory.buildWithId({ name: 'Mathe' })
+									courseEntityFactory.buildWithId({ name: 'Mathe' })
 								),
 							},
 						],
@@ -171,8 +171,8 @@ describe('dashboard uc', () => {
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									courseFactory.buildWithId({ name: 'Mathe' }),
-									courseFactory.buildWithId({ name: 'German' }),
+									courseEntityFactory.buildWithId({ name: 'Mathe' }),
+									courseEntityFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],
@@ -194,8 +194,8 @@ describe('dashboard uc', () => {
 							{
 								pos: position,
 								gridElement: GridElement.FromPersistedGroup('elementId', title, [
-									courseFactory.buildWithId({ name: 'Mathe' }),
-									courseFactory.buildWithId({ name: 'German' }),
+									courseEntityFactory.buildWithId({ name: 'Mathe' }),
+									courseEntityFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],

@@ -1,7 +1,7 @@
+import { CourseRepo } from '@modules/course/repo';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '../domain/do/dashboard';
 import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
