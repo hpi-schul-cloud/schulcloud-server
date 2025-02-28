@@ -116,8 +116,10 @@ export class RoomMembershipService {
 			throw new BadRequestException('Room membership not found');
 		}
 
-		const group = await this.groupService.findById(roomMembership.userGroupId);
-		const role = await this.roleService.findByName(roleName);
+		const [group, role] = await Promise.all([
+			this.groupService.findById(roomMembership.userGroupId),
+			this.roleService.findByName(roleName),
+		]);
 
 		group.users.forEach((groupUser) => {
 			if (userIds.includes(groupUser.userId)) {
@@ -126,8 +128,6 @@ export class RoomMembershipService {
 		});
 
 		await this.groupService.save(group);
-
-		return Promise.resolve();
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {
