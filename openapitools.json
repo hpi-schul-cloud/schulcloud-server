@@ -62,7 +62,7 @@
 					"FILTER": "operationId:upload|download"
 				},
 				"globalProperty": {
-					"models": "FileRecordResponse:StreamableFile",
+					"models": "FileRecordResponse:StreamableFile:StorageLocation:FileRecordParentType",
 					"apis": "",
 					"supportingFiles": ""
 				},
