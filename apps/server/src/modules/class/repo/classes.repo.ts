@@ -47,7 +47,7 @@ export class ClassesRepo {
 		await this.em.flush();
 	}
 
-	public async updateMany(classes: Class[]): Promise<void> {
+	public async updateMany(classes: Class[], flush = true): Promise<void> {
 		const classMap: Map<string, Class> = new Map<string, Class>(
 			classes.map((clazz: Class): [string, Class] => [clazz.id, clazz])
 		);
@@ -72,7 +72,11 @@ export class ClassesRepo {
 			this.em.assign(entity, updatedEntity);
 		});
 
-		await this.em.persistAndFlush(existingEntities);
+		if (flush) {
+			await this.em.persistAndFlush(existingEntities);
+		} else {
+			this.em.persist(existingEntities);
+		}
 	}
 
 	public async findClassById(id: EntityId): Promise<Class | null> {

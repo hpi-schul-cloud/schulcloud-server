@@ -4,12 +4,12 @@
 			"$oid": "59df0e03caee3e1158ee2f77"
 		},
 		"schoolId": {
-			"$oid": "5f2987e020834114b8efd6f6"
+			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"title": "Willkommen in der Schul-Cloud!",
 		"content": "<p>Liebe Schu&uuml;lerinnen und Sch&uuml;ler,</p>\r\n\r\n<p>um auch im n&auml;chsten Jahrzehnt des 21. Jahrhunderts bildungsm&auml;&szlig;ig spitze aufgestellt zu sein, nutzen wir ab sofort die Schul-Cloud. Mit Hilfe der Schul-Cloud k&ouml;nnen wir uns unter anderem mit den bereits bestehenden Moodle-Accounts anmelden, viele Tools nutzen und auf Bildungsinhalte zugreifen. Weiterhin k&ouml;nnen wir auch die Stundenpl&auml;ne online aktualisieren und Aufgaben erstellen.</p>\r\n",
 		"creatorId": {
-			"$oid": "59ad4c412b442b7f81810285"
+			"$oid": "0000d224816abba584714c9c"
 		},
 		"history": [],
 		"createdAt": {

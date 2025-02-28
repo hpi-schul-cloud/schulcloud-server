@@ -17,11 +17,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NewsRepo } from '@shared/repo/news';
 import { setupEntities } from '@testing/database';
 import { teamNewsFactory } from '@testing/factory/news.factory';
-import { NewsService } from './news.service';
+import { NewsUserDeleteService } from './news-user-delete.service';
 
-describe(NewsService.name, () => {
+describe(NewsUserDeleteService.name, () => {
 	let module: TestingModule;
-	let service: NewsService;
+	let service: NewsUserDeleteService;
 	let repo: DeepMocked<NewsRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -30,7 +30,7 @@ describe(NewsService.name, () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				NewsService,
+				NewsUserDeleteService,
 				{
 					provide: NewsRepo,
 					useValue: createMock<NewsRepo>(),
@@ -52,7 +52,7 @@ describe(NewsService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(NewsService);
+		service = module.get(NewsUserDeleteService);
 		repo = module.get(NewsRepo);
 		eventBus = module.get(EventBus);
 	});
