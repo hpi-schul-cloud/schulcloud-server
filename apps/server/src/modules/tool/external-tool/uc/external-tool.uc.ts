@@ -1,6 +1,6 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationService } from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
@@ -50,7 +50,8 @@ export class ExternalToolUc {
 		externalToolCreate: ExternalToolCreate,
 		jwt: string
 	): Promise<ExternalTool> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		externalToolCreate.config = this.encryptLtiSecret(externalToolCreate);
 
@@ -64,7 +65,8 @@ export class ExternalToolUc {
 		externalTools: ExternalToolCreate[],
 		jwt: string
 	): Promise<ExternalToolImportResult[]> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		const results: ExternalToolImportResult[] = [];
 
@@ -130,13 +132,18 @@ export class ExternalToolUc {
 		externalToolUpdate: ExternalToolUpdate,
 		jwt: string
 	): Promise<ExternalTool> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			currentExternalTool,
+			AuthorizationContextBuilder.write([Permission.TOOL_ADMIN])
+		);
 
 		externalToolUpdate.config = this.encryptLtiSecret(externalToolUpdate);
 
 		const { thumbnailUrl, ...externalToolUpdateProps } = externalToolUpdate;
-
-		const currentExternalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
 		// Use secrets from existing config
 		const updatedConfigProps: ExternalToolConfig = { ...currentExternalTool.config, ...externalToolUpdateProps.config };
@@ -182,7 +189,8 @@ export class ExternalToolUc {
 		query: ExternalToolSearchQuery,
 		options: IFindOptions<ExternalTool>
 	): Promise<Page<ExternalTool>> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 
 		const tools: Page<ExternalTool> = await this.externalToolService.findExternalTools(query, options);
 
@@ -190,17 +198,27 @@ export class ExternalToolUc {
 	}
 
 	public async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
-		const tool: ExternalTool = await this.externalToolService.findById(toolId);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			externalTool,
+			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
+		);
 
-		return tool;
+		return externalTool;
 	}
 
 	public async deleteExternalTool(userId: EntityId, externalToolId: EntityId, jwt: string): Promise<void> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
 
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			externalTool,
+			AuthorizationContextBuilder.write([Permission.TOOL_ADMIN])
+		);
 
 		await this.externalToolImageService.deleteAllFiles(externalToolId, jwt);
 
@@ -208,17 +226,18 @@ export class ExternalToolUc {
 	}
 
 	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
-		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(
+			user,
+			externalTool,
+			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
+		);
 
 		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
 
 		return metadata;
-	}
-
-	private async ensurePermission(userId: EntityId, permission: Permission): Promise<void> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [permission]);
 	}
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {
