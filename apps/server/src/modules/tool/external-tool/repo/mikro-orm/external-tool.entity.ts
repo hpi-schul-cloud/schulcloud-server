@@ -1,4 +1,4 @@
-import { Embedded, Entity, Index, Property, Unique } from '@mikro-orm/core';
+import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../../common/enum';
@@ -42,7 +42,7 @@ export interface ExternalToolEntityProps {
 }
 
 @Entity({ tableName: 'external-tools' })
-@Index({ properties: ['config_clientId'], options: { unique: true, sparse: true } })
+@Unique({ properties: ['config_clientId'], options: { sparse: true } })
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()
