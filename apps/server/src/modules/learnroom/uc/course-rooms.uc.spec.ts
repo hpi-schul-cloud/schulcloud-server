@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { User, UserRepo } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -20,7 +21,7 @@ import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
 describe('rooms usecase', () => {
 	let uc: CourseRoomsUc;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let userRepo: DeepMocked<UserRepo>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
@@ -39,8 +40,8 @@ describe('rooms usecase', () => {
 			providers: [
 				CourseRoomsUc,
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: TaskRepo,
@@ -70,7 +71,7 @@ describe('rooms usecase', () => {
 		}).compile();
 
 		uc = module.get(CourseRoomsUc);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		taskRepo = module.get(TaskRepo);
 		userRepo = module.get(UserRepo);
 		legacyBoardRepo = module.get(LegacyBoardRepo);
@@ -110,7 +111,7 @@ describe('rooms usecase', () => {
 			board.syncBoardElementReferences([...lessons, ...tasks]);
 
 			const userSpy = userRepo.findById.mockResolvedValue(user);
-			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const roomSpy = courseService.findOneForUser.mockResolvedValue(room);
 			const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
 			const tasksSpy = taskRepo.findBySingleParent.mockResolvedValue([tasks, 3]);
 			const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
@@ -181,7 +182,7 @@ describe('rooms usecase', () => {
 			const board = boardFactory.buildWithId({ course: room });
 			board.syncBoardElementReferences([hiddenTask, visibleTask]);
 			const userSpy = userRepo.findById.mockResolvedValue(user);
-			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const roomSpy = courseService.findOneForUser.mockResolvedValue(room);
 			const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
 			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
 			const saveSpy = legacyBoardRepo.save.mockResolvedValue();
@@ -246,7 +247,7 @@ describe('rooms usecase', () => {
 			board.syncBoardElementReferences(tasks);
 			const reorderSpy = jest.spyOn(board, 'reorderElements');
 			const userSpy = userRepo.findById.mockResolvedValue(user);
-			const roomSpy = courseRepo.findOne.mockResolvedValue(room);
+			const roomSpy = courseService.findOneForUser.mockResolvedValue(room);
 			const boardSpy = legacyBoardRepo.findByCourseId.mockResolvedValue(board);
 			const authorisationSpy = authorisation.hasCourseWritePermission.mockReturnValue(shouldAuthorize);
 			const saveSpy = legacyBoardRepo.save.mockResolvedValue();

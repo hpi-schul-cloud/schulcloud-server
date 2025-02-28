@@ -3,7 +3,6 @@ import { BoardModule } from '@modules/board';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
-import { CourseRepo } from '@modules/course/repo';
 import { GroupModule } from '@modules/group';
 import { LessonModule } from '@modules/lesson';
 import { RoleModule } from '@modules/role';
@@ -61,7 +60,6 @@ import {
 		CommonCartridgeImportService,
 		CommonCartridgeImportMapper,
 		CourseCopyService,
-		CourseRepo,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,

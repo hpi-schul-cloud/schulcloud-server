@@ -1,6 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
-import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
+import { CourseGroupRepo } from '@modules/course/repo';
 import { InstanceModule } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { UserModule } from '@modules/user';
@@ -18,7 +18,6 @@ import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 	imports: [AuthorizationModule, LoggerModule, InstanceModule, UserModule],
 	providers: [
 		ReferenceLoader,
-		CourseRepo,
 		CourseGroupRepo,
 		TaskRepo,
 		LegacySchoolRepo,

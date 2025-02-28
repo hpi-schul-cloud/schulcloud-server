@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
-import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { User } from '@modules/user/repo';
@@ -24,7 +25,7 @@ describe('TaskUC', () => {
 	let module: TestingModule;
 	let service: TaskUC;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let lessonService: DeepMocked<LessonService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
@@ -47,8 +48,8 @@ describe('TaskUC', () => {
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: LessonService,
@@ -71,7 +72,7 @@ describe('TaskUC', () => {
 
 		service = module.get(TaskUC);
 		taskRepo = module.get(TaskRepo);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		lessonService = module.get(LessonService);
 		authorizationService = module.get(AuthorizationService);
 		taskService = module.get(TaskService);
@@ -92,7 +93,7 @@ describe('TaskUC', () => {
 				const user = setupUser(permissions);
 				const finishedTask = taskFactory.finished(user).build();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+				courseService.findAllByUserId.mockResolvedValueOnce([]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -206,7 +207,7 @@ describe('TaskUC', () => {
 				const lesson = lessonFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				courseRepo.findAllByUserId.mockResolvedValue([[], 0]);
+				courseService.findAllByUserId.mockResolvedValue([]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -242,7 +243,7 @@ describe('TaskUC', () => {
 				const course = courseEntityFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllByUserId.mockResolvedValueOnce([course]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -278,7 +279,7 @@ describe('TaskUC', () => {
 				const task = taskFactory.finished(user).build({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+				courseService.findAllByUserId.mockResolvedValueOnce([]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
@@ -305,7 +306,7 @@ describe('TaskUC', () => {
 				const task = taskFactory.finished(user).build({ course });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllByUserId.mockResolvedValueOnce([course]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
@@ -390,7 +391,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllByUserId.mockResolvedValueOnce([course]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
@@ -504,7 +505,7 @@ describe('TaskUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([course]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
@@ -539,7 +540,7 @@ describe('TaskUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([course]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
