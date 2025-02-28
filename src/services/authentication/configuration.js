@@ -13,7 +13,7 @@ module.exports = {
 		secret:
 			Configuration.get('JWT_PRIVATE_KEY').replace(/\\n/g, '\n') +
 			Configuration.get('JWT_PUBLIC_KEY').replace(/\\n/g, '\n'),
-		authStrategies: ['jwt', 'tsp', 'api-key'],
+		authStrategies: ['jwt', 'api-key'],
 		jwtOptions: {
 			header: { typ: 'JWT' },
 			audience: Configuration.get('SC_DOMAIN'),
