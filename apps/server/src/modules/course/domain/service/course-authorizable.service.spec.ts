@@ -1,35 +1,31 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
-import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { courseFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { ContextExternalTool } from '../domain';
-import { ContextExternalToolRepo } from '../repo/mikro-orm';
-import { contextExternalToolFactory } from '../testing';
-import { ContextExternalToolAuthorizableService } from './course-authorizable.service';
+import { COURSE_REPO, CourseRepo } from '../interface';
+import { CourseAuthorizableService } from './course-authorizable.service';
 
-describe('ContextExternalToolAuthorizableService', () => {
+describe(CourseAuthorizableService.name, () => {
 	let module: TestingModule;
-	let service: ContextExternalToolAuthorizableService;
+	let service: CourseAuthorizableService;
 
-	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
+	let courseRepo: DeepMocked<CourseRepo>;
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ContextExternalToolAuthorizableService,
+				CourseAuthorizableService,
 				{
-					provide: ContextExternalToolRepo,
-					useValue: createMock<ContextExternalToolRepo>(),
+					provide: COURSE_REPO,
+					useValue: createMock<CourseRepo>(),
 				},
 				AuthorizationInjectionService,
 			],
 		}).compile();
 
-		service = module.get(ContextExternalToolAuthorizableService);
-		contextExternalToolRepo = module.get(ContextExternalToolRepo);
+		service = module.get(CourseAuthorizableService);
+		courseRepo = module.get(COURSE_REPO);
 		injectionService = module.get(AuthorizationInjectionService);
 	});
 
@@ -43,35 +39,28 @@ describe('ContextExternalToolAuthorizableService', () => {
 
 	describe('constructor', () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
-			expect(injectionService.getReferenceLoader(AuthorizableReferenceType.ContextExternalToolEntity)).toBe(service);
+			expect(injectionService.getReferenceLoader(AuthorizableReferenceType.Course)).toBe(service);
 		});
 	});
 
 	describe('findById', () => {
 		describe('when id is given', () => {
 			const setup = () => {
-				const schoolId: string = legacySchoolDoFactory.buildWithId().id as string;
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-					schoolId,
-				});
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
-					.withSchoolExternalToolRef(schoolExternalTool.id, schoolExternalTool.schoolId)
-					.build();
+				const course = courseFactory.build();
 
-				contextExternalToolRepo.findById.mockResolvedValue(contextExternalTool);
+				courseRepo.findCourseById.mockResolvedValue(course);
 
 				return {
-					contextExternalTool,
-					contextExternalToolId: contextExternalTool.id,
+					course,
 				};
 			};
 
 			it('should return a contextExternalTool', async () => {
-				const { contextExternalTool, contextExternalToolId } = setup();
+				const { course } = setup();
 
-				const result: ContextExternalTool = await service.findById(contextExternalToolId);
+				const result = await service.findById(course.id);
 
-				expect(result).toEqual(contextExternalTool);
+				expect(result).toEqual(course);
 			});
 		});
 	});
