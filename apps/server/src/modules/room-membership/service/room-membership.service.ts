@@ -118,7 +118,7 @@ export class RoomMembershipService {
 
 		const [group, role] = await Promise.all([
 			this.groupService.findById(roomMembership.userGroupId),
-			await this.roleService.findByName(roleName),
+			this.roleService.findByName(roleName),
 		]);
 
 		group.users.forEach((groupUser) => {
@@ -128,8 +128,6 @@ export class RoomMembershipService {
 		});
 
 		await this.groupService.save(group);
-
-		return Promise.resolve();
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {

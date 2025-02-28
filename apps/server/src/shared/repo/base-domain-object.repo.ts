@@ -16,12 +16,12 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 
 	protected abstract mapDOToEntityProperties(entityDO: D): EntityData<E>;
 
-	async save(domainObject: D): Promise<D> {
+	public async save(domainObject: D): Promise<D> {
 		const savedDomainObjects = await this.saveAll([domainObject]);
 		return savedDomainObjects[0];
 	}
 
-	async saveAll(domainObjects: D[]): Promise<D[]> {
+	public async saveAll(domainObjects: D[]): Promise<D[]> {
 		const promises = domainObjects.map((dob) => this.createOrUpdateEntity(dob));
 
 		const results = await Promise.all(promises);
@@ -44,7 +44,7 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 		return { domainObject, persistedEntity };
 	}
 
-	async delete(domainObjects: D[] | D): Promise<void> {
+	public async delete(domainObjects: D[] | D): Promise<void> {
 		const ids: Primary<E>[] = Utils.asArray(domainObjects).map((dob) => {
 			if (!dob.id) {
 				throw new InternalServerErrorException('Cannot delete object without id');
