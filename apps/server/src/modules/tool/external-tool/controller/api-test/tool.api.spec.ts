@@ -1,5 +1,5 @@
 import { BiloMediaQueryResponse } from '@infra/bilo-client';
-import { biloMediaQueryDataResponseFactory, biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
+import { biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
@@ -17,10 +17,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios, { AxiosResponse } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { MediaMetadataMapper } from '../../../../media-source-sync/mapper';
 import { mediaSourceEntityFactory } from '../../../../media-source/testing';
 import { OAuthTokenDto } from '../../../../oauth-adapter';
-import { ProviderLoginResponse, ProviderRedirectResponse } from '../../../../oauth-provider/domain';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -37,9 +35,9 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolUtilizationResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
+	ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {
