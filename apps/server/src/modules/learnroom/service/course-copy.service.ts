@@ -8,7 +8,8 @@ import {
 } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
@@ -31,7 +32,7 @@ export class CourseCopyService {
 		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
@@ -44,7 +45,7 @@ export class CourseCopyService {
 		courseId: EntityId;
 		newName?: string | undefined;
 	}): Promise<CopyStatus> {
-		const user: User = await this.userRepo.findById(userId, true);
+		const user: User = await this.userService.getUserEntityWithRoles(userId);
 
 		// fetch original course and board
 		const originalCourse = await this.courseRepo.findById(courseId);
