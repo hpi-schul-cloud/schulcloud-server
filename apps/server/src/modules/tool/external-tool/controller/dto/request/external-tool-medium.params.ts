@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsArray, IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { MediaSourceDataFormat } from '@modules/media-source';
+import { ToolContextType } from '../../../../common/enum';
 
 export class ExternalToolMediumParams {
 	@IsString()
@@ -20,13 +21,11 @@ export class ExternalToolMediumParams {
 	@ApiPropertyOptional({ type: String, description: 'The id of the media source' })
 	mediaSourceId?: string;
 
-	@IsArray()
 	@IsOptional()
 	@IsEnum(MediaSourceDataFormat, { each: true })
 	@ApiPropertyOptional({
 		enum: MediaSourceDataFormat,
 		enumName: 'MediaSourceDataFormat',
-		isArray: true,
 		description: 'Restrict media sources to a specific format',
 	})
 	format?: MediaSourceDataFormat;
@@ -34,5 +33,5 @@ export class ExternalToolMediumParams {
 	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({ type: Date, description: 'The date the medium was last modified' })
-	modified?: Date;
+	modifiedAt?: Date;
 }

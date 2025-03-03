@@ -8,6 +8,8 @@ import {
 import { MediaMetadataDto } from '../dto';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
+import { MediaSourceDataFormatMissingLoggableException } from '../loggable/media-source-data-format-missing-loggable.exception';
+import { MediaSourceIdMissingLoggableException } from '../loggable/media-source-id-missing-loggable.exception';
 import { BiloSyncStrategy } from './strategy';
 
 @Injectable()
@@ -38,20 +40,28 @@ export class MediaSourceSyncService {
 
 	public async fetchMediumMetadata(
 		mediumId: string,
-		dataFormat: MediaSourceDataFormat | undefined
+		mediaSourceId: string | undefined,
+		mediaSourceDataFormat: MediaSourceDataFormat | undefined
 	): Promise<MediaMetadataDto> {
-		if (!dataFormat) {
-			// TODO: loggableException
-			throw new Error('Data format is required');
+		if (!mediaSourceDataFormat) {
+			throw new MediaSourceDataFormatMissingLoggableException();
 		}
 
-		const strategy = this.syncStrategyMap.get(dataFormat);
+		if (!mediaSourceId) {
+			throw new MediaSourceIdMissingLoggableException(mediaSourceDataFormat);
+		}
+
+		const mediaSource = await this.mediaSourceService.findByFormatAndSourceId(mediaSourceDataFormat, mediaSourceId);
+
+		if (!mediaSource) {
+			throw new MediaSourceNotFoundLoggableException(mediaSourceDataFormat);
+		}
+
+		const strategy = this.syncStrategyMap.get(mediaSourceDataFormat);
 
 		if (!strategy) {
-			throw new SyncStrategyNotImplementedLoggableException(dataFormat);
+			throw new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat);
 		}
-
-		const mediaSource: MediaSource = await this.getMediaSource(strategy);
 
 		const mediaMetadata: MediaMetadataDto = await strategy.fetchMediaMetadata(mediumId, mediaSource);
 

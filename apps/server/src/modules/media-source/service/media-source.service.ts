@@ -20,6 +20,12 @@ export class MediaSourceService {
 		return domainObject;
 	}
 
+	public async findByFormatAndSourceId(format: MediaSourceDataFormat, sourceId: EntityId): Promise<MediaSource | null> {
+		const domainObject: MediaSource | null = await this.mediaSourceRepo.findByFormatAndSourceId(format, sourceId);
+
+		return domainObject;
+	}
+
 	public async save(domainObject: MediaSource): Promise<MediaSource> {
 		const savedObject: MediaSource = await this.mediaSourceRepo.save(domainObject);
 

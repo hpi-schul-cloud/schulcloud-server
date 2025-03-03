@@ -17,7 +17,7 @@ export class ExternalToolMediumMetadataResponse {
 	previewLogoUrl?: string;
 
 	@ApiPropertyOptional({ type: Date, description: 'The last Modified Date of the Medium' })
-	modified?: Date;
+	modifiedAt?: Date;
 
 	constructor(response: ExternalToolMediumMetadataResponse) {
 		this.name = response.name;
@@ -25,6 +25,6 @@ export class ExternalToolMediumMetadataResponse {
 		this.publisher = response.publisher;
 		this.logoUrl = response.logoUrl;
 		this.previewLogoUrl = response.previewLogoUrl;
-		this.modified = response.modified;
+		this.modifiedAt = response.modifiedAt;
 	}
 }

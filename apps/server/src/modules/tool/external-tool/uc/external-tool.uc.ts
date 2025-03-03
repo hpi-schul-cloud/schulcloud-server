@@ -278,14 +278,16 @@ export class ExternalToolUc {
 	public async getMetadataForExternalToolFromMediaSource(
 		userId: EntityId,
 		mediumId: string,
-		mediaSourceFormat: MediaSourceDataFormat | undefined
+		mediaSourceId: string | undefined,
+		mediaSourceDataFormat: MediaSourceDataFormat | undefined
 	): Promise<MediaMetadataDto> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SOURCE_ADMIN]);
 
 		const mediaMetadataDto: MediaMetadataDto = await this.mediaSourceSyncService.fetchMediumMetadata(
 			mediumId,
-			mediaSourceFormat
+			mediaSourceId,
+			mediaSourceDataFormat
 		);
 
 		return mediaMetadataDto;

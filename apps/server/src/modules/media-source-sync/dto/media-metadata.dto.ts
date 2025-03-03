@@ -9,7 +9,7 @@ export class MediaMetadataDto {
 
 	previewLogoUrl?: string;
 
-	modified?: Date;
+	modifiedAt?: Date;
 
 	constructor(response: MediaMetadataDto) {
 		this.name = response.name;
@@ -17,6 +17,6 @@ export class MediaMetadataDto {
 		this.publisher = response.publisher;
 		this.logoUrl = response.logoUrl;
 		this.previewLogoUrl = response.previewLogoUrl;
-		this.modified = response.modified;
+		this.modifiedAt = response.modifiedAt;
 	}
 }

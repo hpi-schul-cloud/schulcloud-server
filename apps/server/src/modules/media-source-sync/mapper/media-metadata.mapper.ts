@@ -11,7 +11,7 @@ export class MediaMetadataMapper {
 			publisher: metadataItem.publisher,
 			logoUrl: metadataItem.cover.href,
 			previewLogoUrl: metadataItem.coverSmall.href,
-			modified: new Date(metadataItem.modified),
+			modifiedAt: new Date(metadataItem.modified),
 		});
 
 		return mediaMetadata;

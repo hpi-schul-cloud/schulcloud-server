@@ -11,12 +11,12 @@ export class ExternalToolMediumResponse {
 	public mediaSourceId?: string;
 
 	@ApiPropertyOptional({ type: Date, description: 'The last modified date of the medium' })
-	public metadataModifiedAt?: Date;
+	public modifiedAt?: Date;
 
 	constructor(props: ExternalToolMediumResponse) {
 		this.mediumId = props.mediumId;
 		this.publisher = props.publisher;
 		this.mediaSourceId = props.mediaSourceId;
-		this.metadataModifiedAt = props.metadataModifiedAt;
+		this.modifiedAt = props.modifiedAt;
 	}
 }

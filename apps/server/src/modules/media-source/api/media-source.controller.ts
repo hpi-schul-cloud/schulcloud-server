@@ -15,7 +15,6 @@ export class MediaSourceController {
 	@ApiOperation({ summary: 'Get a list of all media sources' })
 	@ApiResponse({ status: 200, type: MediaSourceListResponse })
 	@ApiUnauthorizedResponse()
-	@ApiForbiddenResponse()
 	@Get()
 	public async getMediaSourceList(@CurrentUser() currentUser: ICurrentUser): Promise<MediaSourceListResponse> {
 		const mediaSources: MediaSource[] = await this.mediaSourceUc.getMediaSourceList(currentUser.userId);
