@@ -35,7 +35,7 @@ describe('ProvisioningService', () => {
 					provide: SchulconnexSyncProvisioningStrategy,
 					useValue: createMock<SchulconnexSyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
-							return SystemProvisioningStrategy.SANIS;
+							return SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
 						},
 					}),
 				},
@@ -90,12 +90,12 @@ describe('ProvisioningService', () => {
 	const setupSystemData = () => {
 		const system: System = systemFactory.withOauthConfig().build({
 			provisioningUrl: 'https://api.moin.schule/',
-			provisioningStrategy: SystemProvisioningStrategy.SANIS,
+			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 		});
 		const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 			systemId: system.id,
 			provisioningUrl: 'https://api.moin.schule/',
-			provisioningStrategy: SystemProvisioningStrategy.SANIS,
+			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 		});
 		const oauthDataDto: OauthDataDto = oauthDataDtoFactory.build({
 			system: provisioningSystemDto,

@@ -15,8 +15,8 @@ export class SystemsSeedDataService {
 
 	public async import(): Promise<number> {
 		const scTheme: string | undefined = this.configService.get<string>('SC_THEME');
-		const moinSchuleClientId: string | undefined = this.configService.get<string>('SANIS_CLIENT_ID');
-		const moinSchuleClientSecret: string | undefined = this.configService.get<string>('SANIS_CLIENT_SECRET');
+		const moinSchuleClientId: string | undefined = this.configService.get<string>('SCHULCONNEX_CLIENT_ID');
+		const moinSchuleClientSecret: string | undefined = this.configService.get<string>('SCHULCONNEX_CLIENT_SECRET');
 
 		if (scTheme === 'n21' && moinSchuleClientId && moinSchuleClientSecret) {
 			const encryptedMoinSchuleSecret: string = this.defaultEncryptionService.encrypt(moinSchuleClientSecret);

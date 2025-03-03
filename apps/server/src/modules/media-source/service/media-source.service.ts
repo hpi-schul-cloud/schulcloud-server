@@ -26,10 +26,10 @@ export class MediaSourceService {
 		return domainObject;
 	}
 
-	public async save(domainObject: MediaSource): Promise<MediaSource> {
-		const savedObject: MediaSource = await this.mediaSourceRepo.save(domainObject);
+	public async saveAll(domainObject: MediaSource[]): Promise<MediaSource[]> {
+		const savedObjects: MediaSource[] = await this.mediaSourceRepo.saveAll(domainObject);
 
-		return savedObject;
+		return savedObjects;
 	}
 
 	public async getAllMediaSources(): Promise<MediaSource[]> {

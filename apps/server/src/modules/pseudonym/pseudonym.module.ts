@@ -4,7 +4,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ExternalToolPseudonymRepo } from './repo';
 import { PseudonymService } from './service';
 
-// Why import this module LearnroomModule and ToolModule, The UserModule should also checked, but maybe it is ok.
 @Module({
 	imports: [LoggerModule, CqrsModule],
 	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger],

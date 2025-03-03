@@ -3,7 +3,9 @@ import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
 import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFactory } from '@modules/board/testing';
-import { CourseService } from '@modules/learnroom/service';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -23,10 +25,8 @@ import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { pseudonymFactory } from '@testing/factory/domainobject';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { RosterConfig } from '../roster.config';
@@ -94,7 +94,7 @@ describe('FeathersRosterService', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		configService = module.get(ConfigService);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	beforeEach(() => {
@@ -215,9 +215,9 @@ describe('FeathersRosterService', () => {
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
 				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
-				const courseA = courseFactory.buildWithId();
-				const courseB = courseFactory.buildWithId();
-				const courseC = courseFactory.buildWithId();
+				const courseA = courseEntityFactory.buildWithId();
+				const courseB = courseEntityFactory.buildWithId();
+				const courseC = courseEntityFactory.buildWithId();
 				const courses = [courseA, courseB, courseC];
 
 				const clientId = 'testClientId';
@@ -287,9 +287,9 @@ describe('FeathersRosterService', () => {
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
 				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
-				const courseA = courseFactory.buildWithId();
-				const courseB = courseFactory.buildWithId();
-				const courseC = courseFactory.buildWithId();
+				const courseA = courseEntityFactory.buildWithId();
+				const courseB = courseEntityFactory.buildWithId();
+				const courseC = courseEntityFactory.buildWithId();
 				const courses = [courseA, courseB, courseC];
 
 				const clientId = 'testClientId';
@@ -530,7 +530,7 @@ describe('FeathersRosterService', () => {
 					toolId: externalTool.id,
 				});
 
-				const courseA = courseFactory.buildWithId({
+				const courseA = courseEntityFactory.buildWithId({
 					school: schoolEntity,
 					students: [studentUser, studentUser2],
 					teachers: [teacherUser],
@@ -720,7 +720,7 @@ describe('FeathersRosterService', () => {
 					toolId: externalTool.id,
 				});
 
-				const courseA = courseFactory.buildWithId({
+				const courseA = courseEntityFactory.buildWithId({
 					school: schoolEntity,
 					students: [studentUser, studentUser2],
 					teachers: [teacherUser],
@@ -841,7 +841,7 @@ describe('FeathersRosterService', () => {
 
 		describe('when invalid oauth2Client was given and external tool was not found', () => {
 			const setup = () => {
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(null);
@@ -863,7 +863,7 @@ describe('FeathersRosterService', () => {
 		describe('when the external tool is deactivated', () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId({ isDeactivated: true });
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
@@ -886,7 +886,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const externalToolId = externalTool.id;
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
@@ -912,7 +912,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				courseService.findById.mockResolvedValue(course);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);

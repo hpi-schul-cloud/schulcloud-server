@@ -1,6 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
+import { CourseModule } from '@modules/course';
 import { LearnroomModule } from '@modules/learnroom';
 import { LessonModule } from '@modules/lesson';
 import { RoomModule } from '@modules/room';
@@ -16,6 +17,7 @@ import { ShareTokenUC } from './uc';
 	imports: [
 		SharingModule,
 		AuthorizationModule,
+		CourseModule,
 		LearnroomModule,
 		LessonModule,
 		TaskModule,
