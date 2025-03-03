@@ -1,3 +1,5 @@
+import { BiloMediaQueryResponse } from '@infra/bilo-client';
+import { biloMediaQueryDataResponseFactory, biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
@@ -9,11 +11,16 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
+import { MediaMetadataMapper } from '../../../../media-source-sync/mapper';
+import { mediaSourceEntityFactory } from '../../../../media-source/testing';
+import { OAuthTokenDto } from '../../../../oauth-adapter';
+import { ProviderLoginResponse, ProviderRedirectResponse } from '../../../../oauth-provider/domain';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -940,6 +947,80 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${toolId}/datasheet`);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+	});
+
+	describe('[GET] tools/external-tools/medium/:mediumId/media-source/:format/:mediaSourceId/metadata', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const mediaSourceEntity = mediaSourceEntityFactory.build();
+
+				return { mediaSourceEntity };
+			};
+
+			it('should return unauthorized', async () => {
+				const { mediaSourceEntity } = setup();
+
+				const response: Response = await testApiClient.get(
+					`medium/mediumId/media-source/format/${mediaSourceEntity.sourceId}/metadata`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		// TODO API TEST
+		describe('when mediumId, media source id and format is given', () => {
+			const setup = async () => {
+				const mediaSourceEntity = mediaSourceEntityFactory.build();
+
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				em.clear();
+
+				const mockToken = new OAuthTokenDto({
+					accessToken: 'mock-access-token',
+					idToken: 'mock-id-token',
+					refreshToken: 'mock-refresh-token',
+				});
+
+				axiosMock.onPost(`${mediaSourceEntity.oauthConfig!.authEndpoint}.*`).replyOnce(HttpStatus.OK, mockToken);
+
+				const mockResponseData: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
+				const mediumIds = mockResponseData.map((response: BiloMediaQueryResponse) => response.query.id);
+
+				const mockAxiosResponse = axiosResponseFactory.build({
+					data: mockResponseData,
+				}) as AxiosResponse<BiloMediaQueryResponse[]>;
+				axiosMock.onPost(`${mediaSourceEntity.oauthConfig!.baseUrl}.*`).replyOnce(HttpStatus.OK, mockAxiosResponse);
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: mockAxiosResponse.data[0] };
+			};
+
+			it('should return the metadata of media source', async () => {
+				const { loggedInClient, mediaSourceEntity, biloMediaMetaData } = await setup();
+
+				const response: Response = await loggedInClient.get(
+					`medium/mediumId/media-source/${mediaSourceEntity.format}/${mediaSourceEntity.sourceId}/metadata`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					id: expect.any(String),
+					name: biloMediaMetaData.data.title,
+					description: biloMediaMetaData.data.description,
+					publisher: biloMediaMetaData.data.publisher,
+					logoUrl: biloMediaMetaData.data.cover,
+					previewLogoUrl: biloMediaMetaData.data.coverSmall,
+					modifiedAt: biloMediaMetaData.data.modified,
+					createdAt: expect.any(String),
+					updatedAt: expect.any(String),
+				});
 			});
 		});
 	});

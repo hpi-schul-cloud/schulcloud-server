@@ -145,4 +145,46 @@ describe(MediaSourceRepo.name, () => {
 			});
 		});
 	});
+
+	describe('findByFormatAndSourceId', () => {
+		describe('when a media source data format and source id is provided', () => {
+			describe('when the media source exists', () => {
+				const setup = async () => {
+					const format = MediaSourceDataFormat.BILDUNGSLOGIN;
+					const sourceId = 'source-id';
+					const mediaSourceEntity = mediaSourceEntityFactory.build({ format, sourceId });
+					const otherMediaSourceEntity = mediaSourceEntityFactory.build({
+						format: MediaSourceDataFormat.VIDIS,
+						sourceId: 'other-source-id',
+					});
+
+					await em.persistAndFlush([mediaSourceEntity, otherMediaSourceEntity]);
+					em.clear();
+
+					const expectedDO = MediaSourceMapper.mapEntityToDo(mediaSourceEntity);
+
+					return { format, sourceId, expectedDO };
+				};
+
+				it('should return the media source', async () => {
+					const { format, sourceId, expectedDO } = await setup();
+
+					const result: MediaSource | null = await repo.findByFormatAndSourceId(format, sourceId);
+
+					expect(result).toEqual(expectedDO);
+				});
+			});
+
+			describe('when the media source does not exist', () => {
+				it('should return null', async () => {
+					const format = MediaSourceDataFormat.VIDIS;
+					const sourceId = 'source-id';
+
+					const result: MediaSource | null = await repo.findByFormatAndSourceId(format, sourceId);
+
+					expect(result).toBeNull();
+				});
+			});
+		});
+	});
 });

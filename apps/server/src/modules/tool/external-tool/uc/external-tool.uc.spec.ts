@@ -17,6 +17,8 @@ import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { roleFactory } from '@testing/factory/role.factory';
+import { MediaSourceDataFormat } from '../../../media-source';
+import { MediaSourceSyncService } from '../../../media-source-sync';
 import { CustomParameter } from '../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
@@ -25,9 +27,9 @@ import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolUtilization,
 	ExternalToolParameterDatasheetTemplateProperty,
 	ExternalToolProps,
+	ExternalToolUtilization,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
@@ -64,6 +66,7 @@ describe(ExternalToolUc.name, () => {
 	let pdfService: DeepMocked<DatasheetPdfService>;
 	let externalToolImageService: DeepMocked<ExternalToolImageService>;
 	let encryptionService: DeepMocked<EncryptionService>;
+	let mediaSourceSyncService: DeepMocked<MediaSourceSyncService>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -113,6 +116,10 @@ describe(ExternalToolUc.name, () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
+				{
+					provide: MediaSourceSyncService,
+					useValue: createMock<MediaSourceSyncService>(),
+				},
 			],
 		}).compile();
 
@@ -127,6 +134,7 @@ describe(ExternalToolUc.name, () => {
 		pdfService = module.get(DatasheetPdfService);
 		externalToolImageService = module.get(ExternalToolImageService);
 		encryptionService = module.get(DefaultEncryptionService);
+		mediaSourceSyncService = module.get(MediaSourceSyncService);
 	});
 
 	afterAll(async () => {
@@ -1507,6 +1515,106 @@ describe(ExternalToolUc.name, () => {
 				const result = await uc.createDatasheetFilename(toolId);
 
 				expect(result).toEqual(filename);
+			});
+		});
+	});
+
+	describe('getMetadataForExternalToolFromMediaSource', () => {
+		describe('when user has insufficient permission to get an metadata for external tool ', () => {
+			const setup = () => {
+				const mediumId = 'mediumId';
+				const mediaSourceId = 'mediaSourceId';
+				const mediaSourceFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+
+				const user: User = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockRejectedValue(new UnauthorizedException());
+
+				return {
+					user,
+					mediaSourceFormat,
+					mediaSourceId,
+					mediumId,
+				};
+			};
+
+			it('should throw UnauthorizedException ', async () => {
+				const { mediaSourceFormat, mediaSourceId, mediumId, user } = setup();
+
+				const result = uc.getMetadataForExternalToolFromMediaSource(
+					user.id,
+					mediaSourceId,
+					mediumId,
+					mediaSourceFormat
+				);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when medium id, media source id and media source format are given', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+				const mediumId = 'mediumId';
+				const mediaSourceId = 'mediaSourceId';
+				const mediaSourceFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				mediaSourceSyncService.fetchMediumMetadata.mockResolvedValue({
+					name: 'mediumName',
+					description: 'mediumDescription',
+					publisher: 'publisher',
+					logoUrl: 'logoUrl',
+					previewLogoUrl: 'previewLogoUrl',
+					modifiedAt: new Date(),
+				});
+
+				return {
+					user,
+					mediumId,
+					mediaSourceId,
+					mediaSourceFormat,
+				};
+			};
+
+			it('should get user with permission', async () => {
+				const { user, mediumId, mediaSourceId, mediaSourceFormat } = setup();
+
+				await uc.getMetadataForExternalToolFromMediaSource(user.id, mediaSourceId, mediumId, mediaSourceFormat);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should fetch medium metadata', async () => {
+				const { user, mediumId, mediaSourceId, mediaSourceFormat } = setup();
+
+				await uc.getMetadataForExternalToolFromMediaSource(user.id, mediumId, mediaSourceId, mediaSourceFormat);
+
+				expect(mediaSourceSyncService.fetchMediumMetadata).toHaveBeenCalledWith(
+					mediumId,
+					mediaSourceId,
+					mediaSourceFormat
+				);
+			});
+
+			it('should return medium metadata', async () => {
+				const { user, mediumId, mediaSourceId, mediaSourceFormat } = setup();
+
+				const result = await uc.getMetadataForExternalToolFromMediaSource(
+					user.id,
+					mediaSourceId,
+					mediumId,
+					mediaSourceFormat
+				);
+
+				expect(result).toEqual({
+					name: 'mediumName',
+					description: 'mediumDescription',
+					publisher: 'publisher',
+					logoUrl: 'logoUrl',
+					previewLogoUrl: 'previewLogoUrl',
+					modifiedAt: expect.any(Date),
+				});
 			});
 		});
 	});

@@ -1,0 +1,136 @@
+import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { ServerTestModule } from '@modules/server';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { MediaSourceDataFormat } from '../../enum';
+import { mediaSourceEntityFactory } from '../../testing';
+import { MediaSourceListResponse } from '../response';
+
+describe('MediaSourceController (API)', () => {
+	let app: INestApplication;
+	let em: EntityManager;
+	let orm: MikroORM;
+	let testApiClient: TestApiClient;
+
+	beforeAll(async () => {
+		const moduleRef: TestingModule = await Test.createTestingModule({
+			imports: [ServerTestModule],
+		}).compile();
+
+		app = moduleRef.createNestApplication();
+		await app.init();
+		em = app.get(EntityManager);
+		orm = app.get(MikroORM);
+		testApiClient = new TestApiClient(app, 'media-sources');
+	});
+
+	afterAll(async () => {
+		await app.close();
+	});
+
+	afterEach(async () => {
+		await orm.getSchemaGenerator().clearDatabase();
+	});
+
+	describe('[GET] media-sources', () => {
+		describe('when the user is not authorized', () => {
+			const setup = async () => {
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
+
+				await em.persistAndFlush([superheroUser, superheroAccount]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return a unauthorized status', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when media sources are available', () => {
+			const setup = async () => {
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+
+				const bilo = mediaSourceEntityFactory.build({});
+
+				const vidis = mediaSourceEntityFactory.build({
+					format: MediaSourceDataFormat.VIDIS,
+				});
+
+				await em.persistAndFlush([superheroUser, superheroAccount, bilo, vidis]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return a list of media sources', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					responses: [
+						{
+							id: expect.any(String),
+							name: 'media-source-1',
+							sourceId: 'source-id-1',
+							format: 'BILDUNGSLOGIN',
+						},
+						{
+							id: expect.any(String),
+							name: 'media-source-2',
+							sourceId: 'source-id-2',
+							format: 'VIDIS',
+						},
+					],
+				});
+			});
+		});
+
+		describe('when no media sources are available', () => {
+			const setup = async () => {
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+
+				await em.persistAndFlush([superheroUser, superheroAccount]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.body).toEqual<MediaSourceListResponse>({
+					responses: [],
+				});
+			});
+		});
+	});
+});
