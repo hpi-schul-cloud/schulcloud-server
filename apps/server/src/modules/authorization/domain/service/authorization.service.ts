@@ -1,5 +1,5 @@
-import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
+import { UserService } from '@modules/user/service/user.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';

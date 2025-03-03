@@ -1,12 +1,12 @@
 import { LoggerModule } from '@core/logger';
 import { FeathersModule } from '@infra/feathers';
 import { UserModule } from '@modules/user';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthorizationHelper, AuthorizationInjectionService, AuthorizationService, RuleManager } from './domain';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
 
 @Module({
-	imports: [FeathersModule, LoggerModule, UserModule],
+	imports: [FeathersModule, LoggerModule, forwardRef(() => UserModule)],
 	providers: [
 		FeathersAuthorizationService,
 		AuthorizationInjectionService,

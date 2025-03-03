@@ -2,7 +2,7 @@ import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderServiceGeneric,
-} from '@modules/authorization';
+} from '@modules/authorization/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { User, UserRepo } from '../repo';
