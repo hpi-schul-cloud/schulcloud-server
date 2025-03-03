@@ -87,7 +87,7 @@ export class ToolController {
 
 	@Post('/import')
 	@ApiCreatedResponse({
-		description: 'The Tool has been successfully created.',
+		description: 'A list of Tools has been created.',
 		type: ExternalToolImportResultListResponse,
 	})
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
