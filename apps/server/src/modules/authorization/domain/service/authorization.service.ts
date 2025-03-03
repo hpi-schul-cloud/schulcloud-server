@@ -1,4 +1,5 @@
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
@@ -13,7 +14,7 @@ export class AuthorizationService {
 	constructor(
 		private readonly ruleManager: RuleManager,
 		private readonly authorizationHelper: AuthorizationHelper,
-		private readonly userRepo: UserRepo
+		private readonly userService: UserService
 	) {}
 
 	public checkPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): void {
@@ -53,7 +54,7 @@ export class AuthorizationService {
 
 	public async getUserWithPermissions(userId: EntityId): Promise<User> {
 		// replace with service method getUserWithPermissions BC-5069
-		const userWithPopulatedRoles = await this.userRepo.findById(userId, true);
+		const userWithPopulatedRoles = await this.userService.getUserEntityWithRoles(userId);
 
 		return userWithPopulatedRoles;
 	}
