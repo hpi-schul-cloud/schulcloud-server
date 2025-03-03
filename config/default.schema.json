@@ -55,11 +55,6 @@
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
-		"DISABLED_BRUTE_FORCE_CHECK": {
-			"type": "boolean",
-			"default": false,
-			"description": "To disabled the brute force prevention hooks for by authentication."
-		},
 		"LOGIN_BLOCK_TIME": {
 			"type": "integer",
 			"default": 15,
@@ -1538,22 +1533,6 @@
 		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
 			"type": "string",
 			"description": "The documentation page that gets rendered in the migration wizard tool."
-		},
-		"TSP_SCHOOL_SYNCER": {
-			"type": "object",
-			"description": "TSP School Syncer properties",
-			"properties": {
-				"SCHOOL_LIMIT": {
-					"type": "integer",
-					"minimum": 1,
-					"description": "Number of simultaneously synchronized schools"
-				},
-				"STUDENTS_TEACHERS_CLASSES_LIMIT": {
-					"type": "integer",
-					"minimum": 1,
-					"description": "Number of simultaneously synchronized students, teachers and classes"
-				}
-			}
 		},
 		"ADMIN_API_CLIENT": {
 			"type": "object",
