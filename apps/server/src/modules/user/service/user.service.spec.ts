@@ -363,6 +363,46 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('saveEntity', () => {
+		describe('when save is successfull', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				return {
+					user,
+				};
+			};
+
+			it('should call the userRepo.save', async () => {
+				const { user } = setup();
+
+				await service.saveEntity(user);
+
+				expect(userRepo.save).toHaveBeenCalledWith(user);
+			});
+		});
+
+		describe('when save is not successfull', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const error = new Error('Error');
+
+				userRepo.save.mockRejectedValueOnce(error);
+
+				return {
+					user,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, error } = setup();
+
+				await expect(service.saveEntity(user)).rejects.toThrowError(error);
+			});
+		});
+	});
+
 	describe('findByExternalId is called', () => {
 		describe('when a user with this external id exists', () => {
 			it('should return the user', async () => {

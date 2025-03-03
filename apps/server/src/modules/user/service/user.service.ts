@@ -103,6 +103,10 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return savedUser;
 	}
 
+	public async saveEntity(user: User): Promise<void> {
+		await this.userRepo.save(user);
+	}
+
 	public async saveAll(users: UserDo[]): Promise<UserDo[]> {
 		const savedUsers = await this.userDORepo.saveAll(users);
 
