@@ -171,7 +171,7 @@ describe('CourseService', () => {
 
 			await expect(courseService.findAllByUserId(userId)).resolves.not.toThrow();
 
-			expect(courseRepo.findAllByUserId).toBeCalledWith(userId);
+			expect(courseRepo.findAllByUserId).toBeCalledWith(userId, undefined, undefined);
 		});
 	});
 
