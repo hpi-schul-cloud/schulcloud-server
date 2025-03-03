@@ -9,7 +9,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { User, UserRepo } from '@modules/user/repo';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,7 +23,6 @@ describe('CourseService', () => {
 	let module: TestingModule;
 	let courseService: CourseService;
 
-	let userRepo: DeepMocked<UserRepo>;
 	let eventBus: DeepMocked<EventBus>;
 	let courseRepo: DeepMocked<CourseRepo>;
 
@@ -32,10 +31,6 @@ describe('CourseService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CourseService,
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
@@ -58,7 +53,6 @@ describe('CourseService', () => {
 		}).compile();
 		courseRepo = module.get(CourseRepo);
 		courseService = module.get(CourseService);
-		userRepo = module.get(UserRepo);
 		eventBus = module.get(EventBus);
 	});
 
@@ -96,7 +90,6 @@ describe('CourseService', () => {
 				const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const allCourses = [course1, course2, course3];
 
-				userRepo.findById.mockResolvedValue(user);
 				courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 
 				return {
@@ -132,7 +125,6 @@ describe('CourseService', () => {
 			const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 			const allCourses = [course1, course2, course3];
 
-			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSE, [

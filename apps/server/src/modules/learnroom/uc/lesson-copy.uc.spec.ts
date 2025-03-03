@@ -6,7 +6,7 @@ import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/cop
 import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonCopyService, LessonService } from '@modules/lesson';
-import { User, UserRepo } from '@modules/user/repo';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -19,7 +19,6 @@ import { LessonCopyUC } from './lesson-copy.uc';
 describe('lesson copy uc', () => {
 	let module: TestingModule;
 	let uc: LessonCopyUC;
-	let userRepo: DeepMocked<UserRepo>;
 	let lessonService: DeepMocked<LessonService>;
 	let courseRepo: DeepMocked<CourseRepo>;
 	let authorisation: DeepMocked<AuthorizationService>;
@@ -35,10 +34,6 @@ describe('lesson copy uc', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyUC,
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
 				{
 					provide: LessonService,
 					useValue: createMock<LessonService>(),
@@ -63,7 +58,6 @@ describe('lesson copy uc', () => {
 		}).compile();
 
 		uc = module.get(LessonCopyUC);
-		userRepo = module.get(UserRepo);
 		lessonService = module.get(LessonService);
 		authorisation = module.get(AuthorizationService);
 		courseRepo = module.get(CourseRepo);
@@ -300,7 +294,6 @@ describe('lesson copy uc', () => {
 
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
 
-				userRepo.findById.mockResolvedValueOnce(user);
 				lessonService.findById.mockResolvedValueOnce(lesson);
 				courseRepo.findById.mockResolvedValueOnce(course);
 				authorisation.hasPermission.mockReturnValueOnce(false);
@@ -331,7 +324,6 @@ describe('lesson copy uc', () => {
 
 				const parentParams = { courseId: course.id, userId: new ObjectId().toHexString() };
 
-				userRepo.findById.mockResolvedValueOnce(user);
 				lessonService.findById.mockResolvedValueOnce(lesson);
 				courseRepo.findById.mockResolvedValueOnce(course);
 				authorisation.checkPermission.mockImplementationOnce(() => {
