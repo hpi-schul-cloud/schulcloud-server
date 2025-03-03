@@ -988,7 +988,6 @@ describe('ToolController (API)', () => {
 				axiosMock.onPost(`${mediaSourceEntity.oauthConfig!.authEndpoint}.*`).replyOnce(HttpStatus.OK, mockToken);
 
 				const mockResponseData: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
-				const mediumIds = mockResponseData.map((response: BiloMediaQueryResponse) => response.query.id);
 
 				const mockAxiosResponse = axiosResponseFactory.build({
 					data: mockResponseData,
@@ -1004,7 +1003,7 @@ describe('ToolController (API)', () => {
 				const { loggedInClient, mediaSourceEntity, biloMediaMetaData } = await setup();
 
 				const response: Response = await loggedInClient.get(
-					`medium/mediumId/media-source/${mediaSourceEntity.format}/${mediaSourceEntity.sourceId}/metadata`
+					`medium/mediumId/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
 				);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
