@@ -195,6 +195,26 @@ describe('CourseService', () => {
 		});
 	});
 
+	describe('save', () => {
+		describe('when saving Course', () => {
+			const setup = () => {
+				const course = courseEntityFactory.buildWithId();
+
+				courseRepo.save.mockResolvedValueOnce();
+
+				return { course };
+			};
+
+			it('should call save from course repository', async () => {
+				const { course } = setup();
+
+				await expect(courseService.save(course)).resolves.not.toThrow();
+
+				expect(courseRepo.save).toBeCalledWith(course);
+			});
+		});
+	});
+
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();

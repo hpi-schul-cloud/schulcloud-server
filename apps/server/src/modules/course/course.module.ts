@@ -7,6 +7,7 @@ import {
 	COURSE_REPO,
 	CourseAuthorizableService,
 	CourseDoService,
+	CourseGroupAuthorizableService,
 	CourseGroupService,
 	CourseService,
 	CourseSyncService,
@@ -14,7 +15,6 @@ import {
 } from './domain';
 import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
-import { CourseGroupAuthorizableService } from './domain/service/course-gropu-authorizable.service';
 
 @Module({
 	imports: [RoleModule, LoggerModule, CqrsModule, AuthorizationModule],

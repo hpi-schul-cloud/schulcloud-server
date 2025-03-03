@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
-import { courseFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { courseFactory } from '../../testing';
 import { COURSE_REPO, CourseRepo } from '../interface';
 import { CourseAuthorizableService } from './course-authorizable.service';
 
@@ -10,7 +10,7 @@ describe(CourseAuthorizableService.name, () => {
 	let service: CourseAuthorizableService;
 
 	let courseRepo: DeepMocked<CourseRepo>;
-	let injectionService: DeepMocked<AuthorizationInjectionService>;
+	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -55,7 +55,15 @@ describe(CourseAuthorizableService.name, () => {
 				};
 			};
 
-			it('should return a contextExternalTool', async () => {
+			it('should call courseRepo.findCourseById with correctly props', async () => {
+				const { course } = setup();
+
+				await service.findById(course.id);
+
+				expect(courseRepo.findCourseById).toBeCalledWith(course.id);
+			});
+
+			it('should return a course', async () => {
 				const { course } = setup();
 
 				const result = await service.findById(course.id);

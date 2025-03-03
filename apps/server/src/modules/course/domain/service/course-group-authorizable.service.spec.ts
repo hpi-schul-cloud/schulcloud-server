@@ -4,14 +4,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CourseEntity, CourseGroupEntity, CourseGroupRepo } from '../../repo';
 import { courseGroupEntityFactory } from '../../testing';
-import { CourseGroupAuthorizableService } from './course-gropu-authorizable.service';
+import { CourseGroupAuthorizableService } from './course-group-authorizable.service';
 
 describe(CourseGroupAuthorizableService.name, () => {
 	let module: TestingModule;
 	let service: CourseGroupAuthorizableService;
 
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
-	let injectionService: DeepMocked<AuthorizationInjectionService>;
+	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
 		await setupEntities([CourseEntity, CourseGroupEntity]);
