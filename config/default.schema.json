@@ -746,17 +746,17 @@
 			"default": "false",
 			"description": "Login via Link generation (to the right form)."
 		},
-		"FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED": {
+		"FEATURE_USER_LOGIN_MIGRATION_ENABLED": {
 			"type": "boolean",
 			"default": "false",
-			"description": "Enables the oauth system (iserv to sanis) migration feature."
+			"description": "Enables the oauth system migration feature."
 		},
 		"MIGRATION_END_GRACE_PERIOD_MS": {
 			"type": "number",
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
-		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+		"FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
