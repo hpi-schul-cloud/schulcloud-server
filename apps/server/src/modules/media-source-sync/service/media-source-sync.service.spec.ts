@@ -43,6 +43,7 @@ describe(MediaSourceSyncService.name, () => {
 	});
 
 	afterEach(() => {
+		jest.resetAllMocks();
 		jest.clearAllMocks();
 	});
 
@@ -196,7 +197,7 @@ describe(MediaSourceSyncService.name, () => {
 
 		describe('when the sync strategy is not implemented', () => {
 			const setup = () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+				const mediaSourceDataFormat = 'UKNOWN_FORMAT' as MediaSourceDataFormat;
 
 				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
 				Reflect.set(service, 'syncStrategyMap', strategyMap);
