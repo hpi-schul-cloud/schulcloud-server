@@ -1,6 +1,5 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
-import { CourseGroupRepo } from '@modules/course/repo';
 import { InstanceModule } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { UserModule } from '@modules/user';
@@ -16,14 +15,7 @@ import { AuthorizationReferenceService, ReferenceLoader } from './domain';
  */
 @Module({
 	imports: [AuthorizationModule, LoggerModule, InstanceModule, UserModule],
-	providers: [
-		ReferenceLoader,
-		CourseGroupRepo,
-		TaskRepo,
-		LegacySchoolRepo,
-		SubmissionRepo,
-		AuthorizationReferenceService,
-	],
+	providers: [ReferenceLoader, TaskRepo, LegacySchoolRepo, SubmissionRepo, AuthorizationReferenceService],
 	exports: [AuthorizationReferenceService],
 })
 export class AuthorizationReferenceModule {}
