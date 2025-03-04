@@ -105,9 +105,6 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		await this.repo.save(course);
 	}
 
-	/**
-	 * name
-	 */
 	public async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<CourseEntity[]> {
 		const [courses] = await this.repo.findAllForTeacherOrSubstituteTeacher(userId);
 
