@@ -1,4 +1,4 @@
-// Needs deep import because of cyclic dependency
+// Needs deep import because of cyclic dependency - will be solved in BC-9169
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,

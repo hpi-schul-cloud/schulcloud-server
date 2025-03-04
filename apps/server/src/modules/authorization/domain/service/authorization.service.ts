@@ -1,5 +1,5 @@
 import { User } from '@modules/user/repo';
-// Needs deep import because of cyclic dependency
+// Needs deep import because of cyclic dependency  - will be solved in BC-9169
 import { UserService } from '@modules/user/service/user.service';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
