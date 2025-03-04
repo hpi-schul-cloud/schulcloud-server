@@ -3,7 +3,6 @@ const airbnbRules = require('./.eslint-rules-airbnb.js');
 module.exports = {
 	extends: ['prettier', 'plugin:promise/recommended'],
 	rules: {
-		...airbnbRules,
 		'prettier/prettier': ['error'],
 		'no-process-env': 'error',
 		'no-multiple-empty-lines': [
@@ -74,6 +73,11 @@ module.exports = {
 			parserOptions: {
 				project: 'apps/server/tsconfig.lint.json',
 				sourceType: 'module',
+				ecmaVersion: 2018,
+				ecmaFeatures: {
+					generators: false,
+					objectLiteralDuplicateProperties: false,
+				},
 			},
 			plugins: ['@typescript-eslint/eslint-plugin', 'import'],
 			extends: [
@@ -84,6 +88,7 @@ module.exports = {
 				'plugin:import/typescript',
 			],
 			rules: {
+				...airbnbRules,
 				'import/no-unresolved': 'off', // better handled by ts resolver
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
 				'import/prefer-default-export': 'off',
