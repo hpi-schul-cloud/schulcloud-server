@@ -14,7 +14,6 @@ export class MediaSourceResponse {
 	@ApiPropertyOptional({
 		enum: MediaSourceDataFormat,
 		enumName: 'MediaSourceDataFormat',
-		isArray: true,
 		description: 'Format of the media source data',
 	})
 	public format?: MediaSourceDataFormat;
