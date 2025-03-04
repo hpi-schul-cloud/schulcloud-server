@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
@@ -729,17 +729,22 @@ describe(ExternalToolUc.name, () => {
 
 			it('should successfully check the user permission with the authorization service', async () => {
 				const { currentUser, user } = setupAuthorization();
-				const { toolId } = setupDefault();
+				const { toolId, externalTool } = setupDefault();
+				externalToolService.findById.mockResolvedValue(externalTool);
 
 				await uc.getExternalTool(currentUser.userId, toolId);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					externalTool,
+					AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
+				);
 			});
 
 			it('should throw if the user has insufficient permission to get an external tool', async () => {
 				const { currentUser } = setupAuthorization();
 				const { toolId } = setupDefault();
-				authorizationService.checkAllPermissions.mockImplementation(() => {
+				authorizationService.checkPermission.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 
@@ -764,9 +769,9 @@ describe(ExternalToolUc.name, () => {
 		const setup = () => {
 			const { externalTool, toolId, mockLogoBase64 } = setupDefault();
 
-			const externalToolToUpdate: ExternalToolUpdate = {
+			const externalToolToUpdateProps: ExternalToolUpdate = {
 				...externalTool.getProps(),
-				name: 'newName',
+				name: 'oldName',
 				url: undefined,
 			};
 			const updatedExternalTool: ExternalTool = externalToolFactory.build({
@@ -778,12 +783,12 @@ describe(ExternalToolUc.name, () => {
 			const lti11ToolConfig: Lti11ToolConfig = lti11ToolConfigFactory.build();
 
 			externalToolService.updateExternalTool.mockResolvedValue(updatedExternalTool);
-			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolToUpdate));
+			externalToolService.findById.mockResolvedValue(new ExternalTool(externalToolToUpdateProps));
 
 			return {
 				externalTool,
-				updatedExternalToolDO: updatedExternalTool,
-				externalToolDOtoUpdate: externalToolToUpdate,
+				updatedExternalTool,
+				externalToolToUpdateProps,
 				toolId,
 				mockLogoBase64,
 				lti11ToolConfig,
@@ -793,33 +798,37 @@ describe(ExternalToolUc.name, () => {
 		describe('Authorization', () => {
 			it('should call getUserWithPermissions', async () => {
 				const { currentUser } = setupAuthorization();
-				const { toolId, externalToolDOtoUpdate } = setup();
+				const { toolId, externalToolToUpdateProps } = setup();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
 
 			it('should successfully check the user permission with the authorization service', async () => {
 				const { currentUser, user } = setupAuthorization();
-				const { toolId, externalToolDOtoUpdate } = setup();
+				const { toolId, externalToolToUpdateProps } = setup();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					new ExternalTool(externalToolToUpdateProps),
+					AuthorizationContextBuilder.write([Permission.TOOL_ADMIN])
+				);
 			});
 
 			it('should throw if the user has insufficient permission to get an external tool', async () => {
 				const { currentUser } = setupAuthorization();
-				const { toolId, externalToolDOtoUpdate } = setup();
-				authorizationService.checkAllPermissions.mockImplementation(() => {
+				const { toolId, externalToolToUpdateProps } = setup();
+				authorizationService.checkPermission.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
 
 				const result: Promise<ExternalTool> = uc.updateExternalTool(
 					currentUser.userId,
 					toolId,
-					externalToolDOtoUpdate,
+					externalToolToUpdateProps,
 					'jwt'
 				);
 
@@ -829,19 +838,19 @@ describe(ExternalToolUc.name, () => {
 
 		it('should validate the tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { toolId, externalToolDOtoUpdate, mockLogoBase64 } = setup();
+			const { toolId, externalToolToUpdateProps, mockLogoBase64 } = setup();
 
-			await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+			await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
 
 			expect(toolValidationService.validateUpdate).toHaveBeenCalledWith(
 				toolId,
-				new ExternalTool({ ...externalToolDOtoUpdate, logo: mockLogoBase64, id: expect.any(String) })
+				new ExternalTool({ ...externalToolToUpdateProps, logo: mockLogoBase64, id: expect.any(String) })
 			);
 		});
 
 		it('should throw if validation of the tool fails', async () => {
 			const { currentUser } = setupAuthorization();
-			const { toolId, externalToolDOtoUpdate } = setup();
+			const { toolId, externalToolToUpdateProps } = setup();
 			toolValidationService.validateUpdate.mockImplementation(() => {
 				throw new UnprocessableEntityException();
 			});
@@ -849,7 +858,7 @@ describe(ExternalToolUc.name, () => {
 			const result: Promise<ExternalTool> = uc.updateExternalTool(
 				currentUser.userId,
 				toolId,
-				externalToolDOtoUpdate,
+				externalToolToUpdateProps,
 				'jwt'
 			);
 
@@ -858,25 +867,25 @@ describe(ExternalToolUc.name, () => {
 
 		it('should call the service to update the tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { toolId, externalToolDOtoUpdate } = setup();
+			const { toolId, externalToolToUpdateProps } = setup();
 
-			await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+			await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
 
 			expect(externalToolService.updateExternalTool).toHaveBeenCalled();
 		});
 
 		it('should return the updated tool', async () => {
 			const { currentUser } = setupAuthorization();
-			const { toolId, externalToolDOtoUpdate, updatedExternalToolDO } = setup();
+			const { toolId, externalToolToUpdateProps, updatedExternalTool } = setup();
 
 			const result: ExternalTool = await uc.updateExternalTool(
 				currentUser.userId,
 				toolId,
-				externalToolDOtoUpdate,
+				externalToolToUpdateProps,
 				'jwt'
 			);
 
-			expect(result).toEqual(updatedExternalToolDO);
+			expect(result).toEqual(updatedExternalTool);
 		});
 
 		describe('when fetching logo', () => {
@@ -1194,12 +1203,16 @@ describe(ExternalToolUc.name, () => {
 		};
 
 		it('should check that the user has TOOL_ADMIN permission', async () => {
-			const { toolId, currentUser, user } = setup();
+			const { toolId, currentUser, user, externalTool } = setup();
 
 			await uc.deleteExternalTool(currentUser.userId, toolId, 'jwt');
 
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
-			expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+				user,
+				externalTool,
+				AuthorizationContextBuilder.write([Permission.TOOL_ADMIN])
+			);
 		});
 
 		it('should call ExternalToolService', async () => {
@@ -1255,7 +1268,11 @@ describe(ExternalToolUc.name, () => {
 
 				await uc.getUtilizationForExternalTool(user.id, tool.id);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					tool,
+					AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
+				);
 			});
 		});
 

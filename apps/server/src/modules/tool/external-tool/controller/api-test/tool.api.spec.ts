@@ -466,20 +466,25 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				const externalTool = externalToolEntityFactory.build();
+
+				await em.persistAndFlush([adminAccount, adminUser, externalTool]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient };
+				return {
+					loggedInClient,
+					externalTool,
+				};
 			};
 
-			it('should return unauthorized', async () => {
-				const { loggedInClient } = await setup();
+			it('should return forbidden', async () => {
+				const { loggedInClient, externalTool } = await setup();
 
-				const response: Response = await loggedInClient.get(`${new ObjectId().toHexString()}`);
+				const response: Response = await loggedInClient.get(externalTool.id);
 
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
@@ -648,7 +653,7 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ id: toolId });
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -659,12 +664,12 @@ describe('ToolController (API)', () => {
 				return { loggedInClient, params, toolId };
 			};
 
-			it('should return unauthorized', async () => {
+			it('should return forbidden', async () => {
 				const { loggedInClient, params, toolId } = await setup();
 
-				const response: Response = await loggedInClient.post(`${toolId}`, params);
+				const response: Response = await loggedInClient.post(toolId, params);
 
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
@@ -738,12 +743,12 @@ describe('ToolController (API)', () => {
 				return { loggedInClient, externalTool };
 			};
 
-			it('should return unauthorized', async () => {
+			it('should return forbidden', async () => {
 				const { loggedInClient, externalTool } = await setup();
 
 				const response: Response = await loggedInClient.delete(externalTool.id);
 
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});
