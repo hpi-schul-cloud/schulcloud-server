@@ -9,7 +9,7 @@ import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
 import { DataDeletedEvent, UserDeletedEvent } from '../../domain/event';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { DeletionLogService, DeletionRequestService, DeletionExecutionSagaService } from '../../domain/service';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
@@ -25,7 +25,8 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM,
-		private readonly configService: ConfigService<DeletionConfig, true>
+		private readonly configService: ConfigService<DeletionConfig, true>,
+		private readonly deletionExecutionService: DeletionExecutionSagaService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 		this.config = [
@@ -99,6 +100,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 				await Promise.all(
 					deletionRequests.map(async (req) => {
 						await this.executeDeletionRequest(req);
+						await this.deletionExecutionService.executeDeletionRequest(req);
 					})
 				);
 
