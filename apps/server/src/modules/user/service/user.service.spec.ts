@@ -12,6 +12,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
@@ -541,6 +542,32 @@ describe('UserService', () => {
 				const result = await service.findPublicTeachersBySchool(school.id);
 
 				expect(result).toEqual(expect.objectContaining({ data: [], total: 0 }));
+			});
+		});
+	});
+
+	describe('findForImportUser', () => {
+		describe('when find is successfull', () => {
+			it('should call the repo with given school and filters', async () => {
+				const school = schoolEntityFactory.build();
+				const filters = { name: 'name' };
+				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
+
+				await service.findForImportUser(school, filters, options);
+
+				expect(userRepo.findForImportUser).toHaveBeenCalledWith(school, filters, options);
+			});
+		});
+
+		describe('when find is not successfull', () => {
+			it('should call the repo with given school and filters', async () => {
+				const school = schoolEntityFactory.build();
+				const filters = { name: 'name' };
+				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
+				const error = new Error('Error');
+				userRepo.findForImportUser.mockRejectedValueOnce(error);
+
+				await expect(service.findForImportUser(school, filters, options)).rejects.toThrowError(error);
 			});
 		});
 	});
