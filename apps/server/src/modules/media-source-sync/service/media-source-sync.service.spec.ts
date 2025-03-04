@@ -197,7 +197,10 @@ describe(MediaSourceSyncService.name, () => {
 
 		describe('when the sync strategy is not implemented', () => {
 			const setup = () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.VIDIS;
+				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+
+				const mediaSource = mediaSourceFactory.withBildungslogin().build();
+				mediaSourceService.findByFormatAndSourceId.mockResolvedValue(mediaSource);
 
 				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
 				Reflect.set(service, 'syncStrategyMap', strategyMap);
