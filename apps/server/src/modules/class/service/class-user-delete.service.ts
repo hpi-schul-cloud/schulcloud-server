@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
 	DataDeletionDomainOperationLoggable,
-	DeletionService,
+	UserDeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
@@ -16,7 +16,7 @@ import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
-export class ClassUserDeleteService implements DeletionService {
+export class ClassUserDeleteService implements UserDeletionService {
 	constructor(
 		private readonly classesRepo: ClassesRepo,
 		private readonly logger: Logger,
@@ -26,7 +26,11 @@ export class ClassUserDeleteService implements DeletionService {
 		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public getDomainName(): DomainName {
+		return DomainName.CLASS;
+	}
+
+	public async invokeUserDeletion(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Classes',
@@ -75,7 +79,8 @@ export class ClassUserDeleteService implements DeletionService {
 		return result;
 	}
 
-	public async compensateDeletion(userId: EntityId): Promise<void> {
+	// TODO: Implement this method
+	public compensateUserDeletion(userId: EntityId): void {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Compensating deletion of user data from Classes',
@@ -84,7 +89,6 @@ export class ClassUserDeleteService implements DeletionService {
 				StatusModel.PENDING
 			)
 		);
-		return Promise.resolve();
 	}
 
 	private getClassesId(classes: Class[]): EntityId[] {

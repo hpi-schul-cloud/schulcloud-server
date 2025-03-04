@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { DeletionService } from '../interface';
+import { UserDeletionService } from '../interface';
 
 @Injectable()
 export class UserDeletionInjectionService {
-	private readonly userDeletionServices: DeletionService[] = [];
+	private readonly userDeletionServices: UserDeletionService[] = [];
 
-	public injectUserDeletionService(deletionService: DeletionService): void {
-		this.userDeletionServices.push(deletionService);
+	public injectUserDeletionService(userDeletionService: UserDeletionService): void {
+		this.userDeletionServices.push(userDeletionService);
 	}
 
-	public getUserDeletionServices(): DeletionService[] {
+	public getUserDeletionServices(): UserDeletionService[] {
 		return this.userDeletionServices;
 	}
 }

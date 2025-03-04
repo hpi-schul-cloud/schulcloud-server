@@ -1,8 +1,8 @@
 import { LoggerModule } from '@core/logger';
 import { CalendarModule } from '@infra/calendar';
-// import { ClassModule } from '@modules/class';
+import { ClassModule } from '@modules/class';
 import { FilesModule } from '@modules/files';
-// import { NewsModule } from '@modules/news';
+import { NewsModule } from '@modules/news';
 import { PseudonymModule } from '@modules/pseudonym';
 import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { TeamsModule } from '@modules/teams';
@@ -23,8 +23,8 @@ import { DeletionBatchController } from './api/controller/deletion-batch.control
 		CqrsModule,
 		DeletionModule,
 		LoggerModule,
-		// ClassModule,
-		// NewsModule,
+		ClassModule,
+		NewsModule,
 		TeamsModule,
 		PseudonymModule,
 		FilesModule,
