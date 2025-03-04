@@ -53,7 +53,7 @@ export class SchulconnexAsyncProvisioningStrategy extends SchulconnexBaseProvisi
 			school?.id
 		);
 
-		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+		if (this.configService.get('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')) {
 			await this.provisionGroups(data, user, school);
 		}
 
