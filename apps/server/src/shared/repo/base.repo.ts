@@ -22,6 +22,10 @@ export abstract class BaseRepo<T extends BaseEntity> {
 		await this._em.persistAndFlush(entities);
 	}
 
+	persist(entities: T | T[]): void {
+		this._em.persist(entities);
+	}
+
 	async delete(entities: T | T[]): Promise<void> {
 		await this._em.removeAndFlush(entities);
 	}
