@@ -1,3 +1,4 @@
+// Needs deep import because of cyclic dependency
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
