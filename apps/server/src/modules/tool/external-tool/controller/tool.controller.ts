@@ -72,7 +72,7 @@ export class ToolController {
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates an ExternalTool' })
-	async createExternalTool(
+	public async createExternalTool(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
@@ -94,7 +94,7 @@ export class ToolController {
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates multiple ExternalTools at the same time.' })
-	async importExternalTools(
+	public async importExternalTools(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
@@ -117,7 +117,7 @@ export class ToolController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Returns a list of ExternalTools' })
-	async findExternalTool(
+	public async findExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() filterQuery: ExternalToolSearchParams,
 		@Query() pagination: PaginationParams,
@@ -145,7 +145,7 @@ export class ToolController {
 
 	@Get(':externalToolId')
 	@ApiOperation({ summary: 'Returns an ExternalTool for the given id' })
-	async getExternalTool(
+	public async getExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolResponse> {
@@ -164,7 +164,7 @@ export class ToolController {
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Updates an ExternalTool' })
-	async updateExternalTool(
+	public async updateExternalTool(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
@@ -188,7 +188,7 @@ export class ToolController {
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	@ApiOperation({ summary: 'Deletes an ExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async deleteExternalTool(
+	public async deleteExternalTool(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
@@ -211,7 +211,7 @@ export class ToolController {
 		description: 'Logo of external tool fetched successfully.',
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise<void> {
+	public async getExternalToolLogo(@Param() params: ExternalToolIdParams, @Res() res: Response): Promise<void> {
 		const externalToolLogo: ExternalToolLogo = await this.externalToolLogoService.getExternalToolBinaryLogo(
 			params.externalToolId
 		);
@@ -227,7 +227,7 @@ export class ToolController {
 		type: ExternalToolUtilizationResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getUtilizationForExternalTool(
+	public async getUtilizationForExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolUtilizationResponse> {
@@ -246,7 +246,7 @@ export class ToolController {
 	@ApiOperation({ summary: 'Returns a pdf of the external tool information' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
 	@ApiNotFoundResponse({ description: 'The external tool has not been found' })
-	async getDatasheet(
+	public async getDatasheet(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
 		@Res({ passthrough: true }) res: Response
@@ -265,7 +265,7 @@ export class ToolController {
 	@Get('medium/:mediumId/media-source/:format/:mediaSourceId/metadata')
 	@ApiOperation({ summary: 'Returns metadata from media source for configuration of a medium' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getMetadataForExternalToolFromMediaSource(
+	public async getMetadataForExternalToolFromMediaSource(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolMediumParams
 	): Promise<ExternalToolMediumMetadataResponse> {
