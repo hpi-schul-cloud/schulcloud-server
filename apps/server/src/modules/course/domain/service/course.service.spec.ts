@@ -171,7 +171,7 @@ describe('CourseService', () => {
 
 			await expect(courseService.findAllByUserId(userId)).resolves.not.toThrow();
 
-			expect(courseRepo.findAllByUserId).toBeCalledWith(userId);
+			expect(courseRepo.findAllByUserId).toBeCalledWith(userId, undefined, undefined);
 		});
 	});
 
@@ -191,6 +191,26 @@ describe('CourseService', () => {
 				await expect(courseService.create(course)).resolves.not.toThrow();
 
 				expect(courseRepo.createCourse).toBeCalledWith(course);
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when saving Course', () => {
+			const setup = () => {
+				const course = courseEntityFactory.buildWithId();
+
+				courseRepo.save.mockResolvedValueOnce();
+
+				return { course };
+			};
+
+			it('should call save from course repository', async () => {
+				const { course } = setup();
+
+				await expect(courseService.save(course)).resolves.not.toThrow();
+
+				expect(courseRepo.save).toBeCalledWith(course);
 			});
 		});
 	});

@@ -85,8 +85,12 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		return result;
 	}
 
-	public async findAllByUserId(userId: EntityId): Promise<CourseEntity[]> {
-		const [courses] = await this.repo.findAllByUserId(userId);
+	public async findAllByUserId(
+		userId: EntityId,
+		filters?: { onlyActiveCourses?: boolean },
+		options?: IFindOptions<CourseEntity>
+	): Promise<CourseEntity[]> {
+		const [courses] = await this.repo.findAllByUserId(userId, filters, options);
 
 		return courses;
 	}
@@ -95,6 +99,16 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		const result = await this.repo.createCourse(course);
 
 		return result;
+	}
+
+	public async save(course: CourseEntity): Promise<void> {
+		await this.repo.save(course);
+	}
+
+	public async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<CourseEntity[]> {
+		const [courses] = await this.repo.findAllForTeacherOrSubstituteTeacher(userId);
+
+		return courses;
 	}
 
 	private getCoursesId(courses: CourseEntity[]): EntityId[] {
