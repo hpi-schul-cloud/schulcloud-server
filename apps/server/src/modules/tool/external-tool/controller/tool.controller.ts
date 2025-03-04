@@ -193,16 +193,12 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<void> {
-		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(
-			currentUser.userId,
-			params.externalToolId,
-			jwt
-		);
+		const deleted = await this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId, jwt);
 		this.logger.debug(
 			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`
 		);
 
-		return promise;
+		return deleted;
 	}
 
 	@Get('/:externalToolId/logo')
@@ -231,7 +227,7 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolUtilizationResponse> {
-		const externalToolUtilization: ExternalToolUtilization = await this.externalToolUc.getUtilizationForExternalTool(
+		const externalToolUtilization: ExternalToolUtilization = await this.externalToolUc.getMetadataForExternalTool(
 			currentUser.userId,
 			params.externalToolId
 		);
