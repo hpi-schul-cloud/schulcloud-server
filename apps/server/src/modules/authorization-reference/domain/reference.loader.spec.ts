@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
-import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
 import { InstanceService } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { User, UserRepo } from '@modules/user/repo';
@@ -18,8 +17,6 @@ describe('reference.loader', () => {
 	let service: ReferenceLoader;
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let userRepo: DeepMocked<UserRepo>;
-	let courseRepo: DeepMocked<CourseRepo>;
-	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
 	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
@@ -39,14 +36,6 @@ describe('reference.loader', () => {
 				{
 					provide: UserRepo,
 					useValue: createMock<UserRepo>(),
-				},
-				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
-				},
-				{
-					provide: CourseGroupRepo,
-					useValue: createMock<CourseGroupRepo>(),
 				},
 				{
 					provide: TaskRepo,
@@ -70,8 +59,6 @@ describe('reference.loader', () => {
 		service = await module.get(ReferenceLoader);
 		injectionService = await module.get(AuthorizationInjectionService);
 		userRepo = await module.get(UserRepo);
-		courseRepo = await module.get(CourseRepo);
-		courseGroupRepo = await module.get(CourseGroupRepo);
 		taskRepo = await module.get(TaskRepo);
 		schoolRepo = await module.get(LegacySchoolRepo);
 		submissionRepo = await module.get(SubmissionRepo);
@@ -126,17 +113,6 @@ describe('reference.loader', () => {
 	describe('currently, the reference loader has to inject the loaders into the injection service. In the future, this part should be moved into the modules.', () => {
 		it('should inject user repo', () => {
 			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.User, userRepo);
-		});
-
-		it('should inject course repo', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Course, courseRepo);
-		});
-
-		it('should inject course group repo', () => {
-			expect(injectionService.injectReferenceLoader).toBeCalledWith(
-				AuthorizableReferenceType.CourseGroup,
-				courseGroupRepo
-			);
 		});
 
 		it('should inject task repo', () => {

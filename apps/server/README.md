@@ -49,10 +49,10 @@ See [ErWIn-IDM specific documentation](https://hpi-schul-cloud.github.io/schulcl
 6. Add secrets to systems (optional)
 
 The systems of the seed data do not contain any secrets, so connecting to those systems will fail.
-You can add these secrets by putting them into your env vars. E.g. if you add `SANIS_CLIENT_ID=<actual secret>` into your .env file, the secret will be written into the db, when you run the database setup. You need to add the env var `AES_KEY` as well to encrypt those secrets in the DB.
+You can add these secrets by putting them into your env vars. E.g. if you add `SCHULCONNEX_CLIENT_ID=<actual secret>` into your .env file, the secret will be written into the db, when you run the database setup. You need to add the env var `AES_KEY` as well to encrypt those secrets in the DB.
 The real secrets can be found in the password store.
 
-While exporting the systems to JSON the secrets will be replaced by placeholders following the pattern `<capitalized alias>_<capitalized property name>`. So the system with alias "sanis" and the secret property "clientId" will be replaced by "SANIS_CLIENT_ID"
+While exporting the systems to JSON the secrets will be replaced by placeholders following the pattern `<capitalized alias>_<capitalized property name>`. So the system with alias "sanis" and the secret property "clientId" will be replaced by "SCHULCONNEX_CLIENT_ID"
 
 ### How to start the application
 
