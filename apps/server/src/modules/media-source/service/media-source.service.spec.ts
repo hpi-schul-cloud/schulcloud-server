@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediaSourceRepo } from '../repo';
 import { MediaSourceDataFormat } from '../enum';
+import { MediaSourceRepo } from '../repo';
 import { mediaSourceFactory } from '../testing';
 import { MediaSourceService } from './media-source.service';
 
@@ -81,32 +81,32 @@ describe(MediaSourceService.name, () => {
 		});
 	});
 
-	describe('save', () => {
-		describe('when saving a media source', () => {
+	describe('saveAll', () => {
+		describe('when saving media sources', () => {
 			const setup = () => {
-				const mediaSource = mediaSourceFactory.build();
+				const mediaSources = mediaSourceFactory.buildList(2);
 
-				mediaSourceRepo.save.mockResolvedValueOnce(mediaSource);
+				mediaSourceRepo.saveAll.mockResolvedValueOnce(mediaSources);
 
 				return {
-					mediaSource,
+					mediaSources,
 				};
 			};
 
-			it('should save the media source', async () => {
-				const { mediaSource } = setup();
+			it('should save the media sources', async () => {
+				const { mediaSources } = setup();
 
-				await service.save(mediaSource);
+				await service.saveAll(mediaSources);
 
-				expect(mediaSourceRepo.save).toHaveBeenCalledWith(mediaSource);
+				expect(mediaSourceRepo.saveAll).toHaveBeenCalledWith(mediaSources);
 			});
 
-			it('should return the media source', async () => {
-				const { mediaSource } = setup();
+			it('should return the media sources', async () => {
+				const { mediaSources } = setup();
 
-				const result = await service.save(mediaSource);
+				const result = await service.saveAll(mediaSources);
 
-				expect(result).toEqual(mediaSource);
+				expect(result).toEqual(mediaSources);
 			});
 		});
 	});

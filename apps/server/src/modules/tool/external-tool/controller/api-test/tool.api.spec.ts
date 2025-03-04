@@ -1,5 +1,5 @@
 import { BiloMediaQueryResponse } from '@infra/bilo-client';
-import { biloMediaQueryDataResponseFactory, biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
+import { biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
@@ -17,10 +17,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios, { AxiosResponse } from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { MediaMetadataMapper } from '../../../../media-source-sync/mapper';
 import { mediaSourceEntityFactory } from '../../../../media-source/testing';
 import { OAuthTokenDto } from '../../../../oauth-adapter';
-import { ProviderLoginResponse, ProviderRedirectResponse } from '../../../../oauth-provider/domain';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -37,9 +35,9 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolUtilizationResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
+	ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {
@@ -990,7 +988,6 @@ describe('ToolController (API)', () => {
 				axiosMock.onPost(`${mediaSourceEntity.oauthConfig!.authEndpoint}.*`).replyOnce(HttpStatus.OK, mockToken);
 
 				const mockResponseData: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
-				const mediumIds = mockResponseData.map((response: BiloMediaQueryResponse) => response.query.id);
 
 				const mockAxiosResponse = axiosResponseFactory.build({
 					data: mockResponseData,
@@ -1006,7 +1003,7 @@ describe('ToolController (API)', () => {
 				const { loggedInClient, mediaSourceEntity, biloMediaMetaData } = await setup();
 
 				const response: Response = await loggedInClient.get(
-					`medium/mediumId/media-source/${mediaSourceEntity.format}/${mediaSourceEntity.sourceId}/metadata`
+					`medium/mediumId/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
 				);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);

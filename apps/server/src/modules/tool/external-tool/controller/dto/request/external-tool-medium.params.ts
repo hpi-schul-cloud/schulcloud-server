@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { MediaSourceDataFormat } from '@modules/media-source';
-import { ToolContextType } from '../../../../common/enum';
 
 export class ExternalToolMediumParams {
 	@IsString()

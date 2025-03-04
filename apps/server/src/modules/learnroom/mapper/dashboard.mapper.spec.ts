@@ -1,17 +1,17 @@
-import { Course, CourseGroup } from '@shared/domain/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { DashboardResponse } from '../controller/dto';
 import { Dashboard, GridElement, GridElementWithPosition } from '../domain/do/dashboard';
 import { DashboardMapper } from './dashboard.mapper';
 
 describe('dashboard mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	it('should map the required properties correctly', () => {
-		const mock = courseFactory.buildWithId({ name: 'Mathe' });
+		const mock = courseEntityFactory.buildWithId({ name: 'Mathe' });
 		const gridArray: GridElementWithPosition[] = [
 			{
 				pos: { x: 1, y: 3 },
@@ -20,8 +20,8 @@ describe('dashboard mapper', () => {
 			{
 				pos: { x: 2, y: 3 },
 				gridElement: GridElement.FromPersistedGroup('groupId', 'groupTitle', [
-					courseFactory.buildWithId({ name: 'English' }),
-					courseFactory.buildWithId({ name: 'Deutsch' }),
+					courseEntityFactory.buildWithId({ name: 'English' }),
+					courseEntityFactory.buildWithId({ name: 'Deutsch' }),
 				]),
 			},
 		];

@@ -1,17 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { biloMediaQueryDataResponseFactory, biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MediaSourceService, MediaSourceDataFormat, MediaSourceNotFoundLoggableException } from '@modules/media-source';
+import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
+import { MediaSourceDataFormat, MediaSourceNotFoundLoggableException, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { MediaMetadataDto } from '../dto';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
 import { MediaSourceDataFormatMissingLoggableException } from '../loggable/media-source-data-format-missing-loggable.exception';
 import { MediaSourceIdMissingLoggableException } from '../loggable/media-source-id-missing-loggable.exception';
 import { MediaMetadataMapper } from '../mapper';
 import { mediaSourceSyncReportFactory } from '../testing';
-import { BiloSyncStrategy } from './strategy';
 import { MediaSourceSyncService } from './media-source-sync.service';
+import { BiloSyncStrategy } from './strategy';
 
 describe(MediaSourceSyncService.name, () => {
 	let module: TestingModule;
@@ -45,6 +44,7 @@ describe(MediaSourceSyncService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('syncAllMediaMetadata', () => {
@@ -197,7 +197,7 @@ describe(MediaSourceSyncService.name, () => {
 
 		describe('when the sync strategy is not implemented', () => {
 			const setup = () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+				const mediaSourceDataFormat = MediaSourceDataFormat.VIDIS;
 
 				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
 				Reflect.set(service, 'syncStrategyMap', strategyMap);

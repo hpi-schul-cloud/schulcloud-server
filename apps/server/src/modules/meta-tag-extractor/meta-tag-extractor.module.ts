@@ -1,7 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { ConsoleWriterModule } from '@infra/console';
 import { BoardModule } from '@modules/board';
-import { LearnroomModule } from '@modules/learnroom';
+import { CourseModule } from '@modules/course';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { UserModule } from '@modules/user';
@@ -20,7 +20,7 @@ import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } f
 		BoardModule,
 		ConsoleWriterModule,
 		HttpModule,
-		LearnroomModule,
+		CourseModule,
 		LessonModule,
 		LoggerModule,
 		TaskModule,

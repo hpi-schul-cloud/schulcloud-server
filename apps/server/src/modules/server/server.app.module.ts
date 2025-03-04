@@ -16,6 +16,7 @@ import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
+import { CourseApiModule } from '@modules/course/course-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
@@ -56,6 +57,7 @@ import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
+	CourseApiModule,
 	AuthenticationApiModule,
 	AuthGuardModule.register([AuthGuardOptions.JWT]),
 	AuthorizationReferenceApiModule,

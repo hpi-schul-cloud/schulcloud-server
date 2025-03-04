@@ -3,14 +3,14 @@ import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { BoardContextApiHelperModule } from '@modules/board-context';
+import { CourseModule } from '@modules/course';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
-import { LearnroomModule } from '@modules/learnroom';
-import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { CommonToolModule } from './common';
 import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
 import { ToolContextController, ToolDeepLinkController } from './context-external-tool/controller';
@@ -34,7 +34,7 @@ import { ToolModule } from './tool.module';
 		AuthorizationModule,
 		LoggerModule,
 		LegacySchoolModule,
-		LearnroomModule,
+		CourseModule,
 		BoardModule,
 		BoardContextApiHelperModule,
 		SchoolModule,
