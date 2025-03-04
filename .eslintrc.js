@@ -1,4 +1,4 @@
-const airbnbRules = require('./.eslint-rules-airbnb.js');
+import airbnbRules from './.eslint-rules-airbnb.js';
 
 module.exports = {
 	extends: ['prettier', 'plugin:promise/recommended'],
