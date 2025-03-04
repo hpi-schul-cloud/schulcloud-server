@@ -30,7 +30,6 @@ describe('CourseGroupService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupService,
-
 				{
 					provide: CourseGroupRepo,
 					useValue: createMock<CourseGroupRepo>(),

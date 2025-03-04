@@ -12,10 +12,9 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
-import { schoolFactory } from '@modules/school/testing';
+import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
