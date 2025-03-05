@@ -1,42 +1,36 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
-	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
+	UserDeletionService,
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo/news';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class NewsUserDeleteService implements UserDeletionService {
 	constructor(
 		private readonly newsRepo: NewsRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
-		this.logger.setContext(NewsService.name);
+		this.logger.setContext(NewsUserDeleteService.name);
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	public getDomainName(): DomainName {
+		return DomainName.NEWS;
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async invokeUserDeletion(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from News',
@@ -70,6 +64,18 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 			)
 		);
 		return result;
+	}
+
+	// TODO: Implement this method
+	public compensateUserDeletion(userId: EntityId): void {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Compensating user data deletion from News',
+				DomainName.NEWS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 	}
 
 	private getNewsId(news: News[]): EntityId[] {
