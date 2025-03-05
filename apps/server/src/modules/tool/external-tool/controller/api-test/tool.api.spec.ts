@@ -1,5 +1,3 @@
-import { BiloMediaQueryResponse } from '@infra/bilo-client';
-import { biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
@@ -7,17 +5,15 @@ import { FileRecordResponse } from '@modules/files-storage/controller/dto';
 import { instanceEntityFactory } from '@modules/instance/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
 import {
