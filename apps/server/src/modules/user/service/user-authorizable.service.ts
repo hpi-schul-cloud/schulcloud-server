@@ -1,10 +1,9 @@
-// Needs deep import because of cyclic dependency - will be solved in BC-9169
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderServiceGeneric,
 	CurrentUserLoader,
-} from '@modules/authorization/domain';
+} from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { User, UserRepo } from '../repo';
