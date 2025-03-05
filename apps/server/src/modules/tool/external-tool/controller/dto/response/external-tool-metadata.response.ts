@@ -2,11 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { ContextExternalToolCountPerContextResponse } from '../../../../common/controller/dto';
 
 export class ExternalToolMetadataResponse {
-	@ApiProperty()
-	schoolExternalToolCount: number;
+	@ApiProperty({ description: 'Amount of usages of the tool in schools' })
+	public schoolExternalToolCount: number;
 
-	@ApiProperty()
-	contextExternalToolCountPerContext: ContextExternalToolCountPerContextResponse;
+	@ApiProperty({ description: 'Amount of usages of the tool in contexts' })
+	public contextExternalToolCountPerContext: ContextExternalToolCountPerContextResponse;
 
 	constructor(externalToolMetadataResponse: ExternalToolMetadataResponse) {
 		this.schoolExternalToolCount = externalToolMetadataResponse.schoolExternalToolCount;

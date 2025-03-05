@@ -2,19 +2,19 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ExternalToolImportResultResponse {
 	@ApiProperty({ description: 'Name of the external tool' })
-	toolName: string;
+	public toolName: string;
 
 	@ApiProperty({ description: 'Medium id of the external tool' })
-	mediumId?: string;
+	public mediumId?: string;
 
 	@ApiProperty({ description: 'Medium source of the external tool' })
-	mediumSourceId?: string;
+	public mediumSourceId?: string;
 
 	@ApiProperty({ description: 'ObjectId of the created external tool' })
-	toolId?: string;
+	public toolId?: string;
 
 	@ApiProperty({ description: 'Status message of the error that occurred' })
-	error?: string;
+	public error?: string;
 
 	constructor(props: ExternalToolImportResultResponse) {
 		this.toolName = props.toolName;
@@ -30,7 +30,7 @@ export class ExternalToolImportResultListResponse {
 		type: [ExternalToolImportResultResponse],
 		description: 'List of operation results for the provided external tools',
 	})
-	results: ExternalToolImportResultResponse[];
+	public results: ExternalToolImportResultResponse[];
 
 	constructor(props: ExternalToolImportResultListResponse) {
 		this.results = props.results;

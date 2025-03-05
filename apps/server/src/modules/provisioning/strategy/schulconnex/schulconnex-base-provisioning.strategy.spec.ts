@@ -550,7 +550,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 						provisioningUrl,
 					}),
 					idToken: 'schulconnexIdToken',
-					accessToken: 'schulconnexAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const validationError: classValidator.ValidationError = new classValidator.ValidationError();

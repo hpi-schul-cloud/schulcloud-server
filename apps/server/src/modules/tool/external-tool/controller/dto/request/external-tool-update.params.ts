@@ -15,31 +15,31 @@ import { ExternalToolMediumParams } from './external-tool-medium.params';
 export class ExternalToolUpdateParams {
 	@IsString()
 	@ApiProperty({ type: String, description: 'ID of the external tool' })
-	id!: string;
+	public id!: string;
 
 	@IsString()
 	@ApiProperty()
-	name!: string;
+	public name!: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ type: String, description: 'Description of the external tool' })
-	description?: string;
+	public description?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ type: String, description: 'URL of the external tool' })
-	url?: string;
+	public url?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ type: String, description: 'URL of the logo of the external tool' })
-	logoUrl?: string;
+	public logoUrl?: string;
 
 	@IsUrl()
 	@IsOptional()
 	@ApiPropertyOptional({ type: String, description: 'URL of the thumbnail of the external tool' })
-	thumbnailUrl?: string;
+	public thumbnailUrl?: string;
 
 	@ValidateNested()
 	@Type(() => ExternalToolConfigCreateParams, {
@@ -61,18 +61,18 @@ export class ExternalToolUpdateParams {
 			{ $ref: getSchemaPath(Oauth2ToolConfigUpdateParams) },
 		],
 	})
-	config!: Lti11ToolConfigUpdateParams | Oauth2ToolConfigUpdateParams | BasicToolConfigParams;
+	public config!: Lti11ToolConfigUpdateParams | Oauth2ToolConfigUpdateParams | BasicToolConfigParams;
 
 	@ValidateNested({ each: true })
 	@IsArray()
 	@IsOptional()
 	@ApiPropertyOptional({ type: [CustomParameterPostParams], description: 'Custom parameters of the external tool' })
 	@Type(() => CustomParameterPostParams)
-	parameters?: CustomParameterPostParams[];
+	public parameters?: CustomParameterPostParams[];
 
 	@IsBoolean()
 	@ApiProperty({ type: Boolean, default: false })
-	isHidden!: boolean;
+	public isHidden!: boolean;
 
 	@IsBoolean()
 	@ApiProperty({
@@ -80,11 +80,11 @@ export class ExternalToolUpdateParams {
 		default: false,
 		description: 'Tool can be deactivated, related tools can not be added to e.g. school, course or board anymore',
 	})
-	isDeactivated!: boolean;
+	public isDeactivated!: boolean;
 
 	@IsBoolean()
 	@ApiProperty({ type: Boolean, default: false, description: 'Open the tool in a new tab' })
-	openNewTab!: boolean;
+	public openNewTab!: boolean;
 
 	@IsArray()
 	@IsOptional()
@@ -95,16 +95,16 @@ export class ExternalToolUpdateParams {
 		isArray: true,
 		description: 'Restrict the tool to certain contexts',
 	})
-	restrictToContexts?: ToolContextType[];
+	public restrictToContexts?: ToolContextType[];
 
 	@ValidateNested()
 	@IsOptional()
 	@ApiPropertyOptional({ type: ExternalToolMediumParams, description: 'Medium of the external tool' })
-	medium?: ExternalToolMediumParams;
+	public medium?: ExternalToolMediumParams;
 
 	@IsBoolean()
 	@ApiProperty({ type: Boolean, default: false, description: 'Should the tool be a preferred tool' })
-	isPreferred!: boolean;
+	public isPreferred!: boolean;
 
 	@IsString()
 	@IsOptional()
@@ -112,5 +112,5 @@ export class ExternalToolUpdateParams {
 		type: String,
 		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
 	})
-	iconName?: string;
+	public iconName?: string;
 }

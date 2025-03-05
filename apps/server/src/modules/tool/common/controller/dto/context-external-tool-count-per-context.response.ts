@@ -1,14 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ContextExternalToolCountPerContextResponse {
-	@ApiProperty()
-	course: number;
+	@ApiProperty({ description: 'Amount of usages in courses' })
+	public course: number;
 
-	@ApiProperty()
-	boardElement: number;
+	@ApiProperty({ description: 'Amount of usages in boards' })
+	public boardElement: number;
 
-	@ApiProperty()
-	mediaBoard: number;
+	@ApiProperty({ description: 'Amount of usages in media boards' })
+	public mediaBoard: number;
 
 	constructor(props: ContextExternalToolCountPerContextResponse) {
 		this.course = props.course;
