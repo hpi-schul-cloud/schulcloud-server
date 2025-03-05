@@ -1,11 +1,12 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
 import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { Course, LessonEntity, TaskWithStatusVo } from '@shared/domain/entity';
+import { LessonEntity, TaskWithStatusVo } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { TaskRepo } from '@shared/repo/task';
 import { TaskService } from '../service';
 
@@ -14,12 +15,12 @@ export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService
 	) {}
 
-	async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
+	public async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [
@@ -60,7 +61,7 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	async findAll(userId: EntityId, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
+	public async findAll(userId: EntityId, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		let response: Counted<TaskWithStatusVo[]>;
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -76,7 +77,11 @@ export class TaskUC {
 		return response;
 	}
 
-	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
+	public async changeFinishedForUser(
+		userId: EntityId,
+		taskId: EntityId,
+		isFinished: boolean
+	): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -101,7 +106,7 @@ export class TaskUC {
 		return result;
 	}
 
-	async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+	public async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -176,19 +181,19 @@ export class TaskUC {
 
 	// it should return also the scopePermissions for this user added to the entity .scopePermission: { userId, read: boolean, write: boolean }
 	// then we can pass and allow only scoped courses to getPermittedLessonIds and validate read write of .scopePermission
-	private async getPermittedCourses(user: User, neededPermission: Action): Promise<Course[]> {
-		let permittedCourses: Course[] = [];
+	private async getPermittedCourses(user: User, neededPermission: Action): Promise<CourseEntity[]> {
+		let permittedCourses: CourseEntity[] = [];
 
 		if (neededPermission === Action.write) {
-			[permittedCourses] = await this.courseRepo.findAllForTeacherOrSubstituteTeacher(user.id);
+			permittedCourses = await this.courseService.findAllForTeacherOrSubstituteTeacher(user.id);
 		} else if (neededPermission === Action.read) {
-			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
+			permittedCourses = await this.courseService.findAllByUserId(user.id);
 		}
 
 		return permittedCourses;
 	}
 
-	private async getPermittedLessons(user: User, courses: Course[]): Promise<LessonEntity[]> {
+	private async getPermittedLessons(user: User, courses: CourseEntity[]): Promise<LessonEntity[]> {
 		const writeCourses = courses.filter((c) =>
 			this.authorizationService.hasPermission(user, c, AuthorizationContextBuilder.write([]))
 		);
@@ -216,7 +221,7 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
+	public async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 

@@ -2,6 +2,8 @@ import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CopyApiResponse } from '@modules/copy-helper';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
 import { LegacyBoard } from '@modules/learnroom/repo';
@@ -9,9 +11,8 @@ import { boardFactory } from '@modules/learnroom/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Task } from '@shared/domain/entity';
+import { Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -51,7 +52,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is loggedin', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseFactory.build({ students: [studentUser] });
+				const course = courseEntityFactory.build({ students: [studentUser] });
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([course, task, studentAccount, studentUser]);
@@ -76,7 +77,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not loggedin', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseFactory.build({ students: [studentUser] });
+				const course = courseEntityFactory.build({ students: [studentUser] });
 				const task = taskFactory.build({ course });
 
 				await em.persistAndFlush([course, task, studentAccount, studentUser]);
@@ -99,7 +100,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is loggedin', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const task = taskFactory.draft().build({ course });
 				board.syncBoardElementReferences([task]);
@@ -146,7 +147,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not loggedin', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const task = taskFactory.draft().build({ course });
 				board.syncBoardElementReferences([task]);
@@ -173,7 +174,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
@@ -203,7 +204,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
@@ -233,7 +234,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const board = boardFactory.build({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
@@ -263,7 +264,7 @@ describe('Course Rooms Controller (API)', () => {
 				const body = response.body as CopyApiResponse;
 				expect(body.id).toBeDefined();
 
-				expect(() => em.findOneOrFail(Course, body.id as string)).not.toThrow();
+				expect(() => em.findOneOrFail(CourseEntity, body.id as string)).not.toThrow();
 			});
 
 			it('should persist board of room copy', async () => {
@@ -281,7 +282,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const board = boardFactory.build({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
@@ -307,7 +308,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const lesson = lessonFactory.build({ course });
 
 				await em.persistAndFlush([lesson, course, teacherAccount, teacherUser]);
@@ -330,7 +331,7 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 				const lesson = lessonFactory.build({ course });
 
 				await em.persistAndFlush([lesson, course, teacherAccount, teacherUser]);

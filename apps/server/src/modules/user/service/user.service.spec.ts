@@ -14,7 +14,7 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
-import { schoolFactory } from '@modules/school/testing';
+import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -363,6 +363,46 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('saveEntity', () => {
+		describe('when save is successfull', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				return {
+					user,
+				};
+			};
+
+			it('should call the userRepo.save', async () => {
+				const { user } = setup();
+
+				await service.saveEntity(user);
+
+				expect(userRepo.save).toHaveBeenCalledWith(user);
+			});
+		});
+
+		describe('when save is not successfull', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const error = new Error('Error');
+
+				userRepo.save.mockRejectedValueOnce(error);
+
+				return {
+					user,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { user, error } = setup();
+
+				await expect(service.saveEntity(user)).rejects.toThrowError(error);
+			});
+		});
+	});
+
 	describe('findByExternalId is called', () => {
 		describe('when a user with this external id exists', () => {
 			it('should return the user', async () => {
@@ -501,6 +541,32 @@ describe('UserService', () => {
 				const result = await service.findPublicTeachersBySchool(school.id);
 
 				expect(result).toEqual(expect.objectContaining({ data: [], total: 0 }));
+			});
+		});
+	});
+
+	describe('findForImportUser', () => {
+		describe('when find is successfull', () => {
+			it('should call the repo with given school and filters', async () => {
+				const school = schoolEntityFactory.build();
+				const filters = { name: 'name' };
+				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
+
+				await service.findForImportUser(school, filters, options);
+
+				expect(userRepo.findForImportUser).toHaveBeenCalledWith(school, filters, options);
+			});
+		});
+
+		describe('when find is not successfull', () => {
+			it('should call the repo with given school and filters', async () => {
+				const school = schoolEntityFactory.build();
+				const filters = { name: 'name' };
+				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
+				const error = new Error('Error');
+				userRepo.findForImportUser.mockRejectedValueOnce(error);
+
+				await expect(service.findForImportUser(school, filters, options)).rejects.toThrowError(error);
 			});
 		});
 	});

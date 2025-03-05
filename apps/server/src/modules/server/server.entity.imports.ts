@@ -1,7 +1,9 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
-import { DeletionLogEntity, DeletionBatchEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
+import { CourseEntity } from '@modules/course/repo/course.entity';
+import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
+import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import {
@@ -39,8 +41,6 @@ import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/rep
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { User } from '@modules/user/repo';
-import { Course } from '@shared/domain/entity/course.entity';
-import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
@@ -63,8 +63,8 @@ export const ENTITIES = [
 	DeletionBatchEntity,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	CourseNews,
 	DashboardGridElementEntity,
 	DashboardEntity,

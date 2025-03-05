@@ -1,19 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller/dto';
-
-import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
@@ -25,7 +25,7 @@ describe('TaskUC', () => {
 	let module: TestingModule;
 	let service: TaskUC;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let lessonService: DeepMocked<LessonService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let taskService: DeepMocked<TaskService>;
@@ -37,7 +37,7 @@ describe('TaskUC', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			imports: [],
@@ -48,8 +48,8 @@ describe('TaskUC', () => {
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: LessonService,
@@ -72,7 +72,7 @@ describe('TaskUC', () => {
 
 		service = module.get(TaskUC);
 		taskRepo = module.get(TaskRepo);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		lessonService = module.get(LessonService);
 		authorizationService = module.get(AuthorizationService);
 		taskService = module.get(TaskService);
@@ -93,7 +93,7 @@ describe('TaskUC', () => {
 				const user = setupUser(permissions);
 				const finishedTask = taskFactory.finished(user).build();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+				courseService.findAllByUserId.mockResolvedValueOnce([]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -207,7 +207,7 @@ describe('TaskUC', () => {
 				const lesson = lessonFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				courseRepo.findAllByUserId.mockResolvedValue([[], 0]);
+				courseService.findAllByUserId.mockResolvedValue([]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -240,10 +240,10 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_VIEW_V3];
 				const user = setupUser(permissions);
 				const task = taskFactory.finished(user).build();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllByUserId.mockResolvedValueOnce([course]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -279,7 +279,7 @@ describe('TaskUC', () => {
 				const task = taskFactory.finished(user).build({ creator: user });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+				courseService.findAllByUserId.mockResolvedValueOnce([]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
@@ -302,11 +302,11 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 
-				const course = courseFactory.build({ teachers: [user] });
+				const course = courseEntityFactory.build({ teachers: [user] });
 				const task = taskFactory.finished(user).build({ course });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllByUserId.mockResolvedValueOnce([course]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
@@ -381,7 +381,7 @@ describe('TaskUC', () => {
 				const user = setupUser(permissions);
 				const user2 = setupUser([]);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });
@@ -391,7 +391,7 @@ describe('TaskUC', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				courseRepo.findAllByUserId.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllByUserId.mockResolvedValueOnce([course]);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
@@ -498,14 +498,14 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId({ substitutionTeachers: [user] });
+				const course = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task = taskFactory.build({ course });
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([course]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
@@ -528,7 +528,7 @@ describe('TaskUC', () => {
 				const permissions = [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3];
 				const user = setupUser(permissions);
 				const paginationParams = new PaginationParams();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course, hidden: false });
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });
@@ -540,7 +540,7 @@ describe('TaskUC', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				courseRepo.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([[course], 1]);
+				courseService.findAllForTeacherOrSubstituteTeacher.mockResolvedValueOnce([course]);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[lesson], 1]);
 				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);

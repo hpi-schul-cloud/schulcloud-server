@@ -15,7 +15,7 @@ export class SchulconnexImportUserMapper {
 		em: EntityManager
 	): ImportUser[] {
 		const importUsers: ImportUser[] = response.map((externalUser: SchulconnexResponse): ImportUser => {
-			const role: RoleName | undefined = SchulconnexResponseMapper.mapSanisRoleToRoleName(externalUser);
+			const role: RoleName | undefined = SchulconnexResponseMapper.mapSchulconnexRoleToRoleName(externalUser);
 
 			const groups: SchulconnexGruppenResponse[] | undefined = externalUser.personenkontexte[0]?.gruppen?.filter(
 				(group) => group.gruppe.typ === SchulconnexGroupType.CLASS

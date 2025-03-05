@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
@@ -8,8 +9,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { Submission } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
@@ -54,7 +53,7 @@ describe('Submission Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const task = taskFactory.buildWithId();
-				const courseGroup = courseGroupFactory.buildWithId();
+				const courseGroup = courseGroupEntityFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, student: teacherUser, grade: 97, courseGroup });
 
 				await em.persistAndFlush([submission, teacherAccount, teacherUser]);
@@ -92,7 +91,7 @@ describe('Submission Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const task = taskFactory.buildWithId();
-				const courseGroup = courseGroupFactory.buildWithId();
+				const courseGroup = courseGroupEntityFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, student: teacherUser, grade: 97, courseGroup });
 
 				await em.persistAndFlush([submission, teacherAccount, teacherUser]);
@@ -243,7 +242,7 @@ describe('Submission Controller (API)', () => {
 
 		describe('WHEN user is authenticated and has no permission', () => {
 			const setup = async () => {
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const task = taskFactory.buildWithId({ course });
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 				const submission = submissionFactory.buildWithId({ task });

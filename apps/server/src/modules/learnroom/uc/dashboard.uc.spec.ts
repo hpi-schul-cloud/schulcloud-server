@@ -1,12 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 import { DashboardUc } from './dashboard.uc';
@@ -15,7 +15,7 @@ describe('dashboard uc', () => {
 	let module: TestingModule;
 	let service: DashboardUc;
 	let repo: IDashboardRepo;
-	let courseRepo: CourseRepo;
+	let courseService: CourseService;
 
 	afterAll(async () => {
 		await module.close();
@@ -31,17 +31,17 @@ describe('dashboard uc', () => {
 					useValue: createMock<DashboardUc>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(DashboardUc);
 		repo = module.get(DASHBOARD_REPO);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 
-		await setupEntities([Course, CourseGroup]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterEach(() => {
@@ -54,7 +54,7 @@ describe('dashboard uc', () => {
 				const dashboard = new Dashboard('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
-			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
+			jest.spyOn(courseService, 'findAllByUserId').mockImplementation(() => Promise.resolve([]));
 			const dashboard = await service.getUsersDashboard('userId');
 
 			expect(dashboard instanceof Dashboard).toEqual(true);
@@ -67,10 +67,10 @@ describe('dashboard uc', () => {
 			const dashboardRepoSpy = jest
 				.spyOn(repo, 'getUsersDashboard')
 				.mockImplementation(() => Promise.resolve(dashboard));
-			const courses = new Array(5).map(() => ({} as Course));
-			const courseRepoSpy = jest
-				.spyOn(courseRepo, 'findAllByUserId')
-				.mockImplementation(() => Promise.resolve([courses, 5]));
+			const courses = new Array(5).map(() => ({} as CourseEntity));
+			const courseServiceSpy = jest
+				.spyOn(courseService, 'findAllByUserId')
+				.mockImplementation(() => Promise.resolve(courses));
 			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
 			const persistSpy = jest.spyOn(repo, 'persistAndFlush');
 
@@ -78,7 +78,7 @@ describe('dashboard uc', () => {
 
 			expect(result instanceof Dashboard).toEqual(true);
 			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
-			expect(courseRepoSpy).toHaveBeenCalledWith(
+			expect(courseServiceSpy).toHaveBeenCalledWith(
 				userId,
 				{ onlyActiveCourses: true },
 				{ order: { name: SortOrder.asc } }
@@ -97,7 +97,7 @@ describe('dashboard uc', () => {
 							pos: { x: 1, y: 2 },
 							gridElement: GridElement.FromPersistedReference(
 								'elementId',
-								courseFactory.buildWithId({ name: 'Mathe' })
+								courseEntityFactory.buildWithId({ name: 'Mathe' })
 							),
 						},
 					],
@@ -120,7 +120,7 @@ describe('dashboard uc', () => {
 									pos: { x: 1, y: 2 },
 									gridElement: GridElement.FromPersistedReference(
 										'elementId',
-										courseFactory.buildWithId({ name: 'Mathe' })
+										courseEntityFactory.buildWithId({ name: 'Mathe' })
 									),
 								},
 							],
@@ -143,7 +143,7 @@ describe('dashboard uc', () => {
 								pos: { x: 1, y: 2 },
 								gridElement: GridElement.FromPersistedReference(
 									'elementId',
-									courseFactory.buildWithId({ name: 'Mathe' })
+									courseEntityFactory.buildWithId({ name: 'Mathe' })
 								),
 							},
 						],
@@ -165,8 +165,8 @@ describe('dashboard uc', () => {
 						{
 							pos: { x: 3, y: 4 },
 							gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-								courseFactory.buildWithId({ name: 'Mathe' }),
-								courseFactory.buildWithId({ name: 'German' }),
+								courseEntityFactory.buildWithId({ name: 'Mathe' }),
+								courseEntityFactory.buildWithId({ name: 'German' }),
 							]),
 						},
 					],
@@ -189,8 +189,8 @@ describe('dashboard uc', () => {
 								{
 									pos: { x: 3, y: 4 },
 									gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-										courseFactory.buildWithId({ name: 'Mathe' }),
-										courseFactory.buildWithId({ name: 'German' }),
+										courseEntityFactory.buildWithId({ name: 'Mathe' }),
+										courseEntityFactory.buildWithId({ name: 'German' }),
 									]),
 								},
 							],
@@ -212,8 +212,8 @@ describe('dashboard uc', () => {
 							{
 								pos: { x: 3, y: 4 },
 								gridElement: GridElement.FromPersistedGroup('elementId', 'originalTitle', [
-									courseFactory.buildWithId({ name: 'Mathe' }),
-									courseFactory.buildWithId({ name: 'German' }),
+									courseEntityFactory.buildWithId({ name: 'Mathe' }),
+									courseEntityFactory.buildWithId({ name: 'German' }),
 								]),
 							},
 						],

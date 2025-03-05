@@ -3,17 +3,18 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
-import { User, UserRepo } from '@modules/user/repo';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
-import { CourseRepo } from '@shared/repo/course';
+import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { TaskCopyService } from '../service';
@@ -22,9 +23,8 @@ import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;
-	let userRepo: DeepMocked<UserRepo>;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let lessonService: DeepMocked<LessonService>;
 	let authorisation: DeepMocked<AuthorizationService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
@@ -32,22 +32,18 @@ describe('task copy uc', () => {
 	let module: TestingModule;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [
 				TaskCopyUC,
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				{
 					provide: TaskRepo,
 					useValue: createMock<TaskRepo>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: LessonService,
@@ -73,10 +69,9 @@ describe('task copy uc', () => {
 		}).compile();
 
 		uc = module.get(TaskCopyUC);
-		userRepo = module.get(UserRepo);
 		taskRepo = module.get(TaskRepo);
 		authorisation = module.get(AuthorizationService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		lessonService = module.get(LessonService);
 		taskCopyService = module.get(TaskCopyService);
 		copyHelperService = module.get(CopyHelperService);
@@ -95,7 +90,7 @@ describe('task copy uc', () => {
 			Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 			const user = userFactory.buildWithId();
-			const course = courseFactory.buildWithId({ teachers: [user] });
+			const course = courseEntityFactory.buildWithId({ teachers: [user] });
 			const lesson = lessonFactory.buildWithId({ course });
 			const allTasks = taskFactory.buildList(3, { course });
 			const task = allTasks[0];
@@ -114,7 +109,7 @@ describe('task copy uc', () => {
 			taskRepo.findById.mockResolvedValueOnce(task);
 			lessonService.findById.mockResolvedValueOnce(lesson);
 			taskRepo.findBySingleParent.mockResolvedValueOnce([allTasks, allTasks.length]);
-			courseRepo.findById.mockResolvedValueOnce(course);
+			courseService.findById.mockResolvedValueOnce(course);
 			authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(true);
 			copyHelperService.deriveCopyName.mockReturnValueOnce(copyName);
 			taskCopyService.copyTask.mockResolvedValueOnce(status);
@@ -180,7 +175,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 
-				expect(courseRepo.findById).toBeCalledWith(course.id);
+				expect(courseService.findById).toBeCalledWith(course.id);
 			});
 
 			it('should pass without destination course', async () => {
@@ -264,11 +259,10 @@ describe('task copy uc', () => {
 					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 					const user = userFactory.buildWithId();
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const lesson = lessonFactory.buildWithId({ course });
 					const task = taskFactory.buildWithId();
 
-					userRepo.findById.mockResolvedValueOnce(user);
 					taskRepo.findById.mockResolvedValueOnce(task);
 					authorisation.hasPermission.mockReturnValueOnce(false);
 
@@ -295,12 +289,11 @@ describe('task copy uc', () => {
 					Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 					const user = userFactory.buildWithId();
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const task = taskFactory.buildWithId();
 
-					userRepo.findById.mockResolvedValueOnce(user);
 					taskRepo.findById.mockResolvedValueOnce(task);
-					courseRepo.findById.mockResolvedValueOnce(course);
+					courseService.findById.mockResolvedValueOnce(course);
 					authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(true);
 					authorisation.checkPermission.mockImplementationOnce(() => {
 						throw new ForbiddenException();
@@ -366,13 +359,12 @@ describe('task copy uc', () => {
 				Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
 
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const lesson = lessonFactory.buildWithId({ course });
 				const task = taskFactory.buildWithId();
 
-				userRepo.findById.mockResolvedValueOnce(user);
 				taskRepo.findById.mockResolvedValueOnce(task);
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 				lessonService.findById.mockResolvedValueOnce(lesson);
 				// first canReadTask > second canWriteLesson
 				authorisation.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
