@@ -10,7 +10,7 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
-import { ClassGroupUc, GroupUc } from './uc';
+import { ClassGroupUc, CourseSyncUc, GroupUc } from './uc';
 
 @Module({
 	imports: [
@@ -26,6 +26,6 @@ import { ClassGroupUc, GroupUc } from './uc';
 		CourseModule,
 	],
 	controllers: [GroupController],
-	providers: [GroupUc, ClassGroupUc],
+	providers: [GroupUc, ClassGroupUc, CourseSyncUc],
 })
 export class GroupApiModule {}

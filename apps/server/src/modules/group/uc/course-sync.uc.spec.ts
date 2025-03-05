@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseDoService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
-import { GroupService } from '@modules/group';
-import { groupFactory } from '@modules/group/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { CourseDoService, CourseSyncService } from '../domain';
+import { CourseSyncService, GroupService } from '../service';
+import { groupFactory } from '../testing';
 import { CourseSyncUc } from './course-sync.uc';
 
 describe(CourseSyncUc.name, () => {

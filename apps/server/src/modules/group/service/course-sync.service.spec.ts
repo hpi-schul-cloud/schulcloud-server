@@ -1,7 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupUser } from '@modules/group';
-import { groupFactory } from '@modules/group/testing';
+import { Course, CourseDoService } from '@modules/course';
+import { CourseGroupEntity, SyncAttribute } from '@modules/course/repo';
+import { courseFactory } from '@modules/course/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
@@ -9,24 +10,20 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { CourseGroupEntity, SyncAttribute } from '../../repo';
-import { courseFactory } from '../../testing';
-import { Course } from '../course.do';
-import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
-import { CourseDoService } from './course-do.service';
+import { Group, GroupUser } from '../domain';
+import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../domain/error';
+import { groupFactory } from '../testing';
 import { CourseSyncService } from './course-sync.service';
 
 describe(CourseSyncService.name, () => {
 	let module: TestingModule;
 	let service: CourseSyncService;
 	let roleService: DeepMocked<RoleService>;
-
-	let courseDoService: DeepMocked<CourseDoService>;
+	let courseService: DeepMocked<CourseDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CourseSyncService,
 				{
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
@@ -35,12 +32,13 @@ describe(CourseSyncService.name, () => {
 					provide: CourseDoService,
 					useValue: createMock<CourseDoService>(),
 				},
+				CourseSyncService,
 			],
 		}).compile();
 
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
-		courseDoService = module.get(CourseDoService);
+		courseService = module.get(CourseDoService);
 		await setupEntities([User, Course, CourseGroupEntity]);
 	});
 
@@ -67,7 +65,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.stopSynchronization(course);
 
-				expect(courseDoService.save).toHaveBeenCalledWith(
+				expect(courseService.save).toHaveBeenCalledWith(
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: undefined,
@@ -129,7 +127,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.startSynchronization(course, group, syncingUser);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: group.id,
@@ -187,7 +185,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.startSynchronization(course, group, syncingUser);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: group.id,
@@ -242,7 +240,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.startSynchronization(course, group, syncingUser);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: group.id,
@@ -295,7 +293,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.startSynchronization(course, group, syncingUser);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: group.id,
@@ -336,7 +334,7 @@ describe(CourseSyncService.name, () => {
 					CourseAlreadySynchronizedLoggableException
 				);
 
-				expect(courseDoService.saveAll).not.toHaveBeenCalled();
+				expect(courseService.saveAll).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -369,7 +367,7 @@ describe(CourseSyncService.name, () => {
 					substitutionTeacherIds: [substituteTeacherId],
 				});
 
-				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 
@@ -387,7 +385,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.synchronizeCourseWithGroup(newGroup);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: newGroup.id,
@@ -440,7 +438,7 @@ describe(CourseSyncService.name, () => {
 					substitutionTeacherIds: [],
 				});
 
-				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName
 					.mockResolvedValueOnce(studentRole)
 					.mockResolvedValueOnce(teacherRole)
@@ -460,7 +458,7 @@ describe(CourseSyncService.name, () => {
 
 				await service.synchronizeCourseWithGroup(newGroup);
 
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: newGroup.id,
@@ -491,7 +489,7 @@ describe(CourseSyncService.name, () => {
 					users: [],
 				});
 
-				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 
@@ -506,7 +504,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, oldGroup } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: newGroup.name,
@@ -538,7 +536,7 @@ describe(CourseSyncService.name, () => {
 					users: [],
 				});
 
-				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 
@@ -553,7 +551,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, oldGroup } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup, oldGroup);
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: course.name,
@@ -592,7 +590,7 @@ describe(CourseSyncService.name, () => {
 					teacherIds: [teacherUserId],
 					excludeFromSync: [],
 				});
-				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 
@@ -608,7 +606,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, teacherUserId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: course.name,
@@ -654,7 +652,7 @@ describe(CourseSyncService.name, () => {
 					substitutionTeacherIds: [substituteTeacherId],
 					excludeFromSync: [SyncAttribute.TEACHERS],
 				});
-				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 
@@ -671,7 +669,7 @@ describe(CourseSyncService.name, () => {
 				const { course, newGroup, teacherUserId, studentUserId } = setup();
 
 				await service.synchronizeCourseWithGroup(newGroup);
-				expect(courseDoService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
 					new Course({
 						...course.getProps(),
 						name: course.name,

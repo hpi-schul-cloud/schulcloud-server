@@ -1,5 +1,4 @@
-import { CourseSyncService } from '@modules/course';
-import { Group } from '@modules/group';
+import { CourseSyncService, Group } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

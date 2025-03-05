@@ -5,7 +5,6 @@ export * from './course-info-list.response';
 export * from './course-info.dto';
 export * from './course-metadata.response';
 export * from './course-sort.params';
-export * from './course-sync.body.params';
 export * from './course.url.params';
 export * from './create-course-body.params';
 export * from './create-course.response';

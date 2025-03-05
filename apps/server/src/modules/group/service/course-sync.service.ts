@@ -1,17 +1,19 @@
-import { Group, GroupUser } from '@modules/group';
+import { Course, CourseDoService } from '@modules/course';
+import { SyncAttribute } from '@modules/course/repo';
 import { RoleDto, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SyncAttribute } from '../../repo';
-import { Course } from '../course.do';
-import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
-import { CourseDoService } from './course-do.service';
+import { Group, GroupUser } from '../domain';
+import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../domain/error';
 
 @Injectable()
 export class CourseSyncService {
-	constructor(private readonly courseService: CourseDoService, private readonly roleService: RoleService) {}
+	constructor(
+		@Inject(forwardRef(() => CourseDoService)) private readonly courseService: CourseDoService,
+		private readonly roleService: RoleService
+	) {}
 
 	public async startSynchronization(course: Course, group: Group, user: User): Promise<void> {
 		if (course.syncedWithGroup) {

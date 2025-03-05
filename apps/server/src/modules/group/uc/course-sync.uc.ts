@@ -1,9 +1,9 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { GroupService } from '@modules/group';
+import { CourseDoService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseDoService, CourseSyncService } from '../domain';
+import { CourseSyncService, GroupService } from '../service';
 
 @Injectable()
 export class CourseSyncUc {

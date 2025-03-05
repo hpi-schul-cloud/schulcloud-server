@@ -1,23 +1,20 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiConsumes,
 	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
-	ApiNoContentResponse,
 	ApiOperation,
 	ApiProduces,
 	ApiTags,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/dto';
-import { CourseSyncUc } from './course-sync.uc';
 import { CourseUc } from './course.uc';
 import {
 	CourseCommonCartridgeMetadataResponse,
 	CourseMetadataListResponse,
-	CourseSyncBodyParams,
 	CourseUrlParams,
 	CreateCourseBodyParams,
 	CreateCourseResponse,
@@ -28,7 +25,7 @@ import { CourseMapper } from './mapper';
 @JwtAuthentication()
 @Controller('courses')
 export class CourseController {
-	constructor(private readonly courseUc: CourseUc, private readonly courseSyncUc: CourseSyncUc) {}
+	constructor(private readonly courseUc: CourseUc) {}
 
 	@Get()
 	public async findForUser(
@@ -58,32 +55,6 @@ export class CourseController {
 		const response = CourseMapper.mapToCreateCourseResponse(course);
 
 		return response;
-	}
-
-	@Post(':courseId/stop-sync')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({ summary: 'Stop the synchronization of a course with a group.' })
-	@ApiNoContentResponse({ description: 'The course was successfully disconnected from a group.' })
-	@ApiUnprocessableEntityResponse({ description: 'The course is not synchronized with a group.' })
-	public async stopSynchronization(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: CourseUrlParams
-	): Promise<void> {
-		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
-	}
-
-	@Post(':courseId/start-sync/')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
-	@ApiNoContentResponse({ description: 'The course was successfully synchronized to a group.' })
-	@ApiUnprocessableEntityResponse({ description: 'The course is already synchronized with a group.' })
-	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
-	public async startSynchronization(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: CourseUrlParams,
-		@Body() bodyParams: CourseSyncBodyParams
-	): Promise<void> {
-		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
 	}
 
 	@Get(':courseId/user-permissions')
