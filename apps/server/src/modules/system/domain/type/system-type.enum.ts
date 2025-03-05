@@ -6,6 +6,7 @@ export enum SystemType {
 	TSP_SCHOOL = 'tsp-school',
 	// Legacy
 	LOCAL = 'local',
+	ISERV = 'iserv',
 	LERNSAX = 'lernsax',
 	ITSLEARNING = 'itslearning',
 	MOODLE = 'moodle',

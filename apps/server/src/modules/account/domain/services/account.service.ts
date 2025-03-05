@@ -368,7 +368,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
-		// const noPasswordStrategies = ['ldap', 'moodle'];
+		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
 		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
 		// 	dto.password = undefined;
 		// }
