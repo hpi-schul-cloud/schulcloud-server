@@ -6,19 +6,19 @@ export class ExternalToolMediumParams {
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty({ type: String, description: 'Id of the medium' })
-	mediumId!: string;
+	public mediumId!: string;
 
 	@IsString()
 	@IsOptional()
 	@IsNotEmpty()
 	@ApiPropertyOptional({ type: String, description: 'Publisher of the medium' })
-	publisher?: string;
+	public publisher?: string;
 
 	@IsString()
 	@IsOptional()
 	@IsNotEmpty()
 	@ApiPropertyOptional({ type: String, description: 'The id of the media source' })
-	mediaSourceId?: string;
+	public mediaSourceId?: string;
 
 	@IsOptional()
 	@IsEnum(MediaSourceDataFormat, { each: true })
@@ -27,10 +27,10 @@ export class ExternalToolMediumParams {
 		enumName: 'MediaSourceDataFormat',
 		description: 'Restrict media sources to a specific format',
 	})
-	format?: MediaSourceDataFormat;
+	public format?: MediaSourceDataFormat;
 
 	@IsDate()
 	@IsOptional()
 	@ApiPropertyOptional({ type: Date, description: 'The date the medium was last modified' })
-	modifiedAt?: Date;
+	public modifiedAt?: Date;
 }

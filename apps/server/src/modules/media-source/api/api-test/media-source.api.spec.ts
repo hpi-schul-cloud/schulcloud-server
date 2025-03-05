@@ -5,7 +5,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { MediaSourceDataFormat } from '../../enum';
 import { mediaSourceEntityFactory } from '../../testing';
 import { MediaSourceListResponse } from '../response';
 
@@ -65,11 +64,9 @@ describe('MediaSourceController (API)', () => {
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				const bilo = mediaSourceEntityFactory.build({});
+				const bilo = mediaSourceEntityFactory.withBiloFormat().build({});
 
-				const vidis = mediaSourceEntityFactory.build({
-					format: MediaSourceDataFormat.VIDIS,
-				});
+				const vidis = mediaSourceEntityFactory.withVidisFormat().build({});
 
 				await em.persistAndFlush([superheroUser, superheroAccount, bilo, vidis]);
 				em.clear();
