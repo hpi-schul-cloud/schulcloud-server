@@ -1,4 +1,4 @@
-import airbnbRules from './.eslint-rules-airbnb.js';
+const airbnbRules = require('./.eslint-rules-airbnb.js');
 
 module.exports = {
 	extends: ['prettier', 'plugin:promise/recommended'],
@@ -22,9 +22,6 @@ module.exports = {
 				allow: ['_id', '_v', '__v'],
 			},
 		],
-		'no-shadow': 'off',
-		'@typescript-eslint/no-shadow': 'off',
-		'no-console': 'warn',
 		'prefer-destructuring': [
 			'warn',
 			{
@@ -98,8 +95,6 @@ module.exports = {
 				'no-underscore-dangle': 'off',
 				'filename-rules/match': [1, /^([a-z0-9]+-)*[a-z]+(?:\..*)?$/],
 				'require-await': 'warn',
-				'no-empty-function': 'off',
-				'@typescript-eslint/no-empty-function': 'off',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',
 				'@typescript-eslint/explicit-function-return-type': 'warn',
@@ -116,8 +111,6 @@ module.exports = {
 						},
 					},
 				],
-				'no-unused-vars': 'off',
-				'@typescript-eslint/no-unused-vars': 'off',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
 					{

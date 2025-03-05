@@ -1,12 +1,5 @@
 module.exports = {
-	'import/no-unresolved': [
-		'off',
-		{
-			commonjs: true,
-			caseSensitive: true,
-			caseSensitiveStrict: false,
-		},
-	],
+	'import/no-unresolved': ['off'],
 	'import/no-extraneous-dependencies': [
 		'off',
 		{
@@ -59,14 +52,6 @@ module.exports = {
 		{
 			exceptMethods: {},
 			enforceForClassFields: true,
-		},
-	],
-	'@typescript-eslint/no-unused-vars': [
-		'error',
-		{
-			vars: 'all',
-			args: 'after-used',
-			ignoreRestSiblings: true,
 		},
 	],
 	curly: [0, 'multi-line'],
@@ -544,7 +529,7 @@ module.exports = {
 		},
 	],
 	'no-empty-function': ['off'],
-	'@typescript-eslint/no-empty-function': ['error'],
+	'@typescript-eslint/no-empty-function': ['off'],
 	'import/no-named-as-default-member': ['off'],
 	camelcase: [
 		'off',
