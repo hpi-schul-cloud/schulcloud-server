@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -16,7 +17,7 @@ describe('LocalStrategy', () => {
 	let strategy: LocalStrategy;
 	let mockUser: User;
 	let mockAccount: Account;
-	let userRepoMock: DeepMocked<UserRepo>;
+	let userServiceMock: DeepMocked<UserService>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 	let configServiceMock: DeepMocked<ConfigService>;
@@ -29,8 +30,8 @@ describe('LocalStrategy', () => {
 		authenticationServiceMock = createMock<AuthenticationService>();
 		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
 		configServiceMock = createMock<ConfigService>();
-		userRepoMock = createMock<UserRepo>();
-		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
+		userServiceMock = createMock<UserService>();
+		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userServiceMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
 		mockAccount = accountDoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
 	});
@@ -39,7 +40,7 @@ describe('LocalStrategy', () => {
 		authenticationServiceMock.loadAccount.mockResolvedValue(mockAccount);
 		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
 		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);
-		userRepoMock.findById.mockResolvedValue(mockUser);
+		userServiceMock.getUserEntityWithRoles.mockResolvedValue(mockUser);
 		configServiceMock.get.mockReturnValue(false);
 	});
 
