@@ -13,9 +13,4 @@ export {
 export { ProvisioningConfig } from './provisioning.config';
 export { ProvisioningModule } from './provisioning.module';
 export { ProvisioningService } from './service/provisioning.service';
-export {
-	IservProvisioningStrategy,
-	OidcMockProvisioningStrategy,
-	ProvisioningStrategy,
-	SchulconnexResponseMapper,
-} from './strategy';
+export { OidcMockProvisioningStrategy, ProvisioningStrategy, SchulconnexResponseMapper } from './strategy';

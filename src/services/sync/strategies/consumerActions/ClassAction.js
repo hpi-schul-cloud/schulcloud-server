@@ -3,7 +3,6 @@ const BaseConsumerAction = require('./BaseConsumerAction');
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
 const { SchoolRepo, ClassRepo, UserRepo } = require('../../repo');
 const { NotFound } = require('../../../../errors');
-const { SCHOOL_FEATURES } = require('../../../school/model');
 
 const defaultOptions = {
 	allowedLogKeys: ['class', 'ldapDN', 'systemId', 'schoolDn', 'year'],
@@ -25,39 +24,16 @@ class ClassAction extends BaseConsumerAction {
 	async action(data = {}) {
 		const { class: classData = {} } = data;
 
-		let school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
+		const school = await SchoolRepo.findSchoolByLdapIdAndSystem(classData.schoolDn, classData.systemId);
 
 		if (!school) {
-			const migratedSchool = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(
-				classData.schoolDn,
-				classData.systemId
-			);
-
-			if (migratedSchool) {
-				if (
-					migratedSchool.userLoginMigration &&
-					!migratedSchool.userLoginMigration.closedAt &&
-					migratedSchool.features?.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)
-				) {
-					school = migratedSchool;
-				} else {
-					throw new NotFound(
-						`Migrated School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be synced, since the feature is deactivated.`,
-						{
-							schoolDn: classData.schoolDn,
-							systemId: classData.systemId,
-						}
-					);
+			throw new NotFound(
+				`School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be found.`,
+				{
+					schoolDn: classData.schoolDn,
+					systemId: classData.systemId,
 				}
-			} else {
-				throw new NotFound(
-					`School for schoolDn ${classData.schoolDn} and system ${classData.systemId} couldn't be found.`,
-					{
-						schoolDn: classData.schoolDn,
-						systemId: classData.systemId,
-					}
-				);
-			}
+			);
 		}
 
 		if (school.inUserMigration === true) {

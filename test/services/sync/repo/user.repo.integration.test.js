@@ -171,22 +171,6 @@ describe('user repo', () => {
 		});
 	});
 
-	describe('findByPreviousExternalIdAndSchool', () => {
-		it('should return null if not found', async () => {
-			const testSchool = await testObjects.createTestSchool();
-			const res = await UserRepo.findByPreviousExternalIdAndSchool('Not existing id', testSchool._id);
-			expect(res).to.be.null;
-		});
-
-		it('should find user by previousExternalId and school', async () => {
-			const previousExternalId = new ObjectId();
-			const school = await testObjects.createTestSchool();
-			const testUser = await testObjects.createTestUser({ previousExternalId, schoolId: school._id });
-			const res = await UserRepo.findByPreviousExternalIdAndSchool(previousExternalId, school._id);
-			expect(res._id.toString()).to.be.equal(testUser._id.toString());
-		});
-	});
-
 	describe('findByLdapDnsAndSchool', () => {
 		const setup = async () => {
 			const ldapDn = 'TEST_LDAP_DN';
@@ -243,17 +227,6 @@ describe('user repo', () => {
 
 			expect(user1).not.to.be.undefined;
 			expect(user2).not.to.be.undefined;
-		});
-
-		describe('when the user has migrated', () => {
-			it('should find the user by its old ldap dn and school', async () => {
-				const { previousLdapDn, school, migratedUser } = await setup();
-
-				const res = await UserRepo.findByLdapDnsAndSchool([previousLdapDn], school._id);
-
-				expect(res.length).to.equal(1);
-				expect(res[0]._id.toString()).to.equal(migratedUser._id.toString());
-			});
 		});
 	});
 

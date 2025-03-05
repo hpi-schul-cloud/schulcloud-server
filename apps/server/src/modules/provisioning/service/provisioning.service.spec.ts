@@ -7,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import {
-	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
 	SchulconnexSyncProvisioningStrategy,
@@ -44,14 +43,6 @@ describe('ProvisioningService', () => {
 					useValue: createMock<SchulconnexAsyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.SCHULCONNEX_ASYNC;
-						},
-					}),
-				},
-				{
-					provide: IservProvisioningStrategy,
-					useValue: createMock<IservProvisioningStrategy>({
-						getType(): SystemProvisioningStrategy {
-							return SystemProvisioningStrategy.ISERV;
 						},
 					}),
 				},
