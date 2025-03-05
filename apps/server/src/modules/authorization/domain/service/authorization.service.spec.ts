@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -28,7 +29,7 @@ describe('AuthorizationService', () => {
 	let service: AuthorizationService;
 	let ruleManager: DeepMocked<RuleManager>;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 
 	const testPermission = 'CAN_TEST' as Permission;
 
@@ -47,8 +48,8 @@ describe('AuthorizationService', () => {
 					useValue: createMock<AuthorizationHelper>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 			],
 		}).compile();
@@ -56,7 +57,7 @@ describe('AuthorizationService', () => {
 		service = await module.get(AuthorizationService);
 		ruleManager = await module.get(RuleManager);
 		authorizationHelper = await module.get(AuthorizationHelper);
-		userRepo = await module.get(UserRepo);
+		userService = await module.get(UserService);
 	});
 
 	afterEach(() => {
@@ -301,7 +302,7 @@ describe('AuthorizationService', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 
-			userRepo.findById.mockResolvedValueOnce(user);
+			userService.getUserEntityWithRoles.mockResolvedValueOnce(user);
 
 			return { user };
 		};

@@ -1,5 +1,6 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CourseEntity, CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { ToolContextType } from '@modules/tool/common/enum';
 import {
 	ContextExternalTool,
@@ -8,7 +9,8 @@ import {
 } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ToolConfig } from '@modules/tool/tool-config';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
@@ -26,16 +28,16 @@ type CourseCopyParams = {
 export class CourseCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
-	async copyCourse({
+	public async copyCourse({
 		userId,
 		courseId,
 		newName,
@@ -44,15 +46,15 @@ export class CourseCopyService {
 		courseId: EntityId;
 		newName?: string | undefined;
 	}): Promise<CopyStatus> {
-		const user: User = await this.userRepo.findById(userId, true);
+		const user: User = await this.userService.getUserEntityWithRoles(userId);
 
 		// fetch original course and board
-		const originalCourse = await this.courseRepo.findById(courseId);
+		const originalCourse = await this.courseService.findById(courseId);
 		let originalBoard = await this.legacyBoardRepo.findByCourseId(courseId);
 		originalBoard = await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
-		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
+		const existingCourses = await this.courseService.findAllByUserId(userId);
 		const existingNames = existingCourses.map((course: CourseEntity) => course.name);
 		const copyName = this.copyHelperService.deriveCopyName(newName || originalCourse.name, existingNames);
 
@@ -109,13 +111,15 @@ export class CourseCopyService {
 			copyingSince: new Date(),
 		});
 
-		await this.courseRepo.createCourse(courseCopy);
+		await this.courseService.create(courseCopy);
+
 		return courseCopy;
 	}
 
-	private async finishCourseCopying(courseCopy: CourseEntity) {
+	private async finishCourseCopying(courseCopy: CourseEntity): Promise<CourseEntity> {
 		delete courseCopy.copyingSince;
-		await this.courseRepo.save(courseCopy);
+		await this.courseService.save(courseCopy);
+
 		return courseCopy;
 	}
 

@@ -1,7 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardContextApiHelperModule } from '@modules/board-context';
-import { CourseRepo } from '@modules/course/repo';
+import { CourseModule } from '@modules/course';
 import { RoomModule } from '@modules/room';
 import { RoomMembershipModule } from '@modules/room-membership';
 import { UserModule } from '@modules/user';
@@ -15,6 +15,7 @@ import { BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 @Module({
 	imports: [
 		BoardModule,
+		CourseModule,
 		forwardRef(() => AuthorizationModule),
 		LoggerModule,
 		UserModule,
@@ -29,7 +30,6 @@ import { BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 		ColumnUc,
 		ElementUc,
 		BoardUc,
-		CourseRepo,
 		MetricsService,
 	],
 	exports: [],
