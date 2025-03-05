@@ -1,5 +1,5 @@
-import { AuthorizableReferenceType, AuthorizationLoaderService, Rule } from '../type';
-import { AuthorizationInjectionService, CurrentUserLoader } from './authorization-injection.service';
+import { AuthorizableReferenceType, AuthorizationLoaderService, CurrentUserLoader, Rule } from '../type';
+import { AuthorizationInjectionService } from './authorization-injection.service';
 
 function createRuleMock(isApplicable: boolean, hasPermission: boolean): Rule {
 	return {

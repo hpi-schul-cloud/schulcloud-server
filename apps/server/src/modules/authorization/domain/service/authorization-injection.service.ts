@@ -1,11 +1,5 @@
-import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { AuthorizableReferenceType, AuthorizationLoaderService, Rule } from '../type';
-
-export interface CurrentUserLoader {
-	loadCurrentUserWithPermissions(userId: EntityId): Promise<User>;
-}
+import { AuthorizableReferenceType, AuthorizationLoaderService, CurrentUserLoader, Rule } from '../type';
 
 @Injectable()
 export class AuthorizationInjectionService {
