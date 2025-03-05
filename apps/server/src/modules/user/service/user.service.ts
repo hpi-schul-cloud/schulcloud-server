@@ -18,12 +18,14 @@ import {
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleService } from '@modules/role';
+import { SchoolEntity } from '@modules/school/repo';
+import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { UserDo } from '../domain';
 import { UserConfig } from '../interfaces';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable/addSecondarySchoolToUserError.loggable';
@@ -101,6 +103,10 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const savedUser = await this.userDORepo.save(user);
 
 		return savedUser;
+	}
+
+	public async saveEntity(user: User): Promise<void> {
+		await this.userRepo.save(user);
 	}
 
 	public async saveAll(users: UserDo[]): Promise<UserDo[]> {
@@ -348,5 +354,15 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const userDOs = this.userDORepo.findByTspUids(tspUids);
 
 		return userDOs;
+	}
+
+	public findForImportUser(
+		school: SchoolEntity,
+		filters?: ImportUserNameMatchFilter,
+		options?: IFindOptions<User>
+	): Promise<Counted<User[]>> {
+		const users = this.userRepo.findForImportUser(school, filters, options);
+
+		return users;
 	}
 }
