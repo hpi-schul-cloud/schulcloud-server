@@ -1,4 +1,4 @@
-import { courseFactory } from '../../testing';
+import { courseFactory } from '@modules/course/testing';
 import { CourseAlreadySynchronizedLoggableException } from './course-already-synchronized.loggable-exception';
 
 describe(CourseAlreadySynchronizedLoggableException.name, () => {

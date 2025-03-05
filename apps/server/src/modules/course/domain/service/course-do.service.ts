@@ -1,4 +1,3 @@
-import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { type Group } from '@modules/group';
 import { Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -8,7 +7,7 @@ import { Course } from '../course.do';
 import { COURSE_REPO, CourseFilter, CourseRepo } from '../interface';
 
 @Injectable()
-export class CourseDoService implements AuthorizationLoaderServiceGeneric<Course> {
+export class CourseDoService {
 	constructor(@Inject(COURSE_REPO) private readonly courseRepo: CourseRepo) {}
 
 	public async findById(courseId: EntityId): Promise<Course> {
