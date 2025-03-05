@@ -5,9 +5,10 @@ import { DashboardMapper } from '../mapper/dashboard.mapper';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardResponse, DashboardUrlParams, MoveElementParams, PatchGroupParams } from './dto';
 
+// Seperates module für course-dashboard ?
 @ApiTags('Dashboard')
 @JwtAuthentication()
-@Controller('dashboard')
+@Controller('dashboard') // Grid Ansicht für Course -> course-dashboard
 export class DashboardController {
 	constructor(private readonly dashboardUc: DashboardUc) {}
 

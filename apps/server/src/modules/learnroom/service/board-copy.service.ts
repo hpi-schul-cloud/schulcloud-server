@@ -43,7 +43,7 @@ export class BoardCopyService {
 		private readonly columnBoardNodeRepo: ColumnBoardNodeRepo
 	) {}
 
-	async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
+	public async copyBoard(params: BoardCopyParams): Promise<CopyStatus> {
 		const { originalBoard, user, originalCourse, destinationCourse } = params;
 
 		const boardElements: LegacyBoardElement[] = originalBoard.getElements();

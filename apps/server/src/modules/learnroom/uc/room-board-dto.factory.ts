@@ -189,7 +189,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
+	public createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,
@@ -198,6 +198,7 @@ export class RoomBoardDTOFactory {
 			roomsAuthorisationService: this.roomsAuthorisationService,
 		});
 		const result = worker.manufacture();
+
 		return result;
 	}
 }

@@ -23,17 +23,25 @@ type CourseCopyParams = {
 	copyName?: string;
 };
 
+/**
+ * Datenstruktur A -> B (course) -> C ()
+ * Api copy C -> B (course.copy) -> A (durch dependency inversion, oder Events auflösbar)
+ *
+ * Websockets wäre eine Möglichkeit das fertig async zurück zu spielen zum Nutzer bei Event Based Ansatz.
+ */
+
+// references (Task, Lesson, ColumnBoard )[] .copy() <--| (legacy)boardService.copy | xx / CourseCopyService --registrieren--> !Course.copy! <--registration-- CourseGroup.copy() <-- x <-- y <-- z
 @Injectable()
 export class CourseCopyService {
 	constructor(
 		private readonly configService: ConfigService<ToolConfig, true>,
-		private readonly courseService: CourseService,
+		private readonly courseService: CourseService, // -> CourseCopyService.copy -> UC -> api
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: CourseRoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
-		private readonly contextExternalToolService: ContextExternalToolService
+		private readonly contextExternalToolService: ContextExternalToolService // <--- ????
 	) {}
 
 	public async copyCourse({

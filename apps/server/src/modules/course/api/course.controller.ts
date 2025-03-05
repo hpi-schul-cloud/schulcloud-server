@@ -40,6 +40,7 @@ export class CourseController {
 		const { skip, limit } = pagination;
 
 		const result = new CourseMetadataListResponse(courseResponses, total, skip, limit);
+
 		return result;
 	}
 

@@ -8,12 +8,26 @@ import { RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
+/**
+ *
+ * https://niedersachsen.cloud/rooms/5e700020c3b6f0002b6c6960
+ * legacy learroom (course details) page
+ *
+ * https://niedersachsen.cloud/rooms/6792532dc48b5bc0b75125ae
+ * new rooms
+ *
+ * course api module
+ * --> course module
+ * --> legacy course board -> couse module
+ * --> course dashboard -> course module
+ * Es gibt mehre weitere Module die dependencies auf course module hat.
+ */
 @Injectable()
 export class CourseRoomsUc {
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly userRepo: UserRepo,
-		private readonly legacyBoardRepo: LegacyBoardRepo,
+		private readonly legacyBoardRepo: LegacyBoardRepo, // zu ein LegacyBoard gibt es genau ein Course
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: CourseRoomsAuthorisationService,
 		private readonly roomsService: CourseRoomsService
@@ -29,6 +43,7 @@ export class CourseRoomsUc {
 		await this.roomsService.updateLegacyBoard(legacyBoard, roomId, userId);
 
 		const roomBoardDTO = this.factory.createDTO({ room: course, board: legacyBoard, user });
+
 		return roomBoardDTO;
 	}
 
@@ -45,10 +60,13 @@ export class CourseRoomsUc {
 		}
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
 		const element = legacyBoard.getByTargetId(elementId);
+
 		if (visibility) {
 			element.publish();
+			// legacyBoard.publishElement(elementId)
 		} else {
 			element.unpublish();
+			// legacyBoard.unpublishElement(elementId)
 		}
 
 		await this.legacyBoardRepo.save(legacyBoard);

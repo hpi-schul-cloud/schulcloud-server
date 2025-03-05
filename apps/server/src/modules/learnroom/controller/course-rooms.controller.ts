@@ -20,29 +20,31 @@ import {
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
  */
-@ApiTags('Course-Rooms')
+@ApiTags('Legacy-board')
 @JwtAuthentication()
-@Controller('course-rooms')
+@Controller('legacy-board') // Frontend wäre beteiligt bei dieser Änderung, returned aber nur board
 export class CourseRoomsController {
+	// LegacyBoardController
 	constructor(
-		private readonly roomsUc: CourseRoomsUc,
+		private readonly roomsUc: CourseRoomsUc, // <-- course uc
 		private readonly mapper: RoomBoardResponseMapper,
-		private readonly courseCopyUc: CourseCopyUC,
-		private readonly lessonCopyUc: LessonCopyUC
+		private readonly courseCopyUc: CourseCopyUC, // OK
+		private readonly lessonCopyUc: LessonCopyUC // kann verschoben werden
 	) {}
 
 	@Get(':roomId/board')
-	async getRoomBoard(
+	public async getRoomBoard(
 		@Param() urlParams: CourseRoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SingleColumnBoardResponse> {
 		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
+
 		return mapped;
 	}
 
 	@Patch(':roomId/elements/:elementId/visibility')
-	async patchElementVisibility(
+	public async patchElementVisibility(
 		@Param() urlParams: CourseRoomElementUrlParams,
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -56,7 +58,7 @@ export class CourseRoomsController {
 	}
 
 	@Patch(':roomId/board/order')
-	async patchOrderingOfElements(
+	public async patchOrderingOfElements(
 		@Param() urlParams: CourseRoomUrlParams,
 		@Body() params: PatchOrderParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -64,20 +66,23 @@ export class CourseRoomsController {
 		await this.roomsUc.reorderBoardElements(urlParams.roomId, currentUser.userId, params.elements);
 	}
 
+	// mit roomId ist hier ein Kurs gemeint
 	@Post(':roomId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyCourse(
+	public async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseRoomUrlParams
 	): Promise<CopyApiResponse> {
 		const copyStatus = await this.courseCopyUc.copyCourse(currentUser.userId, urlParams.roomId);
 		const dto = CopyMapper.mapToResponse(copyStatus);
+
 		return dto;
 	}
 
+	// gehört zu lessons
 	@Post('lessons/:lessonId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyLesson(
+	public async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,
 		@Body() params: LessonCopyApiParams
@@ -88,6 +93,7 @@ export class CourseRoomsController {
 			CopyMapper.mapLessonCopyToDomain(params, currentUser.userId)
 		);
 		const dto = CopyMapper.mapToResponse(copyStatus);
+
 		return dto;
 	}
 }

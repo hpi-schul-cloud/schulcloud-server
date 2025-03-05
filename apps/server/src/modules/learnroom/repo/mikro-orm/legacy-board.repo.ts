@@ -16,6 +16,7 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 		// TODO this auto-creation of board should be moved to uc instead of in repo
 		const board = await this.getOrCreateCourseBoard(courseId);
 		await this.populateBoard(board);
+
 		return board;
 	}
 
@@ -24,6 +25,7 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 		if (!board) {
 			board = await this.createBoardForCourse(courseId);
 		}
+
 		return board;
 	}
 
@@ -31,12 +33,14 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 		const course = await this._em.findOneOrFail(CourseEntity, courseId);
 		const board = new LegacyBoard({ course, references: [] });
 		await this._em.persistAndFlush(board);
+
 		return board;
 	}
 
 	async findById(id: EntityId): Promise<LegacyBoard> {
 		const board = await this._em.findOneOrFail(LegacyBoard, { id });
 		await this.populateBoard(board);
+
 		return board;
 	}
 
@@ -49,6 +53,7 @@ export class LegacyBoardRepo extends BaseRepo<LegacyBoard> {
 		await this._em.populate(lessonElements, ['target']);
 		const columnBoardElements = elements.filter((el) => el instanceof ColumnBoardBoardElement);
 		await this._em.populate(columnBoardElements, ['target']);
+
 		return board;
 	}
 }
