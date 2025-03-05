@@ -7,13 +7,13 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
+import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
 
 describe('UserLoginMigrationRule', () => {

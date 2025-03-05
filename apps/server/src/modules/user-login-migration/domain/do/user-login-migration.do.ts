@@ -1,20 +1,20 @@
-import { EntityId } from '../types';
-import { BaseDO } from './base.do';
+import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationDO extends BaseDO {
-	schoolId: EntityId;
+	public schoolId: EntityId;
 
-	sourceSystemId?: EntityId;
+	public sourceSystemId?: EntityId;
 
-	targetSystemId: EntityId;
+	public targetSystemId: EntityId;
 
-	mandatorySince?: Date;
+	public mandatorySince?: Date;
 
-	startedAt: Date;
+	public startedAt: Date;
 
-	closedAt?: Date;
+	public closedAt?: Date;
 
-	finishedAt?: Date;
+	public finishedAt?: Date;
 
 	constructor(props: UserLoginMigrationDO) {
 		super(props.id);

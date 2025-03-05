@@ -1,17 +1,16 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { type SystemEntity } from '@modules/system/repo';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@testing/database';
-
-import { LegacyLogger } from '@core/logger';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { type SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { UserLoginMigrationDO } from '../../domain';
+import { UserLoginMigrationEntity } from './user-login-migration.entity';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
 
 describe('UserLoginMigrationRepo', () => {

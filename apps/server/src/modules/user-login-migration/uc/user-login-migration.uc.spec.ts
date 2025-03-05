@@ -16,12 +16,12 @@ import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page, RoleReference } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { externalUserDtoFactory } from '../../provisioning/testing';
+import { UserLoginMigrationDO } from '../domain';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -32,6 +32,7 @@ import {
 	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
+import { userLoginMigrationDOFactory } from '../testing';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 
 describe(UserLoginMigrationUc.name, () => {

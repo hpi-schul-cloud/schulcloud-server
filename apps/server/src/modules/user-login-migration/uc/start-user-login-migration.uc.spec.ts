@@ -7,12 +7,12 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { UserLoginMigrationDO } from '../domain';
 import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
+import { userLoginMigrationDOFactory } from '../testing';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
 
 describe(StartUserLoginMigrationUc.name, () => {

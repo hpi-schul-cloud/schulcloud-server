@@ -1,9 +1,23 @@
 import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export type IUserLoginMigration = Readonly<Omit<UserLoginMigrationEntity, keyof BaseEntityWithTimestamps>>;
+export type UserLoginMigrationEntityProps = {
+	school: SchoolEntity;
+
+	sourceSystem?: SystemEntity;
+
+	targetSystem: SystemEntity;
+
+	mandatorySince?: Date;
+
+	startedAt: Date;
+
+	closedAt?: Date;
+
+	finishedAt?: Date;
+};
 
 @Entity({ tableName: 'user-login-migrations' })
 export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
@@ -29,7 +43,7 @@ export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	finishedAt?: Date;
 
-	constructor(props: IUserLoginMigration) {
+	constructor(props: UserLoginMigrationEntityProps) {
 		super();
 		this.school = props.school;
 		this.sourceSystem = props.sourceSystem;

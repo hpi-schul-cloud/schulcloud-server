@@ -12,7 +12,8 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '../domain';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,

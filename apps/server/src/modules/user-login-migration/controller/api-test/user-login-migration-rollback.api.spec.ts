@@ -6,11 +6,11 @@ import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
+import { UserLoginMigrationEntity } from '../../repo';
 import { userLoginMigrationFactory } from '../../testing';
 
 describe('UserLoginMigrationRollbackController (API)', () => {

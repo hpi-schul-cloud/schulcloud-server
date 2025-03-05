@@ -6,15 +6,15 @@ import { System, SystemService } from '@modules/system';
 import { SystemType } from '@modules/system/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
+import { UserLoginMigrationDO } from '../domain';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
+import { UserLoginMigrationRepo } from '../repo';
 
 @Injectable()
 export class UserLoginMigrationService {

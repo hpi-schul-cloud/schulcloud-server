@@ -14,6 +14,7 @@ import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
+import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
@@ -24,7 +25,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
