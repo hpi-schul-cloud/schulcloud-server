@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { MediaMetadataDto } from '../../../media-source-sync';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -13,6 +14,7 @@ import {
 	CustomParameterResponse,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
+	ExternalToolMediumMetadataResponse,
 	ExternalToolMediumResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
@@ -86,6 +88,12 @@ export class ExternalToolResponseMapper {
 		}
 
 		return new ExternalToolMediumResponse({ ...medium });
+	}
+
+	public static mapExternalMediumMetadataToResponse(
+		mediumMetadata: MediaMetadataDto
+	): ExternalToolMediumMetadataResponse {
+		return new ExternalToolMediumMetadataResponse({ ...mediumMetadata });
 	}
 
 	private static mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {

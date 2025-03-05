@@ -12,7 +12,7 @@ import {
 	CommonToolValidationService,
 	Lti11EncryptionService,
 } from './service';
-import { CommonToolMetadataService } from './service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from './service/common-tool-utilization.service';
 
 @Module({
 	imports: [LoggerModule, SchoolModule, forwardRef(() => BoardModule), CqrsModule],
@@ -23,7 +23,7 @@ import { CommonToolMetadataService } from './service/common-tool-metadata.servic
 		ExternalToolRepo,
 		SchoolExternalToolRepo,
 		ContextExternalToolRepo,
-		CommonToolMetadataService,
+		CommonToolUtilizationService,
 		CommonToolDeleteService,
 		Lti11EncryptionService,
 	],
@@ -33,7 +33,7 @@ import { CommonToolMetadataService } from './service/common-tool-metadata.servic
 		ExternalToolRepo,
 		SchoolExternalToolRepo,
 		ContextExternalToolRepo,
-		CommonToolMetadataService,
+		CommonToolUtilizationService,
 		CommonToolDeleteService,
 		Lti11EncryptionService,
 	],

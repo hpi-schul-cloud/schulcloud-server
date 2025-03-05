@@ -1,6 +1,8 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaMetadataDto, MediaSourceSyncService } from '@modules/media-source-sync';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
@@ -10,16 +12,17 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	ExternalToolConfig,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolMetadata,
+	ExternalToolUtilization,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
+import { ExternalToolMetadata } from '../domain/external-tool-metadata';
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
 	DatasheetPdfService,
@@ -39,10 +42,11 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly commonToolUtilizationService: CommonToolUtilizationService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
+		private readonly mediaSourceSyncService: MediaSourceSyncService
 	) {}
 
 	public async createExternalTool(
@@ -235,7 +239,9 @@ export class ExternalToolUc {
 			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
 		);
 
-		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
+		const metadata: ExternalToolUtilization = await this.commonToolUtilizationService.getUtilizationForExternalTool(
+			toolId
+		);
 
 		return metadata;
 	}
@@ -287,6 +293,24 @@ export class ExternalToolUc {
 		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
+	}
+
+	public async getMetadataForExternalToolFromMediaSource(
+		userId: EntityId,
+		mediumId: string,
+		mediaSourceId: string | undefined,
+		mediaSourceDataFormat: MediaSourceDataFormat | undefined
+	): Promise<MediaMetadataDto> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SOURCE_ADMIN]);
+
+		const mediaMetadataDto: MediaMetadataDto = await this.mediaSourceSyncService.fetchMediumMetadata(
+			mediumId,
+			mediaSourceId,
+			mediaSourceDataFormat
+		);
+
+		return mediaMetadataDto;
 	}
 
 	private encryptLtiSecret(

@@ -9,6 +9,7 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
+import { MediaMetadataMapper } from '../../mapper';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { MediaSourceSyncReport } from '../../interface';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
@@ -467,6 +468,31 @@ describe(BiloSyncStrategy.name, () => {
 				await strategy.syncAllMediaMetadata(mediaSource);
 
 				expect(externalToolService.updateExternalTools).toBeCalledWith(expectedUpdatedTools);
+			});
+		});
+	});
+
+	describe('fetchMediaMetadata', () => {
+		describe('when mediumId and media source are given', () => {
+			const setup = () => {
+				const mediumId = 'medium-id';
+				const mediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const metadataItem = biloMediaQueryDataResponseFactory.build({ id: mediumId });
+
+				biloMediaFetchService.fetchMediaMetadata.mockResolvedValueOnce([metadataItem]);
+
+				const expectedMediaMetadataDto = MediaMetadataMapper.mapToMediaMetadata(metadataItem);
+
+				return { mediumId, mediaSource, expectedMediaMetadataDto };
+			};
+
+			it('should return the fetched media metadata', async () => {
+				const { mediumId, mediaSource, expectedMediaMetadataDto } = setup();
+
+				const result = await strategy.fetchMediaMetadata(mediumId, mediaSource);
+
+				expect(result).toEqual(expectedMediaMetadataDto);
 			});
 		});
 	});

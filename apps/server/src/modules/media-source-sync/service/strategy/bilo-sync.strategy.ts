@@ -8,6 +8,8 @@ import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/do
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
 import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
 import { MediaSourceSyncOperation } from '../../types';
+import { MediaMetadataDto } from '../../dto';
+import { MediaMetadataMapper } from '../../mapper';
 
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
@@ -41,6 +43,17 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
 
 		return report;
+	}
+
+	public async fetchMediaMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediaMetadataDto> {
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
+			[mediumId],
+			mediaSource
+		);
+
+		const mediaMetadataDto: MediaMetadataDto = MediaMetadataMapper.mapToMediaMetadata(metadataItems[0]);
+
+		return mediaMetadataDto;
 	}
 
 	private async getAllToolsWithBiloMedium(mediaSource: MediaSource): Promise<ExternalTool[]> {

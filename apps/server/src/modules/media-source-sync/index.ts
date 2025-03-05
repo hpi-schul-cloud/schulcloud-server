@@ -1,4 +1,5 @@
 export * from './types';
+export * from './dto';
 export { MediaSourceSyncService } from './service';
 export { MediaSourceSyncReport, MediaSourceSyncOperationReport } from './interface';
-export { MediaSourceSyncModule } from './media-source-sync.module';
+export * from './media-source-sync.module';

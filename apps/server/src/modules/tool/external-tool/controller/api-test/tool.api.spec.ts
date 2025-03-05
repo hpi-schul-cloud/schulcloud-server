@@ -3,6 +3,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { FileRecordResponse } from '@modules/files-storage/controller/dto';
 import { instanceEntityFactory } from '@modules/instance/testing';
+import { MediaSourceDataFormat } from '@modules/media-source';
+import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -30,9 +32,9 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
+	ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {
@@ -860,7 +862,7 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+				expect(response.body).toEqual<ExternalToolUtilizationResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
 						course: 1,
@@ -947,5 +949,83 @@ describe('ToolController (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
+	});
+
+	describe('[GET] tools/external-tools/medium/:mediumId/media-source/:format/:mediaSourceId/metadata', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const format = MediaSourceDataFormat.BILDUNGSLOGIN;
+				const authEndpoint = `http://mediaSourceEntity.oauthConfig.authEndpoint.*`;
+				const baseUrl = `http://mediaSourceEntity.oauthConfig.baseUrl.*`;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
+
+				return { format, mediaSourceEntity };
+			};
+
+			it('should return unauthorized', async () => {
+				const { format, mediaSourceEntity } = setup();
+
+				const response: Response = await testApiClient.get(
+					`medium/mediumId/media-source/${format}/${mediaSourceEntity.sourceId}/metadata`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		// TODO API TEST
+		// describe('when mediumId, media source id and format is given', () => {
+		// 	const setup = async () => {
+		// 		const authEndpoint = 'http://mediaSourceEntity.oauthConfig.authEndpoint';
+		// 		const baseUrl = 'http://mediaSourceEntity.oauthConfig.baseUrl';
+
+		// 		const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
+		// 		const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+		// 			Permission.MEDIA_SOURCE_ADMIN,
+		// 		]);
+		// 		await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+		// 		em.clear();
+
+		// 		const mockToken = new OAuthTokenDto({
+		// 			accessToken: 'mock-access-token',
+		// 			idToken: 'mock-id-token',
+		// 			refreshToken: 'mock-refresh-token',
+		// 		});
+
+		// 		axiosMock.onPost(`${authEndpoint}.*`).replyOnce(HttpStatus.OK, mockToken);
+
+		// 		const mockResponseData: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(1);
+
+		// 		const mockAxiosResponse = axiosResponseFactory.build({
+		// 			data: mockResponseData,
+		// 		}) as AxiosResponse<BiloMediaQueryResponse[]>;
+		// 		axiosMock.onPost(`${baseUrl}.*`).replyOnce(HttpStatus.OK, mockAxiosResponse);
+
+		// 		const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+		// 		return { loggedInClient, mediaSourceEntity, biloMediaMetaData: mockAxiosResponse.data[0] };
+		// 	};
+
+		// 	it('should return the metadata of media source', async () => {
+		// 		const { loggedInClient, mediaSourceEntity, biloMediaMetaData } = await setup();
+
+		// 		const response: Response = await loggedInClient.get(
+		// 			`/medium/medium-id-1/media-source/${MediaSourceDataFormat.BILDUNGSLOGIN}/${mediaSourceEntity.sourceId}/metadata`
+		// 		);
+
+		// 		expect(response.statusCode).toEqual(HttpStatus.OK);
+		// 		expect(response.body).toEqual({
+		// 			id: expect.any(String),
+		// 			name: biloMediaMetaData.data.title,
+		// 			description: biloMediaMetaData.data.description,
+		// 			publisher: biloMediaMetaData.data.publisher,
+		// 			logoUrl: biloMediaMetaData.data.cover,
+		// 			previewLogoUrl: biloMediaMetaData.data.coverSmall,
+		// 			modifiedAt: biloMediaMetaData.data.modified,
+		// 			createdAt: expect.any(String),
+		// 			updatedAt: expect.any(String),
+		// 		});
+		// 	});
+		// });
 	});
 });
