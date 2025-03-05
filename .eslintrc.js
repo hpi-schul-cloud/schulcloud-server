@@ -1,5 +1,7 @@
+const airbnbRules = require('./.eslint-rules-airbnb.js');
+
 module.exports = {
-	extends: ['airbnb-base', 'prettier', 'plugin:promise/recommended'],
+	extends: ['prettier', 'plugin:promise/recommended'],
 	rules: {
 		'prettier/prettier': ['error'],
 		'no-process-env': 'error',
@@ -18,12 +20,6 @@ module.exports = {
 			'error',
 			{
 				allow: ['_id', '_v', '__v'],
-			},
-		],
-		'no-shadow': [
-			'error',
-			{
-				allow: ['err', 'error'],
 			},
 		],
 		'prefer-destructuring': [
@@ -74,10 +70,14 @@ module.exports = {
 			parserOptions: {
 				project: 'apps/server/tsconfig.lint.json',
 				sourceType: 'module',
+				ecmaVersion: 2018,
+				ecmaFeatures: {
+					generators: false,
+					objectLiteralDuplicateProperties: false,
+				},
 			},
 			plugins: ['@typescript-eslint/eslint-plugin', 'import'],
 			extends: [
-				'airbnb-typescript/base',
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/recommended-requiring-type-checking',
 				'prettier',
@@ -85,6 +85,7 @@ module.exports = {
 				'plugin:import/typescript',
 			],
 			rules: {
+				...airbnbRules,
 				'import/no-unresolved': 'off', // better handled by ts resolver
 				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
 				'import/prefer-default-export': 'off',
@@ -110,7 +111,6 @@ module.exports = {
 						},
 					},
 				],
-				'@typescript-eslint/no-unused-vars': 'error',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
 					{
