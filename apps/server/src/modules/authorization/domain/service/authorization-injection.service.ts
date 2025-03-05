@@ -34,7 +34,7 @@ export class AuthorizationInjectionService {
 		return this.referenceLoaders.get(referenceType);
 	}
 
-	public injectUserLoader(userLoader: CurrentUserLoader): void {
+	public injectCurrentUserLoader(userLoader: CurrentUserLoader): void {
 		this.currentUserLoader = userLoader;
 	}
 

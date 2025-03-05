@@ -13,7 +13,7 @@ import { User, UserRepo } from '../repo';
 export class UserAuthorizableService implements AuthorizationLoaderServiceGeneric<User>, CurrentUserLoader {
 	constructor(private readonly userRepo: UserRepo, private readonly injectionService: AuthorizationInjectionService) {
 		this.injectionService.injectReferenceLoader(AuthorizableReferenceType.User, this);
-		this.injectionService.injectUserLoader(this);
+		this.injectionService.injectCurrentUserLoader(this);
 	}
 
 	public async findById(id: EntityId): Promise<User> {
