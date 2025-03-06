@@ -6,8 +6,6 @@ import {
 	DeletionLogService,
 	DeletionRequestService,
 	DeletionBatchService,
-	UserDeletionInjectionService,
-	DeletionExecutionSagaService,
 } from './domain/service';
 import { DeletionLogRepo, DeletionRequestRepo, DeletionBatchRepo, DeletionBatchUsersRepo } from './repo';
 
@@ -22,15 +20,11 @@ import { DeletionLogRepo, DeletionRequestRepo, DeletionBatchRepo, DeletionBatchU
 		DeletionLogService,
 		DeletionRequestService,
 		DeletionBatchService,
-		UserDeletionInjectionService,
-		DeletionExecutionSagaService,
-	],
+		],
 	exports: [
 		DeletionRequestService,
 		DeletionLogService,
 		DeletionBatchService,
-		UserDeletionInjectionService,
-		DeletionExecutionSagaService,
 	],
 })
 export class DeletionModule {}

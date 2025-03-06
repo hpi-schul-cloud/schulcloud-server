@@ -1,1 +1,1 @@
-export * from './news-user-delete.service';
+export * from './saga-injectable.service';

@@ -7,4 +7,3 @@ export { DeletionService, DomainDeletionReport, DomainOperationReport, UserDelet
 export { DataDeletionDomainOperationLoggable } from './domain/loggable';
 export { DeletionErrorLoggableException } from './domain/loggable-exception';
 export { OperationReportHelper } from './domain/helper';
-export { UserDeletionInjectionService } from './domain/service';

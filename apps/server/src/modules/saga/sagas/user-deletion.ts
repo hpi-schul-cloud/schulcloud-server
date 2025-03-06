@@ -19,14 +19,19 @@ export class UserDeletionSaga implements Saga {
         private readonly sagaInjectionService: SagaInjectionService
     ) { }
 
-    private async compensate(compensations: Compensation[]): Promise<void> {
+    /**
+     * Order of compensations is reversed.
+     * Index 0 is the latest compensation.
+     * We execute them in reverse order because the latest compensation is the one that undoes the latest step.
+     */
+    private async compensate(reversedCompensations: Compensation[]): Promise<void> {
         try {
-            for (const compensate of compensations) {
+            for (const compensate of reversedCompensations) {
                 await compensate.fn();
                 console.log(`Compensated for step ${compensate.step.stepName}`);
             }
         } catch (error) {
-            console.error(`Compensation failed for step ${compensations[0].step.stepName}`, error);
+            console.error(`Compensation failed for step ${reversedCompensations[0].step.stepName}`, error);
         }
     }
 
@@ -51,7 +56,7 @@ export class UserDeletionSaga implements Saga {
         } catch (error) {
             const logMessage = `User deletion saga failed for user ${userId} at step ${currentStep?.stepName}. Initiating compensations...`;
             console.error(logMessage, error);
-            await this.compensate(compensations);
+            await this.compensate(compensations.reverse()); // ! .reverse() mutates the array
 
             return logMessage;
         }
