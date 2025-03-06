@@ -1,5 +1,5 @@
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { UserLoginMigrationQuery } from '../../uc';
+import { UserLoginMigrationQuery } from '../../domain/interface';
 import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../dto';
 
 export class UserLoginMigrationMapper {

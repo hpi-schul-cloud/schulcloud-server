@@ -5,12 +5,14 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService } from '@modules/oauth';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
-import { UserService, UserDo } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UserLoginMigrationQuery } from '../domain/interface';
+import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../domain/service';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -24,8 +26,6 @@ import {
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
 } from '../loggable';
-import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
-import { UserLoginMigrationQuery } from './dto';
 
 @Injectable()
 export class UserLoginMigrationUc {

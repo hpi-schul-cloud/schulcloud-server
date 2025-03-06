@@ -13,6 +13,7 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationQuery } from '../domain/interface';
 import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
@@ -25,7 +26,6 @@ import {
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
-	UserLoginMigrationQuery,
 	UserLoginMigrationUc,
 } from '../uc';
 import {
@@ -60,7 +60,7 @@ export class UserLoginMigrationController {
 	})
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found.', type: UserLoginMigrationSearchListResponse })
 	@ApiInternalServerErrorResponse({ description: 'Cannot find target system information.' })
-	async getMigrations(
+	public async getMigrations(
 		@CurrentUser() user: ICurrentUser,
 		@Query() params: UserLoginMigrationSearchParams
 	): Promise<UserLoginMigrationSearchListResponse> {
@@ -90,7 +90,7 @@ export class UserLoginMigrationController {
 	@ApiForbiddenResponse()
 	@ApiOkResponse({ description: 'UserLoginMigrations has been found', type: UserLoginMigrationResponse })
 	@ApiNotFoundResponse({ description: 'Cannot find UserLoginMigration' })
-	async findUserLoginMigrationBySchool(
+	public async findUserLoginMigrationBySchool(
 		@CurrentUser() user: ICurrentUser,
 		@Param() params: SchoolIdParams
 	): Promise<UserLoginMigrationResponse> {
@@ -116,7 +116,7 @@ export class UserLoginMigrationController {
 	})
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiForbiddenResponse()
-	async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+	public async startMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.startUserLoginMigrationUc.startMigration(
 			currentUser.userId,
 			currentUser.schoolId
@@ -140,7 +140,7 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'User login migration started', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
+	public async restartMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse> {
 		const migrationDto: UserLoginMigrationDO = await this.restartUserLoginMigrationUc.restartMigration(
 			currentUser.userId,
 			currentUser.schoolId
@@ -168,7 +168,7 @@ export class UserLoginMigrationController {
 	@ApiOkResponse({ description: 'User login migration is set mandatory/optional', type: UserLoginMigrationResponse })
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
-	async setMigrationMandatory(
+	public async setMigrationMandatory(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: UserLoginMigrationMandatoryParams
 	): Promise<UserLoginMigrationResponse> {
@@ -202,7 +202,9 @@ export class UserLoginMigrationController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiNoContentResponse({ description: 'User login migration was reverted' })
-	async closeMigration(@CurrentUser() currentUser: ICurrentUser): Promise<UserLoginMigrationResponse | undefined> {
+	public async closeMigration(
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<UserLoginMigrationResponse | undefined> {
 		const userLoginMigration: UserLoginMigrationDO | undefined = await this.closeUserLoginMigrationUc.closeMigration(
 			currentUser.userId,
 			currentUser.schoolId
@@ -222,7 +224,7 @@ export class UserLoginMigrationController {
 	@Post('migrate-to-oauth2')
 	@ApiOkResponse({ description: 'The User has been successfully migrated.' })
 	@ApiUnprocessableEntityResponse({ description: 'The migration of the User was not possible.' })
-	async migrateUserLogin(
+	public async migrateUserLogin(
 		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: Oauth2MigrationParams
