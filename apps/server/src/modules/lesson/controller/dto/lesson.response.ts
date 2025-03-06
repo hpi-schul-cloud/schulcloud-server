@@ -1,6 +1,6 @@
+import { ComponentProperties, LessonEntity } from '@modules/lesson/repository';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller/dto';
-import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LessonContentResponse } from './lesson-content.response';
 import { MaterialResponse } from './material.response';

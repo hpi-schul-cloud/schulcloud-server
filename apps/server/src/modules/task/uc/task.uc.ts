@@ -2,9 +2,10 @@ import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modu
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
+import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LessonEntity, TaskWithStatusVo } from '@shared/domain/entity';
+import { TaskWithStatusVo } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo/task';
