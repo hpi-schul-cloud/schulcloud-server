@@ -4,8 +4,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '../base.do.repo';
 

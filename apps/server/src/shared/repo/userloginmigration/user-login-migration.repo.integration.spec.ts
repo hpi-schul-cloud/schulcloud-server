@@ -9,8 +9,8 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserLoginMigrationDO } from '@modules/user-login-migration';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
 
