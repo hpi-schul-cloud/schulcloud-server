@@ -1,5 +1,5 @@
-export { AuthorizationModule } from './authorization.module';
 export { AuthorizationConfig } from './authorization.config';
+export { AuthorizationModule } from './authorization.module';
 export {
 	// Action should not be exported, but hard to solve for now. The AuthorizationContextBuilder is the prefared way
 	Action,
@@ -7,11 +7,12 @@ export {
 	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
+	AuthorizationInjectionService,
 	AuthorizationLoaderService,
 	AuthorizationLoaderServiceGeneric,
 	AuthorizationService,
+	CurrentUserLoader,
 	ForbiddenLoggableException,
-	AuthorizationInjectionService,
 	Rule,
 } from './domain';
 // Should not used anymore
