@@ -27,21 +27,21 @@ export class CustomParameterResponse {
 	@ApiProperty({
 		enum: CustomParameterScopeTypeParams,
 		description: 'Scope where the parameter has to be configured.',
-		example: 'school',
+		example: CustomParameterScopeTypeParams.SCHOOL,
 	})
 	public scope: CustomParameterScopeTypeParams;
 
 	@ApiProperty({
 		enum: CustomParameterLocationParams,
 		description: 'Location where the parameter is transmitted in the HTTP request to the tool provider.',
-		example: 'query',
+		example: CustomParameterLocationParams.QUERY,
 	})
 	public location: CustomParameterLocationParams;
 
 	@ApiProperty({
 		enum: CustomParameterTypeParams,
 		description: 'Input field type. Auto parameters have to be global and cannot have a defaultValue.',
-		example: 'boolean',
+		example: CustomParameterTypeParams.BOOLEAN,
 	})
 	public type: CustomParameterTypeParams;
 

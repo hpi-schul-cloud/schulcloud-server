@@ -9,7 +9,7 @@ export class Oauth2ToolConfigUpdateParams extends ExternalToolConfigCreateParams
 		enum: ToolConfigType,
 		enumName: 'ToolConfigType',
 		description: 'Configuration type of the tool.',
-		example: 'oauth2',
+		example: ToolConfigType.OAUTH2,
 	})
 	public type!: ToolConfigType;
 
@@ -70,7 +70,7 @@ export class Oauth2ToolConfigUpdateParams extends ExternalToolConfigCreateParams
 		enum: TokenEndpointAuthMethod,
 		enumName: 'TokenEndpointAuthMethod',
 		description: 'OAuth2 token endpoint method',
-		example: 'client_secret_basic',
+		example: TokenEndpointAuthMethod.CLIENT_SECRET_BASIC,
 	})
 	public tokenEndpointAuthMethod!: TokenEndpointAuthMethod;
 }

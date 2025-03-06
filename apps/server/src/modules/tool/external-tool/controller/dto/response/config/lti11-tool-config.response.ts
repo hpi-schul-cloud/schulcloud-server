@@ -7,7 +7,7 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		enum: ToolConfigType,
 		enumName: 'ToolConfigType',
 		description: 'Configuration type of the tool.',
-		example: 'lti11',
+		example: ToolConfigType.LTI11,
 	})
 	public type: ToolConfigType;
 
@@ -27,7 +27,7 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		enum: LtiMessageType,
 		enumName: 'LtiMessageType',
 		description: 'LTI 1.1 message type.',
-		example: 'basic-lti-launch-request',
+		example: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 	})
 	public lti_message_type: LtiMessageType;
 
@@ -35,7 +35,7 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		enum: LtiPrivacyPermission,
 		enumName: 'LtiPrivacyPermission',
 		description: 'Describes the amount of personal information that the tool provider gets.',
-		example: 'anonymous',
+		example: LtiPrivacyPermission.ANONYMOUS,
 	})
 	public privacy_permission: LtiPrivacyPermission;
 

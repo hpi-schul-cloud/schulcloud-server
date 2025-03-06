@@ -7,7 +7,7 @@ export class BasicToolConfigResponse extends ExternalToolConfigResponse {
 		enum: ToolConfigType,
 		enumName: 'ToolConfigType',
 		description: 'Configuration type of the tool.',
-		example: 'basic',
+		example: ToolConfigType.BASIC,
 	})
 	public type: ToolConfigType;
 
