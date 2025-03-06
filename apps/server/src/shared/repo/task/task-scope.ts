@@ -1,5 +1,5 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { Task } from '@shared/domain/entity';
+import { Task } from '@modules/task/repo';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '../scope';
 

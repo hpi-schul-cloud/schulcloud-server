@@ -1,6 +1,6 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { FilterQuery } from '@mikro-orm/core';
-import { Task } from '@shared/domain/entity';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Task } from '@modules/task/repo';
 import { EmptyResultQuery } from '../query';
 import { TaskScope } from './task-scope';
 

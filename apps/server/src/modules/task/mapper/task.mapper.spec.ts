@@ -2,11 +2,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
-import { Material, Submission, Task, TaskParentDescriptions } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { InputFormat, TaskStatus, TaskUpdate } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { taskFactory } from '@testing/factory/task.factory';
 import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
+import { Task, TaskParentDescriptions } from '../repo';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (task: Task, status: TaskStatus, descriptions: TaskParentDescriptions): TaskResponse => {

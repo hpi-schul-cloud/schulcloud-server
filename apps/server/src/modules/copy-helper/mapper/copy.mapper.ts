@@ -3,8 +3,8 @@ import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/le
 import { LessonEntity } from '@modules/lesson/repository';
 import { LessonCopyParentParams } from '@modules/lesson/types/lesson-copy-parent.params';
 import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
+import { Task } from '@modules/task/repo';
 import { TaskCopyParentParams } from '@modules/task/types/task-copy-parent.params';
-import { Task } from '@shared/domain/entity/task.entity';
 import { EntityId } from '@shared/domain/types';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyStatus, CopyStatusEnum } from '../types/copy.types';

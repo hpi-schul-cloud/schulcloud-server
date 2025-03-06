@@ -1,10 +1,11 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
-import { Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { SubmissionStatusResponse } from '../controller/dto';
+import { Task } from '../repo';
 import { SubmissionMapper } from './submission.mapper';
 
 describe('Submission Mapper', () => {

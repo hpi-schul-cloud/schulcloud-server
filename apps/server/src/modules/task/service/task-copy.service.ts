@@ -4,9 +4,9 @@ import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-cli
 import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo/task';
+import { Task } from '../repo';
 
 type TaskCopyParams = {
 	originalTaskId: EntityId;

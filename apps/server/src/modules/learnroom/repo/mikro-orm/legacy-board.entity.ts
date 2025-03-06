@@ -1,8 +1,9 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repository';
+import { Task } from '@modules/task/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, Task } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LearnroomElement } from '../../types';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';

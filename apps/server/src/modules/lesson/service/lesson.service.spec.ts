@@ -13,13 +13,14 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Task } from '@modules/task/repo';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { ComponentProperties, ComponentType, LessonEntity, LessonRepo } from '../repository';
-import { LessonService } from './lesson.service';
 import { lessonFactory } from '../testing';
+import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
 	let lessonService: LessonService;
