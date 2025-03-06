@@ -6,10 +6,11 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
+import { LessonEntity } from '../repository';
 import { LessonService } from '../service';
 import { LessonUC } from './lesson.uc';
 

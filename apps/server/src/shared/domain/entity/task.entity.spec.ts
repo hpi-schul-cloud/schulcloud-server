@@ -1,5 +1,6 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -8,7 +9,6 @@ import { setupEntities } from '@testing/database';
 import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { LessonEntity } from './lesson.entity';
 import { Material } from './materials.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
