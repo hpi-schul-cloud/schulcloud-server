@@ -1,4 +1,4 @@
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationDO } from '../../domain';
 import { UserLoginMigrationQuery } from '../../domain/interface';
 import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../dto';
 

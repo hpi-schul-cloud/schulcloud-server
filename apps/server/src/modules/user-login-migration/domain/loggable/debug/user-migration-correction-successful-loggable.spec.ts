@@ -1,7 +1,7 @@
 import { LogMessage } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userLoginMigrationDOFactory } from '../../../testing';
+import { UserLoginMigrationDO } from '../../user-login-migration.do';
 import { UserMigrationCorrectionSuccessfulLoggable } from './user-migration-correction-successful-loggable';
 
 describe(UserMigrationCorrectionSuccessfulLoggable.name, () => {

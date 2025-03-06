@@ -5,13 +5,13 @@ import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
 import { roleFactory } from '@testing/factory/role.factory';
+import { userLoginMigrationDOFactory } from '../../testing';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,
 } from '../loggable';
+import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { UserMigrationService } from './user-migration.service';
 
 describe(UserMigrationService.name, () => {

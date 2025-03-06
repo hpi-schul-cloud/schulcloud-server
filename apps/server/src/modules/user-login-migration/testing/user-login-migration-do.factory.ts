@@ -1,5 +1,5 @@
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { DoBaseFactory } from './do-base.factory';
+import { DoBaseFactory } from '@testing/factory/domainobject';
+import { UserLoginMigrationDO } from '../domain';
 
 export const userLoginMigrationDOFactory = DoBaseFactory.define<UserLoginMigrationDO, UserLoginMigrationDO>(
 	UserLoginMigrationDO,

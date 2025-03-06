@@ -1,6 +1,6 @@
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
 import { Loggable, LogMessage } from '@core/logger';
+import { EntityId } from '@shared/domain/types';
+import { UserLoginMigrationDO } from '../../user-login-migration.do';
 
 export class UserMigrationStartedLoggable implements Loggable {
 	constructor(private readonly userId: EntityId, private readonly userLoginMigration: UserLoginMigrationDO) {}

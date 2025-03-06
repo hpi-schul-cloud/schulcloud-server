@@ -7,13 +7,14 @@ import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userLoginMigrationDOFactory } from '../../testing';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
 } from '../loggable';
+import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { SchoolMigrationService } from './school-migration.service';
 
 describe(SchoolMigrationService.name, () => {

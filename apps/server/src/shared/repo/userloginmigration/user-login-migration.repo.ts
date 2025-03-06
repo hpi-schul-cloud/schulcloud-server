@@ -3,8 +3,8 @@ import { EntityData, EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '../base.do.repo';
@@ -19,7 +19,7 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 		return UserLoginMigrationEntity;
 	}
 
-	async findBySchoolId(schoolId: EntityId): Promise<UserLoginMigrationDO | null> {
+	public async findBySchoolId(schoolId: EntityId): Promise<UserLoginMigrationDO | null> {
 		const userLoginMigration: UserLoginMigrationEntity | null = await this._em.findOne(UserLoginMigrationEntity, {
 			school: schoolId,
 		});
@@ -32,7 +32,7 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 		return null;
 	}
 
-	mapEntityToDO(entity: UserLoginMigrationEntity): UserLoginMigrationDO {
+	public mapEntityToDO(entity: UserLoginMigrationEntity): UserLoginMigrationDO {
 		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			id: entity.id,
 			schoolId: entity.school.id,
@@ -47,7 +47,7 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 		return userLoginMigrationDO;
 	}
 
-	mapDOToEntityProperties(entityDO: UserLoginMigrationDO): EntityData<UserLoginMigrationEntity> {
+	public mapDOToEntityProperties(entityDO: UserLoginMigrationDO): EntityData<UserLoginMigrationEntity> {
 		const userLoginMigrationProps: EntityData<UserLoginMigrationEntity> = {
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			sourceSystem: entityDO.sourceSystemId ? this._em.getReference(SystemEntity, entityDO.sourceSystemId) : undefined,

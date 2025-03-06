@@ -1,10 +1,10 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacySchoolService } from '../../../legacy-school';
+import { UserLoginMigrationDO } from '../../domain';
 import { UserLoginMigrationNotFoundLoggableException } from '../../domain/loggable';
 import {
 	SchoolMigrationService,

@@ -7,7 +7,7 @@ import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userLoginMigrationDOFactory } from '../../testing';
 import {
 	UserLoginMigrationNotFoundLoggableException,
 	UserMigrationRollbackSuccessfulLoggable,

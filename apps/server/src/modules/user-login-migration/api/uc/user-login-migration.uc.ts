@@ -8,9 +8,10 @@ import { ProvisioningService } from '@modules/provisioning';
 import { UserDo, UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Page, RoleReference } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UserLoginMigrationDO } from '../../domain';
 import { UserLoginMigrationQuery } from '../../domain/interface';
 import {
 	ExternalSchoolNumberMissingLoggableException,

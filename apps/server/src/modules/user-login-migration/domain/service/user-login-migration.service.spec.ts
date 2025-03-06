@@ -10,15 +10,15 @@ import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userLoginMigrationDOFactory } from '../../testing';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
+import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
 describe(UserLoginMigrationService.name, () => {
