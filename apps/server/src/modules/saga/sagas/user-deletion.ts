@@ -1,5 +1,5 @@
 import { Saga } from "../interface/saga";
-import { SagaStep } from "../interface/saga-steps";
+import { SagaStep } from "../interface/saga-step";
 import { SagaInjectionService } from "../service/injection";
 import { SagaCompensateFn } from "../type/saga-compensate-function";
 

@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SagaStep } from '../interface/saga-steps';
+import { SagaStep } from '../interface/saga-step';
 
 @Injectable()
 export class SagaInjectionService {

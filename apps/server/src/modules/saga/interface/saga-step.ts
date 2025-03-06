@@ -1,7 +1,7 @@
 import { SagaCompensateFn } from "../type/saga-compensate-function";
 
 
-export interface SagaStep<T = any> {
+export interface SagaStep<T = unknown> {
     sagaName: string;
     stepName: string; // grouped by sagaName
 	invoke(data: T): Promise<SagaCompensateFn>; // e.g. userId for deletion, can be different for each step

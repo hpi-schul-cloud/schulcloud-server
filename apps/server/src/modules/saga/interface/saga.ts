@@ -1,6 +1,6 @@
-import { SagaStep } from "./saga-steps";
+import { SagaStep } from "./saga-step";
 
-export interface Saga<T = any> {
+export interface Saga<T = unknown> {
     name: string;
     flow: SagaStep['sagaName'][];
     invoke(data?: T): Promise<string>;
