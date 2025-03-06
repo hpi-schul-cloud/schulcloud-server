@@ -798,7 +798,11 @@ describe(ExternalToolUc.name, () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalTool> = uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
+				const result: Promise<ExternalTool> = uc.updateExternalTool(
+					currentUser.userId,
+					toolId,
+					externalToolToUpdateProps
+				);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -823,7 +827,11 @@ describe(ExternalToolUc.name, () => {
 				throw new UnprocessableEntityException();
 			});
 
-			const result: Promise<ExternalTool> = uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
+			const result: Promise<ExternalTool> = uc.updateExternalTool(
+				currentUser.userId,
+				toolId,
+				externalToolToUpdateProps
+			);
 
 			await expect(result).rejects.toThrow(UnprocessableEntityException);
 		});
