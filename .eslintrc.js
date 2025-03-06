@@ -85,11 +85,9 @@ module.exports = {
 				'plugin:import/typescript',
 			],
 			rules: {
-				'import/no-unresolved': 'off', // better handled by ts resolver
-				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
+				...airbnbRules,
 				'import/prefer-default-export': 'off',
 				'no-void': ['error', { allowAsStatement: true }],
-				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
 				'filename-rules/match': [1, /^([a-z0-9]+-)*[a-z]+(?:\..*)?$/],
@@ -116,7 +114,6 @@ module.exports = {
 						allowSingleExtends: true,
 					},
 				],
-				...airbnbRules,
 			},
 			overrides: [
 				{
