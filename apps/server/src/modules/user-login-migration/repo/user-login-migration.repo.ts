@@ -3,11 +3,11 @@ import { EntityData, EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
-import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
-import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { BaseDORepo } from '../base.do.repo';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
+import { UserLoginMigrationDO } from '../domain';
+import { UserLoginMigrationEntity } from './user-login-migration.entity';
 
 @Injectable()
 export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, UserLoginMigrationEntity> {

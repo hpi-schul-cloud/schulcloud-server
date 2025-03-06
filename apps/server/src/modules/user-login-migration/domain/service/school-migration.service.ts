@@ -4,8 +4,8 @@ import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import { performance } from 'perf_hooks';
+import { UserLoginMigrationRepo } from '../../repo';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,

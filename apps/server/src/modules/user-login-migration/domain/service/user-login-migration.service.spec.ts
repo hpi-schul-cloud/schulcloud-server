@@ -10,7 +10,7 @@ import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
+import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,

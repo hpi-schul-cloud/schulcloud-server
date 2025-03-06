@@ -3,7 +3,7 @@ import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
+import { UserLoginMigrationRepo } from '../../repo';
 import { UserLoginMigrationDO } from '../user-login-migration.do';
 
 @Injectable()

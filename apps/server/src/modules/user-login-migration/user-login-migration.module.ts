@@ -4,7 +4,6 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
 import {
 	MigrationCheckService,
 	SchoolMigrationService,
@@ -13,6 +12,7 @@ import {
 	UserLoginMigrationService,
 	UserMigrationService,
 } from './domain/service';
+import { UserLoginMigrationRepo } from './repo';
 
 @Module({
 	imports: [UserModule, LegacySchoolModule, LoggerModule, AccountModule, SystemModule],

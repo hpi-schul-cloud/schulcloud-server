@@ -4,7 +4,7 @@ import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration';
+import { UserLoginMigrationRepo } from '../../repo';
 import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { MigrationCheckService } from './migration-check.service';
 

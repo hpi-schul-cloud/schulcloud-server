@@ -8,7 +8,7 @@ import { UserDo } from '@modules/user/domain';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { UserLoginMigrationRepo } from '@shared/repo/userloginmigration/user-login-migration.repo';
+import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
