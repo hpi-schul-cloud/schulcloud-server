@@ -3,7 +3,6 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { lessonFactory } from '@modules/lesson/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,6 +11,7 @@ import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { LessonEntity } from '../repository';
 import { LessonService } from '../service';
+import { lessonFactory } from '../testing';
 import { LessonUC } from './lesson.uc';
 
 describe('LessonUC', () => {

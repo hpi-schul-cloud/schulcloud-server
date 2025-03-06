@@ -3,13 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LernstoreResources } from '@modules/lesson/controller';
-import { lessonFactory } from '@modules/lesson/testing';
 import { User } from '@modules/user/repo';
 import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { ComponentProperties, ComponentType, LessonEntity } from '.';
+import { lessonFactory } from '../testing';
+import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 
 describe('Lesson Entity', () => {
 	let orm: MikroORM;

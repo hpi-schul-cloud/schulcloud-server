@@ -4,7 +4,6 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
-import { lessonFactory } from '@modules/lesson/testing';
 import { TaskCopyService } from '@modules/task';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -25,6 +24,7 @@ import {
 	LessonEntity,
 	LessonRepo,
 } from '../repository';
+import { lessonFactory } from '../testing';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 
