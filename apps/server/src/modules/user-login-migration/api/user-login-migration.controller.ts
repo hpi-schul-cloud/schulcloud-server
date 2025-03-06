@@ -19,7 +19,6 @@ import {
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
 } from '../loggable';
-import { UserLoginMigrationMapper } from '../mapper';
 import {
 	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,
@@ -38,6 +37,7 @@ import {
 	UserLoginMigrationSearchListResponse,
 	UserLoginMigrationSearchParams,
 } from './dto';
+import { UserLoginMigrationMapper } from './mapper';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')

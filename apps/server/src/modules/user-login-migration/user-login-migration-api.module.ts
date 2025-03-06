@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -6,9 +7,8 @@ import { ProvisioningModule } from '@modules/provisioning';
 import { UserModule } from '@modules/user';
 import { ImportUserModule } from '@modules/user-import';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
-import { UserLoginMigrationRollbackController } from './controller/user-login-migration-rollback.controller';
-import { UserLoginMigrationController } from './controller/user-login-migration.controller';
+import { UserLoginMigrationRollbackController } from './api/user-login-migration-rollback.controller';
+import { UserLoginMigrationController } from './api/user-login-migration.controller';
 import {
 	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,

@@ -1,6 +1,6 @@
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../controller/dto';
-import { UserLoginMigrationQuery } from '../uc';
+import { UserLoginMigrationQuery } from '../../uc';
+import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../dto';
 
 export class UserLoginMigrationMapper {
 	static mapSearchParamsToQuery(searchParams: UserLoginMigrationSearchParams): UserLoginMigrationQuery {
