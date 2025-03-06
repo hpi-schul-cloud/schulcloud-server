@@ -9,4 +9,3 @@ export * from './submission.entity';
 export * from './task.entity';
 export * from './team.entity';
 export * from './user-login-migration.entity';
-export * from './video-conference.entity';

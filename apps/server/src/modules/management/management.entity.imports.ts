@@ -43,6 +43,7 @@ import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/rep
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { User } from '@modules/user/repo';
+import { VideoConference } from '@modules/video-conference/repo';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
@@ -52,7 +53,6 @@ import { Submission } from '@shared/domain/entity/submission.entity';
 import { Task } from '@shared/domain/entity/task.entity';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
 export const ENTITIES = [
 	AccountEntity,

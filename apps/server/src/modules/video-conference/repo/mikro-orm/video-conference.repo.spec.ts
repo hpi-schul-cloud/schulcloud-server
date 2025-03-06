@@ -3,13 +3,14 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { TargetModels, VideoConference, VideoConferenceOptions } from '@shared/domain/entity';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../../domain';
+import { videoConferenceFactory } from '../../testing';
+import { VideoConferenceOptions } from './video-conference-options.embeddable';
+import { VideoConferenceTargetModels } from './video-conference-target-models.enum';
+import { VideoConference } from './video-conference.entity';
+import { VideoConferenceRepo } from './video-conference.repo';
 
 class VideoConferenceRepoSpec extends VideoConferenceRepo {
 	mapEntityToDOSpec(entity: VideoConference): VideoConferenceDO {
@@ -99,7 +100,7 @@ describe('Video Conference Repo', () => {
 					everyAttendeJoinsMuted: true,
 					moderatorMustApproveJoinRequests: false,
 				}),
-				targetModel: TargetModels.COURSES,
+				targetModel: VideoConferenceTargetModels.COURSES,
 				target: new ObjectId().toHexString(),
 			};
 
@@ -136,7 +137,7 @@ describe('Video Conference Repo', () => {
 
 			// Assert
 			expect(result.target).toEqual(testDO.target);
-			expect(result.targetModel).toEqual(TargetModels.COURSES);
+			expect(result.targetModel).toEqual(VideoConferenceTargetModels.COURSES);
 			expect(result.options?.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);
 			expect(result.options?.everybodyJoinsAsModerator).toEqual(testDO.options.everybodyJoinsAsModerator);
 			expect(result.options?.moderatorMustApproveJoinRequests).toEqual(testDO.options.moderatorMustApproveJoinRequests);

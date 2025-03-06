@@ -1,5 +1,6 @@
-import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
-import { VideoConference, VideoConferenceOptions } from './video-conference.entity';
+import { videoConferenceFactory } from '../../testing';
+import { VideoConferenceOptions } from './video-conference-options.embeddable';
+import { VideoConference } from './video-conference.entity';
 
 describe('Video Conference Entity', () => {
 	describe('constructor', () => {
