@@ -6,10 +6,10 @@ import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } fro
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserLoginMigrationEntity } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { legacySchoolDoFactory } from '../testing';
 import { LegacySchoolRepo } from './legacy-school.repo';

@@ -3,7 +3,7 @@ import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
-import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
