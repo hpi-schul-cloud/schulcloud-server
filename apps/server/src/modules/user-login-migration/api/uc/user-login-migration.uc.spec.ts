@@ -8,6 +8,7 @@ import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { OAuthService } from '@modules/oauth';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
+import { externalUserDtoFactory } from '@modules/provisioning/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
@@ -21,7 +22,6 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { externalUserDtoFactory } from '../../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -31,7 +31,7 @@ import {
 	UserLoginMigrationMultipleEmailUsersLoggableException,
 	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
 } from '../../domain/loggable';
-import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
+import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../../domain/service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 
 describe(UserLoginMigrationUc.name, () => {

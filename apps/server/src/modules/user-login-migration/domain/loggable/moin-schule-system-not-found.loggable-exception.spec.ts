@@ -1,4 +1,4 @@
-import { MoinSchuleSystemNotFoundLoggableException } from '@modules/user-login-migration/loggable/moin-schule-system-not-found.loggable-exception';
+import { MoinSchuleSystemNotFoundLoggableException } from './moin-schule-system-not-found.loggable-exception';
 
 describe(MoinSchuleSystemNotFoundLoggableException.name, () => {
 	describe('getLogMessage', () => {

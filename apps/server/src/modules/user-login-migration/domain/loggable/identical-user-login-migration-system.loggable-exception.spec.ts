@@ -1,5 +1,5 @@
-import { IdenticalUserLoginMigrationSystemLoggableException } from '@modules/user-login-migration/loggable/identical-user-login-migration-system.loggable-exception';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { IdenticalUserLoginMigrationSystemLoggableException } from './identical-user-login-migration-system.loggable-exception';
 
 describe(IdenticalUserLoginMigrationSystemLoggableException.name, () => {
 	describe('getLogMessage', () => {

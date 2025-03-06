@@ -1,5 +1,5 @@
-import { UserLoginMigrationAlreadyClosedLoggableException } from '@modules/user-login-migration/loggable/user-login-migration-already-closed.loggable-exception';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { UserLoginMigrationAlreadyClosedLoggableException } from './user-login-migration-already-closed.loggable-exception';
 
 describe(UserLoginMigrationAlreadyClosedLoggableException.name, () => {
 	describe('getLogMessage', () => {
