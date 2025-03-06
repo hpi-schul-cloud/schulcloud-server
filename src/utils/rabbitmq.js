@@ -28,6 +28,14 @@ const getConnection = async () => {
 	}
 };
 
+const setup = async () => {
+	try {
+		await getConnection();
+	} catch (err) {
+		logger.error('RabbitMQ unable to setup.', err);
+	}
+};
+
 class Channel {
 	constructor(queue, queueOptions) {
 		this.queue = queue;
