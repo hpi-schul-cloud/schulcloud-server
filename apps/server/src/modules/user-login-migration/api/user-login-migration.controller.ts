@@ -19,7 +19,7 @@ import {
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 	UserLoginMigrationNotFoundLoggableException,
-} from '../loggable';
+} from '../domain/loggable';
 import {
 	CloseMigrationWizardUc,
 	CloseUserLoginMigrationUc,
