@@ -1,51 +1,33 @@
-import type { FileRecordResponse } from '@modules/files-storage/controller/dto';
-import { FileRecordParentType, StorageLocation } from '@modules/files-storage/interface';
+import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from '@infra/files-storage-client';
 import { type Instance, InstanceService } from '@modules/instance';
-import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
-import { firstValueFrom, Observable } from 'rxjs';
-import { ToolConfig } from '../../tool-config';
 import { FileRecordRef } from '../domain';
 
 @Injectable()
 export class ExternalToolImageService {
-	private readonly internalFileApiUrl: string;
-
-	constructor(
-		private readonly configService: ConfigService<ToolConfig, true>,
-		private readonly httpService: HttpService,
-		private readonly instanceService: InstanceService
-	) {
-		this.internalFileApiUrl = this.configService.get('FILES_STORAGE__SERVICE_BASE_URL');
-	}
+	constructor(private readonly fileApi: FileApi, private readonly instanceService: InstanceService) {}
 
 	public async uploadImageFileFromUrl(
 		url: string,
 		fileNameAffix: string,
-		externalToolId: EntityId,
-		jwt: string
+		externalToolId: EntityId
 	): Promise<FileRecordRef> {
 		const fileName = `external-tool-${fileNameAffix}-${externalToolId}`;
 
 		const instance: Instance = await this.instanceService.getInstance();
 
-		const observable: Observable<AxiosResponse<FileRecordResponse>> = this.httpService.post(
-			`${this.internalFileApiUrl}/api/v3/file/upload-from-url/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
+		const response: AxiosResponse<FileRecordResponse> = await this.fileApi.uploadFromUrl(
+			instance.id,
+			StorageLocation.INSTANCE,
+			externalToolId,
+			FileRecordParentType.EXTERNALTOOLS,
 			{
 				url,
 				fileName,
-			},
-			{
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
 			}
 		);
-
-		const response: AxiosResponse<FileRecordResponse> = await firstValueFrom(observable);
 
 		return new FileRecordRef({
 			uploadUrl: url,
@@ -54,31 +36,18 @@ export class ExternalToolImageService {
 		});
 	}
 
-	public async deleteImageFile(fileRecordId: EntityId, jwt: string): Promise<void> {
-		const observable: Observable<AxiosResponse<unknown>> = this.httpService.delete(
-			`${this.internalFileApiUrl}/api/v3/file/delete/${fileRecordId}`,
-			{
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			}
-		);
-
-		await firstValueFrom(observable);
+	public async deleteImageFile(fileRecordId: EntityId): Promise<void> {
+		await this.fileApi.deleteFile(fileRecordId);
 	}
 
-	public async deleteAllFiles(externalToolId: EntityId, jwt: string): Promise<void> {
+	public async deleteAllFiles(externalToolId: EntityId): Promise<void> {
 		const instance: Instance = await this.instanceService.getInstance();
 
-		const observable: Observable<AxiosResponse<unknown>> = this.httpService.delete(
-			`${this.internalFileApiUrl}/api/v3/file/delete/${StorageLocation.INSTANCE}/${instance.id}/${FileRecordParentType.ExternalTool}/${externalToolId}`,
-			{
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			}
+		await this.fileApi.deleteByParent(
+			instance.id,
+			StorageLocation.INSTANCE,
+			externalToolId,
+			FileRecordParentType.EXTERNALTOOLS
 		);
-
-		await firstValueFrom(observable);
 	}
 }
