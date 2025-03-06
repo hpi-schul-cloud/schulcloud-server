@@ -14,12 +14,11 @@ import { PaginationParams } from '@shared/controller/dto';
 import { Material, Submission } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
-import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { Task } from '../repo';
+import { Task, TaskRepo } from '../repo';
 import { TaskService } from '../service';
 import { TaskUC } from './task.uc';
 

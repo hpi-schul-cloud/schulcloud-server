@@ -7,8 +7,7 @@ import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
-import { TaskRepo } from '@shared/repo/task';
-import { TaskWithStatusVo } from '../repo';
+import { TaskRepo, TaskWithStatusVo } from '../repo';
 import { TaskService } from '../service';
 
 @Injectable()

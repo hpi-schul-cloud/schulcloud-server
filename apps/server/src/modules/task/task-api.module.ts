@@ -3,8 +3,8 @@ import { CopyHelperModule } from '@modules/copy-helper/copy-helper.module';
 import { CourseModule } from '@modules/course';
 import { LessonModule } from '@modules/lesson';
 import { Module } from '@nestjs/common';
-import { TaskRepo } from '@shared/repo/task';
 import { SubmissionController, TaskController } from './controller';
+import { TaskRepo } from './repo';
 import { TaskModule } from './task.module';
 import { SubmissionUc, TaskCopyUC, TaskUC } from './uc';
 

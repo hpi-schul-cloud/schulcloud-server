@@ -3,15 +3,15 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonEntity } from '@modules/lesson/repository';
 import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@modules/task/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Material, Submission } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { Material, Submission } from '../../domain/entity';
-import { SortOrder } from '../../domain/interface';
+import { Task } from './task.entity';
 import { TaskRepo } from './task.repo';
 
 const yesterday = new Date(Date.now() - 86400000);

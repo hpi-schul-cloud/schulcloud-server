@@ -1,10 +1,10 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { Task } from '@modules/task/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo/base.repo';
 import { TaskScope } from './task-scope';
+import { Task } from './task.entity';
 
 @Injectable()
 export class TaskRepo extends BaseRepo<Task> {

@@ -8,8 +8,7 @@ import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { TaskRepo } from '@shared/repo/task';
-import { Task } from '../repo';
+import { Task, TaskRepo } from '../repo';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 

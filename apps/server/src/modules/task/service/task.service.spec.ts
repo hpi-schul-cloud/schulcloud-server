@@ -18,12 +18,11 @@ import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission } from '@shared/domain/entity';
-import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { ObjectId } from 'bson';
-import { Task } from '../repo';
+import { Task, TaskRepo } from '../repo';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
