@@ -120,7 +120,7 @@
 		"nest:test:cov": "jest \"^((?!\\.load\\.spec\\.ts).)*\\.spec\\.ts$\" --coverage --force-exit --maxWorkers='50%'",
 		"nest:test:debug": "jest --runInBand",
 		"nest:lint": "eslint apps --ignore-path .gitignore",
-		"nest:lint:config": "eslint --ignore-path .gitignore --print-config apps/server/src/apps/server.app.ts > eslint-config-dump.json",
+		"nest:lint:config": "eslint --print-config apps/server/src/apps/server.app.ts > eslint-config-dump.json",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"ensureIndexes:prod": "npm run nest:start:console:prod -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
