@@ -12,11 +12,12 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission, Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo/task';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
