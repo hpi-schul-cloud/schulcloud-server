@@ -4,6 +4,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
+import { lessonFactory } from '@modules/lesson/testing';
 import { TaskCopyService } from '@modules/task';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -12,7 +13,6 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import {
