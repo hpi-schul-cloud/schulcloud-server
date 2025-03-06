@@ -44,19 +44,22 @@ export class TspOauthDataMapper {
 		const oauthDataDtos: OauthDataDto[] = [];
 		const usersOfClasses = new Map<string, TspUserInfo[]>();
 
-		oauthDataDtos.push(
-			...this.mapTspTeachersToOauthDataDtos(
-				tspTeachers,
-				systemDto,
-				externalSchools,
-				externalClasses,
-				teacherForClasses,
-				usersOfClasses
-			)
-		);
-		oauthDataDtos.push(
-			...this.mapTspStudentsToOauthDataDtos(tspStudents, systemDto, externalSchools, externalClasses, usersOfClasses)
-		);
+		this.mapTspTeachersToOauthDataDtos(
+			tspTeachers,
+			systemDto,
+			externalSchools,
+			externalClasses,
+			teacherForClasses,
+			usersOfClasses
+		).forEach((oauthDataDto) => oauthDataDtos.push(oauthDataDto));
+
+		this.mapTspStudentsToOauthDataDtos(
+			tspStudents,
+			systemDto,
+			externalSchools,
+			externalClasses,
+			usersOfClasses
+		).forEach((oauthDataDto) => oauthDataDtos.push(oauthDataDto));
 
 		return { oauthDataDtos, usersOfClasses };
 	}
