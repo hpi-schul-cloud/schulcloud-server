@@ -64,8 +64,6 @@ export class CommonCartridgeFileParser {
 		organization: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): CommonCartridgeFileResourceProps | undefined {
-		this.checkOrganization(organization);
-
 		const resource = this.resourceFactory.create(organization, this.options.inputFormat);
 
 		if (

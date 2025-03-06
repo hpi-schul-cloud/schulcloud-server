@@ -75,17 +75,22 @@ export class FilesStorageClientAdapter {
 				)}/api/v3/file/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`
 			);
 			const formData = new FormData();
-			formData.append('file', file);
+
+			formData.append('storageLocationId', storageLocationId);
+			formData.append('storageLocation', storageLocation);
 			formData.append('parentId', parentId);
 			formData.append('parentType', parentType);
+			formData.append('file', file);
+
 			const observable = this.httpService.post(url.toString(), formData, {
 				responseType: 'arraybuffer',
 				headers: {
-					'Content-Type': 'multipart/form-data',
 					Authorization: `Bearer ${token}`,
+					'Content-Type': 'multipart/form-data',
 				},
 			});
 			const response = await lastValueFrom(observable);
+			// console.log(response.data);
 
 			return response.data as FileRecordResponse;
 		} catch (error: unknown) {
