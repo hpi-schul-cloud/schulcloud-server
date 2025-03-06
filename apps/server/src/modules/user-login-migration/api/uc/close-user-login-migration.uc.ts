@@ -4,9 +4,13 @@ import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator'
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LegacySchoolService } from '../../legacy-school';
-import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
-import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';
+import { LegacySchoolService } from '../../../legacy-school';
+import { UserLoginMigrationNotFoundLoggableException } from '../../domain/loggable';
+import {
+	SchoolMigrationService,
+	UserLoginMigrationRevertService,
+	UserLoginMigrationService,
+} from '../../domain/service';
 
 @Injectable()
 export class CloseUserLoginMigrationUc {

@@ -11,8 +11,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, RoleReference, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationQuery } from '../domain/interface';
-import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../domain/service';
+import { UserLoginMigrationQuery } from '../../domain/interface';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -25,7 +24,8 @@ import {
 	UserMigrationCorrectionSuccessfulLoggable,
 	UserMigrationStartedLoggable,
 	UserMigrationSuccessfulLoggable,
-} from '../loggable';
+} from '../../domain/loggable';
+import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../../domain/service';
 
 @Injectable()
 export class UserLoginMigrationUc {

@@ -21,14 +21,6 @@ import {
 	UserLoginMigrationNotFoundLoggableException,
 } from '../domain/loggable';
 import {
-	CloseMigrationWizardUc,
-	CloseUserLoginMigrationUc,
-	RestartUserLoginMigrationUc,
-	StartUserLoginMigrationUc,
-	ToggleUserLoginMigrationUc,
-	UserLoginMigrationUc,
-} from '../uc';
-import {
 	ForceMigrationParams,
 	Oauth2MigrationParams,
 	SchoolIdParams,
@@ -38,6 +30,14 @@ import {
 	UserLoginMigrationSearchParams,
 } from './dto';
 import { UserLoginMigrationMapper } from './mapper';
+import {
+	CloseMigrationWizardUc,
+	CloseUserLoginMigrationUc,
+	RestartUserLoginMigrationUc,
+	StartUserLoginMigrationUc,
+	ToggleUserLoginMigrationUc,
+	UserLoginMigrationUc,
+} from './uc';
 
 @ApiTags('UserLoginMigration')
 @Controller('user-login-migrations')

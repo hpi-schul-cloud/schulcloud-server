@@ -27,8 +27,8 @@ import { UUID } from 'bson';
 import { DeepPartial } from 'fishery';
 import { Response } from 'supertest';
 import { userLoginMigrationFactory } from '../../testing';
-import { UserLoginMigrationUc } from '../../uc';
 import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
+import { UserLoginMigrationUc } from '../uc';
 
 jest.mock('jwks-rsa', () => () => {
 	return {

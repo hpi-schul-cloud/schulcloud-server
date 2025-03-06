@@ -12,7 +12,7 @@ import {
 	UserLoginMigrationRollbackService,
 	UserLoginMigrationService,
 	UserMigrationService,
-} from './service';
+} from './domain/service';
 
 @Module({
 	imports: [UserModule, LegacySchoolModule, LoggerModule, AccountModule, SystemModule],

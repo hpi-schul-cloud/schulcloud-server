@@ -6,7 +6,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { UserLoginMigrationRollbackService } from '../service';
+import { UserLoginMigrationRollbackService } from '../../domain/service';
 import { UserLoginMigrationRollbackUc } from './user-login-migration-rollback.uc';
 
 describe(UserLoginMigrationRollbackUc.name, () => {

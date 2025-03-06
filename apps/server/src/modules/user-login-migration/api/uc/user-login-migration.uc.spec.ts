@@ -21,7 +21,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { externalUserDtoFactory } from '../../provisioning/testing';
+import { externalUserDtoFactory } from '../../../provisioning/testing';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -30,7 +30,7 @@ import {
 	UserLoginMigrationInvalidExternalSchoolIdLoggableException,
 	UserLoginMigrationMultipleEmailUsersLoggableException,
 	UserLoginMigrationSchoolAlreadyMigratedLoggableException,
-} from '../loggable';
+} from '../../domain/loggable';
 import { SchoolMigrationService, UserLoginMigrationService, UserMigrationService } from '../service';
 import { UserLoginMigrationUc } from './user-login-migration.uc';
 

@@ -11,8 +11,11 @@ import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
-import { SchoolNumberMissingLoggableException, UserLoginMigrationAlreadyClosedLoggableException } from '../loggable';
-import { UserLoginMigrationService } from '../service';
+import {
+	SchoolNumberMissingLoggableException,
+	UserLoginMigrationAlreadyClosedLoggableException,
+} from '../../domain/loggable';
+import { UserLoginMigrationService } from '../../domain/service';
 import { StartUserLoginMigrationUc } from './start-user-login-migration.uc';
 
 describe(StartUserLoginMigrationUc.name, () => {

@@ -4,8 +4,8 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { UserLoginMigrationNotFoundLoggableException, UserLoginMigrationStartLoggable } from '../loggable';
-import { SchoolMigrationService, UserLoginMigrationService } from '../service';
+import { UserLoginMigrationNotFoundLoggableException, UserLoginMigrationStartLoggable } from '../../domain/loggable';
+import { SchoolMigrationService, UserLoginMigrationService } from '../../domain/service';
 
 @Injectable()
 export class RestartUserLoginMigrationUc {

@@ -6,8 +6,11 @@ import { Injectable } from '@nestjs/common';
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationMandatoryLoggable, UserLoginMigrationNotFoundLoggableException } from '../loggable';
-import { UserLoginMigrationService } from '../service';
+import {
+	UserLoginMigrationMandatoryLoggable,
+	UserLoginMigrationNotFoundLoggableException,
+} from '../../domain/loggable';
+import { UserLoginMigrationService } from '../../domain/service';
 
 @Injectable()
 export class ToggleUserLoginMigrationUc {
@@ -18,7 +21,11 @@ export class ToggleUserLoginMigrationUc {
 		private readonly logger: Logger
 	) {}
 
-	async setMigrationMandatory(userId: EntityId, schoolId: EntityId, mandatory: boolean): Promise<UserLoginMigrationDO> {
+	public async setMigrationMandatory(
+		userId: EntityId,
+		schoolId: EntityId,
+		mandatory: boolean
+	): Promise<UserLoginMigrationDO> {
 		await this.checkPermission(userId, schoolId);
 
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(

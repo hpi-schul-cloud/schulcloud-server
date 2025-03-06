@@ -2,7 +2,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationRollbackService } from '../service';
+import { UserLoginMigrationRollbackService } from '../../domain/service';
 
 @Injectable()
 export class UserLoginMigrationRollbackUc {

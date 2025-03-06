@@ -9,8 +9,8 @@ import {
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { UserLoginMigrationRollbackUc } from '../uc';
 import { UserIdParams } from './dto';
+import { UserLoginMigrationRollbackUc } from './uc';
 
 @ApiTags('UserLoginMigration Rollback')
 @Controller('user-login-migrations')

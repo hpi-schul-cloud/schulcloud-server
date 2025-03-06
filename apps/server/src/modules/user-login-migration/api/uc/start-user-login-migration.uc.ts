@@ -10,8 +10,8 @@ import {
 	SchoolNumberMissingLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationStartLoggable,
-} from '../loggable';
-import { UserLoginMigrationService } from '../service';
+} from '../../domain/loggable';
+import { UserLoginMigrationService } from '../../domain/service';
 
 @Injectable()
 export class StartUserLoginMigrationUc {
@@ -24,7 +24,7 @@ export class StartUserLoginMigrationUc {
 		this.logger.setContext(StartUserLoginMigrationUc.name);
 	}
 
-	async startMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
+	public async startMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
 		await this.checkPreconditions(userId, schoolId);
 
 		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
