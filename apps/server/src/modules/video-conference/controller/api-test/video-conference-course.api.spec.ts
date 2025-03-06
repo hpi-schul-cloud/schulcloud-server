@@ -16,7 +16,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
 import { VideoConferenceScope } from '../../domain';
-import { VideoConference, VideoConferenceTargetModels } from '../../repo';
+import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
@@ -369,7 +369,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -406,7 +406,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -446,7 +446,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -495,7 +495,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -531,7 +531,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -571,7 +571,7 @@ describe('VideoConferenceController (API)', () => {
 					const expertAccount = accountFactory.buildWithId({ userId: expertUser.id });
 
 					const course = courseEntityFactory.buildWithId({ school, students: [expertUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 						options: { moderatorMustApproveJoinRequests: false },
@@ -609,7 +609,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -658,7 +658,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -694,7 +694,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, students: [studentUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});
@@ -729,7 +729,7 @@ describe('VideoConferenceController (API)', () => {
 					]);
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
-					const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 					});

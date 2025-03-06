@@ -1,8 +1,8 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { VideoConference, VideoConferenceProps, VideoConferenceTargetModels } from '../repo';
+import { VideoConferenceEntity, VideoConferenceProps, VideoConferenceTargetModels } from '../repo';
 
-export const videoConferenceFactory = BaseFactory.define<VideoConference, VideoConferenceProps>(
-	VideoConference,
+export const videoConferenceFactory = BaseFactory.define<VideoConferenceEntity, VideoConferenceProps>(
+	VideoConferenceEntity,
 	({ sequence }) => {
 		return {
 			target: `${sequence}`,

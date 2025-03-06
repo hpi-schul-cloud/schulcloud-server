@@ -1,9 +1,9 @@
-import { EntityData, EntityName, Loaded } from '@mikro-orm/core';
+import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../../domain';
 import { VideoConferenceTargetModels } from './video-conference-target-models.enum';
-import { VideoConference } from './video-conference.entity';
+import { VideoConferenceEntity } from './video-conference.entity';
 
 const VideoConferenceTargetModelsMapping: Record<VideoConferenceScope, VideoConferenceTargetModels> = {
 	[VideoConferenceScope.EVENT]: VideoConferenceTargetModels.EVENTS,
@@ -20,16 +20,16 @@ const VideoConferencingScopeMapping: Record<VideoConferenceTargetModels, VideoCo
 };
 
 @Injectable()
-export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConference> {
-	get entityName(): EntityName<VideoConference> {
-		return VideoConference;
+export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConferenceEntity> {
+	get entityName(): EntityName<VideoConferenceEntity> {
+		return VideoConferenceEntity;
 	}
 
 	public async findByScopeAndScopeId(
 		scopeId: string,
 		videoConferenceScope: VideoConferenceScope
 	): Promise<VideoConferenceDO> {
-		const entity: Loaded<VideoConference> = await this._em.findOneOrFail(VideoConference, {
+		const entity: VideoConferenceEntity = await this._em.findOneOrFail(VideoConferenceEntity, {
 			target: scopeId,
 			targetModel: VideoConferenceTargetModelsMapping[videoConferenceScope],
 		});
@@ -37,7 +37,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		return this.mapEntityToDO(entity);
 	}
 
-	protected mapEntityToDO(entity: VideoConference): VideoConferenceDO {
+	protected mapEntityToDO(entity: VideoConferenceEntity): VideoConferenceDO {
 		return new VideoConferenceDO({
 			id: entity.id,
 			target: entity.target,
@@ -50,7 +50,7 @@ export class VideoConferenceRepo extends BaseDORepo<VideoConferenceDO, VideoConf
 		});
 	}
 
-	protected mapDOToEntityProperties(entityDO: VideoConferenceDO): EntityData<VideoConference> {
+	protected mapDOToEntityProperties(entityDO: VideoConferenceDO): EntityData<VideoConferenceEntity> {
 		return {
 			target: entityDO.target,
 			targetModel: VideoConferenceTargetModelsMapping[entityDO.targetModel],

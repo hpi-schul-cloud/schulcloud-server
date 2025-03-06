@@ -14,7 +14,7 @@ export type VideoConferenceProps = {
 // Preset options for opening a video conference
 @Entity({ tableName: 'videoconferences' })
 @Index({ properties: ['target', 'targetModel'] })
-export class VideoConference extends BaseEntityWithTimestamps {
+export class VideoConferenceEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
 	target: string;
@@ -22,7 +22,7 @@ export class VideoConference extends BaseEntityWithTimestamps {
 	@Enum(() => VideoConferenceTargetModels)
 	targetModel: VideoConferenceTargetModels;
 
-	@Embedded(() => VideoConferenceOptions)
+	@Embedded(() => VideoConferenceOptions, { object: true })
 	options: VideoConferenceOptions;
 
 	constructor(props: VideoConferenceProps) {

@@ -1,11 +1,14 @@
-import { Embeddable } from '@mikro-orm/core';
+import { Embeddable, Property } from '@mikro-orm/core';
 
 @Embeddable()
 export class VideoConferenceOptions {
+	@Property()
 	public everyAttendeJoinsMuted: boolean;
 
+	@Property()
 	public everybodyJoinsAsModerator: boolean;
 
+	@Property()
 	public moderatorMustApproveJoinRequests: boolean;
 
 	constructor(options: VideoConferenceOptions) {

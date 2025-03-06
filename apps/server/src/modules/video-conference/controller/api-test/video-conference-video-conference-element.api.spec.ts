@@ -25,7 +25,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
 import { VideoConferenceScope } from '../../domain';
-import { VideoConference, VideoConferenceTargetModels } from '../../repo';
+import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
@@ -566,7 +566,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -644,7 +644,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -725,7 +725,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -811,7 +811,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -889,7 +889,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -972,7 +972,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 							options: { moderatorMustApproveJoinRequests: false },
@@ -1054,7 +1054,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -1141,7 +1141,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -1220,7 +1220,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
@@ -1293,7 +1293,7 @@ describe('VideoConferenceController (API)', () => {
 						const cardNode = cardEntityFactory.withParent(columnNode).build();
 						const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});

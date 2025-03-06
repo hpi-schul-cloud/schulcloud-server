@@ -43,7 +43,7 @@ import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/rep
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { User } from '@modules/user/repo';
-import { VideoConference } from '@modules/video-conference/repo';
+import { VideoConferenceEntity } from '@modules/video-conference/repo';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
@@ -104,7 +104,7 @@ export const ENTITIES = [
 	TeamUserEntity,
 	User,
 	UserLoginMigrationEntity,
-	VideoConference,
+	VideoConferenceEntity,
 	GroupEntity,
 	RegistrationPinEntity,
 	UserLicenseEntity,
