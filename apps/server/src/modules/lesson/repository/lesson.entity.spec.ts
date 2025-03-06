@@ -4,11 +4,11 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LernstoreResources } from '@modules/lesson/controller';
 import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { materialFactory } from '@testing/factory/material.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { lessonFactory } from '../testing';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 

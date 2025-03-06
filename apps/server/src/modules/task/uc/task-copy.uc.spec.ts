@@ -16,9 +16,9 @@ import { ForbiddenException, InternalServerErrorException, NotFoundException } f
 import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { taskFactory } from '@testing/factory/task.factory';
 import { Task, TaskRepo } from '../repo';
 import { TaskCopyService } from '../service';
+import { taskFactory } from '../testing';
 import { TaskCopyParentParams } from '../types';
 import { TaskCopyUC } from './task-copy.uc';
 

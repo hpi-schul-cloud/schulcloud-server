@@ -6,6 +6,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,7 +15,6 @@ import { BaseEntity, Material, Submission } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { materialFactory } from '@testing/factory/material.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,

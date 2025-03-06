@@ -17,9 +17,9 @@ import { TaskStatus } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { Task, TaskRepo } from '../repo';
 import { TaskService } from '../service';
+import { taskFactory } from '../testing';
 import { TaskUC } from './task.uc';
 
 describe('TaskUC', () => {

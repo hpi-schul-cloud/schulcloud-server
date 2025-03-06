@@ -20,9 +20,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ObjectId } from 'bson';
 import { Task, TaskRepo } from '../repo';
+import { taskFactory } from '../testing';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 

@@ -2,13 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { TaskListResponse } from '@modules/task/controller/dto';
+import { taskFactory } from '@modules/task/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { InputFormat } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 

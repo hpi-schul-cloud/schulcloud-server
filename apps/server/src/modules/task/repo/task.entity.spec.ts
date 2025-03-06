@@ -9,7 +9,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
+import { taskFactory } from '../testing';
 import { Task } from './task.entity';
 
 describe('Task Entity', () => {

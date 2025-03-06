@@ -22,9 +22,9 @@ import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo/submission';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ObjectId } from 'bson';
 import { Task } from '../repo';
+import { taskFactory } from '../testing';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {

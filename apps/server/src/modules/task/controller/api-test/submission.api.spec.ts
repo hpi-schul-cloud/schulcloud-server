@@ -4,13 +4,13 @@ import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/t
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { SubmissionStatusListResponse } from '@modules/task/controller/dto/submission.response';
+import { taskFactory } from '@modules/task/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
 import { Submission } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 

@@ -10,9 +10,9 @@ import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { Task } from './task.entity';
 import { TaskRepo } from './task.repo';
+import { taskFactory } from '../testing';
 
 const yesterday = new Date(Date.now() - 86400000);
 const tomorrow = new Date(Date.now() + 86400000);

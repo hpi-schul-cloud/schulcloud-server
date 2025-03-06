@@ -2,11 +2,12 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { taskFactory } from '@modules/task/testing';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { Submission, SubmissionProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
-import { taskFactory } from './task.factory';
 
 class SubmissionFactory extends BaseFactory<Submission, SubmissionProperties> {
 	graded(): this {

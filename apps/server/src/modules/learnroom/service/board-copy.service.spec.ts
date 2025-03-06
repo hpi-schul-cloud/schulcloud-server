@@ -13,6 +13,7 @@ import { LessonEntity } from '@modules/lesson/repository';
 import { lessonFactory } from '@modules/lesson/testing';
 import { TaskCopyService } from '@modules/task';
 import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -20,7 +21,6 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { Material, Submission } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import {
 	boardFactory,

@@ -10,9 +10,9 @@ import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { Task } from '../repo';
 import { SubmissionService } from '../service/submission.service';
+import { taskFactory } from '../testing';
 import { SubmissionUc } from './submission.uc';
 
 describe('Submission Uc', () => {

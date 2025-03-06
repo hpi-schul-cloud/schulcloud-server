@@ -1,14 +1,10 @@
-import { Task } from '@modules/task/repo';
-// Remove the eslint-disable after fixing the import issue in EPIC-96
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { TaskProperties } from '@shared/domain/types';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
 
 const yesterday = new Date(Date.now() - 86400000);
 

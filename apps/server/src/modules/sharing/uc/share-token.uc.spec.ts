@@ -20,6 +20,7 @@ import { SchoolService } from '@modules/school';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskCopyService, TaskService } from '@modules/task';
 import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { BadRequestException, NotImplementedException } from '@nestjs/common';
@@ -28,7 +29,6 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Material, Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';

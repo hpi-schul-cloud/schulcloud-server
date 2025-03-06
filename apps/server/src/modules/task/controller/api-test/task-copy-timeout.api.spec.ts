@@ -4,10 +4,10 @@ import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { taskFactory } from '@modules/task/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { taskFactory } from '@testing/factory/task.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 // config must be set outside before the server module is imported, otherwise the configuration is already set
