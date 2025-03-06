@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { AuthorizableReferenceType, AuthorizationLoaderService, Rule } from '../type';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { AuthorizableReferenceType, AuthorizationLoaderService, CurrentUserLoader, Rule } from '../type';
 
 @Injectable()
 export class AuthorizationInjectionService {
@@ -7,19 +7,36 @@ export class AuthorizationInjectionService {
 
 	private readonly referenceLoaders: Map<AuthorizableReferenceType, AuthorizationLoaderService> = new Map();
 
-	injectAuthorizationRule(rule: Rule) {
+	private currentUserLoader?: CurrentUserLoader;
+
+	public injectAuthorizationRule(rule: Rule): void {
 		this.authorizationRules.push(rule);
 	}
 
-	getAuthorizationRules(): Rule[] {
+	public getAuthorizationRules(): Rule[] {
 		return this.authorizationRules;
 	}
 
-	injectReferenceLoader(referenceType: AuthorizableReferenceType, referenceLoader: AuthorizationLoaderService) {
+	public injectReferenceLoader(
+		referenceType: AuthorizableReferenceType,
+		referenceLoader: AuthorizationLoaderService
+	): void {
 		this.referenceLoaders.set(referenceType, referenceLoader);
 	}
 
-	getReferenceLoader(referenceType: AuthorizableReferenceType): AuthorizationLoaderService | undefined {
+	public getReferenceLoader(referenceType: AuthorizableReferenceType): AuthorizationLoaderService | undefined {
 		return this.referenceLoaders.get(referenceType);
+	}
+
+	public injectCurrentUserLoader(userLoader: CurrentUserLoader): void {
+		this.currentUserLoader = userLoader;
+	}
+
+	public getCurrentUserLoader(): CurrentUserLoader {
+		if (!this.currentUserLoader) {
+			throw new InternalServerErrorException('UserLoader is not injected');
+		}
+
+		return this.currentUserLoader;
 	}
 }
