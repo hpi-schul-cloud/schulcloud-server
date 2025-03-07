@@ -16,7 +16,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { NewsRepo } from '../../repo';
-import { teamNewsFactory } from '../factory';
+import { teamNewsFactory } from '../../testing';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {

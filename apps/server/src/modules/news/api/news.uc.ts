@@ -4,8 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CrudOperation } from '@shared/types/crud-operation.enum';
-import { CreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '../domain';
-import { NewsCrudOperationLoggable } from '../domain/loggable';
+import { CreateNews, INewsScope, IUpdateNews, NewsCrudOperationLoggable, NewsTargetModel } from '../domain';
 import { News, NewsRepo, NewsTargetFilter } from '../repo';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
