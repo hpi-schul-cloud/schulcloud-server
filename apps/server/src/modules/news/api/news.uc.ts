@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { FeathersAuthorizationService } from '@modules/authorization';
-import { Injectable } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CrudOperation } from '@shared/types/crud-operation.enum';
@@ -12,8 +12,9 @@ type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 @Injectable()
 export class NewsUc {
 	constructor(
-		private newsRepo: NewsRepo,
+		@Inject(forwardRef(() => FeathersAuthorizationService))
 		private authorizationService: FeathersAuthorizationService,
+		private newsRepo: NewsRepo,
 		private logger: Logger
 	) {
 		this.logger.setContext(NewsUc.name);
