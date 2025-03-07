@@ -2,12 +2,12 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { LernstoreResources } from '@modules/lesson/controller';
 import { User } from '@modules/user/repo';
 import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
+import { LernstoreResources } from '../api';
 import { lessonFactory } from '../testing';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 

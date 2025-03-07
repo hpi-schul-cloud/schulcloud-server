@@ -3,10 +3,10 @@ import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LessonLinkedTaskResponse } from '../controller/dto/lesson-linked-task.response';
-import { LessonMapper } from '../controller/mapper/lesson.mapper';
-import { LessonService } from '../service';
+import { LessonLinkedTaskResponse } from '../api/dto/lesson-linked-task.response';
+import { LessonMapper } from '../api/mapper/lesson.mapper';
 import { LessonEntity } from '../repository';
+import { LessonService } from '../service';
 
 @Injectable()
 export class LessonUC {
