@@ -29,7 +29,7 @@ export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
 	sourceSystem?: SystemEntity;
 
 	@ManyToOne(() => SystemEntity)
-	targetSystem: SystemEntity;
+	targetSystem!: SystemEntity;
 
 	@Property({ nullable: true })
 	mandatorySince?: Date;

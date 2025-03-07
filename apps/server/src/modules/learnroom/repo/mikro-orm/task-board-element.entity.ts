@@ -1,5 +1,5 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
-import { Task } from '@shared/domain/entity';
+import { Task } from '@modules/task/repo';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-board-element.entity';
 
 @Entity({ discriminatorValue: LegacyBoardElementType.Task })

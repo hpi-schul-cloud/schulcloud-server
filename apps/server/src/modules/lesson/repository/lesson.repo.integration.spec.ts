@@ -1,15 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { materialFactory } from '@testing/factory/material.factory';
-import { taskFactory } from '@testing/factory/task.factory';
+import { lessonFactory } from '../testing';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { LessonRepo } from './lesson.repo';
-import { lessonFactory } from '../testing';
 
 describe('LessonRepo', () => {
 	let module: TestingModule;
