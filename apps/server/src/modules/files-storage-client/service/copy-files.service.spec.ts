@@ -2,13 +2,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 

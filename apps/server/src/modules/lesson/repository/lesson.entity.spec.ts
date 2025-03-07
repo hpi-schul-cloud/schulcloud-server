@@ -4,14 +4,12 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LernstoreResources } from '@modules/lesson/controller';
 import { User } from '@modules/user/repo';
+import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { materialFactory } from '@testing/factory/material.factory';
 import { taskFactory } from '@testing/factory/task.factory';
+import { lessonFactory } from '../testing';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
-import { Material } from './materials.entity';
-import { Submission } from './submission.entity';
-import { Task } from './task.entity';
 
 describe('Lesson Entity', () => {
 	let orm: MikroORM;

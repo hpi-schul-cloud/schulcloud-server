@@ -1,11 +1,11 @@
 import { EntityDictionary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { LessonEntity } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { LessonScope } from './lesson-scope';
+import { LessonEntity } from './lesson.entity';
 
 @Injectable()
 export class LessonRepo extends BaseRepo<LessonEntity> {

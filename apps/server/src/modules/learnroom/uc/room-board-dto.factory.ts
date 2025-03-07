@@ -1,9 +1,10 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
+import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { LessonEntity, Task, TaskWithStatusVo } from '@shared/domain/entity';
+import { Task, TaskWithStatusVo } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { TaskStatus } from '@shared/domain/types';
 import {
