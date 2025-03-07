@@ -9,6 +9,7 @@ import { TeamsModule } from '@modules/teams';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserModule } from '@modules/user';
+import { SagaModule } from '@modules/saga';
 import { DeletionModule } from '.';
 import { DeletionExecutionController } from './api/controller/deletion-execution.controller';
 import { DeletionRequestController } from './api/controller/deletion-request.controller';
@@ -29,6 +30,7 @@ import { DeletionBatchController } from './api/controller/deletion-batch.control
 		PseudonymModule,
 		FilesModule,
 		RocketChatUserModule,
+		SagaModule,
 		UserModule,
 	],
 	controllers: [DeletionRequestController, DeletionExecutionController, DeletionBatchController],

@@ -1,0 +1,1 @@
+export type SagaCompensateFn = () => Promise<void>;
