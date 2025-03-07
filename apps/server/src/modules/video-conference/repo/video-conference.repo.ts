@@ -1,7 +1,7 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../../domain';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
 import { VideoConferenceTargetModels } from './video-conference-target-models.enum';
 import { VideoConferenceEntity } from './video-conference.entity';
 

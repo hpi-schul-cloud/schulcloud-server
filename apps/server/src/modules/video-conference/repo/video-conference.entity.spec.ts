@@ -1,4 +1,4 @@
-import { videoConferenceFactory } from '../../testing';
+import { videoConferenceFactory } from '../testing';
 import { VideoConferenceOptions } from './video-conference-options.embeddable';
 import { VideoConferenceEntity } from './video-conference.entity';
 
