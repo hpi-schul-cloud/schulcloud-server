@@ -1,8 +1,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
-import { Task } from '@modules/task/repo';
+import { Task, TaskProperties } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { TaskProperties } from '@shared/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 
