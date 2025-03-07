@@ -19,7 +19,7 @@ import {
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity } from '@modules/lesson/repository';
 import { MediaSourceEntity } from '@modules/media-source/entity';
-import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo/news.entity';
+import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
