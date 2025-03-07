@@ -4,8 +4,8 @@ import { User } from '@modules/user/repo';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { SubmissionStatusResponse } from '../controller/dto';
-import { Task } from '../repo';
+import { Task } from '../../repo';
+import { SubmissionStatusResponse } from '../dto';
 import { SubmissionMapper } from './submission.mapper';
 
 describe('Submission Mapper', () => {

@@ -5,10 +5,10 @@ import { User } from '@modules/user/repo';
 import { Material, Submission } from '@shared/domain/entity';
 import { InputFormat, TaskStatus, TaskUpdate } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../controller/dto';
-import { Task, TaskParentDescriptions } from '../repo';
+import { Task, TaskParentDescriptions } from '../../repo';
+import { taskFactory } from '../../testing';
+import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../dto';
 import { TaskMapper } from './task.mapper';
-import { taskFactory } from '../testing';
 
 const createExpectedResponse = (task: Task, status: TaskStatus, descriptions: TaskParentDescriptions): TaskResponse => {
 	const expectedStatus = Object.create(TaskStatusResponse.prototype) as TaskStatusResponse;

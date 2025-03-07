@@ -3,8 +3,9 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { CopyApiResponse } from '@modules/copy-helper/dto/copy.response';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { TaskCopyUC, TaskUC } from '../uc';
+import { TaskCopyUC } from './task-copy.uc';
 import { TaskController } from './task.controller';
+import { TaskUC } from './task.uc';
 
 describe('TaskController', () => {
 	let module: TestingModule;

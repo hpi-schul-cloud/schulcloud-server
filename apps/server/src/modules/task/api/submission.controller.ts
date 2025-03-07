@@ -1,9 +1,9 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { SubmissionMapper } from '../mapper';
-import { SubmissionUc } from '../uc';
 import { SubmissionStatusListResponse, SubmissionUrlParams, TaskUrlParams } from './dto';
+import { SubmissionMapper } from './mapper';
+import { SubmissionUc } from './submission.uc';
 
 @ApiTags('Submission')
 @JwtAuthentication()

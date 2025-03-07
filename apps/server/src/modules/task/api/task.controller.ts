@@ -4,11 +4,10 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { PaginationParams } from '@shared/controller/dto';
-import { TaskMapper } from '../mapper';
-import { TaskCopyUC } from '../uc/task-copy.uc';
-import { TaskUC } from '../uc/task.uc';
-import { TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
-import { TaskCopyApiParams } from './dto/task-copy.params';
+import { TaskCopyApiParams, TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
+import { TaskMapper } from './mapper';
+import { TaskCopyUC } from './task-copy.uc';
+import { TaskUC } from './task.uc';
 
 @ApiTags('Task')
 @JwtAuthentication()
