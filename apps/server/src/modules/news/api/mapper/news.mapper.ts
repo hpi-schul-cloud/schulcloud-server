@@ -1,4 +1,3 @@
-import { LogMessageData } from '@core/logger';
 import { CreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '../../domain';
 import { News } from '../../repo';
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../dto';
@@ -71,16 +70,5 @@ export class NewsMapper {
 			displayAt: params.displayAt,
 		};
 		return dto;
-	}
-
-	public static mapToLogMessageData(news: News): LogMessageData {
-		const data = {
-			entityType: 'News',
-			id: news.id,
-			targetModel: news.targetModel,
-			targetId: news.target.id,
-		};
-
-		return data;
 	}
 }

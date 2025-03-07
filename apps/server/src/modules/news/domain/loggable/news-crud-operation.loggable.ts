@@ -1,8 +1,8 @@
 import { Loggable, LogMessage } from '@core/logger';
 import { EntityId } from '@shared/domain/types';
 import { CrudOperation } from '@shared/types/crud-operation.enum';
-import { NewsMapper } from '../../api/mapper';
 import { News } from '../../repo';
+import { NewsLogMapper } from '../mapper';
 
 export class NewsCrudOperationLoggable implements Loggable {
 	constructor(
@@ -17,7 +17,7 @@ export class NewsCrudOperationLoggable implements Loggable {
 			data: {
 				operation: this.operation,
 				userId: this.userId,
-				news: NewsMapper.mapToLogMessageData(this.news),
+				news: NewsLogMapper.mapToLogMessageData(this.news),
 			},
 		};
 	}
