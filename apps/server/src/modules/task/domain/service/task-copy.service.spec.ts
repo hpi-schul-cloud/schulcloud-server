@@ -12,8 +12,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
-import { Task, TaskRepo } from '../repo';
-import { taskFactory } from '../testing';
+import { Task, TaskRepo } from '../../repo';
+import { taskFactory } from '../../testing';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {

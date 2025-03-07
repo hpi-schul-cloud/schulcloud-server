@@ -8,9 +8,9 @@ import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { TaskCopyService } from '../domain';
 import { Task, TaskRepo } from '../repo';
-import { TaskCopyService } from '../service';
-import { TaskCopyParentParams } from '../types';
+import { TaskCopyParentParams } from './dto';
 
 @Injectable()
 export class TaskCopyUC {

@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SubmissionService } from '../service';
+import { SubmissionService } from '../domain';
 
 @Injectable()
 export class SubmissionUc {

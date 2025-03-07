@@ -8,8 +8,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
 import { TaskRepo, TaskWithStatusVo } from '../repo';
-import { TaskService } from '../service';
-
+import { TaskService } from '../domain';
 @Injectable()
 export class TaskUC {
 	constructor(

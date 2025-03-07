@@ -23,8 +23,8 @@ import { SubmissionRepo } from '@shared/repo/submission';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { ObjectId } from 'bson';
-import { Task } from '../repo';
-import { taskFactory } from '../testing';
+import { Task } from '../../repo';
+import { taskFactory } from '../../testing';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {

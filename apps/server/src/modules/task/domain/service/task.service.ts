@@ -18,7 +18,7 @@ import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Task, TaskRepo } from '../repo';
+import { Task, TaskRepo } from '../../repo';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

@@ -18,9 +18,9 @@ import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { Task, TaskRepo } from '../repo';
-import { TaskService } from '../service';
 import { taskFactory } from '../testing';
 import { TaskUC } from './task.uc';
+import { TaskService } from '../domain';
 
 describe('TaskUC', () => {
 	let module: TestingModule;

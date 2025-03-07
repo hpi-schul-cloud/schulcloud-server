@@ -1,5 +1,6 @@
 export * from './submission.response';
 export * from './submission.url.params';
+export * from './task-copy-parent.params';
 export * from './task-copy.params';
 export * from './task-create.params';
 export * from './task-status.response';

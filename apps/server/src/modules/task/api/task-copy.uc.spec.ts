@@ -17,10 +17,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { Task, TaskRepo } from '../repo';
-import { TaskCopyService } from '../service';
 import { taskFactory } from '../testing';
-import { TaskCopyParentParams } from '../types';
 import { TaskCopyUC } from './task-copy.uc';
+import { TaskCopyService } from '../domain';
+import { TaskCopyParentParams } from './dto';
 
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;
