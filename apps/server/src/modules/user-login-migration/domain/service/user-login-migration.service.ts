@@ -8,13 +8,13 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '../../repo';
+import { UserLoginMigrationDO } from '../do';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
 
 @Injectable()
 export class UserLoginMigrationService {

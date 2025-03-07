@@ -1,8 +1,8 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { UserLoginMigrationService } from './user-login-migration.service';
+import { UserLoginMigrationDO } from '../do';
 
 @Injectable()
 export class UserLoginMigrationRevertService {

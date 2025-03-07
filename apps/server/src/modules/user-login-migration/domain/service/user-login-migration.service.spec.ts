@@ -12,13 +12,13 @@ import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
+import { UserLoginMigrationDO } from '../do';
 import {
 	IdenticalUserLoginMigrationSystemLoggableException,
 	MoinSchuleSystemNotFoundLoggableException,
 	UserLoginMigrationAlreadyClosedLoggableException,
 	UserLoginMigrationGracePeriodExpiredLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
 describe(UserLoginMigrationService.name, () => {

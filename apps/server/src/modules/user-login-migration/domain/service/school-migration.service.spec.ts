@@ -14,8 +14,8 @@ import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { SchoolMigrationService } from './school-migration.service';
+import { UserLoginMigrationDO } from '../do';
 
 describe(SchoolMigrationService.name, () => {
 	let module: TestingModule;

@@ -10,7 +10,7 @@ import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
+import { UserLoginMigrationDO } from '../do';
 
 @Injectable()
 export class SchoolMigrationService {

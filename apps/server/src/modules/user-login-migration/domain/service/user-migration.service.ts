@@ -4,11 +4,11 @@ import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { UserLoginMigrationDO } from '../do';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
 
 @Injectable()
 export class UserMigrationService {

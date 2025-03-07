@@ -4,7 +4,7 @@ import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '../../repo';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
+import { UserLoginMigrationDO } from '../do';
 
 @Injectable()
 export class MigrationCheckService {

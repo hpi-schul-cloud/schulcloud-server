@@ -7,11 +7,11 @@ import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory } from '@testing/factory/role.factory';
 import { userLoginMigrationDOFactory } from '../../testing';
+import { UserLoginMigrationDO } from '../do';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../user-login-migration.do';
 import { UserMigrationService } from './user-migration.service';
 
 describe(UserMigrationService.name, () => {
