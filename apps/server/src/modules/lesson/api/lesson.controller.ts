@@ -1,10 +1,15 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { LessonUC } from '../uc';
-import { LessonMetadataListResponse, LessonResponse, LessonUrlParams, LessonsUrlParams } from './dto';
-import { LessonLinkedTaskResponse } from './dto/lesson-linked-task.response';
-import { LessonMapper } from './mapper/lesson.mapper';
+import {
+	LessonLinkedTaskResponse,
+	LessonMetadataListResponse,
+	LessonResponse,
+	LessonUrlParams,
+	LessonsUrlParams,
+} from './dto';
+import { LessonMapper } from './mapper';
+import { LessonUC } from './uc';
 
 @ApiTags('Lesson')
 @JwtAuthentication()
@@ -13,14 +18,17 @@ export class LessonController {
 	constructor(private readonly lessonUC: LessonUC) {}
 
 	@Delete(':lessonId')
-	async delete(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+	public async delete(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
 		const result = await this.lessonUC.delete(currentUser.userId, urlParams.lessonId);
 
 		return result;
 	}
 
 	@Get('course/:courseId')
-	async getCourseLessons(@Param() urlParams: LessonsUrlParams, @CurrentUser() currentUser: ICurrentUser) {
+	public async getCourseLessons(
+		@Param() urlParams: LessonsUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<LessonMetadataListResponse> {
 		const lessons = await this.lessonUC.getLessons(currentUser.userId, urlParams.courseId);
 
 		const dtoList = lessons.map((lesson) => LessonMapper.mapToMetadataResponse(lesson));
@@ -29,14 +37,17 @@ export class LessonController {
 	}
 
 	@Get(':lessonId')
-	async getLesson(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser) {
+	public async getLesson(
+		@Param() urlParams: LessonUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<LessonResponse> {
 		const lesson = await this.lessonUC.getLesson(currentUser.userId, urlParams.lessonId);
 		const response = new LessonResponse(lesson);
 		return response;
 	}
 
 	@Get(':lessonId/tasks')
-	async getLessonTasks(
+	public async getLessonTasks(
 		@Param() urlParams: LessonUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<LessonLinkedTaskResponse[]> {

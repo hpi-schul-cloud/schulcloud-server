@@ -3,10 +3,10 @@ import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LessonLinkedTaskResponse } from '../api/dto/lesson-linked-task.response';
-import { LessonMapper } from '../api/mapper/lesson.mapper';
-import { LessonEntity } from '../repository';
-import { LessonService } from '../service';
+import { LessonEntity } from '../../repository';
+import { LessonService } from '../../service';
+import { LessonLinkedTaskResponse } from '../dto';
+import { LessonMapper } from '../mapper';
 
 @Injectable()
 export class LessonUC {
@@ -16,7 +16,7 @@ export class LessonUC {
 		private readonly courseService: CourseService
 	) {}
 
-	async delete(userId: EntityId, lessonId: EntityId): Promise<boolean> {
+	public async delete(userId: EntityId, lessonId: EntityId): Promise<boolean> {
 		const [user, lesson] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.lessonService.findById(lessonId),
@@ -31,7 +31,7 @@ export class LessonUC {
 		return true;
 	}
 
-	async getLessons(userId: EntityId, courseId: EntityId): Promise<LessonEntity[]> {
+	public async getLessons(userId: EntityId, courseId: EntityId): Promise<LessonEntity[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const course = await this.courseService.findOneForUser(courseId, userId);
 
@@ -45,7 +45,7 @@ export class LessonUC {
 		return filteredLessons;
 	}
 
-	async getLesson(userId: EntityId, lessonId: EntityId): Promise<LessonEntity> {
+	public async getLesson(userId: EntityId, lessonId: EntityId): Promise<LessonEntity> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const lesson = await this.lessonService.findById(lessonId);
 
@@ -54,7 +54,7 @@ export class LessonUC {
 		return lesson;
 	}
 
-	async getLessonLinkedTasks(userId: EntityId, lessonId: EntityId): Promise<LessonLinkedTaskResponse[]> {
+	public async getLessonLinkedTasks(userId: EntityId, lessonId: EntityId): Promise<LessonLinkedTaskResponse[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const lesson = await this.lessonService.findById(lessonId);
 
