@@ -12,13 +12,12 @@ import {
 	Property,
 } from '@mikro-orm/core';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
-import { SchoolFeature, SchoolPurpose } from '@modules/school/domain';
-import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { LanguageType } from '@shared/domain/interface';
+import { FileStorageType, SchoolFeature, SchoolPurpose } from '../domain';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './school-year.entity';
 
