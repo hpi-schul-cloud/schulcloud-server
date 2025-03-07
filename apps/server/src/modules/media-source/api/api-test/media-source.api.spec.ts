@@ -2,7 +2,6 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { mediaSourceEntityFactory } from '../../testing';
@@ -37,12 +36,12 @@ describe('MediaSourceController (API)', () => {
 	describe('[GET] media-sources', () => {
 		describe('when the user is not authorized', () => {
 			const setup = async () => {
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([superheroUser, superheroAccount]);
+				await em.persistAndFlush([adminUser, adminAccount]);
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
 				return {
 					loggedInClient,
@@ -60,9 +59,7 @@ describe('MediaSourceController (API)', () => {
 
 		describe('when media sources are available', () => {
 			const setup = async () => {
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 
 				const bilo = mediaSourceEntityFactory.withBiloFormat().build({});
 
