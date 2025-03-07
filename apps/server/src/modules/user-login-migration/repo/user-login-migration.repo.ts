@@ -6,7 +6,7 @@ import { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { UserLoginMigrationDO } from '../../domain';
+import { UserLoginMigrationDO } from '../domain';
 import { UserLoginMigrationEntity } from './user-login-migration.entity';
 
 @Injectable()
