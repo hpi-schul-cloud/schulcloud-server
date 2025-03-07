@@ -17,8 +17,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Counted, EntityId } from '@shared/domain/types';
-import { SubmissionRepo } from '@shared/repo/submission';
-import { Submission } from '../../repo';
+import { Submission, SubmissionRepo } from '../../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
