@@ -1,6 +1,5 @@
 export * from './base.entity';
 export * from './consent';
-export * from './lesson.entity';
 export * from './materials.entity';
 export * from './news.entity';
 export * from './role.entity';
@@ -8,4 +7,3 @@ export * from './storageprovider.entity';
 export * from './submission.entity';
 export * from './task.entity';
 export * from './team.entity';
-export * from './user-login-migration.entity';

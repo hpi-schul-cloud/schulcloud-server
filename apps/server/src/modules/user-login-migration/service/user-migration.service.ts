@@ -3,8 +3,8 @@ import { Account, AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { UserLoginMigrationDO } from '../domain';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,
