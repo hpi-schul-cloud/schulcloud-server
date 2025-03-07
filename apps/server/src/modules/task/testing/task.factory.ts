@@ -1,9 +1,9 @@
 import { schoolEntityFactory } from '@modules/school/testing';
-import { Task, TaskProperties } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
+import { Task, TaskProperties } from '../repo';
 
 const yesterday = new Date(Date.now() - 86400000);
 
