@@ -1,3 +1,3 @@
-export { TeamsModule } from './teams.module';
+export { TeamAuthorisableService, TeamService } from './domain';
 export { TeamsConfig } from './teams.config';
-export * from './service';
+export { TeamsModule } from './teams.module';

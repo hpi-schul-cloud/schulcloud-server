@@ -4,10 +4,10 @@ import { courseEntityFactory } from '@modules/course/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { teamFactory } from '@modules/teams/testing';
 import { userFactory } from '@modules/user/testing';
 import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
-import { teamFactory } from './team.factory';
 
 export const schoolNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(SchoolNews, ({ sequence }) => {
 	return {

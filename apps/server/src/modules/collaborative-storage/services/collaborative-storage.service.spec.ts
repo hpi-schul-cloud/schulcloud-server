@@ -7,13 +7,12 @@ import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
 import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
+import { TeamEntity, TeamsRepo } from '@modules/teams/repo';
+import { teamFactory } from '@modules/teams/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { TeamsRepo } from '@shared/repo/teams';
 import { setupEntities } from '@testing/database';
-import { teamFactory } from '@testing/factory/team.factory';
 import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {

@@ -9,14 +9,13 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { teamFactory } from '@modules/teams/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo/teams';
 import { setupEntities } from '@testing/database';
-import { teamFactory } from '@testing/factory/team.factory';
 import { teamUserFactory } from '@testing/factory/teamuser.factory';
 import { ObjectId } from 'bson';
+import { TeamEntity, TeamsRepo } from '../../repo';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {

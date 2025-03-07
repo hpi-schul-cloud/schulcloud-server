@@ -1,9 +1,8 @@
 import { PseudonymService } from '@modules/pseudonym';
+import { TeamEntity, TeamsRepo } from '@modules/teams/repo';
 import { UserService } from '@modules/user';
 import { UserDo } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
-import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo/teams';
 import { IdTokenCreationLoggableException } from '../error';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';

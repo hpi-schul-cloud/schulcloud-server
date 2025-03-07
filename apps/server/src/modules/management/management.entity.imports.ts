@@ -39,6 +39,7 @@ import {
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/repo';
 import { Task } from '@modules/task/repo';
+import { TeamEntity, TeamUserEntity } from '@modules/teams/repo/team.entity';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
@@ -51,7 +52,6 @@ import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/ne
 import { Role } from '@shared/domain/entity/role.entity';
 import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { Submission } from '@shared/domain/entity/submission.entity';
-import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
 export const ENTITIES = [

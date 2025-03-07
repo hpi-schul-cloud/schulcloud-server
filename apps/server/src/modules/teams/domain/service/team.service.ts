@@ -14,9 +14,8 @@ import {
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { TeamEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
+import { TeamEntity, TeamsRepo } from '../../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

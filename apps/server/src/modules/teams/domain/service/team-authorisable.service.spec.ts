@@ -1,10 +1,9 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { teamFactory } from '@modules/teams/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo/teams';
 import { setupEntities } from '@testing/database';
-import { teamFactory } from '@testing/factory/team.factory';
+import { TeamEntity, TeamsRepo } from '../../repo';
 import { TeamAuthorisableService } from './team-authorisable.service';
 
 describe('team authorisable service', () => {
