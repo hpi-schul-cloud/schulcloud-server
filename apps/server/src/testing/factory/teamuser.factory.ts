@@ -3,6 +3,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { TeamUserEntity } from '@modules/teams/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { Role } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
