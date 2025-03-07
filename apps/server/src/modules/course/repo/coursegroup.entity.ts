@@ -1,5 +1,5 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { LessonParent } from '@modules/lesson/repository';
+import { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps, TaskParent } from '@shared/domain/entity';

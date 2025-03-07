@@ -1,4 +1,4 @@
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Task } from '@shared/domain/entity';
 import { BaseFactory } from '@testing/factory/base.factory';

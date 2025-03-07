@@ -14,7 +14,7 @@ import {
 	ComponentType,
 	LessonEntity,
 	LessonRepo,
-} from '../repository';
+} from '../repo';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 

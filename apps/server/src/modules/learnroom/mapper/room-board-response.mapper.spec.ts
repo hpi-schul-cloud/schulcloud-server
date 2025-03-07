@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardLayout } from '@modules/board';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';

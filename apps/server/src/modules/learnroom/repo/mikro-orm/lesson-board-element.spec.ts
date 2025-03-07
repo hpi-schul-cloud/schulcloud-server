@@ -1,5 +1,5 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';

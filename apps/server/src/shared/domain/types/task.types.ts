@@ -1,5 +1,5 @@
 import type { CourseEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import type { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import type { Submission } from '../entity';

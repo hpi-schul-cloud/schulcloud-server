@@ -9,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { LessonEntity } from '../../repository';
+import { LessonEntity } from '../../repo';
 import { LessonService } from '../../service';
 import { lessonFactory } from '../../testing';
 import { LessonUC } from './lesson.uc';

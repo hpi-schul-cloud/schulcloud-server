@@ -17,9 +17,9 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { ComponentProperties, ComponentType, LessonEntity, LessonRepo } from '../repository';
-import { LessonService } from './lesson.service';
+import { ComponentProperties, ComponentType, LessonEntity, LessonRepo } from '../repo';
 import { lessonFactory } from '../testing';
+import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {
 	let lessonService: LessonService;

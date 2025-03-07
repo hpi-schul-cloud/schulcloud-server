@@ -6,7 +6,7 @@ import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthorizationModule } from '../authorization';
-import { LessonRepo } from './repository';
+import { LessonRepo } from './repo';
 import { EtherpadService, LessonCopyService, LessonService } from './service';
 
 @Module({

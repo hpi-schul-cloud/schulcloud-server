@@ -1,5 +1,5 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { Submission, Task } from '@shared/domain/entity';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFileDomainObjectProps, EntitiesWithFiles, FileDomainObjectProps } from '../interfaces';

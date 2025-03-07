@@ -8,7 +8,7 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-} from '@modules/lesson/repository';
+} from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';

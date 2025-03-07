@@ -5,7 +5,7 @@ import { columnBoardFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { LessonService } from '@modules/lesson/service';
 import { lessonFactory } from '@modules/lesson/testing';
 import { TaskService } from '@modules/task/service';

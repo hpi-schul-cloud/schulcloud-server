@@ -6,7 +6,7 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-} from '@modules/lesson/repository';
+} from '@modules/lesson/repo';
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import { LernstoreResources } from './lernstore.resources';

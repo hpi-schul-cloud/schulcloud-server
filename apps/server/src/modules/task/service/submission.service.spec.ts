@@ -12,7 +12,7 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';

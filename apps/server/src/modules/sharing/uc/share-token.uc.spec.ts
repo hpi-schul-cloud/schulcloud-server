@@ -12,7 +12,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';

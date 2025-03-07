@@ -23,7 +23,7 @@ import {
 	ComponentType,
 	LessonEntity,
 	LessonRepo,
-} from '../repository';
+} from '../repo';
 import { lessonFactory } from '../testing';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';

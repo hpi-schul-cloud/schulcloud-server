@@ -5,7 +5,7 @@ import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { LessonEntity } from '../../repository';
+import { LessonEntity } from '../../repo';
 import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
 import { LessonMapper } from './lesson.mapper';
 

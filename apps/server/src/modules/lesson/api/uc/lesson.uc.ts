@@ -3,7 +3,7 @@ import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { LessonEntity } from '../../repository';
+import { LessonEntity } from '../../repo';
 import { LessonService } from '../../service';
 import { LessonLinkedTaskResponse } from '../dto';
 import { LessonMapper } from '../mapper';

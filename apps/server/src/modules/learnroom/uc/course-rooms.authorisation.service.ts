@@ -1,5 +1,5 @@
 import { CourseEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';

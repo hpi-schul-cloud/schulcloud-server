@@ -6,7 +6,7 @@ import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';

@@ -17,7 +17,7 @@ import {
 	TaskBoardElement,
 } from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
