@@ -2,11 +2,10 @@ import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { NewsRepo } from '@shared/repo/news';
-import { NewsController } from './controller/news.controller';
-import { TeamNewsController } from './controller/team-news.controller';
-import { NewsService } from './service/news.service';
-import { NewsUc } from './uc/news.uc';
+import { NewsController, TeamNewsController } from './api';
+import { NewsUc } from './api/news.uc';
+import { NewsService } from './domain';
+import { NewsRepo } from './repo/news.repo';
 
 // imports from deletion module?
 @Module({

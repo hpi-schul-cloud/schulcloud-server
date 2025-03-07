@@ -6,6 +6,7 @@ import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
+import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
@@ -17,17 +18,13 @@ import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/rep
 import { User } from '@modules/user/repo';
 
 import {
-	CourseNews,
 	LessonEntity,
 	Material,
-	News,
 	Role,
-	SchoolNews,
 	StorageProviderEntity,
 	Submission,
 	Task,
 	TeamEntity,
-	TeamNews,
 } from '@shared/domain/entity';
 
 export const ENTITIES = [

@@ -18,6 +18,7 @@ import {
 } from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
+import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo/news.entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
@@ -43,7 +44,6 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { User } from '@modules/user/repo';
 import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
-import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { Submission } from '@shared/domain/entity/submission.entity';
