@@ -5,12 +5,12 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import moment from 'moment';
 import { NewsTargetModel } from '../../domain';
+import { News } from '../../repo';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '../dto';
 
 describe('News Controller (API)', () => {

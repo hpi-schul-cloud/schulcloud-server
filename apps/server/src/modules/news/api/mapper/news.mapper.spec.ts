@@ -5,9 +5,10 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { CourseNews, News, NewsProperties, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
+import { TeamEntity } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '../../domain';
+import { CourseNews, News, NewsProperties, SchoolNews, TeamNews } from '../../repo';
 import {
 	CreateNewsParams,
 	FilterNewsParams,
