@@ -105,9 +105,7 @@ describe('MediaSourceController (API)', () => {
 
 		describe('when no media sources are available', () => {
 			const setup = async () => {
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 
 				await em.persistAndFlush([superheroUser, superheroAccount]);
 				em.clear();
