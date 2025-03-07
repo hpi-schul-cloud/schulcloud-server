@@ -5,7 +5,7 @@ import { KeycloakAdministrationService } from '@infra/identity-management/keyclo
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { UserRepo } from '@modules/user/repo';
+import { UserModule } from '@modules/user';
 import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -74,6 +74,7 @@ describe('AccountService Integration', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				IdentityManagementModule,
+				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
@@ -92,7 +93,6 @@ describe('AccountService Integration', () => {
 				AccountServiceIdm,
 				AccountServiceDb,
 				AccountRepo,
-				UserRepo,
 				{
 					provide: KeycloakIdentityManagementService,
 					useValue: createMock<KeycloakIdentityManagementService>(),

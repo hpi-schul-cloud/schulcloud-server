@@ -4,11 +4,12 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CourseEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
+import { isLesson, LessonEntity } from '@modules/lesson/repository';
 import { TaskCopyService } from '@modules/task';
+import { isTask, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
-import { isLesson, isTask, LessonEntity, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { sortBy } from 'lodash';
 import {

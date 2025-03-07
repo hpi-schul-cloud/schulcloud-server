@@ -1,4 +1,6 @@
-import { LessonEntity, Submission, Task } from '@shared/domain/entity';
+import { LessonEntity } from '@modules/lesson/repository';
+import { Task } from '@modules/task/repo';
+import { Submission } from '@shared/domain/entity';
 
 export type EntitiesWithFiles = Task | LessonEntity | Submission;
 export type EntityWithEmbeddedFiles = Task | LessonEntity;

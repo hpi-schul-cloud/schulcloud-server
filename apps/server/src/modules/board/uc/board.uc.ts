@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
-import { CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -32,7 +32,7 @@ export class BoardUc {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly roomService: RoomService,
 		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly boardContextApiHelperService: BoardContextApiHelperService
@@ -174,7 +174,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(context.id);
+			const course = await this.courseService.findById(context.id);
 
 			this.authorizationService.checkPermission(user, course, {
 				action: Action.write,
@@ -194,7 +194,7 @@ export class BoardUc {
 
 	private async getStorageLocationReference(context: BoardExternalReference): Promise<StorageLocationReference> {
 		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(context.id);
+			const course = await this.courseService.findById(context.id);
 
 			return { id: course.school.id, type: StorageLocation.SCHOOL };
 		}
