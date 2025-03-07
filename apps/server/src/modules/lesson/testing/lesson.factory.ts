@@ -1,8 +1,6 @@
-// Remove the eslint-disable after fixing the import issue in EPIC-96
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { courseEntityFactory } from '@modules/course/testing';
-import { LessonEntity, LessonProperties } from '@shared/domain/entity';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { LessonEntity, LessonProperties } from '../repository';
 
 class LessonFactory extends BaseFactory<LessonEntity, LessonProperties> {}
 

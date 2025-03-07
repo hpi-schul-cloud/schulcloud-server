@@ -3,8 +3,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { EntityId } from '../../../../../shared/domain/types';
 import { ToolConfigType } from '../../../common/enum';
 import { ExternalToolSearchQuery } from '../../../common/interface';
 import { ExternalTool } from '../../domain';
@@ -21,9 +21,7 @@ export class ExternalToolRepo {
 	}
 
 	public async save(domainObject: ExternalTool): Promise<ExternalTool> {
-		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id, {
-			populate: ['thumbnail.fileRecord'],
-		});
+		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id);
 
 		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
 		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
@@ -55,9 +53,7 @@ export class ExternalToolRepo {
 	}
 
 	public async findById(id: EntityId): Promise<ExternalTool> {
-		const entity: ExternalToolEntity = await this.em.findOneOrFail(this.entityName, id, {
-			populate: ['thumbnail.fileRecord'],
-		});
+		const entity: ExternalToolEntity = await this.em.findOneOrFail(this.entityName, id);
 		const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 
 		return domainObject;
@@ -68,13 +64,7 @@ export class ExternalToolRepo {
 	}
 
 	public async findByName(name: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(
-			this.entityName,
-			{ name },
-			{
-				populate: ['thumbnail.fileRecord'],
-			}
-		);
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { name });
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -83,13 +73,7 @@ export class ExternalToolRepo {
 	}
 
 	public async findAllByConfigType(type: ToolConfigType): Promise<ExternalTool[]> {
-		const entities: ExternalToolEntity[] = await this.em.find(
-			this.entityName,
-			{ config: { type } },
-			{
-				populate: ['thumbnail.fileRecord'],
-			}
-		);
+		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, { config: { type } });
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -98,13 +82,7 @@ export class ExternalToolRepo {
 	}
 
 	public async findByOAuth2ConfigClientId(clientId: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(
-			this.entityName,
-			{ config: { clientId } },
-			{
-				populate: ['thumbnail.fileRecord'],
-			}
-		);
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { config: { clientId } });
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -113,15 +91,9 @@ export class ExternalToolRepo {
 	}
 
 	public async findByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(
-			this.entityName,
-			{
-				medium: { mediumId, mediaSourceId },
-			},
-			{
-				populate: ['thumbnail.fileRecord'],
-			}
-		);
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, {
+			medium: { mediumId, mediaSourceId },
+		});
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
@@ -130,15 +102,9 @@ export class ExternalToolRepo {
 	}
 
 	public async findAllByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
-		const entities: ExternalToolEntity[] = await this.em.find(
-			this.entityName,
-			{
-				medium: { mediaSourceId },
-			},
-			{
-				populate: ['thumbnail.fileRecord'],
-			}
-		);
+		const entities: ExternalToolEntity[] = await this.em.find(this.entityName, {
+			medium: { mediaSourceId },
+		});
 
 		const domainObjects: ExternalTool[] = entities.map((entity: ExternalToolEntity): ExternalTool => {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
@@ -172,7 +138,6 @@ export class ExternalToolRepo {
 				offset: pagination?.skip,
 				limit: pagination?.limit,
 				orderBy: order,
-				populate: ['thumbnail.fileRecord'],
 			}
 		);
 
@@ -189,15 +154,13 @@ export class ExternalToolRepo {
 	}
 
 	private mapDomainObjectToEntityProps(entityDO: ExternalTool): ExternalToolEntityProps {
-		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO, this.em);
+		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
 
 		return entity;
 	}
 
 	private async saveWithoutFlush(domainObject: ExternalTool): Promise<ExternalTool> {
-		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id, {
-			populate: ['thumbnail.fileRecord'],
-		});
+		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id);
 
 		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
 		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);

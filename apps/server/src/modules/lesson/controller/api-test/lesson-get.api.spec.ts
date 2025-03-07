@@ -1,8 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -11,8 +8,11 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-} from '@shared/domain/entity';
-import { lessonFactory } from '@testing/factory/lesson.factory';
+} from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
+import { ServerTestModule } from '@modules/server';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { materialFactory } from '@testing/factory/material.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';

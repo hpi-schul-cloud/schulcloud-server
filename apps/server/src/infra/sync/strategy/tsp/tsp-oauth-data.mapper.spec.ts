@@ -166,6 +166,37 @@ describe(TspOauthDataMapper.name, () => {
 			});
 		});
 
+		describe('when handling large amounts', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+
+				const school = schoolFactory.build({
+					externalId: faker.string.uuid(),
+				});
+
+				const lehrerUid = faker.string.uuid();
+
+				const tspTeachers = robjExportLehrerFactory.buildList(1000000, {
+					lehrerUid,
+					schuleNummer: school.externalId,
+				});
+
+				const tspClasses = [];
+
+				const tspStudents = robjExportSchuelerFactory.buildList(1000000);
+
+				return { system, school, tspTeachers, tspStudents, tspClasses };
+			};
+
+			it('should not throw RangeError', () => {
+				const { system, school, tspTeachers, tspStudents, tspClasses } = setup();
+
+				expect(() => sut.mapTspDataToOauthData(system, [school], tspTeachers, tspStudents, tspClasses)).not.toThrow(
+					RangeError
+				);
+			});
+		});
+
 		describe('when school has to externalId', () => {
 			const setup = () => {
 				const system = systemFactory.build();

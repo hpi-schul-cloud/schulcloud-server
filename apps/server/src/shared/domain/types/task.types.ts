@@ -1,7 +1,8 @@
 import type { CourseEntity } from '@modules/course/repo';
+import { LessonEntity } from '@modules/lesson/repository';
 import type { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
-import type { LessonEntity, Submission } from '../entity';
+import type { Submission } from '../entity';
 import type { InputFormat } from './input-format.types';
 
 interface ITask {
