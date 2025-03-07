@@ -43,18 +43,20 @@ class EduSharingConnector {
 		secretOptions.headers.Authorization = `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
 
 		try {
-			if (secretOptions.method.toUpperCase() === 'GET') {
+			throw new Error('testing edusharing errors');
+			/* if (secretOptions.method.toUpperCase() === 'GET') {
 				return await axios.get(secretOptions.url, secretOptions);
 			}
 			if (secretOptions.method.toUpperCase() === 'POST') {
 				return await axios.post(secretOptions.url, secretOptions.data, secretOptions);
 			}
-			return null;
+			return null; */
 		} catch (err) {
 			if (err.statusCode === 404) {
 				// more recent edusharing versions return empty 200 instead
 				return null;
 			}
+			// console.log(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			if (retried === true) {
 				throw new GeneralError('Edu-Sharing Request failed');
