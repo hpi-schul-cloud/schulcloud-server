@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -10,30 +8,22 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { News } from '@shared/domain/entity';
+import type { News } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo/news';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class NewsUserDeleteService implements DeletionService {
 	constructor(
 		private readonly newsRepo: NewsRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
-		this.logger.setContext(NewsService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		this.logger.setContext(NewsUserDeleteService.name);
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
@@ -53,7 +43,7 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 			newsEntity.removeUpdaterReference(userId);
 		});
 
-		await this.newsRepo.save(newsWithUserData);
+		this.newsRepo.persist(newsWithUserData);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.NEWS, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, counterOfNews, this.getNewsId(newsWithUserData)),
