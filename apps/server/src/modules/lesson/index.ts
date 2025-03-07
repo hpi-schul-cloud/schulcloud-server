@@ -1,5 +1,5 @@
-export * from './lesson.module';
-export * from './types/lesson-copy-parent.params';
-export * from './types/lesson-copy.params';
-export { LessonService, LessonCopyService, EtherpadService } from './service';
+export * from './domain/types/lesson-copy-parent.params';
+export * from './domain/types/lesson-copy.params';
 export { LessonConfig } from './lesson.config';
+export * from './lesson.module';
+export { EtherpadService, LessonCopyService, LessonService } from './service';

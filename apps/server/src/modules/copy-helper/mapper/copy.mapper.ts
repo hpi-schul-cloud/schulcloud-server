@@ -1,7 +1,7 @@
 import { ColumnBoard } from '@modules/board/domain/colum-board.do';
 import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { LessonCopyParentParams } from '@modules/lesson';
 import { LessonEntity } from '@modules/lesson/repo';
-import { LessonCopyParentParams } from '@modules/lesson/types/lesson-copy-parent.params';
 import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
 import { TaskCopyParentParams } from '@modules/task/types/task-copy-parent.params';
 import { Task } from '@shared/domain/entity/task.entity';

@@ -5,6 +5,7 @@ import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { Material } from '@shared/domain/entity';
 import { randomBytes } from 'crypto';
+import { LessonCopyParams } from '../domain/types';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -15,7 +16,6 @@ import {
 	LessonEntity,
 	LessonRepo,
 } from '../repo';
-import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
 
 @Injectable()
