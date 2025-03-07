@@ -1,5 +1,5 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
-import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 
