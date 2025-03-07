@@ -15,8 +15,8 @@ import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { teamNewsFactory } from '@modules/news/domain/factory/news.factory';
 import { NewsRepo } from '../../repo';
+import { teamNewsFactory } from '../factory';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {
