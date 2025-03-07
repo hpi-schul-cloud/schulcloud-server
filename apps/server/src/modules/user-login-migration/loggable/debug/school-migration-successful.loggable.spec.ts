@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { userLoginMigrationDOFactory } from '@testing/factory/domainobject';
+import { userLoginMigrationDOFactory } from '../../testing';
 import { SchoolMigrationSuccessfulLoggable } from './school-migration-successful.loggable';
 
 describe(SchoolMigrationSuccessfulLoggable.name, () => {

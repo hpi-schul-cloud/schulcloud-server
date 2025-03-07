@@ -7,5 +7,5 @@ export class ExternalToolBulkCreateParams {
 	@ValidateNested()
 	@Type(() => ExternalToolCreateParams)
 	@ApiProperty({ type: [ExternalToolCreateParams], description: 'List of external tools' })
-	data!: ExternalToolCreateParams[];
+	public data!: ExternalToolCreateParams[];
 }

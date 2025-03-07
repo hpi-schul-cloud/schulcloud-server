@@ -6,11 +6,12 @@ import {
 } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';

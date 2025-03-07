@@ -9,15 +9,16 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
+import { LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
 import { TaskCopyService } from '@modules/task';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission, Task } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { taskFactory } from '@testing/factory/task.factory';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import {

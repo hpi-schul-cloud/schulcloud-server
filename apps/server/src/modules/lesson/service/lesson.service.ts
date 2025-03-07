@@ -1,4 +1,10 @@
+import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import {
+	AuthorizableReferenceType,
+	AuthorizationInjectionService,
+	AuthorizationLoaderService,
+} from '@modules/authorization';
 import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
@@ -14,15 +20,8 @@ import {
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
-import {
-	AuthorizableReferenceType,
-	AuthorizationInjectionService,
-	AuthorizationLoaderService,
-} from '@modules/authorization';
-import { LessonRepo } from '../repository';
+import { ComponentProperties, LessonEntity, LessonRepo } from '../repository';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
