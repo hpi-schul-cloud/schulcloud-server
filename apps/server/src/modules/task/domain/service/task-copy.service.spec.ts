@@ -9,10 +9,10 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
-import { Task, TaskRepo } from '../../repo';
+import { Submission, Task, TaskRepo } from '../../repo';
 import { taskFactory } from '../../testing';
 import { TaskCopyService } from './task-copy.service';
 
