@@ -13,7 +13,7 @@ const testObjects = require('../../helpers/testObjects')(appPromise());
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
-describe('EduSharingV7 FIND', () => {
+describe.only('EduSharingV7 FIND', () => {
 	let app;
 	let eduSharingResponse;
 	let eduSharingService;
