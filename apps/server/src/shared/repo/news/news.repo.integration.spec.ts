@@ -1,9 +1,10 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { TeamEntity } from '@modules/teams/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseNews, News, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
+import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { NewsTargetModel } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';

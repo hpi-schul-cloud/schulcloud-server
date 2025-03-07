@@ -1,6 +1,6 @@
 import type { CourseEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
-import type { TeamEntity } from '../../../modules/teams/repo/team.entity';
+import type { TeamEntity } from '@modules/teams/repo';
 import { EntityId } from './entity-id';
 
 export enum NewsTargetModel {

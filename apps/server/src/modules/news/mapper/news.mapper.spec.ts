@@ -3,9 +3,10 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { TeamEntity } from '@modules/teams/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { CourseNews, News, NewsProperties, SchoolNews, TeamEntity, TeamNews } from '@shared/domain/entity';
+import { CourseNews, News, NewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import {
