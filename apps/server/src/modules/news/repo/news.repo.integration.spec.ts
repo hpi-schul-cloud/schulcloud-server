@@ -8,7 +8,7 @@ import {
 	schoolUnpublishedNewsFactory,
 	teamNewsFactory,
 	teamUnpublishedNewsFactory,
-} from '@modules/news/domain/factory';
+} from '@modules/news/testing';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamEntity } from '@shared/domain/entity';
