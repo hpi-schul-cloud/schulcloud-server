@@ -5,7 +5,7 @@ import { SchoolFeature } from '@modules/school/domain';
 import { SchoolEntity } from '@modules/school/repo';
 import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

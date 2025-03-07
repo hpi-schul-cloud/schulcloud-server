@@ -1,4 +1,4 @@
-import { BaseDO } from '@shared/domain/domainobject/base.do';
+import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationDO extends BaseDO {
