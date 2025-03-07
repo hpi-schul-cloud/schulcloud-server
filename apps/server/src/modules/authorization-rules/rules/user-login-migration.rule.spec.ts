@@ -7,7 +7,6 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
 import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -87,7 +86,7 @@ describe('UserLoginMigrationRule', () => {
 			it('should return false', () => {
 				const { user, notUserLoginMigration } = setup();
 
-				const result = rule.isApplicable(user, notUserLoginMigration as unknown as UserLoginMigrationDO);
+				const result = rule.isApplicable(user, notUserLoginMigration);
 
 				expect(result).toEqual(false);
 			});

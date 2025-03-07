@@ -1,6 +1,7 @@
 import { Entity, Enum } from '@mikro-orm/core';
 import { LessonEntity } from '@modules/lesson/repository';
-import { BaseEntityWithTimestamps, Task } from '@shared/domain/entity';
+import { Task } from '@modules/task/repo';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ColumnBoardNode } from './column-board-node.entity';
 

@@ -5,11 +5,11 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { type SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
-import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserLoginMigrationDO } from '../domain';
+import { userLoginMigrationFactory } from '../testing';
 import { UserLoginMigrationEntity } from './user-login-migration.entity';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
 

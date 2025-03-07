@@ -1,7 +1,6 @@
 import { AuthorizationService } from '@modules/authorization';
 import { System, SystemService } from '@modules/system';
-import { UserLoginMigrationService } from '@modules/user-login-migration';
-import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
+import { UserLoginMigrationDO, UserLoginMigrationService } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

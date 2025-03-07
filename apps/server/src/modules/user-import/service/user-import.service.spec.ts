@@ -9,7 +9,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationDO } from '@modules/user-login-migration/domain';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';

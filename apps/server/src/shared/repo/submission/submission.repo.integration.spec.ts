@@ -3,13 +3,14 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonEntity } from '@modules/lesson/repository';
 import { lessonFactory } from '@modules/lesson/testing';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { Material, Submission, Task } from '../../domain/entity';
+import { Material, Submission } from '../../domain/entity';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
