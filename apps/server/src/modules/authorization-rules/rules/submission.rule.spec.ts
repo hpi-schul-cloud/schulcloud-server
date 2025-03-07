@@ -4,18 +4,20 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
@@ -34,7 +36,7 @@ describe('SubmissionRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User, Submission, Task, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Submission, Task, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
@@ -204,7 +206,7 @@ describe('SubmissionRule', () => {
 						const user = buildUserWithPermission(permission);
 						const user2 = buildUserWithPermission(permission);
 						const task = taskFactory.build();
-						const courseGroup = courseGroupFactory.build({ students: [user, user2] });
+						const courseGroup = courseGroupEntityFactory.build({ students: [user, user2] });
 						const submission = submissionFactory.build({ task, student: user2, courseGroup });
 						return { user, submission, permission };
 					};
@@ -225,7 +227,7 @@ describe('SubmissionRule', () => {
 					const setup = () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
-						const course = courseFactory.build({ teachers: [user] });
+						const course = courseEntityFactory.build({ teachers: [user] });
 						const task = taskFactory.build({ course });
 						const submission = submissionFactory.build({ task });
 						return { user, submission, permission };
@@ -247,7 +249,7 @@ describe('SubmissionRule', () => {
 					const setup = () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
-						const course = courseFactory.build({ substitutionTeachers: [user] });
+						const course = courseEntityFactory.build({ substitutionTeachers: [user] });
 						const task = taskFactory.build({ course });
 						const submission = submissionFactory.build({ task });
 						return { user, submission, permission };
@@ -270,7 +272,7 @@ describe('SubmissionRule', () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
 						const user2 = buildUserWithPermission(permission);
-						const course = courseFactory.build({ students: [user, user2] });
+						const course = courseEntityFactory.build({ students: [user, user2] });
 						const task = taskFactory.build({ course, publicSubmissions: true });
 						const submission = submissionFactory.build({ task, student: user2 });
 						return { user, submission, permission };
@@ -296,7 +298,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.build({ task, student: user });
 
@@ -320,7 +322,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.build({ task, student: user2, teamMembers: [user, user2] });
 
@@ -344,8 +346,8 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
-							const courseGroup = courseGroupFactory.build({ course, students: [user] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
+							const courseGroup = courseGroupEntityFactory.build({ course, students: [user] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.build({ task, student: user2, courseGroup });
 
@@ -369,7 +371,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.build({ task, student: user2 });
 
@@ -393,7 +395,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user2], teachers: [user] });
+							const course = courseEntityFactory.build({ students: [user2], teachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.build({ task, student: user2 });
 
@@ -417,7 +419,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user2], substitutionTeachers: [user] });
+							const course = courseEntityFactory.build({ students: [user2], substitutionTeachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.build({ task, student: user2 });
 
@@ -443,7 +445,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.submitted().build({ task, student: user });
 
@@ -467,7 +469,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory
 								.submitted()
@@ -493,8 +495,8 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
-							const courseGroup = courseGroupFactory.build({ course, students: [user] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
+							const courseGroup = courseGroupEntityFactory.build({ course, students: [user] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.submitted().build({ task, student: user2, courseGroup });
 
@@ -518,7 +520,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user, user2] });
+							const course = courseEntityFactory.build({ students: [user, user2] });
 							const task = taskFactory.build({ course, publicSubmissions: true });
 							const submission = submissionFactory.submitted().build({ task, student: user2 });
 
@@ -542,7 +544,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user2], teachers: [user] });
+							const course = courseEntityFactory.build({ students: [user2], teachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.submitted().build({ task, student: user2 });
 
@@ -566,7 +568,7 @@ describe('SubmissionRule', () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
 							const user2 = buildUserWithPermission(permission);
-							const course = courseFactory.build({ students: [user2], substitutionTeachers: [user] });
+							const course = courseEntityFactory.build({ students: [user2], substitutionTeachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.submitted().build({ task, student: user2 });
 
@@ -591,7 +593,7 @@ describe('SubmissionRule', () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
 						const user2 = buildUserWithPermission(permission);
-						const course = courseFactory.build({ students: [user, user2] });
+						const course = courseEntityFactory.build({ students: [user, user2] });
 						const task = taskFactory.build({ course });
 						const submission = submissionFactory.build({ task, student: user2 });
 

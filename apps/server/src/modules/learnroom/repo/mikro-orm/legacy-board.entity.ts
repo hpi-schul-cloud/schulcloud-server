@@ -1,6 +1,9 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
+import { CourseEntity } from '@modules/course/repo';
+import { LessonEntity } from '@modules/lesson/repository';
+import { Task } from '@modules/task/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, Course, LessonEntity, Task } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LearnroomElement } from '../../types';
 import { ColumnBoardBoardElement } from './column-board-board-element.entity';
@@ -11,7 +14,7 @@ import { TaskBoardElement } from './task-board-element.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];
-	course: Course;
+	course: CourseEntity;
 };
 
 @Entity({ tableName: 'board' })
@@ -22,8 +25,8 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		this.course = wrap(props.course).toReference();
 	}
 
-	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
-	course: IdentifiedReference<Course>;
+	@OneToOne({ entity: () => CourseEntity, fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
+	course: IdentifiedReference<CourseEntity>;
 
 	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);

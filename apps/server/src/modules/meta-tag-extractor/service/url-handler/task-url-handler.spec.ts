@@ -1,10 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { LessonEntity } from '@modules/lesson/repository';
 import { TaskService } from '@modules/task';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ObjectId } from 'bson';
 import { MetaDataEntityType } from '../../types';
 import { TaskUrlHandler } from './task-url-handler';
@@ -27,7 +30,7 @@ describe(TaskUrlHandler.name, () => {
 
 		taskService = module.get(TaskService);
 		taskUrlHandler = module.get(TaskUrlHandler);
-		await setupEntities([User, Task, Submission, Course, CourseGroup, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 	});
 
 	describe('getMetaData', () => {

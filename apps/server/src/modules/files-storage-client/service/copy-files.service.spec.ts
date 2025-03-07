@@ -1,22 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	ComponentProperties,
-	ComponentType,
-	Course,
-	CourseGroup,
-	LessonEntity,
-	Material,
-	Submission,
-	Task,
-} from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
@@ -32,7 +26,7 @@ describe('copy files service', () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, LessonEntity, Material, Course, CourseGroup]);
+		await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {
@@ -76,7 +70,7 @@ describe('copy files service', () => {
 		describe('copy files of lesson', () => {
 			const lessonSetup = () => {
 				const { school, imageHTML1, imageHTML2 } = setup();
-				const originalCourse = courseFactory.build({ school });
+				const originalCourse = courseEntityFactory.build({ school });
 				const textContent: ComponentProperties = {
 					title: '',
 					hidden: false,

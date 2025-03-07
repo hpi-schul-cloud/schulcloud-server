@@ -1,5 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const request = require('request-promise-native');
+const axios = require('axios');
 const { getCounty } = require('../helpers');
 
 class MerlinTokenGenerator {
@@ -8,7 +8,9 @@ class MerlinTokenGenerator {
 	}
 
 	async post(options) {
-		return request.post(options);
+		const res = await axios(options);
+
+		return res.data;
 	}
 
 	async getMerlinCredentials(county = null) {
@@ -58,7 +60,7 @@ class MerlinTokenGenerator {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-			form: {
+			data: {
 				username: credentials.username,
 				password: credentials.password,
 			},

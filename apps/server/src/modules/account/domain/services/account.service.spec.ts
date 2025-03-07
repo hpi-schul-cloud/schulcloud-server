@@ -13,7 +13,8 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
@@ -45,7 +46,7 @@ describe('AccountService', () => {
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<Logger>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
 	let eventBus: DeepMocked<EventBus>;
 	let orm: MikroORM;
@@ -56,7 +57,7 @@ describe('AccountService', () => {
 			accountServiceIdm,
 			configService,
 			logger,
-			userRepo,
+			userService,
 			accountRepo,
 			eventBus,
 			orm
@@ -97,8 +98,8 @@ describe('AccountService', () => {
 					useValue: createMock<AccountRepo>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: EventBus,
@@ -117,7 +118,7 @@ describe('AccountService', () => {
 		accountService = module.get(AccountService);
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
-		userRepo = module.get(UserRepo);
+		userService = module.get(UserService);
 		accountRepo = module.get(AccountRepo);
 		eventBus = module.get(EventBus);
 	});
@@ -1290,7 +1291,7 @@ describe('AccountService', () => {
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
 				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 
-				const userUpdateSpy = jest.spyOn(userRepo, 'save');
+				const userUpdateSpy = jest.spyOn(userService, 'saveEntity');
 
 				return { mockStudentUser, mockStudentAccountDo, userUpdateSpy };
 			};
@@ -1326,7 +1327,7 @@ describe('AccountService', () => {
 				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
 
 				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
-				const userUpdateSpy = jest.spyOn(userRepo, 'save');
+				const userUpdateSpy = jest.spyOn(userService, 'saveEntity');
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy };
 			};
@@ -1425,7 +1426,7 @@ describe('AccountService', () => {
 
 				const mockTeacherAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 
-				userRepo.save.mockRejectedValueOnce(undefined);
+				userService.saveEntity.mockRejectedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 
 				return { mockTeacherUser, mockTeacherAccountDo };
@@ -1455,7 +1456,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockResolvedValueOnce(undefined);
+				userService.saveEntity.mockResolvedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
 
@@ -1488,7 +1489,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockResolvedValueOnce(undefined);
+				userService.saveEntity.mockResolvedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockRejectedValueOnce(new ValidationError('fail to update'));
 
@@ -1522,7 +1523,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockResolvedValue();
+				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					mockStudentAccount.password = account.password;
 
@@ -1557,7 +1558,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockResolvedValue();
+				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					Object.assign(mockStudentAccount, account);
 					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
@@ -1591,7 +1592,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockResolvedValue();
+				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					Object.assign(mockStudentAccount, account);
 					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
@@ -1621,7 +1622,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockResolvedValue();
+				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
 
 				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
@@ -1651,7 +1652,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockRejectedValueOnce(undefined);
+				userService.saveEntity.mockRejectedValueOnce(undefined);
 
 				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
@@ -1713,7 +1714,7 @@ describe('AccountService', () => {
 				});
 				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
-				userRepo.save.mockRejectedValueOnce(undefined);
+				userService.saveEntity.mockRejectedValueOnce(undefined);
 				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
@@ -1746,7 +1747,7 @@ describe('AccountService', () => {
 					school: mockSchool,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockUserWithoutAccount);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockUserWithoutAccount);
 				accountServiceDb.findByUserIdOrFail.mockImplementation(() => {
 					throw new EntityNotFoundError(AccountEntity.name);
 				});
@@ -1764,7 +1765,7 @@ describe('AccountService', () => {
 
 		describe('When user does not exist', () => {
 			const setup = () => {
-				userRepo.findById.mockRejectedValueOnce(undefined);
+				userService.getUserEntityWithRoles.mockRejectedValueOnce(undefined);
 			};
 
 			it('should throw EntityNotFoundError', async () => {
@@ -1789,7 +1790,7 @@ describe('AccountService', () => {
 					systemId: externalSystem.id,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockExternalUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockExternalUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(
 					AccountEntityToDoMapper.mapToDo(mockExternalUserAccount)
 				);
@@ -1824,7 +1825,7 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 
 				return { mockStudentAccount };
@@ -1857,7 +1858,7 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
 
@@ -1891,7 +1892,7 @@ describe('AccountService', () => {
 					password: undefined,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
 
@@ -1924,7 +1925,7 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
 				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
@@ -1959,7 +1960,7 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
 				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
@@ -1995,7 +1996,7 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
 				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
@@ -2031,8 +2032,8 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				userRepo.save.mockRejectedValueOnce(undefined);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
+				userService.saveEntity.mockRejectedValueOnce(undefined);
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
 				accountServiceDb.save.mockResolvedValueOnce({
@@ -2072,8 +2073,8 @@ describe('AccountService', () => {
 					username: 'fail@to.update',
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				userRepo.save.mockResolvedValueOnce();
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
+				userService.saveEntity.mockResolvedValueOnce();
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);

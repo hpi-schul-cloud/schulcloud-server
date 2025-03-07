@@ -1,11 +1,14 @@
 import { columnBoardFactory } from '@modules/board/testing';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { BadRequestException } from '@nestjs/common';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -20,8 +23,8 @@ describe('Board Entity', () => {
 	beforeAll(async () => {
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			LessonEntity,
 			Material,
 			Task,
@@ -220,7 +223,7 @@ describe('Board Entity', () => {
 
 		describe('when board element has an invalid type', () => {
 			it('should throw an error', () => {
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const board = boardFactory.buildWithId({ references: [] });
 
 				// @ts-expect-error invalid target type

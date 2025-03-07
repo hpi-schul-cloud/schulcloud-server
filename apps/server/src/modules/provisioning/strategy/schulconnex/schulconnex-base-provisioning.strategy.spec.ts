@@ -23,6 +23,7 @@ import { ValidationErrorLoggableException } from '@shared/common/loggable-except
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
+import { randomUUID } from 'crypto';
 import {
 	ExternalGroupDto,
 	ExternalLicenseDto,
@@ -49,7 +50,7 @@ class TestClass extends SchulconnexBaseProvisioningStrategy {
 	}
 
 	getType(): SystemProvisioningStrategy {
-		return SystemProvisioningStrategy.SANIS;
+		return SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
 	}
 }
 
@@ -104,7 +105,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 		validationFunction.mockReset();
-		config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+		config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = false;
 		config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = false;
 	});
 
@@ -115,11 +116,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -148,7 +149,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const schulconnexPoliciesInfoResponse: SchulconnexPoliciesInfoResponse =
 					schulconnexPoliciesInfoResponseFactory.build({ data: [schulconnexPoliciesInfoLicenseResponse] });
 
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = true;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
 				config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				mapper.mapToExternalUserDto.mockReturnValue(user);
@@ -231,17 +232,17 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 			});
 		});
 
-		describe('when FEATURE_SANIS_GROUP_PROVISIONING_ENABLED is false', () => {
+		describe('when FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED is false', () => {
 			const setup = () => {
 				const provisioningUrl = 'sanisProvisioningUrl';
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -255,7 +256,7 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				mapper.mapToExternalSchoolDto.mockReturnValue(school);
 				validationFunction.mockResolvedValueOnce([]);
 
-				config.FEATURE_SANIS_GROUP_PROVISIONING_ENABLED = false;
+				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = false;
 
 				return {
 					input,
@@ -289,11 +290,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -338,11 +339,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -379,11 +380,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl: undefined,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -429,11 +430,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user = new ExternalUserDto({
@@ -484,11 +485,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'sanisIdToken',
-					accessToken: 'sanisAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const user: ExternalUserDto = externalUserDtoFactory.build();
@@ -545,11 +546,11 @@ describe(SchulconnexBaseProvisioningStrategy.name, () => {
 				const input: OauthDataStrategyInputDto = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
 						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 						provisioningUrl,
 					}),
 					idToken: 'schulconnexIdToken',
-					accessToken: 'schulconnexAccessToken',
+					accessToken: randomUUID(),
 				});
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				const validationError: classValidator.ValidationError = new classValidator.ValidationError();

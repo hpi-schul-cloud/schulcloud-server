@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { fileRecordFactory } from '@modules/files-storage/testing';
+import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -7,7 +7,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { DateToString } from '@testing/date-to-string';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Response } from 'supertest';
@@ -63,7 +62,7 @@ describe('ToolReferenceController (API)', () => {
 				const schoolWithoutTool = schoolEntityFactory.buildWithId();
 				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity = externalToolEntityFactory.buildWithId();
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -112,8 +111,9 @@ describe('ToolReferenceController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const thumbnailFileRecord = fileRecordFactory.build();
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
+				const fileRecordId = new ObjectId();
+				const fileName = 'test.png';
 				const externalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
 					parameters: [
@@ -130,7 +130,8 @@ describe('ToolReferenceController (API)', () => {
 					],
 					thumbnail: {
 						uploadUrl: 'https://uploadurl.com',
-						fileRecord: thumbnailFileRecord,
+						fileRecord: fileRecordId,
+						fileName,
 					},
 				});
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -152,7 +153,6 @@ describe('ToolReferenceController (API)', () => {
 					externalToolEntity,
 					schoolExternalToolEntity,
 					contextExternalToolEntity,
-					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -163,11 +163,18 @@ describe('ToolReferenceController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, params, contextExternalToolEntity, externalToolEntity, thumbnailFileRecord };
+				return {
+					loggedInClient,
+					params,
+					contextExternalToolEntity,
+					externalToolEntity,
+					fileRecordId,
+					fileName,
+				};
 			};
 
 			it('should return an ToolReferenceListResponse with data', async () => {
-				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity, thumbnailFileRecord } =
+				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity, fileRecordId, fileName } =
 					await setup();
 
 				const response: Response = await loggedInClient.get(`${params.contextType}/${params.contextId}`);
@@ -185,9 +192,7 @@ describe('ToolReferenceController (API)', () => {
 							}),
 							logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 							openInNewTab: externalToolEntity.openNewTab,
-							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
-								thumbnailFileRecord.name
-							)}`,
+							thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 							isLtiDeepLinkingTool: false,
 						},
 					],
@@ -210,7 +215,7 @@ describe('ToolReferenceController (API)', () => {
 				const schoolWithoutTool = schoolEntityFactory.buildWithId();
 				const school = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity = externalToolEntityFactory.buildWithId();
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -256,8 +261,9 @@ describe('ToolReferenceController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
-				const course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const thumbnailFileRecord = fileRecordFactory.build();
+				const course = courseEntityFactory.buildWithId({ school, teachers: [adminUser] });
+				const fileRecordId = new ObjectId();
+				const fileName = 'test.png';
 				const externalToolEntity = externalToolEntityFactory
 					.withLti11Config({
 						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
@@ -278,7 +284,8 @@ describe('ToolReferenceController (API)', () => {
 						],
 						thumbnail: {
 							uploadUrl: 'https://uploadurl.com',
-							fileRecord: thumbnailFileRecord,
+							fileRecord: fileRecordId,
+							fileName,
 						},
 					});
 				const schoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
@@ -302,7 +309,6 @@ describe('ToolReferenceController (API)', () => {
 					externalToolEntity,
 					schoolExternalToolEntity,
 					contextExternalToolEntity,
-					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -313,8 +319,9 @@ describe('ToolReferenceController (API)', () => {
 					contextExternalToolId: contextExternalToolEntity.id,
 					contextExternalToolEntity,
 					externalToolEntity,
-					thumbnailFileRecord,
 					ltiDeepLinkEmbeddable,
+					fileRecordId,
+					fileName,
 				};
 			};
 
@@ -324,8 +331,9 @@ describe('ToolReferenceController (API)', () => {
 					contextExternalToolId,
 					contextExternalToolEntity,
 					externalToolEntity,
-					thumbnailFileRecord,
 					ltiDeepLinkEmbeddable,
+					fileRecordId,
+					fileName,
 				} = await setup();
 
 				const response: Response = await loggedInClient.get(`context-external-tools/${contextExternalToolId}`);
@@ -341,9 +349,7 @@ describe('ToolReferenceController (API)', () => {
 					}),
 					logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 					openInNewTab: externalToolEntity.openNewTab,
-					thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
-						thumbnailFileRecord.name
-					)}`,
+					thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 					isLtiDeepLinkingTool: true,
 					ltiDeepLink: {
 						mediaType: ltiDeepLinkEmbeddable.mediaType,

@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
+import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { LessonMetadataListResponse } from '../dto';
@@ -31,7 +31,7 @@ describe('Lesson Controller (API) - GET list of lessons from course /lessons/cou
 	describe('when user is a valid teacher', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 			const lesson = lessonFactory.build({ course });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 			await em.persistAndFlush([teacherAccount, teacherUser, course, lesson, hiddenLesson]);
@@ -66,7 +66,7 @@ describe('Lesson Controller (API) - GET list of lessons from course /lessons/cou
 	describe('when user is a valid student', () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.buildWithId({ students: [studentUser] });
+			const course = courseEntityFactory.buildWithId({ students: [studentUser] });
 			const lesson = lessonFactory.build({ course });
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 
@@ -101,7 +101,7 @@ describe('Lesson Controller (API) - GET list of lessons from course /lessons/cou
 	describe('when user is not authorized', () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseFactory.buildWithId({ students: [] });
+			const course = courseEntityFactory.buildWithId({ students: [] });
 			const lesson = lessonFactory.build({ course });
 			await em.persistAndFlush([studentAccount, studentUser, course, lesson]);
 

@@ -1,12 +1,12 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
-import { LessonEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LessonLinkedTaskResponse } from '../controller/dto/lesson-linked-task.response';
 import { LessonMapper } from '../controller/mapper/lesson.mapper';
 import { LessonService } from '../service';
+import { LessonEntity } from '../repository';
 
 @Injectable()
 export class LessonUC {

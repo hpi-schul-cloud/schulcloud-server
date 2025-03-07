@@ -1,14 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { LessonEntity } from '@shared/domain/entity';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 
@@ -140,7 +139,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a course and user is part of it', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = createStudent();
-					const course = courseFactory.build({ students: [studentUser] });
+					const course = courseEntityFactory.build({ students: [studentUser] });
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
@@ -173,7 +172,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a course and user is NOT part of it', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = createStudent();
-					const course = courseFactory.build({ students: [] });
+					const course = courseEntityFactory.build({ students: [] });
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
@@ -206,7 +205,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a coursegroup and user is part of it', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = createStudent();
-					const courseGroup = courseGroupFactory.build({ students: [studentUser] });
+					const courseGroup = courseGroupEntityFactory.build({ students: [studentUser] });
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
@@ -239,7 +238,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a coursegroup and user is NOT part of it', () => {
 				const setup = async () => {
 					const { studentAccount, studentUser } = createStudent();
-					const courseGroup = courseGroupFactory.build({ students: [] });
+					const courseGroup = courseGroupEntityFactory.build({ students: [] });
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([studentAccount, studentUser, lesson]);
@@ -276,7 +275,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a course and user is part of it', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = createTeacher();
-					const course = courseFactory.build({ teachers: [teacherUser] });
+					const course = courseEntityFactory.build({ teachers: [teacherUser] });
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
@@ -309,7 +308,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a course and user NOT is part of it', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = createTeacher();
-					const course = courseFactory.build({ teachers: [] });
+					const course = courseEntityFactory.build({ teachers: [] });
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
@@ -342,8 +341,8 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a coursegroup and user is part of the related course as teacher', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = createTeacher();
-					const course = courseFactory.build({ teachers: [teacherUser] });
-					const courseGroup = courseGroupFactory.build({ students: [], course });
+					const course = courseEntityFactory.build({ teachers: [teacherUser] });
+					const courseGroup = courseGroupEntityFactory.build({ students: [], course });
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
@@ -376,8 +375,8 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a coursegroup and user is part of the related course as substitution teacher', () => {
 				const setup = async () => {
 					const { teacherAccount, teacherUser } = createTeacher();
-					const course = courseFactory.build({ substitutionTeachers: [teacherUser] });
-					const courseGroup = courseGroupFactory.build({ students: [], course });
+					const course = courseEntityFactory.build({ substitutionTeachers: [teacherUser] });
+					const courseGroup = courseGroupEntityFactory.build({ students: [], course });
 					const lesson = lessonFactory.build({ courseGroup });
 
 					await em.persistAndFlush([teacherAccount, teacherUser, lesson]);
@@ -414,7 +413,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a course and user is part of it', () => {
 				const setup = async () => {
 					const { adminAccount, adminUser } = createAdmin();
-					const course = courseFactory.build({ substitutionTeachers: [adminUser] });
+					const course = courseEntityFactory.build({ substitutionTeachers: [adminUser] });
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([adminAccount, adminUser, lesson]);
@@ -447,7 +446,7 @@ describe('Lesson Controller (API) - delete', () => {
 			describe('when lesson is part of a course and user NOT is part of it', () => {
 				const setup = async () => {
 					const { adminAccount, adminUser } = createAdmin();
-					const course = courseFactory.build({ teachers: [] });
+					const course = courseEntityFactory.build({ teachers: [] });
 					const lesson = lessonFactory.build({ course });
 
 					await em.persistAndFlush([adminAccount, adminUser, lesson]);

@@ -1,6 +1,8 @@
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
+import { CourseEntity } from '@modules/course/repo/course.entity';
+import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
 import { DeletionLogEntity } from '@modules/deletion/repo/entity/deletion-log.entity';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity/deletion-request.entity';
 import { FileRecord } from '@modules/files-storage/entity';
@@ -17,6 +19,7 @@ import {
 } from '@modules/learnroom/repo';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { LessonEntity } from '@modules/lesson/repository';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
@@ -35,23 +38,20 @@ import {
 } from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/repo';
+import { Task } from '@modules/task/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
-import { Course } from '@shared/domain/entity/course.entity';
-import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
-import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { Submission } from '@shared/domain/entity/submission.entity';
-import { Task } from '@shared/domain/entity/task.entity';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
 export const ENTITIES = [
@@ -66,8 +66,8 @@ export const ENTITIES = [
 	DeletionLogEntity,
 	ContextExternalToolEntity,
 	CountyEmbeddable,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	CourseNews,
 	DashboardGridElementEntity,
 	DashboardEntity,

@@ -1,6 +1,6 @@
 import { LoggerModule } from '@core/logger';
+import { CourseModule } from '@modules/course';
 import { GroupModule } from '@modules/group';
-import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SystemModule } from '@modules/system';
@@ -10,7 +10,7 @@ import { SchulconnexGroupProvisioningConsumer } from './amqp';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
 
 @Module({
-	imports: [LoggerModule, LegacySchoolModule, UserModule, RoleModule, SystemModule, GroupModule, LearnroomModule],
+	imports: [LoggerModule, LegacySchoolModule, UserModule, RoleModule, SystemModule, GroupModule, CourseModule],
 	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })
 export class SchulconnexGroupProvisioningConsumerModule {}

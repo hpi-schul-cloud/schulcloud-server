@@ -10,16 +10,16 @@ import {
 	wrap,
 } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { Course } from '@shared/domain/entity/course.entity';
 
 export interface DashboardGridElementModelProperties {
 	id?: string;
 	title?: string;
 	xPos: number;
 	yPos: number;
-	references: Course[];
+	references: CourseEntity[];
 	dashboard: DashboardEntity;
 }
 
@@ -48,8 +48,8 @@ export class DashboardGridElementEntity extends BaseEntityWithTimestamps {
 	yPos: number;
 
 	@Index()
-	@ManyToMany('Course', undefined, { fieldName: 'referenceIds' })
-	references = new Collection<Course>(this);
+	@ManyToMany(() => CourseEntity, undefined, { fieldName: 'referenceIds' })
+	references = new Collection<CourseEntity>(this);
 
 	@Index()
 	@ManyToOne('DashboardEntity', { wrappedReference: true })

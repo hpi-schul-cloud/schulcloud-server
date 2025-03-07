@@ -3,16 +3,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo/course';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardExternalReferenceType, BoardLayout, BoardNodeFactory, Column, ColumnBoard } from '../domain';
 import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
@@ -26,7 +26,7 @@ describe(BoardUc.name, () => {
 	let boardPermissionService: DeepMocked<BoardNodePermissionService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let boardNodeFactory: DeepMocked<BoardNodeFactory>;
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
@@ -51,8 +51,8 @@ describe(BoardUc.name, () => {
 					useValue: createMock<ColumnBoardService>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: RoomService,
@@ -82,10 +82,10 @@ describe(BoardUc.name, () => {
 		boardPermissionService = module.get(BoardNodePermissionService);
 		boardNodeService = module.get(BoardNodeService);
 		columnBoardService = module.get(ColumnBoardService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 		boardNodeFactory = module.get(BoardNodeFactory);
 		boardContextApiHelperService = module.get(BoardContextApiHelperService);
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {
@@ -109,7 +109,7 @@ describe(BoardUc.name, () => {
 	describe('createBoard', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 
 			return { user, course };
 		};
@@ -139,13 +139,13 @@ describe(BoardUc.name, () => {
 					parentType: BoardExternalReferenceType.Course,
 				});
 
-				expect(courseRepo.findById).toHaveBeenCalledWith(courseId);
+				expect(courseService.findById).toHaveBeenCalledWith(courseId);
 			});
 
 			it('should call the authorization service to check the permissions', async () => {
 				const { user, course } = setup();
 
-				courseRepo.findById.mockResolvedValueOnce(course);
+				courseService.findById.mockResolvedValueOnce(course);
 
 				await uc.createBoard(user.id, {
 					title: 'new board',
@@ -478,7 +478,7 @@ describe(BoardUc.name, () => {
 
 			await uc.copyBoard(user.id, boardId, user.school.id);
 
-			expect(courseRepo.findById).toHaveBeenCalled();
+			expect(courseService.findById).toHaveBeenCalled();
 		});
 
 		it('should call Board Permission Service to check permission', async () => {
@@ -492,9 +492,9 @@ describe(BoardUc.name, () => {
 		it('should call authorization to check course permissions', async () => {
 			const { user, boardId } = setup();
 
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			// TODO should not use course repo
-			courseRepo.findById.mockResolvedValueOnce(course);
+			courseService.findById.mockResolvedValueOnce(course);
 
 			await uc.copyBoard(user.id, boardId, user.school.id);
 

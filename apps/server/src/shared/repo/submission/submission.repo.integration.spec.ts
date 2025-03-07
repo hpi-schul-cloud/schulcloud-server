@@ -1,14 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { courseGroupFactory } from '@testing/factory/coursegroup.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '@testing/factory/task.factory';
+import { Material, Submission } from '../../domain/entity';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {
@@ -20,7 +22,7 @@ describe('submission repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Submission, Task, LessonEntity, Course, CourseGroup, Material],
+					entities: [Submission, Task, LessonEntity, CourseEntity, CourseGroupEntity, Material],
 				}),
 			],
 			providers: [SubmissionRepo],
@@ -44,7 +46,7 @@ describe('submission repo', () => {
 	describe('findById', () => {
 		it(' should return the submission with populated courseGroup', async () => {
 			const student = userFactory.build();
-			const courseGroup = courseGroupFactory.build({ students: [student] });
+			const courseGroup = courseGroupEntityFactory.build({ students: [student] });
 			const submission = submissionFactory.build({ courseGroup });
 			await em.persistAndFlush(submission);
 			em.clear();
@@ -56,8 +58,8 @@ describe('submission repo', () => {
 
 		it('should return the submission with populated task and nested lesson, course and courseGroup', async () => {
 			const student = userFactory.build();
-			const course = courseFactory.build();
-			const courseGroup = courseGroupFactory.build({ students: [student], course });
+			const course = courseEntityFactory.build();
+			const courseGroup = courseGroupEntityFactory.build({ students: [student], course });
 			const lesson = lessonFactory.build({ course, courseGroup });
 			const task = taskFactory.build({ course, lesson });
 			const submission = submissionFactory.build({ courseGroup, task });
@@ -127,11 +129,11 @@ describe('submission repo', () => {
 		});
 
 		it('should return submissions when the user is in the course group', async () => {
-			const course = courseFactory.build();
+			const course = courseEntityFactory.build();
 			await em.persistAndFlush(course);
 			const student1 = userFactory.build();
 			const student2 = userFactory.build();
-			const courseGroup = courseGroupFactory.build({ course, students: [student1, student2] });
+			const courseGroup = courseGroupEntityFactory.build({ course, students: [student1, student2] });
 			const task = taskFactory.build({ course });
 			const submission = submissionFactory.build({ student: student1, task });
 			submission.courseGroup = courseGroup;

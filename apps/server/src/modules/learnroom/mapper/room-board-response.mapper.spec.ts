@@ -1,10 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardLayout } from '@modules/board';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
 import { ColumnBoardMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
@@ -18,7 +21,7 @@ describe('room board response mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [RoomBoardResponseMapper],
@@ -44,7 +47,7 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map tasks with status on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const task = taskFactory.buildWithId({ course });
 			const status = {
 				graded: 0,
@@ -69,7 +72,7 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map tasks with status on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const linkedTask = taskFactory.buildWithId({ course });
 			const status = {
 				graded: 0,
@@ -94,7 +97,7 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map lessons on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const lessonMetadata = {
 				id: 'lessonId',
 				name: 'lesson',
@@ -121,7 +124,7 @@ describe('room board response mapper', () => {
 		});
 
 		it('should map mix of tasks and lessons on board to response', () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			const lessonMetadata = {
 				id: 'lessonId',
 				name: 'lesson',

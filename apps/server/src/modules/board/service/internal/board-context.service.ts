@@ -1,15 +1,18 @@
+import { CourseService } from '@modules/course';
 import { RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { AnyBoardNode, BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 
 @Injectable()
 export class BoardContextService {
-	constructor(private readonly courseRepo: CourseRepo, private readonly roomMembershipService: RoomMembershipService) {}
+	constructor(
+		private readonly courseService: CourseService,
+		private readonly roomMembershipService: RoomMembershipService
+	) {}
 
-	async getUsersWithBoardRoles(rootNode: AnyBoardNode): Promise<UserWithBoardRoles[]> {
+	public async getUsersWithBoardRoles(rootNode: AnyBoardNode): Promise<UserWithBoardRoles[]> {
 		if (!('context' in rootNode)) {
 			return [];
 		}
@@ -42,7 +45,7 @@ export class BoardContextService {
 	}
 
 	private async getFromCourse(courseId: EntityId): Promise<UserWithBoardRoles[]> {
-		const course = await this.courseRepo.findById(courseId);
+		const course = await this.courseService.findById(courseId);
 		const usersWithRoles: UserWithBoardRoles[] = [
 			...course.getTeachersList().map((user) => {
 				return {

@@ -1,16 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
+import { LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
 import { TaskService } from '@modules/task';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory, columnBoardNodeFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
@@ -32,8 +35,8 @@ describe('rooms service', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			LessonEntity,
 			Material,
 			Task,
@@ -78,7 +81,7 @@ describe('rooms service', () => {
 		describe('for lessons, tasks and column boards', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const room = courseFactory.buildWithId({ students: [user] });
+				const room = courseEntityFactory.buildWithId({ students: [user] });
 				const tasks = taskFactory.buildList(3, { course: room });
 				const lessons = lessonFactory.buildList(3, { course: room });
 				const legacyBoard = boardFactory.buildWithId({ course: room });
