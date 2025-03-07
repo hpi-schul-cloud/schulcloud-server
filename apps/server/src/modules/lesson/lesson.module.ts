@@ -1,13 +1,13 @@
 import { LoggerModule } from '@core/logger';
 import { FeathersServiceProvider } from '@infra/feathers';
+import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { AuthorizationModule } from '../authorization';
+import { EtherpadService, LessonCopyService, LessonService } from './domain';
 import { LessonRepo } from './repo';
-import { EtherpadService, LessonCopyService, LessonService } from './service';
 
 @Module({
 	imports: [FilesStorageClientModule, LoggerModule, CopyHelperModule, TaskModule, CqrsModule, AuthorizationModule],

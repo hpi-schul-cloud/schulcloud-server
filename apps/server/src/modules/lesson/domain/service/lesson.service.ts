@@ -21,7 +21,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Counted, EntityId } from '@shared/domain/types';
-import { ComponentProperties, LessonEntity, LessonRepo } from '../repo';
+import { ComponentProperties, LessonEntity, LessonRepo } from '../../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
