@@ -1,6 +1,6 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
@@ -9,7 +9,6 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '@testing/factory/task.factory';
-import { Material } from './materials.entity';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 

@@ -1,5 +1,5 @@
-import { Material, MaterialProperties } from '@shared/domain/entity/materials.entity';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { Material, MaterialProperties } from '../repo';
 
 class MaterialFactory extends BaseFactory<Material, MaterialProperties> {}
 

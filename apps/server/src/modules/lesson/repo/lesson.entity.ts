@@ -1,9 +1,10 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { InternalServerErrorException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, Material, Task, TaskParent } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps, Task, TaskParent } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LernstoreResources } from '../api';
+import { Material } from './materials.entity';
 
 export interface LessonProperties {
 	name: string;

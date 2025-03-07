@@ -3,7 +3,6 @@ import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopySta
 import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
-import { Material } from '@shared/domain/entity';
 import { randomBytes } from 'crypto';
 import {
 	ComponentEtherpadProperties,
@@ -14,6 +13,7 @@ import {
 	ComponentType,
 	LessonEntity,
 	LessonRepo,
+	Material,
 } from '../../repo';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';

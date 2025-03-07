@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
-import { Material, RelatedResourceProperties } from '@shared/domain/entity';
+import { Material, RelatedResourceProperties } from '../../repo';
 
 export class MaterialResponse {
 	constructor(material: Material) {
