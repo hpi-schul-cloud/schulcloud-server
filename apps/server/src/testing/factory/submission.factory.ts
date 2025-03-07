@@ -5,9 +5,9 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { taskFactory } from '@modules/task/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
-import { Submission, SubmissionProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
+import { Submission, SubmissionProperties } from '@modules/task/repo';
 
 class SubmissionFactory extends BaseFactory<Submission, SubmissionProperties> {
 	graded(): this {

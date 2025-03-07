@@ -6,11 +6,12 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Material, Submission } from '@shared/domain/entity';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { taskFactory } from '../testing';
 import { Task } from './task.entity';
+import { Submission } from './submission.entity';
 
 describe('Task Entity', () => {
 	beforeAll(async () => {

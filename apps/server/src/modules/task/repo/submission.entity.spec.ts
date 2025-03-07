@@ -3,15 +3,15 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonEntity } from '@modules/lesson/repository';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { Task } from '@modules/task/repo';
-import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory } from '@testing/factory/submission.factory';
-import { Material } from './materials.entity';
+import { taskFactory } from '../testing';
 import { Submission } from './submission.entity';
+import { Task } from './task.entity';
 
 describe('Submission entity', () => {
 	beforeAll(async () => {
