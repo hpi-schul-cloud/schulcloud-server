@@ -1,9 +1,11 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseEntity, CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
+import { CourseEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
+import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LessonEntity, TaskWithStatusVo } from '@shared/domain/entity';
+import { TaskWithStatusVo } from '@shared/domain/entity';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo/task';
@@ -14,12 +16,12 @@ export class TaskUC {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly authorizationService: AuthorizationService,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService
 	) {}
 
-	async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
+	public async findAllFinished(userId: EntityId, pagination?: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		this.authorizationService.checkOneOfPermissions(user, [
@@ -60,7 +62,7 @@ export class TaskUC {
 		return [taskWithStatusVos, total];
 	}
 
-	async findAll(userId: EntityId, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
+	public async findAll(userId: EntityId, pagination: Pagination): Promise<Counted<TaskWithStatusVo[]>> {
 		let response: Counted<TaskWithStatusVo[]>;
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -76,7 +78,11 @@ export class TaskUC {
 		return response;
 	}
 
-	async changeFinishedForUser(userId: EntityId, taskId: EntityId, isFinished: boolean): Promise<TaskWithStatusVo> {
+	public async changeFinishedForUser(
+		userId: EntityId,
+		taskId: EntityId,
+		isFinished: boolean
+	): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -101,7 +107,7 @@ export class TaskUC {
 		return result;
 	}
 
-	async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+	public async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 
@@ -180,9 +186,9 @@ export class TaskUC {
 		let permittedCourses: CourseEntity[] = [];
 
 		if (neededPermission === Action.write) {
-			[permittedCourses] = await this.courseRepo.findAllForTeacherOrSubstituteTeacher(user.id);
+			permittedCourses = await this.courseService.findAllForTeacherOrSubstituteTeacher(user.id);
 		} else if (neededPermission === Action.read) {
-			[permittedCourses] = await this.courseRepo.findAllByUserId(user.id);
+			permittedCourses = await this.courseService.findAllByUserId(user.id);
 		}
 
 		return permittedCourses;
@@ -216,7 +222,7 @@ export class TaskUC {
 		return oneWeekAgo;
 	}
 
-	async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
+	public async delete(userId: EntityId, taskId: EntityId): Promise<boolean> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const task = await this.taskRepo.findById(taskId);
 

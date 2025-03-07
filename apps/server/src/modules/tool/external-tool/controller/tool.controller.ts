@@ -1,5 +1,5 @@
 import { LegacyLogger } from '@core/logger';
-import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
 	Controller,
@@ -70,13 +70,12 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates an ExternalTool' })
 	public async createExternalTool(
-		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolParams: ExternalToolCreateParams
 	): Promise<ExternalToolResponse> {
 		const externalTool: ExternalToolCreate = this.externalToolDOMapper.mapCreateRequest(externalToolParams);
 
-		const created: ExternalTool = await this.externalToolUc.createExternalTool(currentUser.userId, externalTool, jwt);
+		const created: ExternalTool = await this.externalToolUc.createExternalTool(currentUser.userId, externalTool);
 
 		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(created);
 
@@ -95,7 +94,6 @@ export class ToolController {
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Creates multiple ExternalTools at the same time.' })
 	public async importExternalTools(
-		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() externalToolBulkParams: ExternalToolBulkCreateParams
 	): Promise<ExternalToolImportResultListResponse> {
@@ -103,8 +101,7 @@ export class ToolController {
 
 		const results: ExternalToolImportResult[] = await this.externalToolUc.importExternalTools(
 			currentUser.userId,
-			externalTools,
-			jwt
+			externalTools
 		);
 
 		const response: ExternalToolImportResultListResponse = ExternalToolResponseMapper.mapToImportResponse(results);
@@ -165,7 +162,6 @@ export class ToolController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiOperation({ summary: 'Updates an ExternalTool' })
 	public async updateExternalTool(
-		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
 		@Body() externalToolParams: ExternalToolUpdateParams
@@ -174,8 +170,7 @@ export class ToolController {
 		const updated: ExternalTool = await this.externalToolUc.updateExternalTool(
 			currentUser.userId,
 			params.externalToolId,
-			externalTool,
-			jwt
+			externalTool
 		);
 		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(updated);
 		this.logger.debug(`ExternalTool with id ${mapped.id} was updated by user with id ${currentUser.userId}`);
@@ -189,15 +184,10 @@ export class ToolController {
 	@ApiOperation({ summary: 'Deletes an ExternalTool' })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	public async deleteExternalTool(
-		@JWT() jwt: string,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<void> {
-		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(
-			currentUser.userId,
-			params.externalToolId,
-			jwt
-		);
+		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
 		this.logger.debug(
 			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`
 		);

@@ -17,6 +17,7 @@ import {
 	TaskBoardElement,
 } from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { LessonEntity } from '@modules/lesson/repository';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
@@ -41,7 +42,6 @@ import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/rep
 import { ImportUser } from '@modules/user-import/entity';
 import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license/entity';
 import { User } from '@modules/user/repo';
-import { LessonEntity } from '@shared/domain/entity/lesson.entity';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';

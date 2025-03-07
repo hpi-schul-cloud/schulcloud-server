@@ -1,5 +1,5 @@
-import { CourseRepo } from '@modules/course/repo';
-import { UserRepo } from '@modules/user/repo';
+import { CourseService } from '@modules/course';
+import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '../repo';
@@ -11,8 +11,8 @@ import { RoomBoardDTOFactory } from './room-board-dto.factory';
 @Injectable()
 export class CourseRoomsUc {
 	constructor(
-		private readonly courseRepo: CourseRepo,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
+		private readonly courseService: CourseService,
 		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: CourseRoomsAuthorisationService,
@@ -20,9 +20,9 @@ export class CourseRoomsUc {
 	) {}
 
 	public async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
-		const user = await this.userRepo.findById(userId, true);
+		const user = await this.userService.getUserEntityWithRoles(userId);
 		// TODO no authorisation check here?
-		const course = await this.courseRepo.findOne(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId);
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);
 
 		// TODO this must be rewritten. Board auto-creation must be treated separately
@@ -38,8 +38,9 @@ export class CourseRoomsUc {
 		userId: EntityId,
 		visibility: boolean
 	): Promise<void> {
-		const user = await this.userRepo.findById(userId);
-		const course = await this.courseRepo.findOne(roomId, userId);
+		const user = await this.userService.getUserEntityWithRoles(userId);
+		const course = await this.courseService.findOneForUser(roomId, userId);
+
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}
@@ -67,8 +68,9 @@ export class CourseRoomsUc {
 	}
 */
 	public async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
-		const user = await this.userRepo.findById(userId);
-		const course = await this.courseRepo.findOne(roomId, userId);
+		const user = await this.userService.getUserEntityWithRoles(userId);
+		const course = await this.courseService.findOneForUser(roomId, userId);
+
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}

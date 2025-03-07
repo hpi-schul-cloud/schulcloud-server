@@ -1,5 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
-import { CourseEntity, CourseGroupEntity, CourseRepo } from '@modules/course/repo';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,7 +15,7 @@ describe('dashboard uc', () => {
 	let module: TestingModule;
 	let service: DashboardUc;
 	let repo: IDashboardRepo;
-	let courseRepo: CourseRepo;
+	let courseService: CourseService;
 
 	afterAll(async () => {
 		await module.close();
@@ -30,15 +31,15 @@ describe('dashboard uc', () => {
 					useValue: createMock<DashboardUc>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(DashboardUc);
 		repo = module.get(DASHBOARD_REPO);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 
 		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
@@ -53,7 +54,7 @@ describe('dashboard uc', () => {
 				const dashboard = new Dashboard('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
-			jest.spyOn(courseRepo, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
+			jest.spyOn(courseService, 'findAllByUserId').mockImplementation(() => Promise.resolve([]));
 			const dashboard = await service.getUsersDashboard('userId');
 
 			expect(dashboard instanceof Dashboard).toEqual(true);
@@ -67,9 +68,9 @@ describe('dashboard uc', () => {
 				.spyOn(repo, 'getUsersDashboard')
 				.mockImplementation(() => Promise.resolve(dashboard));
 			const courses = new Array(5).map(() => ({} as CourseEntity));
-			const courseRepoSpy = jest
-				.spyOn(courseRepo, 'findAllByUserId')
-				.mockImplementation(() => Promise.resolve([courses, 5]));
+			const courseServiceSpy = jest
+				.spyOn(courseService, 'findAllByUserId')
+				.mockImplementation(() => Promise.resolve(courses));
 			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
 			const persistSpy = jest.spyOn(repo, 'persistAndFlush');
 
@@ -77,7 +78,7 @@ describe('dashboard uc', () => {
 
 			expect(result instanceof Dashboard).toEqual(true);
 			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
-			expect(courseRepoSpy).toHaveBeenCalledWith(
+			expect(courseServiceSpy).toHaveBeenCalledWith(
 				userId,
 				{ onlyActiveCourses: true },
 				{ order: { name: SortOrder.asc } }

@@ -4,10 +4,8 @@ import {
 	AuthorizationInjectionService,
 	AuthorizationLoaderService,
 } from '@modules/authorization';
-import { CourseGroupRepo, CourseRepo } from '@modules/course/repo';
 import { InstanceService } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
-import { UserRepo } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
@@ -18,9 +16,6 @@ import { TaskRepo } from '@shared/repo/task';
 @Injectable()
 export class ReferenceLoader {
 	constructor(
-		private readonly userRepo: UserRepo,
-		private readonly courseRepo: CourseRepo,
-		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly submissionRepo: SubmissionRepo,
@@ -29,9 +24,6 @@ export class ReferenceLoader {
 	) {
 		const service = this.authorizationInjectionService;
 		service.injectReferenceLoader(AuthorizableReferenceType.Task, this.taskRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.Course, this.courseRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.CourseGroup, this.courseGroupRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.User, this.userRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.School, this.schoolRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Instance, this.instanceService);
