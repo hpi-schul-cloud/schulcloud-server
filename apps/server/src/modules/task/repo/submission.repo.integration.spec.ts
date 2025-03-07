@@ -8,9 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Material } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { Submission, Task } from '../repo';
-import { taskFactory } from '../testing';
+import { submissionFactory, taskFactory } from '../testing';
 import { SubmissionRepo } from './submission.repo';
 
 describe('submission repo', () => {

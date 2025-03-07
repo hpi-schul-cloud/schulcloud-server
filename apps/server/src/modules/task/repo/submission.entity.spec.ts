@@ -8,8 +8,7 @@ import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { submissionFactory } from '@testing/factory/submission.factory';
-import { taskFactory } from '../testing';
+import { submissionFactory, taskFactory } from '../testing';
 import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 

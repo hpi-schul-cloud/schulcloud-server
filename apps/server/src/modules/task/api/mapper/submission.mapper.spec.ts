@@ -3,8 +3,8 @@ import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { Submission, Task } from '../../repo';
+import { submissionFactory } from '../../testing';
 import { SubmissionStatusResponse } from '../dto';
 import { SubmissionMapper } from './submission.mapper';
 

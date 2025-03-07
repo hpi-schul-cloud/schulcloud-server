@@ -15,10 +15,9 @@ import { Material } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { TaskService, TaskStatus } from '../domain';
 import { Submission, Task, TaskRepo } from '../repo';
-import { taskFactory } from '../testing';
+import { submissionFactory, taskFactory } from '../testing';
 import { TaskUC } from './task.uc';
 
 describe('TaskUC', () => {

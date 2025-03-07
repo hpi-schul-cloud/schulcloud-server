@@ -19,10 +19,9 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { ObjectId } from 'bson';
 import { Submission, Task, TaskRepo } from '../../repo';
-import { taskFactory } from '../../testing';
+import { submissionFactory, taskFactory } from '../../testing';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
