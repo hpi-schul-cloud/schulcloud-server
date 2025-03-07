@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types/entity-id';
-import type { NewsTargetModel } from '../type';
+import { NewsTargetModel } from '../type';
 
 /** interface for finding news with optional targetId */
 export interface INewsScope {

@@ -5,8 +5,7 @@ import type { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import type { TeamEntity } from '@shared/domain/entity/team.entity';
 import { EntityId } from '@shared/domain/types';
-import type { NewsTarget } from '../domain';
-import { NewsTargetModel } from '../domain/type';
+import { NewsTarget, NewsTargetModel } from '../domain/type';
 
 export interface NewsProperties {
 	title: string;
