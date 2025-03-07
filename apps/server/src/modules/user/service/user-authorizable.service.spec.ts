@@ -43,6 +43,10 @@ describe(UserAuthorizableService.name, () => {
 		it('should inject itself into the AuthorizationInjectionService', () => {
 			expect(injectionService.getReferenceLoader(AuthorizableReferenceType.User)).toBe(service);
 		});
+
+		it('should inject itself as a CurrentUserLoader into the AuthorizationInjectionService', () => {
+			expect(injectionService.getCurrentUserLoader()).toBe(service);
+		});
 	});
 
 	describe('findById', () => {
@@ -63,6 +67,36 @@ describe(UserAuthorizableService.name, () => {
 				const result = await service.findById(user.id);
 
 				expect(result).toEqual(user);
+			});
+		});
+	});
+
+	describe('loadCurrentUserWithPermissions', () => {
+		describe('when user is returned by repo', () => {
+			const setup = () => {
+				const user = userFactory.build();
+
+				userRepo.findById.mockResolvedValue(user);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return a user', async () => {
+				const { user } = setup();
+
+				const result = await service.loadCurrentUserWithPermissions(user.id);
+
+				expect(result).toEqual(user);
+			});
+
+			it('should call userRepo.findById with id and true', async () => {
+				const { user } = setup();
+
+				await service.loadCurrentUserWithPermissions(user.id);
+
+				expect(userRepo.findById).toHaveBeenCalledWith(user.id, true);
 			});
 		});
 	});
