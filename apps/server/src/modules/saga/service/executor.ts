@@ -5,13 +5,11 @@ import { Saga } from '../interface/saga';
 
 @Injectable()
 export class SagaExecutorService {
-    private readonly sagas: Map<string, Saga> = new Map();
+	private readonly sagas: Map<string, Saga> = new Map();
 
-	constructor(
-		private readonly sagaInjectionService: SagaInjectionService
-	) {
-        this.sagas.set('user-deletion', new UserDeletionSaga(this.sagaInjectionService));
-        // add other sagas here
+	constructor(private readonly sagaInjectionService: SagaInjectionService) {
+		this.sagas.set('user-deletion', new UserDeletionSaga(this.sagaInjectionService));
+		// add other sagas here
 	}
 
 	public async executeSaga<T = any>(sagaName: string, data?: T): Promise<void> {
@@ -19,12 +17,12 @@ export class SagaExecutorService {
 		if (!saga) {
 			throw new Error(`Saga ${sagaName} not found`);
 		}
-        try {
-            const finalMessage = await saga.invoke(data);
-            console.log(finalMessage); // replace with logger
-        } catch (error) {
-            // should never happen
-            throw new InternalServerErrorException('Unexpected error during saga execution of ' + sagaName);
-        }
+		try {
+			const finalMessage = await saga.invoke(data);
+			console.log(finalMessage); // replace with logger
+		} catch (error) {
+			// should never happen
+			throw new InternalServerErrorException(`Unexpected error during saga execution of ${sagaName}`);
+		}
 	}
 }

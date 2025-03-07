@@ -7,18 +7,15 @@ import { ClassesRepo } from '../repo';
 
 @Injectable()
 export class SagaInjectableService {
-	constructor(
-		private readonly sagaInjectionService: SagaInjectionService,
-		private readonly classesRepo: ClassesRepo
-	) {
+	constructor(private readonly sagaInjectionService: SagaInjectionService, private readonly classesRepo: ClassesRepo) {
 		this.sagaInjectionService.injectSagaStep({
 			sagaName: 'user-deletion',
 			stepName: 'delete-user-from-class',
 			invoke: this.invokeUserDeletion.bind(this),
 			metadata: {
 				moduleName: DomainName.CLASS,
-			}
-		})
+			},
+		});
 	}
 
 	public async invokeUserDeletion(userId: EntityId): Promise<SagaCompensateFn> {
@@ -45,7 +42,7 @@ export class SagaInjectableService {
 			domain: DomainName.CLASS,
 			user: userId,
 			modifiedCount: numberOfUpdatedClasses,
-			deletedCount: 0
+			deletedCount: 0,
 		});
 
 		// returns compensation function
@@ -56,5 +53,4 @@ export class SagaInjectableService {
 	private async compensateUserDeletion(userId: EntityId): Promise<void> {
 		throw new Error('Not implemented');
 	}
-
 }

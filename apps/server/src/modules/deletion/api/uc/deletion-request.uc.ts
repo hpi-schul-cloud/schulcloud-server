@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
+import { SagaExecutorService } from '@modules/saga';
 import { DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
@@ -28,6 +29,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
 		private readonly configService: ConfigService<DeletionConfig, true>,
+		private readonly sagaExecutorService: SagaExecutorService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 		this.config = [
@@ -97,13 +99,10 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			if (max > 0) {
 				this.logger.debug({ action: 'processing deletion request', deletionRequests });
 
-				// TODO: here would be an optional entry point for a saga
-
-				// eslint-disable-next-line no-await-in-loop
-				await Promise.all(
-					deletionRequests.map(this.executeDeletionRequest)
-				);
-
+				deletionRequests.map(async (req) => {
+					await this.sagaExecutorService.executeSaga('user-deletion', req);
+					await this.executeDeletionRequest(req);
+				});
 				// eslint-disable-next-line no-await-in-loop
 				await this.delayForDeletion();
 			}

@@ -6,9 +6,9 @@ export class SagaInjectionService {
 	private readonly sagaSteps: SagaStep[] = [];
 
 	public injectSagaStep(sagaStep: SagaStep): void {
-        if (this.getSagaStep(sagaStep.sagaName, sagaStep.stepName)) {
-            throw new Error(`Saga step ${sagaStep.stepName} already exists`);
-        }
+		if (this.getSagaStep(sagaStep.sagaName, sagaStep.stepName)) {
+			throw new Error(`Saga step ${sagaStep.stepName} already exists`);
+		}
 		this.sagaSteps.push(sagaStep);
 	}
 
@@ -16,12 +16,11 @@ export class SagaInjectionService {
 		return this.sagaSteps;
 	}
 
-    public listBySagaName(sagaName: string): SagaStep[] {
-        return this.sagaSteps.filter((step) => step.sagaName === sagaName);
-    }
+	public listBySagaName(sagaName: string): SagaStep[] {
+		return this.sagaSteps.filter((step) => step.sagaName === sagaName);
+	}
 
-    public getSagaStep(sagaName: string, stepName: string): SagaStep | null {
-        return this.sagaSteps.find((step) => step.sagaName === sagaName && step.stepName === stepName) ?? null;
-    }
-
+	public getSagaStep(sagaName: string, stepName: string): SagaStep | null {
+		return this.sagaSteps.find((step) => step.sagaName === sagaName && step.stepName === stepName) ?? null;
+	}
 }
