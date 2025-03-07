@@ -3,7 +3,6 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { taskFactory } from '@modules/task/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
@@ -12,6 +11,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { submissionFactory } from '@testing/factory/submission.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { taskFactory } from '../../testing';
 import { SubmissionStatusListResponse } from '../dto';
 
 describe('Submission Controller (API)', () => {
