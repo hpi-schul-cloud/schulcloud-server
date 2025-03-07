@@ -2,8 +2,9 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { TeamUserEntity } from '@modules/teams/repo';
 import { userFactory } from '@modules/user/testing';
-import { Role, TeamUserEntity } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
