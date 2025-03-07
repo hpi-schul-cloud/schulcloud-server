@@ -51,6 +51,9 @@ export class UserDeletionSaga implements Saga {
 				// eslint-disable-next-line no-await-in-loop
 				const compensate = await step.invoke(deletionRequest.targetRefId);
 				compensations.push({ fn: compensate, step });
+
+				// test compensation
+				// throw new Error('tryin compensation');
 			}
 		} catch (error) {
 			const logMessage = `User deletion saga failed for user ${deletionRequest.targetRefId} at step ${currentStep?.stepName}. Initiating compensations...`;

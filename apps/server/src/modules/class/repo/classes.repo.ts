@@ -86,4 +86,12 @@ export class ClassesRepo {
 
 		return domainObject;
 	}
+
+	public async findById(id: EntityId | EntityId[]): Promise<Class[]> {
+		const classes = await this.em.find(ClassEntity, id);
+
+		const mapped = classes.map((clazz) => ClassMapper.mapToDO(clazz));
+
+		return mapped;
+	}
 }

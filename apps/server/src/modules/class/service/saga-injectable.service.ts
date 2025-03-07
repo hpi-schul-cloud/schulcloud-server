@@ -25,6 +25,8 @@ export class SagaInjectableService {
 
 		const domainObjects = await this.classesRepo.findAllByUserId(userId);
 
+		const classesIds = domainObjects.map((domainObject) => domainObject.id);
+
 		const updatedClasses: Class[] = domainObjects.map((domainObject) => {
 			if (domainObject.userIds !== undefined) {
 				domainObject.removeUser(userId);
@@ -36,7 +38,7 @@ export class SagaInjectableService {
 
 		await this.classesRepo.updateMany(updatedClasses);
 
-		// use logger instead
+		// TODO use logger instead
 		console.log({
 			message: 'Successfully removed user data from Classes',
 			domain: DomainName.CLASS,
@@ -46,11 +48,32 @@ export class SagaInjectableService {
 		});
 
 		// returns compensation function
-		return async () => this.compensateUserDeletion(userId);
+		return async () => this.compensateUserDeletion(userId, classesIds);
 	}
 
 	// TODO: Implement this method
-	private async compensateUserDeletion(userId: EntityId): Promise<void> {
+	private async compensateUserDeletion(userId: EntityId, classesIds: EntityId[]): Promise<void> {
+		const domainObjects = await this.classesRepo.findById(classesIds);
+
+		const updatedClasses: Class[] = domainObjects.map((domainObject) => {
+			if (domainObject.userIds !== undefined) {
+				domainObject.addUser(userId);
+			}
+			return domainObject;
+		});
+
+		const numberOfUpdatedClasses = updatedClasses.length;
+
+		await this.classesRepo.updateMany(updatedClasses);
+
+		// TODO use logger instead
+		console.log({
+			message: 'Successfully restored user data in Classes',
+			domain: DomainName.CLASS,
+			user: userId,
+			modifiedCount: numberOfUpdatedClasses,
+			deletedCount: 0,
+		});
 		throw new Error('Not implemented');
 	}
 }
