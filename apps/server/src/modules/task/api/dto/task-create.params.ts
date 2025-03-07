@@ -1,6 +1,7 @@
+import { TaskCreate } from '@modules/task';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
-import { InputFormat, TaskCreate } from '@shared/domain/types';
+import { InputFormat } from '@shared/domain/types';
 import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
 
 export class TaskCreateParams implements TaskCreate {

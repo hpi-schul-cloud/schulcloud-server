@@ -6,8 +6,9 @@ import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps, Submission } from '@shared/domain/entity';
 import { EntityWithSchool } from '@shared/domain/interface';
-import { TaskStatus, EntityId, TaskProperties } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
+import { ITask, TaskStatus } from '../domain';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -30,6 +31,18 @@ export type TaskParentDescriptions = {
 
 export interface TaskParent {
 	getStudentIds(): EntityId[];
+}
+
+export interface TaskProperties extends ITask {
+	course?: CourseEntity;
+	lesson?: LessonEntity;
+	creator: User;
+	school: SchoolEntity;
+	finished?: User[];
+	private?: boolean;
+	submissions?: Submission[];
+	publicSubmissions?: boolean;
+	teamSubmissions?: boolean;
 }
 
 @Entity({ tableName: 'homeworks' })

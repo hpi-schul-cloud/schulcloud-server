@@ -13,14 +13,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller/dto';
 import { Material, Submission } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
-import { TaskStatus } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { submissionFactory } from '@testing/factory/submission.factory';
+import { TaskService, TaskStatus } from '../domain';
 import { Task, TaskRepo } from '../repo';
 import { taskFactory } from '../testing';
 import { TaskUC } from './task.uc';
-import { TaskService } from '../domain';
 
 describe('TaskUC', () => {
 	let module: TestingModule;

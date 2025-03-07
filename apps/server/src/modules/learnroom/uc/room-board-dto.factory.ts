@@ -2,11 +2,11 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repository';
+import { TaskStatus } from '@modules/task';
 import { Task, TaskWithStatusVo } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
-import { TaskStatus } from '@shared/domain/types';
 import {
 	ColumnBoardBoardElement,
 	ColumnBoardNode,

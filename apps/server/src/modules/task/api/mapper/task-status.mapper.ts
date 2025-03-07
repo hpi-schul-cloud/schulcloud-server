@@ -1,4 +1,4 @@
-import { TaskStatus } from '@shared/domain/types';
+import { TaskStatus } from '../../domain';
 import { TaskStatusResponse } from '../dto';
 
 export class TaskStatusMapper {

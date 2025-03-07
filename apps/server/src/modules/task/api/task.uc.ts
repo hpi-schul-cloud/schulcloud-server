@@ -6,9 +6,9 @@ import { LessonEntity } from '@modules/lesson/repository';
 import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
-import { Counted, EntityId, TaskStatus } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
+import { TaskService, TaskStatus } from '../domain';
 import { TaskRepo, TaskWithStatusVo } from '../repo';
-import { TaskService } from '../domain';
 @Injectable()
 export class TaskUC {
 	constructor(
