@@ -21,8 +21,8 @@ export class CommonCartridgeImportService {
 	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
 		const courseName = parser.getTitle() ?? 'Untitled Course';
 
-		await this.uploadCourseFiles(parser, currentUser);
 		await this.coursesClient.createCourse({ title: courseName });
+		await this.uploadCourseFiles(parser, currentUser);
 	}
 
 	private async uploadCourseFiles(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
@@ -38,7 +38,7 @@ export class CommonCartridgeImportService {
 				await this.fileStorageClient.upload(
 					currentUser.schoolId,
 					commonCartridgeFileResourceProps.storageLocation,
-					commonCartridgeFileResourceProps.parentId,
+					commonCartridgeFileResourceProps.parentId, // parent id not exist yet in this context this could be boardnode id
 					commonCartridgeFileResourceProps.parentType,
 					new File([commonCartridgeFileResourceProps.file], organization.title, filePropertyBag)
 				);
