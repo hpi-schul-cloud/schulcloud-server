@@ -59,6 +59,10 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.gradeLevel;
 	}
 
+	set gradeLevel(gradeLevel: number | undefined) {
+		this.props.gradeLevel = gradeLevel;
+	}
+
 	get ldapDN(): string | undefined {
 		return this.props.ldapDN;
 	}
