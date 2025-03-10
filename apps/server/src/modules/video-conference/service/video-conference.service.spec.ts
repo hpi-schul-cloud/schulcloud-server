@@ -46,7 +46,7 @@ describe(VideoConferenceService.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
-	let teamRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let configService: DeepMocked<ConfigService<VideoConferenceConfig, true>>;
@@ -375,7 +375,7 @@ describe(VideoConferenceService.name, () => {
 					.withTeamUser([teamUser])
 					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
 					.build();
-				import { TeamRepo } from '@modules/team/repo';.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 
 				userService.findById.mockResolvedValue(user);
 
