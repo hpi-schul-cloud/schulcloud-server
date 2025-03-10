@@ -3,7 +3,7 @@ import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import { UserService, UserDo } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -222,7 +222,7 @@ export class TspProvisioningService {
 				firstName: externalUser.firstName,
 				lastName: externalUser.lastName,
 				email: this.createTspEmail(externalUser.externalId),
-				birthday: externalUser.birthday,
+				birthday: new Date(),
 				externalId: externalUser.externalId,
 				secondarySchools: [],
 				lastSyncedAt: new Date(),

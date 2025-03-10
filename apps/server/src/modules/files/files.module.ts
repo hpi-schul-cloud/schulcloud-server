@@ -1,11 +1,11 @@
-import { Module } from '@nestjs/common';
-import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { LoggerModule } from '@core/logger';
+import { StorageProviderRepo } from '@modules/school/repo';
+import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { DeleteFilesConsole } from './job';
-import { DeleteFilesUc } from './uc';
 import { FilesRepo } from './repo';
 import { FilesService } from './service';
+import { DeleteFilesUc } from './uc';
 
 @Module({
 	imports: [CqrsModule, LoggerModule],
