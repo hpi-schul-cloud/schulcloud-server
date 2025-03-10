@@ -1,6 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { PseudonymModule } from '@modules/pseudonym';
-import { TeamsRepo } from '@modules/team/repo';
+import { TeamRepo } from '@modules/team/repo';
 import { ToolModule } from '@modules/tool';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
@@ -10,7 +10,7 @@ import { OauthProviderServiceModule } from './oauth-provider-service.module';
 
 @Module({
 	imports: [OauthProviderServiceModule, UserModule, LoggerModule, PseudonymModule, ToolModule],
-	providers: [OauthProviderLoginFlowService, IdTokenService, TeamsRepo],
+	providers: [OauthProviderLoginFlowService, IdTokenService, TeamRepo],
 	exports: [OauthProviderLoginFlowService, IdTokenService],
 })
 export class OauthProviderModule {}

@@ -6,7 +6,7 @@ import { BaseRepo } from '@shared/repo/base.repo';
 import { TeamEntity, TeamUserEntity } from './team.entity';
 
 @Injectable()
-export class TeamsRepo extends BaseRepo<TeamEntity> {
+export class TeamRepo extends BaseRepo<TeamEntity> {
 	get entityName() {
 		return TeamEntity;
 	}

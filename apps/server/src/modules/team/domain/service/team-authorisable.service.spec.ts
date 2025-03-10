@@ -3,7 +3,7 @@ import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modul
 import { teamFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { TeamEntity, TeamsRepo } from '../../repo';
+import { TeamEntity, TeamRepo } from '../../repo';
 import { TeamAuthorisableService } from './team-authorisable.service';
 
 describe('team authorisable service', () => {
@@ -11,7 +11,7 @@ describe('team authorisable service', () => {
 	let service: TeamAuthorisableService;
 	let injectionService: AuthorizationInjectionService;
 
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 
 	beforeAll(async () => {
 		await setupEntities([TeamEntity]);
@@ -20,8 +20,8 @@ describe('team authorisable service', () => {
 			providers: [
 				TeamAuthorisableService,
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				AuthorizationInjectionService,
 			],
@@ -29,7 +29,7 @@ describe('team authorisable service', () => {
 
 		service = module.get(TeamAuthorisableService);
 		injectionService = module.get(AuthorizationInjectionService);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 	});
 
 	it('should inject intself into authorisation', () => {
@@ -38,7 +38,7 @@ describe('team authorisable service', () => {
 
 	it('should return entity', async () => {
 		const team = teamFactory.buildWithId();
-		teamsRepo.findById.mockResolvedValue(team);
+		teamRepo.findById.mockResolvedValue(team);
 
 		const result = await service.findById(team.id);
 		expect(result).toEqual(team);
@@ -46,9 +46,9 @@ describe('team authorisable service', () => {
 
 	it('should call repo with populate', async () => {
 		const team = teamFactory.buildWithId();
-		teamsRepo.findById.mockResolvedValue(team);
+		teamRepo.findById.mockResolvedValue(team);
 
 		await service.findById(team.id);
-		expect(teamsRepo.findById).toHaveBeenCalledWith(team.id, true);
+		expect(teamRepo.findById).toHaveBeenCalledWith(team.id, true);
 	});
 });

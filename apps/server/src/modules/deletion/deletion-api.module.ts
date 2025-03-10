@@ -5,7 +5,7 @@ import { FilesModule } from '@modules/files';
 import { NewsModule } from '@modules/news';
 import { PseudonymModule } from '@modules/pseudonym';
 import { RocketChatUserModule } from '@modules/rocketchat-user';
-import { TeamsModule } from '@modules/team';
+import { TeamModule } from '@modules/team';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -25,7 +25,7 @@ import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
 		LoggerModule,
 		ClassModule,
 		NewsModule,
-		TeamsModule,
+		TeamModule,
 		PseudonymModule,
 		FilesModule,
 		RocketChatUserModule,

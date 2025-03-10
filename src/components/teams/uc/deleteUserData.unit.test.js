@@ -7,7 +7,7 @@ const chaiAsPromised = require('chai-as-promised');
 const deleteUserTeamsData = require('../../teams/uc/deleteUserTeamsData.uc');
 const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
-const { teamsRepo } = require('../repo/index');
+const { teamRepo } = require('../repo/index');
 const { AssertionError } = require('../../../errors');
 
 const { expect } = chai;
@@ -29,11 +29,11 @@ const createTestGetTeamsForUserResult = (teamId) => {
 };
 
 const initTeamsStubs = ({ teamsId }) => {
-	const getTeamsStub = sinon.stub(teamsRepo, 'getTeamsIdsForUser');
+	const getTeamsStub = sinon.stub(teamRepo, 'getTeamsIdsForUser');
 	getTeamsStub.callsFake(() => []);
 	getTeamsStub.withArgs(USER_ID).returns(createTestGetTeamsForUserResult(teamsId));
 
-	const removeTeamsStub = sinon.stub(teamsRepo, 'removeUserFromTeams');
+	const removeTeamsStub = sinon.stub(teamRepo, 'removeUserFromTeams');
 	removeTeamsStub.withArgs(USER_ID).returns({ success: true, modifiedDocuments: 1 });
 
 	return { getTeamsStub, removeTeamsStub };
@@ -83,8 +83,6 @@ describe('delete teams user data usecase', () => {
 			const { data } = result.trashBinData;
 			expect(data.teamIds).to.be.an('object');
 		});
-
-
 
 		it('should throw an error if called with an invalid ObjectId', async () => {
 			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserData[0];

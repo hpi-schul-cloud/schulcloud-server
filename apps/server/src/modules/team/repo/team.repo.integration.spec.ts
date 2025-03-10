@@ -7,19 +7,19 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { TeamEntity, TeamUserEntity } from './team.entity';
-import { TeamsRepo } from './teams.repo';
+import { TeamRepo } from './team.repo';
 
 describe('team repo', () => {
 	let module: TestingModule;
-	let repo: TeamsRepo;
+	let repo: TeamRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TeamEntity] })],
-			providers: [TeamsRepo],
+			providers: [TeamRepo],
 		}).compile();
-		repo = module.get(TeamsRepo);
+		repo = module.get(TeamRepo);
 		em = module.get(EntityManager);
 	});
 

@@ -7,7 +7,7 @@ import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
 import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
-import { TeamEntity, TeamsRepo } from '@modules/team/repo';
+import { TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -22,7 +22,7 @@ describe('Collaborative Storage Service', () => {
 	let adapter: DeepMocked<CollaborativeStorageAdapter>;
 	let authService: DeepMocked<AuthorizationService>;
 	let roleService: DeepMocked<RoleService>;
-	let teamRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 
 	let mockId: string;
 	let roleDto: RoleDto;
@@ -42,8 +42,8 @@ describe('Collaborative Storage Service', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: CollaborativeStorageAdapter,
@@ -59,7 +59,7 @@ describe('Collaborative Storage Service', () => {
 		adapter = module.get(CollaborativeStorageAdapter);
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
-		teamRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		await setupEntities([TeamEntity]);
 	});
 
