@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { schoolYearEntityFactory } from '../../testing';
+import { schoolYearEntityFactory } from '../testing';
 import { SchoolYearEntityMapper } from './mapper';
 import { SchoolYearEntity } from './school-year.entity';
 import { SchoolYearMikroOrmRepo } from './school-year.repo';

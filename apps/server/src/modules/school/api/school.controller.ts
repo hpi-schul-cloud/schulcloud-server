@@ -2,11 +2,18 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { SchoolQueryParams, SchoolRemoveSystemUrlParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
-import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemResponse } from './dto/response';
-import { SchoolExistsResponse } from './dto/response/school-exists.response';
-import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
-import { SchoolUserListResponse } from './dto/response/school-user.response';
+import {
+	SchoolExistsResponse,
+	SchoolForExternalInviteResponse,
+	SchoolForLdapLoginResponse,
+	SchoolQueryParams,
+	SchoolRemoveSystemUrlParams,
+	SchoolResponse,
+	SchoolSystemResponse,
+	SchoolUpdateBodyParams,
+	SchoolUrlParams,
+	SchoolUserListResponse,
+} from './dto';
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
