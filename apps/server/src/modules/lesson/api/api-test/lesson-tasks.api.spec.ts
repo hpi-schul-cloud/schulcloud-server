@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
-import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server';
 import { taskFactory } from '@modules/task/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { lessonFactory } from '../../testing';
 
 describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/tasks', () => {
 	let module: TestingModule;

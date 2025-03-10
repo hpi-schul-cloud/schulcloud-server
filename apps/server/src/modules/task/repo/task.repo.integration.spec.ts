@@ -1,11 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';

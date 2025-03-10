@@ -7,11 +7,10 @@ import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { LessonEntity } from '../../repo';
-import { LessonService } from '../../service';
+import { LessonService } from '../../domain';
+import { LessonEntity, Material } from '../../repo';
 import { lessonFactory } from '../../testing';
 import { LessonUC } from './lesson.uc';
 

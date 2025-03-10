@@ -1,12 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseGroupEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { submissionFactory, taskFactory } from '../testing';
 import { Submission } from './submission.entity';

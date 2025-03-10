@@ -3,13 +3,13 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { LessonEntity } from '@modules/lesson/repo';
-import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { LessonEntity } from '../../repo';
+import { lessonFactory } from '../../testing';
 
 describe('Lesson Controller (API) - delete', () => {
 	let app: INestApplication;

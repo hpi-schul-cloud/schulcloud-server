@@ -1,3 +1,5 @@
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { EntityId } from '@shared/domain/types';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -6,9 +8,7 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-} from '@modules/lesson/repo';
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { EntityId } from '@shared/domain/types';
+} from '../../repo';
 import { LernstoreResources } from './lernstore.resources';
 
 class ComponentTextPropsImpl implements ComponentTextProperties {

@@ -4,13 +4,12 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { materialFactory } from '@testing/factory/material.factory';
-import { lessonFactory } from '../testing';
+import { lessonFactory, materialFactory } from '../testing';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { LessonRepo } from './lesson.repo';
+import { Material } from './materials.entity';
 
 describe('LessonRepo', () => {
 	let module: TestingModule;
