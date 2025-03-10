@@ -56,11 +56,18 @@ class EduSharingConnector {
 				// more recent edusharing versions return empty 200 instead
 				return null;
 			}
-			const filteredOptions = { ...options, headers: { ...options.headers, Authorization: '<secret>' } };
-			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, filteredOptions);
 			if (retried === true) {
-				throw new GeneralError('Edu-Sharing Request failed');
+				throw new GeneralError('Edu-Sharing Request failed', {
+					statusCode: err.statusCode,
+					message: err.message,
+					options,
+				});
 			} else {
+				const { headers, ...filteredOptions } = options;
+				logger.error(
+					`Edu-Sharing failed request with error ${err.statusCode} ${err.message}, retrying...`,
+					filteredOptions
+				);
 				const response = await this.eduSharingRequest(options, user, true);
 				return response;
 			}
