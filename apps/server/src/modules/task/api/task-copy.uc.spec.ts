@@ -14,13 +14,13 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { Task, TaskRepo } from '../repo';
-import { taskFactory } from '../testing';
-import { TaskCopyUC } from './task-copy.uc';
 import { TaskCopyService } from '../domain';
+import { Submission, Task, TaskRepo } from '../repo';
+import { taskFactory } from '../testing';
 import { TaskCopyParentParams } from './dto';
+import { TaskCopyUC } from './task-copy.uc';
 
 describe('task copy uc', () => {
 	let uc: TaskCopyUC;

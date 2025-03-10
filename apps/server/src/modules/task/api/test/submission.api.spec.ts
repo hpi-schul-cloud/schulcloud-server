@@ -6,12 +6,11 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
-import { Submission } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { taskFactory } from '../../testing';
+import { Submission } from '../../repo';
+import { submissionFactory, taskFactory } from '../../testing';
 import { SubmissionStatusListResponse } from '../dto';
 
 describe('Submission Controller (API)', () => {

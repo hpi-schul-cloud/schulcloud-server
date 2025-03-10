@@ -3,11 +3,11 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity } from '@modules/lesson/repository';
 import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@modules/task/repo';
+import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { BadRequestException } from '@nestjs/common';
-import { Material, Submission } from '@shared/domain/entity';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import {
 	boardFactory,

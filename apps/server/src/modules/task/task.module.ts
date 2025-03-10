@@ -3,9 +3,8 @@ import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { SubmissionRepo } from '@shared/repo/submission';
 import { SubmissionService, TaskCopyService, TaskService } from './domain';
-import { TaskRepo } from './repo';
+import { SubmissionRepo, TaskRepo } from './repo';
 
 @Module({
 	imports: [FilesStorageClientModule, CopyHelperModule, CqrsModule, LoggerModule],
