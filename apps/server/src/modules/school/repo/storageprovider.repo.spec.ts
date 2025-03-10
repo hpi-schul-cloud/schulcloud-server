@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { StorageProviderRepo } from './storageprovider.repo';
+import { storageProviderFactory } from '../testing';
+import { StorageProviderEntity } from './storageprovider.entity';
 
 describe('StorageProviderRepo', () => {
 	let module: TestingModule;
