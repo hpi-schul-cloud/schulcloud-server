@@ -11,10 +11,9 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { BaseEntity, Material } from '@shared/domain/entity';
+import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { materialFactory } from '@testing/factory/material.factory';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -24,8 +23,9 @@ import {
 	ComponentType,
 	LessonEntity,
 	LessonRepo,
-} from '../repo';
-import { lessonFactory } from '../testing';
+	Material,
+} from '../../repo';
+import { lessonFactory, materialFactory } from '../../testing';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 
