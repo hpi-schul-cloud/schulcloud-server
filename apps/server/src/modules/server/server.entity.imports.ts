@@ -33,6 +33,7 @@ import {
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
+	StorageProviderEntity,
 } from '@modules/school/repo';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/repo';
@@ -47,7 +48,6 @@ import { User } from '@modules/user/repo';
 import { Material } from '@shared/domain/entity/materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';
-import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
 
