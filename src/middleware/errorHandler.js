@@ -126,6 +126,7 @@ const secretDataKeys = (() =>
 		'_csrf',
 		'searchUserPassword',
 		'authorization',
+		'Authorization',
 		'student-email',
 	].map((k) => k.toLocaleLowerCase()))();
 
@@ -151,6 +152,7 @@ const filterDeep = (newData, level = 0) => {
 			}
 		});
 	}
+	console.log(newData);
 	return newData;
 };
 
