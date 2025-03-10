@@ -1,7 +1,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { setupEntities } from '@testing/database';
-import { School } from '../../../domain';
+import { School } from '../../domain';
 import { SchoolEntity } from '../school.entity';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
