@@ -1,5 +1,5 @@
-import { StorageProviderEntity, StorageProviderProperties } from '@shared/domain/entity';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { StorageProviderEntity, StorageProviderProperties } from '../repo';
 
 export const storageProviderFactory = BaseFactory.define<StorageProviderEntity, StorageProviderProperties>(
 	StorageProviderEntity,
