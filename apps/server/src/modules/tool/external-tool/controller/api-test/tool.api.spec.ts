@@ -1,7 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BiloMediaQueryResponse } from '@infra/bilo-client';
 import { biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
-import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
@@ -9,20 +7,17 @@ import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@mod
 import { instanceEntityFactory } from '@modules/instance/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
+import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpService } from '@nestjs/axios';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios, { AxiosResponse } from 'axios';
+import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { of } from 'rxjs';
 import { Response } from 'supertest';
 import {
 	CustomParameterLocationParams,
@@ -44,33 +39,26 @@ import {
 	ExternalToolSearchListResponse,
 	ExternalToolUtilizationResponse,
 } from '../dto';
+
 describe('ToolController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
-	let httpService: DeepMocked<HttpService>;
 
-	let oauthAdapterService: DeepMocked<OauthAdapterService>;
-	let encryptionService: DeepMocked<SymmetricKeyEncryptionService>;
+	beforeEach(async () => {
+		axiosMock.reset();
+		await cleanupCollections(em);
+	});
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideProvider(HttpService)
-			.useValue(createMock<HttpService>())
-			.overrideProvider(OauthAdapterService)
-			.useValue(createMock<OauthAdapterService>())
-			.overrideProvider(DefaultEncryptionService)
-			.useValue(createMock<EncryptionService>())
-			.compile();
+		}).compile();
 		app = moduleRef.createNestApplication();
 		axiosMock = new MockAdapter(axios);
-		httpService = moduleRef.get(HttpService);
-		oauthAdapterService = moduleRef.get(OauthAdapterService);
-		encryptionService = moduleRef.get(DefaultEncryptionService);
+
 		await app.init();
 
 		em = app.get(EntityManager);
@@ -79,10 +67,6 @@ describe('ToolController (API)', () => {
 
 	afterAll(async () => {
 		await app.close();
-	});
-
-	afterEach(async () => {
-		await cleanupCollections(em);
 	});
 
 	describe('[POST] tools/external-tools', () => {
@@ -992,41 +976,37 @@ describe('ToolController (API)', () => {
 			});
 		});
 
-		describe('when mediumId, media source id and format is given', () => {
+		describe('XXXX when mediumId, media source id and format is given XXXX', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
+				const authEndpoint = `https://oauth-token-url.com/`;
+				const baseUrl = `https://oauth-base-url.com/`;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
+
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
 				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
 				em.clear();
 
-				const mockToken = new OAuthTokenDto({
-					accessToken: 'mock-access-token',
-					idToken: 'mock-id-token',
-					refreshToken: 'mock-refresh-token',
+				axiosMock.onPost(new RegExp(authEndpoint)).reply<OauthTokenResponse>(HttpStatus.OK, {
+					id_token: 'idToken',
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
 				});
-				const decryptedClientSecret = 'client-secret-decrypted';
+				const responses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
 
-				oauthAdapterService.sendTokenRequest.mockResolvedValueOnce(mockToken);
-				encryptionService.decrypt.mockReturnValueOnce(decryptedClientSecret);
-
-				const mockResponseData: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(1);
-
-				const mockAxiosResponse = axiosResponseFactory.build({
-					data: mockResponseData,
-				}) as AxiosResponse<BiloMediaQueryResponse[]>;
-
-				httpService.post.mockReturnValueOnce(of(mockAxiosResponse));
+				axiosMock.onPost(new RegExp(baseUrl + '.*')).replyOnce(HttpStatus.OK, responses);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
 
-				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: mockAxiosResponse.data[0] };
+				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: responses[0] };
 			};
 
 			it('should return the metadata of media source', async () => {
 				const { loggedInClient, mediaSourceEntity, biloMediaMetaData } = await setup();
 
 				const response: Response = await loggedInClient.get(
-					`/medium/medium-id-1/media-source/${MediaSourceDataFormat.BILDUNGSLOGIN}/${mediaSourceEntity.sourceId}/metadata`
+					`medium/medium-id-1/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
 				);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
