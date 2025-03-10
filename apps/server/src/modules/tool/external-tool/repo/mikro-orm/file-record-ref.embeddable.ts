@@ -1,16 +1,20 @@
-import { Embeddable, ManyToOne, Property } from '@mikro-orm/core';
-import { FileRecord } from '@modules/files-storage/entity';
+import { Embeddable, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 @Embeddable()
 export class FileRecordRefEmbeddable {
 	@Property()
-	uploadUrl: string;
+	public uploadUrl: string;
 
-	@ManyToOne(() => FileRecord)
-	fileRecord: FileRecord;
+	@Property()
+	public fileRecord: ObjectId;
+
+	@Property()
+	public fileName: string;
 
 	constructor(props: FileRecordRefEmbeddable) {
 		this.uploadUrl = props.uploadUrl;
 		this.fileRecord = props.fileRecord;
+		this.fileName = props.fileName;
 	}
 }

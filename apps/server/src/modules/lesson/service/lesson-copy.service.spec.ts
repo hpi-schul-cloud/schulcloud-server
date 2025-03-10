@@ -5,12 +5,17 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseEntity, Material } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { setupEntities } from '@testing/database';
+import { materialFactory } from '@testing/factory/material.factory';
 import {
-	BaseEntity,
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
 	ComponentInternalProperties,
@@ -18,16 +23,9 @@ import {
 	ComponentTextProperties,
 	ComponentType,
 	LessonEntity,
-	Material,
-	Submission,
-	Task,
-} from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/database';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { materialFactory } from '@testing/factory/material.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { LessonRepo } from '../repository';
+	LessonRepo,
+} from '../repository';
+import { lessonFactory } from '../testing';
 import { EtherpadService } from './etherpad.service';
 import { LessonCopyService } from './lesson-copy.service';
 

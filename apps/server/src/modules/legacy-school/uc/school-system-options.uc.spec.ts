@@ -131,7 +131,9 @@ describe(SchoolSystemOptionsUc.name, () => {
 		describe('when saving new options to a system at the school', () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
-				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const system: System = systemFactory.build({
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
 					provisioningOptions: new SchulConneXProvisioningOptions().set({
@@ -220,7 +222,9 @@ describe(SchoolSystemOptionsUc.name, () => {
 		describe('when saving existing options to a system at the school', () => {
 			const setup = () => {
 				const user = userFactory.asAdmin().buildWithId();
-				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const system: System = systemFactory.build({
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
 					provisioningOptions: new SchulConneXProvisioningOptions().set({
@@ -358,7 +362,9 @@ describe(SchoolSystemOptionsUc.name, () => {
 		describe('when the authorization fails', () => {
 			const setup = () => {
 				const user = userFactory.asStudent().buildWithId();
-				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
+				const system: System = systemFactory.build({
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
+				});
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
 				});

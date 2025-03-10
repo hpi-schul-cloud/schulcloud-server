@@ -1,4 +1,3 @@
-import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -7,7 +6,8 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-} from '@shared/domain/entity/lesson.entity';
+} from '@modules/lesson/repository';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import { LernstoreResources } from './lernstore.resources';
 
