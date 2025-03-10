@@ -58,9 +58,9 @@ class EduSharingConnector {
 			}
 			// console.log(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			delete options.headers.Authorization;
-			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
+			// logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
 			if (retried === true) {
-				throw new GeneralError('Edu-Sharing Request failed');
+				throw new GeneralError(`Edu-Sharing Request failed ${err.statusCode} ${err.message}`, options);
 			} else {
 				const response = await this.eduSharingRequest(options, user, true);
 				return response;
