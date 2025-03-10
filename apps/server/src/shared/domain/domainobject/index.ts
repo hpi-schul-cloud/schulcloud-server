@@ -3,4 +3,3 @@ export * from './external-source';
 export * from './page';
 export * from './pseudonym.do';
 export * from './role-reference';
-export * from './video-conference.do';

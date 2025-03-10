@@ -1,6 +1,5 @@
-import { VideoConferenceDO } from '@shared/domain/domainobject';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 
 export const videoConferenceDOFactory: BaseFactory<VideoConferenceDO, VideoConferenceDO> = BaseFactory.define<
 	VideoConferenceDO,

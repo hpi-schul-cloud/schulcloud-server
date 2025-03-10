@@ -3,20 +3,21 @@ import { createMock } from '@golevelup/ts-jest';
 import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { TargetModels, VideoConference, VideoConferenceOptions } from '@shared/domain/entity';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
+import { videoConferenceFactory } from '../testing';
+import { VideoConferenceOptions } from './video-conference-options.embeddable';
+import { VideoConferenceTargetModels } from './video-conference-target-models.enum';
+import { VideoConferenceEntity } from './video-conference.entity';
+import { VideoConferenceRepo } from './video-conference.repo';
 
 class VideoConferenceRepoSpec extends VideoConferenceRepo {
-	mapEntityToDOSpec(entity: VideoConference): VideoConferenceDO {
+	mapEntityToDOSpec(entity: VideoConferenceEntity): VideoConferenceDO {
 		return super.mapEntityToDO(entity);
 	}
 
-	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): EntityData<VideoConference> {
+	mapDOToEntityPropertiesSpec(entityDO: VideoConferenceDO): EntityData<VideoConferenceEntity> {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
@@ -28,7 +29,7 @@ describe('Video Conference Repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [VideoConference] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [VideoConferenceEntity] })],
 			providers: [
 				VideoConferenceRepoSpec,
 				{
@@ -55,7 +56,7 @@ describe('Video Conference Repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(VideoConference);
+		expect(repo.entityName).toBe(VideoConferenceEntity);
 	});
 
 	describe('findByScopeId', () => {
@@ -89,7 +90,7 @@ describe('Video Conference Repo', () => {
 		it('should return a domain object', () => {
 			// Arrange
 			const id = new ObjectId();
-			const testEntity: VideoConference = {
+			const testEntity: VideoConferenceEntity = {
 				id: id.toHexString(),
 				_id: id,
 				updatedAt: new Date('2022-07-20'),
@@ -99,7 +100,7 @@ describe('Video Conference Repo', () => {
 					everyAttendeJoinsMuted: true,
 					moderatorMustApproveJoinRequests: false,
 				}),
-				targetModel: TargetModels.COURSES,
+				targetModel: VideoConferenceTargetModels.COURSES,
 				target: new ObjectId().toHexString(),
 			};
 
@@ -132,11 +133,11 @@ describe('Video Conference Repo', () => {
 			});
 
 			// Act
-			const result: EntityData<VideoConference> = repo.mapDOToEntityPropertiesSpec(testDO);
+			const result: EntityData<VideoConferenceEntity> = repo.mapDOToEntityPropertiesSpec(testDO);
 
 			// Assert
 			expect(result.target).toEqual(testDO.target);
-			expect(result.targetModel).toEqual(TargetModels.COURSES);
+			expect(result.targetModel).toEqual(VideoConferenceTargetModels.COURSES);
 			expect(result.options?.everyAttendeJoinsMuted).toEqual(testDO.options.everyAttendeeJoinsMuted);
 			expect(result.options?.everybodyJoinsAsModerator).toEqual(testDO.options.everybodyJoinsAsModerator);
 			expect(result.options?.moderatorMustApproveJoinRequests).toEqual(testDO.options.moderatorMustApproveJoinRequests);
