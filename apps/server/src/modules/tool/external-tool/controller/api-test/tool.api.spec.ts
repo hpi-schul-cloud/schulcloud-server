@@ -976,7 +976,7 @@ describe('ToolController (API)', () => {
 			});
 		});
 
-		describe('XXXX when mediumId, media source id and format is given XXXX', () => {
+		describe('when mediumId, media source id and format is given', () => {
 			const setup = async () => {
 				const authEndpoint = `https://oauth-token-url.com/`;
 				const baseUrl = `https://oauth-base-url.com/`;
@@ -1014,9 +1014,9 @@ describe('ToolController (API)', () => {
 					name: biloMediaMetaData.data.title,
 					description: biloMediaMetaData.data.description,
 					publisher: biloMediaMetaData.data.publisher,
-					logoUrl: expect.any(String),
-					previewLogoUrl: expect.any(String),
-					modifiedAt: expect.any(String),
+					logoUrl: biloMediaMetaData.data.cover.href,
+					previewLogoUrl: biloMediaMetaData.data.coverSmall.href,
+					modifiedAt: new Date(biloMediaMetaData.data.modified).toISOString(),
 				});
 			});
 		});

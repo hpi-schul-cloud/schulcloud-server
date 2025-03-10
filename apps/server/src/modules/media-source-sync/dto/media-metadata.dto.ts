@@ -1,15 +1,15 @@
 export class MediaMetadataDto {
-	name: string;
+	public name: string;
 
-	description?: string;
+	public description?: string;
 
-	publisher?: string;
+	public publisher?: string;
 
-	logoUrl?: string;
+	public logoUrl?: string;
 
-	previewLogoUrl?: string;
+	public previewLogoUrl?: string;
 
-	modifiedAt?: Date;
+	public modifiedAt?: Date;
 
 	constructor(response: MediaMetadataDto) {
 		this.name = response.name;
