@@ -6,9 +6,9 @@ import { TeamUserEntity } from '@modules/teams/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { Role } from '@shared/domain/entity';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { roleFactory } from '@testing/factory/role.factory';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
-import { roleFactory } from './role.factory';
 
 class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserEntity> {
 	withRoleAndUserId(role: Role, userId: string): this {

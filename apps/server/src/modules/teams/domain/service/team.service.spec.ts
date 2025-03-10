@@ -9,11 +9,10 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { teamFactory } from '@modules/teams/testing';
+import { teamFactory, teamUserFactory } from '@modules/teams/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { teamUserFactory } from '@testing/factory/teamuser.factory';
 import { ObjectId } from 'bson';
 import { TeamEntity, TeamsRepo } from '../../repo';
 import { TeamService } from './team.service';
