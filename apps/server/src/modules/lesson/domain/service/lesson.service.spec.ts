@@ -13,12 +13,12 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Submission, Task } from '@modules/task/repo';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { ComponentProperties, ComponentType, LessonEntity, LessonRepo } from '../repo';
-import { lessonFactory } from '../testing';
+import { ComponentProperties, ComponentType, LessonEntity, LessonRepo, Material } from '../../repo';
+import { lessonFactory } from '../../testing';
 import { LessonService } from './lesson.service';
 
 describe('LessonService', () => {

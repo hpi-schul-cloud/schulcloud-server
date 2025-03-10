@@ -2,14 +2,15 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
-import { Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { materialFactory } from '@testing/factory/material.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { LernstoreResources } from '../api';
 import { lessonFactory } from '../testing';
+import { materialFactory } from '../testing/material.factory';
 import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
+import { Material } from './materials.entity';
 
 describe('Lesson Entity', () => {
 	let orm: MikroORM;

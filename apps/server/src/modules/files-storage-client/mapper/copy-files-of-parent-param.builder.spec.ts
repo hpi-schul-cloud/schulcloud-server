@@ -4,10 +4,11 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
-import { Material, Submission, Task } from '@shared/domain/entity';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { taskFactory } from '@testing/factory/task.factory';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
 import { FileParamBuilder } from './files-storage-param.builder';
 

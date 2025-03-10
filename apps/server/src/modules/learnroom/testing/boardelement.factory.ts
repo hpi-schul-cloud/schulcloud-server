@@ -1,8 +1,8 @@
 import { LessonEntity } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@shared/domain/entity';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ColumnBoardBoardElement, ColumnBoardNode, LessonBoardElement, TaskBoardElement } from '../repo';
 import { columnBoardNodeFactory } from './column-board-node.factory';
 

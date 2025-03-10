@@ -1,4 +1,4 @@
-import { Task } from '@shared/domain/entity';
+import { Task } from '@modules/task/repo';
 import { LessonEntity } from '../../repo';
 import { LessonMetadataResponse } from '../dto';
 import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
