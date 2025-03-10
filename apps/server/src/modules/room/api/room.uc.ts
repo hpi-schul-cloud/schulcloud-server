@@ -122,7 +122,7 @@ export class RoomUc {
 		});
 
 		const userIds = roomMembershipAuthorizable.members.map((member) => member.userId);
-		const users = (await this.userService.findByIds(userIds)).filter((user) => user.deletedAt === undefined);
+		const users = (await this.userService.findByIds(userIds)).filter((user) => !user.deletedAt);
 
 		const memberResponses = users.map((user) => {
 			const member = roomMembershipAuthorizable.members.find((item) => item.userId === user.id);
