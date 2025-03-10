@@ -7,7 +7,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolUserListResponse } from '../dto/response/school-user.response';
+import { SchoolUserListResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;

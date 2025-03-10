@@ -11,7 +11,7 @@ import {
 	SchoolUpdateBody,
 	StudentPermission,
 	TeacherPermission,
-} from '../../../domain';
+} from '../../domain';
 
 export class SchoolLogo {
 	@ApiPropertyOptional()
