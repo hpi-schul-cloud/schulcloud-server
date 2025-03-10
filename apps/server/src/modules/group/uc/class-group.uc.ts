@@ -6,7 +6,7 @@ import { ProvisioningConfig } from '@modules/provisioning';
 import { School, SchoolService, SchoolYear, SchoolYearService } from '@modules/school/domain';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System, SystemService } from '@modules/system';
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

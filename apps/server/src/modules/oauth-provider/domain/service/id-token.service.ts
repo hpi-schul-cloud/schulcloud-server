@@ -1,6 +1,5 @@
 import { PseudonymService } from '@modules/pseudonym';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TeamEntity } from '@shared/domain/entity';
 import { TeamsRepo } from '@shared/repo/teams';
