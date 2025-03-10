@@ -8,4 +8,3 @@ export {
 } from './datasheet';
 export { ExternalToolMedium, ExternalToolMediumProps } from './external-tool-medium.do';
 export { FileRecordRef, FileRecordRefProps } from './file-record-ref';
-export { ExternalToolMediumMetadata } from './external-tool-medium-metadata';
