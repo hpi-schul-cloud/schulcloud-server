@@ -13,12 +13,11 @@ import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { RoleReference, VideoConferenceDO } from '@shared/domain/domainobject';
+import { RoleReference } from '@shared/domain/domainobject';
 import { Role, TeamEntity } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo/teams';
-import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { teamFactory } from '@testing/factory/team.factory';
@@ -34,8 +33,10 @@ import {
 	BBBStatus,
 	GuestPolicy,
 } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
+import { ErrorStatus } from '../error';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 

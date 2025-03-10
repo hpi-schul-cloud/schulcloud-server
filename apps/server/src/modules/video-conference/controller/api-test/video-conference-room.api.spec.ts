@@ -9,16 +9,17 @@ import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TargetModels, VideoConference } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
+import { VideoConferenceScope } from '../../domain';
+import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
+import { videoConferenceFactory } from '../../testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
@@ -488,8 +489,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 						await em.persistAndFlush([
@@ -549,8 +550,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 						await em.persistAndFlush([
@@ -613,8 +614,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 						await em.persistAndFlush([
@@ -686,8 +687,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 
@@ -747,8 +748,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 
@@ -817,8 +818,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 							options: { moderatorMustApproveJoinRequests: false },
 						});
@@ -882,8 +883,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 
@@ -956,8 +957,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 
@@ -1018,8 +1019,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 
@@ -1078,8 +1079,8 @@ describe('VideoConferenceController (API)', () => {
 							roomId: room.id,
 							userGroupId: userGroup.id,
 						});
-						const videoConference: VideoConference = videoConferenceFactory.buildWithId({
-							targetModel: TargetModels.ROOMS,
+						const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
+							targetModel: VideoConferenceTargetModels.ROOMS,
 							target: room.id,
 						});
 

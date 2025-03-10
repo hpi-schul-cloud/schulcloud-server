@@ -1,11 +1,12 @@
-import { videoConferenceFactory } from '@testing/factory/video-conference.factory';
-import { VideoConference, VideoConferenceOptions } from './video-conference.entity';
+import { videoConferenceFactory } from '../testing';
+import { VideoConferenceOptions } from './video-conference-options.embeddable';
+import { VideoConferenceEntity } from './video-conference.entity';
 
 describe('Video Conference Entity', () => {
 	describe('constructor', () => {
 		it('should throw an error by empty constructor', () => {
 			// @ts-expect-error: Test case
-			const test = () => new VideoConference();
+			const test = () => new VideoConferenceEntity();
 			expect(test).toThrow();
 		});
 
@@ -16,7 +17,7 @@ describe('Video Conference Entity', () => {
 				everybodyJoinsAsModerator: true,
 				moderatorMustApproveJoinRequests: true,
 			});
-			expect(vc instanceof VideoConference).toEqual(true);
+			expect(vc instanceof VideoConferenceEntity).toEqual(true);
 		});
 	});
 });
