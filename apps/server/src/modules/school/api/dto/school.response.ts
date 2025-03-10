@@ -1,8 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { FileStorageType, InstanceFeature, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../../../domain';
-import { SchoolLogo } from '../param';
+import { FileStorageType, InstanceFeature, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../../domain';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
+import { SchoolLogo } from './school-update-body.params';
 import { SchoolYearResponse } from './school-year.response';
 import { YearsResponse } from './years.response';
 

@@ -7,15 +7,15 @@ import { Page } from '@shared/domain/domainobject';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
-import { SchoolUpdateBodyParams } from './dto/param';
 import {
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
+	SchoolForLdapLoginResponse,
 	SchoolResponse,
 	SchoolSystemResponse,
-} from './dto/response';
-import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
-import { SchoolUserListResponse } from './dto/response/school-user.response';
+	SchoolUpdateBodyParams,
+	SchoolUserListResponse,
+} from './dto';
 import { SchoolResponseMapper, SchoolUserResponseMapper, SystemResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
 

@@ -1,4 +1,4 @@
-import { FederalState } from '../../../domain';
+import { FederalState } from '../../domain';
 import { FederalStateEntity } from '../federal-state.entity';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 
