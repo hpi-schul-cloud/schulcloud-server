@@ -21,6 +21,7 @@ import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity } from '@modules/lesson/repository';
 import { MediaSourceEntity } from '@modules/media-source/entity';
+import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
@@ -48,7 +49,6 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { Material } from '@shared/domain/entity/materials.entity';
-import { CourseNews, News, SchoolNews, TeamNews } from '@shared/domain/entity/news.entity';
 import { Role } from '@shared/domain/entity/role.entity';
 import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 import { VideoConference } from '@shared/domain/entity/video-conference.entity';
