@@ -23,6 +23,7 @@ const config: IdpConsoleConfig = {
 	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
+	JSON_LOG_FORMAT: Configuration.get('JSON_LOG_FORMAT') as boolean,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'

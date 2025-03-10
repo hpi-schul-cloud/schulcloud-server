@@ -20,8 +20,8 @@ export type ValidationErrorLogMessage = {
 };
 
 export type LogMessageWithContext = {
-	message: string;
-	context: string | undefined;
+	message: any;
+	context: any;
 };
 
 export type LogMessageData = LogMessageDataObject | string | number | boolean | undefined;
