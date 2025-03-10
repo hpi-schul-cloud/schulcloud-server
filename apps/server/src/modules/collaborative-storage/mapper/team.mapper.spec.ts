@@ -1,5 +1,5 @@
-import { TeamEntity } from '@modules/teams/repo';
-import { teamFactory } from '@modules/teams/testing';
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { TeamMapper } from './team.mapper';

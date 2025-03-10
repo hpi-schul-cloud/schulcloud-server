@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { PseudonymService } from '@modules/pseudonym/service';
-import { TeamsRepo } from '@modules/teams/repo';
-import { teamFactory } from '@modules/teams/testing';
+import { TeamsRepo } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { User } from '@modules/user/repo';
 import { UserService } from '@modules/user/service/user.service';

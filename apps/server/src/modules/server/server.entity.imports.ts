@@ -37,7 +37,7 @@ import {
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/repo';
 import { Submission, Task } from '@modules/task/repo';
-import { TeamEntity, TeamUserEntity } from '@modules/teams/repo';
+import { TeamEntity, TeamUserEntity } from '@modules/team/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';

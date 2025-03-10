@@ -9,7 +9,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { teamFactory, teamUserFactory } from '@modules/teams/testing';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';

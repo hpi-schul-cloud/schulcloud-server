@@ -1,4 +1,4 @@
-import { TeamEntity, TeamUserEntity } from '@modules/teams/repo';
+import { TeamEntity, TeamUserEntity } from '@modules/team/repo';
 import { Injectable } from '@nestjs/common';
 import { TeamDto, TeamUserDto } from '../services/dto/team.dto';
 

@@ -1,6 +1,6 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { teamFactory, teamUserFactory } from '@modules/teams/testing';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';

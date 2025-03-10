@@ -6,7 +6,7 @@ import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { Room, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
-import { TeamEntity, TeamsRepo, TeamUserEntity } from '@modules/teams/repo';
+import { TeamEntity, TeamsRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';

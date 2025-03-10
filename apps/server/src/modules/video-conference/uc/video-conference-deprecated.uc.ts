@@ -7,7 +7,7 @@ import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
-import { TeamEntity, TeamUserEntity, TeamsRepo } from '@modules/teams/repo';
+import { TeamEntity, TeamUserEntity, TeamsRepo } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';

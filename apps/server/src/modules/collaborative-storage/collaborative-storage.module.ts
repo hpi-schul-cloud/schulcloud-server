@@ -2,7 +2,7 @@ import { LoggerModule } from '@core/logger';
 import { CollaborativeStorageAdapterModule } from '@infra/collaborative-storage';
 import { AuthorizationModule } from '@modules/authorization';
 import { RoleModule } from '@modules/role';
-import { TeamsRepo } from '@modules/teams/repo';
+import { TeamsRepo } from '@modules/team/repo';
 import { Module } from '@nestjs/common';
 import { CollaborativeStorageController } from './controller';
 import { TeamMapper, TeamPermissionsMapper } from './mapper';

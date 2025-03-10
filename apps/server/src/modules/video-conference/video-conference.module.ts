@@ -8,7 +8,7 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { RoomModule } from '@modules/room';
 import { RoomMembershipModule } from '@modules/room-membership';
-import { TeamsRepo } from '@modules/teams/repo';
+import { TeamsRepo } from '@modules/team/repo';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';

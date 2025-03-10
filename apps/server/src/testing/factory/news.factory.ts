@@ -4,7 +4,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { teamFactory } from '@modules/teams/testing';
+import { teamFactory } from '@modules/team/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity';

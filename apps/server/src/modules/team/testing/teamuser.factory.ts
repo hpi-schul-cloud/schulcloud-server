@@ -2,7 +2,7 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { TeamUserEntity } from '@modules/teams/repo';
+import { TeamUserEntity } from '@modules/team/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import { Role } from '@shared/domain/entity';

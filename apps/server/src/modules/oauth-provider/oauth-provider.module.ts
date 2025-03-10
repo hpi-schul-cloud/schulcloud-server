@@ -1,6 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { PseudonymModule } from '@modules/pseudonym';
-import { TeamsRepo } from '@modules/teams/repo';
+import { TeamsRepo } from '@modules/team/repo';
 import { ToolModule } from '@modules/tool';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';

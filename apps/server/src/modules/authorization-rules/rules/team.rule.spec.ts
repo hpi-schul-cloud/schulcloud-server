@@ -3,7 +3,7 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
-import { teamFactory } from '@modules/teams/testing';
+import { teamFactory } from '@modules/team/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
