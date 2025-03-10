@@ -6,3 +6,4 @@ export * from './school-entity.factory';
 export * from './school-year.do.factory';
 export * from './school-year.entity.factory';
 export * from './school.factory';
+export * from './storageprovider.factory';
