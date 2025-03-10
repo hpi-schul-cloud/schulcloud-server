@@ -6,5 +6,4 @@ export * from './news.types';
 export * from './rich-text.types';
 export * from './schulcloud-theme.enum';
 export * from './system.type';
-export * from './task.types';
 export * from './value-of';
