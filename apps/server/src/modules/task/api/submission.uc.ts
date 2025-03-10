@@ -1,10 +1,10 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { SubmissionService } from '../domain';
+import { Submission } from '../repo';
 
 @Injectable()
 export class SubmissionUc {
