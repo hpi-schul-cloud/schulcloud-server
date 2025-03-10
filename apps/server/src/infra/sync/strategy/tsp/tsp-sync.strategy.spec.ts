@@ -31,7 +31,7 @@ import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { System, SystemService, SystemType } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
