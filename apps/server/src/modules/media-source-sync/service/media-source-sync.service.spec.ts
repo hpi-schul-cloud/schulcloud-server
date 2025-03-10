@@ -171,7 +171,9 @@ describe(MediaSourceSyncService.name, () => {
 			it('should throw an MediaSourceIdMissingLoggableException', async () => {
 				const result = service.fetchMediumMetadata('mediumId', undefined, MediaSourceDataFormat.BILDUNGSLOGIN);
 
-				await expect(result).rejects.toThrow(new MediaSourceIdMissingLoggableException());
+				await expect(result).rejects.toThrow(
+					new MediaSourceIdMissingLoggableException(MediaSourceDataFormat.BILDUNGSLOGIN)
+				);
 			});
 		});
 
