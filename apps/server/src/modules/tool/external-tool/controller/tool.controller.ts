@@ -18,6 +18,7 @@ import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -259,6 +260,7 @@ export class ToolController {
 	@Get('medium/:mediumId/media-source/:format/:mediaSourceId/metadata')
 	@ApiOperation({ summary: 'Returns metadata from media source for configuration of a medium' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	@ApiInternalServerErrorResponse({ description: 'Error occurred while retrieving metadata from media source' })
 	public async getMetadataForExternalToolFromMediaSource(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolMediumParams
