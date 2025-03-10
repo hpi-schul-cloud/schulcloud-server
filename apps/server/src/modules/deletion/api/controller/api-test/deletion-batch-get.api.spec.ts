@@ -45,16 +45,20 @@ describe('getBatches ', () => {
 			const teacher2 = userFactory.asTeacher().buildWithId();
 			const invalidId1 = new ObjectId().toHexString();
 			const invalidId2 = new ObjectId().toHexString();
+			const now = new Date();
+			const tenSecondsAgo = new Date(now.getTime() - 10 * 1000);
 
 			const batch1 = deletionBatchEntityFactory.build({
 				targetRefIds: [student1.id, student2.id],
 				skippedIds: [teacher1.id],
 				invalidIds: [invalidId1],
+				createdAt: tenSecondsAgo,
 			});
 			const batch2 = deletionBatchEntityFactory.build({
 				targetRefIds: [student3.id],
 				skippedIds: [teacher2.id],
 				invalidIds: [invalidId2],
+				createdAt: now,
 			});
 			await em.persistAndFlush([student1, student2, student3, teacher1, teacher2, batch1, batch2]);
 			em.clear();
@@ -93,8 +97,8 @@ describe('getBatches ', () => {
 
 			expect(result.total).toEqual(2);
 			expect(result.data).toEqual([
-				expect.objectContaining(deletionBatchListResponse1),
 				expect.objectContaining(deletionBatchListResponse2),
+				expect.objectContaining(deletionBatchListResponse1),
 			]);
 		});
 	});
