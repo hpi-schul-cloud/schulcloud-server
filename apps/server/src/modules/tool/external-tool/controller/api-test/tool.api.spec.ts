@@ -39,6 +39,7 @@ import {
 	ExternalToolSearchListResponse,
 	ExternalToolUtilizationResponse,
 } from '../dto';
+import { mediaUserLicenseEntityFactory } from '../../../../user-license/testing';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -981,11 +982,12 @@ describe('ToolController (API)', () => {
 				const authEndpoint = `https://oauth-token-url.com/`;
 				const baseUrl = `https://oauth-base-url.com/`;
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
+				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
 				em.clear();
 
 				axiosMock.onPost(new RegExp(authEndpoint)).reply<OauthTokenResponse>(HttpStatus.OK, {
@@ -999,14 +1001,14 @@ describe('ToolController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
 
-				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: responses[0] };
+				return { loggedInClient, userLicence, mediaSourceEntity, biloMediaMetaData: responses[0] };
 			};
 
 			it('should return the metadata of media source', async () => {
-				const { loggedInClient, mediaSourceEntity, biloMediaMetaData } = await setup();
+				const { loggedInClient, userLicence, mediaSourceEntity, biloMediaMetaData } = await setup();
 
 				const response: Response = await loggedInClient.get(
-					`medium/medium-id-1/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
+					`medium/${userLicence.mediumId}/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
 				);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
@@ -1018,6 +1020,32 @@ describe('ToolController (API)', () => {
 					previewLogoUrl: biloMediaMetaData.data.coverSmall.href,
 					modifiedAt: new Date(biloMediaMetaData.data.modified).toISOString(),
 				});
+			});
+		});
+
+		describe('when mediumId not valid, media source id and format is given', () => {
+			const setup = async () => {
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return { loggedInClient, mediaSourceEntity };
+			};
+
+			it('should not return the metadata of media source', async () => {
+				const { loggedInClient, mediaSourceEntity } = await setup();
+
+				const response: Response = await loggedInClient.get(
+					`medium/some-id/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 	});
