@@ -7,6 +7,7 @@ import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
 import { LessonEntity } from '@modules/lesson/repository';
+import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
@@ -19,7 +20,7 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { User } from '@modules/user/repo';
 
-import { CourseNews, Material, News, Role, SchoolNews, StorageProviderEntity, TeamNews } from '@shared/domain/entity';
+import { Material, Role, StorageProviderEntity } from '@shared/domain/entity';
 
 export const ENTITIES = [
 	AccountEntity,
