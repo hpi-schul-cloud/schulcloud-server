@@ -12,10 +12,8 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -28,8 +26,10 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
-import { VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
+import { ErrorStatus } from '../error';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {

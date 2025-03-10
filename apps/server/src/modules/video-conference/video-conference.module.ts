@@ -12,9 +12,9 @@ import { TeamRepo } from '@modules/team/repo';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
+import { VideoConferenceRepo } from './repo';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
 
