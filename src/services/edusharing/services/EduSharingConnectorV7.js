@@ -56,14 +56,13 @@ class EduSharingConnector {
 				// more recent edusharing versions return empty 200 instead
 				return null;
 			}
+			const { headers, ...filteredOptions } = options;
 			if (retried === true) {
-				throw new GeneralError('Edu-Sharing Request failed', {
-					statusCode: err.statusCode,
-					message: err.message,
-					options,
-				});
+				throw new GeneralError(
+					`Edu-Sharing finally failed request with error ${err.statusCode} ${err.message}. No more retries`,
+					filteredOptions
+				);
 			} else {
-				const { headers, ...filteredOptions } = options;
 				logger.error(
 					`Edu-Sharing failed request with error ${err.statusCode} ${err.message}, retrying...`,
 					filteredOptions

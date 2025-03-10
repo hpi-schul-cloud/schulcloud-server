@@ -126,7 +126,6 @@ const secretDataKeys = (() =>
 		'_csrf',
 		'searchUserPassword',
 		'authorization',
-		'Authorization',
 		'student-email',
 	].map((k) => k.toLocaleLowerCase()))();
 
