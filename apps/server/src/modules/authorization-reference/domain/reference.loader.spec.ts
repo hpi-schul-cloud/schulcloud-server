@@ -3,13 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
-import { TaskRepo } from '@modules/task/repo';
+import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { SubmissionRepo } from '@shared/repo/submission';
 import { setupEntities } from '@testing/database';
 import { ReferenceLoader } from './reference.loader';
 
