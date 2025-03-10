@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { SchoolYear } from '../domain';
-import { SchoolYearsNoYearsLeft } from '../domain/error';
 import { SchoolYearRepo } from '../domain/interface';
+import { SchoolYearsNoYearsLeft } from '../domain/loggable';
 import { SchoolYearEntityMapper } from './mapper';
 import { SchoolYearEntity } from './school-year.entity';
 
