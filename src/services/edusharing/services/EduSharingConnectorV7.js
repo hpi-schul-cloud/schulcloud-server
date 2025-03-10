@@ -60,7 +60,7 @@ class EduSharingConnector {
 				throw new GeneralError('Edu-Sharing Request failed', {
 					statusCode: err.statusCode,
 					message: err.message,
-					{options},
+					options,
 				});
 			} else {
 				const { headers, ...filteredOptions } = options;
