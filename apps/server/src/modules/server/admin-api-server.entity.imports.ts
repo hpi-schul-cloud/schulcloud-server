@@ -17,16 +17,7 @@ import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { User } from '@modules/user/repo';
-
-import {
-	CourseNews,
-	News,
-	Role,
-	SchoolNews,
-	StorageProviderEntity,
-	TeamEntity,
-	TeamNews,
-} from '@shared/domain/entity';
+import { CourseNews, News, Role, SchoolNews, StorageProviderEntity, TeamEntity, TeamNews } from '@shared/domain/entity';
 
 export const ENTITIES = [
 	AccountEntity,
