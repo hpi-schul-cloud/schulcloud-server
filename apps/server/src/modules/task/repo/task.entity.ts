@@ -4,11 +4,12 @@ import { LessonEntity } from '@modules/lesson/repository';
 import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, Submission } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { ITask, TaskStatus } from '../domain';
+import { Submission } from './submission.entity';
 
 export class TaskWithStatusVo {
 	task!: Task;
