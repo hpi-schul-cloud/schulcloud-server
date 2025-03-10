@@ -21,7 +21,6 @@ const requestLog = require('./logger/RequestLogger');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
-const rabbitMq = require('./utils/rabbitmq');
 
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
@@ -47,7 +46,6 @@ const setupApp = async (orm) => {
 	setupFacadeLocator(app);
 	setupSwagger(app);
 	await initializeRedisClient();
-	rabbitMq.setup(app);
 	app
 		.use(compress())
 		.options('*', cors())
