@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../../domain';
+import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../domain';
 import { SchoolEntityMapper } from './mapper/school.entity.mapper';
 import { SchoolEntity } from './school.entity';
 import { SchoolScope } from './scope/school.scope';
