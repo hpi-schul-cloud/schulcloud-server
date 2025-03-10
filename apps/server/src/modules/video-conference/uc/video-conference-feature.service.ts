@@ -5,8 +5,8 @@ import { SchoolFeature } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { VideoConferenceScope } from '../domain';
 import { VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 
