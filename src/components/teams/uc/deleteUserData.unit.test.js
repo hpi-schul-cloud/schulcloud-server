@@ -7,7 +7,7 @@ const chaiAsPromised = require('chai-as-promised');
 const deleteUserTeamsData = require('../../teams/uc/deleteUserTeamsData.uc');
 const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 
-const { teamRepo } = require('../repo/index');
+const { teamsRepo } = require('../repo/index');
 const { AssertionError } = require('../../../errors');
 
 const { expect } = chai;
@@ -29,11 +29,11 @@ const createTestGetTeamsForUserResult = (teamId) => {
 };
 
 const initTeamsStubs = ({ teamsId }) => {
-	const getTeamsStub = sinon.stub(teamRepo, 'getTeamsIdsForUser');
+	const getTeamsStub = sinon.stub(teamsRepo, 'getTeamsIdsForUser');
 	getTeamsStub.callsFake(() => []);
 	getTeamsStub.withArgs(USER_ID).returns(createTestGetTeamsForUserResult(teamsId));
 
-	const removeTeamsStub = sinon.stub(teamRepo, 'removeUserFromTeams');
+	const removeTeamsStub = sinon.stub(teamsRepo, 'removeUserFromTeams');
 	removeTeamsStub.withArgs(USER_ID).returns({ success: true, modifiedDocuments: 1 });
 
 	return { getTeamsStub, removeTeamsStub };

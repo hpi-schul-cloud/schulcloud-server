@@ -1,5 +1,5 @@
-const teamRepo = require('../../teams/repo/teams.repo');
+const teamsRepo = require('../../teams/repo/teams.repo');
 
 module.exports = {
-	teamRepo,
+	teamsRepo,
 };

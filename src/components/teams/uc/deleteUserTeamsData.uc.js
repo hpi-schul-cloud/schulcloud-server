@@ -1,5 +1,5 @@
 const { AssertionError } = require('../../../errors');
-const { teamRepo } = require('../repo');
+const { teamsRepo } = require('../repo');
 const { trashBinResult } = require('../../helper/uc.helper');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { debug } = require('../../../logger');
@@ -18,12 +18,12 @@ const deleteUserDataFromTeams = async (userId) => {
 	validateParams(userId);
 	debug(`deleting user mentions in teams started`, { userId });
 	let complete = true;
-	const teams = await teamRepo.getTeamsIdsForUser(userId);
+	const teams = await teamsRepo.getTeamsIdsForUser(userId);
 	debug(`found ${teams.length} teams with user to be removed from`, { userId });
 	const data = {};
 	if (teams.length !== 0) {
 		addTeamsToTrashbinData(teams, data);
-		const result = await teamRepo.removeUserFromTeams(userId);
+		const result = await teamsRepo.removeUserFromTeams(userId);
 		complete = result.success;
 		debug(`removed user from ${result.modifiedDocuments} teams`, { userId });
 	}
