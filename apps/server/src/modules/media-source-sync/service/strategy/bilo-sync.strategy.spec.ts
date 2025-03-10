@@ -9,9 +9,9 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
+import { MediaSourceSyncReport } from '../../interface';
 import { MediaMetadataMapper } from '../../mapper';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
-import { MediaSourceSyncReport } from '../../interface';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
 

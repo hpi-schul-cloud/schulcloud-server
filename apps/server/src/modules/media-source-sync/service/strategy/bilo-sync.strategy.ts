@@ -5,11 +5,11 @@ import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
-import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
-import { MediaSourceSyncOperation } from '../../types';
 import { MediaMetadataDto } from '../../dto';
+import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
+import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
 import { MediaMetadataMapper } from '../../mapper';
+import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
@@ -37,7 +37,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
 			mediumIds,
-			mediaSource
+			mediaSource,
+			false
 		);
 
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
@@ -48,7 +49,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	public async fetchMediaMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediaMetadataDto> {
 		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
 			[mediumId],
-			mediaSource
+			mediaSource,
+			true
 		);
 
 		const mediaMetadataDto: MediaMetadataDto = MediaMetadataMapper.mapToMediaMetadata(metadataItems[0]);

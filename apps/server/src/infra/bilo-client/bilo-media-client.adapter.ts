@@ -20,7 +20,7 @@ import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from './interface';
-import { BiloMediaQueryBadResponseLoggable } from './loggable';
+import { BiloMediaQueryBadResponseLoggable, BiloMediaQueryBadResponseLoggableException } from './loggable';
 import { BiloMediaQueryBodyParams } from './request';
 import { BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
 
@@ -35,7 +35,8 @@ export class BiloMediaClientAdapter {
 
 	public async fetchMediaMetadata(
 		mediumIds: string[],
-		biloMediaSource: MediaSource
+		biloMediaSource: MediaSource,
+		shouldThrowOnAnyBadResponse: boolean
 	): Promise<BiloMediaQueryDataResponse[]> {
 		if (!biloMediaSource.oauthConfig) {
 			throw new MediaSourceOauthConfigNotFoundLoggableException(
@@ -72,7 +73,10 @@ export class BiloMediaClientAdapter {
 			}
 		}
 
-		const validResponses = await this.validateAndFilterMediaQueryResponses(axiosResponse.data);
+		const validResponses = await this.validateAndFilterMediaQueryResponses(
+			axiosResponse.data,
+			shouldThrowOnAnyBadResponse
+		);
 		const metadataItems: BiloMediaQueryDataResponse[] = validResponses.map(
 			(response: BiloMediaQueryResponse) => response.data
 		);
@@ -98,7 +102,8 @@ export class BiloMediaClientAdapter {
 	}
 
 	private async validateAndFilterMediaQueryResponses(
-		responses: BiloMediaQueryResponse[]
+		responses: BiloMediaQueryResponse[],
+		shouldThrowOnAnyBadResponse: boolean
 	): Promise<BiloMediaQueryResponse[]> {
 		const validResponses: BiloMediaQueryResponse[] = [];
 		const badResponseReports: MediaQueryBadResponseReport[] = [];
@@ -121,7 +126,11 @@ export class BiloMediaClientAdapter {
 		await Promise.all(validatePromises);
 
 		if (badResponseReports.length) {
-			this.logger.debug(new BiloMediaQueryBadResponseLoggable(badResponseReports));
+			if (shouldThrowOnAnyBadResponse) {
+				throw new BiloMediaQueryBadResponseLoggableException(badResponseReports);
+			} else {
+				this.logger.debug(new BiloMediaQueryBadResponseLoggable(badResponseReports));
+			}
 		}
 
 		return validResponses;
