@@ -1,12 +1,14 @@
 import { columnBoardFactory } from '@modules/board/testing';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity } from '@modules/lesson/repository';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { BadRequestException } from '@nestjs/common';
-import { LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { Material } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,

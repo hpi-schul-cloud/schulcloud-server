@@ -1,11 +1,11 @@
-import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
-import { LessonCopyParentParams } from '@modules/lesson/types/lesson-copy-parent.params';
-import { TaskCopyApiParams } from '@modules/task/controller/dto/task-copy.params';
-import { TaskCopyParentParams } from '@modules/task/types/task-copy-parent.params';
-import { LessonEntity } from '@shared/domain/entity/lesson.entity';
-import { Task } from '@shared/domain/entity/task.entity';
-import { EntityId } from '@shared/domain/types';
 import { ColumnBoard } from '@modules/board/domain/colum-board.do';
+import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { LessonEntity } from '@modules/lesson/repository';
+import { LessonCopyParentParams } from '@modules/lesson/types/lesson-copy-parent.params';
+import { TaskCopyParentParams } from '@modules/task/api/dto/task-copy-parent.params';
+import { TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
+import { Task } from '@modules/task/repo';
+import { EntityId } from '@shared/domain/types';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 

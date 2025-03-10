@@ -1,7 +1,9 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { LessonParent } from '@modules/lesson/repository';
 import { SchoolEntity } from '@modules/school/repo';
+import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
-import { BaseEntityWithTimestamps, LessonParent, TaskParent } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 // eslint-disable-next-line import/no-cycle
