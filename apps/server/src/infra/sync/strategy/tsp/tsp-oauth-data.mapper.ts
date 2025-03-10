@@ -40,14 +40,6 @@ const CLASS_NAME_FORMATS = [
 			};
 		},
 	},
-	{
-		regex: /(.*)/,
-		values: (fullName: string): ClassNameGradeInfo => {
-			return {
-				name: fullName,
-			};
-		},
-	},
 ];
 
 export type TspUserInfo = {
