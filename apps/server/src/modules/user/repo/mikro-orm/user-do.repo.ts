@@ -143,6 +143,7 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
+			deletedAt: entity.deletedAt,
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,
