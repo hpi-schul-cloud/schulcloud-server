@@ -1,10 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
-import { federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
+import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
