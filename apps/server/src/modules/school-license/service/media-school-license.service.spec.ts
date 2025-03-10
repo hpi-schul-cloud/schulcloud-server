@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { SchoolService } from '@modules/school';
-import { FederalStateEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { FederalStateEntityMapper } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolFactory } from '@modules/school/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
