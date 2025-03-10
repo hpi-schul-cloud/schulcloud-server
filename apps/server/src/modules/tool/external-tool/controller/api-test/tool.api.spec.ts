@@ -956,27 +956,6 @@ describe('ToolController (API)', () => {
 	});
 
 	describe('[GET] tools/external-tools/medium/:mediumId/media-source/:format/:mediaSourceId/metadata', () => {
-		describe('when user is not authenticated', () => {
-			const setup = () => {
-				const format = MediaSourceDataFormat.BILDUNGSLOGIN;
-				const authEndpoint = `http://mediaSourceEntity.oauthConfig.authEndpoint.*`;
-				const baseUrl = `http://mediaSourceEntity.oauthConfig.baseUrl.*`;
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
-
-				return { format, mediaSourceEntity };
-			};
-
-			it('should return unauthorized', async () => {
-				const { format, mediaSourceEntity } = setup();
-
-				const response: Response = await testApiClient.get(
-					`medium/mediumId/media-source/${format}/${mediaSourceEntity.sourceId}/metadata`
-				);
-
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
 		describe('when mediumId, media source id and format is given', () => {
 			const setup = async () => {
 				const authEndpoint = `https://oauth-token-url.com/`;
@@ -1023,7 +1002,7 @@ describe('ToolController (API)', () => {
 			});
 		});
 
-		describe('when mediumId not valid, media source id and format is given', () => {
+		describe('when mediumId not valid', () => {
 			const setup = async () => {
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
@@ -1046,6 +1025,65 @@ describe('ToolController (API)', () => {
 				);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when media source not valid', () => {
+			const setup = async () => {
+				const authEndpoint = `https://oauth-token-url.com/`;
+				const baseUrl = `https://oauth-base-url.com/`;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
+				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
+
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
+				em.clear();
+
+				axiosMock.onPost(new RegExp(authEndpoint)).reply<OauthTokenResponse>(HttpStatus.OK, {
+					id_token: 'idToken',
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				});
+				const responses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
+
+				axiosMock.onPost(new RegExp(baseUrl + '.*')).replyOnce(HttpStatus.OK, responses);
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return { loggedInClient, userLicence, mediaSourceEntity, biloMediaMetaData: responses[0] };
+			};
+
+			it('should not return the metadata of undefined media source', async () => {
+				const { loggedInClient, userLicence } = await setup();
+
+				const response: Response = await loggedInClient.get(
+					`medium/${userLicence.mediumId}/media-source/BILDUNGSLOGIN/some-id/metadata`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const format = MediaSourceDataFormat.BILDUNGSLOGIN;
+				const authEndpoint = `http://mediaSourceEntity.oauthConfig.authEndpoint.*`;
+				const baseUrl = `http://mediaSourceEntity.oauthConfig.baseUrl.*`;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
+
+				return { format, mediaSourceEntity };
+			};
+
+			it('should return unauthorized', async () => {
+				const { format, mediaSourceEntity } = setup();
+
+				const response: Response = await testApiClient.get(
+					`medium/mediumId/media-source/${format}/${mediaSourceEntity.sourceId}/metadata`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
