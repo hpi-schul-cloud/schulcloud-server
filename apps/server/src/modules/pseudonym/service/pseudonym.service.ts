@@ -15,7 +15,7 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, Pseudonym } from '@shared/domain/domainobject';
