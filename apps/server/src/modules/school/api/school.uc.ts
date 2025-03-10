@@ -1,6 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
