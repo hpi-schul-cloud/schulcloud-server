@@ -6,20 +6,20 @@ import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { Room, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
+import { VideoConferenceScope } from '@modules/video-conference/domain';
+import { VideoConferenceRepo } from '@modules/video-conference/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RoleReference } from '@shared/domain/domainobject';
-import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
 import { BBBRole } from '../bbb';
-import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
+import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';
 import { ErrorStatus } from '../error';
 import { VideoConferenceOptions } from '../interface';
-import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 
@@ -36,7 +36,7 @@ export class VideoConferenceService {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamRepo: TeamRepo,
 		private readonly userService: UserService,
 		private readonly videoConferenceRepo: VideoConferenceRepo
 	) {}
@@ -72,7 +72,7 @@ export class VideoConferenceService {
 				return isExpert;
 			}
 			case VideoConferenceScope.EVENT: {
-				const team = await this.teamsRepo.findById(scopeId);
+				const team = await this.teamRepo.findById(scopeId);
 				const teamUser = team.teamUsers.find((userInTeam: TeamUserEntity) => userInTeam.user.id === userId);
 
 				if (teamUser === undefined) {
@@ -106,7 +106,7 @@ export class VideoConferenceService {
 		if (scope === VideoConferenceScope.COURSE) {
 			scopeResource = await this.courseService.findById(scopeId);
 		} else if (scope === VideoConferenceScope.EVENT) {
-			scopeResource = await this.teamsRepo.findById(scopeId);
+			scopeResource = await this.teamRepo.findById(scopeId);
 		} else if (scope === VideoConferenceScope.ROOM) {
 			scopeResource = await this.roomService.getSingleRoom(scopeId);
 		} else if (scope === VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT) {
