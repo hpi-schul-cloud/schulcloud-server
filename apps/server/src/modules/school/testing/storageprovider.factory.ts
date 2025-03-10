@@ -1,5 +1,5 @@
-import { StorageProviderEntity, StorageProviderProperties } from '@modules/school/repo';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { StorageProviderEntity, StorageProviderProperties } from '../repo';
 
 export const storageProviderFactory = BaseFactory.define<StorageProviderEntity, StorageProviderProperties>(
 	StorageProviderEntity,
