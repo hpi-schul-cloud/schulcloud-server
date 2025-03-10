@@ -1,4 +1,4 @@
-import { schoolYearEntityFactory } from '@modules/school/testing';
+import { schoolYearEntityFactory } from '../testing';
 import { SchoolYearEntity } from './school-year.entity';
 
 describe('schoolyear entity', () => {

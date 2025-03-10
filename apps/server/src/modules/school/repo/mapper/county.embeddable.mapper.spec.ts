@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { countyFactory } from '@modules/school/testing/county.factory';
-import { CountyEmbeddableMapper } from './county.embeddable.mapper';
+import { countyFactory } from '../../testing/county.factory';
 import { CountyEmbeddable } from '../federal-state.entity';
+import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 
 describe('CountyEmbeddableMapper', () => {
 	describe('mapToEntity', () => {

@@ -1,5 +1,5 @@
 import { School, SchoolYear } from '../do';
-import { MissingYearsLoggableException } from '../error';
+import { MissingYearsLoggableException } from '../loggable';
 
 export class SchoolYearHelper {
 	public static computeActiveAndLastAndNextYear(
