@@ -1,10 +1,10 @@
 import { LogMessage } from '@core/logger';
-import { MediaSourceDataFormatMissingLoggableException } from './media-source-data-format-missing-loggable.exception';
+import { MediaSourceIdMissingLoggableException } from './media-source-id-missing-loggable.exception';
 
-describe('MediaSourceDataFormatMissingLoggableException', () => {
+describe('MediaSourceIdMissingLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const exception = new MediaSourceDataFormatMissingLoggableException();
+			const exception = new MediaSourceIdMissingLoggableException();
 
 			return {
 				exception,
@@ -17,7 +17,7 @@ describe('MediaSourceDataFormatMissingLoggableException', () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				message: `Media source data format is missing.`,
+				message: `Media source id is missing.`,
 			} as LogMessage);
 		});
 	});
