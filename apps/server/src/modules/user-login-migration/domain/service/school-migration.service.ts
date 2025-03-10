@@ -1,16 +1,15 @@
 import { LegacyLogger, Logger } from '@core/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { performance } from 'perf_hooks';
 import { UserLoginMigrationRepo } from '../../repo';
+import { UserLoginMigrationDO } from '../do';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
 } from '../loggable';
-import { UserLoginMigrationDO } from '../do';
 
 @Injectable()
 export class SchoolMigrationService {

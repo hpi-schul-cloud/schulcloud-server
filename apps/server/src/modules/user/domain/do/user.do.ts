@@ -20,6 +20,8 @@ export class UserDo extends BaseDO {
 
 	public updatedAt?: Date;
 
+	public deletedAt?: Date;
+
 	public email: string;
 
 	public firstName: string;
@@ -75,6 +77,7 @@ export class UserDo extends BaseDO {
 
 		this.createdAt = domainObject.createdAt;
 		this.updatedAt = domainObject.updatedAt;
+		this.deletedAt = domainObject.deletedAt;
 		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;

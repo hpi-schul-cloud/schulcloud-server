@@ -7,7 +7,6 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
-import { UserDo, UserSourceOptions } from '@modules/user/domain';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
@@ -17,6 +16,7 @@ import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
+import { UserDo, UserSourceOptions } from '../../domain';
 import { UserDiscoverableQuery } from '../../service/user-query.type';
 import { UserDORepo } from './user-do.repo';
 import { User } from './user.entity';
