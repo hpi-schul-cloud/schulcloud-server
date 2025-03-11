@@ -1,4 +1,4 @@
-export class ConfigTestHelper<T, K extends keyof T = Extract<keyof T, string>> {
+export class TestConfigHelper<T, K extends keyof T = Extract<keyof T, string>> {
 	private originConfigs = new Map<K, T[K]>();
 
 	constructor(private readonly config: T) {}
