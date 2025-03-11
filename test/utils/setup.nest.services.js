@@ -10,8 +10,8 @@ const { AccountApiModule } = require('../../dist/apps/server/modules/account/acc
 const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
 const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/imports-from-feathers');
-const { TeamService } = require('../../dist/apps/server/modules/teams/service/team.service');
-const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
+const { TeamService } = require('../../dist/apps/server/modules/team/domain/service/team.service');
+const { TeamApiModule } = require('../../dist/apps/server/modules/team/team-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule, AuthorizationRulesModule } = require('../../dist/apps/server/modules/authorization-rules');
 const { createConfigModuleOptions } = require('../../dist/apps/server/shared/common/config-module-options');
@@ -38,7 +38,7 @@ const setupNestServices = async (app) => {
 			),
 			ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 			AccountApiModule,
-			TeamsApiModule,
+			TeamApiModule,
 			AuthorizationModule,
 			AuthorizationRulesModule,
 			RosterModule,

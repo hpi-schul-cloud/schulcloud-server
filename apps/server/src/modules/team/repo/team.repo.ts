@@ -1,11 +1,12 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Role, TeamEntity, TeamUserEntity } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo/base.repo';
+import { TeamEntity, TeamUserEntity } from './team.entity';
 
 @Injectable()
-export class TeamsRepo extends BaseRepo<TeamEntity> {
+export class TeamRepo extends BaseRepo<TeamEntity> {
 	get entityName() {
 		return TeamEntity;
 	}

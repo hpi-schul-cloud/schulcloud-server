@@ -9,21 +9,19 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo/teams';
 import { setupEntities } from '@testing/database';
-import { teamFactory } from '@testing/factory/team.factory';
-import { teamUserFactory } from '@testing/factory/teamuser.factory';
 import { ObjectId } from 'bson';
+import { TeamEntity, TeamRepo } from '../../repo';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
 	let module: TestingModule;
 	let service: TeamService;
 
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
@@ -33,8 +31,8 @@ describe('TeamService', () => {
 			providers: [
 				TeamService,
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: Logger,
@@ -54,7 +52,7 @@ describe('TeamService', () => {
 		}).compile();
 
 		service = module.get(TeamService);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		eventBus = module.get(EventBus);
 	});
 
@@ -73,19 +71,19 @@ describe('TeamService', () => {
 				const team1 = teamFactory.withTeamUser([teamUser]).build();
 				const team2 = teamFactory.withTeamUser([teamUser]).build();
 
-				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
+				teamRepo.findByUserId.mockResolvedValue([team1, team2]);
 
 				return {
 					teamUser,
 				};
 			};
 
-			it('should call teamsRepo.findByUserId', async () => {
+			it('should call teamRepo.findByUserId', async () => {
 				const { teamUser } = setup();
 
 				await service.findUserDataFromTeams(teamUser.user.id);
 
-				expect(teamsRepo.findByUserId).toBeCalledWith(teamUser.user.id);
+				expect(teamRepo.findByUserId).toBeCalledWith(teamUser.user.id);
 			});
 
 			it('should return array of two teams with user', async () => {
@@ -105,7 +103,7 @@ describe('TeamService', () => {
 				const team1 = teamFactory.withTeamUser([teamUser]).build();
 				const team2 = teamFactory.withTeamUser([teamUser]).build();
 
-				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
+				teamRepo.findByUserId.mockResolvedValue([team1, team2]);
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
 					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [team1.id, team2.id]),
@@ -117,12 +115,12 @@ describe('TeamService', () => {
 				};
 			};
 
-			it('should call teamsRepo.findByUserId', async () => {
+			it('should call teamRepo.findByUserId', async () => {
 				const { teamUser } = setup();
 
 				await service.deleteUserData(teamUser.user.id);
 
-				expect(teamsRepo.findByUserId).toBeCalledWith(teamUser.user.id);
+				expect(teamRepo.findByUserId).toBeCalledWith(teamUser.user.id);
 			});
 
 			it('should update teams without deleted user', async () => {
