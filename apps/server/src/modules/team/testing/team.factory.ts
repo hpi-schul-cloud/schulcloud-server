@@ -1,6 +1,7 @@
-import { Role, TeamEntity, TeamProperties, TeamUserEntity } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
+import { TeamEntity, TeamProperties, TeamUserEntity } from '../repo';
 import { teamUserFactory } from './teamuser.factory';
 
 class TeamFactory extends BaseFactory<TeamEntity, TeamProperties> {

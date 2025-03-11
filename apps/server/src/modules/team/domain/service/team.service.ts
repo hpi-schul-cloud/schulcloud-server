@@ -14,15 +14,14 @@ import {
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { TeamEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
+import { TeamEntity, TeamRepo } from '../../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
 export class TeamService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamRepo: TeamRepo,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM
@@ -37,7 +36,7 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findUserDataFromTeams(userId: EntityId): Promise<TeamEntity[]> {
-		const teams = await this.teamsRepo.findByUserId(userId);
+		const teams = await this.teamRepo.findByUserId(userId);
 
 		return teams;
 	}
@@ -51,13 +50,13 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 				StatusModel.PENDING
 			)
 		);
-		const teams = await this.teamsRepo.findByUserId(userId);
+		const teams = await this.teamRepo.findByUserId(userId);
 
 		teams.forEach((team) => {
 			team.userIds = team.userIds.filter((u) => u.userId.id !== userId);
 		});
 
-		await this.teamsRepo.save(teams);
+		await this.teamRepo.save(teams);
 
 		const numberOfUpdatedTeams = teams.length;
 
