@@ -3,10 +3,10 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { lessonFactory } from '@modules/lesson/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 // config must be set outside before the server module is importat, otherwise the configuration is already set

@@ -11,7 +11,8 @@ import {
 	OperationType,
 	UserDeletedEvent,
 } from '@modules/deletion';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
@@ -62,7 +63,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly logger: Logger,
-		private readonly userRepo: UserRepo,
+		private readonly userService: UserService,
 		private readonly accountRepo: AccountRepo,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM
@@ -92,7 +93,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save(user);
+				await this.userService.saveEntity(user);
 			} catch (err: unknown) {
 				throw new EntityNotFoundError(User.name);
 			}
@@ -183,7 +184,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save(targetUser);
+				await this.userService.saveEntity(targetUser);
 			} catch (err) {
 				throw new EntityNotFoundError(User.name);
 			}
@@ -206,7 +207,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(userId);
+			user = await this.userService.getUserEntityWithRoles(userId);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
 		}
@@ -236,7 +237,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 		try {
 			user.forcePasswordChange = false;
-			await this.userRepo.save(user);
+			await this.userService.saveEntity(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
 		}

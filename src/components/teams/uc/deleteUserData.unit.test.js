@@ -84,8 +84,6 @@ describe('delete teams user data usecase', () => {
 			expect(data.teamIds).to.be.an('object');
 		});
 
-
-
 		it('should throw an error if called with an invalid ObjectId', async () => {
 			const deleteUserDataFromTeams = deleteUserTeamsData.deleteUserData[0];
 			await expect(deleteUserDataFromTeams('NOT_AN_ID')).to.be.rejectedWith(AssertionError);

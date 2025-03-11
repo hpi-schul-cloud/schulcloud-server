@@ -1,7 +1,6 @@
 import { AccountSave, AccountService } from '@modules/account';
 import { RoleDto, RoleService } from '@modules/role';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';

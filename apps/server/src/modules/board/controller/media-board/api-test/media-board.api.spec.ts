@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { fileRecordFactory } from '@modules/files-storage/testing';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
@@ -309,11 +308,13 @@ describe('Media Board (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				const externalTool = externalToolEntityFactory.build();
-				const thumbnailFileRecord = fileRecordFactory.build();
+				const fileRecordId = new ObjectId();
+				const fileName = 'test.png';
 				const unusedExternalTool = externalToolEntityFactory.build({
 					thumbnail: {
 						uploadUrl: 'https://uploadurl.com',
-						fileRecord: thumbnailFileRecord,
+						fileRecord: fileRecordId,
+						fileName,
 					},
 				});
 				const schoolExternalTool = schoolExternalToolEntityFactory.build({
@@ -352,7 +353,6 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					mediaLine,
 					mediaElement,
-					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -363,12 +363,13 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					unusedExternalTool,
 					unusedSchoolExternalTool,
-					thumbnailFileRecord,
+					fileRecordId,
+					fileName,
 				};
 			};
 
 			it('should return the available media line', async () => {
-				const { studentClient, mediaBoard, unusedExternalTool, unusedSchoolExternalTool, thumbnailFileRecord } =
+				const { studentClient, mediaBoard, unusedExternalTool, unusedSchoolExternalTool, fileRecordId, fileName } =
 					await setup();
 
 				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
@@ -380,9 +381,7 @@ describe('Media Board (API)', () => {
 							schoolExternalToolId: unusedSchoolExternalTool.id,
 							name: unusedExternalTool.name,
 							description: unusedExternalTool.description,
-							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
-								thumbnailFileRecord.name
-							)}`,
+							thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 						},
 					],
 					collapsed: mediaBoard.collapsed as boolean,
@@ -514,7 +513,8 @@ describe('Media Board (API)', () => {
 
 				const mediaSource = mediaSourceEntityFactory.build();
 				const externalTool = externalToolEntityFactory.build();
-				const thumbnailFileRecord = fileRecordFactory.build();
+				const fileRecordId = new ObjectId();
+				const fileName = 'test.png';
 				const licensedUnusedExternalTool = externalToolEntityFactory
 					.withMedium({
 						mediumId: 'mediumId',
@@ -523,7 +523,8 @@ describe('Media Board (API)', () => {
 					.build({
 						thumbnail: {
 							uploadUrl: 'https://uploadurl.com',
-							fileRecord: thumbnailFileRecord,
+							fileRecord: fileRecordId,
+							fileName,
 						},
 					});
 				const unusedExternalTool = externalToolEntityFactory.build({ medium: { mediumId: 'notLicensedByUser' } });
@@ -574,7 +575,6 @@ describe('Media Board (API)', () => {
 					mediaLine,
 					mediaElement,
 					userLicense,
-					thumbnailFileRecord,
 				]);
 				em.clear();
 
@@ -585,7 +585,8 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					licensedUnusedExternalTool,
 					licensedUnusedSchoolExternalTool,
-					thumbnailFileRecord,
+					fileRecordId,
+					fileName,
 				};
 			};
 
@@ -595,7 +596,8 @@ describe('Media Board (API)', () => {
 					mediaBoard,
 					licensedUnusedExternalTool,
 					licensedUnusedSchoolExternalTool,
-					thumbnailFileRecord,
+					fileRecordId,
+					fileName,
 				} = await setup();
 
 				const response = await studentClient.get(`${mediaBoard.id}/media-available-line`);
@@ -607,9 +609,7 @@ describe('Media Board (API)', () => {
 							schoolExternalToolId: licensedUnusedSchoolExternalTool.id,
 							name: licensedUnusedExternalTool.name,
 							description: licensedUnusedExternalTool.description,
-							thumbnailUrl: `/api/v3/file/preview/${thumbnailFileRecord.id}/${encodeURIComponent(
-								thumbnailFileRecord.name
-							)}`,
+							thumbnailUrl: `/api/v3/file/preview/${fileRecordId.toHexString()}/${encodeURIComponent(fileName)}`,
 						},
 					],
 					collapsed: false,

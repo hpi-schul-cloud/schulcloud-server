@@ -3,7 +3,7 @@ import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import { UserService, UserDo } from '@modules/user';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -154,6 +154,7 @@ export class TspProvisioningService {
 	): Class {
 		currentClass.schoolId = school.id;
 		currentClass.name = clazz.name ?? currentClass.name;
+		currentClass.gradeLevel = clazz.gradeLevel ?? currentClass.gradeLevel;
 		currentClass.year = school.currentYear?.id;
 		currentClass.source = this.ENTITY_SOURCE;
 		currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
@@ -171,6 +172,7 @@ export class TspProvisioningService {
 	private createClass(clazz: ExternalClassDto, school: School, teacherIds: string[], studentIds: string[]): Class {
 		const newClass = ClassFactory.create({
 			name: clazz.name,
+			gradeLevel: clazz.gradeLevel,
 			schoolId: school.id,
 			year: school.currentYear?.id,
 			teacherIds,
@@ -222,7 +224,7 @@ export class TspProvisioningService {
 				firstName: externalUser.firstName,
 				lastName: externalUser.lastName,
 				email: this.createTspEmail(externalUser.externalId),
-				birthday: externalUser.birthday,
+				birthday: new Date(),
 				externalId: externalUser.externalId,
 				secondarySchools: [],
 				lastSyncedAt: new Date(),
