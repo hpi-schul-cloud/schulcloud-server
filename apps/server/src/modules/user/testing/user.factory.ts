@@ -1,20 +1,20 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User, UserProperties } from '@modules/user/repo';
-import { ConsentEntity, ParentConsentEntity, Role, UserConsentEntity } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import {
-	userPermissions,
-	studentPermissions,
-	teacherPermissions,
 	adminPermissions,
+	studentPermissions,
 	superheroPermissions,
+	teacherPermissions,
+	userPermissions,
 } from '@testing/user-role-permissions';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
+import { ConsentEntity, ParentConsentEntity, User, UserConsentEntity, UserProperties } from '../repo';
 
 const userConsentFactory = BaseFactory.define<UserConsentEntity, UserConsentEntity>(UserConsentEntity, () => {
 	return {

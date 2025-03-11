@@ -1,4 +1,4 @@
-import { EntityId } from '../types';
+import { EntityId } from '../../../../shared/domain/types';
 
 export class ParentConsent {
 	id: EntityId;
