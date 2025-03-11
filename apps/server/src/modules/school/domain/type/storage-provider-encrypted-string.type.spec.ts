@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { StorageProviderEncryptedStringType } from './StorageProviderEncryptedString.type';
+import { StorageProviderEncryptedStringType } from './storage-provider-encrypted-string.type';
 
 describe('EncryptedString type', () => {
 	describe('constructor', () => {
