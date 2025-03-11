@@ -6,7 +6,7 @@ import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@
 import { FileEntity } from '@modules/files/entity';
 import { GroupEntity } from '@modules/group/entity';
 import { DashboardEntity, DashboardGridElementEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
@@ -19,7 +19,7 @@ import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { User } from '@modules/user/repo';
-import { Material, Role } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity';
 
 export const ENTITIES = [
 	AccountEntity,

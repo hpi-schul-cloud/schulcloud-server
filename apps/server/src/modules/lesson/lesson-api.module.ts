@@ -1,9 +1,8 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { CourseModule } from '@modules/course';
 import { Module } from '@nestjs/common';
-import { LessonController } from './controller';
+import { LessonController, LessonUC } from './api';
 import { LessonModule } from './lesson.module';
-import { LessonUC } from './uc';
 
 @Module({
 	imports: [LessonModule, AuthorizationModule, CourseModule],

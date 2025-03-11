@@ -1,7 +1,7 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
-import { LessonParent } from '@modules/lesson/repository';
+import { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
