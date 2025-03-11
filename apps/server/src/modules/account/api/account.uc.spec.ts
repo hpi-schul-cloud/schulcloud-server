@@ -5,12 +5,12 @@ import { EntityNotFoundError } from '@shared/common/error';
 
 import { faker } from '@faker-js/faker';
 import { AuthorizationService } from '@modules/authorization';
+import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
-import { Role } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';

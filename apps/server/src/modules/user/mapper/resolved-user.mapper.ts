@@ -1,5 +1,4 @@
-import { Role } from '@shared/domain/entity';
-import { ResolvedUserResponse } from '../controller/dto';
+import { ResolvedUserResponse, Role } from '../controller/dto';
 import { User } from '../repo';
 
 export class ResolvedUserMapper {

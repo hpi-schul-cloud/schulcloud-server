@@ -1,4 +1,4 @@
-import { Role } from '@shared/domain/entity';
+import { Role } from '@modules/role/repo';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
 
