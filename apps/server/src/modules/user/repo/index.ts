@@ -1,3 +1,3 @@
-export { UserDORepo } from './mikro-orm/user-do.repo';
-export { User, UserProperties, UserSchoolEmbeddable } from './mikro-orm/user.entity';
-export { UserRepo } from './mikro-orm/user.repo';
+export { UserDORepo } from './user-do.repo';
+export { User, UserProperties, UserSchoolEmbeddable } from './user.entity';
+export { UserRepo } from './user.repo';

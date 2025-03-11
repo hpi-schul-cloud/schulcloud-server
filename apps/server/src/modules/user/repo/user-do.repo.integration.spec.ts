@@ -16,8 +16,8 @@ import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
-import { UserDo, UserSourceOptions } from '../../domain';
-import { UserDiscoverableQuery } from '../../service/user-query.type';
+import { UserDo, UserSourceOptions } from '../domain';
+import { UserDiscoverableQuery } from '../service/user-query.type';
 import { UserDORepo } from './user-do.repo';
 import { User } from './user.entity';
 

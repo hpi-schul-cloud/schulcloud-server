@@ -9,8 +9,8 @@ import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domai
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
-import { SecondarySchoolReference, UserDo, UserSourceOptions } from '../../domain';
-import { UserQuery } from '../../service/user-query.type';
+import { SecondarySchoolReference, UserDo, UserSourceOptions } from '../domain';
+import { UserQuery } from '../service/user-query.type';
 import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
 import { UserScope } from './user.scope';
