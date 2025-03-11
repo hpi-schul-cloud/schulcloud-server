@@ -14,5 +14,7 @@ export class TestConfigHelper<T, K extends keyof T = Extract<keyof T, string>> {
 		this.originConfigs.forEach((value, key) => {
 			this.config[key] = value;
 		});
+
+		this.originConfigs.clear();
 	}
 }
