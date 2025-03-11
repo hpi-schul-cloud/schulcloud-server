@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { Account, AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationDO } from '../do';
