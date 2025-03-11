@@ -154,6 +154,7 @@ export class TspProvisioningService {
 	): Class {
 		currentClass.schoolId = school.id;
 		currentClass.name = clazz.name ?? currentClass.name;
+		currentClass.gradeLevel = clazz.gradeLevel ?? currentClass.gradeLevel;
 		currentClass.year = school.currentYear?.id;
 		currentClass.source = this.ENTITY_SOURCE;
 		currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
@@ -171,6 +172,7 @@ export class TspProvisioningService {
 	private createClass(clazz: ExternalClassDto, school: School, teacherIds: string[], studentIds: string[]): Class {
 		const newClass = ClassFactory.create({
 			name: clazz.name,
+			gradeLevel: clazz.gradeLevel,
 			schoolId: school.id,
 			year: school.currentYear?.id,
 			teacherIds,

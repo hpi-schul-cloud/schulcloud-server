@@ -1,12 +1,13 @@
+import { EntityManager } from '@mikro-orm/core';
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
-import { INestApplication } from '@nestjs/common';
-import { EntityManager } from '@mikro-orm/core';
-import { CreateDeletionBatchBodyParams } from '../dto';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DomainName } from '../../../domain/types';
-import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
 import { DeletionBatchEntity } from '../../../repo/entity';
+import { CreateDeletionBatchBodyParams } from '../dto';
+import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
 
 const baseRouteName = '/deletion-batches';
 
@@ -17,6 +18,9 @@ describe('createBatch', () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
+		const config = adminApiServerConfig();
+		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
+
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
