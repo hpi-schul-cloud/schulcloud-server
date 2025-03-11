@@ -8,11 +8,11 @@ import {
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { RoleName } from '@modules/role';
 import { School } from '@modules/school';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 

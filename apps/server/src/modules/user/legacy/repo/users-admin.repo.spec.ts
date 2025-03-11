@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 import { accountFactory } from '@modules/account/testing';
 import { ClassEntity } from '@modules/class/entity';
+import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
@@ -10,7 +11,7 @@ import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/te
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';

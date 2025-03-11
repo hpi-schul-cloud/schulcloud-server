@@ -1,7 +1,7 @@
+import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { MatchType, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';

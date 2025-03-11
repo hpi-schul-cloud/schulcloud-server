@@ -1,10 +1,10 @@
-import { Permission } from '@aws-sdk/client-s3';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { Role } from './role.entity';
 import { roleFactory } from '../testing';
+import { Role } from './role.entity';
+import { RoleName } from '../domain';
 
 describe('Role Entity', () => {
 	let orm: MikroORM;

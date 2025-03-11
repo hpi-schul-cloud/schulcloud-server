@@ -8,11 +8,11 @@ import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/serv
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { RoleName } from '@modules/role';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;

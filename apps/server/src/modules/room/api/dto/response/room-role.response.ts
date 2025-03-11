@@ -1,5 +1,5 @@
+import { RoomRole } from '@modules/role';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoomRole } from '@shared/domain/interface';
 
 export class RoomRoleResponse {
 	@ApiProperty()

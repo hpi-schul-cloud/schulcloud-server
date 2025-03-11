@@ -1,7 +1,7 @@
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserDo } from '@modules/user';
-import { RoleName } from '@shared/domain/interface';
 import { ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { RoleName } from '@modules/role';
 
 export class IservMapper {
 	static mapToExternalSchoolDto(schoolDO: LegacySchoolDo): ExternalSchoolDto {

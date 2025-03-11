@@ -1,6 +1,6 @@
+import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 

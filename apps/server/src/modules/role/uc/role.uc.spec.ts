@@ -4,7 +4,7 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { RoleUc } from '@modules/role/uc/role.uc';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '../domain';
 
 describe('RoleUc', () => {
 	let module: TestingModule;
