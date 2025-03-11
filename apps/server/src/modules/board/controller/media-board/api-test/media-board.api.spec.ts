@@ -60,7 +60,7 @@ describe('Media Board (API)', () => {
 	});
 
 	describe('[GET] /media-boards/me', () => {
-		describe.only('when a valid user accesses their media board', () => {
+		describe('when a valid user accesses their media board', () => {
 			const setup = async () => {
 				configTestHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
 
