@@ -1,4 +1,4 @@
-import { UserDiscoverableQuery } from '../service/user-query.type';
+import { UserDiscoverableQuery } from '../../service/user-query.type';
 import { UserScope } from './user.scope';
 
 describe('UserScope', () => {
