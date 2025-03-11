@@ -35,7 +35,7 @@ export class BoardResponse {
 	@ApiProperty()
 	isVisible: boolean;
 
-	@ApiProperty()
+	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
 	layout: BoardLayout;
 
 	@ApiProperty({ enum: BoardFeature, isArray: true, enumName: 'BoardFeature' })
