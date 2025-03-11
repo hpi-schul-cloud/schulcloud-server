@@ -1,6 +1,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { User } from '@modules/user/repo';
-import { userDoFactory, userFactory } from '@modules/user/testing';
+import { userFactory } from '@modules/user/testing';
 import { ValidationError } from '@shared/common/error';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';

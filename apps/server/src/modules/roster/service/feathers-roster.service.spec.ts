@@ -20,7 +20,7 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserDo, UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';

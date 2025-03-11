@@ -8,7 +8,7 @@ import { SchoolFeature } from '@modules/school/domain';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';

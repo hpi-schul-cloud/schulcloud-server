@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { roleFactory } from '@testing/factory/role.factory';
 import { groupFactory } from '../testing';
 import { Group } from './group';

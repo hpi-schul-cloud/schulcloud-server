@@ -11,7 +11,7 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';

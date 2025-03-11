@@ -10,12 +10,12 @@ import {
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, Page } from '@shared/domain/domainobject';

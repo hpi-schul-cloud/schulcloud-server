@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationRepo } from '../../repo';
 import { UserLoginMigrationDO } from '../do';

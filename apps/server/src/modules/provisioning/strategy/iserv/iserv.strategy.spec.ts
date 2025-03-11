@@ -7,7 +7,7 @@ import {
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';

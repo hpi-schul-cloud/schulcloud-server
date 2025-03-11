@@ -2,9 +2,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
-import { userDoFactory } from '@modules/user/testing';
 import { OAuthService, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
+import { userDoFactory } from '@modules/user/domain/factory';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
