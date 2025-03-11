@@ -84,7 +84,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 
-			const userId = new ObjectId().toHexString();
+			const userId = new ObjectId();
 			const contents = { title: 'title', hidden: false, user: userId };
 
 			const contentText: ComponentTextProperties = { text: 'text (ck4) content' };
