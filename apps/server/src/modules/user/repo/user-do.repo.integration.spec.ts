@@ -4,6 +4,7 @@ import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-or
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -15,7 +16,6 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserDo, UserSourceOptions } from '../domain';
 import { UserDiscoverableQuery } from '../service/user-query.type';
 import { UserDORepo } from './user-do.repo';

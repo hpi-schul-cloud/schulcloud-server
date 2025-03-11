@@ -1,8 +1,8 @@
 import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { roleFactory } from '@testing/factory/role.factory';
 import { DeepPartial } from 'fishery';
 import { TeamUserEntity } from '../repo';
 

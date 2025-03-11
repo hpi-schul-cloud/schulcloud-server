@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { accountFactory } from '@modules/account/testing';
+import { roleFactory, roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { User } from '@modules/user/repo';
@@ -7,7 +8,6 @@ import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';

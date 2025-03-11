@@ -7,6 +7,7 @@ import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { UserDo, UserService } from '@modules/user';
@@ -19,7 +20,6 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,

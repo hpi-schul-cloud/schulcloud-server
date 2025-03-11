@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -13,7 +14,6 @@ import { RoleName, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';

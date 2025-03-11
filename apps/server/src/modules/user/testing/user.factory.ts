@@ -1,12 +1,12 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User, UserProperties } from '@modules/user/repo';
 import { ConsentEntity, ParentConsentEntity, UserConsentEntity } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { roleFactory } from '@testing/factory/role.factory';
 import {
 	adminPermissions,
 	studentPermissions,

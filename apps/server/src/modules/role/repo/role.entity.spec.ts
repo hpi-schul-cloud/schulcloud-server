@@ -3,8 +3,8 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { Role } from './role.entity';
+import { roleFactory } from '../testing';
 
 describe('Role Entity', () => {
 	let orm: MikroORM;
