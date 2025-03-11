@@ -4,6 +4,7 @@ import { Task, TaskParent } from '@modules/task/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import { LernstoreResources } from '../api';
 import { Material } from './materials.entity';
 
@@ -51,7 +52,7 @@ export type ComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
-	user?: EntityId;
+	user?: ObjectId;
 } & (
 	| { component: ComponentType.TEXT; content: ComponentTextProperties }
 	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }

@@ -77,7 +77,7 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
 			lesson.contents.map((c: ComponentProperties) => {
-				if (c.user === userId) {
+				if (c.user?.toHexString() === userId) {
 					c.user = undefined;
 				}
 				return c;

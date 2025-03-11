@@ -1,4 +1,4 @@
-import { EntityDictionary } from '@mikro-orm/core';
+import { EntityDictionary, EntityName } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
@@ -9,21 +9,24 @@ import { LessonEntity } from './lesson.entity';
 
 @Injectable()
 export class LessonRepo extends BaseRepo<LessonEntity> {
-	get entityName() {
+	get entityName(): EntityName<LessonEntity> {
 		return LessonEntity;
 	}
 
-	async createLesson(lesson: LessonEntity): Promise<void> {
-		return this.save(this.create(lesson));
+	public async createLesson(lesson: LessonEntity): Promise<void> {
+		await this.save(this.create(lesson));
 	}
 
-	async findById(id: EntityId): Promise<LessonEntity> {
+	public async findById(id: EntityId): Promise<LessonEntity> {
 		const lesson = await super.findById(id);
 		await this._em.populate(lesson, ['course', 'tasks', 'materials', 'courseGroup.course']);
 		return lesson;
 	}
 
-	async findAllByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<LessonEntity[]>> {
+	public async findAllByCourseIds(
+		courseIds: EntityId[],
+		filters?: { hidden?: boolean }
+	): Promise<Counted<LessonEntity[]>> {
 		const scope = new LessonScope();
 
 		scope.byCourseIds(courseIds);
