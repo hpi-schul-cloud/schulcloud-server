@@ -847,6 +847,46 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('deleteUser', () => {
+		describe('when user is successfully deleted', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				userRepo.deleteUser.mockResolvedValueOnce(1);
+
+				return { userId };
+			};
+
+			it('should return true', async () => {
+				const { userId } = setup();
+
+				const result = await service.deleteUser(userId);
+
+				expect(result).toBe(true);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(userId);
+			});
+		});
+
+		describe('when user deletion fails', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				userRepo.deleteUser.mockResolvedValueOnce(0);
+
+				return { userId };
+			};
+
+			it('should return false', async () => {
+				const { userId } = setup();
+
+				const result = await service.deleteUser(userId);
+
+				expect(result).toBe(false);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(userId);
+			});
+		});
+	});
+
 	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
