@@ -1,4 +1,4 @@
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 
 export type EntitiesWithFiles = Task | LessonEntity | Submission;

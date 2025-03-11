@@ -1,6 +1,6 @@
 import { ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/course';
-import { LessonService } from '@modules/lesson/service';
+import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {

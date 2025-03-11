@@ -1,7 +1,7 @@
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { teamFactory } from '@testing/factory/team.factory';
 import { TeamMapper } from './team.mapper';
 
 describe('TeamMapper', () => {

@@ -17,7 +17,7 @@ import {
 	TaskBoardElement,
 } from '@modules/learnroom/repo';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
@@ -39,6 +39,7 @@ import {
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { SystemEntity } from '@modules/system/repo';
 import { Submission, Task } from '@modules/task/repo';
+import { TeamEntity, TeamUserEntity } from '@modules/team/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
@@ -47,9 +48,7 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
-import { Material } from '@shared/domain/entity/materials.entity';
 import { Role } from '@shared/domain/entity/role.entity';
-import { TeamEntity, TeamUserEntity } from '@shared/domain/entity/team.entity';
 
 export const ENTITIES = [
 	AccountEntity,

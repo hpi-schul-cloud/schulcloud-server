@@ -1,5 +1,5 @@
 import { CourseEntity, CourseMetadata, CourseType } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { Task } from '@modules/task/repo';
 import type { ColumnBoardNode } from '../repo';
 
