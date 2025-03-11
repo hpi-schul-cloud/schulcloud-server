@@ -4,7 +4,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CourseEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
-import { isLesson, LessonEntity } from '@modules/lesson/repository';
+import { isLesson, LessonEntity } from '@modules/lesson/repo';
 import { TaskCopyService } from '@modules/task';
 import { isTask, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
