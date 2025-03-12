@@ -1,10 +1,10 @@
+import { RoleName } from '@modules/role';
 import { ApiProperty } from '@nestjs/swagger';
-// import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 
 export class UsersByRoleResponse {
 	@ApiProperty()
-	roleName: string;
+	roleName: RoleName;
 
 	@ApiProperty()
 	ids: EntityId[];
