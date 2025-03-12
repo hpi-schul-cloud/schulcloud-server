@@ -9,7 +9,6 @@ import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionServ
 import {
 	MediaSource,
 	MediaSourceDataFormat,
-	MediaSourceOauthConfig,
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
@@ -23,7 +22,11 @@ import { AxiosResponse } from 'axios';
 import { ValidationError } from 'class-validator';
 import { of, throwError } from 'rxjs';
 import { MediaQueryBadResponseReport } from './interface';
-import { BiloMediaQueryBadResponseLoggable, BiloMediaQueryBadResponseLoggableException } from './loggable';
+import {
+	BiloMediaQueryBadResponseLoggable,
+	BiloMediaQueryBadResponseLoggableException,
+	BiloMediaQueryUnprocessableResponseLoggableException,
+} from './loggable';
 import { BiloMediaQueryBodyParams } from './request';
 import { BiloLinkResponse, BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
 import { biloMediaQueryResponseFactory, biloMediaQueryDataResponseFactory } from './testing';
@@ -94,9 +97,9 @@ describe(BiloMediaClientAdapter.name, () => {
 				const mockResponseData: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
 				const mediumIds = mockResponseData.map((response: BiloMediaQueryResponse) => response.query.id);
 
-				const mockAxiosResponse = axiosResponseFactory.build({
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
 					data: mockResponseData,
-				}) as AxiosResponse<BiloMediaQueryResponse[]>;
+				});
 
 				const decryptedClientSecret = 'client-secret-decrypted';
 
@@ -104,7 +107,9 @@ describe(BiloMediaClientAdapter.name, () => {
 				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
 				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce(decryptedClientSecret);
 
-				const expectedBiloRequestBody = mediumIds.map((id: string) => ({ id } as BiloMediaQueryBodyParams));
+				const expectedBiloRequestBody = mediumIds.map((id: string): BiloMediaQueryBodyParams => {
+					return { id };
+				});
 
 				const expectedMetadataItems = mockResponseData.map((responseData: BiloMediaQueryResponse) => responseData.data);
 
@@ -123,8 +128,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 				await service.fetchMediaMetadata(mediumIds, mediaSource, false);
 
-				const oauthConfig = mediaSource.oauthConfig as MediaSourceOauthConfig;
-				expect(encryptionService.decrypt).toHaveBeenCalledWith(oauthConfig.clientSecret);
+				expect(encryptionService.decrypt).toHaveBeenCalledWith(mediaSource.oauthConfig?.clientSecret);
 			});
 
 			it('should call oauth adapter to fetch the oauth token', async () => {
@@ -132,12 +136,16 @@ describe(BiloMediaClientAdapter.name, () => {
 
 				await service.fetchMediaMetadata(mediumIds, mediaSource, false);
 
-				const oauthConfig = mediaSource.oauthConfig as MediaSourceOauthConfig;
-				expect(oauthAdapterService.sendTokenRequest).toHaveBeenCalledWith(oauthConfig.authEndpoint, {
-					client_id: oauthConfig.clientId,
+				const tokenRequest: ClientCredentialsGrantTokenRequest = {
+					client_id: mediaSource.oauthConfig?.clientId as string,
 					client_secret: decryptedClientSecret,
 					grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
-				} as ClientCredentialsGrantTokenRequest);
+				};
+
+				expect(oauthAdapterService.sendTokenRequest).toHaveBeenCalledWith(
+					mediaSource.oauthConfig?.authEndpoint,
+					tokenRequest
+				);
 			});
 
 			it('should call http service with the correct params and headers', async () => {
@@ -145,9 +153,9 @@ describe(BiloMediaClientAdapter.name, () => {
 
 				await service.fetchMediaMetadata(mediumIds, mediaSource, false);
 
-				const oauthConfig = mediaSource.oauthConfig as MediaSourceOauthConfig;
+				const baseUrl = mediaSource.oauthConfig?.baseUrl as string;
 				expect(httpService.post).toHaveBeenCalledWith(
-					`${oauthConfig.baseUrl}/query`,
+					`${baseUrl}/query`,
 					expect.arrayContaining(expectedBiloRequestBody),
 					expect.objectContaining({
 						headers: {
@@ -185,9 +193,9 @@ describe(BiloMediaClientAdapter.name, () => {
 
 				const mediumIds = responses.map((response: BiloMediaQueryResponse) => response.query.id);
 
-				const mockAxiosResponse = axiosResponseFactory.build({
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
 					data: responses,
-				}) as AxiosResponse<BiloMediaQueryResponse[]>;
+				});
 
 				const decryptedClientSecret = 'client-secret-decrypted';
 
@@ -235,7 +243,7 @@ describe(BiloMediaClientAdapter.name, () => {
 			});
 
 			describe('when the parameter shouldThrowOnAnyBadResponse is true', () => {
-				it('should throw an exception', async () => {
+				it('should throw an BiloMediaQueryBadResponseLoggableException', async () => {
 					const { mediumIds, mediaSource, expectedBadStatusReports } = setup();
 
 					const promise = service.fetchMediaMetadata(mediumIds, mediaSource, true);
@@ -259,27 +267,29 @@ describe(BiloMediaClientAdapter.name, () => {
 
 				const validResponses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
 
+				const cover: BiloLinkResponse = { href: 'invalid-link', rel: 'src' };
 				const invalidMetadataItems: BiloMediaQueryDataResponse[] = biloMediaQueryDataResponseFactory.buildList(2, {
 					title: undefined,
 					modified: undefined,
-					cover: { href: 'test', rel: 'src' } as BiloLinkResponse,
+					cover,
 				});
 
-				const badResponses: BiloMediaQueryResponse[] = invalidMetadataItems.map((data: BiloMediaQueryDataResponse) =>
-					biloMediaQueryResponseFactory.build({
-						query: { id: data.id } as BiloMediaQueryBodyParams,
+				const badResponses: BiloMediaQueryResponse[] = invalidMetadataItems.map((data: BiloMediaQueryDataResponse) => {
+					const query: BiloMediaQueryBodyParams = { id: data.id };
+					return biloMediaQueryResponseFactory.build({
 						status: 200,
+						query,
 						data,
-					})
-				);
+					});
+				});
 
 				const responses = [...validResponses, ...badResponses];
 
 				const mediumIds = responses.map((response: BiloMediaQueryResponse) => response.query.id);
 
-				const mockAxiosResponse = axiosResponseFactory.build({
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
 					data: responses,
-				}) as AxiosResponse<BiloMediaQueryResponse[]>;
+				});
 
 				const decryptedClientSecret = 'client-secret-decrypted';
 
@@ -327,7 +337,7 @@ describe(BiloMediaClientAdapter.name, () => {
 			});
 
 			describe('when the parameter shouldThrowOnAnyBadResponse is true', () => {
-				it('should throw an exception', async () => {
+				it('should throw an BiloMediaQueryBadResponseLoggableException', async () => {
 					const { mediumIds, mediaSource, expectedBadResponseReports } = setup();
 
 					const promise = service.fetchMediaMetadata(mediumIds, mediaSource, true);
@@ -397,6 +407,43 @@ describe(BiloMediaClientAdapter.name, () => {
 				const promise = service.fetchMediaMetadata(mediumIds, mediaSource, false);
 
 				await expect(promise).rejects.toThrow(unknownError);
+			});
+		});
+
+		describe('when the response body received is not an array', () => {
+			const setup = () => {
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const mockToken = new OAuthTokenDto({
+					accessToken: 'mock-access-token',
+					idToken: 'mock-id-token',
+					refreshToken: 'mock-refresh-token',
+				});
+
+				const unprocessableResponseBody = biloMediaQueryResponseFactory.build();
+				const mockAxiosResponse = axiosResponseFactory.build({
+					data: unprocessableResponseBody,
+				});
+
+				const decryptedClientSecret = 'client-secret-decrypted';
+
+				jest.spyOn(oauthAdapterService, 'sendTokenRequest').mockResolvedValueOnce(mockToken);
+				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
+				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce(decryptedClientSecret);
+
+				return {
+					mediumIds: ['123'],
+					mediaSource,
+					mockToken,
+				};
+			};
+
+			it('should throw an BiloMediaQueryUnprocessableResponseLoggableException', async () => {
+				const { mediumIds, mediaSource } = setup();
+
+				const promise = service.fetchMediaMetadata(mediumIds, mediaSource, false);
+
+				await expect(promise).rejects.toThrow(new BiloMediaQueryUnprocessableResponseLoggableException());
 			});
 		});
 	});

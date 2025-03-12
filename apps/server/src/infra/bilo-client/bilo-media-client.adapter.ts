@@ -6,7 +6,6 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
 	MediaSource,
 	MediaSourceDataFormat,
-	MediaSourceOauthConfig,
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import {
@@ -20,7 +19,11 @@ import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from './interface';
-import { BiloMediaQueryBadResponseLoggable, BiloMediaQueryBadResponseLoggableException } from './loggable';
+import {
+	BiloMediaQueryBadResponseLoggable,
+	BiloMediaQueryBadResponseLoggableException,
+	BiloMediaQueryUnprocessableResponseLoggableException,
+} from './loggable';
 import { BiloMediaQueryBodyParams } from './request';
 import { BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
 
@@ -45,9 +48,16 @@ export class BiloMediaClientAdapter {
 			);
 		}
 
-		const url = new URL(`${biloMediaSource.oauthConfig.baseUrl}/query`);
+		let sanitizedBaseUrl = biloMediaSource.oauthConfig.baseUrl;
+		if (sanitizedBaseUrl.endsWith('/')) {
+			sanitizedBaseUrl = sanitizedBaseUrl.slice(0, -1);
+		}
 
-		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string) => ({ id } as BiloMediaQueryBodyParams));
+		const url = new URL(`${sanitizedBaseUrl}/query`);
+
+		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string): BiloMediaQueryBodyParams => {
+			return { id };
+		});
 
 		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource);
 
@@ -85,16 +95,18 @@ export class BiloMediaClientAdapter {
 	}
 
 	private async fetchAccessToken(mediaSource: MediaSource): Promise<OAuthTokenDto> {
-		const oauthConfig = mediaSource.oauthConfig as MediaSourceOauthConfig;
+		if (!mediaSource.oauthConfig) {
+			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
+		}
 
 		const credentials = new ClientCredentialsGrantTokenRequest({
-			client_id: oauthConfig.clientId,
-			client_secret: this.encryptionService.decrypt(oauthConfig.clientSecret),
+			client_id: mediaSource.oauthConfig.clientId,
+			client_secret: this.encryptionService.decrypt(mediaSource.oauthConfig.clientSecret),
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
 		const accessToken: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(
-			oauthConfig.authEndpoint,
+			mediaSource.oauthConfig.authEndpoint,
 			credentials
 		);
 
@@ -107,6 +119,10 @@ export class BiloMediaClientAdapter {
 	): Promise<BiloMediaQueryResponse[]> {
 		const validResponses: BiloMediaQueryResponse[] = [];
 		const badResponseReports: MediaQueryBadResponseReport[] = [];
+
+		if (!Array.isArray(responses)) {
+			throw new BiloMediaQueryUnprocessableResponseLoggableException();
+		}
 
 		const validatePromises = responses.map(async (response: BiloMediaQueryResponse): Promise<void> => {
 			if (response.status !== 200) {

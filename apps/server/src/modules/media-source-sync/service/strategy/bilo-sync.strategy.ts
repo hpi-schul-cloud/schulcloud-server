@@ -14,7 +14,7 @@ import { MediaSourceSyncOperation } from '../../types';
 @Injectable()
 export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
-		private readonly biloMediaFetchService: BiloMediaClientAdapter,
+		private readonly biloMediaClientAdapter: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,
 		private readonly logger: Logger
 	) {}
@@ -35,7 +35,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
 			.filter((mediumId: string | undefined): mediumId is string => !!mediumId);
 
-		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
 			mediumIds,
 			mediaSource,
 			false
@@ -47,7 +47,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	}
 
 	public async fetchMediaMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediaMetadataDto> {
-		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
 			[mediumId],
 			mediaSource,
 			true

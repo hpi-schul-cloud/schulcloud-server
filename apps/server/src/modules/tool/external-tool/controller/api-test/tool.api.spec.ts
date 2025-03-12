@@ -1129,7 +1129,7 @@ describe('ToolController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 				expect(response.body).toEqual<ErrorResponse>({
-					message: `Internal Server Error`,
+					message: `Bad response from the media source`,
 					type: 'BILO_MEDIA_QUERY_BAD_RESPONSE',
 					code: 500,
 					title: 'Bilo Media Query Bad Response',
