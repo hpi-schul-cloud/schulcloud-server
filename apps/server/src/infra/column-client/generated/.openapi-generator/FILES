@@ -11,3 +11,4 @@ index.ts
 models/card-response.ts
 models/create-card-body-params.ts
 models/index.ts
+models/rename-body-params.ts

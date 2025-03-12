@@ -35,10 +35,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn|ColumnController_updateColumnTitle"
+					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn"
 				},
 				"globalProperty": {
-					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse:RenameBodyParams",
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse",
 					"apis": "",
 					"supportingFiles": ""
 				},
@@ -59,10 +59,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:ColumnController_createCard"
+					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle"
 				},
 				"globalProperty": {
-					"models": "CreateCardBodyParams:CardResponse",
+					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams",
 					"apis": "",
 					"supportingFiles": ""
 				},
