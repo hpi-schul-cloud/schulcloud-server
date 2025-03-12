@@ -6,7 +6,8 @@ import {
 } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { User, UserRepo } from '../../repo';
+import { User } from '../../repo';
+import { UserRepo } from '../../repo/user.repo';
 
 @Injectable()
 export class UserAuthorizableService implements AuthorizationLoaderServiceGeneric<User>, CurrentUserLoader {
