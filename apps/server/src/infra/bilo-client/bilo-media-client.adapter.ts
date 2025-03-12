@@ -6,6 +6,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
 	MediaSource,
 	MediaSourceDataFormat,
+	MediaSourceOauthConfig,
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import {
@@ -59,7 +60,7 @@ export class BiloMediaClientAdapter {
 			return { id };
 		});
 
-		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource);
+		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource.oauthConfig);
 
 		const observable: Observable<AxiosResponse<BiloMediaQueryResponse[]>> = this.httpService.post(
 			url.toString(),
@@ -94,19 +95,15 @@ export class BiloMediaClientAdapter {
 		return metadataItems;
 	}
 
-	private async fetchAccessToken(mediaSource: MediaSource): Promise<OAuthTokenDto> {
-		if (!mediaSource.oauthConfig) {
-			throw new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN);
-		}
-
+	private async fetchAccessToken(mediaSourceOauthConfig: MediaSourceOauthConfig): Promise<OAuthTokenDto> {
 		const credentials = new ClientCredentialsGrantTokenRequest({
-			client_id: mediaSource.oauthConfig.clientId,
-			client_secret: this.encryptionService.decrypt(mediaSource.oauthConfig.clientSecret),
+			client_id: mediaSourceOauthConfig.clientId,
+			client_secret: this.encryptionService.decrypt(mediaSourceOauthConfig.clientSecret),
 			grant_type: OAuthGrantType.CLIENT_CREDENTIALS_GRANT,
 		});
 
 		const accessToken: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(
-			mediaSource.oauthConfig.authEndpoint,
+			mediaSourceOauthConfig.authEndpoint,
 			credentials
 		);
 
