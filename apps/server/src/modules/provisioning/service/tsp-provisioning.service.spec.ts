@@ -612,5 +612,33 @@ describe('TspProvisioningService', () => {
 				await expect(() => sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
+
+		describe('when an error occurs while saving account', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build(),
+					externalSchool: externalSchoolDtoFactory.build(),
+				});
+				const user = userDoFactory.build({ id: faker.string.uuid(), roles: [] });
+
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
+
+				accountServiceMock.findByUserId.mockRejectedValueOnce(new Error('Test error'));
+
+				return { data, school, user };
+			};
+
+			it('should delete the user and throw BadDataLoggableException', async () => {
+				const { data, school, user } = setup();
+
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
+				expect(userServiceMock.deleteUser).toHaveBeenCalledWith(user.id);
+			});
+		});
 	});
 });

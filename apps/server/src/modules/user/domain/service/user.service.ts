@@ -227,6 +227,14 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		}
 	}
 
+	public async deleteUser(userId: EntityId): Promise<boolean> {
+		const deletionCount = await this.userRepo.deleteUser(userId);
+
+		const userDeleted = deletionCount === 1;
+
+		return userDeleted;
+	}
+
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
