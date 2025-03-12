@@ -4,7 +4,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Role } from '@modules/role/repo';
-import { roleFactory, roleFactory } from '@modules/role/testing';
+import { roleFactory } from '@modules/role/testing';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
