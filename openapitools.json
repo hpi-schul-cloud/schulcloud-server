@@ -52,6 +52,30 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
+			"column-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/column-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:ColumnController_createCard"
+				},
+				"globalProperty": {
+					"models": "CreateCardBodyParams:CardResponse:",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
 			"files-storage-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:4444/api/v3/docs-json",

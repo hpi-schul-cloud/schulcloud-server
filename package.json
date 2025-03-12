@@ -137,8 +137,10 @@
 		"generate-client:courses-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key courses-api",
 		"pregenerate-client:tldraw-api": "rimraf ./apps/server/src/infra/tldraw-client/generated",
 		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
-		"pregenerate-client:boards-api": "rimraf ./apps/server/src/infra/boards-client/generated",
-		"generate-client:boards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key boards-api",
+		"pregenerate-client:boards-api": "rimraf ./apps/server/src/infra/column-client/generated",
+		"generate-client:boards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key column-api",
+		"pregenerate-client:column-api": "rimraf ./apps/server/src/infra/column-client/generated",
+		"generate-client:column-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key column-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
 	},
 	"overrides": {
