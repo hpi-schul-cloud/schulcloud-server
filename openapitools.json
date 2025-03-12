@@ -62,7 +62,31 @@
 					"FILTER": "operationId:ColumnController_createCard"
 				},
 				"globalProperty": {
-					"models": "CreateCardBodyParams:CardResponse:",
+					"models": "CreateCardBodyParams:CardResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"card-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/card-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CardController_updateCardTitle|CardController_createElement"
+				},
+				"globalProperty": {
+					"models": "RenameBodyParams:CreateContentElementBodyParams:AnyContentElementResponse:ExternalToolElementResponse:FileElementResponse:LinkElementResponse:RichTextElementResponse:SubmissionContainerElementResponse:DrawingElementResponse:DeletedElementResponse:VideoConferenceElementResponse",
 					"apis": "",
 					"supportingFiles": ""
 				},
