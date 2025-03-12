@@ -200,9 +200,16 @@ export class TspProvisioningService {
 		}
 		const savedUser = await this.userService.save(user);
 
-		const account = await this.accountService.findByUserId(savedUser.id ?? '');
-		const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
-		await this.accountService.save(updated);
+		try {
+			const account = await this.accountService.findByUserId(savedUser.id ?? '');
+			const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
+			await this.accountService.save(updated);
+		} catch (error) {
+			if (existingUser === null) {
+				await this.userService.deleteUser(savedUser.id ?? '');
+			}
+			throw new BadDataLoggableException('Error while saving account', { externalId: data.externalUser.externalId });
+		}
 
 		return user;
 	}
