@@ -867,7 +867,7 @@ describe('UserService', () => {
 			});
 		});
 
-		describe('when user deletion fails', () => {
+		describe(`when user was not deleted`, () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 
