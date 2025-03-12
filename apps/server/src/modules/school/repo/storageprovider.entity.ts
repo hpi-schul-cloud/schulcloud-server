@@ -1,6 +1,6 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { StorageProviderEncryptedStringType } from '@shared/repo/types/StorageProviderEncryptedString.type';
+import { StorageProviderEncryptedStringType } from '../domain';
 
 export interface StorageProviderProperties {
 	endpointUrl: string;

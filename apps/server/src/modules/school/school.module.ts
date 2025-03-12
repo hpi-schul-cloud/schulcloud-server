@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { SystemModule } from '../system';
 import { FederalStateService, SCHOOL_REPO, SCHOOL_YEAR_REPO, SchoolService, SchoolYearService } from './domain';
 import { SystemDeletedHandler } from './domain/event-handler';
-import { FederalStateRepo, SchoolYearMikroOrmRepo } from './repo';
-import { SchoolMikroOrmRepo } from './repo/mikro-orm/school.repo';
+import { FederalStateRepo, SchoolMikroOrmRepo, SchoolYearMikroOrmRepo } from './repo';
 
 @Module({
 	imports: [SystemModule],

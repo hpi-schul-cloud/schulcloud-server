@@ -3,7 +3,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { LessonCopyService } from '@modules/lesson/service';
+import { LessonCopyService } from '@modules/lesson';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
