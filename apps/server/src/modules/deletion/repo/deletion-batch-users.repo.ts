@@ -1,9 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
 export type UserIdsByRole = {
-	roleName: string;
+	roleName: RoleName;
 	userIds: EntityId[];
 };
 
