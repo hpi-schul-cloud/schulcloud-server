@@ -49,11 +49,11 @@ export class BiloMediaClientAdapter {
 		}
 
 		let sanitizedBaseUrl = biloMediaSource.oauthConfig.baseUrl;
-		if (sanitizedBaseUrl.endsWith('/')) {
-			sanitizedBaseUrl = sanitizedBaseUrl.slice(0, -1);
+		if (!sanitizedBaseUrl.endsWith('/')) {
+			sanitizedBaseUrl = sanitizedBaseUrl + '/';
 		}
 
-		const url = new URL(`${sanitizedBaseUrl}/query`);
+		const url = new URL('./query', sanitizedBaseUrl);
 
 		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string): BiloMediaQueryBodyParams => {
 			return { id };
