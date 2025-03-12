@@ -7,7 +7,7 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 } from '@modules/deletion';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';

@@ -8,7 +8,7 @@ import { oauthSessionTokenFactory } from '@modules/oauth/testing';
 import { OauthConfig, SystemService } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';

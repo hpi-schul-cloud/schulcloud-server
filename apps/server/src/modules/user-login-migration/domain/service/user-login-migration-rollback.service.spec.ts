@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { UserDo, UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { userLoginMigrationDOFactory } from '../../testing';
 import {

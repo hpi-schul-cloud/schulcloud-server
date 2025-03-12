@@ -27,9 +27,8 @@ import { setupEntities } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserDto } from '../../api/dto';
 import { UserDiscoverableQuery, UserDo, UserQuery } from '../../domain';
-import { userDoFactory } from '../../domain/factory';
 import { User, UserDORepo, UserRepo } from '../../repo';
-import { userFactory } from '../../testing';
+import { userDoFactory, userFactory } from '../../testing';
 import { UserService } from './user.service';
 
 describe('UserService', () => {

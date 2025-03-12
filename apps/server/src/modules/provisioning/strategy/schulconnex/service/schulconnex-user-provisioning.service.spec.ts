@@ -5,7 +5,7 @@ import { AccountSave, AccountService } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import CryptoJS from 'crypto-js';

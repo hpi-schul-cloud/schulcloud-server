@@ -3,7 +3,7 @@ import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { DoBaseFactory } from '@testing/factory/domainobject';
 import { DeepPartial } from 'fishery';
-import { UserDo } from '../do';
+import { UserDo } from '../domain';
 
 class UserDoFactory extends DoBaseFactory<UserDo, UserDo> {
 	public withRoles(roles: { id: EntityId; name: RoleName }[]): UserDoFactory {

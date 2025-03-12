@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { UserDo, UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '../../repo';

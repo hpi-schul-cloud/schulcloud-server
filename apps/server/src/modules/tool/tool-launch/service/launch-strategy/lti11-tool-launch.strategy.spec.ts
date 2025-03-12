@@ -4,7 +4,7 @@ import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';

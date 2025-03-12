@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { schoolFactory } from '@modules/school/testing';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ExternalToolParameterDatasheetTemplateProperty } from '../domain';

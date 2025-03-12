@@ -4,7 +4,7 @@ import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';

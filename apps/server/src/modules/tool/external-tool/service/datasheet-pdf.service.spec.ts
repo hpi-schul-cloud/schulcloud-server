@@ -1,4 +1,4 @@
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';

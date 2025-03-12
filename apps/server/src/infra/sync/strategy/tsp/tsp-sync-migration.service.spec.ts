@@ -4,7 +4,7 @@ import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { systemFactory } from '@modules/system/testing';
 import { UserService, UserSourceOptions } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TspSyncMigrationService } from './tsp-sync-migration.service';

@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';

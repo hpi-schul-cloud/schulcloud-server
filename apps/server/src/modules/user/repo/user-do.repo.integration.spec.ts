@@ -16,8 +16,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserDiscoverableQuery, UserDo, UserSourceOptions } from '../domain';
-import { userDoFactory } from '../domain/factory';
-import { userFactory } from '../testing';
+import { userDoFactory, userFactory } from '../testing';
 import { UserDORepo } from './user-do.repo';
 import { User } from './user.entity';
 

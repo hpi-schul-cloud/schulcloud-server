@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
 import { UserService } from '../domain';
-import { userDoFactory } from '../domain/factory';
+import { userDoFactory } from '../testing';
 import { AdminApiUserUc } from './admin-api-user.uc';
 
 describe('admin api user uc', () => {

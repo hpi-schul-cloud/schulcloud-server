@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UserDo, UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { ObjectId } from 'bson';

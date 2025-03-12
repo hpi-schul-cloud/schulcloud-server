@@ -21,9 +21,8 @@ import { schoolFactory, schoolYearDoFactory, schoolYearEntityFactory } from '@mo
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserDo, UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/domain/factory';
 import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
