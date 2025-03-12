@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
-export class SchoolRule implements Rule<School> {
+export class SchoolAdminRule implements Rule<School> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -14,19 +14,13 @@ export class SchoolRule implements Rule<School> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isApplicable = object instanceof School && !user.resolvePermissions().includes(Permission.SCHOOL_CREATE);
+		const isApplicable = object instanceof School && user.resolvePermissions().includes(Permission.SCHOOL_CREATE);
 
 		return isApplicable;
 	}
 
 	public hasPermission(user: User, school: School, context: AuthorizationContext): boolean {
-		let hasPermission = false;
-		const isUsersSchool = user.school.id === school.id;
-		if (isUsersSchool) {
-			hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		} else {
-			hasPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.SCHOOL_EDIT_ALL]);
-		}
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
 		return hasPermission;
 	}
