@@ -63,9 +63,11 @@ export class MediaSourceSyncService {
 			throw new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat);
 		}
 
-		const mediaMetadata: MediaMetadataDto = await strategy.fetchMediaMetadata(mediumId, mediaSource);
+		return { name: 'Test mit bilo medium', description: 'bla asdasdasd', publisher: 'Public Source' };
 
-		return mediaMetadata;
+		// const mediaMetadata: MediaMetadataDto = await strategy.fetchMediaMetadata(mediumId, mediaSource);
+
+		// return mediaMetadata;
 	}
 
 	private async getMediaSource(strategy: MediaSourceSyncStrategy): Promise<MediaSource> {
