@@ -8,10 +8,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { MediaSource } from '../do';
 import { MediaSourceService } from '../service';
 import { mediaSourceFactory } from '../testing';
 import { MediaSourceUc } from './media-source.uc';
-import { MediaSource } from '../do';
 
 describe(MediaSourceUc.name, () => {
 	let module: TestingModule;
@@ -50,38 +50,37 @@ describe(MediaSourceUc.name, () => {
 		jest.resetAllMocks();
 	});
 
-	const setupAuthorization = () => {
-		const user: User = userFactory.buildWithId();
-		const currentUser = currentUserFactory.build();
-
-		authorizationService.getUserWithPermissions.mockResolvedValue(user);
-
-		return {
-			user,
-			currentUser,
-		};
-	};
-
 	describe('getAllMediaSources', () => {
-		describe('Authorization', () => {
+		describe('when checking user permission', () => {
+			const setup = () => {
+				const user: User = userFactory.buildWithId();
+				const currentUser = currentUserFactory.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					user,
+					currentUser,
+				};
+			};
 			it('should call getUserWithPermissions', async () => {
-				const { currentUser } = setupAuthorization();
+				const { currentUser } = setup();
 
 				await uc.getMediaSourceList(currentUser.userId);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
 
-			it('should successfully check the user permission with the authorization service', async () => {
-				const { currentUser, user } = setupAuthorization();
+			it('should call checkAllPermissions', async () => {
+				const { currentUser, user } = setup();
 
 				await uc.getMediaSourceList(currentUser.userId);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.MEDIA_SOURCE_ADMIN]);
 			});
 
-			it('should throw if the user has insufficient permission to create an external tool', async () => {
-				const { currentUser } = setupAuthorization();
+			it('should throw UnauthorizedException', async () => {
+				const { currentUser } = setup();
 				authorizationService.checkAllPermissions.mockImplementation(() => {
 					throw new UnauthorizedException();
 				});
