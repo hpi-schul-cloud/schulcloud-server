@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';
-import { UserDiscoverableQuery } from '../../domain';
+import { UserDiscoverableQuery } from '../../domain/query/user-query';
 import { User } from '../user.entity';
 
 export class UserScope extends Scope<User> {
