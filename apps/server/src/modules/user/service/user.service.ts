@@ -17,14 +17,14 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
+import { IFindOptions, LanguageType } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserDo } from '../domain';
 import { UserConfig } from '../interfaces';

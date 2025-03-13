@@ -1,4 +1,4 @@
-import { roleFactory } from '@testing/factory/role.factory';
+import { roleFactory } from '@modules/role/testing';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from './addSecondarySchoolToUserError.loggable';
 
 describe('AddSecondarySchoolToUsersRoleErrorLoggableException', () => {

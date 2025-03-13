@@ -5,16 +5,14 @@ import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { ClassService, ClassSourceOptions } from '@modules/class';
 import { classFactory } from '@modules/class/domain/testing';
-import { RoleService } from '@modules/role';
-import { roleDtoFactory } from '@modules/role/testing';
+import { RoleName, RoleService } from '@modules/role';
+import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { RoleName } from '@shared/domain/interface';
-import { roleFactory } from '@testing/factory/role.factory';
 import { BadDataLoggableException } from '../loggable';
 import {
 	externalClassDtoFactory,

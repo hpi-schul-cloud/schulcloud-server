@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { Role } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BaseRepo } from '../base.repo';
+import { BaseRepo } from '@shared/repo/base.repo';
+import { RoleName } from '../domain';
+import { Role } from './role.entity';
 
 @Injectable()
 export class RoleRepo extends BaseRepo<Role> {

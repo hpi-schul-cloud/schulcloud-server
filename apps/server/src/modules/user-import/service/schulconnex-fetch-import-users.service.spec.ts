@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
+import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -9,7 +10,6 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ImportUser } from '../entity';
 import { UserImportSchoolExternalIdMissingLoggableException } from '../loggable';

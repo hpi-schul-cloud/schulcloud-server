@@ -1,8 +1,8 @@
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { Role } from '@shared/domain/entity/role.entity';
 
 export interface TeamProperties {
 	name: string;

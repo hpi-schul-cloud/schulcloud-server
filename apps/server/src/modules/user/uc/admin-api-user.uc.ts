@@ -1,8 +1,7 @@
 import { AccountSave, AccountService } from '@modules/account';
-import { RoleService } from '@modules/role';
+import { RoleName, RoleService } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { nanoid } from 'nanoid';
 import { UserService } from '../service';

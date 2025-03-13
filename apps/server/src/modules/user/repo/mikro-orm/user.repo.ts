@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { Injectable } from '@nestjs/common';
-import { Role } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';

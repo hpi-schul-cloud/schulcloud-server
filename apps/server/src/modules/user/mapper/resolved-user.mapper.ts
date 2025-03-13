@@ -1,4 +1,4 @@
-import { Role } from '@shared/domain/entity';
+import { Role } from '@modules/role/repo';
 import { ResolvedUserResponse } from '../controller/dto';
 import { User } from '../repo';
 
