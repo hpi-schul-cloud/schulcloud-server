@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationInjectionService } from '@modules/authorization/domain/service/authorization-injection.service';
-import { AuthorizableReferenceType } from '@modules/authorization/domain/type/allowed-authorization-object-type.enum';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { User, UserRepo } from '../../repo';

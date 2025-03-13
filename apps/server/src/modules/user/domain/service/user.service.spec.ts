@@ -25,11 +25,11 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { UserDto } from '../../api/dto/user.dto';
+import { UserDto } from '../../api/dto';
 import { User, UserDORepo, UserRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
 import { UserDo } from '../do';
-import { UserDiscoverableQuery, UserQuery } from '../query/user-query';
+import { UserDiscoverableQuery, UserQuery } from '../query';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
