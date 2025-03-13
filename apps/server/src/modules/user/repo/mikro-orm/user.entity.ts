@@ -15,7 +15,7 @@ import { Role } from '@modules/role/repo';
 import { SchoolEntity, SchoolRoles } from '@modules/school/repo';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { BaseEntityWithTimestamps, ConsentEntity } from '@shared/domain/entity';
-import { EntityWithSchool, LanguageType, Permission } from '@shared/domain/interface';
+import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserParentsEntity } from './user-parents.entity';
 import { UserSourceOptionsEntity } from './user-source-options-entity';
@@ -76,7 +76,7 @@ export class UserSchoolEmbeddable {
 @Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
-export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
+export class User extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
 	email: string;
