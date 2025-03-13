@@ -6,7 +6,7 @@ export * from './context-external-tool-configuration-template.response';
 export * from './context-external-tool-configuration-template-list.response';
 export * from './school-external-tool-configuration-template.response';
 export * from './school-external-tool-configuration-template-list.response';
-export * from './external-tool-metadata.response';
+export * from './external-tool-utilization.response';
 export * from './tool-context-types-list.response';
 export { ExternalToolMediumResponse } from './external-tool-medium.response';
 export {
@@ -15,3 +15,4 @@ export {
 } from './external-tool-import-result-response';
 export * from './preferred-tool.response';
 export * from './preferred-tool-list.response';
+export { ExternalToolMediumMetadataResponse } from './external-tool-medium-metadata.response';
