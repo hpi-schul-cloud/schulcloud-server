@@ -3,7 +3,7 @@ import { PseudonymService } from '@modules/pseudonym/service';
 import { TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { UserService } from '@modules/user/domain';
+import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
