@@ -125,7 +125,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			return false;
 		}
 
-		const isUpToDate = externalTool.medium.metadataModifiedAt.getTime() === metadata.modified;
+		const isUpToDate = externalTool.medium.metadataModifiedAt.getTime() >= metadata.modified;
 
 		return isUpToDate;
 	}
