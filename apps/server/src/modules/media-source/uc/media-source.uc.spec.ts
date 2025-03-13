@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -93,19 +92,24 @@ describe(MediaSourceUc.name, () => {
 
 		describe('when media sources are available', () => {
 			const setup = () => {
-				const mediaSources: MediaSource[] = [mediaSourceFactory.build(), mediaSourceFactory.build()];
+				const user: User = userFactory.buildWithId();
+				const currentUser = currentUserFactory.build();
+				const mediaSources: MediaSource[] = mediaSourceFactory.buildList(10);
 
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				mediaSourceService.getAllMediaSources.mockResolvedValue(mediaSources);
 
 				return {
+					user,
+					currentUser,
 					mediaSources,
 				};
 			};
 
 			it('should return a list of media sources', async () => {
-				const { mediaSources } = setup();
+				const { currentUser, mediaSources } = setup();
 
-				const result = await uc.getMediaSourceList(new ObjectId().toHexString());
+				const result = await uc.getMediaSourceList(currentUser.userId);
 
 				expect(result).toEqual(mediaSources);
 			});
@@ -114,18 +118,23 @@ describe(MediaSourceUc.name, () => {
 		describe('when no media sources are available', () => {
 			const setup = () => {
 				const mediaSources: MediaSource[] = [];
+				const user: User = userFactory.buildWithId();
+				const currentUser = currentUserFactory.build();
 
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				mediaSourceService.getAllMediaSources.mockResolvedValue(mediaSources);
 
 				return {
+					user,
+					currentUser,
 					mediaSources,
 				};
 			};
 
 			it('should return an empty list', async () => {
-				const { mediaSources } = setup();
+				const { currentUser, mediaSources } = setup();
 
-				const result = await uc.getMediaSourceList(new ObjectId().toHexString());
+				const result = await uc.getMediaSourceList(currentUser.userId);
 
 				expect(result).toEqual(mediaSources);
 			});
