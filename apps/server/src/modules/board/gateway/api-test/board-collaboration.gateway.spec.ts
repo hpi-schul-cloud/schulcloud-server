@@ -8,7 +8,6 @@ import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { getSocketApiClient, waitForEvent } from '@testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
 import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
@@ -16,7 +15,9 @@ import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
+	getSocketApiClient,
 	richTextElementEntityFactory,
+	waitForEvent,
 } from '../../testing';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
 

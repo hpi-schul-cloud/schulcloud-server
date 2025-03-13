@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { JwtPayload } from '@infra/auth-guard';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from 'bson';
-import { BaseFactory } from './base.factory';
+import { JwtPayload } from '../interface';
 
 class JwtPayloadImpl implements JwtPayload {
 	accountId: string;
@@ -50,7 +50,7 @@ class JwtPayloadImpl implements JwtPayload {
 	}
 }
 
-export class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {}
+class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {}
 
 export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadImpl, ({ sequence }) => {
 	return {
