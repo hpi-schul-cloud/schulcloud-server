@@ -20,6 +20,8 @@ export class MediaSourceResponseMapper {
 			this.mapToMediaSourceResponse(mediaSource)
 		);
 
-		return new MediaSourceListResponse(responses);
+		const response: MediaSourceListResponse = new MediaSourceListResponse(responses);
+
+		return response;
 	}
 }
