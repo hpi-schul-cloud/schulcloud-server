@@ -5,11 +5,11 @@ export class MediaSourceResponse {
 	@ApiProperty({ type: String, description: 'Id of the media source' })
 	public id: string;
 
+	@ApiProperty({ type: String, description: 'External Id of the media source' })
+	public sourceId: string;
+
 	@ApiPropertyOptional({ type: String, description: 'Name of the media source' })
 	public name?: string;
-
-	@ApiPropertyOptional({ type: String, description: 'External Id of the media source' })
-	public sourceId?: string;
 
 	@ApiPropertyOptional({
 		enum: MediaSourceDataFormat,

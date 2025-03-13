@@ -1,7 +1,8 @@
-import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { mediaSourceEntityFactory } from '../../testing';
@@ -10,7 +11,6 @@ import { MediaSourceListResponse } from '../response';
 describe('MediaSourceController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let orm: MikroORM;
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
@@ -21,7 +21,6 @@ describe('MediaSourceController (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, 'media-sources');
 	});
 
@@ -30,7 +29,7 @@ describe('MediaSourceController (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await cleanupCollections(em);
 	});
 
 	describe('[GET] media-sources', () => {

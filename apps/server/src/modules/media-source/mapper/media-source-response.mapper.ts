@@ -4,7 +4,7 @@ import { MediaSource } from '../do';
 
 @Injectable()
 export class MediaSourceResponseMapper {
-	static mapToMediaSourceResponse(mediaSource: MediaSource): MediaSourceResponse {
+	public static mapToMediaSourceResponse(mediaSource: MediaSource): MediaSourceResponse {
 		const response: MediaSourceResponse = new MediaSourceResponse({
 			id: mediaSource.id,
 			name: mediaSource.name,
@@ -15,7 +15,7 @@ export class MediaSourceResponseMapper {
 		return response;
 	}
 
-	static mapToMediaSourceListResponse(mediaSources: MediaSource[]): MediaSourceListResponse {
+	public static mapToMediaSourceListResponse(mediaSources: MediaSource[]): MediaSourceListResponse {
 		const responses: MediaSourceResponse[] = mediaSources.map((mediaSource: MediaSource) =>
 			this.mapToMediaSourceResponse(mediaSource)
 		);
