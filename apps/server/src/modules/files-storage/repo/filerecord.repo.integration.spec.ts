@@ -175,6 +175,46 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
+	describe('markForDeleteByStorageLocation', () => {
+		const setup = async () => {
+			const storageLocationId1 = new ObjectId().toHexString();
+			const fileRecords1 = fileRecordFactory.buildList(3, {
+				storageLocationId: storageLocationId1,
+			});
+
+			const storageLocationId2 = new ObjectId().toHexString();
+			const fileRecords2 = fileRecordFactory.buildList(3, {
+				storageLocationId: storageLocationId2,
+			});
+
+			const markedForDeleteFileRecords = fileRecordFactory.markedForDelete().buildList(3, {
+				storageLocationId: storageLocationId1,
+			});
+
+			await em.persistAndFlush([...fileRecords1, ...fileRecords2, ...markedForDeleteFileRecords]);
+			em.clear();
+
+			return { fileRecords1, fileRecords2, storageLocationId1 };
+		};
+
+		it('should only find searched fileRecords', async () => {
+			const { storageLocationId1 } = await setup();
+
+			const result = await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+
+			expect(result).toEqual(3);
+		});
+
+		it('should return zero after two calls', async () => {
+			const { storageLocationId1 } = await setup();
+
+			await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+			const result = await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+
+			expect(result).toEqual(0);
+		});
+	});
+
 	describe('findByStorageLocationIdAndParentId', () => {
 		const parentId1 = new ObjectId().toHexString();
 		const storageLocationId1 = new ObjectId().toHexString();
