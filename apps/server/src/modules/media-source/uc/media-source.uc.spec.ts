@@ -55,7 +55,7 @@ describe(MediaSourceUc.name, () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser = currentUserFactory.build();
 
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					user,
@@ -96,8 +96,8 @@ describe(MediaSourceUc.name, () => {
 				const currentUser = currentUserFactory.build();
 				const mediaSources: MediaSource[] = mediaSourceFactory.buildList(10);
 
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				mediaSourceService.getAllMediaSources.mockResolvedValue(mediaSources);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaSourceService.getAllMediaSources.mockResolvedValueOnce(mediaSources);
 
 				return {
 					user,
@@ -121,8 +121,8 @@ describe(MediaSourceUc.name, () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser = currentUserFactory.build();
 
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				mediaSourceService.getAllMediaSources.mockResolvedValue(mediaSources);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				mediaSourceService.getAllMediaSources.mockResolvedValueOnce(mediaSources);
 
 				return {
 					user,
