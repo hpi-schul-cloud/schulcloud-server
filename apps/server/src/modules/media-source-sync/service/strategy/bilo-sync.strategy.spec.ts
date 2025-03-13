@@ -1,7 +1,6 @@
 import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
 import { BiloLinkResponse, BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
@@ -9,10 +8,10 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceSyncReport } from '../../interface';
-import { MediaMetadataMapper } from '../../mapper';
-import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
+import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
 
 describe(BiloSyncStrategy.name, () => {
@@ -471,31 +470,6 @@ describe(BiloSyncStrategy.name, () => {
 				await strategy.syncAllMediaMetadata(mediaSource);
 
 				expect(externalToolService.updateExternalTools).toBeCalledWith(expectedUpdatedTools);
-			});
-		});
-	});
-
-	describe('fetchMediaMetadata', () => {
-		describe('when mediumId and media source are given', () => {
-			const setup = () => {
-				const mediumId = 'medium-id';
-				const mediaSource = mediaSourceFactory.withBildungslogin().build();
-
-				const metadataItem = biloMediaQueryDataResponseFactory.build({ id: mediumId });
-
-				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce([metadataItem]);
-
-				const expectedMediaMetadataDto = MediaMetadataMapper.mapToMediaMetadata(metadataItem);
-
-				return { mediumId, mediaSource, expectedMediaMetadataDto };
-			};
-
-			it('should return the fetched media metadata', async () => {
-				const { mediumId, mediaSource, expectedMediaMetadataDto } = setup();
-
-				const result = await strategy.fetchMediaMetadata(mediumId, mediaSource);
-
-				expect(result).toEqual(expectedMediaMetadataDto);
 			});
 		});
 	});

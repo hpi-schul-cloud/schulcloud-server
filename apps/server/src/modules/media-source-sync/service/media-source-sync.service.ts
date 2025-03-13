@@ -1,15 +1,12 @@
-import { Injectable } from '@nestjs/common';
 import {
 	MediaSource,
 	MediaSourceDataFormat,
-	MediaSourceService,
 	MediaSourceNotFoundLoggableException,
+	MediaSourceService,
 } from '@modules/media-source';
-import { MediaMetadataDto } from '../dto';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../interface';
+import { Injectable } from '@nestjs/common';
+import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
-import { MediaSourceDataFormatMissingLoggableException } from '../loggable/media-source-data-format-missing-loggable.exception';
-import { MediaSourceIdMissingLoggableException } from '../loggable/media-source-id-missing-loggable.exception';
 import { BiloSyncStrategy } from './strategy';
 
 @Injectable()
@@ -36,36 +33,6 @@ export class MediaSourceSyncService {
 		const report: MediaSourceSyncReport = await strategy.syncAllMediaMetadata(mediaSource);
 
 		return report;
-	}
-
-	public async fetchMediumMetadata(
-		mediumId: string,
-		mediaSourceId: string | undefined,
-		mediaSourceDataFormat: MediaSourceDataFormat | undefined
-	): Promise<MediaMetadataDto> {
-		if (!mediaSourceDataFormat) {
-			throw new MediaSourceDataFormatMissingLoggableException();
-		}
-
-		if (!mediaSourceId) {
-			throw new MediaSourceIdMissingLoggableException(mediaSourceDataFormat);
-		}
-
-		const mediaSource = await this.mediaSourceService.findByFormatAndSourceId(mediaSourceDataFormat, mediaSourceId);
-
-		if (!mediaSource) {
-			throw new MediaSourceNotFoundLoggableException(mediaSourceDataFormat);
-		}
-
-		const strategy = this.syncStrategyMap.get(mediaSourceDataFormat);
-
-		if (!strategy) {
-			throw new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat);
-		}
-
-		const mediaMetadata: MediaMetadataDto = await strategy.fetchMediaMetadata(mediumId, mediaSource);
-
-		return mediaMetadata;
 	}
 
 	private async getMediaSource(strategy: MediaSourceSyncStrategy): Promise<MediaSource> {

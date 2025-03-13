@@ -1,14 +1,12 @@
 import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
-import { Injectable } from '@nestjs/common';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaMetadataDto } from '../../dto';
-import { MediaSourceSyncReportFactory, MediaSourceSyncOperationReportFactory } from '../../factory';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
-import { MediaMetadataMapper } from '../../mapper';
+import { Injectable } from '@nestjs/common';
+import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
+import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
@@ -44,18 +42,6 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
 
 		return report;
-	}
-
-	public async fetchMediaMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediaMetadataDto> {
-		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
-			[mediumId],
-			mediaSource,
-			true
-		);
-
-		const mediaMetadataDto: MediaMetadataDto = MediaMetadataMapper.mapToMediaMetadata(metadataItems[0]);
-
-		return mediaMetadataDto;
 	}
 
 	private async getAllToolsWithBiloMedium(mediaSource: MediaSource): Promise<ExternalTool[]> {

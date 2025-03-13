@@ -1,13 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat, MediaSourceNotFoundLoggableException, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
-import { MediaSourceDataFormatMissingLoggableException } from '../loggable/media-source-data-format-missing-loggable.exception';
-import { MediaSourceIdMissingLoggableException } from '../loggable/media-source-id-missing-loggable.exception';
-import { MediaMetadataMapper } from '../mapper';
 import { mediaSourceSyncReportFactory } from '../testing';
 import { MediaSourceSyncService } from './media-source-sync.service';
 import { BiloSyncStrategy } from './strategy';
@@ -44,7 +40,6 @@ describe(MediaSourceSyncService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-		jest.clearAllMocks();
 	});
 
 	describe('syncAllMediaMetadata', () => {
@@ -126,94 +121,6 @@ describe(MediaSourceSyncService.name, () => {
 				const promise = service.syncAllMediaMetadata(mediaSourceDataFormat);
 
 				await expect(promise).rejects.toThrow(new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat));
-			});
-		});
-	});
-
-	describe('fetchMediumMetadata', () => {
-		describe('when mediumId, mediaSourceId and a media source data format is passed', () => {
-			const setup = () => {
-				const mediaSource = mediaSourceFactory.withBildungslogin().build();
-				const bilomedia = biloMediaQueryDataResponseFactory.build();
-				const mediaMetadata = MediaMetadataMapper.mapToMediaMetadata(bilomedia);
-
-				mediaSourceService.findByFormatAndSourceId.mockResolvedValue(mediaSource);
-				biloSyncStrategy.fetchMediaMetadata.mockResolvedValue(mediaMetadata);
-
-				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
-
-				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
-					[mediaSourceDataFormat, biloSyncStrategy],
-				]);
-				Reflect.set(service, 'syncStrategyMap', strategyMap);
-
-				return { mediaMetadata, mediaSourceDataFormat };
-			};
-
-			it('should fetch the media metadata using the bilo strategy', async () => {
-				const { mediaSourceDataFormat } = setup();
-
-				await service.fetchMediumMetadata('mediumId', 'mediaSourceId', mediaSourceDataFormat);
-
-				expect(biloSyncStrategy.fetchMediaMetadata).toBeCalled();
-			});
-		});
-
-		describe('when the media source data format is missing', () => {
-			it('should throw an MediaSourceDataFormatMissingLoggableException', async () => {
-				const result = service.fetchMediumMetadata('mediumId', 'mediaSourceId', undefined);
-
-				await expect(result).rejects.toThrow(new MediaSourceDataFormatMissingLoggableException());
-			});
-		});
-
-		describe('when the media source id is missing', () => {
-			it('should throw an MediaSourceIdMissingLoggableException', async () => {
-				const result = service.fetchMediumMetadata('mediumId', undefined, MediaSourceDataFormat.BILDUNGSLOGIN);
-
-				await expect(result).rejects.toThrow(
-					new MediaSourceIdMissingLoggableException(MediaSourceDataFormat.BILDUNGSLOGIN)
-				);
-			});
-		});
-
-		describe('when the media source cannot be found', () => {
-			const setup = () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
-
-				mediaSourceService.findByFormatAndSourceId.mockResolvedValue(null);
-
-				return { mediaSourceDataFormat };
-			};
-
-			it('should throw an MediaSourceNotFoundLoggableException', async () => {
-				const { mediaSourceDataFormat } = setup();
-
-				const result = service.fetchMediumMetadata('mediumId', 'mediaSourceId', mediaSourceDataFormat);
-
-				await expect(result).rejects.toThrow(new MediaSourceNotFoundLoggableException(mediaSourceDataFormat));
-			});
-		});
-
-		describe('when the sync strategy is not implemented', () => {
-			const setup = () => {
-				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
-
-				const mediaSource = mediaSourceFactory.withBildungslogin().build();
-				mediaSourceService.findByFormatAndSourceId.mockResolvedValue(mediaSource);
-
-				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
-				Reflect.set(service, 'syncStrategyMap', strategyMap);
-
-				return { mediaSourceDataFormat };
-			};
-
-			it('should throw an SyncStrategyNotImplementedLoggableException', async () => {
-				const { mediaSourceDataFormat } = setup();
-
-				const result = service.fetchMediumMetadata('mediumId', 'mediaSourceId', mediaSourceDataFormat);
-
-				await expect(result).rejects.toThrow(new SyncStrategyNotImplementedLoggableException(mediaSourceDataFormat));
 			});
 		});
 	});
