@@ -1,4 +1,4 @@
-import { ErrorLogMessage, LogMessage } from '@core/logger';
+import { LogMessage } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataStrategyNotImplementedLoggableException } from './medium-metadata-strategy-not-implemented-loggable.exception';
 
