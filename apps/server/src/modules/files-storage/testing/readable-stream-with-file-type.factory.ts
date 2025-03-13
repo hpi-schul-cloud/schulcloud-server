@@ -1,6 +1,6 @@
+import { BaseFactory } from '@testing/factory/base.factory';
 import { FileTypeResult, ReadableStreamWithFileType } from 'file-type';
 import { Readable } from 'stream';
-import { BaseFactory } from './base.factory';
 
 type ReadableStreamWithFileTypeProps = {
 	fileType?: FileTypeResult;

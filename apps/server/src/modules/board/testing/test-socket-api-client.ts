@@ -1,5 +1,4 @@
 import { INestApplication } from '@nestjs/common';
-
 import { Socket, io } from 'socket.io-client';
 
 export async function waitForEvent(socket: Socket, eventName: string): Promise<unknown> {
