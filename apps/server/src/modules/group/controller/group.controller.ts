@@ -1,17 +1,37 @@
+import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Group } from '@modules/group';
-import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Query,
+	UnauthorizedException,
+} from '@nestjs/common';
+import {
+	ApiBadRequestResponse,
+	ApiNoContentResponse,
+	ApiOperation,
+	ApiResponse,
+	ApiTags,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { ErrorResponse } from '@core/error/dto';
-import { ClassGroupUc, GroupUc } from '../uc';
+import { ClassGroupUc, CourseSyncUc, GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
 	ClassFilterParams,
 	ClassInfoSearchListResponse,
 	ClassSortParams,
+	CourseSyncBodyParams,
+	CourseUrlParams,
 	GroupIdParams,
 	GroupListResponse,
 	GroupPaginationParams,
@@ -24,7 +44,11 @@ import { GroupResponseMapper } from './mapper';
 @JwtAuthentication()
 @Controller('groups')
 export class GroupController {
-	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
+	constructor(
+		private readonly groupUc: GroupUc,
+		private readonly classGroupUc: ClassGroupUc,
+		private readonly courseSyncUc: CourseSyncUc
+	) {}
 
 	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
@@ -96,5 +120,31 @@ export class GroupController {
 		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups, pagination);
 
 		return response;
+	}
+
+	@Post('/course/:courseId/stop-sync')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Stop the synchronization of a course with a group.' })
+	@ApiNoContentResponse({ description: 'The course was successfully disconnected from a group.' })
+	@ApiUnprocessableEntityResponse({ description: 'The course is not synchronized with a group.' })
+	public async stopSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise<void> {
+		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
+	}
+
+	@Post('/course/:courseId/start-sync/')
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: 'Start the synchronization of a course with a group.' })
+	@ApiNoContentResponse({ description: 'The course was successfully synchronized to a group.' })
+	@ApiUnprocessableEntityResponse({ description: 'The course is already synchronized with a group.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	public async startSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams,
+		@Body() bodyParams: CourseSyncBodyParams
+	): Promise<void> {
+		await this.courseSyncUc.startSynchronization(currentUser.userId, params.courseId, bodyParams.groupId);
 	}
 }

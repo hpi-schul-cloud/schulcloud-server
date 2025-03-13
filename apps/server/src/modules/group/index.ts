@@ -1,4 +1,4 @@
-export { GroupModule } from './group.module';
-export { GroupConfig } from './group.config';
 export * from './domain';
-export { GroupService } from './service';
+export { GroupConfig } from './group.config';
+export { GroupModule } from './group.module';
+export { CourseSyncService, GroupService } from './service';
