@@ -3,9 +3,9 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncService } from '@modules/media-source-sync';
+import { MediaMetadataSyncReportLoggable } from '@modules/media-sync-console/loggable';
 import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
-import { MediaMetadataSyncReportLoggable } from '../loggable';
 import { MediaMetadataSyncStrategy } from './media-metadata-sync.strategy';
 
 describe(MediaMetadataSyncStrategy.name, () => {

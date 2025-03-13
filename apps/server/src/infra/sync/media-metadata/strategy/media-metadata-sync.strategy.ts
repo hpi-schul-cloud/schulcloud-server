@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncService, MediaSourceSyncReport } from '@modules/media-source-sync';
+import { MediaMetadataSyncReportLoggable } from '@modules/media-sync-console/loggable';
 import { SyncStrategy } from '../../strategy/sync-strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
-import { MediaMetadataSyncReportLoggable } from '../loggable';
 
 @Injectable()
 export class MediaMetadataSyncStrategy implements SyncStrategy {

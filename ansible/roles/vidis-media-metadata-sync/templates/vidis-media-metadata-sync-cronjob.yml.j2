@@ -43,7 +43,7 @@ spec:
                 name: vidis-media-metadata-sync-cronjob-configmap
             command: ['/bin/sh','-c']
 #            TODO
-            args: ['']
+            args: ['npm run nest:start:sync-console:prod -- media metadata -df VIDIS']
             resources:
               limits:
                 cpu: {{ VIDIS_MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}
