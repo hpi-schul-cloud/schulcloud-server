@@ -103,7 +103,7 @@ describe(BiloSyncStrategy.name, () => {
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
 
 				const mediums = externalToolMediumFactory.buildList(5, {
-					mediaSourceId: 'media-source-id',
+					mediaSourceId: mediaSource.sourceId,
 					metadataModifiedAt: undefined,
 				});
 
@@ -174,12 +174,12 @@ describe(BiloSyncStrategy.name, () => {
 		});
 
 		describe('when the media from the external tools had been synced before', () => {
-			describe('when the media metadata is outdated', () => {
+			describe('when the metadata is outdated', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withBildungslogin().build();
 
 					const mediums = externalToolMediumFactory.buildList(5, {
-						mediaSourceId: 'media-source-id',
+						mediaSourceId: mediaSource.sourceId,
 						metadataModifiedAt: new Date(),
 					});
 
@@ -258,12 +258,12 @@ describe(BiloSyncStrategy.name, () => {
 				});
 			});
 
-			describe('when the fetched metadata is not outdated', () => {
+			describe('when the metadata is not outdated', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withBildungslogin().build();
 
 					const mediums = externalToolMediumFactory.buildList(5, {
-						mediaSourceId: 'media-source-id',
+						mediaSourceId: mediaSource.sourceId,
 						metadataModifiedAt: new Date(),
 						publisher: undefined,
 					});
@@ -323,6 +323,63 @@ describe(BiloSyncStrategy.name, () => {
 					expect(externalToolService.updateExternalTools).toBeCalledWith([]);
 				});
 			});
+
+			describe('when the metadata is not outdated, but is different from fetched metadata', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.withBildungslogin().build();
+
+					const mediums = externalToolMediumFactory.buildList(5, {
+						mediaSourceId: mediaSource.sourceId,
+						metadataModifiedAt: new Date(),
+						publisher: undefined,
+					});
+
+					const externalTools = mediums.map((medium: ExternalToolMedium) => externalToolFactory.build({ medium }));
+
+					const metadataItems: BiloMediaQueryDataResponse[] = externalTools.map((externalTool: ExternalTool) => {
+						const coverSmall: BiloLinkResponse = {
+							href: externalTool.logoUrl as string,
+							rel: 'src',
+						};
+						return biloMediaQueryDataResponseFactory.build({
+							id: externalTool.medium?.mediumId,
+							title: `other-${externalTool.name}`,
+							description: `other-${externalTool.description as string}`,
+							publisher: undefined,
+							modified: externalTool.medium?.metadataModifiedAt?.getTime() as number,
+							coverSmall,
+						});
+					});
+
+					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
+					biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce(metadataItems);
+
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = {
+						totalCount: mediums.length,
+						successCount: mediums.length,
+						undeliveredCount: 0,
+						failedCount: 0,
+					};
+
+					const expectedOperations = [
+						mediaSourceSyncOperationReportFactory.build({
+							status: MediaSourceSyncStatus.SUCCESS,
+							operation: MediaSourceSyncOperation.UPDATE,
+							count: mediums.length,
+						}),
+					];
+
+					return { mediaSource, expectedSyncReport, expectedOperations };
+				};
+
+				it('should not update the media metadata', async () => {
+					const { mediaSource } = setup();
+
+					await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(externalToolService.updateExternalTools).toBeCalledWith([]);
+				});
+			});
 		});
 
 		describe('when the media source did not deliver the requested metadata', () => {
@@ -330,16 +387,14 @@ describe(BiloSyncStrategy.name, () => {
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
 
 				const mediums = externalToolMediumFactory.buildList(3, {
-					mediaSourceId: 'media-source-id',
+					mediaSourceId: mediaSource.sourceId,
 					metadataModifiedAt: undefined,
 				});
 
 				const externalTools = mediums.map((medium: ExternalToolMedium) => externalToolFactory.build({ medium }));
 
-				const metadataItems: BiloMediaQueryDataResponse[] = [];
-
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
-				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce(metadataItems);
+				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce([]);
 
 				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
 					totalCount: mediums.length,
@@ -382,7 +437,7 @@ describe(BiloSyncStrategy.name, () => {
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
 
 				const mediums = externalToolMediumFactory.buildList(3, {
-					mediaSourceId: 'media-source-id',
+					mediaSourceId: mediaSource.sourceId,
 					metadataModifiedAt: undefined,
 				});
 
