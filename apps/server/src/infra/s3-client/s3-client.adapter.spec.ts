@@ -1,10 +1,10 @@
-import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
+import { ListObjectsV2CommandOutput, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { ErrorUtils } from '@core/error/utils';
+import { LegacyLogger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorUtils } from '@core/error/utils';
-import { LegacyLogger } from '@core/logger';
 import { Readable } from 'node:stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
 import { File, S3Config } from './interface';
@@ -67,6 +67,7 @@ describe('S3ClientAdapter', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -325,6 +326,102 @@ describe('S3ClientAdapter', () => {
 		});
 	});
 
+	describe('moveDirectoryToTrash', () => {
+		describe('when client receives list objects successfully', () => {
+			describe('when contents contains key', () => {
+				const setup = () => {
+					const { pathToFile, bucket } = createParameter();
+					const filePath = 'directory/test.txt';
+
+					const expectedResponse: ListObjectsV2CommandOutput = {
+						Contents: [{ Key: filePath }],
+						IsTruncated: false,
+						KeyCount: 1,
+						$metadata: {},
+					};
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce(expectedResponse);
+
+					return { pathToFile, bucket, filePath };
+				};
+
+				it('should call send() of client with directory path', async () => {
+					const { pathToFile, bucket } = setup();
+
+					await service.moveDirectoryToTrash(pathToFile);
+
+					expect(client.send).toHaveBeenNthCalledWith(
+						1,
+						expect.objectContaining({
+							input: { Bucket: bucket, Prefix: 'test/text.txt' },
+						})
+					);
+				});
+
+				it('should call service.moveToTrash()', async () => {
+					const { pathToFile, filePath } = setup();
+
+					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
+					await service.moveDirectoryToTrash(pathToFile);
+
+					expect(spyMoveToTrash).toBeCalledWith([filePath]);
+				});
+			});
+
+			describe('when contents contains many keys', () => {
+				const setup = () => {
+					const { pathToFile, bucket } = createParameter();
+					const filePath = 'directory/test.txt';
+
+					const expectedResponse: ListObjectsV2CommandOutput = {
+						Contents: [{ Key: filePath }],
+						IsTruncated: true,
+						KeyCount: 1,
+						$metadata: {},
+						NextContinuationToken: 'test',
+					};
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce(expectedResponse);
+					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
+					spyMoveToTrash.mockResolvedValueOnce([]);
+
+					const expectedNextResponse: ListObjectsV2CommandOutput = {
+						Contents: [{ Key: filePath }],
+						IsTruncated: false,
+						KeyCount: 1,
+						$metadata: {},
+					};
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce(expectedNextResponse);
+
+					return { pathToFile, bucket, filePath };
+				};
+
+				it('should call send() of client with directory path', async () => {
+					const { pathToFile, bucket } = setup();
+
+					await service.moveDirectoryToTrash(pathToFile);
+
+					expect(client.send).toHaveBeenNthCalledWith(
+						1,
+						expect.objectContaining({
+							input: { Bucket: bucket, Prefix: 'test/text.txt' },
+						})
+					);
+				});
+
+				it('should call service.moveToTrash()', async () => {
+					const { pathToFile, filePath } = setup();
+
+					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
+					await service.moveDirectoryToTrash(pathToFile);
+
+					expect(spyMoveToTrash).toBeCalledWith([filePath]);
+				});
+			});
+		});
+	});
+
 	describe('delete', () => {
 		const setup = () => {
 			const { pathToFile, bucket } = createParameter();
@@ -351,9 +448,15 @@ describe('S3ClientAdapter', () => {
 				const setup = () => {
 					const { pathToFile, bucket } = createParameter();
 					const filePath = 'directory/test.txt';
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					client.send.mockResolvedValueOnce({ Contents: [{ Key: filePath }] });
+
+					const expectedResponse: ListObjectsV2CommandOutput = {
+						Contents: [{ Key: filePath }],
+						IsTruncated: false,
+						KeyCount: 1,
+						$metadata: {},
+					};
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce(expectedResponse);
 
 					return { pathToFile, bucket, filePath };
 				};
@@ -385,11 +488,63 @@ describe('S3ClientAdapter', () => {
 				});
 			});
 
+			describe('when contents contains many keys', () => {
+				const setup = () => {
+					const { pathToFile, bucket } = createParameter();
+					const filePath = 'directory/test.txt';
+
+					const expectedResponse: ListObjectsV2CommandOutput = {
+						Contents: [{ Key: filePath }],
+						IsTruncated: true,
+						KeyCount: 1,
+						$metadata: {},
+						NextContinuationToken: 'test',
+					};
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce(expectedResponse);
+					const spyDelete = jest.spyOn(service, 'delete');
+					// @ts-expect-error ignore parameter type of mock function
+					spyDelete.mockResolvedValueOnce({});
+
+					const expectedNextResponse: ListObjectsV2CommandOutput = {
+						Contents: [{ Key: filePath }],
+						IsTruncated: false,
+						KeyCount: 1,
+						$metadata: {},
+					};
+					// @ts-expect-error ignore parameter type of mock function
+					client.send.mockResolvedValueOnce(expectedNextResponse);
+
+					return { pathToFile, bucket, filePath };
+				};
+
+				it('should call send() of client with directory path', async () => {
+					const { pathToFile, bucket } = setup();
+
+					await service.deleteDirectory(pathToFile);
+
+					expect(client.send).toHaveBeenNthCalledWith(
+						1,
+						expect.objectContaining({
+							input: { Bucket: bucket, Prefix: 'test/text.txt' },
+						})
+					);
+				});
+
+				it('should call service.delete()', async () => {
+					const { pathToFile, filePath } = setup();
+
+					const spyDelete = jest.spyOn(service, 'delete');
+					await service.deleteDirectory(pathToFile);
+
+					expect(spyDelete).toBeCalledWith([filePath]);
+				});
+			});
+
 			describe('when contents is undefined', () => {
 				const setup = () => {
 					const { pathToFile } = createParameter();
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
+					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce({});
 
 					return { pathToFile };
@@ -407,8 +562,7 @@ describe('S3ClientAdapter', () => {
 			describe('when contents is empty array', () => {
 				const setup = () => {
 					const { pathToFile } = createParameter();
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
+					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce({ Contents: [] });
 
 					return { pathToFile };
@@ -453,9 +607,16 @@ describe('S3ClientAdapter', () => {
 				const { pathToFile } = createParameter();
 				const filePath = 'directory/test.txt';
 				const error = new Error('S3ClientAdapter:delete');
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				client.send.mockResolvedValueOnce({ Contents: [{ Key: filePath }] });
+
+				const expectedResponse: ListObjectsV2CommandOutput = {
+					Contents: [{ Key: filePath }],
+					IsTruncated: false,
+					KeyCount: 1,
+					$metadata: {},
+				};
+				// @ts-expect-error ignore parameter type of mock function
+				client.send.mockResolvedValueOnce(expectedResponse);
+
 				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore
 				client.send.mockRejectedValueOnce();

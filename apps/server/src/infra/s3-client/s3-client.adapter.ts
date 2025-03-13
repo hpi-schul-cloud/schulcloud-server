@@ -136,6 +136,37 @@ export class S3ClientAdapter {
 		}
 	}
 
+	public async moveDirectoryToTrash(path: string, nextMarker?: string): Promise<void> {
+		try {
+			this.logger.debug({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
+
+			const req = new ListObjectsV2Command({
+				Bucket: this.config.bucket,
+				Prefix: path,
+				ContinuationToken: nextMarker,
+			});
+
+			const data = await this.client.send(req);
+
+			if (data.Contents && data.KeyCount) {
+				const pathObjects = data.Contents.map((p) => p.Key);
+
+				const filteredPathObjects = pathObjects.filter((p): p is string => !!p);
+
+				await this.moveToTrash(filteredPathObjects);
+			}
+
+			if (data.IsTruncated && data.NextContinuationToken) {
+				await this.moveDirectoryToTrash(path, data.NextContinuationToken);
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(
+				'S3ClientAdapter:moveDirectoryToTrash',
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
+		}
+	}
+
 	public async restore(paths: string[]): Promise<CopyObjectCommandOutput[]> {
 		try {
 			this.logger.debug({ action: 'restore', params: { paths, bucket: this.config.bucket } });
@@ -264,23 +295,28 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async deleteDirectory(path: string): Promise<void> {
+	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
 			this.logger.debug({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
 			const req = new ListObjectsV2Command({
 				Bucket: this.config.bucket,
 				Prefix: path,
+				ContinuationToken: nextMarker,
 			});
 
 			const data = await this.client.send(req);
 
-			if (data.Contents?.length && data.Contents?.length > 0) {
+			if (data.Contents && data.KeyCount) {
 				const pathObjects = data.Contents.map((p) => p.Key);
 
 				const filteredPathObjects = pathObjects.filter((p): p is string => !!p);
 
 				await this.delete(filteredPathObjects);
+			}
+
+			if (data.IsTruncated && data.NextContinuationToken) {
+				await this.deleteDirectory(path, data.NextContinuationToken);
 			}
 		} catch (err) {
 			throw new InternalServerErrorException(
