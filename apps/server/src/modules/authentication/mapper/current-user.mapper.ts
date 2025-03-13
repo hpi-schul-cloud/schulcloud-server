@@ -1,9 +1,9 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
-import { UserDo } from '@modules/user/domain';
+import { Role } from '@modules/role/repo';
+import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
-import { Role } from '@shared/domain/entity';
 
 export class CurrentUserMapper {
 	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {

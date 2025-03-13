@@ -6,22 +6,21 @@ import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
+import { TeamEntity, TeamRepo } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
+import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { RoleReference, VideoConferenceDO } from '@shared/domain/domainobject';
-import { Role, TeamEntity } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { RoleReference } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
-import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
-import { teamFactory } from '@testing/factory/team.factory';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
@@ -34,8 +33,10 @@ import {
 	BBBStatus,
 	GuestPolicy,
 } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
+import { ErrorStatus } from '../error';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
@@ -64,7 +65,7 @@ describe('VideoConferenceUc', () => {
 	let bbbService: DeepMocked<BBBService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let courseService: DeepMocked<CourseService>;
 	let userService: DeepMocked<UserService>;
 	let calendarService: DeepMocked<CalendarService>;
@@ -125,8 +126,8 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<VideoConferenceRepo>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: CourseService,
@@ -153,7 +154,7 @@ describe('VideoConferenceUc', () => {
 		calendarService = module.get(CalendarService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		userService = module.get(UserService);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		bbbService = module.get(BBBService);
 	});
 
@@ -187,7 +188,7 @@ describe('VideoConferenceUc', () => {
 		userPermissions.set(Permission.JOIN_MEETING, Promise.resolve(true));
 		userPermissions.set(Permission.START_MEETING, Promise.resolve(true));
 
-		teamsRepo.findById.mockResolvedValue(team);
+		teamRepo.findById.mockResolvedValue(team);
 		schoolService.hasFeature.mockResolvedValue(true);
 		courseService.findById.mockResolvedValue(course);
 		calendarService.findEvent.mockResolvedValue(event);
@@ -486,7 +487,7 @@ describe('VideoConferenceUc', () => {
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
 			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
 			expect(userService.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamsRepo.findById).toHaveBeenCalledWith(event.teamId);
+			expect(teamRepo.findById).toHaveBeenCalledWith(event.teamId);
 
 			expect(result.state).toEqual(VideoConferenceState.RUNNING);
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);
@@ -535,7 +536,7 @@ describe('VideoConferenceUc', () => {
 			expect(videoConferenceRepo.findByScopeAndScopeId).toHaveBeenCalledWith(eventId, VideoConferenceScope.EVENT);
 			expect(bbbService.join).toHaveBeenCalledWith(builderEvent.build());
 			expect(userService.findById).toHaveBeenCalledWith(defaultCurrentUser.userId);
-			expect(teamsRepo.findById).toHaveBeenCalledWith(event.teamId);
+			expect(teamRepo.findById).toHaveBeenCalledWith(event.teamId);
 
 			expect(result.state).toEqual(VideoConferenceState.RUNNING);
 			expect(result.permission).toEqual(Permission.JOIN_MEETING);

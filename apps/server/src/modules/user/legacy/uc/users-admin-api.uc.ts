@@ -1,13 +1,13 @@
-import { User, UserRepo } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
-} from '../../../authorization';
-import { RoleService } from '../../../role';
+} from '@modules/authorization';
+import { RoleName, RoleService } from '@modules/role';
+import { User, UserRepo } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { RequestedRoleEnum } from '../enum';
 import { UsersAdminService } from '../service';

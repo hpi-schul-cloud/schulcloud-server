@@ -1,5 +1,5 @@
 import { County } from '../../domain';
-import { CountyResponse } from '../dto/response';
+import { CountyResponse } from '../dto';
 
 export class CountyResponseMapper {
 	public static mapToResponse(county: County): CountyResponse {

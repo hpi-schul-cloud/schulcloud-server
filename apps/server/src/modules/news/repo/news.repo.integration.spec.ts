@@ -9,9 +9,9 @@ import {
 	teamNewsFactory,
 	teamUnpublishedNewsFactory,
 } from '@modules/news/testing';
+import { TeamEntity } from '@modules/team/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamEntity } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';

@@ -1,15 +1,15 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
+import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
-import { SecondarySchoolReference, UserDo, UserSourceOptions } from '@modules/user/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { Role } from '@shared/domain/entity';
 import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
+import { SecondarySchoolReference, UserDo, UserSourceOptions } from '../../domain';
 import { UserQuery } from '../../service/user-query.type';
 import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
@@ -143,6 +143,7 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
+			deletedAt: entity.deletedAt,
 			email: entity.email,
 			firstName: entity.firstName,
 			lastName: entity.lastName,

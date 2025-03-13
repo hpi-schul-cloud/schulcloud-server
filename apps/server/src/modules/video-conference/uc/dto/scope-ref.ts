@@ -1,10 +1,10 @@
-import { VideoConferenceScope } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { VideoConferenceScope } from '../../domain';
 
 export class ScopeRef {
-	id: EntityId;
+	public id: EntityId;
 
-	scope: VideoConferenceScope;
+	public scope: VideoConferenceScope;
 
 	constructor(id: EntityId, scope: VideoConferenceScope) {
 		this.id = id;

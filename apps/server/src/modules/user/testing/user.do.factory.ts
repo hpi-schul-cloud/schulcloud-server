@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserDo } from '@modules/user/domain';
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 import { EntityId } from '@shared/domain/types';
-import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from '@testing/factory/domainobject';
+import { DeepPartial } from 'fishery';
+import { UserDo } from '../domain';
 
 class UserDoFactory extends DoBaseFactory<UserDo, UserDo> {
 	public withRoles(roles: { id: EntityId; name: RoleName }[]): UserDoFactory {

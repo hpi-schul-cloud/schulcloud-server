@@ -3,13 +3,13 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { roleFactory } from '@modules/role/testing';
+import { teamFactory } from '@modules/team/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
-import { teamFactory } from '@testing/factory/team.factory';
 import { TeamRule } from './team.rule';
 
 describe('TeamRule', () => {

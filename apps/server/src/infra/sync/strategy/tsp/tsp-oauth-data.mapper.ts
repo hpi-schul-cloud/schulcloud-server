@@ -8,13 +8,39 @@ import {
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { RoleName } from '@modules/role';
 import { School } from '@modules/school';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
+
+type ClassNameGradeInfo = { name: string; gradeLevel?: number };
+
+const CLASS_NAME_FORMATS = [
+	{
+		regex: /^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/,
+		values: (fullName: string): ClassNameGradeInfo => {
+			let gradeLevel: number | undefined = undefined;
+			const gradeMatch = fullName.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/);
+			if (gradeMatch && gradeMatch.length >= 2) {
+				gradeLevel = parseInt(gradeMatch[1]);
+			}
+
+			let name = fullName;
+			const nameMatch = fullName.match(/^(?:0)*(?:(?:1[0-3])|[1-9])(\D.*)$/);
+			if (nameMatch && nameMatch.length >= 2) {
+				name = nameMatch[1];
+			}
+
+			return {
+				name,
+				gradeLevel,
+			};
+		},
+	},
+];
 
 export type TspUserInfo = {
 	externalId: string;
@@ -40,7 +66,7 @@ export class TspOauthDataMapper {
 		});
 
 		const externalSchools = this.createMapOfExternalSchoolDtos(schools);
-		const { externalClasses, teacherForClasses } = this.createMapsOfClasses(tspClasses);
+		const { externalClasses, classesOfTeachers, classesOfStudents } = this.createMapsOfClasses(tspClasses, tspStudents);
 		const oauthDataDtos: OauthDataDto[] = [];
 		const usersOfClasses = new Map<string, TspUserInfo[]>();
 
@@ -49,7 +75,7 @@ export class TspOauthDataMapper {
 			systemDto,
 			externalSchools,
 			externalClasses,
-			teacherForClasses,
+			classesOfTeachers,
 			usersOfClasses
 		).forEach((oauthDataDto) => oauthDataDtos.push(oauthDataDto));
 
@@ -58,6 +84,7 @@ export class TspOauthDataMapper {
 			systemDto,
 			externalSchools,
 			externalClasses,
+			classesOfStudents,
 			usersOfClasses
 		).forEach((oauthDataDto) => oauthDataDtos.push(oauthDataDto));
 
@@ -85,33 +112,63 @@ export class TspOauthDataMapper {
 		return externalSchools;
 	}
 
-	private createMapsOfClasses(tspClasses: RobjExportKlasse[]): {
+	private createMapsOfClasses(
+		tspClasses: RobjExportKlasse[],
+		tspStudents: RobjExportSchueler[]
+	): {
 		externalClasses: Map<string, ExternalClassDto>;
-		teacherForClasses: Map<string, Array<string>>;
+		classesOfTeachers: Map<string, Array<string>>;
+		classesOfStudents: Map<string, Array<string>>;
 	} {
 		const externalClasses = new Map<string, ExternalClassDto>();
-		const teacherForClasses = new Map<string, Array<string>>();
+		const classesOfTeachers = new Map<string, Array<string>>();
+		const classesOfStudents = new Map<string, Array<string>>();
 
 		tspClasses
 			.filter((tspClass) => this.ensureExternalId(tspClass.klasseId, 'class'))
 			.forEach((tspClass) => {
 				TypeGuard.requireKeys(tspClass, ['klasseId']);
 
+				let className = tspClass.klasseName;
+				let classGradeLevel: number | undefined = undefined;
+				if (className) {
+					const nameGradeInfo = this.getClassNameGradeInfo(className);
+					className = nameGradeInfo.name;
+					classGradeLevel = nameGradeInfo.gradeLevel;
+				}
+
 				const externalClass = new ExternalClassDto({
 					externalId: tspClass.klasseId,
-					name: tspClass.klasseName,
+					name: className,
+					gradeLevel: classGradeLevel,
 				});
 
 				externalClasses.set(tspClass.klasseId, externalClass);
 
 				if (tspClass.lehrerUid) {
-					const classSet = teacherForClasses.get(tspClass.lehrerUid) ?? [];
+					const classSet = classesOfTeachers.get(tspClass.lehrerUid) ?? [];
 					classSet.push(tspClass.klasseId);
-					teacherForClasses.set(tspClass.lehrerUid, classSet);
+					classesOfTeachers.set(tspClass.lehrerUid, classSet);
 				}
 			});
 
-		return { externalClasses, teacherForClasses };
+		tspStudents
+			.filter((tspStudent) => this.ensureExternalId(tspStudent.schuelerUid, 'student'))
+			.forEach((tspStudent) => {
+				TypeGuard.requireKeys(tspStudent, ['schuelerUid']);
+
+				let classes = classesOfStudents.get(tspStudent.schuelerUid);
+				if (!classes) {
+					classes = [];
+					classesOfStudents.set(tspStudent.schuelerUid, classes);
+				}
+
+				if (tspStudent.klasseId) {
+					classes.push(tspStudent.klasseId);
+				}
+			});
+
+		return { externalClasses, classesOfTeachers, classesOfStudents };
 	}
 
 	private mapTspTeachersToOauthDataDtos(
@@ -119,7 +176,7 @@ export class TspOauthDataMapper {
 		systemDto: ProvisioningSystemDto,
 		externalSchools: Map<string, ExternalSchoolDto>,
 		externalClasses: Map<string, ExternalClassDto>,
-		teacherForClasses: Map<string, Array<string>>,
+		classesOfTeachers: Map<string, Array<string>>,
 		usersOfClasses: Map<string, TspUserInfo[]>
 	): OauthDataDto[] {
 		const oauthDataDtos = tspTeachers
@@ -134,7 +191,7 @@ export class TspOauthDataMapper {
 					roles: [RoleName.TEACHER],
 				});
 
-				const classIds = teacherForClasses.get(tspTeacher.lehrerUid) ?? [];
+				const classIds = classesOfTeachers.get(tspTeacher.lehrerUid) ?? [];
 				const classes: ExternalClassDto[] = classIds
 					.map((classId) => externalClasses.get(classId))
 					.filter((externalClass: ExternalClassDto | undefined): externalClass is ExternalClassDto => !!externalClass);
@@ -164,12 +221,20 @@ export class TspOauthDataMapper {
 		systemDto: ProvisioningSystemDto,
 		externalSchools: Map<string, ExternalSchoolDto>,
 		externalClasses: Map<string, ExternalClassDto>,
+		classesOfStudents: Map<string, Array<string>>,
 		usersOfClasses: Map<string, TspUserInfo[]>
 	): OauthDataDto[] {
+		const alreadyMapped = new Set<string>();
+
 		const oauthDataDtos = tspStudents
 			.filter((tspStudent) => this.ensureExternalId(tspStudent.schuelerUid, 'student'))
 			.map((tspStudent) => {
 				TypeGuard.requireKeys(tspStudent, ['schuelerUid']);
+
+				if (alreadyMapped.has(tspStudent.schuelerUid)) {
+					return undefined;
+				}
+				alreadyMapped.add(tspStudent.schuelerUid);
 
 				const externalUser = new ExternalUserDto({
 					externalId: tspStudent.schuelerUid,
@@ -178,11 +243,15 @@ export class TspOauthDataMapper {
 					roles: [RoleName.STUDENT],
 				});
 
-				let classStudent: ExternalClassDto | undefined;
-				if (tspStudent.klasseId) {
-					classStudent = externalClasses.get(tspStudent.klasseId);
-					this.addUserInfoToMap(usersOfClasses, tspStudent.klasseId, tspStudent.schuelerUid, RoleName.STUDENT);
-				}
+				const externalClassesOfStudent: ExternalClassDto[] = [];
+				const externalClassIds = classesOfStudents.get(tspStudent.schuelerUid) ?? [];
+				externalClassIds.forEach((externalClassId) => {
+					this.addUserInfoToMap(usersOfClasses, externalClassId, tspStudent.schuelerUid, RoleName.STUDENT);
+					const externalClass = externalClasses.get(externalClassId);
+					if (externalClass) {
+						externalClassesOfStudent.push(externalClass);
+					}
+				});
 
 				const externalSchool =
 					tspStudent.schuleNummer == null ? undefined : externalSchools.get(tspStudent.schuleNummer);
@@ -191,11 +260,12 @@ export class TspOauthDataMapper {
 					system: systemDto,
 					externalUser,
 					externalSchool,
-					externalClasses: classStudent ? [classStudent] : [],
+					externalClasses: externalClassesOfStudent,
 				});
 
 				return oauthDataDto;
-			});
+			})
+			.filter((oauthDataDto) => !!oauthDataDto);
 
 		return oauthDataDtos;
 	}
@@ -224,5 +294,16 @@ export class TspOauthDataMapper {
 			externalId,
 			role,
 		});
+	}
+
+	private getClassNameGradeInfo(fullClassName: string): ClassNameGradeInfo {
+		const classNameFormat = CLASS_NAME_FORMATS.find((format) => format.regex.test(fullClassName));
+		if (classNameFormat) {
+			return classNameFormat.values(fullClassName);
+		}
+
+		return {
+			name: fullClassName,
+		};
 	}
 }
