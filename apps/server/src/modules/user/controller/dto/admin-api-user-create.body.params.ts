@@ -1,5 +1,5 @@
+import { RoleName } from '@modules/role';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IsEmail, IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 

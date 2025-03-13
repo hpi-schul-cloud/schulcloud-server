@@ -1,5 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
+import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
@@ -7,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
+import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';

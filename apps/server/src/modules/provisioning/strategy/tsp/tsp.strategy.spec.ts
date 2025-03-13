@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
+import { RoleName } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt from 'jsonwebtoken';
 import {

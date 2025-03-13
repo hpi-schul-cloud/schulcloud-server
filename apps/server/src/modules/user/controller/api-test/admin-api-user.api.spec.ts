@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { TestApiClient } from '@testing/test-api-client';
 import { nanoid } from 'nanoid';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
