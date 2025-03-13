@@ -3,7 +3,8 @@ import { Controller, Delete, ForbiddenException, InternalServerErrorException, P
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { FilesStorageAdminUC } from '../uc';
-import { StorageLocationParamsDto } from './dto';
+import { DeleteByStorageLocationResponse, StorageLocationParamsDto } from './dto';
+import { FileRecordMapper } from '../mapper';
 
 @ApiTags('admin')
 @JwtAuthentication()
@@ -19,7 +20,13 @@ export class FilesStorageAdminController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Delete('storage-location/:storageLocation/:storageLocationId')
-	public async deleteByStorageLocation(@Param() params: StorageLocationParamsDto): Promise<void> {
-		await this.filesStorageAdminUC.deleteByStorageLocation(params);
+	public async deleteByStorageLocation(
+		@Param() params: StorageLocationParamsDto
+	): Promise<DeleteByStorageLocationResponse> {
+		const result = await this.filesStorageAdminUC.deleteByStorageLocation(params);
+
+		const response = FileRecordMapper.mapToDeleteByStorageLocationResponse(params, result);
+
+		return response;
 	}
 }
