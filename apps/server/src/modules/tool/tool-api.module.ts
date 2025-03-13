@@ -5,7 +5,6 @@ import { BoardModule } from '@modules/board';
 import { BoardContextApiHelperModule } from '@modules/board-context';
 import { CourseModule } from '@modules/course';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { UserModule } from '@modules/user';
@@ -41,7 +40,6 @@ import { ToolModule } from './tool.module';
 		UserLicenseModule,
 		SchoolLicenseModule,
 		EncryptionModule,
-		MediaSourceSyncModule,
 	],
 	controllers: [
 		ToolLaunchController,

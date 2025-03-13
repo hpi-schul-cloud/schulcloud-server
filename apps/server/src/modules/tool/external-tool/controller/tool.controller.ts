@@ -18,7 +18,6 @@ import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
-	ApiInternalServerErrorResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
@@ -32,7 +31,6 @@ import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { Response } from 'express';
-import { MediaMetadataDto } from '../../../media-source-sync';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolUtilization } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
@@ -51,8 +49,6 @@ import {
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ExternalToolMediumParams,
-	ExternalToolMediumMetadataResponse,
 } from './dto';
 
 @ApiTags('Tool')
@@ -255,26 +251,5 @@ export class ToolController {
 		const streamableFile: StreamableFile = new StreamableFile(datasheetBuffer);
 
 		return streamableFile;
-	}
-
-	@Get('medium/:mediumId/media-source/:format/:mediaSourceId/metadata')
-	@ApiOperation({ summary: 'Returns metadata from media source for configuration of a medium' })
-	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	@ApiInternalServerErrorResponse({ description: 'Error occurred while retrieving metadata from media source' })
-	public async getMetadataForExternalToolFromMediaSource(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: ExternalToolMediumParams
-	): Promise<ExternalToolMediumMetadataResponse> {
-		const externalToolMetadata: MediaMetadataDto = await this.externalToolUc.getMetadataForExternalToolFromMediaSource(
-			currentUser.userId,
-			params.mediumId,
-			params.mediaSourceId,
-			params.format
-		);
-
-		const mapped: ExternalToolMediumMetadataResponse =
-			ExternalToolResponseMapper.mapExternalMediumMetadataToResponse(externalToolMetadata);
-
-		return mapped;
 	}
 }

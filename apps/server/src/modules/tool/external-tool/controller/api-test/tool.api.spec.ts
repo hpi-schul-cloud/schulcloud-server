@@ -1,14 +1,8 @@
-import { ErrorResponse } from '@core/error/dto';
-import { BiloMediaQueryResponse } from '@infra/bilo-client';
-import { biloMediaQueryResponseFactory } from '@infra/bilo-client/testing';
 import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { instanceEntityFactory } from '@modules/instance/testing';
-import { MediaSourceDataFormat } from '@modules/media-source';
-import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -40,7 +34,6 @@ import {
 	ExternalToolSearchListResponse,
 	ExternalToolUtilizationResponse,
 } from '../dto';
-import { mediaUserLicenseEntityFactory } from '../../../../user-license/testing';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -48,11 +41,6 @@ describe('ToolController (API)', () => {
 
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
-
-	beforeEach(async () => {
-		axiosMock.reset();
-		await cleanupCollections(em);
-	});
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -65,6 +53,11 @@ describe('ToolController (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'tools/external-tools');
+	});
+
+	afterEach(async () => {
+		axiosMock.reset();
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
@@ -952,188 +945,6 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${toolId}/datasheet`);
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
-			});
-		});
-	});
-
-	describe('[GET] tools/external-tools/medium/:mediumId/media-source/:format/:mediaSourceId/metadata', () => {
-		describe('when mediumId, media source id and format is given', () => {
-			const setup = async () => {
-				const authEndpoint = `https://oauth-token-url.com/`;
-				const baseUrl = `https://oauth-base-url.com/`;
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
-				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
-
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
-				em.clear();
-
-				axiosMock.onPost(new RegExp(authEndpoint)).reply<OauthTokenResponse>(HttpStatus.OK, {
-					id_token: 'idToken',
-					refresh_token: 'refreshToken',
-					access_token: 'accessToken',
-				});
-				const responses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
-
-				axiosMock.onPost(new RegExp(baseUrl + '.*')).replyOnce(HttpStatus.OK, responses);
-
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient, userLicence, mediaSourceEntity, biloMediaMetaData: responses[0] };
-			};
-
-			it('should return the metadata of media source', async () => {
-				const { loggedInClient, userLicence, mediaSourceEntity, biloMediaMetaData } = await setup();
-
-				const response: Response = await loggedInClient.get(
-					`medium/${userLicence.mediumId}/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
-				);
-
-				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual({
-					name: biloMediaMetaData.data.title,
-					description: biloMediaMetaData.data.description,
-					publisher: biloMediaMetaData.data.publisher,
-					logoUrl: biloMediaMetaData.data.cover.href,
-					previewLogoUrl: biloMediaMetaData.data.coverSmall.href,
-					modifiedAt: new Date(biloMediaMetaData.data.modified).toISOString(),
-				});
-			});
-		});
-
-		describe('when mediumId not valid', () => {
-			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
-				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
-				em.clear();
-
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient, mediaSourceEntity };
-			};
-
-			it('should not return the metadata of media source', async () => {
-				const { loggedInClient, mediaSourceEntity } = await setup();
-
-				const response: Response = await loggedInClient.get(
-					`medium/some-id/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
-				);
-
-				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
-			});
-		});
-
-		describe('when media source not valid', () => {
-			const setup = async () => {
-				const authEndpoint = `https://oauth-token-url.com/`;
-				const baseUrl = `https://oauth-base-url.com/`;
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
-				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
-
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
-				em.clear();
-
-				axiosMock.onPost(new RegExp(authEndpoint)).reply<OauthTokenResponse>(HttpStatus.OK, {
-					id_token: 'idToken',
-					refresh_token: 'refreshToken',
-					access_token: 'accessToken',
-				});
-				const responses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2);
-
-				axiosMock.onPost(new RegExp(baseUrl + '.*')).replyOnce(HttpStatus.OK, responses);
-
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient, userLicence, mediaSourceEntity, biloMediaMetaData: responses[0] };
-			};
-
-			it('should not return the metadata of undefined media source', async () => {
-				const { loggedInClient, userLicence } = await setup();
-
-				const response: Response = await loggedInClient.get(
-					`medium/${userLicence.mediumId}/media-source/BILDUNGSLOGIN/some-id/metadata`
-				);
-
-				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
-			});
-		});
-
-		describe('when user is not authenticated', () => {
-			const setup = () => {
-				const format = MediaSourceDataFormat.BILDUNGSLOGIN;
-				const authEndpoint = `http://mediaSourceEntity.oauthConfig.authEndpoint.*`;
-				const baseUrl = `http://mediaSourceEntity.oauthConfig.baseUrl.*`;
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
-
-				return { format, mediaSourceEntity };
-			};
-
-			it('should return unauthorized', async () => {
-				const { format, mediaSourceEntity } = setup();
-
-				const response: Response = await testApiClient.get(
-					`medium/mediumId/media-source/${format}/${mediaSourceEntity.sourceId}/metadata`
-				);
-
-				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the media source responded with invalid metadata', () => {
-			const setup = async () => {
-				const authEndpoint = `https://oauth-token-url.com/`;
-				const baseUrl = `https://oauth-base-url.com/`;
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ authEndpoint, baseUrl }).build();
-				const userLicence = mediaUserLicenseEntityFactory.build({ mediaSource: mediaSourceEntity });
-
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
-
-				await em.persistAndFlush([superheroAccount, superheroUser, userLicence, mediaSourceEntity]);
-				em.clear();
-
-				axiosMock.onPost(new RegExp(authEndpoint)).reply<OauthTokenResponse>(HttpStatus.OK, {
-					id_token: 'idToken',
-					refresh_token: 'refreshToken',
-					access_token: 'accessToken',
-				});
-
-				const responses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(2, {
-					status: 404,
-					data: undefined,
-				});
-
-				axiosMock.onPost(new RegExp(baseUrl + '.*')).replyOnce(HttpStatus.OK, responses);
-
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
-
-				return { loggedInClient, userLicence, mediaSourceEntity };
-			};
-
-			it('should return an internal server error', async () => {
-				const { loggedInClient, userLicence, mediaSourceEntity } = await setup();
-
-				const response: Response = await loggedInClient.get(
-					`medium/${userLicence.mediumId}/media-source/BILDUNGSLOGIN/${mediaSourceEntity.sourceId}/metadata`
-				);
-
-				expect(response.statusCode).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
-				expect(response.body).toEqual<ErrorResponse>({
-					message: `Bad response from the media source`,
-					type: 'BILO_MEDIA_QUERY_BAD_RESPONSE',
-					code: 500,
-					title: 'Bilo Media Query Bad Response',
-				});
 			});
 		});
 	});

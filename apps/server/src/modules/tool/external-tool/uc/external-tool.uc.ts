@@ -1,8 +1,6 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { MediaSourceDataFormat } from '@modules/media-source';
-import { MediaMetadataDto, MediaSourceSyncService } from '@modules/media-source-sync';
 import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
@@ -45,8 +43,7 @@ export class ExternalToolUc {
 		private readonly commonToolUtilizationService: CommonToolUtilizationService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
-		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
-		private readonly mediaSourceSyncService: MediaSourceSyncService
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
 	public async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -282,24 +279,6 @@ export class ExternalToolUc {
 		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
-	}
-
-	public async getMetadataForExternalToolFromMediaSource(
-		userId: EntityId,
-		mediumId: string,
-		mediaSourceId: string | undefined,
-		mediaSourceDataFormat: MediaSourceDataFormat | undefined
-	): Promise<MediaMetadataDto> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SOURCE_ADMIN]);
-
-		const mediaMetadataDto: MediaMetadataDto = await this.mediaSourceSyncService.fetchMediumMetadata(
-			mediumId,
-			mediaSourceId,
-			mediaSourceDataFormat
-		);
-
-		return mediaMetadataDto;
 	}
 
 	private encryptLtiSecret(
