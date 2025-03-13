@@ -1,4 +1,4 @@
-import { BusinessError } from './business.error';
+import { BusinessError } from '@shared/common/error/business.error';
 
 export class UserAlreadyAssignedToImportUserError extends BusinessError {
 	constructor() {
