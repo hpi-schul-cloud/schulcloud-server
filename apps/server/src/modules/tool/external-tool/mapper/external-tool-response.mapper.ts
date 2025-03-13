@@ -87,7 +87,12 @@ export class ExternalToolResponseMapper {
 			return undefined;
 		}
 
-		return new ExternalToolMediumResponse({ ...medium });
+		return new ExternalToolMediumResponse({
+			mediumId: medium.mediumId,
+			publisher: medium.publisher,
+			mediaSourceId: medium.mediaSourceId,
+			modifiedAt: medium.metadataModifiedAt,
+		});
 	}
 
 	public static mapExternalMediumMetadataToResponse(
