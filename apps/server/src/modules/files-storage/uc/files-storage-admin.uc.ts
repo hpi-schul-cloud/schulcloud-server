@@ -22,14 +22,16 @@ export class FilesStorageAdminUC {
 		this.logger.setContext(FilesStorageAdminUC.name);
 	}
 
-	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<void> {
+	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<number> {
 		const context = AuthorizationContextBuilder.write([
 			AuthorizationContextParamsRequiredPermissions.INSTANCE_VIEW,
 			AuthorizationContextParamsRequiredPermissions.FILESTORAGE_REMOVE,
 		]);
 
 		await this.checkPermission(params.storageLocation, params.storageLocationId, context);
-		return this.filesStorageAdminService.deleteByStorageLocation(params);
+		const result = await this.filesStorageAdminService.deleteByStorageLocation(params);
+
+		return result;
 	}
 
 	private async checkPermission(
