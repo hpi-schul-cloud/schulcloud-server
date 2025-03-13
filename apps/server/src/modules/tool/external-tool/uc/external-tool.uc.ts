@@ -145,7 +145,11 @@ export class ExternalToolUc {
 			config: updatedConfigProps,
 		});
 
-		if (pendingExternalTool.medium && currentExternalTool.medium?.metadataModifiedAt) {
+		if (
+			pendingExternalTool.medium &&
+			!pendingExternalTool.medium?.metadataModifiedAt &&
+			currentExternalTool.medium?.metadataModifiedAt
+		) {
 			pendingExternalTool.medium.metadataModifiedAt = currentExternalTool.medium.metadataModifiedAt;
 		}
 

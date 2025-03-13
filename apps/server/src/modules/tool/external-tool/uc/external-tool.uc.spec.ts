@@ -1095,47 +1095,93 @@ describe(ExternalToolUc.name, () => {
 		});
 
 		describe('when the external tool has a medium with a last metadata modified date', () => {
-			const setupMedium = () => {
-				const mediumWithDate = externalToolMediumFactory.build({ metadataModifiedAt: new Date() });
+			describe('when the tool update dto has undefined metadata modified date', () => {
+				const setupMedium = () => {
+					const mediumWithDate = externalToolMediumFactory.build({ metadataModifiedAt: new Date() });
 
-				const currentExternalTool = externalToolFactory.build({ medium: mediumWithDate });
-				const toolId = currentExternalTool.id;
+					const currentExternalTool = externalToolFactory.build({ medium: mediumWithDate });
+					const toolId = currentExternalTool.id;
 
-				const externalToolToUpdate: ExternalToolUpdate = {
-					...currentExternalTool.getProps(),
-					id: toolId,
-					name: 'newName',
-					description: 'newDescription',
-					medium: {
-						...mediumWithDate,
-						metadataModifiedAt: undefined,
-					},
+					const externalToolToUpdate: ExternalToolUpdate = {
+						...currentExternalTool.getProps(),
+						id: toolId,
+						name: 'newName',
+						description: 'newDescription',
+						medium: {
+							...mediumWithDate,
+							metadataModifiedAt: undefined,
+						},
+					};
+
+					const pendingExternalTool: ExternalTool = externalToolFactory.buildWithId(
+						{
+							...externalToolToUpdate,
+							medium: mediumWithDate,
+						},
+						toolId
+					);
+
+					externalToolService.findById.mockResolvedValueOnce(currentExternalTool);
+
+					return {
+						toolId,
+						externalToolToUpdate,
+						pendingExternalTool,
+					};
 				};
 
-				const pendingExternalTool: ExternalTool = externalToolFactory.buildWithId(
-					{
-						...externalToolToUpdate,
-						medium: mediumWithDate,
-					},
-					toolId
-				);
+				it('should not update the metadata modified date to be undefined', async () => {
+					const { currentUser } = setupAuthorization();
+					const { toolId, externalToolToUpdate, pendingExternalTool } = setupMedium();
 
-				externalToolService.findById.mockResolvedValueOnce(currentExternalTool);
+					await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdate);
 
-				return {
-					toolId,
-					externalToolToUpdate,
-					pendingExternalTool,
+					expect(externalToolService.updateExternalTool).toBeCalledWith(pendingExternalTool);
+				});
+			});
+
+			describe('when the tool update dto has a metadata modified date', () => {
+				const setupMedium = () => {
+					const mediumWithDate = externalToolMediumFactory.build({ metadataModifiedAt: new Date() });
+
+					const currentExternalTool = externalToolFactory.build({ medium: mediumWithDate });
+					const toolId = currentExternalTool.id;
+
+					const externalToolToUpdate: ExternalToolUpdate = {
+						...currentExternalTool.getProps(),
+						id: toolId,
+						name: 'newName',
+						description: 'newDescription',
+						medium: {
+							...mediumWithDate,
+							metadataModifiedAt: new Date(Date.now() + 3600 * 1000),
+						},
+					};
+
+					const pendingExternalTool: ExternalTool = externalToolFactory.buildWithId(
+						{
+							...externalToolToUpdate,
+						},
+						toolId
+					);
+
+					externalToolService.findById.mockResolvedValueOnce(currentExternalTool);
+
+					return {
+						toolId,
+						externalToolToUpdate,
+						pendingExternalTool,
+					};
 				};
-			};
 
-			it('should not update the metadata modified date to be undefined', async () => {
-				const { currentUser } = setupAuthorization();
-				const { toolId, externalToolToUpdate, pendingExternalTool } = setupMedium();
+				it('should update the metadata modified date to the date in the update dto', async () => {
+					const { currentUser } = setupAuthorization();
+					const { toolId, externalToolToUpdate, pendingExternalTool } = setupMedium();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdate);
+					await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdate);
 
-				expect(externalToolService.updateExternalTool).toBeCalledWith(pendingExternalTool);
+					expect(externalToolService.updateExternalTool).toBeCalledWith(pendingExternalTool);
+				});
 			});
 		});
 	});
