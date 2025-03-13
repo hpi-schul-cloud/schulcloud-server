@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 import { EntityId } from '@shared/domain/types';
 import { DoBaseFactory } from '@testing/factory/domainobject';
 import { DeepPartial } from 'fishery';

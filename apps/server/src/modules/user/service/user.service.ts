@@ -17,14 +17,14 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType, RoleName } from '@shared/domain/interface';
+import { IFindOptions, LanguageType } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserDo } from '../domain';
 import { UserConfig } from '../interfaces';
@@ -226,6 +226,14 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
 			throw new BadRequestException('Language is not activated.');
 		}
+	}
+
+	public async deleteUser(userId: EntityId): Promise<boolean> {
+		const deletionCount = await this.userRepo.deleteUser(userId);
+
+		const userDeleted = deletionCount === 1;
+
+		return userDeleted;
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {

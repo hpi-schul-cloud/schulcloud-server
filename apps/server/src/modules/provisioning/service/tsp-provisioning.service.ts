@@ -1,7 +1,7 @@
 import { TspUserInfo } from '@infra/sync/strategy/tsp/';
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
-import { RoleService } from '@modules/role';
+import { RoleName, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
@@ -11,7 +11,6 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { Consent } from '@shared/domain/domainobject/consent';
 import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
 import { UserConsent } from '@shared/domain/domainobject/user-consent';
-import { RoleName } from '@shared/domain/interface';
 import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
@@ -200,9 +199,16 @@ export class TspProvisioningService {
 		}
 		const savedUser = await this.userService.save(user);
 
-		const account = await this.accountService.findByUserId(savedUser.id ?? '');
-		const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
-		await this.accountService.save(updated);
+		try {
+			const account = await this.accountService.findByUserId(savedUser.id ?? '');
+			const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
+			await this.accountService.save(updated);
+		} catch (error) {
+			if (existingUser === null) {
+				await this.userService.deleteUser(savedUser.id ?? '');
+			}
+			throw new BadDataLoggableException('Error while saving account', { externalId: data.externalUser.externalId });
+		}
 
 		return user;
 	}

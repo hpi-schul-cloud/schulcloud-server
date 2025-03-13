@@ -350,5 +350,5 @@ const config: ServerConfig = {
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
 };
 
-export const serverConfig = () => config;
+export const serverConfig = (): ServerConfig => config;
 export const SERVER_CONFIG_TOKEN = 'SERVER_CONFIG_TOKEN';

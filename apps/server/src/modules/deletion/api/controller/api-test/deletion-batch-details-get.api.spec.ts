@@ -5,12 +5,12 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { TestApiClient } from '@testing/test-api-client';
 import { StatusModel } from '../../../domain/types'; // barrel file
 import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response'; // barrel file
+import { RoleName } from '@modules/role';
 
 const baseRouteName = '/deletion-batches';
 

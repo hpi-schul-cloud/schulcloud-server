@@ -1,6 +1,6 @@
-import { Role, RoleProperties } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
-import { BaseFactory } from './base.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { RoleName } from '../domain';
+import { Role, RoleProperties } from '../repo';
 
 export const roleFactory = BaseFactory.define<Role, RoleProperties>(Role, ({ sequence }) => {
 	return {

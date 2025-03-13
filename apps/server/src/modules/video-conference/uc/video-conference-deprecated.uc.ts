@@ -6,13 +6,14 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { RoleName } from '@modules/role';
 import { SchoolFeature } from '@modules/school/domain';
 import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	BBBBaseMeetingConfig,

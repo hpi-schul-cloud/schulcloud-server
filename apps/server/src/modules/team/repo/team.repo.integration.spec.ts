@@ -1,11 +1,11 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { roleFactory } from '@modules/role/testing';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { TeamEntity, TeamUserEntity } from './team.entity';
 import { TeamRepo } from './team.repo';
 

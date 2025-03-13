@@ -13,7 +13,9 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
@@ -21,11 +23,9 @@ import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { Role } from '@shared/domain/entity';
-import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserDo } from '../domain';
 import { User, UserDORepo, UserRepo } from '../repo';
 import { UserDto } from '../uc/dto/user.dto';
@@ -843,6 +843,46 @@ describe('UserService', () => {
 				const result = await service.removeCalendarEvents(userId);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('deleteUser', () => {
+		describe('when user is successfully deleted', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				userRepo.deleteUser.mockResolvedValueOnce(1);
+
+				return { userId };
+			};
+
+			it('should return true', async () => {
+				const { userId } = setup();
+
+				const result = await service.deleteUser(userId);
+
+				expect(result).toBe(true);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(userId);
+			});
+		});
+
+		describe(`when user was not deleted`, () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				userRepo.deleteUser.mockResolvedValueOnce(0);
+
+				return { userId };
+			};
+
+			it('should return false', async () => {
+				const { userId } = setup();
+
+				const result = await service.deleteUser(userId);
+
+				expect(result).toBe(false);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(userId);
 			});
 		});
 	});
