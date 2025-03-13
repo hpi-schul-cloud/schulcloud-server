@@ -13,22 +13,22 @@ import {
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { Role } from '@shared/domain/entity';
-import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
-import { UserDto } from '../../api/dto';
-import { UserDiscoverableQuery, UserDo, UserQuery } from '../../domain';
+import { UserDto } from '../../api/dto/user.dto';
 import { User, UserDORepo, UserRepo } from '../../repo';
-import { userDoFactory, userFactory } from '../../testing';
+import { UserDo } from '../do';
+import { UserDiscoverableQuery, UserQuery } from '../query/user-query';
 import { UserService } from './user.service';
 
 describe('UserService', () => {

@@ -4,6 +4,7 @@ import { BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@mod
 import { VideoConferenceElement } from '@modules/board/domain';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
+import { RoleName } from '@modules/role';
 import { Room, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
@@ -14,7 +15,7 @@ import { VideoConferenceRepo } from '@modules/video-conference/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RoleReference } from '@shared/domain/domainobject';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BBBRole } from '../bbb';
 import { VideoConferenceDO, VideoConferenceOptionsDO } from '../domain';

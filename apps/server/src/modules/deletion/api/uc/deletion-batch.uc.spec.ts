@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { ObjectId } from 'bson';
 import { CreateDeletionBatchParams, DeletionBatchService } from '../../domain/service';
 import { deletionBatchFactory } from '../../domain/testing';

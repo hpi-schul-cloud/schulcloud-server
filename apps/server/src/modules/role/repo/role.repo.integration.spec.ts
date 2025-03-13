@@ -1,12 +1,12 @@
 import { NotFoundError, NullCacheAdapter, ValidationError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
+import { Role } from './role.entity';
 import { RoleRepo } from './role.repo';
+import { RoleName } from '../domain';
+import { roleFactory } from '../testing';
 
 describe('role repo', () => {
 	let module: TestingModule;

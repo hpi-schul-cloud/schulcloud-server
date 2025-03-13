@@ -1,9 +1,10 @@
 import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
+import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityReference, BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityWithSchool, RoleName } from '@shared/domain/interface';
+import { EntityWithSchool } from '@shared/domain/interface';
 
 export type ImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 

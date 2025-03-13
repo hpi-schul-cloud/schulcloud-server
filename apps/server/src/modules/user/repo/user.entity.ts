@@ -10,10 +10,12 @@ import {
 	Property,
 	wrap,
 } from '@mikro-orm/core';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
 import { SchoolEntity, SchoolRoles } from '@modules/school/repo';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
-import { BaseEntityWithTimestamps, Role } from '@shared/domain/entity';
-import { EntityWithSchool, LanguageType, Permission, RoleName } from '@shared/domain/interface';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { EntityWithSchool, LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ConsentEntity } from './consent.entity';
 import { UserParentsEntity } from './user-parents.entity';

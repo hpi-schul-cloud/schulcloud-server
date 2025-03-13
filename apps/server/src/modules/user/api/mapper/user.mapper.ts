@@ -1,5 +1,5 @@
-import { Role } from '@shared/domain/entity';
-import { UserDto } from '../../api/dto';
+import { Role } from '@modules/role/repo';
+import { UserDto } from '../../api/dto/user.dto';
 import { User } from '../../repo';
 
 export class UserMapper {
