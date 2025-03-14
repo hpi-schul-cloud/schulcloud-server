@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolFactory } from '../../testing';
 import { SchoolAuthorizableService } from './school-authorizable.service';
 import { SchoolService } from './school.service';
-import { AuthorizationInjectionService, AuthorizableReferenceType } from '@modules/authorization';
 
 describe(SchoolAuthorizableService.name, () => {
 	let module: TestingModule;
