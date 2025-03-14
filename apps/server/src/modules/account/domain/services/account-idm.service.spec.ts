@@ -6,9 +6,9 @@ import { NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
-import { IdmAccount } from '@shared/domain/interface';
 import { Account, AccountSave } from '..';
 import { AccountConfig } from '../../account-config';
+import { IdmAccount } from '../../repo';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 
