@@ -1,5 +1,5 @@
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
-import { IdmAccount, IdmAccountUpdate } from '@modules/account/repo';
+import { IdmAccount, IdmAccountUpdate } from '@modules/account/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Counted } from '@shared/domain/types';

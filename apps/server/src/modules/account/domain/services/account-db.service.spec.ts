@@ -12,10 +12,10 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
+import { Account, IdmAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountEntity, AccountRepo, IdmAccount } from '../../repo';
+import { AccountEntity, AccountRepo } from '../../repo';
 import { accountDoFactory } from '../../testing';
-import { Account } from '../account';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {

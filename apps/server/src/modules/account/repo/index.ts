@@ -1,4 +1,3 @@
-export { IdmAccount, IdmAccountUpdate } from './account';
 export { AccountEntity, IdmAccountProperties } from './account.entity';
 export { AccountRepo } from './account.repo';
 export { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
