@@ -6,7 +6,7 @@ import { MediumMetadataDto } from '../dto';
 @Injectable()
 export class MediumMetadataMapper {
 	public static mapBiloMetadataToMediumMetadata(metadataItem: BiloMediaQueryDataResponse): MediumMetadataDto {
-		const mediaMetadata: MediumMetadataDto = new MediumMetadataDto({
+		const mediumMetadata: MediumMetadataDto = new MediumMetadataDto({
 			name: metadataItem.title,
 			description: metadataItem.description,
 			publisher: metadataItem.publisher,
@@ -15,7 +15,7 @@ export class MediumMetadataMapper {
 			modifiedAt: new Date(metadataItem.modified),
 		});
 
-		return mediaMetadata;
+		return mediumMetadata;
 	}
 
 	public static mapToMediaSourceMediumMetadataResponse(mediumMetadata: MediumMetadataDto): MediumMetadataResponse {

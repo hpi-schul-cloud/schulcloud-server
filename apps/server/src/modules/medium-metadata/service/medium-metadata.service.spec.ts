@@ -17,7 +17,6 @@ describe(MediumMetadataService.name, () => {
 
 	let mediaSourceRepo: DeepMocked<MediaSourceRepo>;
 	let biloStrategy: DeepMocked<BiloStrategy>;
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let vidisStrategy: DeepMocked<VidisStrategy>;
 
 	beforeAll(async () => {
