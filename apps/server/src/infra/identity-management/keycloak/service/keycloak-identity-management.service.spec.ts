@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Users } from '@keycloak/keycloak-admin-client/lib/resources/users';
-import { IdmAccount } from '@modules/account/repo';
+import { IdmAccount } from '@modules/account/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { IdentityManagementService } from '../../identity-management.service';
