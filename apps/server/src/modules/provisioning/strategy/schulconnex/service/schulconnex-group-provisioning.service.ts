@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseDoService } from '@modules/course';
 import { Group, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { ExternalSource } from '@modules/group/domain';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
@@ -11,7 +12,6 @@ import { RoleService } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';

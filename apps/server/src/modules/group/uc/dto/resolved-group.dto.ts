@@ -1,5 +1,4 @@
-import { ExternalSource } from '@shared/domain/domainobject';
-import { GroupPeriod, GroupTypes } from '../../domain';
+import { ExternalSource, GroupPeriod, GroupTypes } from '../../domain';
 import { ResolvedGroupUser } from './resolved-group-user';
 
 export class ResolvedGroupDto {
