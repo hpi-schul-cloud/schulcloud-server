@@ -1,19 +1,14 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Controller,
-	ForbiddenException,
 	Get,
 	InternalServerErrorException,
 	NotFoundException,
 	Param,
 	UnauthorizedException,
 } from '@nestjs/common';
-import {
-	ApiOperation,
-	ApiResponse,
-	ApiTags
-} from '@nestjs/swagger';
-import { ApiValidationError } from '../../../shared/common/error';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common/error';
 import { MediumMetadataDto } from '../dto';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataUc } from '../uc/medium-metadata.uc';
