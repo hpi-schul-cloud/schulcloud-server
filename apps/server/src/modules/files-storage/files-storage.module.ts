@@ -7,7 +7,7 @@ import { S3ClientModule } from '@infra/s3-client';
 import { Module } from '@nestjs/common';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
-import { FilesStorageService, PreviewService } from './service';
+import { FilesStorageAdminService, FilesStorageService, PreviewService } from './service';
 
 const imports = [
 	LoggerModule,
@@ -22,11 +22,11 @@ const imports = [
 	S3ClientModule.register([s3Config]),
 	PreviewGeneratorProducerModule,
 ];
-const providers = [FilesStorageService, PreviewService, FileRecordRepo];
+const providers = [FilesStorageService, PreviewService, FileRecordRepo, FilesStorageAdminService];
 
 @Module({
 	imports: [...imports, RabbitMQWrapperModule],
 	providers,
-	exports: [FilesStorageService, PreviewService],
+	exports: [FilesStorageService, PreviewService, FilesStorageAdminService],
 })
 export class FilesStorageModule {}
