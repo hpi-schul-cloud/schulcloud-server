@@ -91,9 +91,7 @@ describe('MediumMetadataController (API)', () => {
 		describe('when mediumId not valid', () => {
 			const setup = async () => {
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
 				em.clear();
 
@@ -115,9 +113,7 @@ describe('MediumMetadataController (API)', () => {
 			const setup = async () => {
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 
-				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
-					Permission.MEDIA_SOURCE_ADMIN,
-				]);
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
 				em.clear();
 
@@ -174,8 +170,9 @@ describe('MediumMetadataController (API)', () => {
 		describe('when user is not authenticated', () => {
 			const setup = () => {
 				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
-
-				return { mediaSourceEntity };
+				return {
+					mediaSourceEntity,
+				};
 			};
 
 			it('should return unauthorized', async () => {
