@@ -4,8 +4,6 @@ import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User, UserProperties } from '@modules/user/repo';
-import { ConsentEntity, ParentConsentEntity, UserConsentEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import {
@@ -17,6 +15,7 @@ import {
 } from '@testing/user-role-permissions';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
+import { ConsentEntity, ParentConsentEntity, User, UserConsentEntity, UserProperties } from '../repo';
 
 const userConsentFactory = BaseFactory.define<UserConsentEntity, UserConsentEntity>(UserConsentEntity, () => {
 	return {
