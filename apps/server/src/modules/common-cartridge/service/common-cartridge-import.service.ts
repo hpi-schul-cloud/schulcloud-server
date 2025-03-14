@@ -1,13 +1,19 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { Injectable } from '@nestjs/common';
 import { BoardsClientAdapter } from '@infra/boards-client';
+import { ColumnClientAdapter } from '@infra/column-client';
+import { CardClientAdapter } from '@infra/card-client';
+import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 
 @Injectable()
 export class CommonCartridgeImportService {
-	constructor(private readonly coursesClient: CoursesClientAdapter, private boardsClient: BoardsClientAdapter) {}
+	constructor(
+		private readonly coursesClient: CoursesClientAdapter,
+		private boardsClient: BoardsClientAdapter,
+		private columnClient: ColumnClientAdapter,
+		private cardClient: CardClientAdapter
+	) {}
 
 	public async importFile(file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
@@ -54,7 +60,7 @@ export class CommonCartridgeImportService {
 		for await (const column of columns) {
 			const response = await this.boardsClient.createBoardColumn(boardId);
 
-			await this.boardsClient.updateBoardColumnTitle(response.id, { title: column.title });
+			await this.columnClient.updateBoardColumnTitle(response.id, { title: column.title });
 		}
 	}
 }
