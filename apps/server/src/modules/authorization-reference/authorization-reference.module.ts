@@ -2,7 +2,6 @@ import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { InstanceModule } from '@modules/instance';
 import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
-import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { AuthorizationReferenceService, ReferenceLoader } from './domain';
 
@@ -12,7 +11,7 @@ import { AuthorizationReferenceService, ReferenceLoader } from './domain';
  * Avoid using this module and load the needed data in your use cases and then use the normal AuthorizationModule!
  */
 @Module({
-	imports: [AuthorizationModule, LoggerModule, InstanceModule, UserModule],
+	imports: [AuthorizationModule, LoggerModule, InstanceModule],
 	providers: [ReferenceLoader, TaskRepo, SubmissionRepo, AuthorizationReferenceService],
 	exports: [AuthorizationReferenceService],
 })
