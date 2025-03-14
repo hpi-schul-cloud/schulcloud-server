@@ -1,8 +1,8 @@
 import { BaseDO, RoleReference } from '@shared/domain/domainobject';
-import { Consent } from '@shared/domain/domainobject/consent';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserSourceOptions } from './user-source-options.do';
+import { Consent } from './consent';
+import { UserSourceOptions } from './user-source-options';
 
 export class SecondarySchoolReference {
 	public schoolId: EntityId;

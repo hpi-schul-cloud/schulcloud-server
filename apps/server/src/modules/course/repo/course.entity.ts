@@ -7,7 +7,6 @@ import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 // eslint-disable-next-line import/no-cycle
 import { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
@@ -71,7 +70,7 @@ export class UsersList {
 }
 
 @Entity({ tableName: 'courses' })
-export class CourseEntity extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
+export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent, LessonParent {
 	@Property()
 	name: string;
 

@@ -7,7 +7,6 @@ import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { readableStreamWithFileTypeFactory } from '@testing/factory/readable-stream-with-file-type.factory';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../controller/dto';
@@ -18,7 +17,7 @@ import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordRepo } from '../repo';
-import { fileRecordFactory } from '../testing';
+import { fileRecordFactory, readableStreamWithFileTypeFactory } from '../testing';
 import { FilesStorageService } from './files-storage.service';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
