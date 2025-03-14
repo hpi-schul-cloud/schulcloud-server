@@ -5,7 +5,6 @@ import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { ITask, TaskStatus } from '../domain';
@@ -51,7 +50,7 @@ export interface TaskProperties extends ITask {
 @Index({ properties: ['id', 'private'] })
 @Index({ properties: ['finished', 'course'] })
 @Index({ properties: ['finished', 'course'] })
-export class Task extends BaseEntityWithTimestamps implements EntityWithSchool {
+export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 

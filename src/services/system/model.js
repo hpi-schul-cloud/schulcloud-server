@@ -5,9 +5,6 @@
 
 const mongoose = require('mongoose');
 
-const tspBaseType = require('../sync/strategies/TSP/TSPBaseSyncer').SYNCER_TARGET;
-const tspSchoolType = require('../sync/strategies/TSP/TSPSchoolSyncer').SYNCER_TARGET;
-
 const { Schema } = mongoose;
 
 const types = [
@@ -19,8 +16,8 @@ const types = [
 	'ldap', // general and provider-specific LDAP
 	'oidc',
 	'oauth',
-	tspBaseType,
-	tspSchoolType, // Thüringer Schul-Portal
+	'tsp-base', // TSP Sync replaced, for backwards compatibility only
+	'tsp-school', // TSP Sync replaced, for backwards compatibility only
 ];
 
 const systemSchema = new Schema(

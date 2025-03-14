@@ -1,4 +1,4 @@
-import { User } from '@modules/user/repo';
+import type { User } from '@modules/user/repo';
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
 import { BaseDO } from '@shared/domain/domainobject';
 import { AuthorizationContext } from './authorization-context.interface';

@@ -11,10 +11,10 @@ import {
 	oauthDataDtoFactory,
 	provisioningSystemDtoFactory,
 } from '@modules/provisioning/testing/';
+import { RoleName } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';

@@ -1,10 +1,10 @@
 import { SchulconnexGroupType, SchulconnexGruppenResponse, SchulconnexResponse } from '@infra/schulconnex-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
+import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { SystemEntity } from '@modules/system/repo';
-import { RoleName } from '@shared/domain/interface';
 import { ImportUser } from '../entity';
 
 export class SchulconnexImportUserMapper {

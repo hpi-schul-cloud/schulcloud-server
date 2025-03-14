@@ -1,11 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService, RoomRole } from '@modules/role';
 import { RoomService } from '@modules/room';
 import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
