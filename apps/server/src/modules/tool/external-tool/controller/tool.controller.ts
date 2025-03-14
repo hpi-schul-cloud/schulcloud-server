@@ -217,11 +217,11 @@ export class ToolController {
 		type: ExternalToolUtilizationResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	public async getMetaDataForExternalTool(
+	public async getUtilizationForExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolUtilizationResponse> {
-		const externalToolUtilization: ExternalToolUtilization = await this.externalToolUc.getMetadataForExternalTool(
+		const externalToolUtilization: ExternalToolUtilization = await this.externalToolUc.getUtilizationForExternalTool(
 			currentUser.userId,
 			params.externalToolId
 		);

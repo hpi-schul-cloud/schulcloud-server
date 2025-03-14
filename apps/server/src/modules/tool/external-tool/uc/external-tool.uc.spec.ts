@@ -1260,7 +1260,7 @@ describe(ExternalToolUc.name, () => {
 			it('get user with permissions', async () => {
 				const { toolId, user } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, toolId);
+				await uc.getUtilizationForExternalTool(user.id, toolId);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
@@ -1268,7 +1268,7 @@ describe(ExternalToolUc.name, () => {
 			it('should check that the user has TOOL_ADMIN permission', async () => {
 				const { user, tool } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, tool.id);
+				await uc.getUtilizationForExternalTool(user.id, tool.id);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -1295,7 +1295,7 @@ describe(ExternalToolUc.name, () => {
 			it('should throw UnauthorizedException ', async () => {
 				const { toolId, user } = setup();
 
-				const result: Promise<ExternalToolUtilization> = uc.getMetadataForExternalTool(user.id, toolId);
+				const result: Promise<ExternalToolUtilization> = uc.getUtilizationForExternalTool(user.id, toolId);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -1328,7 +1328,7 @@ describe(ExternalToolUc.name, () => {
 			it('get metadata for external tool', async () => {
 				const { toolId, currentUser } = setup();
 
-				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+				await uc.getUtilizationForExternalTool(currentUser.userId, toolId);
 
 				expect(commonToolMetadataService.getUtilizationForExternalTool).toHaveBeenCalledWith(toolId);
 			});
@@ -1336,7 +1336,7 @@ describe(ExternalToolUc.name, () => {
 			it('return metadata of external tool', async () => {
 				const { toolId, currentUser, externalToolMetadata } = setup();
 
-				const result = await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+				const result = await uc.getUtilizationForExternalTool(currentUser.userId, toolId);
 
 				expect(result).toEqual(externalToolMetadata);
 			});

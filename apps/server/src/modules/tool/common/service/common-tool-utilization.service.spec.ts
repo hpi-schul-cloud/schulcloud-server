@@ -52,7 +52,7 @@ describe(CommonToolUtilizationService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('getMetadataForExternalTool', () => {
+	describe('getUtilizationForExternalTool', () => {
 		describe('when the tool has no usages', () => {
 			const setup = () => {
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([]);

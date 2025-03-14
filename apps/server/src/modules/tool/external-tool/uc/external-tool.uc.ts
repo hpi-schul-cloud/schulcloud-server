@@ -20,7 +20,6 @@ import {
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
-import { ExternalToolMetadata } from '../domain/external-tool-metadata';
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
 	DatasheetPdfService,
@@ -219,7 +218,7 @@ export class ExternalToolUc {
 		await this.externalToolService.deleteExternalTool(externalTool);
 	}
 
-	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+	public async getUtilizationForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolUtilization> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
