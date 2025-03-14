@@ -4,7 +4,6 @@ import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityReference, BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityWithSchool } from '@shared/domain/interface';
 
 export type ImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 
@@ -37,7 +36,7 @@ export enum MatchCreator {
 @Unique({ properties: ['school', 'externalId'] })
 @Unique({ properties: ['school', 'ldapDn'] })
 @Unique({ properties: ['school', 'email'] })
-export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSchool {
+export class ImportUser extends BaseEntityWithTimestamps {
 	constructor(props: ImportUserProperties) {
 		super();
 		this.school = wrap(props.school).toReference();
