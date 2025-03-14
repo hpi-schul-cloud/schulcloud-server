@@ -3,10 +3,10 @@ import { ContextExternalToolCountPerContextResponse } from '../../../../common/c
 
 export class ExternalToolUtilizationResponse {
 	@ApiProperty()
-	schoolExternalToolCount: number;
+	public schoolExternalToolCount: number;
 
 	@ApiProperty()
-	contextExternalToolCountPerContext: ContextExternalToolCountPerContextResponse;
+	public contextExternalToolCountPerContext: ContextExternalToolCountPerContextResponse;
 
 	constructor(externalToolUtilizationResponse: ExternalToolUtilizationResponse) {
 		this.schoolExternalToolCount = externalToolUtilizationResponse.schoolExternalToolCount;

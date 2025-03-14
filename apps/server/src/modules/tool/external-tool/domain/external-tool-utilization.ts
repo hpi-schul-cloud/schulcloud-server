@@ -1,9 +1,9 @@
 import { ContextExternalToolType } from '../../context-external-tool/repo/mikro-orm/context-external-tool-type.enum';
 
 export class ExternalToolUtilization {
-	schoolExternalToolCount: number;
+	public schoolExternalToolCount: number;
 
-	contextExternalToolCountPerContext: Record<ContextExternalToolType, number>;
+	public contextExternalToolCountPerContext: Record<ContextExternalToolType, number>;
 
 	constructor(externalToolUtilization: ExternalToolUtilization) {
 		this.schoolExternalToolCount = externalToolUtilization.schoolExternalToolCount;
