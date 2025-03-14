@@ -57,7 +57,7 @@ describe(MediaSourceSyncService.name, () => {
 					const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
 						[mediaSourceDataFormat, biloSyncStrategy],
 					]);
-					Reflect.set(service, 'syncStrategyMap', strategyMap);
+					Reflect.set(service, 'metadataSyncStrategyMap', strategyMap);
 
 					return { mediaSourceDataFormat, report };
 				};
@@ -90,7 +90,7 @@ describe(MediaSourceSyncService.name, () => {
 					const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
 						[mediaSourceDataFormat, biloSyncStrategy],
 					]);
-					Reflect.set(service, 'syncStrategyMap', strategyMap);
+					Reflect.set(service, 'metadataSyncStrategyMap', strategyMap);
 
 					return { mediaSourceDataFormat, report };
 				};
@@ -108,7 +108,7 @@ describe(MediaSourceSyncService.name, () => {
 		describe('when a media source data format without sync strategy is passed', () => {
 			const setup = () => {
 				const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
-				Reflect.set(service, 'syncStrategyMap', strategyMap);
+				Reflect.set(service, 'metadataSyncStrategyMap', strategyMap);
 
 				const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
 
