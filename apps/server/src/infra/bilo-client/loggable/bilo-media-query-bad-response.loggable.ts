@@ -1,11 +1,11 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@core/logger';
 import { ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from '../interface';
 
 export class BiloMediaQueryBadResponseLoggable implements Loggable {
 	constructor(private readonly badResponseReports: MediaQueryBadResponseReport[]) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage {
 		const loggableReports = this.badResponseReports.map((report: MediaQueryBadResponseReport) => {
 			const loggableReport = {
 				...report,
@@ -16,7 +16,7 @@ export class BiloMediaQueryBadResponseLoggable implements Loggable {
 		});
 
 		return {
-			message: `${this.badResponseReports.length} response(s) is/are found with bad response from bilo media query`,
+			message: `${this.badResponseReports.length} bad response(s) from bilo media query is/are found`,
 			data: { reports: JSON.stringify(loggableReports) },
 		};
 	}

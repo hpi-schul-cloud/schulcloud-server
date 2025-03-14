@@ -17,7 +17,7 @@ import { TokenRequestMapper } from '../mapper/token-request.mapper';
 export class OauthAdapterService {
 	constructor(private readonly httpService: HttpService) {}
 
-	async getPublicKey(jwksUri: string): Promise<string> {
+	public async getPublicKey(jwksUri: string): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
 			cache: true,
 			jwksUri,

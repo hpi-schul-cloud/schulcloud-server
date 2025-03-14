@@ -30,9 +30,9 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
+	ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {
@@ -46,7 +46,6 @@ describe('ToolController (API)', () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
-
 		app = moduleRef.createNestApplication();
 		axiosMock = new MockAdapter(axios);
 
@@ -56,12 +55,13 @@ describe('ToolController (API)', () => {
 		testApiClient = new TestApiClient(app, 'tools/external-tools');
 	});
 
-	afterAll(async () => {
-		await app.close();
+	afterEach(async () => {
+		axiosMock.reset();
+		await cleanupCollections(em);
 	});
 
-	afterEach(async () => {
-		await cleanupCollections(em);
+	afterAll(async () => {
+		await app.close();
 	});
 
 	describe('[POST] tools/external-tools', () => {
@@ -860,7 +860,7 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+				expect(response.body).toEqual<ExternalToolUtilizationResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
 						course: 1,

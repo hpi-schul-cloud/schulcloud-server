@@ -5,15 +5,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolRepo } from '../../context-external-tool/repo';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
-import { ExternalToolMetadata } from '../../external-tool/domain';
-import { SchoolExternalTool, SchoolExternalToolMetadata } from '../../school-external-tool/domain';
+import { ExternalToolUtilization } from '../../external-tool/domain';
+import { SchoolExternalTool, SchoolExternalToolUtilization } from '../../school-external-tool/domain';
 import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { CommonToolMetadataService } from './common-tool-metadata.service';
+import { CommonToolUtilizationService } from './common-tool-utilization.service';
 
-describe(CommonToolMetadataService.name, () => {
+describe(CommonToolUtilizationService.name, () => {
 	let module: TestingModule;
-	let service: CommonToolMetadataService;
+	let service: CommonToolUtilizationService;
 
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
@@ -22,7 +22,7 @@ describe(CommonToolMetadataService.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CommonToolMetadataService,
+				CommonToolUtilizationService,
 				{
 					provide: SchoolExternalToolRepo,
 					useValue: createMock<SchoolExternalToolRepo>(),
@@ -38,7 +38,7 @@ describe(CommonToolMetadataService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(CommonToolMetadataService);
+		service = module.get(CommonToolUtilizationService);
 		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
 		contextExternalToolRepo = module.get(ContextExternalToolRepo);
 		boardCommonToolService = module.get(BoardCommonToolService);
@@ -52,7 +52,7 @@ describe(CommonToolMetadataService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('getMetadataForExternalTool', () => {
+	describe('getUtilizationForExternalTool', () => {
 		describe('when the tool has no usages', () => {
 			const setup = () => {
 				schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([]);
@@ -61,9 +61,11 @@ describe(CommonToolMetadataService.name, () => {
 			it('should return 0 usages for all contexts', async () => {
 				setup();
 
-				const result: ExternalToolMetadata = await service.getMetadataForExternalTool(new ObjectId().toHexString());
+				const result: ExternalToolUtilization = await service.getUtilizationForExternalTool(
+					new ObjectId().toHexString()
+				);
 
-				expect(result).toEqual<ExternalToolMetadata>({
+				expect(result).toEqual<ExternalToolUtilization>({
 					schoolExternalToolCount: 0,
 					contextExternalToolCountPerContext: {
 						course: 0,
@@ -89,9 +91,11 @@ describe(CommonToolMetadataService.name, () => {
 			it('should return the amount of usages for all contexts', async () => {
 				setup();
 
-				const result: ExternalToolMetadata = await service.getMetadataForExternalTool(new ObjectId().toHexString());
+				const result: ExternalToolUtilization = await service.getUtilizationForExternalTool(
+					new ObjectId().toHexString()
+				);
 
-				expect(result).toEqual<ExternalToolMetadata>({
+				expect(result).toEqual<ExternalToolUtilization>({
 					schoolExternalToolCount: 1,
 					contextExternalToolCountPerContext: {
 						course: 2,
@@ -115,11 +119,11 @@ describe(CommonToolMetadataService.name, () => {
 			it('should return 0 usages for all contexts', async () => {
 				setup();
 
-				const result: SchoolExternalToolMetadata = await service.getMetadataForSchoolExternalTool(
+				const result: SchoolExternalToolUtilization = await service.getUtilizationForSchoolExternalTool(
 					new ObjectId().toHexString()
 				);
 
-				expect(result).toEqual<SchoolExternalToolMetadata>({
+				expect(result).toEqual<SchoolExternalToolUtilization>({
 					contextExternalToolCountPerContext: {
 						course: 0,
 						boardElement: 0,
@@ -142,11 +146,11 @@ describe(CommonToolMetadataService.name, () => {
 			it('should return the amount of usages for all contexts', async () => {
 				setup();
 
-				const result: SchoolExternalToolMetadata = await service.getMetadataForSchoolExternalTool(
+				const result: SchoolExternalToolUtilization = await service.getUtilizationForSchoolExternalTool(
 					new ObjectId().toHexString()
 				);
 
-				expect(result).toEqual<SchoolExternalToolMetadata>({
+				expect(result).toEqual<SchoolExternalToolUtilization>({
 					contextExternalToolCountPerContext: {
 						course: 2,
 						boardElement: 3,
