@@ -55,11 +55,6 @@
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
-		"DISABLED_BRUTE_FORCE_CHECK": {
-			"type": "boolean",
-			"default": false,
-			"description": "To disabled the brute force prevention hooks for by authentication."
-		},
 		"LOGIN_BLOCK_TIME": {
 			"type": "integer",
 			"default": 15,
@@ -176,31 +171,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
 		},
-		"TSP_API_BASE_URL": {
-			"type": "string",
-			"default": "https://www.schulportal-thueringen.de",
-			"description": "The TSP API base URL."
-		},
-		"TSP_API_CLIENT_ID": {
-			"type": "string",
-			"default": "",
-			"description": "The TSP API client id."
-		},
-		"TSP_API_CLIENT_SECRET": {
-			"type": "string",
-			"default": "",
-			"description": "The TSP API client secret."
-		},
-		"TSP_API_ENCRYPTION_KEY": {
-			"type": "string",
-			"default": "",
-			"description": "The key used to encrypt/decrypt TSP request tokens."
-		},
-		"TSP_API_SIGNATURE_KEY": {
-			"type": "string",
-			"default": "",
-			"description": "The key used to sign/verify TSP request tokens."
-		},
 		"TSP_API_CLIENT_BASE_URL": {
 			"type": "string",
 			"default": "",
@@ -240,11 +210,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for TSP migration."
-		},
-		"FEATURE_TSP_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for TSP features."
 		},
 		"FEATURE_TSP_SYNC_ENABLED": {
 			"type": "boolean",
@@ -1568,22 +1533,6 @@
 		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
 			"type": "string",
 			"description": "The documentation page that gets rendered in the migration wizard tool."
-		},
-		"TSP_SCHOOL_SYNCER": {
-			"type": "object",
-			"description": "TSP School Syncer properties",
-			"properties": {
-				"SCHOOL_LIMIT": {
-					"type": "integer",
-					"minimum": 1,
-					"description": "Number of simultaneously synchronized schools"
-				},
-				"STUDENTS_TEACHERS_CLASSES_LIMIT": {
-					"type": "integer",
-					"minimum": 1,
-					"description": "Number of simultaneously synchronized students, teachers and classes"
-				}
-			}
 		},
 		"ADMIN_API_CLIENT": {
 			"type": "object",
