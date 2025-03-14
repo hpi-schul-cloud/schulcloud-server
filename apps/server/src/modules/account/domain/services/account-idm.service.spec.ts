@@ -8,8 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Account, AccountSave } from '..';
 import { AccountConfig } from '../../account-config';
-import { IdmAccount } from '../../repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, IdmAccount } from '../../repo';
 import { AccountServiceIdm } from './account-idm.service';
 
 describe('AccountIdmService', () => {

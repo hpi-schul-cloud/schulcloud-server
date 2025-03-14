@@ -7,8 +7,7 @@ import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Account, AccountSave } from '..';
 import { AccountConfig } from '../../account-config';
-import { IdmAccountUpdate } from '../../repo';
-import { AccountIdmToDoMapper } from '../../repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, IdmAccountUpdate } from '../../repo';
 import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from '../error';
 import { AbstractAccountService } from './account.service.abstract';
 

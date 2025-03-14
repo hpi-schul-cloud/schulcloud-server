@@ -7,8 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
 import { AccountSave } from '..';
-import { IdmAccount } from '../../repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, IdmAccount } from '../../repo';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 
