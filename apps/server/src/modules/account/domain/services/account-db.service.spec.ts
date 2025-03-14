@@ -13,11 +13,9 @@ import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
-import { IdmAccount } from '../../repo';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
+import { AccountEntity, AccountRepo, IdmAccount } from '../../repo';
 import { accountDoFactory } from '../../testing';
 import { Account } from '../account';
-import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {

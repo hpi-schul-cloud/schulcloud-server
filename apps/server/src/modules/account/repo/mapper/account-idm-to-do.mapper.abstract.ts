@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Account } from '../../../domain/account';
+import { Account } from '../../domain/account';
 import { IdmAccount } from '../account';
 
 @Injectable()
