@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 import { ExternalGroupUserDto } from '../dto';
 import { UserForGroupNotFoundLoggable } from './user-for-group-not-found.loggable';
 

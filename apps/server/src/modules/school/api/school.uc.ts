@@ -1,9 +1,10 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
-import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import {

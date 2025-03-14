@@ -1,8 +1,7 @@
 import { Group, GroupUser } from '@modules/group';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { SyncAttribute } from '../../repo';
 import { Course } from '../course.do';

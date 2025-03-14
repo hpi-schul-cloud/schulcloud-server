@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { RoleRepo } from '@shared/repo/role';
+import { RoleRepo } from './repo';
 import { RoleService } from './service';
 import { RoleUc } from './uc';
 

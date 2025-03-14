@@ -261,6 +261,12 @@ module.exports = {
 										message: 'testing may NOT import from @modules',
 									},
 								],
+								patterns: [
+									{
+										group: ['@infra/*'],
+										message: 'testing may NOT import from @infra',
+									},
+								],
 							},
 						],
 					},
