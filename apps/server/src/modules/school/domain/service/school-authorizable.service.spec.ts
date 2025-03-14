@@ -44,7 +44,7 @@ describe(SchoolAuthorizableService.name, () => {
 	});
 
 	describe('findById', () => {
-		describe('when id is given', () => {
+		describe('when schoolService.getSchoolById resolve a school', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 
@@ -61,6 +61,26 @@ describe(SchoolAuthorizableService.name, () => {
 				const result = await service.findById(school.id);
 
 				expect(result).toEqual(school);
+			});
+		});
+
+		describe('when schoolService.getSchoolById throw an error', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const error = new Error('An Error');
+
+				schoolService.getSchoolById.mockRejectedValue(error);
+
+				return {
+					error,
+					school,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { school, error } = setup();
+
+				await expect(service.findById(school.id)).rejects.toThrow(error);
 			});
 		});
 	});
