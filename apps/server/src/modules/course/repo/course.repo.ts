@@ -93,4 +93,16 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 
 		return course;
 	}
+
+	public async deleteUser(userId: EntityId): Promise<number> {
+		// remove user from teachers, substitutionTeachers, students
+		const count = await this._em.nativeUpdate(
+			CourseEntity,
+			{ $or: [{ teachers: userId }, { substitutionTeachers: userId }, { students: userId }] },
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ $pull: { teachers: userId, substitutionTeachers: userId, students: userId } } as any
+		);
+
+		return count;
+	}
 }

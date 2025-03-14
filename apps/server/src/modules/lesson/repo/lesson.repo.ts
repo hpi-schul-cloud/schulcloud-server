@@ -65,4 +65,16 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 
 		return lessons;
 	}
+
+	public async deleteUser(userId: EntityId): Promise<number> {
+		const count = await this._em.nativeUpdate(
+			LessonEntity,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ contents: { $elemMatch: { user: new ObjectId(userId) } } } as any,
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ $pull: { contents: { user: new ObjectId(userId) } } } as any
+		);
+
+		return count;
+	}
 }

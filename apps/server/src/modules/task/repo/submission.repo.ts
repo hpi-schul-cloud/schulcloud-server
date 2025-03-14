@@ -35,6 +35,28 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return result;
 	}
 
+	public async deleteUserFromTeam(userId: EntityId): Promise<number> {
+		// delete userId from submission teamMembers
+		const count = await this._em.nativeUpdate(
+			this.entityName,
+			{ teamMembers: userId },
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ $pull: { teamMembers: userId } } as any
+		);
+
+		return count;
+	}
+
+	public async removeUssrReference(submissionIds: EntityId[]): Promise<number> {
+		const count = await this._em.nativeUpdate(
+			this.entityName,
+			{ id: { $in: submissionIds } },
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ $set: { studentId: undefined } } as any
+		);
+
+		return count;
+	}
 	private async byUserIdQuery(userId: EntityId): Promise<FilterQuery<Submission>> {
 		const courseGroupsOfUser = await this._em.find(CourseGroupEntity, { students: userId });
 		const query = { $or: [{ student: userId }, { teamMembers: userId }, { courseGroup: { $in: courseGroupsOfUser } }] };

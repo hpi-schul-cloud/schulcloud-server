@@ -86,4 +86,15 @@ export class ClassesRepo {
 
 		return domainObject;
 	}
+
+	public async deleteUser(userId: EntityId): Promise<number> {
+		const count = await this.em.nativeUpdate(
+			ClassEntity,
+			{ $or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }] },
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ $pull: { userIds: new ObjectId(userId), teacherIds: new ObjectId(userId) } } as any
+		);
+
+		return count;
+	}
 }

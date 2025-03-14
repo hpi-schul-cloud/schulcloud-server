@@ -30,4 +30,15 @@ export class CourseGroupRepo extends BaseRepo<CourseGroupEntity> {
 		});
 		return [courseGroups, count];
 	}
+
+	public async deleteUser(userId: EntityId): Promise<number> {
+		const count = await this._em.nativeUpdate(
+			CourseGroupEntity,
+			{ students: new ObjectId(userId) },
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			{ $pull: { students: new ObjectId(userId) } } as any
+		);
+
+		return count;
+	}
 }
