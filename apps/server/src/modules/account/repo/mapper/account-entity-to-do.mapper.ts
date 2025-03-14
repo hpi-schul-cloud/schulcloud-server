@@ -1,6 +1,6 @@
 import { Counted } from '@shared/domain/types';
-import { Account } from '../../../domain/account';
-import { AccountEntity } from '../../../domain/entity/account.entity';
+import { Account } from '../../domain/account';
+import { AccountEntity } from '../account.entity';
 
 export class AccountEntityToDoMapper {
 	public static mapToDo(account: AccountEntity): Account {

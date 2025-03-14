@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IdmAccount } from '@shared/domain/interface';
-import { Account } from '../../../domain/account';
+import { Account, IdmAccount } from '../../domain';
 
 @Injectable()
 export abstract class AccountIdmToDoMapper {

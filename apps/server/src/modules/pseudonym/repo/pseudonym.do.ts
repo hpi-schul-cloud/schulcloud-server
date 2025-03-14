@@ -1,5 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '../domain-object';
+import { AuthorizableObject, DomainObject } from '../../../shared/domain/domain-object';
 
 export interface PseudonymProps extends AuthorizableObject {
 	pseudonym: string;

@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalSource } from '@shared/domain/domainobject';
 import { DomainObjectFactory } from '@testing/factory/domainobject';
-import { Group, GroupProps, GroupTypes, GroupPeriod } from '../domain';
+import { ExternalSource, Group, GroupPeriod, GroupProps, GroupTypes } from '../domain';
 
 export const groupFactory = DomainObjectFactory.define<Group, GroupProps>(Group, ({ sequence }) => {
 	return {

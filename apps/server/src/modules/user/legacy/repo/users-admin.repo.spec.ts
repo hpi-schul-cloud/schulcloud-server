@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { ClassEntity } from '@modules/class/entity';
 import { RoleName } from '@modules/role';

@@ -4,15 +4,15 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { pseudonymFactory } from '@testing/factory/domainobject';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
-import { externalToolPseudonymEntityFactory } from '../testing';
+import { externalToolPseudonymEntityFactory, pseudonymFactory } from '../testing';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
+import { Pseudonym } from './pseudonym.do';
 
 describe('ExternalToolPseudonymRepo', () => {
 	let module: TestingModule;

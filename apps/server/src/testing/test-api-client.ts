@@ -1,4 +1,4 @@
-import type { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import type { AccountEntity } from '@modules/account/repo';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { User } from '@modules/user/repo';

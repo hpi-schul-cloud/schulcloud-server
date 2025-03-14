@@ -18,11 +18,11 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserDo } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymRepo } from '../repo';
+import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

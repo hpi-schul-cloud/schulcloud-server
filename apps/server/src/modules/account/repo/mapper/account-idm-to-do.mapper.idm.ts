@@ -1,5 +1,4 @@
-import { IdmAccount } from '@shared/domain/interface';
-import { Account } from '../../../domain/account';
+import { Account, IdmAccount } from '../../domain';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 
 export class AccountIdmToDoMapperIdm extends AccountIdmToDoMapper {

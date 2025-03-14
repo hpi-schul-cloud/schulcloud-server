@@ -2,12 +2,7 @@ import { NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { decode } from 'html-entities';
-import sanitize, { AllowedAttribute, IOptions } from 'sanitize-html';
-
-export type IInputFormatsConfig = {
-	allowedTags: string[]; // Note: tag names are not case-sensitive
-	allowedAttributes?: Record<string, AllowedAttribute[]>;
-};
+import sanitize, { IOptions } from 'sanitize-html';
 
 const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	PlainText: {
@@ -106,7 +101,7 @@ const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	},
 };
 
-export const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IOptions => {
+const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IOptions => {
 	switch (inputFormat) {
 		case InputFormat.RICH_TEXT_CK5_SIMPLE:
 			return inputFormatsSanitizeConfig.RichTextCk5Simple;

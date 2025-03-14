@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { RoleName } from '@modules/role';

@@ -1,5 +1,5 @@
-import { InputFormat, RichText } from '@shared/domain/types';
-import { TaskCreate, TaskUpdate } from '../../domain';
+import { InputFormat } from '@shared/domain/types';
+import { RichText, TaskCreate, TaskUpdate } from '../../domain';
 import { TaskWithStatusVo } from '../../repo';
 import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../dto';
 import { TaskStatusMapper } from './task-status.mapper';

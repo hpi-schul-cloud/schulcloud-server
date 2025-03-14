@@ -11,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { AccountEntity } from '../../domain/entity/account.entity';
+import { AccountEntity } from '../../repo';
 import { accountFactory } from '../../testing';
 import {
 	AccountByIdBodyParams,
