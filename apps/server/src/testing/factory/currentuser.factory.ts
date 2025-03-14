@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { ICurrentUser } from '@infra/auth-guard';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';

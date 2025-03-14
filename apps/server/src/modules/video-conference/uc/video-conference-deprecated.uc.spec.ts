@@ -6,6 +6,9 @@ import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { UserDo, UserService } from '@modules/user';
@@ -15,11 +18,9 @@ import { BadRequestException, ForbiddenException, InternalServerErrorException }
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { RoleReference } from '@shared/domain/domainobject';
-import { Role } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,

@@ -1,4 +1,3 @@
-// Remove the eslint-disables after fixing the import issue in EPIC-96
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/domain/entity/account.entity';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports

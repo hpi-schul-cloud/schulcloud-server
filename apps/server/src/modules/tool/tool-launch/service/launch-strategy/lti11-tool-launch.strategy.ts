@@ -1,10 +1,10 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
+import { RoleName } from '@modules/role';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission } from '../../../common/enum';

@@ -6,9 +6,9 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
+import { RoleName } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 
 @Injectable()
 export class InstanceRule implements Rule<Instance> {

@@ -20,11 +20,11 @@ import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
