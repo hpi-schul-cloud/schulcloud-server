@@ -1,4 +1,4 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { EncryptionService } from '@infra/encryption';
 import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from '@infra/vidis-client';
@@ -9,17 +9,22 @@ import {
 	MediaSourceVidisConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ImageMimeType } from '@modules/tool/common';
+import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool/service';
 import { Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { MediaSourceSyncReportFactory } from '../../factory';
+import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
+import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
 export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly encryptionService: EncryptionService,
 		private readonly externalToolService: ExternalToolService,
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly externalToolValidationService: ExternalToolValidationService,
 		private readonly logger: Logger
 	) {}
 
@@ -36,9 +41,9 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 
 		const externalTools: ExternalTool[] = await this.getAllToolsWithVidisMedium(mediaSource);
 
-		const emptyReport = MediaSourceSyncReportFactory.buildEmptyReport();
+		const report: MediaSourceSyncReport = await this.syncExternalToolMediumMetadata(externalTools, vidisMediaMetadata);
 
-		return Promise.resolve(emptyReport);
+		return report;
 	}
 
 	private async getAllToolsWithVidisMedium(mediaSource: MediaSource): Promise<ExternalTool[]> {
@@ -49,7 +54,83 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 		return externalTools;
 	}
 
-	private mapOfferDtoToExternalToolMedium() {}
+	private async syncExternalToolMediumMetadata(
+		externalTools: ExternalTool[],
+		metadataItemsFromVidis: OfferDTO[]
+	): Promise<MediaSourceSyncReport> {
+		const updateSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
+			MediaSourceSyncOperation.UPDATE
+		);
+		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
+		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
+
+		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
+			const fetchedMetadata = metadataItemsFromVidis.find(
+				(metadataFromVidis: OfferDTO) => externalTool.medium?.mediumId === metadataFromVidis.offerId?.toString()
+			);
+
+			if (!fetchedMetadata) {
+				undeliveredReport.count += 1;
+				return null;
+			}
+
+			try {
+				this.mapVidisMetadataToExternalToolMedium(externalTool, fetchedMetadata);
+				await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
+			} catch (error: unknown) {
+				// TODO loggable
+				this.logger.debug(
+					new ErrorLoggable(error, {
+						mediumId: externalTool.medium?.mediumId as string,
+						mediumMediaSourceId: externalTool.medium?.mediaSourceId as string,
+					})
+				);
+				failureReport.count += 1;
+				return null;
+			}
+
+			updateSuccessReport.count += 1;
+
+			return externalTool;
+		});
+
+		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
+			(updateResult: ExternalTool | null) => !!updateResult
+		);
+
+		await this.externalToolService.updateExternalTools(updatedExternalTools);
+
+		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
+			updateSuccessReport,
+			failureReport,
+			undeliveredReport,
+		]);
+
+		return report;
+	}
+
+	private mapVidisMetadataToExternalToolMedium(externalTool: ExternalTool, vidisMetadata: OfferDTO): void {
+		if (vidisMetadata.offerTitle) {
+			externalTool.name = vidisMetadata.offerTitle;
+		}
+
+		if (vidisMetadata.offerLogo) {
+			externalTool.logoUrl = this.buildDataUriFromBase64(vidisMetadata.offerLogo);
+		}
+
+		externalTool.description = vidisMetadata.offerDescription;
+
+		const medium = externalTool.medium as ExternalToolMedium;
+		medium.publisher = vidisMetadata.educationProviderOrganizationName;
+	}
+
+	private buildDataUriFromBase64(rawBase64: string): string {
+		const contentType: ImageMimeType = this.externalToolLogoService.detectAndValidateImageContentType(rawBase64);
+
+		const dataURI = `data:${contentType.valueOf()};base64,${rawBase64}`;
+
+		return dataURI;
+	}
 
 	private async fetchMediaMetadata(vidisConfig: MediaSourceVidisConfig): Promise<OfferDTO[]> {
 		const vidisClient = IDMBetreiberApiFactory(

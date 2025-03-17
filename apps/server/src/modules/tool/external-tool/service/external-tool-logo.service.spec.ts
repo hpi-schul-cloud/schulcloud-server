@@ -6,6 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of, throwError } from 'rxjs';
+import { ImageMimeType } from '../../common/enum';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
@@ -385,6 +386,48 @@ describe(ExternalToolLogoService.name, () => {
 				const func = async () => service.getExternalToolBinaryLogo(externalToolId);
 
 				await expect(func).rejects.toThrow(ExternalToolLogoNotFoundLoggableException);
+			});
+		});
+	});
+
+	describe('detectContentTypeOrThrow', () => {
+		describe('when the image buffer passed is from a png', () => {
+			it('should return the content type "image/png"', () => {
+				const pngBase64Image = 'iVBORw0KGgoAAAAAADElEQVkSuQmCC';
+
+				const result = service.detectAndValidateImageContentType(pngBase64Image);
+
+				expect(result).toEqual(ImageMimeType.PNG.valueOf());
+			});
+		});
+
+		describe('when the image buffer passed is from a jpeg', () => {
+			it('should return the content type "image/jpeg"', () => {
+				const jpegBase64Image = '/9j/4AAQYswLEoooA//9k=';
+
+				const result = service.detectAndValidateImageContentType(jpegBase64Image);
+
+				expect(result).toEqual(ImageMimeType.JPEG.valueOf());
+			});
+		});
+
+		describe('when the image buffer passed is from a gif', () => {
+			it('should return the content type "image/gif"', () => {
+				const gifBase64Image = 'R0lGODdhAQCAkQBADs=';
+
+				const result = service.detectAndValidateImageContentType(gifBase64Image);
+
+				expect(result).toEqual(ImageMimeType.GIF.valueOf());
+			});
+		});
+
+		describe('when the image buffer passed is from an unsupported format', () => {
+			it('should throw an ExternalToolLogoWrongFileTypeLoggableException', () => {
+				const unsupportedFile = 'JVBERi0xLjUKJYCBgoMKMSAwZ3';
+
+				expect(() => {
+					service.detectAndValidateImageContentType(unsupportedFile);
+				}).toThrow(new ExternalToolLogoWrongFileTypeLoggableException());
 			});
 		});
 	});
