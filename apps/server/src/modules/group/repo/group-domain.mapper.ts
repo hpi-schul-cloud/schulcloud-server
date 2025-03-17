@@ -4,7 +4,8 @@ import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { ExternalSourceEmbeddable, SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
-import { ExternalSource, Group, GroupPeriod, GroupProps, GroupTypes, GroupUser } from '../domain';
+import { ExternalSource } from '@shared/domain/domainobject';
+import { Group, GroupPeriod, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from '../entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {

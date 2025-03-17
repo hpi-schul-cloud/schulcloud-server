@@ -1,9 +1,8 @@
-export { GroupDeletedEvent } from './event';
-export * from './external-source';
 export * from './group';
-export { GroupAggregateScope } from './group-aggregate.scope';
+export * from './group-user';
 export { GroupPeriod } from './group-period';
 export * from './group-types';
-export * from './group-user';
-export { GroupVisibilityPermission } from './group-visibility-permission.enum';
+export { GroupDeletedEvent } from './event';
 export { GroupFilter } from './interface';
+export { GroupAggregateScope } from './group-aggregate.scope';
+export { GroupVisibilityPermission } from './group-visibility-permission.enum';

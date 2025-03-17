@@ -4,7 +4,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseDoService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
 import { Group, GroupService, GroupTypes } from '@modules/group';
-import { ExternalSource } from '@modules/group/domain';
 import { groupFactory } from '@modules/group/testing';
 import {
 	LegacySchoolService,
@@ -19,7 +18,7 @@ import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page } from '@shared/domain/domainobject';
+import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
