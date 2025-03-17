@@ -7,9 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { AccountConfig } from '../../account-config';
-import { Account } from '../do/account';
-import { AccountSave } from '../do/account-save';
-import { IdmAccount } from '../do/idm-account';
+import { Account, AccountSave, IdmAccount } from '../do';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 

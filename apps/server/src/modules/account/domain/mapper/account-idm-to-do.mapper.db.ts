@@ -1,5 +1,4 @@
-import { Account } from '../do/account';
-import { IdmAccount } from '../do/idm-account';
+import { Account, IdmAccount } from '../do';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 
 export class AccountIdmToDoMapperDb extends AccountIdmToDoMapper {
