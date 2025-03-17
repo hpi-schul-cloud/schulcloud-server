@@ -26,8 +26,10 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { AccountConfig } from '../../account-config';
 import { AccountEntity } from '../../repo';
-import { Account } from '../account';
-import { AccountSave } from '../account-save';
+import { Account } from '../do/account';
+import { AccountSave } from '../do/account-save';
+import { UpdateAccount } from '../do/update-account';
+import { UpdateMyAccount } from '../do/update-my-account';
 import {
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
@@ -46,8 +48,6 @@ import {
 	UpdatingLastFailedLoginLoggable,
 } from '../error';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
-import { UpdateAccount } from '../update-account';
-import { UpdateMyAccount } from '../update-my-account';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';

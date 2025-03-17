@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Account } from '../account';
-import { AccountSave } from '../account-save';
+import { Account } from '../do/account';
+import { AccountSave } from '../do/account-save';
 
 export abstract class AbstractAccountService {
 	/*
