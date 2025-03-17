@@ -233,4 +233,40 @@ describe('FilesStorageService delete methods', () => {
 			});
 		});
 	});
+
+	describe('deleteByStorageLocation', () => {
+		const setup = () => {
+			const storageLocation = StorageLocation.SCHOOL;
+			const storageLocationId = new ObjectId().toHexString();
+			const params = { storageLocation, storageLocationId };
+
+			fileRecordRepo.markForDeleteByStorageLocation.mockResolvedValue(1);
+
+			return { storageLocation, storageLocationId, params };
+		};
+
+		it('should fileRecordRepo.markForDeleteByStorageLocation', async () => {
+			const { storageLocation, storageLocationId, params } = setup();
+
+			await service.deleteByStorageLocation(params);
+
+			expect(fileRecordRepo.markForDeleteByStorageLocation).toBeCalledWith(storageLocation, storageLocationId);
+		});
+
+		it('should storageClient.moveDirectoryToTrash', async () => {
+			const { storageLocationId, params } = setup();
+
+			await service.deleteByStorageLocation(params);
+
+			expect(storageClient.moveDirectoryToTrash).toBeCalledWith(storageLocationId);
+		});
+
+		it('should return result', async () => {
+			const { params } = setup();
+
+			const resultValue = await service.deleteByStorageLocation(params);
+
+			expect(resultValue).toBe(1);
+		});
+	});
 });

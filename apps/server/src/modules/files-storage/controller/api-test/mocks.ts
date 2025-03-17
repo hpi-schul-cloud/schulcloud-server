@@ -1,3 +1,4 @@
-export const availableParentTypes =
-	'users, schools, courses, tasks, lessons, submissions, gradings, boardnodes, externaltools';
-export const availableStorageLocations = 'school, instance';
+import { FileRecordParentType, StorageLocation } from '../../interface';
+
+export const availableParentTypes = Object.values(FileRecordParentType).join(', ');
+export const availableStorageLocations = Object.values(StorageLocation).join(', ');

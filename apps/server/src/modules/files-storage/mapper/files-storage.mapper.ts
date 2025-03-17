@@ -30,7 +30,7 @@ export class FilesStorageMapper {
 	]);
 
 	public static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizationBodyParamsReferenceType {
-		const res: AuthorizationBodyParamsReferenceType | undefined = this.authorizationEntityMap.get(type);
+		const res = this.authorizationEntityMap.get(type);
 
 		if (!res) {
 			throw new NotImplementedException();
@@ -39,7 +39,7 @@ export class FilesStorageMapper {
 		return res;
 	}
 	public static mapToAllowedStorageLocationType(type: StorageLocation): AuthorizationBodyParamsReferenceType {
-		const res: AuthorizationBodyParamsReferenceType | undefined = this.storageLocationMap.get(type);
+		const res = this.storageLocationMap.get(type);
 
 		if (!res) {
 			throw new NotImplementedException();

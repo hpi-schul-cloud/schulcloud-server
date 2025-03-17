@@ -35,7 +35,7 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { GetFileResponse } from '../interface';
+import { GetFileResponse, StorageLocationParams } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
@@ -331,6 +331,15 @@ export class FilesStorageService {
 		await this.fileRecordRepo.save(fileRecords);
 
 		return fileRecords;
+	}
+
+	public async deleteByStorageLocation(params: StorageLocationParams): Promise<number> {
+		const { storageLocation, storageLocationId } = params;
+
+		const result = await this.fileRecordRepo.markForDeleteByStorageLocation(storageLocation, storageLocationId);
+		await this.storageClient.moveDirectoryToTrash(storageLocationId);
+
+		return result;
 	}
 
 	// restore

@@ -10,12 +10,12 @@ import { EntityId } from '@shared/domain/types';
 import { StorageLocationParamsDto } from '../controller/dto';
 import { StorageLocation } from '../interface';
 import { FilesStorageMapper } from '../mapper';
-import { FilesStorageAdminService } from '../service';
+import { FilesStorageService } from '../service';
 
 @Injectable()
 export class FilesStorageAdminUC {
 	constructor(
-		private readonly filesStorageAdminService: FilesStorageAdminService,
+		private readonly filesStorageAdminService: FilesStorageService,
 		private readonly logger: Logger,
 		private readonly authorizationClientAdapter: AuthorizationClientAdapter
 	) {
