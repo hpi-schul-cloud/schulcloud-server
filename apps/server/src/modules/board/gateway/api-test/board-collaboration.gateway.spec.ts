@@ -1,14 +1,13 @@
 import { MongoIoAdapter } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { getSocketApiClient, waitForEvent } from '@testing/test-socket-api-client';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
 import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
@@ -16,7 +15,9 @@ import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
+	getSocketApiClient,
 	richTextElementEntityFactory,
+	waitForEvent,
 } from '../../testing';
 import { CardUc } from '../../uc/card.uc';
 import { BoardCollaborationGateway } from '../board-collaboration.gateway';
@@ -75,7 +76,7 @@ describe(BoardCollaborationGateway.name, () => {
 			isExternalUser: false,
 		});
 
-		const course = courseFactory.build({ teachers: [teacherUser] });
+		const course = courseEntityFactory.build({ teachers: [teacherUser] });
 		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);

@@ -1,14 +1,12 @@
 import { ClassEntity } from '@modules/class/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { GroupEntity } from '@modules/group/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
-import { FederalStateEntity, SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
+import { Role } from '@modules/role/repo';
+import { FederalStateEntity, SchoolEntity, SchoolYearEntity, StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
-import { Course } from '@shared/domain/entity/course.entity';
-import { CourseGroup } from '@shared/domain/entity/coursegroup.entity';
-import { Role } from '@shared/domain/entity/role.entity';
-import { StorageProviderEntity } from '@shared/domain/entity/storageprovider.entity';
-import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 
 export const ENTITIES = [
 	SchoolEntity,
@@ -20,8 +18,8 @@ export const ENTITIES = [
 	SchoolSystemOptionsEntity,
 	User,
 	Role,
-	Course,
-	CourseGroup,
+	CourseEntity,
+	CourseGroupEntity,
 	ClassEntity,
 	GroupEntity,
 ];

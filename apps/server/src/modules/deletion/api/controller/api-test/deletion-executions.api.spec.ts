@@ -1,6 +1,7 @@
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { TestApiClient } from '@testing/test-api-client';
 
 const baseRouteName = '/deletionExecutions';
@@ -11,6 +12,9 @@ describe(`deletionExecution (api)`, () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
+		const config = adminApiServerConfig();
+		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
+
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();

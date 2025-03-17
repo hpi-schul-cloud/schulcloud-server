@@ -16,6 +16,7 @@ import { BoardApiModule } from '@modules/board/board-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-editor/collaborative-text-editor-api.module';
+import { CourseApiModule } from '@modules/course/course-api.module';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
@@ -34,7 +35,7 @@ import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
-import { TeamsApiModule } from '@modules/teams/teams-api.module';
+import { TeamApiModule } from '@modules/team/team-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
@@ -55,6 +56,7 @@ import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	CoreModule,
+	CourseApiModule,
 	AuthenticationApiModule,
 	AuthGuardModule.register([AuthGuardOptions.JWT]),
 	AuthorizationReferenceApiModule,
@@ -91,7 +93,7 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
-	TeamsApiModule,
+	TeamApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 	SchoolApiModule,

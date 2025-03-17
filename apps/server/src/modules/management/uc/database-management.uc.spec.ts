@@ -4,11 +4,11 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, LdapEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { SchoolEntity } from '@modules/school/repo';
+import { Role } from '@modules/role/repo';
+import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, StorageProviderEntity } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
@@ -38,13 +38,13 @@ describe('DatabaseManagementService', () => {
 			$oid: '0000d186816abba584714c93',
 		},
 		alias: 'SANIS',
-		type: 'oauthSanis',
+		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
 			// eslint-disable-next-line no-template-curly-in-string
-			clientId: '${SANIS_CLIENT_ID}',
+			clientId: '${SCHULCONNEX_CLIENT_ID}',
 			// eslint-disable-next-line no-template-curly-in-string
-			clientSecret: '${SANIS_CLIENT_SECRET}',
+			clientSecret: '${SCHULCONNEX_CLIENT_SECRET}',
 		},
 	};
 	const oauthSystemWithSecrets = {
@@ -52,7 +52,7 @@ describe('DatabaseManagementService', () => {
 			$oid: '0000d186816abba584714c93',
 		},
 		alias: 'SANIS',
-		type: 'oauthSanis',
+		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
 			clientId: 'ClientId',
@@ -511,8 +511,8 @@ describe('DatabaseManagementService', () => {
 
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID',
-						clientSecret: 'SANIS_CLIENT_SECRET',
+						clientId: 'SCHULCONNEX_CLIENT_ID',
+						clientSecret: 'SCHULCONNEX_CLIENT_SECRET',
 					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
@@ -527,8 +527,8 @@ describe('DatabaseManagementService', () => {
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID_env',
-						clientSecret: 'SANIS_CLIENT_SECRET_env',
+						clientId: 'SCHULCONNEX_CLIENT_ID_env',
+						clientSecret: 'SCHULCONNEX_CLIENT_SECRET_env',
 					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID_env',
@@ -557,8 +557,8 @@ describe('DatabaseManagementService', () => {
 					configService.get.mockReturnValue(undefined);
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_ID'));
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SANIS_CLIENT_SECRET'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_ID'));
+					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_SECRET'));
 					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_ID'));
 					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('OIDC_CLIENT_SECRET'));
 				});
@@ -604,8 +604,8 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
 					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
-						clientId: 'SANIS_CLIENT_ID',
-						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
+						clientId: 'SCHULCONNEX_CLIENT_ID',
+						clientSecret: 'SCHULCONNEX_CLIENT_SECRET_encrypted',
 					});
 					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',

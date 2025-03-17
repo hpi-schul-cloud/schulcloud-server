@@ -1,5 +1,11 @@
-export { CountyEmbeddable, FederalStateEntity, FederalStateProperties } from './mikro-orm/federal-state.entity';
-export { FederalStateRepo } from './mikro-orm/federal-state.repo';
-export { SchoolYearEntity, SchoolYearProperties } from './mikro-orm/school-year.entity';
-export { SchoolYearMikroOrmRepo } from './mikro-orm/school-year.repo';
-export { SchoolEntity, SchoolProperties, SchoolRolePermission, SchoolRoles } from './mikro-orm/school.entity';
+export { CountyEmbeddable, FederalStateEntity, FederalStateProperties } from './federal-state.entity';
+export { FederalStateRepo } from './federal-state.repo';
+export { FederalStateEntityMapper } from './mapper/federal-state.entity.mapper';
+export { SchoolYearEntityMapper } from './mapper/school-year.entity.mapper';
+export { SchoolEntityMapper } from './mapper/school.entity.mapper';
+export { SchoolYearEntity, SchoolYearProperties } from './school-year.entity';
+export { SchoolYearMikroOrmRepo } from './school-year.repo';
+export { SchoolEntity, SchoolProperties, SchoolRolePermission, SchoolRoles } from './school.entity';
+export { SchoolMikroOrmRepo } from './school.repo';
+export { StorageProviderEntity, StorageProviderProperties } from './storageprovider.entity';
+export { StorageProviderRepo } from './storageprovider.repo';

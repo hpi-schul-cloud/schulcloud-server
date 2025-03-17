@@ -1,10 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
 import { DashboardRepo } from './dashboard.repo';
@@ -19,7 +19,7 @@ describe('dashboard repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Dashboard, DashboardEntity, DashboardGridElementEntity, Course, User, CourseGroup],
+					entities: [Dashboard, DashboardEntity, DashboardGridElementEntity, CourseEntity, User, CourseGroupEntity],
 				}),
 			],
 			providers: [DashboardRepo, DashboardModelMapper],
@@ -46,7 +46,7 @@ describe('dashboard repo', () => {
 
 	it('should persist dashboard with gridElements', async () => {
 		const user = userFactory.build();
-		const course = courseFactory.build({ students: [user] });
+		const course = courseEntityFactory.build({ students: [user] });
 		await em.persistAndFlush([course, user]);
 		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
@@ -66,7 +66,7 @@ describe('dashboard repo', () => {
 
 	it('should persist dashboard with gridElement group', async () => {
 		const user = userFactory.build();
-		const courses = courseFactory.buildList(2, { students: [user] });
+		const courses = courseEntityFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
 		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
@@ -94,7 +94,7 @@ describe('dashboard repo', () => {
 
 	it('should persist changes', async () => {
 		const user = userFactory.build();
-		const courses = courseFactory.buildList(2, { students: [user] });
+		const courses = courseEntityFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
 		const dashboard = new Dashboard(new ObjectId().toString(), {
 			grid: [
@@ -119,7 +119,7 @@ describe('dashboard repo', () => {
 
 	it('should remove orphaned gridelements', async () => {
 		const user = userFactory.build();
-		const courses = courseFactory.buildList(2, { students: [user] });
+		const courses = courseEntityFactory.buildList(2, { students: [user] });
 		await em.persistAndFlush([user, ...courses]);
 		const elementId = new ObjectId().toString();
 		const dashboard = new Dashboard(new ObjectId().toString(), {
@@ -147,7 +147,7 @@ describe('dashboard repo', () => {
 	describe('persistAndFlush', () => {
 		it('should persist dashboard with gridElements', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			const course = courseEntityFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
 			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
@@ -170,7 +170,7 @@ describe('dashboard repo', () => {
 
 		it('should be idempotent', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			const course = courseEntityFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
 			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
@@ -191,7 +191,7 @@ describe('dashboard repo', () => {
 
 		it('should persist dashboard with element without id', async () => {
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			const course = courseEntityFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([user, course]);
 			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
@@ -224,7 +224,7 @@ describe('dashboard repo', () => {
 		describe('when user has a dashboard already', () => {
 			it('should return the existing dashboard', async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], name: 'Mathe' });
+				const course = courseEntityFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
 				const dashboard = new Dashboard(new ObjectId().toString(), {
 					grid: [
@@ -274,7 +274,7 @@ describe('dashboard repo', () => {
 		describe('when user has a dashboard already', () => {
 			const setup = async () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user], name: 'Mathe' });
+				const course = courseEntityFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
 				const dashboard = new Dashboard(new ObjectId().toString(), {
 					grid: [
@@ -304,7 +304,7 @@ describe('dashboard repo', () => {
 		const setup = async () => {
 			const userWithoutDashoard = userFactory.build();
 			const user = userFactory.build();
-			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			const course = courseEntityFactory.build({ students: [user], name: 'Mathe' });
 			await em.persistAndFlush([userWithoutDashoard, user, course]);
 			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [

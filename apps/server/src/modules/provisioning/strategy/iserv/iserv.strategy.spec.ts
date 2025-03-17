@@ -6,10 +6,10 @@ import {
 	IdTokenExtractionFailureLoggableException,
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
+import { RoleName } from '@modules/role';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';

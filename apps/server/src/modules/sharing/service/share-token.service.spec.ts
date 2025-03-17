@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ColumnBoardService } from '@modules/board/service';
+import { ColumnBoardService } from '@modules/board';
 import { columnBoardFactory } from '@modules/board/testing';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonService } from '@modules/lesson/service';
-import { TaskService } from '@modules/task/service';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonService } from '@modules/lesson';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { TaskService } from '@modules/task';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
@@ -69,7 +71,7 @@ describe('ShareTokenService', () => {
 		lessonService = await module.get(LessonService);
 		taskService = await module.get(TaskService);
 		columnBoardService = await module.get(ColumnBoardService);
-		await setupEntities([User, Course, CourseGroup, Task, Submission, LessonEntity, Material]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 	});
 
 	afterAll(async () => {
@@ -157,7 +159,7 @@ describe('ShareTokenService', () => {
 
 	describe('lookup with parent name', () => {
 		it('when parent is course', async () => {
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
 
 			const payload = { parentId: course.id, parentType: ShareTokenParentType.Course };

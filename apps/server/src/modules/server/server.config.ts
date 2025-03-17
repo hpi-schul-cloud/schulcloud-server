@@ -145,7 +145,6 @@ const config: ServerConfig = {
 			? (Configuration.get('ALERT_STATUS_URL') as null)
 			: (Configuration.get('ALERT_STATUS_URL') as string),
 	CALENDAR_SERVICE_ENABLED: Configuration.get('CALENDAR_SERVICE_ENABLED') as boolean,
-	DISABLED_BRUTE_FORCE_CHECK: Configuration.get('DISABLED_BRUTE_FORCE_CHECK') as boolean,
 	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
 	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
 	FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED: Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') as boolean,
@@ -175,9 +174,7 @@ const config: ServerConfig = {
 	FEATURE_LOGIN_LINK_ENABLED: Configuration.get('FEATURE_LOGIN_LINK_ENABLED') as boolean,
 	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
 	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
-	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: Configuration.get(
-		'FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED'
-	) as boolean,
+	FEATURE_USER_LOGIN_MIGRATION_ENABLED: Configuration.get('FEATURE_USER_LOGIN_MIGRATION_ENABLED') as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
 	) as boolean,
@@ -310,7 +307,9 @@ const config: ServerConfig = {
 	FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION: Configuration.get(
 		'FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION'
 	) as boolean,
-	FEATURE_SANIS_GROUP_PROVISIONING_ENABLED: Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED') as boolean,
+	FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED: Configuration.get(
+		'FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED'
+	) as boolean,
 	FEATURE_AI_TUTOR_ENABLED: Configuration.get('FEATURE_AI_TUTOR_ENABLED') as boolean,
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: Configuration.get('FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED') as boolean,
@@ -339,9 +338,11 @@ const config: ServerConfig = {
 	MEDIA_SOURCE_VIDIS_PASSWORD: Configuration.has('MEDIA_SOURCE_VIDIS_PASSWORD')
 		? (Configuration.get('MEDIA_SOURCE_VIDIS_PASSWORD') as string)
 		: undefined,
-	SANIS_CLIENT_ID: Configuration.has('SANIS_CLIENT_ID') ? (Configuration.get('SANIS_CLIENT_ID') as string) : undefined,
-	SANIS_CLIENT_SECRET: Configuration.has('SANIS_CLIENT_SECRET')
-		? (Configuration.get('SANIS_CLIENT_SECRET') as string)
+	SCHULCONNEX_CLIENT_ID: Configuration.has('SCHULCONNEX_CLIENT_ID')
+		? (Configuration.get('SCHULCONNEX_CLIENT_ID') as string)
+		: undefined,
+	SCHULCONNEX_CLIENT_SECRET: Configuration.has('SCHULCONNEX_CLIENT_SECRET')
+		? (Configuration.get('SCHULCONNEX_CLIENT_SECRET') as string)
 		: undefined,
 	LICENSE_SUMMARY_URL: Configuration.has('LICENSE_SUMMARY_URL')
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
@@ -349,5 +350,5 @@ const config: ServerConfig = {
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
 };
 
-export const serverConfig = () => config;
+export const serverConfig = (): ServerConfig => config;
 export const SERVER_CONFIG_TOKEN = 'SERVER_CONFIG_TOKEN';

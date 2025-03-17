@@ -3,7 +3,6 @@ import { ICurrentUser } from '@infra/auth-guard';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
 import { UserService } from '@modules/user';
-import { UserRepo } from '@modules/user/repo';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
@@ -59,10 +58,6 @@ describe('get H5P editor', () => {
 				{
 					provide: H5PPlayer,
 					useValue: createMock<H5PPlayer>(),
-				},
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
 				},
 				{
 					provide: LibraryStorage,

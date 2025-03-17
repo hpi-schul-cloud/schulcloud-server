@@ -1,15 +1,14 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseDoService } from '@modules/course';
 import { Group, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
-import { CourseDoService } from '@modules/learnroom';
 import {
 	LegacySchoolService,
 	SchoolSystemOptionsService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource } from '@shared/domain/domainobject';

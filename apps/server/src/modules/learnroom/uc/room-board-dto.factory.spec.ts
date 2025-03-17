@@ -2,14 +2,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { AuthorizationService } from '@modules/authorization';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Submission, Task, TaskWithStatusVo } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task, TaskWithStatusVo } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
 import { LegacyBoard, LegacyBoardElement } from '../repo';
 import { boardFactory, columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
 import { LessonMetaData } from '../types';
@@ -56,8 +58,8 @@ describe(RoomBoardDTOFactory.name, () => {
 		mapper = module.get(RoomBoardDTOFactory);
 		await setupEntities([
 			User,
-			Course,
-			CourseGroup,
+			CourseEntity,
+			CourseGroupEntity,
 			LessonEntity,
 			Material,
 			Task,
@@ -70,7 +72,7 @@ describe(RoomBoardDTOFactory.name, () => {
 	describe('mapDTO', () => {
 		it('should set roomid', () => {
 			const user = userFactory.buildWithId();
-			const room = courseFactory.buildWithId({ teachers: [user] });
+			const room = courseEntityFactory.buildWithId({ teachers: [user] });
 			const board = boardFactory.buildWithId({ course: room });
 
 			const result = mapper.createDTO({ room, board, user });
@@ -79,7 +81,7 @@ describe(RoomBoardDTOFactory.name, () => {
 
 		it('should set displayColor', () => {
 			const user = userFactory.buildWithId();
-			const room = courseFactory.buildWithId({ teachers: [user] });
+			const room = courseEntityFactory.buildWithId({ teachers: [user] });
 			const board = boardFactory.buildWithId({ course: room });
 
 			const result = mapper.createDTO({ room, board, user });
@@ -88,7 +90,7 @@ describe(RoomBoardDTOFactory.name, () => {
 
 		it('should set title', () => {
 			const user = userFactory.buildWithId();
-			const room = courseFactory.buildWithId({ teachers: [user] });
+			const room = courseEntityFactory.buildWithId({ teachers: [user] });
 			const board = boardFactory.buildWithId({ course: room });
 
 			const result = mapper.createDTO({ room, board, user });
@@ -100,14 +102,14 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let tasks: Task[];
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
 				substitutionTeacher = userFactory.buildWithId();
-				room = courseFactory.buildWithId({
+				room = courseEntityFactory.buildWithId({
 					teachers: [teacher],
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
@@ -172,14 +174,14 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let tasks: Task[];
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
 				substitutionTeacher = userFactory.buildWithId();
-				room = courseFactory.buildWithId({
+				room = courseEntityFactory.buildWithId({
 					teachers: [teacher],
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
@@ -211,14 +213,14 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let lessons: LessonEntity[];
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
 				substitutionTeacher = userFactory.buildWithId();
-				room = courseFactory.buildWithId({
+				room = courseEntityFactory.buildWithId({
 					teachers: [teacher],
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
@@ -250,7 +252,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let lesson: LessonEntity;
 			const inOneDay = new Date(Date.now() + 8.64e7);
 
@@ -258,7 +260,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
 				substitutionTeacher = userFactory.buildWithId();
-				room = courseFactory.buildWithId({
+				room = courseEntityFactory.buildWithId({
 					teachers: [teacher],
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
@@ -332,14 +334,14 @@ describe(RoomBoardDTOFactory.name, () => {
 			let student: User;
 			let substitutionTeacher: User;
 			let board: LegacyBoard;
-			let room: Course;
+			let room: CourseEntity;
 			let lessons: LessonEntity[];
 
 			beforeEach(() => {
 				teacher = userFactory.buildWithId();
 				student = userFactory.buildWithId();
 				substitutionTeacher = userFactory.buildWithId();
-				room = courseFactory.buildWithId({
+				room = courseEntityFactory.buildWithId({
 					teachers: [teacher],
 					students: [student],
 					substitutionTeachers: [substitutionTeacher],
@@ -369,7 +371,7 @@ describe(RoomBoardDTOFactory.name, () => {
 		describe('when board contains allowed column boards', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const room = courseFactory.build();
+				const room = courseEntityFactory.build();
 				const columnboardBoardElements = columnboardBoardElementFactory.buildList(5);
 				const lessonElement = lessonBoardElementFactory.buildWithId();
 				const board = boardFactory.buildWithId({ references: [lessonElement, ...columnboardBoardElements] });

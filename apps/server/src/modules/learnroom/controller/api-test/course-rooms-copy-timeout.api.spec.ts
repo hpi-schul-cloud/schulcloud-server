@@ -1,15 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { lessonFactory } from '@modules/lesson/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-
 // config must be set outside before the server module is importat, otherwise the configuration is already set
 const configBefore = Configuration.toObject({ plainSecrets: true });
 Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
@@ -48,7 +47,7 @@ describe('Course Rooms copy (API)', () => {
 	describe('when copying course', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ name: 'course #1', teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
 
 			await em.persistAndFlush([course, teacherAccount, teacherUser]);
 			em.clear();
@@ -70,7 +69,7 @@ describe('Course Rooms copy (API)', () => {
 	describe('when copying lesson', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseFactory.build({ name: 'course #1', teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ name: 'course #1', teachers: [teacherUser] });
 			const lesson = lessonFactory.build({ name: 'lesson #1', course });
 
 			await em.persistAndFlush([course, lesson, teacherAccount, teacherUser]);

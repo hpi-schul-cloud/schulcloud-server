@@ -1,12 +1,22 @@
-import { Course, CourseGroup, LessonEntity, Material, Submission, Task } from '@shared/domain/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Submission, Task } from '@modules/task/repo';
 import { setupEntities } from '@testing/database';
-import { lessonFactory } from '@testing/factory/lesson.factory';
 import { LegacyBoardElementType } from './legacy-board-element.entity';
 import { LessonBoardElement } from './lesson-board-element.entity';
 
 describe('LessonBoardElementEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([LessonBoardElement, LessonEntity, Material, Course, CourseGroup, Task, Submission]);
+		await setupEntities([
+			LessonBoardElement,
+			LessonEntity,
+			Material,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+		]);
 	});
 
 	describe('constructor', () => {

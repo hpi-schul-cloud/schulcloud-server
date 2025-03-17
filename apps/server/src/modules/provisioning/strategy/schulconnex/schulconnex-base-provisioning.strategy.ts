@@ -6,10 +6,10 @@ import {
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
+import { RoleName } from '@modules/role';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
-import { RoleName } from '@shared/domain/interface';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import {
@@ -63,7 +63,7 @@ export abstract class SchulconnexBaseProvisioningStrategy extends ProvisioningSt
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (this.configService.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+		if (this.configService.get('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')) {
 			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);

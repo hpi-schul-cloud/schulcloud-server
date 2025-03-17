@@ -1,11 +1,10 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService, RoomRole } from '@modules/role';
 import { RoomService } from '@modules/room';
 import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoleName, RoomRole } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomMembershipAuthorizable, UserWithRoomRoles } from '../do/room-membership-authorizable.do';
 import { RoomMembership } from '../do/room-membership.do';
@@ -116,8 +115,10 @@ export class RoomMembershipService {
 			throw new BadRequestException('Room membership not found');
 		}
 
-		const group = await this.groupService.findById(roomMembership.userGroupId);
-		const role = await this.roleService.findByName(roleName);
+		const [group, role] = await Promise.all([
+			this.groupService.findById(roomMembership.userGroupId),
+			this.roleService.findByName(roleName),
+		]);
 
 		group.users.forEach((groupUser) => {
 			if (userIds.includes(groupUser.userId)) {
@@ -126,8 +127,6 @@ export class RoomMembershipService {
 		});
 
 		await this.groupService.save(group);
-
-		return Promise.resolve();
 	}
 
 	public async getRoomMembershipAuthorizablesByUserId(userId: EntityId): Promise<RoomMembershipAuthorizable[]> {

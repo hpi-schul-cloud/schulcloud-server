@@ -1,7 +1,7 @@
+import { CourseService } from '@modules/course';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { Dashboard, GridPosition, GridPositionWithGroupIndex } from '../domain/do/dashboard';
 import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
@@ -9,12 +9,12 @@ import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo
 export class DashboardUc {
 	constructor(
 		@Inject(DASHBOARD_REPO) private readonly dashboardRepo: IDashboardRepo,
-		private readonly courseRepo: CourseRepo
+		private readonly courseService: CourseService
 	) {}
 
 	public async getUsersDashboard(userId: EntityId): Promise<Dashboard> {
 		const dashboard = await this.dashboardRepo.getUsersDashboard(userId);
-		const [courses] = await this.courseRepo.findAllByUserId(
+		const courses = await this.courseService.findAllByUserId(
 			userId,
 			{ onlyActiveCourses: true },
 			{ order: { name: SortOrder.asc } }

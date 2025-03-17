@@ -1,19 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, CourseGroup } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { CourseRepo } from '@shared/repo/course';
+import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { courseFactory } from '@testing/factory/course.factory';
-import { roleFactory } from '@testing/factory/role.factory';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
@@ -21,7 +22,7 @@ import { BoardContextService } from './board-context.service';
 describe(BoardContextService.name, () => {
 	let module: TestingModule;
 	let service: BoardContextService;
-	let courseRepo: DeepMocked<CourseRepo>;
+	let courseService: DeepMocked<CourseService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 
 	beforeAll(async () => {
@@ -33,17 +34,17 @@ describe(BoardContextService.name, () => {
 					useValue: createMock<RoomMembershipService>(),
 				},
 				{
-					provide: CourseRepo,
-					useValue: createMock<CourseRepo>(),
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(BoardContextService);
 		roomMembershipService = module.get(RoomMembershipService);
-		courseRepo = module.get(CourseRepo);
+		courseService = module.get(CourseService);
 
-		await setupEntities([User, Course, CourseGroup]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	afterEach(() => {
@@ -115,11 +116,11 @@ describe(BoardContextService.name, () => {
 			describe('when teachers are associated with the course', () => {
 				const setup = () => {
 					const teacher = userFactory.build();
-					const course = courseFactory.buildWithId({ teachers: [teacher] });
+					const course = courseEntityFactory.buildWithId({ teachers: [teacher] });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					courseRepo.findById.mockResolvedValue(course);
+					courseService.findById.mockResolvedValue(course);
 
 					return { columnBoard, teacher };
 				};
@@ -144,11 +145,11 @@ describe(BoardContextService.name, () => {
 			describe('when substitution teachers are associated with the course', () => {
 				const setup = () => {
 					const substitutionTeacher = userFactory.build();
-					const course = courseFactory.buildWithId({ substitutionTeachers: [substitutionTeacher] });
+					const course = courseEntityFactory.buildWithId({ substitutionTeachers: [substitutionTeacher] });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					courseRepo.findById.mockResolvedValue(course);
+					courseService.findById.mockResolvedValue(course);
 
 					return { columnBoard, substitutionTeacher };
 				};
@@ -173,11 +174,11 @@ describe(BoardContextService.name, () => {
 			describe('when students are associated with the course', () => {
 				const setup = () => {
 					const student = userFactory.build();
-					const course = courseFactory.buildWithId({ students: [student] });
+					const course = courseEntityFactory.buildWithId({ students: [student] });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					courseRepo.findById.mockResolvedValue(course);
+					courseService.findById.mockResolvedValue(course);
 
 					return { columnBoard, student };
 				};
@@ -201,11 +202,11 @@ describe(BoardContextService.name, () => {
 
 			describe('when evaluating the course context', () => {
 				const setup = () => {
-					const course = courseFactory.buildWithId();
+					const course = courseEntityFactory.buildWithId();
 					const columnBoard = columnBoardFactory.build({
 						context: { id: course.id, type: BoardExternalReferenceType.Course },
 					});
-					courseRepo.findById.mockResolvedValue(course);
+					courseService.findById.mockResolvedValue(course);
 
 					return { columnBoard };
 				};
@@ -215,7 +216,7 @@ describe(BoardContextService.name, () => {
 
 					await service.getUsersWithBoardRoles(columnBoard);
 
-					expect(courseRepo.findById).toHaveBeenCalledWith(columnBoard.context.id);
+					expect(courseService.findById).toHaveBeenCalledWith(columnBoard.context.id);
 				});
 			});
 		});

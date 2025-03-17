@@ -1,13 +1,12 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
-import { CourseDoService } from '@modules/learnroom';
-import { Course } from '@modules/learnroom/domain';
+import { Course, CourseDoService } from '@modules/course';
 import { ProvisioningConfig } from '@modules/provisioning';
 import { School, SchoolService, SchoolYear, SchoolYearService } from '@modules/school/domain';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System, SystemService } from '@modules/system';
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

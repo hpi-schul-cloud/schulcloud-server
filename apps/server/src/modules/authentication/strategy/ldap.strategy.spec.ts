@@ -5,15 +5,16 @@ import { Account } from '@modules/account';
 import { accountDoFactory, defaultTestPassword, defaultTestPasswordHash } from '@modules/account/testing';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { AuthenticationService } from '../services/authentication.service';
@@ -24,7 +25,7 @@ describe('LdapStrategy', () => {
 	let module: TestingModule;
 	let strategy: LdapStrategy;
 
-	let userRepoMock: DeepMocked<UserRepo>;
+	let userServiceMock: DeepMocked<UserService>;
 	let schoolRepoMock: DeepMocked<LegacySchoolRepo>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let ldapServiceMock: DeepMocked<LdapService>;
@@ -46,8 +47,8 @@ describe('LdapStrategy', () => {
 					useValue: createMock<LdapService>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: LegacySchoolRepo,
@@ -67,7 +68,7 @@ describe('LdapStrategy', () => {
 		strategy = module.get(LdapStrategy);
 		authenticationServiceMock = module.get(AuthenticationService);
 		schoolRepoMock = module.get(LegacySchoolRepo);
-		userRepoMock = module.get(UserRepo);
+		userServiceMock = module.get(UserService);
 		ldapServiceMock = module.get(LdapService);
 		systemService = module.get(SystemService);
 	});
@@ -111,7 +112,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
 				return {
@@ -158,7 +159,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
 				return {
@@ -205,7 +206,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
 				return {
@@ -252,7 +253,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
 				return {
@@ -299,7 +300,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(new UnauthorizedException());
 
@@ -351,7 +352,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 				ldapServiceMock.checkLdapCredentials.mockRejectedValueOnce(error);
 
@@ -411,7 +412,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValue(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
 				return {
@@ -476,7 +477,7 @@ describe('LdapStrategy', () => {
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(account);
 				authenticationServiceMock.normalizeUsername.mockReturnValue(username);
 				authenticationServiceMock.normalizePassword.mockReturnValue(defaultTestPassword);
-				userRepoMock.findById.mockResolvedValue(user);
+				userServiceMock.getUserEntityWithRoles.mockResolvedValue(user);
 				schoolRepoMock.findById.mockResolvedValue(school);
 
 				return {
