@@ -5,7 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { Account } from '../../domain/account';
-import { AccountEntity } from '../../domain/entity/account.entity';
+import { AccountEntity } from '../../repo';
 
 export interface AccountRepo extends BaseDomainObjectRepo<Account, AccountEntity> {
 	save(account: Account): Promise<Account>;
