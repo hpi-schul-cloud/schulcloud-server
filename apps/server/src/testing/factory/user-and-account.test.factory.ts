@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import type { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import type { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { SchoolEntity } from '@modules/school/repo';

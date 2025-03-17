@@ -5,10 +5,10 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain/interface';
 import { v1 } from 'uuid';
-import { AccountSave } from '..';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo';
+import { AccountSave } from '../account-save';
+import { IdmAccount } from '../idm-account';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 

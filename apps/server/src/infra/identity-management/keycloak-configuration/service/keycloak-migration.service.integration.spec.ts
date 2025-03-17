@@ -1,7 +1,7 @@
 import { LoggerModule } from '@core/logger';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
