@@ -1,14 +1,15 @@
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { BoardsClientAdapter } from '@infra/boards-client';
+import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CardClientAdapter } from '@infra/card-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
-// import { CommonCartridgeImportOrganizationProps } from '..';
+import { CommonCartridgeImportOrganizationProps } from '..';
+import { CommonCartridgeImportMapper } from '@infra/card-client/mapper/common-cartridge-import.mapper';
 
-// const DEPTH_CARD_ELEMENTS = 3;
-// const DEPTH_CARD = 2;
+const DEPTH_CARD_ELEMENTS = 3;
+const DEPTH_CARD = 2;
 const DEPTH_COLUMN = 1;
 const DEPTH_BOARD = 0;
 @Injectable()
@@ -17,7 +18,8 @@ export class CommonCartridgeImportService {
 		private readonly coursesClient: CoursesClientAdapter,
 		private boardsClient: BoardsClientAdapter,
 		private columnClient: ColumnClientAdapter,
-		private cardClient: CardClientAdapter
+		private cardClient: CardClientAdapter,
+		private mapper: CommonCartridgeImportMapper
 	) {}
 
 	public async importFile(file: Buffer): Promise<void> {
@@ -67,38 +69,41 @@ export class CommonCartridgeImportService {
 		for await (const column of columns) {
 			const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 
-			// const cards = parser
-			// 	.getOrganizations()
-			// 	.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
+			const cards = parser
+				.getOrganizations()
+				.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
 
-			// const cardsWithResource = cards.filter((card) => card.isResource);
-			// const cardsWithoutResource = cards.filter((card) => !card.isResource);
+			const cardsWithResource = cards.filter((card) => card.isResource);
+			const cardsWithoutResource = cards.filter((card) => !card.isResource);
 
 			await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: column.title });
 
-			// for await (const card of cardsWithResource) {
-			// 	// await this.createCardWithElement(parser, columnResponse, card);
-			// }
+			for await (const card of cardsWithResource) {
+				// await this.createCardWithElement(parser, columnResponse, card);
+			}
 
-			// for await (const card of cardsWithoutResource) {
-			// 	await this.createCard(parser, columnResponse, card);
-			// }
+			for await (const card of cardsWithoutResource) {
+				await this.createCard(parser, columnResponse, card);
+			}
 		}
 	}
 
-	// private async createCard(
-	// 	parser: CommonCartridgeFileParser,
-	// 	column: ColumnResponse,
-	// 	cardProps: CommonCartridgeImportOrganizationProps
-	// ): Promise<void> {
-	// 	const organizations = parser.getOrganizations();
-	// 	const cardElements = organizations.filter(
-	// 		(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
-	// 	);
-	// for await (const cardElement of cardElements) {
-	// 	await this.createCardElement(parser, card, cardElement);
-	// }
-	// }
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: ColumnResponse,
+		cardProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const organizations = parser.getOrganizations();
+		const cardElements = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+		);
+
+		const card = await this.columnClient.createCard(column.id, {});
+
+		for await (const cardElement of cardElements) {
+			await this.createCardElement(parser, card.id, cardElement);
+		}
+	}
 
 	// private async createCardWithElement(
 	// 	parser: CommonCartridgeFileParser,
@@ -118,27 +123,33 @@ export class CommonCartridgeImportService {
 	// }
 	// }
 
-	// private async createCardElement(
-	// 	parser: CommonCartridgeFileParser,
-	// 	card: Card,
-	// 	cardElementProps: CommonCartridgeImportOrganizationProps
-	// ): Promise<void> {
-	// 	if (cardElementProps.isResource) {
-	// 		const resource = parser.getResource(cardElementProps);
-	// 		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+	private async createCardElement(
+		parser: CommonCartridgeFileParser,
+		cardId: string,
+		cardElementProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		if (cardElementProps.isResource) {
+			const resource = parser.getResource(cardElementProps);
+			const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+			if (resource && contentElementType) {
+				const contentElement = this.cardClient.createCardElement(cardId, { type: contentElementType });
+			}
+			// const cardElement = await this.cardClient.createCardElement(cardId, {});
 
-	// 		if (resource && contentElementType) {
-	// 			const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
-	// 			await this.boardNodeService.addToParent(card, contentElement);
-	// 			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
-	// 			await this.boardNodeService.updateContent(contentElement, contentElementBody);
-	// 		}
-	// 	} else {
-	// 		const contentElement = this.boardNodeFactory.buildContentElement(ContentElementType.RICH_TEXT);
-	// 		await this.boardNodeService.addToParent(card, contentElement);
-	// 		const contentElementBody = this.mapper.mapOrganizationToTextElement(cardElementProps);
-
-	// 		await this.boardNodeService.updateContent(contentElement, contentElementBody);
-	// 	}
-	// }
+			// if (cardElementProps.isResource) {
+			// 	const resource = parser.getResource(cardElementProps);
+			// 	const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+			// 	if (resource && contentElementType) {
+			// 		const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
+			// 		await this.boardNodeService.addToParent(card, contentElement);
+			// 		const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
+			// 		await this.boardNodeService.updateContent(contentElement, contentElementBody);
+			// 	}
+			// } else {
+			// 	const contentElement = this.boardNodeFactory.buildContentElement(ContentElementType.RICH_TEXT);
+			// 	await this.boardNodeService.addToParent(card, contentElement);
+			// 	const contentElementBody = this.mapper.mapOrganizationToTextElement(cardElementProps);
+			// 	await this.boardNodeService.updateContent(contentElement, contentElementBody);
+		}
+	}
 }
