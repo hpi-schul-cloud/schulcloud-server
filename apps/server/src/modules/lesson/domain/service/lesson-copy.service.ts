@@ -17,6 +17,7 @@ import {
 } from '../../repo';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
+import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class LessonCopyService {
@@ -28,7 +29,7 @@ export class LessonCopyService {
 		private readonly copyFilesService: CopyFilesService
 	) {}
 
-	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
+	public async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
 		const lesson: LessonEntity = await this.lessonRepo.findById(params.originalLessonId);
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
@@ -79,7 +80,7 @@ export class LessonCopyService {
 		copiedTasksStatus: CopyStatus[],
 		lessonCopy: LessonEntity,
 		originalLesson: LessonEntity
-	) {
+	): { status: CopyStatus; elements: CopyStatus[] } {
 		const elements: CopyStatus[] = [
 			...LessonCopyService.lessonStatusMetadata(),
 			...contentStatus,
@@ -98,7 +99,7 @@ export class LessonCopyService {
 		return { status, elements };
 	}
 
-	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
+	public updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
 		const copiedLesson = lessonStatus.copyEntity as LessonEntity;
 
 		if (copiedLesson?.contents === undefined) {
@@ -120,7 +121,7 @@ export class LessonCopyService {
 		}
 
 		const { content } = value;
-		const extractTaskId = (url: string) => {
+		const extractTaskId = (url: string): EntityId => {
 			const urlObject = new URL(url, 'https://www.example.com');
 			const taskId = urlObject.pathname.split('/')[2];
 			return taskId;
@@ -165,8 +166,7 @@ export class LessonCopyService {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
 		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
-		for (let i = 0; i < content.length; i += 1) {
-			const element = content[i];
+		for (const element of content) {
 			if (element.component === ComponentType.TEXT) {
 				const textContent = this.copyTextContent(element);
 				copiedContent.push(textContent);
@@ -295,7 +295,11 @@ export class LessonCopyService {
 		return false;
 	}
 
-	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
+	private async copyLinkedTasks(
+		destinationLesson: LessonEntity,
+		lesson: LessonEntity,
+		params: LessonCopyParams
+	): Promise<CopyStatus[]> {
 		const linkedTasks = lesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
@@ -348,7 +352,7 @@ export class LessonCopyService {
 		return { copiedMaterials, materialsStatus };
 	}
 
-	private copyEmbeddedTaskLink(originalElement: ComponentProperties) {
+	private copyEmbeddedTaskLink(originalElement: ComponentProperties): ComponentProperties {
 		const copy = JSON.parse(JSON.stringify(originalElement)) as ComponentProperties;
 		delete copy._id;
 		return copy;
