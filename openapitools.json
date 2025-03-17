@@ -86,7 +86,7 @@
 					"FILTER": "operationId:CardController_updateCardTitle|CardController_createElement"
 				},
 				"globalProperty": {
-					"models": "ApiValidationError|CardControllerCreateElement201Response|CardListResponse|CardResponseElementsInner|CardResponse|CollaborativeTextEditorElementResponse|ContentElementType|CreateContentElementBodyParams|DeletedElementContent|DeletedElementResponse|DrawingElementContent|DrawingElementResponse|ExternalToolElementContent|ExternalToolElementResponse|FileElementContent|FileElementResponse|LinkElementContent|LinkElementResponse|MoveCardBodyParams|RenameBodyParams|RichTextElementContent|RichTextElementResponse|SetHeightBodyParams|SubmissionContainerElementContent|SubmissionContainerElementResponse|TimestampsResponse|VideoConferenceElementContent|VideoConferenceElementResponse|VisibilitySettingsResponse",
+					"models": "ApiValidationError:CardControllerCreateElement201Response:CardListResponse:CardResponseElementsInner:CardResponse:CollaborativeTextEditorElementResponse:ContentElementType:CreateContentElementBodyParams:DeletedElementContent:DeletedElementResponse:DrawingElementContent:DrawingElementResponse:ExternalToolElementContent:ExternalToolElementResponse:FileElementContent:FileElementResponse:LinkElementContent:LinkElementResponse:MoveCardBodyParams:RenameBodyParams:RichTextElementContent:RichTextElementResponse:SetHeightBodyParams:SubmissionContainerElementContent:SubmissionContainerElementResponse:TimestampsResponse:VideoConferenceElementContent:VideoConferenceElementResponse:VisibilitySettingsResponse",
 					"apis": "",
 					"supportingFiles": ""
 				},
