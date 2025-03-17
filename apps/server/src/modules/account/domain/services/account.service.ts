@@ -25,7 +25,7 @@ import {
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { AccountConfig } from '../../account-config';
-import { AccountEntity } from '../../repo';
+import { AccountEntity } from '../../repo/account.entity';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,

@@ -1,5 +1,5 @@
 import { Counted } from '@shared/domain/types';
-import { Account } from '../../domain';
+import { Account } from '../../domain/do/account';
 import { AccountEntity } from '../account.entity';
 
 export class AccountEntityToDoMapper {
