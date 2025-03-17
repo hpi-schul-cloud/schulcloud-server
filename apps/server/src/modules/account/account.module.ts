@@ -6,11 +6,11 @@ import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AccountConfig } from './account-config';
-import { ACCOUNT_REPO } from './domain';
+import { ACCOUNT_REPO, AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm, AccountMikroOrmRepo } from './repo';
+import { AccountMikroOrmRepo } from './repo';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {

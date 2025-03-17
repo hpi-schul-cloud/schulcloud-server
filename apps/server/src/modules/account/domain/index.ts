@@ -2,6 +2,7 @@ export * from './account';
 export * from './account-save';
 export * from './idm-account';
 export * from './interface';
+export * from './mapper';
 export * from './services';
 export * from './type';
 export * from './update-account';
