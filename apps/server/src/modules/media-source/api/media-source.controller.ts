@@ -1,6 +1,6 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { MediaSource } from '../do';
 import { MediaSourceResponseMapper } from '../mapper';
 import { MediaSourceUc } from '../uc';
@@ -13,7 +13,7 @@ export class MediaSourceController {
 	constructor(private readonly mediaSourceUc: MediaSourceUc) {}
 
 	@ApiOperation({ summary: 'Get a list of all media sources' })
-	@ApiResponse({ status: 200, type: MediaSourceListResponse })
+	@ApiOkResponse({ description: 'The list of all media sources', type: MediaSourceListResponse })
 	@ApiUnauthorizedResponse()
 	@Get()
 	public async getMediaSourceList(@CurrentUser() currentUser: ICurrentUser): Promise<MediaSourceListResponse> {

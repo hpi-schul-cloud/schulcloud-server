@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MediumMetadataResponse {
-	@ApiProperty({ type: String, description: 'The Namem' })
+	@ApiProperty({ type: String, description: 'The Name' })
 	public name: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The Description' })

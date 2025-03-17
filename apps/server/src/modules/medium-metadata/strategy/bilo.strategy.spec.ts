@@ -6,6 +6,7 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediumMetadataMapper } from '../mapper';
 import { BiloStrategy } from './bilo.strategy';
+import { MediumMetadataNotFoundLoggableException } from '../loggable/medium-metadata-not-found-loggable.exception';
 
 describe(BiloStrategy.name, () => {
 	let module: TestingModule;
@@ -65,6 +66,25 @@ describe(BiloStrategy.name, () => {
 				const result = await strategy.getMediumMetadata(mediumId, mediaSource);
 
 				expect(result).toEqual(expectedMediaMetadataDto);
+			});
+		});
+
+		describe('when metadata not found', () => {
+			const setup = () => {
+				const mediumId = 'medium-id';
+				const mediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce([]);
+
+				return { mediumId, mediaSource };
+			};
+
+			it('should throw not found exception', async () => {
+				const { mediumId, mediaSource } = setup();
+
+				const result = strategy.getMediumMetadata(mediumId, mediaSource);
+
+				await expect(result).rejects.toThrow(MediumMetadataNotFoundLoggableException);
 			});
 		});
 	});

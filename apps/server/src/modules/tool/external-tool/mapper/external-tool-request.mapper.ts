@@ -23,7 +23,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { ExternalTool } from '../domain';
+import { ExternalTool, ExternalToolMedium } from '../domain';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -141,12 +141,14 @@ export class ExternalToolRequestMapper {
 		if (!externalToolMediumParams) {
 			return undefined;
 		}
-		return {
+		const externalToolMedium: ExternalToolMedium = new ExternalToolMedium({
 			mediumId: externalToolMediumParams.mediumId,
 			publisher: externalToolMediumParams.publisher,
 			mediaSourceId: externalToolMediumParams.mediaSourceId,
 			metadataModifiedAt: externalToolMediumParams.modifiedAt,
-		};
+		});
+
+		return externalToolMedium;
 	}
 
 	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDto {

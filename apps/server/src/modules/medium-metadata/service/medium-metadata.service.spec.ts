@@ -1,21 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client';
-import { MediaSourceDataFormat, mediaSourceFactory, MediaSourceRepo } from '@modules/media-source';
+import { MediaSourceDataFormat, mediaSourceFactory, MediaSourceService } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediumMetadataMapper } from '../mapper';
-import { BiloStrategy, MediumMetadataStrategy, VidisStrategy } from '../strategy';
-import { MediumMetadataService } from './medium-metadata.service';
 import {
 	MediaSourceDataFormatNotFoundLoggableException,
 	MediaSourceNotFoundLoggableException,
 	MediumMetadataStrategyNotImplementedLoggableException,
 } from '../loggable';
+import { MediumMetadataMapper } from '../mapper';
+import { BiloStrategy, MediumMetadataStrategy, VidisStrategy } from '../strategy';
+import { MediumMetadataService } from './medium-metadata.service';
 
 describe(MediumMetadataService.name, () => {
 	let module: TestingModule;
 	let service: MediumMetadataService;
 
-	let mediaSourceRepo: DeepMocked<MediaSourceRepo>;
+	let mediaSourceService: DeepMocked<MediaSourceService>;
 	let biloStrategy: DeepMocked<BiloStrategy>;
 	let vidisStrategy: DeepMocked<VidisStrategy>;
 
@@ -24,8 +24,8 @@ describe(MediumMetadataService.name, () => {
 			providers: [
 				MediumMetadataService,
 				{
-					provide: MediaSourceRepo,
-					useValue: createMock<MediaSourceRepo>(),
+					provide: MediaSourceService,
+					useValue: createMock<MediaSourceService>(),
 				},
 				{
 					provide: BiloStrategy,
@@ -39,7 +39,7 @@ describe(MediumMetadataService.name, () => {
 		}).compile();
 
 		service = module.get(MediumMetadataService);
-		mediaSourceRepo = module.get(MediaSourceRepo);
+		mediaSourceService = module.get(MediaSourceService);
 		biloStrategy = module.get(BiloStrategy);
 		vidisStrategy = module.get(VidisStrategy);
 	});
@@ -56,7 +56,7 @@ describe(MediumMetadataService.name, () => {
 		describe('when getting media metadata using the bilo strategy', () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				mediaSourceRepo.findBySourceId.mockResolvedValue(mediaSource);
+				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);
 				const strategyMap = new Map<MediaSourceDataFormat, MediumMetadataStrategy>([
 					[MediaSourceDataFormat.VIDIS, vidisStrategy],
 				]);
@@ -78,7 +78,7 @@ describe(MediumMetadataService.name, () => {
 				const bilomedia = biloMediaQueryDataResponseFactory.build();
 				const mediaMetadata = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(bilomedia);
 
-				mediaSourceRepo.findBySourceId.mockResolvedValue(mediaSource);
+				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);
 				biloStrategy.getMediumMetadata.mockResolvedValue(mediaMetadata);
 
 				const strategyMap = new Map<MediaSourceDataFormat, MediumMetadataStrategy>([
@@ -100,7 +100,7 @@ describe(MediumMetadataService.name, () => {
 
 		describe('when the media source is missing', () => {
 			const setup = () => {
-				mediaSourceRepo.findBySourceId.mockResolvedValue(null);
+				mediaSourceService.findBySourceId.mockResolvedValue(null);
 			};
 
 			it('should throw an MediaSourceDataFormatNotFoundLoggableException', async () => {
@@ -115,7 +115,7 @@ describe(MediumMetadataService.name, () => {
 		describe('when the media source has no  data format', () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.build();
-				mediaSourceRepo.findBySourceId.mockResolvedValue(mediaSource);
+				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);
 			};
 
 			it('should throw an MediaSourceDataFormatNotFoundLoggableException', async () => {
@@ -132,7 +132,7 @@ describe(MediumMetadataService.name, () => {
 				const mediaSourceDataFormat = MediaSourceDataFormat.VIDIS;
 
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				mediaSourceRepo.findBySourceId.mockResolvedValue(mediaSource);
+				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);
 
 				const strategyMap = new Map<MediaSourceDataFormat, MediumMetadataStrategy>([
 					[MediaSourceDataFormat.BILDUNGSLOGIN, biloStrategy],

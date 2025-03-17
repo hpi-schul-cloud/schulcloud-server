@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataStrategy } from './interface';
+import { MediumMetadataNotFoundLoggableException } from '../loggable/medium-metadata-not-found-loggable.exception';
 
 @Injectable()
 export class BiloStrategy implements MediumMetadataStrategy {
@@ -19,6 +20,10 @@ export class BiloStrategy implements MediumMetadataStrategy {
 			mediaSource,
 			true
 		);
+
+		if (!metadataItems.length) {
+			throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
+		}
 
 		const mediumMetadataDto: MediumMetadataDto = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(metadataItems[0]);
 

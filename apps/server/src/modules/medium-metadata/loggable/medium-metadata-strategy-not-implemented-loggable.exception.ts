@@ -1,8 +1,8 @@
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage, Loggable } from '@core/logger';
 import { NotImplementedException } from '@nestjs/common';
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 
-export class MediumMetadataStrategyNotImplementedLoggableException extends NotImplementedException {
+export class MediumMetadataStrategyNotImplementedLoggableException extends NotImplementedException implements Loggable {
 	constructor(private readonly mediaSourceDataFormat: MediaSourceDataFormat) {
 		super();
 	}

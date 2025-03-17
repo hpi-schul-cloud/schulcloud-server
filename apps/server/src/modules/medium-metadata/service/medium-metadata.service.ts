@@ -1,4 +1,4 @@
-import { MediaSourceDataFormat, MediaSourceRepo } from '@modules/media-source';
+import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
 import {
@@ -13,7 +13,7 @@ export class MediumMetadataService {
 	private mediumMetadataStrategyMap: Map<MediaSourceDataFormat, MediumMetadataStrategy>;
 
 	constructor(
-		private readonly mediaSourceRepo: MediaSourceRepo,
+		private readonly mediaSourceService: MediaSourceService,
 		private readonly biloStrategy: BiloStrategy,
 		private readonly vidisStrategy: VidisStrategy
 	) {
@@ -23,7 +23,7 @@ export class MediumMetadataService {
 	}
 
 	public async getMetadata(mediumId: string, mediaSourceId: string): Promise<MediumMetadataDto> {
-		const mediaSource = await this.mediaSourceRepo.findBySourceId(mediaSourceId);
+		const mediaSource = await this.mediaSourceService.findBySourceId(mediaSourceId);
 		if (!mediaSource) {
 			throw new MediaSourceNotFoundLoggableException(mediaSourceId);
 		}
