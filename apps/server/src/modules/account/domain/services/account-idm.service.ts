@@ -5,10 +5,12 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Account, AccountSave, IdmAccountUpdate } from '..';
 import { AccountConfig } from '../../account-config';
 import { AccountIdmToDoMapper } from '../../repo';
+import { Account } from '../account';
+import { AccountSave } from '../account-save';
 import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from '../error';
+import { IdmAccountUpdate } from '../idm-account';
 import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
