@@ -15,8 +15,8 @@ import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
 import { AccountEntity } from '../../repo';
 import { accountDoFactory } from '../../testing';
-import { Account } from '../account';
-import { IdmAccount } from '../idm-account';
+import { Account } from '../do/account';
+import { IdmAccount } from '../do/idm-account';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 

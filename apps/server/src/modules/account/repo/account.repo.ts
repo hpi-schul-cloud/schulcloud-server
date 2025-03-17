@@ -5,7 +5,7 @@ import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { AccountRepo } from '../domain';
-import { Account } from '../domain/account';
+import { Account } from '../domain/do/account';
 import { AccountEntity } from './account.entity';
 import { AccountEntityToDoMapper } from './mapper';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
