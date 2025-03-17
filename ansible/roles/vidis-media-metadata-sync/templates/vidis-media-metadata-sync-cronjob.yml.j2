@@ -42,7 +42,6 @@ spec:
             - configMapRef:
                 name: vidis-media-metadata-sync-cronjob-configmap
             command: ['/bin/sh','-c']
-#            TODO
             args: ['npm run nest:start:sync-console:prod -- media metadata -df VIDIS']
             resources:
               limits:
