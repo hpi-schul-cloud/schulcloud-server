@@ -29,11 +29,11 @@ import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountEntityToDoMapper } from '../../repo/micro-orm/mapper';
 import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountEntity } from '../entity/account.entity';
 import { IdmCallbackLoggableException } from '../error';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -94,7 +94,7 @@ describe('AccountService', () => {
 					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
-					provide: AccountRepo,
+					provide: ACCOUNT_REPO,
 					useValue: createMock<AccountRepo>(),
 				},
 				{
@@ -119,7 +119,7 @@ describe('AccountService', () => {
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 		userService = module.get(UserService);
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		eventBus = module.get(EventBus);
 	});
 

@@ -14,10 +14,10 @@ import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { accountDoFactory } from '../../testing';
 import { Account } from '../account';
 import { AccountEntity } from '../entity/account.entity';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {
@@ -45,7 +45,7 @@ describe('AccountDbService', () => {
 			providers: [
 				AccountServiceDb,
 				{
-					provide: AccountRepo,
+					provide: ACCOUNT_REPO,
 					useValue: createMock<AccountRepo>(),
 				},
 				{
@@ -62,7 +62,7 @@ describe('AccountDbService', () => {
 				},
 			],
 		}).compile();
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
 		configServiceMock = module.get(ConfigService);
 		idmServiceMock = module.get(IdentityManagementService);

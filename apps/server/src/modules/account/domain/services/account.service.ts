@@ -13,7 +13,7 @@ import {
 } from '@modules/deletion';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
@@ -26,7 +26,6 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountEntity } from '../entity/account.entity';
 import {
 	DeletedAccountLoggable,
@@ -45,6 +44,7 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from '../error';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -64,7 +64,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
-		private readonly accountRepo: AccountRepo,
+		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM
 	) {

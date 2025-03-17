@@ -5,19 +5,20 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { Account } from '../../domain';
+import { Account, ACCOUNT_REPO } from '../../domain';
 import { AccountEntity } from '../../domain/entity/account.entity';
 import { accountDoFactory, accountFactory } from '../../testing';
-import { AccountRepo } from './account.repo';
+import { AccountMikroOrmRepo } from './account.repo';
 import { AccountEntityToDoMapper } from './mapper';
 import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
 
-class AccountTestRepo extends AccountRepo {
+class AccountTestRepo extends AccountMikroOrmRepo {
 	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
-describe('AccountRepo', () => {
+
+describe('AccountMikroOrmRepo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
 	let repo: AccountTestRepo;
@@ -25,7 +26,7 @@ describe('AccountRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, User] })],
-			providers: [AccountTestRepo],
+			providers: [{ provide: ACCOUNT_REPO, useClass: AccountMikroOrmRepo }, AccountTestRepo],
 		}).compile();
 		repo = module.get(AccountTestRepo);
 		em = module.get(EntityManager);

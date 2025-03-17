@@ -14,10 +14,10 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
 import { Account, AccountSave } from '..';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
 import { accountFactory } from '../../testing';
 import { AccountEntity } from '../entity/account.entity';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -92,7 +92,10 @@ describe('AccountService Integration', () => {
 				AccountService,
 				AccountServiceIdm,
 				AccountServiceDb,
-				AccountRepo,
+				{
+					provide: ACCOUNT_REPO,
+					useValue: createMock<AccountRepo>(),
+				},
 				{
 					provide: KeycloakIdentityManagementService,
 					useValue: createMock<KeycloakIdentityManagementService>(),
@@ -115,7 +118,7 @@ describe('AccountService Integration', () => {
 		}).compile();
 		accountService = module.get(AccountService);
 		identityManagementService = module.get(IdentityManagementService);
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		em = module.get(EntityManager);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
 		isIdmReachable = await keycloakAdminService.testKcConnection();
