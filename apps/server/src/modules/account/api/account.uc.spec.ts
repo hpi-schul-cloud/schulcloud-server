@@ -19,7 +19,7 @@ import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../domain/entity/account.entity';
 import { AccountService } from '../domain/services';
-import { AccountEntityToDoMapper } from '../repo/micro-orm/mapper';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 import { accountFactory } from '../testing';
 import { AccountUc } from './account.uc';
 import { AccountSearchDto, AccountSearchType, UpdateAccountDto } from './dto';

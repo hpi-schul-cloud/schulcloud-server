@@ -9,7 +9,7 @@ import { EntityNotFoundError } from '@shared/common/error';
 import { IdmAccount } from '@shared/domain/interface';
 import { Account, AccountSave } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 
 describe('AccountIdmService', () => {

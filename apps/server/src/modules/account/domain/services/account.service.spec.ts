@@ -29,7 +29,7 @@ import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
 import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountEntityToDoMapper } from '../../repo/micro-orm/mapper';
+import { AccountEntityToDoMapper } from '../../repo/mapper';
 import { accountDoFactory, accountFactory } from '../../testing';
 import { AccountEntity } from '../entity/account.entity';
 import { IdmCallbackLoggableException } from '../error';

@@ -1,6 +1,6 @@
 import { Scope } from '@shared/repo/scope';
 import { ObjectId } from 'bson';
-import { AccountEntity } from '../../../domain/entity/account.entity';
+import { AccountEntity } from '../../domain/entity/account.entity';
 
 export class AccountScope extends Scope<AccountEntity> {
 	byUserIdsAndSystemId(userIds: string[], systemId: string): AccountScope {

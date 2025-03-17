@@ -4,7 +4,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AccountModule } from './account.module';
 import { AccountEntity } from './domain/entity/account.entity';
 import { AccountService } from './domain/services/account.service';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/mapper';
 
 describe('AccountModule', () => {
 	let module: TestingModule;

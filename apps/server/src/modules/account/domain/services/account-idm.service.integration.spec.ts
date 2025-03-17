@@ -1,3 +1,4 @@
+import { LoggerModule } from '@core/logger';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
@@ -5,12 +6,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { LoggerModule } from '@core/logger';
 import { v1 } from 'uuid';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountSave } from '..';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountSave } from '..';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;

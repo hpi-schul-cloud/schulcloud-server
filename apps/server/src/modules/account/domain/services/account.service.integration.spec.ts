@@ -14,7 +14,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
 import { Account, AccountSave } from '..';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/mapper';
 import { accountFactory } from '../../testing';
 import { AccountEntity } from '../entity/account.entity';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
