@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Pseudonym, PseudonymProps } from '@shared/domain/domainobject';
-import { DomainObjectFactory } from './domain-object.factory';
+import { DomainObjectFactory } from '@testing/factory/domainobject/domain-object.factory';
+import { Pseudonym, PseudonymProps } from '../repo';
 
 export const pseudonymFactory = DomainObjectFactory.define<Pseudonym, PseudonymProps>(Pseudonym, ({ sequence }) => {
 	return {

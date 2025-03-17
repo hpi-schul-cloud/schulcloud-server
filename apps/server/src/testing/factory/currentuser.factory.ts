@@ -32,7 +32,7 @@ class CurrentUser implements ICurrentUser {
 	}
 }
 
-export class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
+class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 	public withRole(role: string): this {
 		const params = { roles: [role] };
 		return this.params(params);

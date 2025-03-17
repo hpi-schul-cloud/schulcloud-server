@@ -27,13 +27,13 @@ import {
 } from '@shared/common/error';
 import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
-import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountEntityToDoMapper } from '../../repo/micro-orm/mapper';
+import { AccountEntity, AccountEntityToDoMapper, AccountRepo } from '../../repo';
 import { accountDoFactory, accountFactory } from '../../testing';
-import { AccountEntity } from '../entity/account.entity';
+import { Account } from '../account';
+import { AccountSave } from '../account-save';
 import { IdmCallbackLoggableException } from '../error';
+import { UpdateAccount } from '../update-account';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';

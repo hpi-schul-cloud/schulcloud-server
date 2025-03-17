@@ -8,8 +8,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AccountService } from '..';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
+import { Account, AccountSave, AccountService, UpdateAccount, UpdateMyAccount } from '../domain';
 import {
 	AccountSearchDto,
 	AccountSearchType,
