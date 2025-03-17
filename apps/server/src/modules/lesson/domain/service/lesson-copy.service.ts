@@ -179,7 +179,7 @@ export class LessonCopyService {
 	): Promise<{ copy: ComponentProperties | undefined; status: CopyStatus } | undefined> {
 		if (this.isTypeThatShouldBeCopied(element.component)) {
 			try {
-				const copy = await this.functionmap[element.component](element, params);
+				const copy = await this.copyFunctionMap[element.component](element, params);
 				const status = this.statusMap[element.component](element.title);
 				return { copy, status };
 			} catch (error) {
@@ -234,7 +234,7 @@ export class LessonCopyService {
 		},
 	};
 
-	private functionmap: Record<
+	private copyFunctionMap: Record<
 		ComponentType,
 		(el: ComponentProperties, params: LessonCopyParams) => Promise<ComponentProperties>
 	> = {
