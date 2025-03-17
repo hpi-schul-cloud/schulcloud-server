@@ -10,7 +10,7 @@ export class MediumMetadataNotFoundLoggableException extends NotFoundException i
 		return {
 			message: `Medium metadata could not be found.`,
 			data: {
-				mediaSourceName: this.sourceId,
+				sourceId: this.sourceId,
 				mediumId: this.mediumId,
 			},
 		};
