@@ -1,11 +1,16 @@
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { BoardsClientAdapter } from '@infra/boards-client';
+import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CardClientAdapter } from '@infra/card-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
+import { CommonCartridgeImportOrganizationProps } from '..';
 
+const DEPTH_CARD_ELEMENTS = 3;
+const DEPTH_CARD = 2;
+const DEPTH_COLUMN = 1;
+const DEPTH_BOARD = 0;
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -30,7 +35,7 @@ export class CommonCartridgeImportService {
 	}
 
 	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<void> {
-		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === 0);
+		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
@@ -53,14 +58,87 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const columns = parser
 			.getOrganizations()
-			.filter((organization) => organization.path.startsWith(board.identifier) && organization.pathDepth === 1);
+			.filter(
+				(organization) => organization.path.startsWith(board.identifier) && organization.pathDepth === DEPTH_COLUMN
+			);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for await (const column of columns) {
-			const response = await this.boardsClient.createBoardColumn(boardId);
+			const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 
-			await this.columnClient.updateBoardColumnTitle(response.id, { title: column.title });
+			const cards = parser
+				.getOrganizations()
+				.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
+
+			const cardsWithResource = cards.filter((card) => card.isResource);
+			const cardsWithoutResource = cards.filter((card) => !card.isResource);
+
+			await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: column.title });
+
+			for await (const card of cardsWithResource) {
+				// await this.createCardWithElement(parser, columnResponse, card);
+			}
+
+			for await (const card of cardsWithoutResource) {
+				await this.createCard(parser, columnResponse, card);
+			}
 		}
 	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: ColumnResponse,
+		cardProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const organizations = parser.getOrganizations();
+		const cardElements = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+		);
+		// for await (const cardElement of cardElements) {
+		// 	await this.createCardElement(parser, card, cardElement);
+		// }
+	}
+
+	// private async createCardWithElement(
+	// 	parser: CommonCartridgeFileParser,
+	// 	column: ColumnResponse,
+	// 	cardProps: CommonCartridgeImportOrganizationProps
+	// ): Promise<void> {
+	// const createCardResponse = parser.getOrganizations().filter(
+	// 	(organization) => organization.pathDepth >= 2 && organization.path.startsWith(cardProps.path)
+	// ).find();
+	// await this.columnClient.createCard(column.id, cardProps);
+	// const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+	// if (resource && contentElementType) {
+	// 	const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
+	// 	await this.boardNodeService.addToParent(card, contentElement);
+	// 	const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
+	// 	await this.boardNodeService.updateContent(contentElement, contentElementBody);
+	// }
+	// }
+
+	// private async createCardElement(
+	// 	parser: CommonCartridgeFileParser,
+	// 	card: Card,
+	// 	cardElementProps: CommonCartridgeImportOrganizationProps
+	// ): Promise<void> {
+	// 	if (cardElementProps.isResource) {
+	// 		const resource = parser.getResource(cardElementProps);
+	// 		const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+
+	// 		if (resource && contentElementType) {
+	// 			const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
+	// 			await this.boardNodeService.addToParent(card, contentElement);
+	// 			const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
+	// 			await this.boardNodeService.updateContent(contentElement, contentElementBody);
+	// 		}
+	// 	} else {
+	// 		const contentElement = this.boardNodeFactory.buildContentElement(ContentElementType.RICH_TEXT);
+	// 		await this.boardNodeService.addToParent(card, contentElement);
+	// 		const contentElementBody = this.mapper.mapOrganizationToTextElement(cardElementProps);
+
+	// 		await this.boardNodeService.updateContent(contentElement, contentElementBody);
+	// 	}
+	// }
 }
