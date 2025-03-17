@@ -10,9 +10,7 @@ import { InternalServerErrorException, UnprocessableEntityException } from '@nes
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { ProviderRedirectResponse } from '../domain';
-import { OauthProviderLoginFlowService } from '../domain/service/oauth-provider.login-flow.service';
-import { OauthProviderService } from '../domain/service/oauth-provider.service';
+import { OauthProviderLoginFlowService, OauthProviderService, ProviderRedirectResponse } from '../domain';
 import { providerLoginResponseFactory } from '../testing';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 
