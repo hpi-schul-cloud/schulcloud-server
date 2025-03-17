@@ -663,6 +663,7 @@ describe('lesson copy service', () => {
 				const originalLesson = lessonFactory.build({
 					course: originalCourse,
 				});
+				lessonRepo.findById.mockResolvedValueOnce(originalLesson);
 
 				return {
 					user,
