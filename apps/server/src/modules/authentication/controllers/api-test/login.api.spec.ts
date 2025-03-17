@@ -144,7 +144,8 @@ describe('Login Controller (api)', () => {
 					username: user.email,
 					password: 'wrongPassword',
 				};
-				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
+				expect(result.status).toEqual(401);
 			});
 		});
 		describe('when user login fails cause account is deactivated', () => {
@@ -168,7 +169,8 @@ describe('Login Controller (api)', () => {
 					username: newUser.email,
 					password: defaultPassword,
 				};
-				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
+				expect(result.status).toEqual(401);
 			});
 		});
 	});

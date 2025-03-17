@@ -238,8 +238,8 @@ describe('NewsUc', () => {
 			const createdNews = await service.create(userId, schoolId, params);
 			expect(createdNews.school).toEqual(schoolId);
 			expect(createdNews.creator).toEqual(userId);
-			expect(createdNews.targetModel === NewsTargetModel.Course);
-			expect(createdNews.target.id === schoolId);
+			expect(createdNews.targetModel).toEqual(NewsTargetModel.Course);
+			expect(createdNews.target.id).toEqual(schoolId);
 		});
 
 		it('should save the news', async () => {
