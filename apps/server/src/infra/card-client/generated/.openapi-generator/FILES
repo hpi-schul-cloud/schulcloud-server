@@ -3,6 +3,7 @@
 .openapi-generator-ignore
 api.ts
 api/board-card-api.ts
+api/board-element-api.ts
 base.ts
 common.ts
 configuration.ts
@@ -46,6 +47,7 @@ models/submission-container-element-response.ts
 models/submission-item-response-elements-inner.ts
 models/timestamps-response.ts
 models/update-element-content-body-params-data.ts
+models/update-element-content-body-params.ts
 models/video-conference-element-content.ts
 models/video-conference-element-response.ts
 models/visibility-settings-response.ts

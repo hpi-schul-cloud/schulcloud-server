@@ -1,12 +1,11 @@
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
-import { CardClientAdapter } from '@infra/card-client';
+import { CardClientAdapter, CommonCartridgeImportMapper } from '@infra/card-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportOrganizationProps } from '..';
-import { CommonCartridgeImportMapper } from '@infra/card-client/mapper/common-cartridge-import.mapper';
 
 const DEPTH_CARD_ELEMENTS = 3;
 const DEPTH_CARD = 2;
@@ -79,7 +78,7 @@ export class CommonCartridgeImportService {
 			await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: column.title });
 
 			for await (const card of cardsWithResource) {
-				// await this.createCardWithElement(parser, columnResponse, card);
+				await this.createCardWithElement(parser, columnResponse, card);
 			}
 
 			for await (const card of cardsWithoutResource) {
@@ -105,23 +104,15 @@ export class CommonCartridgeImportService {
 		}
 	}
 
-	// private async createCardWithElement(
-	// 	parser: CommonCartridgeFileParser,
-	// 	column: ColumnResponse,
-	// 	cardProps: CommonCartridgeImportOrganizationProps
-	// ): Promise<void> {
-	// const createCardResponse = parser.getOrganizations().filter(
-	// 	(organization) => organization.pathDepth >= 2 && organization.path.startsWith(cardProps.path)
-	// ).find();
-	// await this.columnClient.createCard(column.id, cardProps);
-	// const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
-	// if (resource && contentElementType) {
-	// 	const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
-	// 	await this.boardNodeService.addToParent(card, contentElement);
-	// 	const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
-	// 	await this.boardNodeService.updateContent(contentElement, contentElementBody);
-	// }
-	// }
+	private async createCardWithElement(
+		parser: CommonCartridgeFileParser,
+		column: ColumnResponse,
+		cardProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const card = await this.columnClient.createCard(column.id, {});
+
+		await this.createCardElement(parser, card.id, cardProps);
+	}
 
 	private async createCardElement(
 		parser: CommonCartridgeFileParser,
@@ -131,25 +122,13 @@ export class CommonCartridgeImportService {
 		if (cardElementProps.isResource) {
 			const resource = parser.getResource(cardElementProps);
 			const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
-			if (resource && contentElementType) {
-				const contentElement = this.cardClient.createCardElement(cardId, { type: contentElementType });
-			}
-			// const cardElement = await this.cardClient.createCardElement(cardId, {});
 
-			// if (cardElementProps.isResource) {
-			// 	const resource = parser.getResource(cardElementProps);
-			// 	const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
-			// 	if (resource && contentElementType) {
-			// 		const contentElement = this.boardNodeFactory.buildContentElement(contentElementType);
-			// 		await this.boardNodeService.addToParent(card, contentElement);
-			// 		const contentElementBody = this.mapper.mapResourceToContentElementBody(resource);
-			// 		await this.boardNodeService.updateContent(contentElement, contentElementBody);
-			// 	}
-			// } else {
-			// 	const contentElement = this.boardNodeFactory.buildContentElement(ContentElementType.RICH_TEXT);
-			// 	await this.boardNodeService.addToParent(card, contentElement);
-			// 	const contentElementBody = this.mapper.mapOrganizationToTextElement(cardElementProps);
-			// 	await this.boardNodeService.updateContent(contentElement, contentElementBody);
+			if (resource && contentElementType) {
+				const resourceBody = this.mapper.mapResourceToContentElementBody(resource);
+
+				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
+				await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
+			}
 		}
 	}
 }

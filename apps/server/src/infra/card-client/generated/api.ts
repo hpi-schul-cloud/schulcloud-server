@@ -15,4 +15,5 @@
 
 
 export * from './api/board-card-api';
+export * from './api/board-element-api';
 

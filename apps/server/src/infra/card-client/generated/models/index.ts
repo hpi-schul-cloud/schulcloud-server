@@ -34,6 +34,7 @@ export * from './submission-container-element-content';
 export * from './submission-container-element-response';
 export * from './submission-item-response-elements-inner';
 export * from './timestamps-response';
+export * from './update-element-content-body-params';
 export * from './update-element-content-body-params-data';
 export * from './video-conference-element-content';
 export * from './video-conference-element-response';
