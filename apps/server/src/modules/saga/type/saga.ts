@@ -4,7 +4,7 @@ import { SagaStepRegistryService } from '../service';
 export interface SagaType {
 	userDeletion: { params: { userId: EntityId }; result: boolean };
 	// add more, e.g:
-	saga1: { params: { id: number }; result: string };
+	// saga1: { params: { id: number }; result: string };
 	// saga2: { params: { name: string }; result: boolean };
 }
 
