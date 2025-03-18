@@ -1,5 +1,6 @@
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
+import { Pseudonym } from '@modules/pseudonym/repo';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { RoleName } from '@modules/role';
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -13,7 +14,7 @@ import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Pseudonym, RoleReference } from '@shared/domain/domainobject';
+import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '../../board';
 import { ExternalToolElement } from '../../board/domain';
