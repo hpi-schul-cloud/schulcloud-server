@@ -21,15 +21,18 @@ models/content-element-type.ts
 models/create-content-element-body-params.ts
 models/deleted-element-content.ts
 models/deleted-element-response.ts
+models/drawing-content-body.ts
 models/drawing-element-content-body.ts
 models/drawing-element-content.ts
 models/drawing-element-response.ts
 models/element-controller-update-element200-response.ts
+models/external-tool-content-body.ts
 models/external-tool-element-content-body.ts
 models/external-tool-element-content.ts
 models/external-tool-element-response.ts
 models/external-tool-response-config.ts
 models/external-tool-update-params-config.ts
+models/file-content-body.ts
 models/file-element-content-body.ts
 models/file-element-content.ts
 models/file-element-response.ts
@@ -49,6 +52,7 @@ models/rich-text-element-content.ts
 models/rich-text-element-response.ts
 models/school-controller-get-provisioning-options200-response.ts
 models/set-height-body-params.ts
+models/submission-container-content-body.ts
 models/submission-container-element-content-body.ts
 models/submission-container-element-content.ts
 models/submission-container-element-response.ts
@@ -56,6 +60,7 @@ models/submission-item-response-elements-inner.ts
 models/timestamps-response.ts
 models/update-element-content-body-params-data.ts
 models/update-element-content-body-params.ts
+models/video-conference-content-body.ts
 models/video-conference-element-content-body.ts
 models/video-conference-element-content.ts
 models/video-conference-element-response.ts

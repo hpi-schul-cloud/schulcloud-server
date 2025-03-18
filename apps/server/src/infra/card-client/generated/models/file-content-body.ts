@@ -17,38 +17,20 @@
 /**
  * 
  * @export
- * @interface LinkContentBody
+ * @interface FileContentBody
  */
-export interface LinkContentBody {
+export interface FileContentBody {
     /**
      * 
      * @type {string}
-     * @memberof LinkContentBody
+     * @memberof FileContentBody
      */
-    'url': string;
+    'caption': string;
     /**
      * 
      * @type {string}
-     * @memberof LinkContentBody
+     * @memberof FileContentBody
      */
-    'title': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkContentBody
-     */
-    'description': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkContentBody
-     */
-    'imageUrl': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkContentBody
-     */
-    'originalImageUrl': string;
+    'alternativeText': string;
 }
 
