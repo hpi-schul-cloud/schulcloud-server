@@ -143,6 +143,8 @@
 		"generate-client:column-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key column-api",
 		"pregenerate-client:card-api": "rimraf ./apps/server/src/infra/card-client/generated",
 		"generate-client:card-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key card-api",
+		"pregenerate-client:element-api": "rimraf ./apps/server/src/infra/element-client/generated",
+		"generate-client:element-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key element-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
 	},
 	"overrides": {

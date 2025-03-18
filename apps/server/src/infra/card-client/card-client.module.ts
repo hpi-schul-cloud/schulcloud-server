@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils';
 import { Request } from 'express';
-import { BoardCardApi, Configuration } from './generated';
-import { CardClientAdapter, CardClientConfig } from '.';
+import { BoardCardApi, BoardElementApi, Configuration } from './generated';
+import { CardClientAdapter, CardClientConfig, CommonCartridgeImportMapper } from '.';
 
 @Module({
 	providers: [
@@ -24,7 +24,22 @@ import { CardClientAdapter, CardClientConfig } from '.';
 			},
 			inject: [ConfigService, REQUEST],
 		},
+		{
+			provide: BoardElementApi,
+			scope: Scope.REQUEST,
+			useFactory: (configService: ConfigService<CardClientConfig, true>, request: Request): BoardElementApi => {
+				const basePath = configService.getOrThrow<string>('API_HOST');
+				const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
+				const configuration = new Configuration({
+					basePath: `${basePath}/v3`,
+					accessToken,
+				});
+
+				return new BoardElementApi(configuration);
+			},
+			inject: [ConfigService, REQUEST],
+		},
 	],
-	exports: [CardClientModule],
+	exports: [CardClientAdapter],
 })
 export class CardClientModule {}

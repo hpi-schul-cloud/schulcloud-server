@@ -1,0 +1,13 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
+api.ts
+api/board-element-api.ts
+base.ts
+common.ts
+configuration.ts
+git_push.sh
+index.ts
+models/element-controller-update-element200-response.ts
+models/index.ts
+models/update-element-content-body-params.ts

@@ -17,8 +17,7 @@ export class CommonCartridgeImportService {
 		private readonly coursesClient: CoursesClientAdapter,
 		private boardsClient: BoardsClientAdapter,
 		private columnClient: ColumnClientAdapter,
-		private cardClient: CardClientAdapter,
-		private mapper: CommonCartridgeImportMapper
+		private cardClient: CardClientAdapter
 	) {}
 
 	public async importFile(file: Buffer): Promise<void> {
@@ -68,9 +67,7 @@ export class CommonCartridgeImportService {
 		for await (const column of columns) {
 			const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 
-			const cards = parser
-				.getOrganizations()
-				.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
+			const cards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_CARD);
 
 			const cardsWithResource = cards.filter((card) => card.isResource);
 			const cardsWithoutResource = cards.filter((card) => !card.isResource);
@@ -121,10 +118,10 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		if (cardElementProps.isResource) {
 			const resource = parser.getResource(cardElementProps);
-			const contentElementType = this.mapper.mapResourceTypeToContentElementType(resource?.type);
+			const contentElementType = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(resource?.type);
 
 			if (resource && contentElementType) {
-				const resourceBody = this.mapper.mapResourceToContentElementBody(resource);
+				const resourceBody = CommonCartridgeImportMapper.mapResourceToContentElementBody(resource);
 
 				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
 				await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
