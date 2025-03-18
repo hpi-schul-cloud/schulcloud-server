@@ -5,7 +5,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { Account, ACCOUNT_REPO } from '../domain';
+import { Account } from '../domain';
 import { accountDoFactory, accountFactory } from '../testing';
 import { AccountEntity } from './account.entity';
 import { AccountMikroOrmRepo } from './account.repo';
@@ -26,7 +26,7 @@ describe('AccountMikroOrmRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, User] })],
-			providers: [{ provide: ACCOUNT_REPO, useClass: AccountMikroOrmRepo }, AccountTestRepo],
+			providers: [AccountTestRepo],
 		}).compile();
 		repo = module.get(AccountTestRepo);
 		em = module.get(EntityManager);
