@@ -58,17 +58,16 @@ export class ToolConfigurationStatusService {
 		if (contextParameterErrors.length) {
 			configurationStatus.isOutdatedOnScopeContext = true;
 
-			if (
-				contextParameterErrors.some(
-					(error: ValidationError) => error instanceof ToolParameterMandatoryValueMissingLoggableException
-				)
-			) {
+			if (this.isMandatoryValueMissing(contextParameterErrors)) {
 				configurationStatus.isIncompleteOnScopeContext = true;
-			} else if (this.isIncompleteOperational(contextParameterErrors) && !this.isOutdated(contextParameterErrors)) {
+			}
+
+			if (this.isIncompleteOperational(contextParameterErrors)) {
 				configurationStatus.isIncompleteOperationalOnScopeContext = true;
+			}
+
+			if (!this.isOutdated(contextParameterErrors)) {
 				configurationStatus.isOutdatedOnScopeContext = false;
-			} else if (this.isIncompleteOperational(contextParameterErrors) && this.isOutdated(contextParameterErrors)) {
-				configurationStatus.isIncompleteOperationalOnScopeContext = true;
 			}
 		}
 
@@ -123,6 +122,12 @@ export class ToolConfigurationStatusService {
 			}
 		}
 		return true;
+	}
+
+	private isMandatoryValueMissing(errors: ValidationError[]): boolean {
+		return errors.some(
+			(error: ValidationError) => error instanceof ToolParameterMandatoryValueMissingLoggableException
+		);
 	}
 
 	private isIncompleteOperational(errors: ValidationError[]): boolean {
