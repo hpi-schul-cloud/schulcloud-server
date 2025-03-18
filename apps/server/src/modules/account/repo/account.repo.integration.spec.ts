@@ -9,8 +9,7 @@ import { Account } from '../domain';
 import { accountDoFactory, accountFactory } from '../testing';
 import { AccountEntity } from './account.entity';
 import { AccountMikroOrmRepo } from './account.repo';
-import { AccountEntityToDoMapper } from './mapper';
-import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { AccountDoToEntityMapper, AccountEntityToDoMapper } from './mapper';
 
 class AccountTestRepo extends AccountMikroOrmRepo {
 	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
