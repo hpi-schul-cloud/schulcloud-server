@@ -24,10 +24,10 @@ import {
 } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountEntity } from '../entity/account.entity';
+import { AccountEntity, AccountRepo } from '../../repo';
+import { Account } from '../account';
+import { AccountSave } from '../account-save';
 import {
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
@@ -45,6 +45,8 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from '../error';
+import { UpdateAccount } from '../update-account';
+import { UpdateMyAccount } from '../update-my-account';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';

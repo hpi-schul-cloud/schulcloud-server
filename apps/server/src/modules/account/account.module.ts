@@ -9,8 +9,7 @@ import { AccountConfig } from './account-config';
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
-import { AccountRepo } from './repo/micro-orm/account.repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm, AccountRepo } from './repo';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
