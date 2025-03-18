@@ -6,7 +6,7 @@ import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
+import { AccountRepo } from '../../repo';
 import { Account } from '../account';
 import { AccountSave } from '../account-save';
 import { AbstractAccountService } from './account.service.abstract';
