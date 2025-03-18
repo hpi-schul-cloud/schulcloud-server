@@ -6,14 +6,14 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { NewsRepo } from '@shared/repo/news';
 import { NewsController } from './controller/news.controller';
 import { TeamNewsController } from './controller/team-news.controller';
-import { SagaInjectableService } from './service/saga-injectable.service';
+import { DeleteUserReferenceFromNewsStep } from './saga';
 import { NewsUc } from './uc/news.uc';
 
 // imports from deletion module?
 @Module({
-	imports: [AuthorizationModule, CqrsModule, LoggerModule, forwardRef(() => SagaModule)],
+	imports: [AuthorizationModule, CqrsModule, LoggerModule, SagaModule],
 	controllers: [NewsController, TeamNewsController],
-	providers: [NewsUc, NewsRepo, SagaInjectableService],
-	exports: [NewsUc, SagaInjectableService],
+	providers: [NewsUc, NewsRepo, DeleteUserReferenceFromNewsStep],
+	exports: [NewsUc],
 })
 export class NewsModule {}

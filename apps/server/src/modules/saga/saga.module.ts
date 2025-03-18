@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
-import { SagaExecutorService } from './service/executor';
-import { SagaInjectionService } from './service/injection';
+import { SagaRegistryService, SagaService, SagaStepRegistryService } from './service';
 
 @Module({
-	imports: [CqrsModule],
-	providers: [SagaExecutorService, SagaInjectionService],
-	exports: [SagaExecutorService, SagaInjectionService],
+	imports: [],
+	providers: [SagaStepRegistryService, SagaRegistryService, SagaService],
+	exports: [SagaService],
 })
 export class SagaModule {}
