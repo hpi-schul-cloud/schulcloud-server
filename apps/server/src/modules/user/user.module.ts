@@ -7,9 +7,18 @@ import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UserDORepo, UserRepo } from './repo';
 import { UserAuthorizableService, UserService } from './service';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [RoleModule, LoggerModule, CqrsModule, RegistrationPinModule, CalendarModule, AuthorizationModule],
+	imports: [
+		RoleModule,
+		LoggerModule,
+		CqrsModule,
+		RegistrationPinModule,
+		CalendarModule,
+		AuthorizationModule,
+		DeletionModule,
+	],
 	providers: [UserRepo, UserDORepo, UserService, UserAuthorizableService],
 	exports: [UserService, UserRepo],
 })

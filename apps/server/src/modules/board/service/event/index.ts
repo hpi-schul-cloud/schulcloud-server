@@ -1,2 +1,2 @@
-export { UserDeletedEventHandlerService } from './user-deleted-event-handler.service';
+export { BoardUserDeleteService } from './board-user-delete.service';
 export { ContextExternalToolDeletedEventHandlerService } from './context-external-tool-deleted-event-handler.service';

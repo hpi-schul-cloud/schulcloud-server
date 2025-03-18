@@ -86,4 +86,12 @@ export class ClassesRepo {
 
 		return domainObject;
 	}
+
+	public async deleteUser(userId: EntityId): Promise<number> {
+		const count = await this.em.nativeDelete(ClassEntity, {
+			$or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }],
+		});
+
+		return count;
+	}
 }

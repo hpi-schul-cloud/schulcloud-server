@@ -17,11 +17,11 @@ import { BoardNodeEntity } from '../../repo';
 import { mediaBoardFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';
 import { MediaBoardService } from '../media-board';
-import { UserDeletedEventHandlerService } from './user-deleted-event-handler.service';
+import { BoardUserDeleteService } from './board-user-delete.service';
 
-describe(UserDeletedEventHandlerService.name, () => {
+describe(BoardUserDeleteService.name, () => {
 	let module: TestingModule;
-	let service: UserDeletedEventHandlerService;
+	let service: BoardUserDeleteService;
 
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
@@ -30,7 +30,7 @@ describe(UserDeletedEventHandlerService.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				UserDeletedEventHandlerService,
+				BoardUserDeleteService,
 				{
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
@@ -54,7 +54,7 @@ describe(UserDeletedEventHandlerService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(UserDeletedEventHandlerService);
+		service = module.get(BoardUserDeleteService);
 		boardNodeService = module.get(BoardNodeService);
 		mediaBoardService = module.get(MediaBoardService);
 		eventBus = module.get(EventBus);

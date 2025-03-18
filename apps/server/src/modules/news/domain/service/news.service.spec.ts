@@ -188,26 +188,14 @@ describe(NewsService.name, () => {
 			};
 		};
 
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in classService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
+		it('should call deleteUserData in classService', async () => {
+			const { deletionRequestId, expectedData, targetRefId } = setup();
 
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+			jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await service.handle({ deletionRequestId, targetRefId });
+			await service.deleteUserData(targetRefId);
 
-				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await service.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
-			});
+			expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
 		});
 	});
 });

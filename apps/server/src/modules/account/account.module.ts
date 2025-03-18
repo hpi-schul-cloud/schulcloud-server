@@ -11,6 +11,7 @@ import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
 import { AccountRepo } from './repo/micro-orm/account.repo';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { DeletionModule } from '@modules/deletion';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
@@ -20,7 +21,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 }
 
 @Module({
-	imports: [CqrsModule, IdentityManagementModule, SystemModule, LoggerModule, UserModule],
+	imports: [CqrsModule, IdentityManagementModule, SystemModule, LoggerModule, UserModule, DeletionModule],
 	providers: [
 		AccountRepo,
 		AccountServiceDb,

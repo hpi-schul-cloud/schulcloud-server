@@ -15,9 +15,10 @@ import {
 } from './domain';
 import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [RoleModule, LoggerModule, CqrsModule, AuthorizationModule],
+	imports: [RoleModule, LoggerModule, AuthorizationModule, DeletionModule],
 	providers: [
 		CourseAuthorizableService,
 		CourseGroupAuthorizableService,

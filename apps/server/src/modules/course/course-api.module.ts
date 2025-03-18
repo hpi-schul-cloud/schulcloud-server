@@ -7,9 +7,19 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseController, CourseInfoController, CourseInfoUc, CourseSyncUc, CourseUc } from './api';
 import { CourseModule } from './course.module';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [AuthorizationModule, CourseModule, RoleModule, SchoolModule, GroupModule, UserModule, ClassModule],
+	imports: [
+		AuthorizationModule,
+		CourseModule,
+		RoleModule,
+		SchoolModule,
+		GroupModule,
+		UserModule,
+		ClassModule,
+		DeletionModule,
+	],
 	controllers: [CourseController, CourseInfoController],
 	providers: [CourseUc, CourseInfoUc, CourseSyncUc],
 })

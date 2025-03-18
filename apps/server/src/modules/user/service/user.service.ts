@@ -1,8 +1,6 @@
 import { Logger } from '@core/logger';
 import { CalendarService } from '@infra/calendar';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
 	DeletionService,
@@ -14,7 +12,7 @@ import {
 	OperationReportHelper,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
@@ -22,7 +20,6 @@ import { SchoolEntity } from '@modules/school/repo';
 import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { IFindOptions, LanguageType } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -35,8 +32,7 @@ import { UserDto } from '../uc/dto/user.dto';
 import { UserDiscoverableQuery, UserQuery } from './user-query.type';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class UserService implements DeletionService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
@@ -45,16 +41,10 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(UserService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async getUserEntityWithRoles(userId: EntityId): Promise<User> {

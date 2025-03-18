@@ -1,11 +1,12 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { LoggerModule } from '@core/logger';
 import { CqrsModule } from '@nestjs/cqrs';
+import { DeletionModule } from '@modules/deletion';
 import { ClassService } from './service';
 import { ClassesRepo } from './repo';
 
 @Module({
-	imports: [CqrsModule, LoggerModule],
+	imports: [CqrsModule, LoggerModule, forwardRef(() => DeletionModule)],
 	providers: [ClassService, ClassesRepo],
 	exports: [ClassService],
 })
