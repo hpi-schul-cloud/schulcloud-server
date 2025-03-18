@@ -1,6 +1,5 @@
 import { EntityId } from '@shared/domain/types';
 
-import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted } from '@shared/domain/types';
 import { Account } from '../do';
@@ -21,15 +20,6 @@ export interface AccountRepo {
 	findByUsername(username: string): Promise<Account | null>;
 
 	findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null>;
-
-	getObjectReference<Entity extends AnyEntity<Entity>>(
-		entityName: EntityName<Entity>,
-		id: Primary<Entity> | Primary<Entity>[]
-	): Entity;
-
-	saveWithoutFlush(account: Account): Promise<Account>;
-
-	flush(): Promise<void>;
 
 	searchByUsernameExactMatch(username: string, offset: number, limit: number): Promise<Counted<Account[]>>;
 	searchByUsernameExactMatch(username: string, offset: number): Promise<Counted<Account[]>>;
