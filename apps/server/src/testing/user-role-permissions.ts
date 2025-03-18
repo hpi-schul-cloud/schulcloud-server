@@ -151,5 +151,7 @@ export const superheroPermissions = [
 	Permission.USER_LOGIN_MIGRATION_FORCE,
 	Permission.USER_LOGIN_MIGRATION_ROLLBACK,
 	Permission.INSTANCE_VIEW,
+	Permission.INSTANCE_EDIT,
+	Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 	Permission.CREATE_SUPPORT_JWT,
 ];
