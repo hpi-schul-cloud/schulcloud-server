@@ -4,7 +4,7 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ForbiddenLoggableException } from '../error';
-import { AuthorizationContext } from '../type';
+import { AuthorizationContext, Rule } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 import { AuthorizationHelper } from './authorization.helper';
 import { RuleManager } from './rule-manager';
@@ -24,8 +24,8 @@ export class AuthorizationService {
 	}
 
 	public hasPermission(user: User, object: AuthorizableObject | BaseDO, context: AuthorizationContext): boolean {
-		const rule = this.ruleManager.selectRule(user, object, context);
-		const hasPermission = rule.hasPermission(user, object, context);
+		const rules = this.ruleManager.selectRule(user, object, context);
+		const hasPermission = rules.some((rule: Rule) => rule.hasPermission(user, object, context));
 
 		return hasPermission;
 	}
