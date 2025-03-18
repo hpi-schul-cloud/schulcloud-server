@@ -9,6 +9,7 @@ import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domai
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
+import { UserDoRepo } from '../domain';
 import { UserSourceOptions } from '../domain/do/user-source-options';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';
@@ -17,7 +18,7 @@ import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
 
 @Injectable()
-export class UserDORepo extends BaseDORepo<UserDo, User> {
+export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements UserDoRepo {
 	get entityName(): EntityName<User> {
 		return User;
 	}

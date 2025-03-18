@@ -19,26 +19,26 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserDo, UserSourceOptions } from '../domain';
 import { UserDiscoverableQuery } from '../domain/query/user-query';
 import { userDoFactory, userFactory } from '../testing';
-import { UserDORepo } from './user-do.repo';
+import { UserDoMikroOrmRepo } from './user-do.repo';
 import { User } from './user.entity';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
-	let repo: UserDORepo;
+	let repo: UserDoMikroOrmRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
-				UserDORepo,
+				UserDoMikroOrmRepo,
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(UserDORepo);
+		repo = module.get(UserDoMikroOrmRepo);
 		em = module.get(EntityManager);
 	});
 

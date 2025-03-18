@@ -5,12 +5,17 @@ import { RegistrationPinModule } from '@modules/registration-pin';
 import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
-import { UserAuthorizableService, UserService } from './domain';
-import { UserDORepo, UserRepo } from './repo';
+import { USER_DO_REPO, USER_REPO, UserAuthorizableService, UserService } from './domain';
+import { UserDoMikroOrmRepo, UserMikroOrmRepo } from './repo';
 
 @Module({
 	imports: [RoleModule, LoggerModule, CqrsModule, RegistrationPinModule, CalendarModule, AuthorizationModule],
-	providers: [UserRepo, UserDORepo, UserService, UserAuthorizableService],
-	exports: [UserService, UserRepo],
+	providers: [
+		{ provide: USER_REPO, useClass: UserMikroOrmRepo },
+		{ provide: USER_DO_REPO, useClass: UserDoMikroOrmRepo },
+		UserService,
+		UserAuthorizableService,
+	],
+	exports: [UserService, { provide: USER_REPO, useClass: UserMikroOrmRepo }],
 })
 export class UserModule {}

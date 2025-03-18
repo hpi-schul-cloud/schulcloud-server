@@ -2,8 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { User, UserRepo } from '../../repo';
+import { User } from '../../repo';
 import { userFactory } from '../../testing';
+import { USER_REPO, UserRepo } from '../interface';
 import { UserAuthorizableService } from './user-authorizable.service';
 
 describe(UserAuthorizableService.name, () => {
@@ -18,7 +19,7 @@ describe(UserAuthorizableService.name, () => {
 			providers: [
 				UserAuthorizableService,
 				{
-					provide: UserRepo,
+					provide: USER_REPO,
 					useValue: createMock<UserRepo>(),
 				},
 				AuthorizationInjectionService,
@@ -26,7 +27,7 @@ describe(UserAuthorizableService.name, () => {
 		}).compile();
 
 		service = module.get(UserAuthorizableService);
-		userRepo = module.get(UserRepo);
+		userRepo = module.get(USER_REPO);
 		injectionService = module.get(AuthorizationInjectionService);
 		await setupEntities([User]);
 	});

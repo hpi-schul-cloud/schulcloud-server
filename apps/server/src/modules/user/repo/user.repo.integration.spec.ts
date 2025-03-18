@@ -11,19 +11,19 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserParentsEntityProps } from './user-parents.entity';
 import { User } from './user.entity';
-import { UserRepo } from './user.repo';
+import { UserMikroOrmRepo } from './user.repo';
 
 describe('user repo', () => {
 	let module: TestingModule;
-	let repo: UserRepo;
+	let repo: UserMikroOrmRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
-			providers: [UserRepo],
+			providers: [UserMikroOrmRepo],
 		}).compile();
-		repo = module.get(UserRepo);
+		repo = module.get(UserMikroOrmRepo);
 		em = module.get(EntityManager);
 	});
 

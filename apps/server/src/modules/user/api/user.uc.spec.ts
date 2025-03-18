@@ -6,14 +6,14 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { UserService } from '../domain';
-import { User, UserRepo } from '../repo';
+import { USER_REPO, UserService } from '../domain';
+import { User, UserMikroOrmRepo } from '../repo';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {
 	let module: TestingModule;
 	let userUc: UserUc;
-	let userRepo: DeepMocked<UserRepo>;
+	let userRepo: DeepMocked<UserMikroOrmRepo>;
 	let config: DeepMocked<ConfigService>;
 
 	afterAll(async () => {
@@ -29,8 +29,8 @@ describe('UserUc', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: USER_REPO,
+					useValue: createMock<UserMikroOrmRepo>(),
 				},
 				{
 					provide: ConfigService,
@@ -40,7 +40,7 @@ describe('UserUc', () => {
 		}).compile();
 
 		userUc = module.get(UserUc);
-		userRepo = module.get(UserRepo);
+		userRepo = module.get(USER_REPO);
 		config = module.get(ConfigService);
 		await setupEntities([User]);
 	});

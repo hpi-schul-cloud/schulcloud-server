@@ -4,14 +4,17 @@ import {
 	AuthorizationLoaderServiceGeneric,
 	CurrentUserLoader,
 } from '@modules/authorization';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { User } from '../../repo';
-import { UserRepo } from '../../repo/user.repo';
+import { USER_REPO, UserRepo } from '../interface';
 
 @Injectable()
 export class UserAuthorizableService implements AuthorizationLoaderServiceGeneric<User>, CurrentUserLoader {
-	constructor(private readonly userRepo: UserRepo, private readonly injectionService: AuthorizationInjectionService) {
+	constructor(
+		@Inject(USER_REPO) private readonly userRepo: UserRepo,
+		private readonly injectionService: AuthorizationInjectionService
+	) {
 		this.injectionService.injectReferenceLoader(AuthorizableReferenceType.User, this);
 		this.injectionService.injectCurrentUserLoader(this);
 	}

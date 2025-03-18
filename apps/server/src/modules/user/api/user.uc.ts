@@ -1,14 +1,17 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserConfig } from '../domain';
-import { User, UserRepo } from '../repo';
+import { USER_REPO, UserConfig } from '../domain';
+import { User, UserMikroOrmRepo } from '../repo';
 import { ChangeLanguageParams } from './dto';
 
 @Injectable()
 export class UserUc {
-	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService<UserConfig, true>) {}
+	constructor(
+		@Inject(USER_REPO) private readonly userRepo: UserMikroOrmRepo,
+		private readonly configService: ConfigService<UserConfig, true>
+	) {}
 
 	public async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
