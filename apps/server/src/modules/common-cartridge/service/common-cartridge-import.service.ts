@@ -1,11 +1,27 @@
-import { CoursesClientAdapter } from '@infra/courses-client';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
+import {
+	CardClientAdapter,
+	CommonCartridgeImportMapper,
+	LinkElementContentBody,
+	RichTextElementContentBody,
+	UpdateElementContentBodyParamsData,
+} from '@infra/card-client';
 import { ColumnClientAdapter } from '@infra/column-client';
-import { CardClientAdapter, CommonCartridgeImportMapper } from '@infra/card-client';
+import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
+import { InputFormat } from '@shared/domain/types';
+import {
+	CommonCartridgeImportOrganizationProps,
+	CommonCartridgeImportResourceProps,
+	CommonCartridgeImportWebContentResourceProps,
+	CommonCartridgeResourceTypeV1P1,
+} from '..';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
-import { CommonCartridgeImportOrganizationProps } from '..';
+import {
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeWebLinkResourceProps,
+	DEFAULT_FILE_PARSER_OPTIONS,
+} from '../import/common-cartridge-import.types';
 
 const DEPTH_CARD_ELEMENTS = 3;
 const DEPTH_CARD = 2;
@@ -67,7 +83,9 @@ export class CommonCartridgeImportService {
 		for await (const column of columns) {
 			const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 
-			const cards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_CARD);
+			const cards = parser
+				.getOrganizations()
+				.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
 
 			const cardsWithResource = cards.filter((card) => card.isResource);
 			const cardsWithoutResource = cards.filter((card) => !card.isResource);
@@ -125,13 +143,60 @@ export class CommonCartridgeImportService {
 			const contentElementType = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(resource?.type);
 
 			if (resource && contentElementType) {
-				const resourceBody = CommonCartridgeImportMapper.mapResourceToContentElementBody(resource);
+				const resourceBody = this.mapToResourceBody(resource, cardElementProps);
 
-				console.log('resource', resourceBody);
+				if (!resourceBody) {
+					return;
+				}
 
 				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
 				await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
 			}
 		}
+	}
+
+	private mapToResourceBody(
+		resource: CommonCartridgeImportResourceProps,
+		cardElementProps: CommonCartridgeImportOrganizationProps
+	): UpdateElementContentBodyParamsData | undefined {
+		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
+			return this.createLinkFromResource(resource);
+		}
+
+		if (
+			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
+			cardElementProps.resourcePath.endsWith('.html')
+		) {
+			return this.createTextFromResource(resource);
+		}
+
+		// TODO files
+
+		return undefined;
+	}
+
+	private createTextFromResource(
+		resource: CommonCartridgeImportWebContentResourceProps
+	): RichTextElementContentBody | undefined {
+		return {
+			type: 'richText',
+			content: {
+				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
+				text: resource.html,
+			},
+		};
+	}
+
+	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody | undefined {
+		return {
+			content: {
+				title: resource.title,
+				url: resource.url,
+				description: '',
+				imageUrl: '',
+				originalImageUrl: '',
+			},
+			type: 'link',
+		};
 	}
 }
