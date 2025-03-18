@@ -4,12 +4,12 @@ import { BiloClientModule } from '@infra/bilo-client';
 import { MediaSourceModule } from '@modules/media-source';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { ExternalToolModule } from '@modules/tool';
-import { MediaSourceSyncService } from './service';
-import { BiloSyncStrategy } from './service/strategy';
+import { MediaMetadataSyncService } from './service';
+import { BiloMetadataSyncStrategy } from './service/strategy';
 
 @Module({
 	imports: [BiloClientModule, LoggerModule, MediaSourceModule, OauthAdapterModule, ExternalToolModule],
-	providers: [MediaSourceSyncService, BiloSyncStrategy],
-	exports: [MediaSourceSyncService],
+	providers: [MediaMetadataSyncService, BiloMetadataSyncStrategy],
+	exports: [MediaMetadataSyncService],
 })
 export class MediaSourceSyncModule {}

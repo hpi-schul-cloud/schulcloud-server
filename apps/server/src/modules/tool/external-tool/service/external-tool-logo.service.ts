@@ -18,7 +18,7 @@ import {
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
 
-const base64ImageContentSignatures: Record<string, ImageMimeType> = {
+const base64ImageTypeSignatures: Record<string, ImageMimeType> = {
 	'/9j/': ImageMimeType.JPEG,
 	iVBORw0KGgo: ImageMimeType.PNG,
 	R0lGODdh: ImageMimeType.GIF,
@@ -83,7 +83,7 @@ export class ExternalToolLogoService {
 
 			const logoBase64: string = buffer.toString('base64');
 
-			this.detectAndValidateImageContentType(logoBase64);
+			this.detectAndValidateLogoImageType(logoBase64);
 
 			return logoBase64;
 		} catch (error) {
@@ -105,15 +105,15 @@ export class ExternalToolLogoService {
 		}
 
 		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
-			contentType: this.detectAndValidateImageContentType(tool.logo).valueOf(),
+			contentType: this.detectAndValidateLogoImageType(tool.logo).valueOf(),
 			logo: Buffer.from(tool.logo, 'base64'),
 		});
 
 		return externalToolLogo;
 	}
 
-	public detectAndValidateImageContentType(base64Image: string): ImageMimeType {
-		const detectedSignature = Object.keys(base64ImageContentSignatures).find((signature: string) =>
+	public detectAndValidateLogoImageType(base64Image: string): ImageMimeType {
+		const detectedSignature: string | undefined = Object.keys(base64ImageTypeSignatures).find((signature: string) =>
 			base64Image.startsWith(signature)
 		);
 
@@ -121,7 +121,7 @@ export class ExternalToolLogoService {
 			throw new ExternalToolLogoWrongFileTypeLoggableException();
 		}
 
-		const contentType: ImageMimeType = base64ImageContentSignatures[detectedSignature];
+		const contentType: ImageMimeType = base64ImageTypeSignatures[detectedSignature];
 
 		return contentType;
 	}

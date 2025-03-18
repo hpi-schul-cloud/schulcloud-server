@@ -14,12 +14,15 @@ import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/do
 import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool/service';
 import { Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
-import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
+import {
+	MediaSourceSyncReportFactory as ReportFactory,
+	MediaSourceSyncOperationReportFactory as OperationReportFactory,
+} from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
-export class VidisSyncStrategy implements MediaSourceSyncStrategy {
+export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly encryptionService: EncryptionService,
 		private readonly externalToolService: ExternalToolService,
@@ -37,9 +40,14 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.sourceId, MediaSourceDataFormat.VIDIS);
 		}
 
-		const vidisMediaMetadata: OfferDTO[] = await this.fetchMediaMetadata(mediaSource.vidisConfig);
-
 		const externalTools: ExternalTool[] = await this.getAllToolsWithVidisMedium(mediaSource);
+
+		if (!externalTools.length) {
+			const emptyReport = ReportFactory.buildEmptyReport();
+			return emptyReport;
+		}
+
+		const vidisMediaMetadata: OfferDTO[] = await this.fetchMediaMetadata(mediaSource.vidisConfig);
 
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediumMetadata(externalTools, vidisMediaMetadata);
 
@@ -58,11 +66,9 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 		externalTools: ExternalTool[],
 		metadataItemsFromVidis: OfferDTO[]
 	): Promise<MediaSourceSyncReport> {
-		const updateSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
-			MediaSourceSyncOperation.UPDATE
-		);
-		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
-		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
+		const updateSuccessReport = OperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE);
+		const failureReport = OperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
+		const undeliveredReport = OperationReportFactory.buildUndeliveredReport();
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
 			const fetchedMetadata = metadataItemsFromVidis.find(
@@ -78,7 +84,7 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 				this.mapVidisMetadataToExternalToolMedium(externalTool, fetchedMetadata);
 				await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
 			} catch (error: unknown) {
-				// TODO loggable
+				// TODO validation error loggable
 				this.logger.debug(
 					new ErrorLoggable(error, {
 						mediumId: externalTool.medium?.mediumId as string,
@@ -100,7 +106,7 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 
 		await this.externalToolService.updateExternalTools(updatedExternalTools);
 
-		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
+		const report: MediaSourceSyncReport = ReportFactory.buildFromOperations([
 			updateSuccessReport,
 			failureReport,
 			undeliveredReport,
@@ -115,7 +121,8 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 		}
 
 		if (vidisMetadata.offerLogo) {
-			externalTool.logoUrl = this.buildDataUriFromBase64(vidisMetadata.offerLogo);
+			externalTool.logo = vidisMetadata.offerLogo;
+			externalTool.logoUrl = this.buildDataUriFromBase64Image(vidisMetadata.offerLogo);
 		}
 
 		externalTool.description = vidisMetadata.offerDescription;
@@ -124,10 +131,10 @@ export class VidisSyncStrategy implements MediaSourceSyncStrategy {
 		medium.publisher = vidisMetadata.educationProviderOrganizationName;
 	}
 
-	private buildDataUriFromBase64(rawBase64: string): string {
-		const contentType: ImageMimeType = this.externalToolLogoService.detectAndValidateImageContentType(rawBase64);
+	private buildDataUriFromBase64Image(rawImage: string): string {
+		const contentType: ImageMimeType = this.externalToolLogoService.detectAndValidateLogoImageType(rawImage);
 
-		const dataURI = `data:${contentType.valueOf()};base64,${rawBase64}`;
+		const dataURI = `data:${contentType.valueOf()};base64,${rawImage}`;
 
 		return dataURI;
 	}

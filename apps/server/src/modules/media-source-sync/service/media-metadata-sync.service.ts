@@ -7,15 +7,15 @@ import {
 } from '@modules/media-source';
 import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
-import { BiloSyncStrategy } from './strategy';
+import { BiloMetadataSyncStrategy } from './strategy';
 
 @Injectable()
-export class MediaSourceSyncService {
+export class MediaMetadataSyncService {
 	private metadataSyncStrategyMap: Map<MediaSourceDataFormat, MediaSourceSyncStrategy>;
 
 	constructor(
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly biloSyncStrategy: BiloSyncStrategy
+		private readonly biloSyncStrategy: BiloMetadataSyncStrategy
 	) {
 		this.metadataSyncStrategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
 		this.metadataSyncStrategyMap.set(this.biloSyncStrategy.getMediaSourceFormat(), this.biloSyncStrategy);

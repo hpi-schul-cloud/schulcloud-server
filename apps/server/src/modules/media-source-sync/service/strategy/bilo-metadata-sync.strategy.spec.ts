@@ -12,11 +12,11 @@ import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/ex
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { MediaSourceSyncReport } from '../../interface';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
-import { BiloSyncStrategy } from './bilo-sync.strategy';
+import { BiloMetadataSyncStrategy } from './bilo-metadata-sync.strategy';
 
-describe(BiloSyncStrategy.name, () => {
+describe(BiloMetadataSyncStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: BiloSyncStrategy;
+	let strategy: BiloMetadataSyncStrategy;
 
 	let biloMediaFetchService: DeepMocked<BiloMediaClientAdapter>;
 	let externalToolService: DeepMocked<ExternalToolService>;
@@ -25,7 +25,7 @@ describe(BiloSyncStrategy.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				BiloSyncStrategy,
+				BiloMetadataSyncStrategy,
 				{
 					provide: BiloMediaClientAdapter,
 					useValue: createMock<BiloMediaClientAdapter>(),
@@ -41,7 +41,7 @@ describe(BiloSyncStrategy.name, () => {
 			],
 		}).compile();
 
-		strategy = module.get(BiloSyncStrategy);
+		strategy = module.get(BiloMetadataSyncStrategy);
 		externalToolService = module.get(ExternalToolService);
 		biloMediaFetchService = module.get(BiloMediaClientAdapter);
 		logger = module.get(Logger);
@@ -93,7 +93,7 @@ describe(BiloSyncStrategy.name, () => {
 				await strategy.syncAllMediaMetadata(mediaSource);
 
 				expect(biloMediaFetchService.fetchMediaMetadata).not.toBeCalled();
-				expect(externalToolService.updateExternalTool).not.toBeCalled();
+				expect(externalToolService.updateExternalTools).not.toBeCalled();
 			});
 		});
 

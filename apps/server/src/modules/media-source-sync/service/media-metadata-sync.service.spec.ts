@@ -5,33 +5,33 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
 import { mediaSourceSyncReportFactory } from '../testing';
-import { BiloSyncStrategy } from './strategy';
-import { MediaSourceSyncService } from './media-source-sync.service';
+import { BiloMetadataSyncStrategy } from './strategy';
+import { MediaMetadataSyncService } from './media-metadata-sync.service';
 
-describe(MediaSourceSyncService.name, () => {
+describe(MediaMetadataSyncService.name, () => {
 	let module: TestingModule;
-	let service: MediaSourceSyncService;
+	let service: MediaMetadataSyncService;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
-	let biloSyncStrategy: DeepMocked<BiloSyncStrategy>;
+	let biloSyncStrategy: DeepMocked<BiloMetadataSyncStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				MediaSourceSyncService,
+				MediaMetadataSyncService,
 				{
 					provide: MediaSourceService,
 					useValue: createMock<MediaSourceService>(),
 				},
 				{
-					provide: BiloSyncStrategy,
-					useValue: createMock<BiloSyncStrategy>(),
+					provide: BiloMetadataSyncStrategy,
+					useValue: createMock<BiloMetadataSyncStrategy>(),
 				},
 			],
 		}).compile();
 
-		service = module.get(MediaSourceSyncService);
+		service = module.get(MediaMetadataSyncService);
 		mediaSourceService = module.get(MediaSourceService);
-		biloSyncStrategy = module.get(BiloSyncStrategy);
+		biloSyncStrategy = module.get(BiloMetadataSyncStrategy);
 	});
 
 	afterAll(async () => {

@@ -1,12 +1,12 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of, throwError } from 'rxjs';
-import { ImageMimeType } from '../../common/enum';
+import { ImageMimeType } from '../../common';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
@@ -395,7 +395,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should return the content type "image/png"', () => {
 				const pngBase64Image = 'iVBORw0KGgoAAAAAADElEQVkSuQmCC';
 
-				const result = service.detectAndValidateImageContentType(pngBase64Image);
+				const result = service.detectAndValidateLogoImageType(pngBase64Image);
 
 				expect(result).toEqual(ImageMimeType.PNG.valueOf());
 			});
@@ -405,7 +405,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should return the content type "image/jpeg"', () => {
 				const jpegBase64Image = '/9j/4AAQYswLEoooA//9k=';
 
-				const result = service.detectAndValidateImageContentType(jpegBase64Image);
+				const result = service.detectAndValidateLogoImageType(jpegBase64Image);
 
 				expect(result).toEqual(ImageMimeType.JPEG.valueOf());
 			});
@@ -415,7 +415,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should return the content type "image/gif"', () => {
 				const gifBase64Image = 'R0lGODdhAQCAkQBADs=';
 
-				const result = service.detectAndValidateImageContentType(gifBase64Image);
+				const result = service.detectAndValidateLogoImageType(gifBase64Image);
 
 				expect(result).toEqual(ImageMimeType.GIF.valueOf());
 			});
@@ -426,7 +426,7 @@ describe(ExternalToolLogoService.name, () => {
 				const unsupportedFile = 'JVBERi0xLjUKJYCBgoMKMSAwZ3';
 
 				expect(() => {
-					service.detectAndValidateImageContentType(unsupportedFile);
+					service.detectAndValidateLogoImageType(unsupportedFile);
 				}).toThrow(new ExternalToolLogoWrongFileTypeLoggableException());
 			});
 		});
