@@ -7,10 +7,11 @@ import {
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
 import { User } from '@modules/user/repo';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
-export class InstanceRule implements Rule<Instance> {
+export class InstanceAdminRule implements Rule<Instance> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -27,19 +28,34 @@ export class InstanceRule implements Rule<Instance> {
 	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
 		let hasPermission = false;
 
+		const canExecuteInstanceOperations = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, context);
 		}
 		if (context.action === Action.write) {
-			throw new NotImplementedException('Action is not implemented.');
+			hasPermission = this.hasWriteAccess(user, context);
 		}
+
+		return canExecuteInstanceOperations && hasPermission;
+	}
+
+	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_VIEW,
+			...context.requiredPermissions,
+		]);
 
 		return hasPermission;
 	}
 
-	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
+	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_EDIT,
+			...context.requiredPermissions,
+		]);
 		return hasPermission;
 	}
 }
