@@ -12,7 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
-import { AccountEntity } from '../../repo';
+import { AccountEntity, AccountMikroOrmRepo } from '../../repo';
 import { accountFactory } from '../../testing';
 import { Account, AccountSave, IdmAccount } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
@@ -93,7 +93,7 @@ describe('AccountService Integration', () => {
 				AccountServiceDb,
 				{
 					provide: ACCOUNT_REPO,
-					useValue: createMock<AccountRepo>(),
+					useValue: AccountMikroOrmRepo,
 				},
 				{
 					provide: KeycloakIdentityManagementService,
