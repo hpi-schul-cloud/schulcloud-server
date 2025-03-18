@@ -1,4 +1,4 @@
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
 import { CourseEntity } from '@modules/course/repo/course.entity';
