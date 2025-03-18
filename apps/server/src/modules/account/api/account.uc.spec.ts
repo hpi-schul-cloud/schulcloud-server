@@ -75,7 +75,7 @@ describe('AccountUc', () => {
 		describe('When user does not exist', () => {
 			const setup = () => {
 				authorizationService.getUserWithPermissions.mockImplementation(() => {
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 			};
 
@@ -102,7 +102,7 @@ describe('AccountUc', () => {
 				});
 
 				accountService.findByUserIdOrFail.mockImplementation((): Promise<Account> => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockUserWithoutAccount };
@@ -1331,7 +1331,7 @@ describe('AccountUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<Account> => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockSuperheroUser };
@@ -1360,7 +1360,7 @@ describe('AccountUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<Account> => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockSuperheroUser };
@@ -1414,7 +1414,7 @@ describe('AccountUc', () => {
 				});
 
 				authorizationService.getUserWithPermissions.mockImplementation((): Promise<User> => {
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 
 				return { mockStudentAccount };
@@ -1966,7 +1966,7 @@ describe('AccountUc', () => {
 					if (mockAdminUser.id === userId) {
 						return Promise.resolve(mockAdminUser);
 					}
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 				authorizationService.checkAllPermissions.mockImplementation((): boolean => {
 					throw new UnauthorizedException();
@@ -2000,12 +2000,12 @@ describe('AccountUc', () => {
 					if (mockSuperheroUser.id === userId) {
 						return Promise.resolve(mockSuperheroUser);
 					}
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 
 				accountService.findById.mockImplementation((id: EntityId): Promise<Account> => {
 					if (id === 'xxx') {
-						throw new EntityNotFoundError(AccountEntity.name);
+						throw new EntityNotFoundError('AccountEntity');
 					}
 					return Promise.reject();
 				});

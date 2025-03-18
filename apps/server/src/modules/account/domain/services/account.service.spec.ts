@@ -1748,7 +1748,7 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockUserWithoutAccount);
 				accountServiceDb.findByUserIdOrFail.mockImplementation(() => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockUserWithoutAccount };
@@ -2052,7 +2052,7 @@ describe('AccountService', () => {
 						otherPassword,
 						otherPassword
 					)
-				).rejects.toThrow(new EntityNotFoundError(User.name));
+				).rejects.toThrow(new EntityNotFoundError('User'));
 			});
 		});
 

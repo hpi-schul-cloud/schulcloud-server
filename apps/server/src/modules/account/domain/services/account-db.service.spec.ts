@@ -324,7 +324,7 @@ describe('AccountDbService', () => {
 					if (mockTeacherUser.id === userId) {
 						return Promise.resolve(mockTeacherAccount);
 					}
-					return Promise.reject(new EntityNotFoundError(AccountEntity.name));
+					return Promise.reject(new EntityNotFoundError('AccountEntity'));
 				});
 				return {};
 			};
@@ -891,7 +891,7 @@ describe('AccountDbService', () => {
 		describe('when deleting non existing account', () => {
 			const setup = () => {
 				accountRepo.deleteById.mockImplementationOnce(() => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 			};
 

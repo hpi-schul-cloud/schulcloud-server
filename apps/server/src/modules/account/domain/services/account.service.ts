@@ -25,7 +25,6 @@ import {
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { AccountConfig } from '../../account-config';
-import { AccountEntity } from '../../repo/account.entity';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,
@@ -95,7 +94,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				await this.userService.saveEntity(user);
 			} catch (err: unknown) {
-				throw new EntityNotFoundError(User.name);
+				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
@@ -105,7 +104,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
 	}
@@ -186,14 +185,14 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				await this.userService.saveEntity(targetUser);
 			} catch (err) {
-				throw new EntityNotFoundError(User.name);
+				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
 			try {
 				return await this.save(targetAccount);
 			} catch (err) {
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
 
@@ -209,7 +208,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		try {
 			user = await this.userService.getUserEntityWithRoles(userId);
 		} catch (err) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 
 		const userPreferences = <UserPreferences>user.preferences;
@@ -233,13 +232,13 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			account.password = password;
 			await this.save(account);
 		} catch (err) {
-			throw new EntityNotFoundError(AccountEntity.name);
+			throw new EntityNotFoundError('AccountEntity');
 		}
 		try {
 			user.forcePasswordChange = false;
 			await this.userService.saveEntity(user);
 		} catch (err) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 	}
 
