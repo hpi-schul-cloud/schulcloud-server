@@ -1,21 +1,21 @@
 import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
-import { Injectable } from '@nestjs/common';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaSourceSyncStrategy, MediaSourceSyncReport } from '../../interface';
+import { Injectable } from '@nestjs/common';
 import {
 	MediaSourceSyncReportFactory as ReportFactory,
 	MediaSourceSyncOperationReportFactory as OperationReportFactory,
 } from '../../factory';
+import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
 export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
-		private readonly biloMediaFetchService: BiloMediaClientAdapter,
+		private readonly biloMediaClientAdapter: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,
 		private readonly logger: Logger
 	) {}
@@ -36,9 +36,10 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
 			.filter((mediumId: string | undefined): mediumId is string => !!mediumId);
 
-		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaFetchService.fetchMediaMetadata(
+		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
 			mediumIds,
-			mediaSource
+			mediaSource,
+			false
 		);
 
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);
@@ -123,12 +124,7 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 			return false;
 		}
 
-		const isUpToDate =
-			externalTool.name === metadata.title &&
-			externalTool.description === metadata.description &&
-			externalTool.logoUrl === metadata.coverSmall.href &&
-			externalTool.medium.publisher === metadata.publisher &&
-			externalTool.medium.metadataModifiedAt.getTime() === metadata.modified;
+		const isUpToDate = externalTool.medium.metadataModifiedAt.getTime() >= metadata.modified;
 
 		return isUpToDate;
 	}
