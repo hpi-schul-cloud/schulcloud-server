@@ -590,7 +590,8 @@
 		},
 		"name": "roomviewer",
 		"permissions": [
-			"ROOM_VIEW"
+			"ROOM_VIEW",
+			"ROOM_LEAVE"
 		]
 	},
 	{
@@ -600,8 +601,8 @@
 		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
-			"ROOM_EDIT",
-			"ROOM_CONTENT_EDIT"
+			"ROOM_CONTENT_EDIT",
+			"ROOM_LEAVE"
 		]
 	},
 	{
