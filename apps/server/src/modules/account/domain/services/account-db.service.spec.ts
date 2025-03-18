@@ -13,7 +13,6 @@ import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
-import { AccountEntity } from '../../repo';
 import { accountDoFactory } from '../../testing';
 import { Account, IdmAccount } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
@@ -66,7 +65,7 @@ describe('AccountDbService', () => {
 		configServiceMock = module.get(ConfigService);
 		idmServiceMock = module.get(IdentityManagementService);
 
-		await setupEntities([AccountEntity, User]);
+		await setupEntities([User]);
 	});
 
 	beforeEach(() => {

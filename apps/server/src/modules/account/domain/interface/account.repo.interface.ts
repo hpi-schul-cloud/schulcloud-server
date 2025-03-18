@@ -3,11 +3,9 @@ import { EntityId } from '@shared/domain/types';
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted } from '@shared/domain/types';
-import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import type { AccountEntity } from '../../repo';
 import { Account } from '../do';
 
-export interface AccountRepo extends BaseDomainObjectRepo<Account, AccountEntity> {
+export interface AccountRepo {
 	save(account: Account): Promise<Account>;
 
 	saveAll(accounts: Account[]): Promise<Account[]>;
