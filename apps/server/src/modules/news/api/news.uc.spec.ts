@@ -239,7 +239,7 @@ describe('NewsUc', () => {
 			expect(createdNews.school).toEqual(schoolId);
 			expect(createdNews.creator).toEqual(userId);
 			expect(createdNews.targetModel).toEqual(NewsTargetModel.School);
-			expect(createdNews.target.id).toEqual(schoolId);
+			expect(createdNews.target).toEqual(schoolId);
 		});
 
 		it('should save the news', async () => {
