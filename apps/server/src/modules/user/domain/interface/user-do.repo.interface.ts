@@ -2,9 +2,9 @@ import { EntityData } from '@mikro-orm/core';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { User } from '../../repo/user.entity';
-import { UserDo } from '../do/user.do';
-import { UserQuery } from '../query/user-query';
+import { User } from '../../repo';
+import { UserDo } from '../do';
+import { UserQuery } from '../query';
 
 export interface UserDoRepo {
 	find(query: UserQuery, options?: IFindOptions<UserDo>): Promise<Page<UserDo>>;

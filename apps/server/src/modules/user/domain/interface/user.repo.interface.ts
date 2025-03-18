@@ -2,7 +2,7 @@ import { SchoolEntity } from '@modules/school/repo';
 import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { User } from '../../repo/user.entity';
+import { User } from '../../repo';
 
 export interface UserRepo {
 	findById(id: EntityId, populate: boolean): Promise<User>;
