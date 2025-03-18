@@ -108,6 +108,10 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const card = await this.columnClient.createCard(column.id, {});
 
+		await this.cardClient.updateCardTitle(card.id, {
+			title: cardProps.title,
+		});
+
 		await this.createCardElement(parser, card.id, cardProps);
 	}
 
@@ -122,6 +126,8 @@ export class CommonCartridgeImportService {
 
 			if (resource && contentElementType) {
 				const resourceBody = CommonCartridgeImportMapper.mapResourceToContentElementBody(resource);
+
+				console.log('resource', resourceBody);
 
 				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
 				await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
