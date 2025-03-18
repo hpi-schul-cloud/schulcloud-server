@@ -9,6 +9,7 @@ import { Readable } from 'node:stream';
 import { S3_CLIENT, S3_CONFIG } from './constants';
 import { File, S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
+import { createListObjectsV2CommandOutput } from './testing';
 
 const createParameter = () => {
 	const bucket = 'test-bucket';
@@ -449,12 +450,7 @@ describe('S3ClientAdapter', () => {
 					const { pathToFile, bucket } = createParameter();
 					const filePath = 'directory/test.txt';
 
-					const expectedResponse: ListObjectsV2CommandOutput = {
-						Contents: [{ Key: filePath }],
-						IsTruncated: false,
-						KeyCount: 1,
-						$metadata: {},
-					};
+					const expectedResponse = createListObjectsV2CommandOutput([{ Key: filePath }]);
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
 
