@@ -9,7 +9,6 @@ import { schoolFactory } from '@modules/school/testing/school.factory';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { setupEntities } from '@testing/database';
 import { SchoolRule } from './school.rule';
 
@@ -37,10 +36,9 @@ describe('SchoolRule', () => {
 
 	const setupSchoolAndUser = () => {
 		const school = schoolFactory.build();
-		const user = userFactory.build({ school: schoolEntityFactory.buildWithId(undefined, school.id) });
-		const superUser = userFactory.asSuperhero([Permission.INSTANCE_EDIT]).build();
+		const user = userFactory.asTeacher().build({ school: schoolEntityFactory.buildWithId(undefined, school.id) });
 
-		return { school, user, superUser };
+		return { school, user };
 	};
 
 	afterEach(() => {
@@ -93,7 +91,26 @@ describe('SchoolRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('when user has required permissions and it is her school', () => {
+		describe('when user has write permissions and it is her school', () => {
+			const setup = () => {
+				const { user, school } = setupSchoolAndUser();
+				const context = AuthorizationContextBuilder.write([]);
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return { user, school, context };
+			};
+
+			it('should return true', () => {
+				const { user, school, context } = setup();
+
+				const result = rule.hasPermission(user, school, context);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user has read permissions and it is her school', () => {
 			const setup = () => {
 				const { user, school } = setupSchoolAndUser();
 				const context = AuthorizationContextBuilder.read([]);
@@ -148,26 +165,6 @@ describe('SchoolRule', () => {
 				const result = rule.hasPermission(user, someOtherSchool, context);
 
 				expect(result).toBe(false);
-			});
-		});
-
-		describe('when the user has super powers', () => {
-			const setup = () => {
-				const { superUser } = setupSchoolAndUser();
-				const someOtherSchool = schoolFactory.build();
-				const context = AuthorizationContextBuilder.read([]);
-
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
-
-				return { superUser, someOtherSchool, context };
-			};
-
-			it('should return true', () => {
-				const { superUser, someOtherSchool, context } = setup();
-
-				const result = rule.hasPermission(superUser, someOtherSchool, context);
-
-				expect(result).toBe(true);
 			});
 		});
 	});

@@ -8,12 +8,10 @@ import {
 import { School } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
-/**
- * Check this rule in BC-9295
- */
 @Injectable()
-export class SchoolRule implements Rule<School> {
+export class SchoolAdminRule implements Rule<School> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -27,9 +25,12 @@ export class SchoolRule implements Rule<School> {
 		return isApplicable;
 	}
 
-	public hasPermission(user: User, entity: School, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, school: School, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		const isUsersSchool = user.school.id === entity.id;
+
+		const canExecuteUserOperations = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
 
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, context);
@@ -38,18 +39,23 @@ export class SchoolRule implements Rule<School> {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
 
-		return hasPermission && isUsersSchool;
+		return canExecuteUserOperations && hasPermission;
 	}
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_VIEW,
+			...context.requiredPermissions,
+		]);
 
 		return hasPermission;
 	}
 
 	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_EDIT,
+			...context.requiredPermissions,
+		]);
 		return hasPermission;
 	}
 }
