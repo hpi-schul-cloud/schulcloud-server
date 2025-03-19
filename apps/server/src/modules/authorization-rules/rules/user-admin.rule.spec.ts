@@ -4,17 +4,16 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
-import { instanceFactory } from '@modules/instance/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { InstanceAdminRule } from './instance-admin.rule';
+import { UserAdminRule } from './user-admin.rule';
 
-describe(InstanceAdminRule.name, () => {
+describe(UserAdminRule.name, () => {
 	let module: TestingModule;
-	let rule: InstanceAdminRule;
+	let rule: UserAdminRule;
 	let injectionService: AuthorizationInjectionService;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
@@ -23,10 +22,10 @@ describe(InstanceAdminRule.name, () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
-			providers: [InstanceAdminRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [UserAdminRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		rule = module.get(InstanceAdminRule);
+		rule = module.get(UserAdminRule);
 		authorizationHelper = module.get(AuthorizationHelper);
 		injectionService = module.get(AuthorizationInjectionService);
 	});
@@ -45,18 +44,18 @@ describe(InstanceAdminRule.name, () => {
 		describe('when the user and object are applicable', () => {
 			const setup = () => {
 				const user = userFactory.asSuperhero().build();
-				const instance = instanceFactory.build();
+				const targetUser = userFactory.build();
 
 				return {
 					user,
-					instance,
+					targetUser,
 				};
 			};
 
 			it('should return true', () => {
-				const { user, instance } = setup();
+				const { user, targetUser } = setup();
 
-				const result = rule.isApplicable(user, instance);
+				const result = rule.isApplicable(user, targetUser);
 
 				expect(result).toEqual(true);
 			});
@@ -65,18 +64,18 @@ describe(InstanceAdminRule.name, () => {
 		describe('when the entity is not applicable', () => {
 			const setup = () => {
 				const user = userFactory.asSuperhero().build();
-				const notInstance = userFactory.build();
+				const notUser = new Object();
 
 				return {
 					user,
-					notInstance,
+					notUser,
 				};
 			};
 
 			it('should return false', () => {
-				const { user, notInstance } = setup();
+				const { user, notUser } = setup();
 
-				const result = rule.isApplicable(user, notInstance as unknown as InstanceAdminRule);
+				const result = rule.isApplicable(user, notUser as unknown as UserAdminRule);
 
 				expect(result).toEqual(false);
 			});
@@ -88,30 +87,30 @@ describe(InstanceAdminRule.name, () => {
 			describe('when the user has write permissions', () => {
 				const setup = () => {
 					const user = userFactory.asSuperhero().build();
-					const instance = instanceFactory.build();
+					const targetUser = userFactory.build();
 					const context = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
 
 					return {
 						user,
-						instance,
+						targetUser,
 						context,
 					};
 				};
 
 				it('should call hasAllPermissions with expected props', () => {
-					const { user, instance, context } = setup();
+					const { user, targetUser, context } = setup();
 					const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
-					rule.hasPermission(user, instance, context);
+					rule.hasPermission(user, targetUser, context);
 
 					expect(spy).toHaveBeenCalledWith(user, [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS]);
 					expect(spy).toHaveBeenCalledWith(user, [Permission.INSTANCE_EDIT, ...context.requiredPermissions]);
 				});
 
 				it('should return true', () => {
-					const { user, instance, context } = setup();
+					const { user, targetUser, context } = setup();
 
-					const result = rule.hasPermission(user, instance, context);
+					const result = rule.hasPermission(user, targetUser, context);
 
 					expect(result).toEqual(true);
 				});
@@ -120,30 +119,30 @@ describe(InstanceAdminRule.name, () => {
 			describe('when the user has read permissions', () => {
 				const setup = () => {
 					const user = userFactory.asSuperhero().build();
-					const instance = instanceFactory.build();
+					const targetUser = userFactory.build();
 					const context = AuthorizationContextBuilder.read([Permission.CREATE_SUPPORT_JWT]);
 
 					return {
 						user,
-						instance,
+						targetUser,
 						context,
 					};
 				};
 
 				it('should call hasAllPermissions with expected props', () => {
-					const { user, instance, context } = setup();
+					const { user, targetUser, context } = setup();
 					const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
-					rule.hasPermission(user, instance, context);
+					rule.hasPermission(user, targetUser, context);
 
 					expect(spy).toHaveBeenCalledWith(user, [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS]);
 					expect(spy).toHaveBeenCalledWith(user, [Permission.INSTANCE_VIEW, ...context.requiredPermissions]);
 				});
 
 				it('should return true', () => {
-					const { user, instance, context } = setup();
+					const { user, targetUser, context } = setup();
 
-					const result = rule.hasPermission(user, instance, context);
+					const result = rule.hasPermission(user, targetUser, context);
 
 					expect(result).toEqual(true);
 				});
@@ -154,19 +153,19 @@ describe(InstanceAdminRule.name, () => {
 			describe('when the user has no write permission', () => {
 				const setup = () => {
 					const user = userFactory.asStudent().build();
-					const instance = instanceFactory.build();
+					const targetUser = userFactory.build();
 					const context = AuthorizationContextBuilder.write([Permission.FILESTORAGE_VIEW]);
 					return {
 						user,
-						instance,
+						targetUser,
 						context,
 					};
 				};
 
 				it('should return false', () => {
-					const { user, instance, context } = setup();
+					const { user, targetUser, context } = setup();
 
-					const result = rule.hasPermission(user, instance, context);
+					const result = rule.hasPermission(user, targetUser, context);
 
 					expect(result).toEqual(false);
 				});
