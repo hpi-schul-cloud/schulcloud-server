@@ -140,7 +140,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return userDos;
 	}
 
-	protected mapEntityToDO(entity: User): UserDo {
+	public mapEntityToDO(entity: User): UserDo {
 		const user: UserDo = new UserDo({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -190,7 +190,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return user;
 	}
 
-	protected mapDOToEntityProperties(entityDO: UserDo): EntityData<User> {
+	public mapDOToEntityProperties(entityDO: UserDo): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
