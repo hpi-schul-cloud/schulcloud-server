@@ -155,4 +155,5 @@ export const superheroPermissions = [
 	Permission.INSTANCE_VIEW,
 	Permission.CREATE_SUPPORT_JWT,
 	Permission.TEACHER_LIST,
+	Permission.MEDIA_SOURCE_ADMIN,
 ];
