@@ -17,6 +17,7 @@ import {
 } from '../../repo';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
+import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class LessonCopyService {
@@ -28,7 +29,7 @@ export class LessonCopyService {
 		private readonly copyFilesService: CopyFilesService
 	) {}
 
-	async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
+	public async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
 		const lesson: LessonEntity = await this.lessonRepo.findById(params.originalLessonId);
 		const { copiedContent, contentStatus } = await this.copyLessonContent(lesson.contents, params);
 		const { copiedMaterials, materialsStatus } = this.copyLinkedMaterials(lesson);
@@ -79,7 +80,7 @@ export class LessonCopyService {
 		copiedTasksStatus: CopyStatus[],
 		lessonCopy: LessonEntity,
 		originalLesson: LessonEntity
-	) {
+	): { status: CopyStatus; elements: CopyStatus[] } {
 		const elements: CopyStatus[] = [
 			...LessonCopyService.lessonStatusMetadata(),
 			...contentStatus,
@@ -98,7 +99,7 @@ export class LessonCopyService {
 		return { status, elements };
 	}
 
-	updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
+	public updateCopiedEmbeddedTasks(lessonStatus: CopyStatus, copyDict: CopyDictionary): CopyStatus {
 		const copiedLesson = lessonStatus.copyEntity as LessonEntity;
 
 		if (copiedLesson?.contents === undefined) {
@@ -120,7 +121,7 @@ export class LessonCopyService {
 		}
 
 		const { content } = value;
-		const extractTaskId = (url: string) => {
+		const extractTaskId = (url: string): EntityId => {
 			const urlObject = new URL(url, 'https://www.example.com');
 			const taskId = urlObject.pathname.split('/')[2];
 			return taskId;
@@ -162,70 +163,90 @@ export class LessonCopyService {
 		copiedContent: ComponentProperties[];
 		contentStatus: CopyStatus[];
 	}> {
-		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
-		const copiedContent: ComponentProperties[] = [];
-		const copiedContentStatus: CopyStatus[] = [];
-		for (let i = 0; i < content.length; i += 1) {
-			const element = content[i];
-			if (element.component === ComponentType.TEXT) {
-				const textContent = this.copyTextContent(element);
-				copiedContent.push(textContent);
-				copiedContentStatus.push({
-					title: element.title,
-					type: CopyElementType.LESSON_CONTENT_TEXT,
-					status: CopyStatusEnum.SUCCESS,
-				});
-			}
-			if (element.component === ComponentType.LERNSTORE) {
-				const lernstoreContent = this.copyLernStore(element);
-				copiedContent.push(lernstoreContent);
-				copiedContentStatus.push({
-					title: element.title,
-					type: CopyElementType.LESSON_CONTENT_LERNSTORE,
-					status: CopyStatusEnum.SUCCESS,
-				});
-			}
-			if (element.component === ComponentType.GEOGEBRA) {
-				const geoGebraContent = LessonCopyService.copyGeogebra(element);
-				copiedContent.push(geoGebraContent);
-				copiedContentStatus.push({
-					title: element.title,
-					type: CopyElementType.LESSON_CONTENT_GEOGEBRA,
-					status: CopyStatusEnum.PARTIAL,
-				});
-			}
-			if (element.component === ComponentType.ETHERPAD && etherpadEnabled) {
-				// eslint-disable-next-line no-await-in-loop
-				const etherpadContent = await this.copyEtherpad(element, params);
-				const etherpadStatus = {
-					title: element.title,
-					type: CopyElementType.LESSON_CONTENT_ETHERPAD,
-					status: CopyStatusEnum.PARTIAL,
-				};
-				if (etherpadContent) {
-					copiedContent.push(etherpadContent);
-				} else {
-					etherpadStatus.status = CopyStatusEnum.FAIL;
-				}
-				copiedContentStatus.push(etherpadStatus);
-			}
-			if (element.component === ComponentType.INTERNAL) {
-				const linkContent = this.copyEmbeddedTaskLink(element);
-				const embeddedTaskStatus = {
-					title: element.title,
-					type: CopyElementType.LESSON_CONTENT_TASK,
-					status: CopyStatusEnum.SUCCESS,
-				};
-				copiedContent.push(linkContent);
-				copiedContentStatus.push(embeddedTaskStatus);
-			}
-		}
+		const copyPromises = content.map((element) => this.copySingleLessonContent(element, params));
+		const results = (await Promise.all(copyPromises)).filter((result) => result !== undefined);
+
+		const copiedContent = results.map((result) => result.copy).filter((copy) => copy !== undefined);
+		const copiedContentStatus = results.map((result) => result.status);
+
 		const contentStatus = this.lessonStatusContent(copiedContentStatus);
 		return { copiedContent, contentStatus };
 	}
 
-	private copyTextContent(element: ComponentProperties): ComponentProperties {
-		return {
+	private async copySingleLessonContent(
+		element: ComponentProperties,
+		params: LessonCopyParams
+	): Promise<{ copy: ComponentProperties | undefined; status: CopyStatus } | undefined> {
+		if (this.isTypeThatShouldBeCopied(element.component)) {
+			try {
+				const copy = await this.copyFunctionMap[element.component](element, params);
+				const status = this.statusMap[element.component](element.title);
+				return { copy, status };
+			} catch (error) {
+				const status = this.statusMap[element.component](element.title);
+				status.status = CopyStatusEnum.FAIL;
+				return { copy: undefined, status };
+			}
+		}
+	}
+
+	private isTypeThatShouldBeCopied(type: ComponentType): boolean {
+		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
+
+		return etherpadEnabled || type !== ComponentType.ETHERPAD;
+	}
+
+	private statusMap: Record<ComponentType, (title: string) => CopyStatus> = {
+		[ComponentType.TEXT]: (title: string) => {
+			return {
+				title,
+				type: CopyElementType.LESSON_CONTENT_TEXT,
+				status: CopyStatusEnum.SUCCESS,
+			};
+		},
+		[ComponentType.LERNSTORE]: (title: string) => {
+			return {
+				title,
+				type: CopyElementType.LESSON_CONTENT_LERNSTORE,
+				status: CopyStatusEnum.SUCCESS,
+			};
+		},
+		[ComponentType.GEOGEBRA]: (title: string) => {
+			return {
+				title,
+				type: CopyElementType.LESSON_CONTENT_GEOGEBRA,
+				status: CopyStatusEnum.PARTIAL,
+			};
+		},
+		[ComponentType.ETHERPAD]: (title: string) => {
+			return {
+				title,
+				type: CopyElementType.LESSON_CONTENT_ETHERPAD,
+				status: CopyStatusEnum.PARTIAL,
+			};
+		},
+		[ComponentType.INTERNAL]: (title: string) => {
+			return {
+				title,
+				type: CopyElementType.LESSON_CONTENT_TASK,
+				status: CopyStatusEnum.SUCCESS,
+			};
+		},
+	};
+
+	private copyFunctionMap: Record<
+		ComponentType,
+		(el: ComponentProperties, params: LessonCopyParams) => Promise<ComponentProperties>
+	> = {
+		[ComponentType.TEXT]: this.copyTextContent.bind(this),
+		[ComponentType.LERNSTORE]: this.copyLernStore.bind(this),
+		[ComponentType.GEOGEBRA]: this.copyGeogebra.bind(this),
+		[ComponentType.ETHERPAD]: this.copyEtherpad.bind(this),
+		[ComponentType.INTERNAL]: this.copyEmbeddedTaskLink.bind(this),
+	};
+
+	private copyTextContent(element: ComponentProperties): Promise<ComponentProperties> {
+		return Promise.resolve({
 			title: element.title,
 			hidden: element.hidden,
 			component: ComponentType.TEXT,
@@ -233,10 +254,10 @@ export class LessonCopyService {
 			content: {
 				text: (element.content as ComponentTextProperties).text,
 			},
-		};
+		});
 	}
 
-	private copyLernStore(element: ComponentProperties): ComponentProperties {
+	private copyLernStore(element: ComponentProperties): Promise<ComponentProperties> {
 		const lernstore: ComponentProperties = {
 			title: element.title,
 			hidden: element.hidden,
@@ -262,20 +283,20 @@ export class LessonCopyService {
 			lernstore.content = lernstoreContent;
 		}
 
-		return lernstore;
+		return Promise.resolve(lernstore);
 	}
 
-	private static copyGeogebra(originalElement: ComponentProperties): ComponentProperties {
+	private copyGeogebra(originalElement: ComponentProperties): Promise<ComponentProperties> {
 		const copy = { ...originalElement, hidden: true } as ComponentProperties;
 		copy.content = { ...copy.content, materialId: '' } as ComponentGeogebraProperties;
 		delete copy._id;
-		return copy;
+		return Promise.resolve(copy);
 	}
 
 	private async copyEtherpad(
 		originalElement: ComponentProperties,
 		params: LessonCopyParams
-	): Promise<ComponentProperties | false> {
+	): Promise<ComponentProperties> {
 		const copy = { ...originalElement } as ComponentProperties;
 		delete copy._id;
 		const content = { ...copy.content, url: '' } as ComponentEtherpadProperties;
@@ -292,10 +313,14 @@ export class LessonCopyService {
 			copy.content = content;
 			return copy;
 		}
-		return false;
+		throw new Error('Failed to create etherpad');
 	}
 
-	private async copyLinkedTasks(destinationLesson: LessonEntity, lesson: LessonEntity, params: LessonCopyParams) {
+	private async copyLinkedTasks(
+		destinationLesson: LessonEntity,
+		lesson: LessonEntity,
+		params: LessonCopyParams
+	): Promise<CopyStatus[]> {
 		const linkedTasks = lesson.getLessonLinkedTasks();
 		if (linkedTasks.length > 0) {
 			const copiedTasksStatus = await Promise.all(
@@ -348,10 +373,10 @@ export class LessonCopyService {
 		return { copiedMaterials, materialsStatus };
 	}
 
-	private copyEmbeddedTaskLink(originalElement: ComponentProperties) {
+	private copyEmbeddedTaskLink(originalElement: ComponentProperties): Promise<ComponentProperties> {
 		const copy = JSON.parse(JSON.stringify(originalElement)) as ComponentProperties;
 		delete copy._id;
-		return copy;
+		return Promise.resolve(copy);
 	}
 
 	private static lessonStatusMetadata(): CopyStatus[] {
