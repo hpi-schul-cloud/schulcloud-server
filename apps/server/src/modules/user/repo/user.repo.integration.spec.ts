@@ -5,11 +5,11 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { type SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { UserParentsEntityProps } from './user-parents.entity';
+import type { UserParentsEntityProps } from './user-parents.entity';
 import { User } from './user.entity';
 import { UserMikroOrmRepo } from './user.repo';
 
@@ -278,32 +278,32 @@ describe('user repo', () => {
 			await em.persistAndFlush([user, otherUser]);
 			em.clear();
 			// full first name
-			const [result1, count1] = await repo.findForImportUser(school, { name: 'papa' });
+			const [result1, count1] = await repo.findForImportUser(school, 'papa');
 			expect(result1.map((u) => u.id)).toContain(user.id);
 			expect(result1.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count1).toEqual(1);
 			// full last name
-			const [result2, count2] = await repo.findForImportUser(school, { name: 'pane' });
+			const [result2, count2] = await repo.findForImportUser(school, 'pane');
 			expect(result2.map((u) => u.id)).toContain(user.id);
 			expect(result2.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count2).toEqual(1);
 			// partial first and last name
-			const [result3, count3] = await repo.findForImportUser(school, { name: 'pa' });
+			const [result3, count3] = await repo.findForImportUser(school, 'pa');
 			expect(result3.map((u) => u.id)).toContain(user.id);
 			expect(result3.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count3).toEqual(1);
 			// partial first name
-			const [result4, count4] = await repo.findForImportUser(school, { name: 'pap' });
+			const [result4, count4] = await repo.findForImportUser(school, 'pap');
 			expect(result4.map((u) => u.id)).toContain(user.id);
 			expect(result4.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count4).toEqual(1);
 			// partial last name
-			const [result5, count5] = await repo.findForImportUser(school, { name: 'ane' });
+			const [result5, count5] = await repo.findForImportUser(school, 'ane');
 			expect(result5.map((u) => u.id)).toContain(user.id);
 			expect(result5.map((u) => u.id)).not.toContain(otherUser.id);
 			expect(count5).toEqual(1);
 			// no match
-			const [result6, count6] = await repo.findForImportUser(school, { name: 'Fox' });
+			const [result6, count6] = await repo.findForImportUser(school, 'Fox');
 			expect(result6.map((u) => u.id)).not.toContain(user);
 			expect(result6.map((u) => u.id)).not.toContain(otherUser);
 			expect(count6).toEqual(0);
@@ -393,7 +393,7 @@ describe('user repo', () => {
 				it('should return the searched user', async () => {
 					const { school, user } = await setup();
 
-					const [result, count] = await repo.findForImportUser(school, { name: user.lastName });
+					const [result, count] = await repo.findForImportUser(school, user.lastName);
 
 					expect(count).toEqual(1);
 					expect(result.map((u) => u.id)).toContain(user.id);

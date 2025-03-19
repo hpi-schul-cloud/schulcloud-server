@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -14,23 +14,23 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
-import { Role } from '@modules/role/repo';
+import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { UserDto } from '../../api/dto';
 import { User } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
 import { UserDo } from '../do';
-import { USER_DO_REPO, USER_REPO, UserDoRepo, UserRepo } from '../interface';
-import { UserDiscoverableQuery, UserQuery } from '../query';
+import { USER_DO_REPO, USER_REPO, type UserDoRepo, type UserRepo } from '../interface';
+import { UserDiscoverableQuery, type UserQuery } from '../query';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
@@ -550,24 +550,24 @@ describe('UserService', () => {
 		describe('when find is successfull', () => {
 			it('should call the repo with given school and filters', async () => {
 				const school = schoolEntityFactory.build();
-				const filters = { name: 'name' };
+				const userName = 'name';
 				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
 
-				await service.findForImportUser(school, filters, options);
+				await service.findForImportUser(school, userName, options);
 
-				expect(userRepo.findForImportUser).toHaveBeenCalledWith(school, filters, options);
+				expect(userRepo.findForImportUser).toHaveBeenCalledWith(school, userName, options);
 			});
 		});
 
 		describe('when find is not successfull', () => {
 			it('should call the repo with given school and filters', async () => {
 				const school = schoolEntityFactory.build();
-				const filters = { name: 'name' };
+				const userName = 'name';
 				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
 				const error = new Error('Error');
 				userRepo.findForImportUser.mockRejectedValueOnce(error);
 
-				await expect(service.findForImportUser(school, filters, options)).rejects.toThrowError(error);
+				await expect(service.findForImportUser(school, userName, options)).rejects.toThrowError(error);
 			});
 		});
 	});
