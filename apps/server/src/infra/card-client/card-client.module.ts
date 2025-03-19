@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils';
 import { Request } from 'express';
+import { CardClientAdapter, CardClientConfig } from '.';
 import { BoardCardApi, BoardElementApi, Configuration } from './generated';
-import { CardClientAdapter, CardClientConfig, CommonCartridgeImportMapper } from '.';
 
 @Module({
 	providers: [

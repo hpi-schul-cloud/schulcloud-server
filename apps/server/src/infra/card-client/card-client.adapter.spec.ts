@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardCardApi } from './generated';
+import { BoardCardApi, BoardElementApi, ContentElementType } from './generated';
 import { CardClientAdapter } from '.';
 import { faker } from '@faker-js/faker/.';
 
@@ -9,11 +9,16 @@ describe(CardClientAdapter.name, () => {
 	let sut: CardClientAdapter;
 
 	const cardApiMock = createMock<BoardCardApi>();
+	const boardElementApiMock = createMock<BoardElementApi>();
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CardClientAdapter,
+				{
+					provide: BoardElementApi,
+					useValue: boardElementApiMock,
+				},
 				{
 					provide: BoardCardApi,
 					useValue: cardApiMock,
@@ -44,7 +49,7 @@ describe(CardClientAdapter.name, () => {
 			const setup = () => {
 				const cardId = faker.string.uuid();
 				const createContentElementBodyParams = {
-					type: 'text',
+					type: ContentElementType.RICH_TEXT,
 					toPosition: 1,
 				};
 
@@ -84,6 +89,39 @@ describe(CardClientAdapter.name, () => {
 				await sut.updateCardTitle(cardId, renameBodyParams);
 
 				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams);
+			});
+		});
+	});
+
+	describe('updateCardElement', () => {
+		describe('when updating a card element', () => {
+			const setup = () => {
+				const elementId = faker.string.uuid();
+				const updateElementContentBodyParams = {
+					data: {
+						type: ContentElementType.RICH_TEXT,
+						content: {
+							inputFormat: 'richText',
+							text: faker.lorem.words(),
+						},
+					},
+				};
+
+				return {
+					elementId,
+					updateElementContentBodyParams,
+				};
+			};
+
+			it('should call elementAPI.elementControllerUpdateElement', async () => {
+				const { elementId, updateElementContentBodyParams } = setup();
+
+				await sut.updateCardElement(elementId, updateElementContentBodyParams);
+
+				expect(boardElementApiMock.elementControllerUpdateElement).toHaveBeenCalledWith(
+					elementId,
+					updateElementContentBodyParams
+				);
 			});
 		});
 	});

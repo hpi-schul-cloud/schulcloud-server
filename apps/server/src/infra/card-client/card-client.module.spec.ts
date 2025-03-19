@@ -49,7 +49,7 @@ describe('CardClientModule', () => {
 	});
 
 	describe('when resolving dependencies', () => {
-		it('should resolve ColumnClientAdapter', async () => {
+		it('should resolve CardClientAdapter', async () => {
 			const adapter = await module.resolve(CardClientAdapter);
 
 			expect(adapter).toBeInstanceOf(CardClientAdapter);
