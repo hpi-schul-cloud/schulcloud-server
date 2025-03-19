@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { PrivacyProtect } from '@shared/controller/validator';
 import { IsEmail, IsOptional, IsString, Matches } from 'class-validator';
-import { passwordPattern } from '../../../domain/password-pattern';
+import { passwordPattern } from '../../../domain';
 
 export class PatchMyAccountParams {
 	@IsString()
