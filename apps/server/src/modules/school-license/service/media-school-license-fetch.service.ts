@@ -9,6 +9,7 @@ import { AxiosResponse, isAxiosError } from 'axios';
 export class MediaSchoolLicenseFetchService {
 	constructor(@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService) {}
 
+	// TODO move code to vidis client adapter
 	public async fetchOffersForSchoolFromVidis(mediaSource: MediaSource, schoolName: string): Promise<OfferDTO[]> {
 		if (!mediaSource.vidisConfig) {
 			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);

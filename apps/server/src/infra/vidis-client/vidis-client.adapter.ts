@@ -1,16 +1,20 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from '@infra/vidis-client';
-import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
-import { MediaSourceVidisConfigNotFoundLoggableException } from '@modules/media-source/loggable';
+import {
+	MediaSource,
+	MediaSourceDataFormat,
+	MediaSourceVidisConfig,
+	MediaSourceVidisConfigNotFoundLoggableException,
+} from '@modules/media-source';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
+import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from './generated';
 
 @Injectable()
-export class VidisFetchService {
+export class VidisClientAdapter {
 	constructor(@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService) {}
 
-	public async getOfferItemsFromVidis(mediaSource: MediaSource): Promise<OfferDTO[]> {
+	public async getOfferItemsByRegion(mediaSource: MediaSource): Promise<OfferDTO[]> {
 		if (!mediaSource.vidisConfig) {
 			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
 		}
@@ -22,17 +26,13 @@ export class VidisFetchService {
 			})
 		);
 
-		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
-		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
-		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
-
 		try {
 			const axiosResponse: AxiosResponse<PageOfferDTO> = await api.getActivatedOffersByRegion(
 				vidisConfig.region,
 				undefined,
 				undefined,
 				{
-					headers: { Authorization: `Basic ${basicAuthEncoded}` },
+					headers: { Authorization: this.buildAuthHeaderValue(vidisConfig) },
 				}
 			);
 			const offerItems: OfferDTO[] = axiosResponse.data.items ?? [];
@@ -45,5 +45,13 @@ export class VidisFetchService {
 				throw error;
 			}
 		}
+	}
+
+	private buildAuthHeaderValue(vidisConfig: MediaSourceVidisConfig): string {
+		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
+		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
+		const basicAuthHeaderValue = `Basic ${btoa(`${decryptedUsername}:${decryptedPassword}`)}`;
+
+		return basicAuthHeaderValue;
 	}
 }
