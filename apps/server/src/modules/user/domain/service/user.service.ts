@@ -5,11 +5,11 @@ import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
-	DeletionService,
-	DomainDeletionReport,
+	type DeletionService,
+	type DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
-	DomainOperationReport,
+	type DomainOperationReport,
 	DomainOperationReportBuilder,
 	OperationReportHelper,
 	OperationType,
@@ -17,22 +17,22 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleDto, RoleName, RoleService } from '@modules/role';
-import { SchoolEntity } from '@modules/school/repo';
-import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
+import { type RoleDto, RoleName, RoleService } from '@modules/role';
+import type { SchoolEntity } from '@modules/school/repo';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
-import { UserDto } from '../../api/dto';
+import type { IFindOptions, LanguageType } from '@shared/domain/interface';
+import type { Counted, EntityId } from '@shared/domain/types';
+import type { UserDto } from '../../api/dto';
 import { UserMapper } from '../../api/mapper';
-import { UserConfig, UserDo } from '../../domain';
-import { User } from '../../repo';
+import type { UserConfig, UserDo } from '../../domain';
+import type { User } from '../../repo';
 import { USER_DO_REPO, USER_REPO, UserDoRepo, UserRepo } from '../interface';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable';
-import { UserDiscoverableQuery, UserQuery } from '../query';
+import { UserDiscoverableQuery, type UserQuery } from '../query';
+import type { UserName } from '../type';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -366,10 +366,10 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	public findForImportUser(
 		school: SchoolEntity,
-		filters?: ImportUserNameMatchFilter,
+		userName?: UserName,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
-		const users = this.userRepo.findForImportUser(school, filters, options);
+		const users = this.userRepo.findForImportUser(school, userName, options);
 
 		return users;
 	}

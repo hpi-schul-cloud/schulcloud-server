@@ -1,12 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Role } from '@modules/role/repo';
-import { SchoolEntity } from '@modules/school/repo';
-import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
+import type { Role } from '@modules/role/repo';
+import type { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
-import { IFindOptions } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
+import type { IFindOptions } from '@shared/domain/interface';
+import type { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { UserRepo } from '../domain';
+import type { UserName, UserRepo } from '../domain';
 import { UserScope } from './scope/user.scope';
 import { User } from './user.entity';
 
@@ -53,14 +52,14 @@ export class UserMikroOrmRepo extends BaseRepo<User> implements UserRepo {
 
 	public async findForImportUser(
 		school: SchoolEntity,
-		filters?: ImportUserNameMatchFilter,
+		userName?: UserName,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { pagination, order } = options || {};
 		const { id: schoolId } = school;
 		if (!ObjectId.isValid(schoolId)) throw new Error('invalid school id');
 
-		const scope: UserScope = new UserScope().bySchoolId(schoolId).byName(filters?.name).withDeleted(false);
+		const scope: UserScope = new UserScope().bySchoolId(schoolId).byName(userName).withDeleted(false);
 
 		const countedUsers = await this._em.findAndCount(User, scope.query, {
 			offset: pagination?.skip,

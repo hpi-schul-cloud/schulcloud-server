@@ -1,8 +1,8 @@
-import { SchoolEntity } from '@modules/school/repo';
-import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
-import { IFindOptions } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
-import { User } from '../../repo';
+import type { SchoolEntity } from '@modules/school/repo';
+import type { IFindOptions } from '@shared/domain/interface';
+import type { Counted, EntityId } from '@shared/domain/types';
+import type { User } from '../../repo';
+import type { UserName } from '../type';
 
 export interface UserRepo {
 	findById(id: EntityId, populate: boolean): Promise<User>;
@@ -13,11 +13,7 @@ export interface UserRepo {
 
 	findByExternalIdOrFail(externalId: string, systemId: string): Promise<User>;
 
-	findForImportUser(
-		school: SchoolEntity,
-		filters?: ImportUserNameMatchFilter,
-		options?: IFindOptions<User>
-	): Promise<Counted<User[]>>;
+	findForImportUser(school: SchoolEntity, userName?: UserName, options?: IFindOptions<User>): Promise<Counted<User[]>>;
 
 	findByEmail(email: string): Promise<User[]>;
 
