@@ -4,17 +4,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { SchoolService } from '@modules/school';
-import { FederalStateEntityMapper } from '@modules/school/repo';
-import { federalStateEntityFactory, schoolFactory } from '@modules/school/testing';
+import { schoolFactory } from '@modules/school/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
-import {
-	BuildMediaSchoolLicenseFailedLoggable,
-	FederalStateAbbreviationOfSchoolNotFoundLoggableException,
-	SchoolNumberNotFoundLoggableException,
-} from '../loggable';
+import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
 import { mediaSchoolLicenseFactory, vidisOfferFactory } from '../testing';
 import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
@@ -300,11 +295,9 @@ describe(MediaSchoolLicenseService.name, () => {
 	describe('updateMediaSchoolLicenses', () => {
 		describe('when school id is given', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateEntityFactory.build();
-				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
 				const schoolId = new ObjectId().toHexString();
-				const school = schoolFactory.build({ id: schoolId, federalState, officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceFactory.build();
+				const school = schoolFactory.build({ id: schoolId, officialSchoolNumber: '00100' });
+				const mediaSource = mediaSourceFactory.withVidis().build();
 				const offersFromMediaSource = vidisOfferFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -329,34 +322,11 @@ describe(MediaSchoolLicenseService.name, () => {
 			});
 		});
 
-		describe('when school without federal state was found', () => {
+		describe('when school with official school number was found ', () => {
 			const setup = () => {
 				const schoolId = new ObjectId().toHexString();
-				const school = schoolFactory.build({ id: schoolId, federalState: undefined, officialSchoolNumber: '00100' });
-
-				schoolService.getSchoolById.mockResolvedValue(school);
-
-				return {
-					school,
-				};
-			};
-
-			it('should throw FederalStateAbbreviationOfSchoolNotFoundLoggableException', async () => {
-				const { school } = setup();
-
-				await expect(mediaSchoolLicenseService.updateMediaSchoolLicenses(school.id)).rejects.toThrow(
-					new FederalStateAbbreviationOfSchoolNotFoundLoggableException(school.id)
-				);
-			});
-		});
-
-		describe('when school with federal state abbreviation and official school number was found ', () => {
-			const setup = () => {
-				const federalStateEntity = federalStateEntityFactory.build();
-				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
-				const schoolId = new ObjectId().toHexString();
-				const school = schoolFactory.build({ id: schoolId, federalState, officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceFactory.build();
+				const school = schoolFactory.build({ id: schoolId, officialSchoolNumber: '00100' });
+				const mediaSource = mediaSourceFactory.withVidis().build();
 				const offersFromMediaSource = vidisOfferFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -379,11 +349,9 @@ describe(MediaSchoolLicenseService.name, () => {
 			});
 		});
 
-		describe('when school with federal state abbreviation and without official school number was found ', () => {
+		describe('when school with without official school number was found ', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateEntityFactory.build();
-				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
-				const school = schoolFactory.build({ officialSchoolNumber: undefined, federalState });
+				const school = schoolFactory.build({ officialSchoolNumber: undefined });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 
@@ -403,15 +371,15 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when media source was found ', () => {
 			const setup = () => {
-				const federalStateEntity = federalStateEntityFactory.build();
-				const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
-				const school = schoolFactory.build({ officialSchoolNumber: '00100', federalState });
-				const mediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS });
+				const schoolNumberPrefix = 'NI_';
+				const officialSchoolNumber = '00100';
+				const schoolName = `${schoolNumberPrefix}${officialSchoolNumber}`;
+
+				const school = schoolFactory.build({ officialSchoolNumber });
+				const mediaSource = mediaSourceFactory.withVidis({ schoolNumberPrefix }).build();
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-
-				const schoolName = `${federalState.abbreviation}_${school.officialSchoolNumber ?? ''}`;
 
 				return {
 					school,
@@ -435,7 +403,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		describe('when fetching offers from media source was successful', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS });
+				const mediaSource = mediaSourceFactory.withVidis().build();
 				const offersFromMediaSource = vidisOfferFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
@@ -463,7 +431,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		describe('when fetching offers from media source was successful and offers have an offerId', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceFactory.withVidis().build({ format: MediaSourceDataFormat.VIDIS });
+				const mediaSource = mediaSourceFactory.withVidis().build();
 				const offersFromMediaSource = vidisOfferFactory.buildList(5, { offerId: 12345 });
 				const mediaSchoolLicenses = mediaSchoolLicenseFactory.buildList(5, {
 					type: SchoolLicenseType.MEDIA_LICENSE,
@@ -516,7 +484,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		describe('when fetching offers from media source was successful and offers have no offerId ', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceFactory.build();
+				const mediaSource = mediaSourceFactory.withVidis().build();
 				const offersFromMediaSource = vidisOfferFactory.buildList(3, { offerId: undefined });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
