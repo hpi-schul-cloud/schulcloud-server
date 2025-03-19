@@ -137,7 +137,7 @@ export class AccountUc {
 		const targetAccount = await this.accountService.findById(accountId);
 
 		if (!targetAccount.userId) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 
 		const targetUser = await this.authorizationService.getUserWithPermissions(targetAccount.userId);

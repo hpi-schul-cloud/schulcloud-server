@@ -5,15 +5,12 @@ import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Injectable } from '@nestjs/common';
-import {
-	MediaSourceSyncReportFactory as ReportFactory,
-	MediaSourceSyncOperationReportFactory as OperationReportFactory,
-} from '../../factory';
+import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
-export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
+export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly biloMediaClientAdapter: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,
@@ -28,7 +25,7 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 		const externalTools: ExternalTool[] = await this.getAllToolsWithBiloMedium(mediaSource);
 
 		if (!externalTools.length) {
-			const emptyReport = ReportFactory.buildEmptyReport();
+			const emptyReport = MediaSourceSyncReportFactory.buildEmptyReport();
 			return emptyReport;
 		}
 
@@ -59,10 +56,14 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 		externalTools: ExternalTool[],
 		metadataItems: BiloMediaQueryDataResponse[]
 	): Promise<MediaSourceSyncReport> {
-		const createSuccessReport = OperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.CREATE);
-		const updateSuccessReport = OperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE);
-		const failureReport = OperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
-		const undeliveredReport = OperationReportFactory.buildUndeliveredReport();
+		const createSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
+			MediaSourceSyncOperation.CREATE
+		);
+		const updateSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
+			MediaSourceSyncOperation.UPDATE
+		);
+		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
+		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
 			const fetchedMetadata = metadataItems.find(
@@ -109,7 +110,7 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 
 		await this.externalToolService.updateExternalTools(updatedExternalTools);
 
-		const report: MediaSourceSyncReport = ReportFactory.buildFromOperations([
+		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
 			createSuccessReport,
 			updateSuccessReport,
 			failureReport,
