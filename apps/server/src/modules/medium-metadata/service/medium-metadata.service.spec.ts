@@ -66,9 +66,9 @@ describe(MediumMetadataService.name, () => {
 			it('should get the media metadata using the vidis strategy', async () => {
 				setup();
 
-				await service.getMetadata('mediumId', 'mediaSourceId');
+				await service.getMetadataItem('mediumId', 'mediaSourceId');
 
-				expect(vidisStrategy.getMediumMetadata).toBeCalled();
+				expect(vidisStrategy.getMediumMetadataItem).toBeCalled();
 			});
 		});
 
@@ -79,7 +79,7 @@ describe(MediumMetadataService.name, () => {
 				const mediaMetadata = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(bilomedia);
 
 				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);
-				biloStrategy.getMediumMetadata.mockResolvedValue(mediaMetadata);
+				biloStrategy.getMediumMetadataItem.mockResolvedValue(mediaMetadata);
 
 				const strategyMap = new Map<MediaSourceDataFormat, MediumMetadataStrategy>([
 					[MediaSourceDataFormat.BILDUNGSLOGIN, biloStrategy],
@@ -92,7 +92,7 @@ describe(MediumMetadataService.name, () => {
 			it('should get the media metadata using the bilo strategy', async () => {
 				const { mediaMetadata } = setup();
 
-				const result = await service.getMetadata('mediumId', 'mediaSourceId');
+				const result = await service.getMetadataItem('mediumId', 'mediaSourceId');
 
 				expect(result).toEqual(mediaMetadata);
 			});
@@ -106,7 +106,7 @@ describe(MediumMetadataService.name, () => {
 			it('should throw an MediaSourceDataFormatNotFoundLoggableException', async () => {
 				setup();
 
-				const result = service.getMetadata('mediumId', 'mediaSourceId');
+				const result = service.getMetadataItem('mediumId', 'mediaSourceId');
 
 				await expect(result).rejects.toThrow(new MediaSourceNotFoundLoggableException('mediaSourceId'));
 			});
@@ -121,7 +121,7 @@ describe(MediumMetadataService.name, () => {
 			it('should throw an MediaSourceDataFormatNotFoundLoggableException', async () => {
 				setup();
 
-				const result = service.getMetadata('mediumId', 'mediaSourceId');
+				const result = service.getMetadataItem('mediumId', 'mediaSourceId');
 
 				await expect(result).rejects.toThrow(new MediaSourceDataFormatNotFoundLoggableException('mediaSourceId'));
 			});
@@ -145,7 +145,7 @@ describe(MediumMetadataService.name, () => {
 			it('should throw an MediumMetadataStrategyNotImplementedLoggableException', async () => {
 				const { mediaSourceDataFormat } = setup();
 
-				const result = service.getMetadata('mediumId', 'mediaSourceId');
+				const result = service.getMetadataItem('mediumId', 'mediaSourceId');
 
 				await expect(result).rejects.toThrow(
 					new MediumMetadataStrategyNotImplementedLoggableException(mediaSourceDataFormat)

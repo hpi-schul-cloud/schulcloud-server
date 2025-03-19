@@ -2,9 +2,12 @@ import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
+import {
+	MediumMetadataNotFoundLoggableException,
+	MediumMetadataStrategyNotImplementedLoggableException,
+} from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataStrategy } from './interface';
-import { MediumMetadataNotFoundLoggableException } from '../loggable/medium-metadata-not-found-loggable.exception';
 
 @Injectable()
 export class BiloStrategy implements MediumMetadataStrategy {
@@ -14,7 +17,7 @@ export class BiloStrategy implements MediumMetadataStrategy {
 		return MediaSourceDataFormat.BILDUNGSLOGIN;
 	}
 
-	public async getMediumMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediumMetadataDto> {
+	public async getMediumMetadataItem(mediumId: string, mediaSource: MediaSource): Promise<MediumMetadataDto> {
 		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
 			[mediumId],
 			mediaSource,
@@ -28,5 +31,9 @@ export class BiloStrategy implements MediumMetadataStrategy {
 		const mediumMetadataDto: MediumMetadataDto = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(metadataItems[0]);
 
 		return mediumMetadataDto;
+	}
+
+	public async getMediumMetadataItems(mediumIds: string[], mediaSource: MediaSource): Promise<MediumMetadataDto[]> {
+		throw new MediumMetadataStrategyNotImplementedLoggableException(MediaSourceDataFormat.BILDUNGSLOGIN);
 	}
 }

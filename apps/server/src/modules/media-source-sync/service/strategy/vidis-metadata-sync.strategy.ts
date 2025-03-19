@@ -1,33 +1,27 @@
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
-import { EncryptionService } from '@infra/encryption';
-import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from '@infra/vidis-client';
-import {
-	MediaSource,
-	MediaSourceDataFormat,
-	MediaSourceVidisConfig,
-	MediaSourceVidisConfigNotFoundLoggableException,
-} from '@modules/media-source';
+import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
+import { MediumMetadataService } from '@modules/medium-metadata';
 import { ExternalToolService } from '@modules/tool';
 import { ImageMimeType } from '@modules/tool/common';
 import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool/service';
 import { Injectable } from '@nestjs/common';
-import { AxiosResponse, isAxiosError } from 'axios';
 import {
 	MediaSourceSyncReportFactory as ReportFactory,
 	MediaSourceSyncOperationReportFactory as OperationReportFactory,
 } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
 import { MediaSourceSyncOperation } from '../../types';
+import { MediumMetadataDto } from '@modules/medium-metadata/dto';
 
 @Injectable()
 export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
-		private readonly encryptionService: EncryptionService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly externalToolValidationService: ExternalToolValidationService,
+		private readonly mediumMetadataService: MediumMetadataService,
 		private readonly logger: Logger
 	) {}
 
@@ -36,18 +30,20 @@ export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	}
 
 	public async syncAllMediaMetadata(mediaSource: MediaSource): Promise<MediaSourceSyncReport> {
-		if (!mediaSource.vidisConfig) {
-			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.sourceId, MediaSourceDataFormat.VIDIS);
-		}
-
 		const externalTools: ExternalTool[] = await this.getAllToolsWithVidisMedium(mediaSource);
-
 		if (!externalTools.length) {
 			const emptyReport = ReportFactory.buildEmptyReport();
 			return emptyReport;
 		}
 
-		const vidisMediaMetadata: OfferDTO[] = await this.fetchMediaMetadata(mediaSource.vidisConfig);
+		const mediumIds: string[] = externalTools
+			.map((externalTool: ExternalTool) => externalTool.medium?.mediumId)
+			.filter((mediumId: string | undefined): mediumId is string => !!mediumId);
+
+		const vidisMediaMetadata: MediumMetadataDto[] = await this.mediumMetadataService.getMetadataItems(
+			mediumIds,
+			mediaSource
+		);
 
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediumMetadata(externalTools, vidisMediaMetadata);
 
@@ -64,7 +60,7 @@ export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 
 	private async syncExternalToolMediumMetadata(
 		externalTools: ExternalTool[],
-		metadataItemsFromVidis: OfferDTO[]
+		metadataItemsFromVidis: MediumMetadataDto[]
 	): Promise<MediaSourceSyncReport> {
 		const updateSuccessReport = OperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE);
 		const failureReport = OperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
@@ -72,7 +68,7 @@ export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
 			const fetchedMetadata = metadataItemsFromVidis.find(
-				(metadataFromVidis: OfferDTO) => externalTool.medium?.mediumId === metadataFromVidis.offerId?.toString()
+				(metadataFromVidis: MediumMetadataDto) => externalTool.medium?.mediumId === metadataFromVidis.mediumId
 			);
 
 			if (!fetchedMetadata) {
@@ -115,20 +111,20 @@ export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 		return report;
 	}
 
-	private mapVidisMetadataToExternalToolMedium(externalTool: ExternalTool, vidisMetadata: OfferDTO): void {
-		if (vidisMetadata.offerTitle) {
-			externalTool.name = vidisMetadata.offerTitle;
+	private mapVidisMetadataToExternalToolMedium(externalTool: ExternalTool, vidisMetadata: MediumMetadataDto): void {
+		if (vidisMetadata.name !== '') {
+			externalTool.name = vidisMetadata.name;
 		}
 
-		if (vidisMetadata.offerLogo) {
-			externalTool.logo = vidisMetadata.offerLogo;
-			externalTool.logoUrl = this.buildDataUriFromBase64Image(vidisMetadata.offerLogo);
+		if (vidisMetadata.logo) {
+			externalTool.logo = vidisMetadata.logo;
+			externalTool.logoUrl = this.buildDataUriFromBase64Image(vidisMetadata.logo);
 		}
 
-		externalTool.description = vidisMetadata.offerDescription;
+		externalTool.description = vidisMetadata.description;
 
 		const medium = externalTool.medium as ExternalToolMedium;
-		medium.publisher = vidisMetadata.educationProviderOrganizationName;
+		medium.publisher = vidisMetadata.publisher;
 	}
 
 	private buildDataUriFromBase64Image(rawImage: string): string {
@@ -137,37 +133,5 @@ export class VidisMetadataSyncStrategy implements MediaSourceSyncStrategy {
 		const dataURI = `data:${contentType.valueOf()};base64,${rawImage}`;
 
 		return dataURI;
-	}
-
-	private async fetchMediaMetadata(vidisConfig: MediaSourceVidisConfig): Promise<OfferDTO[]> {
-		const vidisClient = IDMBetreiberApiFactory(
-			new Configuration({
-				basePath: vidisConfig.baseUrl,
-			})
-		);
-
-		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
-		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
-		const basicAuthEncoded = btoa(`${decryptedUsername}:${decryptedPassword}`);
-
-		try {
-			const axiosResponse: AxiosResponse<PageOfferDTO> = await vidisClient.getActivatedOffersByRegion(
-				vidisConfig.region,
-				undefined,
-				undefined,
-				{
-					headers: { Authorization: `Basic ${basicAuthEncoded}` },
-				}
-			);
-			const offerItems: OfferDTO[] = axiosResponse.data.items ?? [];
-
-			return offerItems;
-		} catch (error: unknown) {
-			if (isAxiosError(error)) {
-				throw new AxiosErrorLoggable(error, 'VIDIS_GET_OFFER_ITEMS_FAILED');
-			} else {
-				throw error;
-			}
-		}
 	}
 }

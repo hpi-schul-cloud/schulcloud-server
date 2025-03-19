@@ -6,9 +6,17 @@ import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { MediaMetadataSyncService } from './service';
 import { BiloMetadataSyncStrategy } from './service/strategy';
+import { MediumMetadataModule } from '@modules/medium-metadata';
 
 @Module({
-	imports: [BiloClientModule, LoggerModule, MediaSourceModule, OauthAdapterModule, ExternalToolModule],
+	imports: [
+		BiloClientModule,
+		LoggerModule,
+		MediaSourceModule,
+		OauthAdapterModule,
+		ExternalToolModule,
+		MediumMetadataModule,
+	],
 	providers: [MediaMetadataSyncService, BiloMetadataSyncStrategy],
 	exports: [MediaMetadataSyncService],
 })
