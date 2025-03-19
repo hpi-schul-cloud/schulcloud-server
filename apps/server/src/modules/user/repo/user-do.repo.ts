@@ -1,18 +1,18 @@
-import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import { Scope } from '@shared/repo/scope';
-import { UserDoRepo } from '../domain';
+import type { Scope } from '@shared/repo/scope';
+import type { UserDoRepo } from '../domain';
 import { UserSourceOptions } from '../domain/do/user-source-options';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
-import { UserQuery } from '../domain/query/user-query';
+import type { UserQuery } from '../domain/query/user-query';
 import { UserScope } from './scope/user.scope';
 import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
@@ -140,7 +140,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return userDos;
 	}
 
-	public mapEntityToDO(entity: User): UserDo {
+	protected mapEntityToDO(entity: User): UserDo {
 		const user: UserDo = new UserDo({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -190,7 +190,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return user;
 	}
 
-	public mapDOToEntityProperties(entityDO: UserDo): EntityData<User> {
+	protected mapDOToEntityProperties(entityDO: UserDo): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,

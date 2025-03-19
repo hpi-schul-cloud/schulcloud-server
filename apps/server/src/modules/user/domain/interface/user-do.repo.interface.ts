@@ -1,10 +1,8 @@
-import { EntityData } from '@mikro-orm/core';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { User } from '../../repo';
-import { UserDo } from '../do';
-import { UserQuery } from '../query';
+import type { Page } from '@shared/domain/domainobject';
+import type { IFindOptions } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
+import type { UserDo } from '../do';
+import type { UserQuery } from '../query';
 
 export interface UserDoRepo {
 	find(query: UserQuery, options?: IFindOptions<UserDo>): Promise<Page<UserDo>>;
@@ -23,10 +21,6 @@ export interface UserDoRepo {
 	findByExternalId(externalId: string, systemId: string): Promise<UserDo | null>;
 
 	findByEmail(email: string): Promise<UserDo[]>;
-
-	mapEntityToDO(entity: User): UserDo;
-
-	mapDOToEntityProperties(entityDO: UserDo): EntityData<User>;
 
 	findByTspUids(tspUids: string[]): Promise<UserDo[]>;
 
