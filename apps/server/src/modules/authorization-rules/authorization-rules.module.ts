@@ -1,20 +1,22 @@
-import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@modules/authorization';
+import { Module } from '@nestjs/common';
 import {
 	CourseGroupRule,
 	CourseRule,
 	GroupRule,
+	InstanceAdminRule,
 	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolRule,
 	SchoolSystemOptionsRule,
 	SubmissionRule,
+	SystemRule,
 	TaskRule,
 	TeamRule,
+	UserAdminRule,
 	UserLoginMigrationRule,
 	UserRule,
-	SystemRule,
 } from './rules';
 
 @Module({
@@ -30,11 +32,13 @@ import {
 		TaskRule,
 		TeamRule,
 		UserRule,
+		UserAdminRule,
 		UserLoginMigrationRule,
 		LegacySchoolRule,
 		SystemRule,
 		SchoolSystemOptionsRule,
 		InstanceRule,
+		InstanceAdminRule,
 	],
 	exports: [
 		SystemRule, // Why export? This is a no go!

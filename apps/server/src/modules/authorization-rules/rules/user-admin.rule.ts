@@ -37,7 +37,7 @@ export class UserAdminRule implements Rule<User> {
 		if (context.action === Action.write) {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
-		console.log('hasPermission', hasPermission);
+
 		return canExecuteUserOperations && hasPermission;
 	}
 
