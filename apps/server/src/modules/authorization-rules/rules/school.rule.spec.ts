@@ -38,7 +38,7 @@ describe('SchoolRule', () => {
 	const setupSchoolAndUser = () => {
 		const school = schoolFactory.build();
 		const user = userFactory.build({ school: schoolEntityFactory.buildWithId(undefined, school.id) });
-		const superUser = userFactory.asSuperhero([Permission.SCHOOL_EDIT_ALL]).build();
+		const superUser = userFactory.asSuperhero([Permission.INSTANCE_EDIT]).build();
 
 		return { school, user, superUser };
 	};
