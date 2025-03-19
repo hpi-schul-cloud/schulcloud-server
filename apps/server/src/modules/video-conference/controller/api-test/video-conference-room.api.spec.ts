@@ -5,6 +5,7 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { SchoolFeature } from '@modules/school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
@@ -22,7 +23,6 @@ import { VideoConferenceScope } from '../../domain';
 import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
-import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;
@@ -925,7 +925,7 @@ describe('VideoConferenceController (API)', () => {
 						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 						const userGroup = groupEntityFactory.buildWithId({
 							organization: school,
-							users: [{ role: roleViewer, user: studentUser }],
+							users: [{ role: roomViewerRole, user: studentUser }],
 						});
 						const roomMembership = roomMembershipEntityFactory.build({
 							roomId: room.id,
@@ -945,7 +945,6 @@ describe('VideoConferenceController (API)', () => {
 							userGroup,
 							roomEditorRole,
 							roomViewerRole,
-
 							videoConference,
 						]);
 						em.clear();
