@@ -7,8 +7,10 @@ import {
 } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
 
+/**
+ * Check this rule in BC-9292
+ */
 @Injectable()
 export class UserRule implements Rule<User> {
 	constructor(
@@ -26,10 +28,7 @@ export class UserRule implements Rule<User> {
 
 	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		const isOwner = user === entity;
-		const canExecuteUserOperations = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
-		]);
+		const isOwner = user.id === entity.id;
 
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, context);
@@ -38,7 +37,7 @@ export class UserRule implements Rule<User> {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
 
-		return !canExecuteUserOperations && (hasPermission || isOwner);
+		return hasPermission || isOwner;
 	}
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
