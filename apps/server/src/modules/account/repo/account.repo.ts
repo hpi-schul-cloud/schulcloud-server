@@ -4,14 +4,13 @@ import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { Account } from '../domain';
+import { Account, AccountRepo } from '../domain';
 import { AccountEntity } from './account.entity';
-import { AccountEntityToDoMapper } from './mapper';
-import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { AccountDoToEntityMapper, AccountEntityToDoMapper } from './mapper';
 import { AccountScope } from './scope/account-scope';
 
 @Injectable()
-export class AccountRepo extends BaseDomainObjectRepo<Account, AccountEntity> {
+export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEntity> implements AccountRepo {
 	constructor(protected readonly em: EntityManager) {
 		super(em);
 	}
