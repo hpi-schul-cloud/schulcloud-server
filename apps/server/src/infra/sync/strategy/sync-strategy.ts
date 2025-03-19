@@ -1,7 +1,7 @@
 import { SyncStrategyTarget } from '../sync-strategy.types';
 
 export abstract class SyncStrategy {
-	abstract getType(): SyncStrategyTarget;
+	public abstract getType(): SyncStrategyTarget;
 
-	abstract sync(): Promise<void>;
+	public abstract sync(): Promise<void>;
 }

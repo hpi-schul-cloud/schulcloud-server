@@ -1,14 +1,14 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
 import { MediaSourceLicenseType } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerTestModule } from '@modules/server';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';

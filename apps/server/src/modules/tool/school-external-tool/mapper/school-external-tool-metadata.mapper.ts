@@ -1,17 +1,17 @@
 import { ContextExternalToolCountPerContextResponse } from '../../common/controller/dto';
 import { SchoolExternalToolMetadataResponse } from '../controller/dto';
-import { SchoolExternalToolMetadata } from '../domain';
+import { SchoolExternalToolUtilization } from '../domain';
 
 export class SchoolExternalToolMetadataMapper {
 	static mapToSchoolExternalToolMetadataResponse(
-		schoolExternalToolMetadata: SchoolExternalToolMetadata
+		schoolExternalToolUtilization: SchoolExternalToolUtilization
 	): SchoolExternalToolMetadataResponse {
-		const externalToolMetadataResponse: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({
+		const externalToolUtilizationResponse: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({
 			contextExternalToolCountPerContext: new ContextExternalToolCountPerContextResponse(
-				schoolExternalToolMetadata.contextExternalToolCountPerContext
+				schoolExternalToolUtilization.contextExternalToolCountPerContext
 			),
 		});
 
-		return externalToolMetadataResponse;
+		return externalToolUtilizationResponse;
 	}
 }

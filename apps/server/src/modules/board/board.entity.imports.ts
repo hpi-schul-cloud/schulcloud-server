@@ -1,4 +1,4 @@
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -24,6 +24,7 @@ import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
+import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
@@ -48,7 +49,6 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
-import { Role } from '@shared/domain/entity/role.entity';
 
 export const ENTITIES = [
 	AccountEntity,
