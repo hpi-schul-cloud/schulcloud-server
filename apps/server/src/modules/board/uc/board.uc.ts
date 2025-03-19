@@ -72,7 +72,6 @@ export class BoardUc {
 
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
 		const boardNodeAuthorizable = await this.checkBoardAuthorization(userId, board, Action.read);
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
 		const permissions = this.getPermissions(userId, boardNodeAuthorizable);
