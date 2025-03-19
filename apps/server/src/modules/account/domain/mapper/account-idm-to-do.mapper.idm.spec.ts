@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, IdmAccount } from '../../domain';
+import { Account, IdmAccount } from '../do';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 import { AccountIdmToDoMapperIdm } from './account-idm-to-do.mapper.idm';
 

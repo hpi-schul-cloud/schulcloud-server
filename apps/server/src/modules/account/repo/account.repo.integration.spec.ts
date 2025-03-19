@@ -8,16 +8,16 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Account } from '../domain';
 import { accountDoFactory, accountFactory } from '../testing';
 import { AccountEntity } from './account.entity';
-import { AccountRepo } from './account.repo';
-import { AccountEntityToDoMapper } from './mapper';
-import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { AccountMikroOrmRepo } from './account.repo';
+import { AccountDoToEntityMapper, AccountEntityToDoMapper } from './mapper';
 
-class AccountTestRepo extends AccountRepo {
+class AccountTestRepo extends AccountMikroOrmRepo {
 	mapDOToEntityPropertiesSpec(entityDO: Account): EntityData<AccountEntity> {
 		return super.mapDOToEntityProperties(entityDO);
 	}
 }
-describe('AccountRepo', () => {
+
+describe('AccountMikroOrmRepo', () => {
 	let module: TestingModule;
 	let em: EntityManager;
 	let repo: AccountTestRepo;
