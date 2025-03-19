@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
-import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -16,7 +15,6 @@ describe('reference.loader', () => {
 	let service: ReferenceLoader;
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let taskRepo: DeepMocked<TaskRepo>;
-	let schoolRepo: DeepMocked<LegacySchoolRepo>;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let instanceService: DeepMocked<InstanceService>;
 	const entityId: EntityId = new ObjectId().toHexString();
@@ -35,10 +33,7 @@ describe('reference.loader', () => {
 					provide: TaskRepo,
 					useValue: createMock<TaskRepo>(),
 				},
-				{
-					provide: LegacySchoolRepo,
-					useValue: createMock<LegacySchoolRepo>(),
-				},
+
 				{
 					provide: SubmissionRepo,
 					useValue: createMock<SubmissionRepo>(),
@@ -53,7 +48,6 @@ describe('reference.loader', () => {
 		service = await module.get(ReferenceLoader);
 		injectionService = await module.get(AuthorizationInjectionService);
 		taskRepo = await module.get(TaskRepo);
-		schoolRepo = await module.get(LegacySchoolRepo);
 		submissionRepo = await module.get(SubmissionRepo);
 		instanceService = await module.get(InstanceService);
 	});
@@ -107,10 +101,6 @@ describe('reference.loader', () => {
 
 	it('should inject task repo', () => {
 		expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Task, taskRepo);
-	});
-
-	it('should inject school repo', () => {
-		expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.School, schoolRepo);
 	});
 
 	it('should inject submission repo', () => {

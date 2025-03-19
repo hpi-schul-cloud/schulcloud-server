@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Role } from '@modules/role/repo';
 import { Injectable } from '@nestjs/common';
-import { Role } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { TeamEntity, TeamUserEntity } from './team.entity';

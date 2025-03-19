@@ -5,7 +5,6 @@ import {
 	AuthorizationLoaderService,
 } from '@modules/authorization';
 import { InstanceService } from '@modules/instance';
-import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { SubmissionRepo, TaskRepo } from '@modules/task/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
@@ -16,14 +15,12 @@ import { EntityId } from '@shared/domain/types';
 export class ReferenceLoader {
 	constructor(
 		private readonly taskRepo: TaskRepo,
-		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly instanceService: InstanceService,
 		private readonly authorizationInjectionService: AuthorizationInjectionService
 	) {
 		const service = this.authorizationInjectionService;
 		service.injectReferenceLoader(AuthorizableReferenceType.Task, this.taskRepo);
-		service.injectReferenceLoader(AuthorizableReferenceType.School, this.schoolRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Submission, this.submissionRepo);
 		service.injectReferenceLoader(AuthorizableReferenceType.Instance, this.instanceService);
 	}

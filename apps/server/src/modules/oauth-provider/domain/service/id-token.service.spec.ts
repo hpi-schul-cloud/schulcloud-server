@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { PseudonymService } from '@modules/pseudonym/service';
+import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { UserService } from '@modules/user/service/user.service';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { pseudonymFactory } from '@testing/factory/domainobject';
 import { IdTokenCreationLoggableException } from '../error';
 import { IdToken, OauthScope } from '../interface';
 import { IdTokenService } from './id-token.service';

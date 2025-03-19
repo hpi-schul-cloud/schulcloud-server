@@ -5,11 +5,12 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService } from '@modules/oauth';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
+import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationDO } from '../../domain';
 import { UserLoginMigrationQuery } from '../../domain/interface';
@@ -222,6 +223,8 @@ export class UserLoginMigrationUc {
 			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, activeUserLoginMigration));
 		} else if (school.externalId !== externalSchoolId) {
 			throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
+		} else {
+			// school already migrated
 		}
 
 		const hasUserMigrated = this.userMigrationService.hasUserMigratedInMigrationPhase(

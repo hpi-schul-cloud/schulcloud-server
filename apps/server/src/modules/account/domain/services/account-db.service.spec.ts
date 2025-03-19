@@ -8,16 +8,14 @@ import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
-import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
 import { accountDoFactory } from '../../testing';
-import { Account } from '../account';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, IdmAccount } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {
@@ -45,7 +43,7 @@ describe('AccountDbService', () => {
 			providers: [
 				AccountServiceDb,
 				{
-					provide: AccountRepo,
+					provide: ACCOUNT_REPO,
 					useValue: createMock<AccountRepo>(),
 				},
 				{
@@ -62,12 +60,12 @@ describe('AccountDbService', () => {
 				},
 			],
 		}).compile();
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
 		configServiceMock = module.get(ConfigService);
 		idmServiceMock = module.get(IdentityManagementService);
 
-		await setupEntities([AccountEntity, User]);
+		await setupEntities([User]);
 	});
 
 	beforeEach(() => {
@@ -325,7 +323,7 @@ describe('AccountDbService', () => {
 					if (mockTeacherUser.id === userId) {
 						return Promise.resolve(mockTeacherAccount);
 					}
-					return Promise.reject(new EntityNotFoundError(AccountEntity.name));
+					return Promise.reject(new EntityNotFoundError('AccountEntity'));
 				});
 				return {};
 			};
@@ -892,7 +890,7 @@ describe('AccountDbService', () => {
 		describe('when deleting non existing account', () => {
 			const setup = () => {
 				accountRepo.deleteById.mockImplementationOnce(() => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 			};
 
