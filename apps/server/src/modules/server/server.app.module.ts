@@ -48,10 +48,12 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { MediumMetadataApiModule } from '../medium-metadata/medium-metadata-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -100,6 +102,8 @@ const serverModules = [
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	MediaSourceApiModule,
+	MediumMetadataApiModule,
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,

@@ -28,10 +28,10 @@ describe(BiloMediaQueryBadResponseLoggable.name, () => {
 
 			const result = loggable.getLogMessage();
 
-			expect(result).toEqual({
-				message: `${expectedLoggableReports.length} response(s) is/are found with bad response from bilo media query`,
+			expect(result).toEqual<LogMessage>({
+				message: `${expectedLoggableReports.length} bad response(s) from bilo media query is/are found`,
 				data: { reports: JSON.stringify(expectedLoggableReports) },
-			} as LogMessage);
+			});
 		});
 	});
 });

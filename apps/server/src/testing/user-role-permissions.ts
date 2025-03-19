@@ -154,4 +154,5 @@ export const superheroPermissions = [
 	Permission.INSTANCE_EDIT,
 	Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 	Permission.CREATE_SUPPORT_JWT,
+	Permission.MEDIA_SOURCE_ADMIN,
 ];
