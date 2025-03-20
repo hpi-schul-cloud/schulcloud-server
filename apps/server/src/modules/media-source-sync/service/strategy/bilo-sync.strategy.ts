@@ -1,12 +1,14 @@
-import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
-import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolValidationService } from '@modules/tool/external-tool/service';
+import { ExternalToolLogoService } from '@modules/tool/external-tool/service/external-tool-logo.service';
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
+import { ValidationErrorLoggableException } from '../../loggable/validation-error-loggable.exception';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
@@ -14,6 +16,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly biloMediaClientAdapter: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,
+		private readonly externalToolValidationService: ExternalToolValidationService,
+		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly logger: Logger
 	) {}
 
@@ -81,15 +85,15 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			}
 
 			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
-
+			let updatedTool = externalTool;
 			try {
-				await this.mapBiloMetadataToExternalTool(externalTool, fetchedMetadata);
+				updatedTool = await this.buildExternalToolMetadataUpdate(externalTool, fetchedMetadata);
 			} catch (error: unknown) {
 				this.logger.debug(
-					new ErrorLoggable(error, {
-						mediumId: externalTool.medium?.mediumId as string,
-						mediumMediaSourceId: externalTool.medium?.mediaSourceId as string,
-					})
+					new ValidationErrorLoggableException(
+						externalTool.medium?.mediumId as string,
+						externalTool.medium?.mediaSourceId as string
+					)
 				);
 				failureReport.count += 1;
 				return null;
@@ -101,7 +105,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 				updateSuccessReport.count += 1;
 			}
 
-			return externalTool;
+			return updatedTool;
 		});
 
 		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
@@ -130,19 +134,23 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		return isUpToDate;
 	}
 
-	private async mapBiloMetadataToExternalTool(
+	private async buildExternalToolMetadataUpdate(
 		externalTool: ExternalTool,
-		metadataItem: BiloMediaQueryDataResponse
-	): Promise<void> {
-		externalTool.name = metadataItem.title;
-		externalTool.description = metadataItem.description;
-		externalTool.logoUrl = metadataItem.coverSmall.href;
+		metadata: BiloMediaQueryDataResponse
+	): Promise<ExternalTool> {
+		externalTool.name = metadata.title;
+		externalTool.description = metadata.description;
+		externalTool.logoUrl = metadata.coverSmall.href;
+		externalTool.logo = await this.externalToolLogoService.fetchLogo({ logoUrl: metadata.cover.href });
 
-		const medium = externalTool.medium as ExternalToolMedium;
-		medium.publisher = metadataItem.publisher;
-		medium.metadataModifiedAt = new Date(metadataItem.modified);
+		if (externalTool.medium) {
+			externalTool.medium.publisher = metadata.publisher;
+			externalTool.medium.metadataModifiedAt = new Date(metadata.modified);
+		}
 
-		await this.updateExternalToolThumbnail(externalTool, metadataItem.cover.href);
+		await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
+
+		return externalTool;
 	}
 
 	private async updateExternalToolThumbnail(
