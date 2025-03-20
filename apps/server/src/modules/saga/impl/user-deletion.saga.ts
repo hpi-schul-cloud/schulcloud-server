@@ -1,10 +1,16 @@
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SagaStepRegistryService } from '../service';
-import { Saga } from '../type';
+import { SagaRegistryService, SagaStepRegistryService } from '../service';
+import { Saga } from '../type/saga';
 
+@Injectable()
 export class UserDeletionSaga extends Saga<'userDeletion'> {
-	constructor(protected readonly stepRegistry: SagaStepRegistryService) {
-		super('userDeletion', stepRegistry);
+	constructor(
+		private readonly stepRegistry: SagaStepRegistryService,
+		private readonly sagaRegistry: SagaRegistryService
+	) {
+		super('userDeletion');
+		sagaRegistry.registerSaga(this);
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<boolean> {

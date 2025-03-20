@@ -1,17 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { ModuleName, SagaStep, SagaType, StepType } from '../type';
-import { SagaRegistryService, SagaStepRegistryService } from '.';
-import { UserDeletionSaga } from '../impl';
+import type { ModuleName, SagaStep, SagaType, StepType } from '../type';
+import { SagaRegistryService } from './saga-registry.service';
+import { SagaStepRegistryService } from './saga-step-registry.service';
 
 @Injectable()
 export class SagaService {
 	constructor(
 		private readonly sagaRegistry: SagaRegistryService,
 		private readonly sagaStepRegistry: SagaStepRegistryService
-	) {
-		const userDeletionSaga = new UserDeletionSaga(sagaStepRegistry);
-		this.sagaRegistry.registerSaga(userDeletionSaga);
-	}
+	) {}
 
 	public registerStep<T extends keyof StepType>(moduleName: ModuleName, step: SagaStep<T>): void {
 		this.sagaStepRegistry.registerStep(moduleName, step);

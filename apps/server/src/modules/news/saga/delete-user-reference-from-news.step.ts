@@ -35,6 +35,7 @@ export class DeleteUserReferenceFromNewsStep extends SagaStep<'deleteUserReferen
 	}
 
 	public compensate(params: { userId: EntityId }): Promise<void> {
-		throw new Error('Method not implemented.');
+		console.log('Compensating deleteUserReferenceFromNewsStep with params:', params);
+		return Promise.resolve();
 	}
 }

@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { ModuleName, SagaStep, StepType } from '../type';
+import type { ModuleName, SagaStep, StepType } from '../type';
 
 @Injectable()
 export class SagaStepRegistryService {
 	private steps: Map<ModuleName, Map<keyof StepType, SagaStep<keyof StepType>>> = new Map();
 
 	public registerStep<T extends keyof StepType>(moduleName: ModuleName, step: SagaStep<T>): void {
-		if (!this.steps.has(moduleName)) {
-			this.steps.set(moduleName, new Map());
+		let moduleSteps = this.steps.get(moduleName);
+		if (!moduleSteps) {
+			moduleSteps = new Map<keyof StepType, SagaStep<keyof StepType>>();
+			this.steps.set(moduleName, moduleSteps);
 		}
-		this.steps.get(moduleName)!.set(step.name, step);
+		moduleSteps.set(step.name, step);
 	}
 
 	public hasStep(moduleName: ModuleName, name: keyof StepType): boolean {
@@ -23,7 +25,7 @@ export class SagaStepRegistryService {
 		}
 	}
 
-	async executeStep<T extends keyof StepType>(
+	public executeStep<T extends keyof StepType>(
 		moduleName: ModuleName,
 		name: T,
 		params: StepType[T]['params']

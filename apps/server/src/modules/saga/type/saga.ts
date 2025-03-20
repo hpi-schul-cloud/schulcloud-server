@@ -1,5 +1,4 @@
 import { EntityId } from '@shared/domain/types';
-import { SagaStepRegistryService } from '../service';
 
 export interface SagaType {
 	userDeletion: { params: { userId: EntityId }; result: boolean };
@@ -9,7 +8,7 @@ export interface SagaType {
 }
 
 export abstract class Saga<T extends keyof SagaType> {
-	constructor(public readonly name: T, protected readonly stepRegistry: SagaStepRegistryService) {}
+	constructor(public readonly name: T) {}
 
 	public abstract execute(params: SagaType[T]['params']): Promise<SagaType[T]['result']>;
 }

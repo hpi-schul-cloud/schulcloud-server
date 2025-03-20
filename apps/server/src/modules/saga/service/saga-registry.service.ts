@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Saga, SagaType } from '../type';
+import type { Saga, SagaType } from '../type';
 import { SagaStepRegistryService } from './saga-step-registry.service';
 
 @Injectable()
@@ -8,11 +8,11 @@ export class SagaRegistryService {
 
 	constructor(private stepRegistry: SagaStepRegistryService) {}
 
-	registerSaga<T extends keyof SagaType>(saga: Saga<T>): void {
+	public registerSaga<T extends keyof SagaType>(saga: Saga<T>): void {
 		this.sagas.set(saga.name, saga);
 	}
 
-	async executeSaga<T extends keyof SagaType>(name: T, params: SagaType[T]['params']): Promise<SagaType[T]['result']> {
+	public executeSaga<T extends keyof SagaType>(name: T, params: SagaType[T]['params']): Promise<SagaType[T]['result']> {
 		const saga = this.sagas.get(name);
 		if (!saga) {
 			throw new Error(`Saga ${name} is not registered.`);

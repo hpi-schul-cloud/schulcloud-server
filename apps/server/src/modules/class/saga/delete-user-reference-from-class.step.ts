@@ -1,9 +1,9 @@
-import { SagaService, SagaStep } from '@modules/saga';
-import { EntityId } from '@shared/domain/types';
-import { ClassesRepo } from '../repo';
-import { Class } from '../domain';
 import { DomainName } from '@modules/deletion';
+import { SagaService, SagaStep } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { Class } from '../domain';
+import { ClassesRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserReferenceFromClassStep extends SagaStep<'deleteUserReference'> {
@@ -16,8 +16,6 @@ export class DeleteUserReferenceFromClassStep extends SagaStep<'deleteUserRefere
 		const { userId } = params;
 
 		const domainObjects = await this.classesRepo.findAllByUserId(userId);
-
-		const classesIds = domainObjects.map((domainObject) => domainObject.id);
 
 		const updatedClasses: Class[] = domainObjects.map((domainObject) => {
 			if (domainObject.userIds !== undefined) {
@@ -43,6 +41,7 @@ export class DeleteUserReferenceFromClassStep extends SagaStep<'deleteUserRefere
 	}
 
 	public compensate(params: { userId: EntityId }): Promise<void> {
-		throw new Error('Method not implemented.');
+		console.log('Compensating deleteUserReferenceFromClassStep with params:', params);
+		return Promise.resolve();
 	}
 }
