@@ -5,13 +5,12 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
-import { Instance } from '@modules/instance';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 
 @Injectable()
-export class InstanceRule implements Rule<Instance> {
+export class UserAdminRule implements Rule<User> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -20,13 +19,17 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isApplicable = object instanceof Instance;
+		const isApplicable = object instanceof User;
 
 		return isApplicable;
 	}
 
-	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
 		let hasPermission = false;
+
+		const canExecuteUserOperations = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
 
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, context);
@@ -35,7 +38,7 @@ export class InstanceRule implements Rule<Instance> {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
 
-		return hasPermission;
+		return canExecuteUserOperations && hasPermission;
 	}
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
@@ -48,7 +51,10 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = false;
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_EDIT,
+			...context.requiredPermissions,
+		]);
 
 		return hasPermission;
 	}
