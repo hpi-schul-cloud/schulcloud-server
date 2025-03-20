@@ -12,11 +12,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
-import { AccountEntity, AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountRepo } from '../../repo';
+import { AccountEntity, AccountMikroOrmRepo } from '../../repo';
 import { accountFactory } from '../../testing';
-import { Account } from '../account';
-import { AccountSave } from '../account-save';
-import { IdmAccount } from '../idm-account';
+import { Account, AccountSave, IdmAccount } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -91,7 +91,10 @@ describe('AccountService Integration', () => {
 				AccountService,
 				AccountServiceIdm,
 				AccountServiceDb,
-				AccountRepo,
+				{
+					provide: ACCOUNT_REPO,
+					useValue: AccountMikroOrmRepo,
+				},
 				{
 					provide: KeycloakIdentityManagementService,
 					useValue: createMock<KeycloakIdentityManagementService>(),
@@ -114,7 +117,7 @@ describe('AccountService Integration', () => {
 		}).compile();
 		accountService = module.get(AccountService);
 		identityManagementService = module.get(IdentityManagementService);
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		em = module.get(EntityManager);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
 		isIdmReachable = await keycloakAdminService.testKcConnection();

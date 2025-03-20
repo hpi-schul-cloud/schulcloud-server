@@ -6,12 +6,14 @@ import { biloMediaQueryDataResponseFactory } from './bilo-media-query-data.respo
 export const biloMediaQueryResponseFactory = Factory.define<BiloMediaQueryResponse>(({ sequence }) => {
 	const mediumId = `medium-id-${sequence}`;
 
+	const query: BiloMediaQueryBodyParams = {
+		id: mediumId,
+	};
+
 	const response: BiloMediaQueryResponse = {
-		query: {
-			id: mediumId,
-		} as BiloMediaQueryBodyParams,
 		status: 200,
 		data: biloMediaQueryDataResponseFactory.build({ id: mediumId }),
+		query,
 	};
 
 	return response;

@@ -6,9 +6,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo';
-import { AccountSave } from '../account-save';
-import { IdmAccount } from '../idm-account';
+import { AccountSave, IdmAccount } from '../do';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 

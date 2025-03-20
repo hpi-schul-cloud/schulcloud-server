@@ -1,9 +1,9 @@
 import { ScanStatus } from '../../entity';
 
 export class ScanResultDto {
-	status: ScanStatus;
+	public status: ScanStatus;
 
-	reason: string;
+	public reason: string;
 
 	constructor(props: ScanResultDto) {
 		this.status = props.status;
