@@ -169,7 +169,7 @@ export class CommonCartridgeExportMapper {
 		return {
 			type: CommonCartridgeResourceType.WEB_LINK,
 			identifier: createIdentifier(element.id),
-			title: element.content.title,
+			title: element.content.title ? element.content.title : element.content.url,
 			url: element.content.url,
 		};
 	}
