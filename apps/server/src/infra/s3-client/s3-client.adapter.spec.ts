@@ -1,4 +1,4 @@
-import { ListObjectsV2CommandOutput, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
+import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
@@ -310,7 +310,7 @@ describe('S3ClientAdapter', () => {
 			);
 		});
 
-		it('should return empty array on error with Code "NoSuchKey"', async () => {
+		it('should return undefined on error with Code "NoSuchKey"', async () => {
 			const { pathToFile } = setup();
 
 			// @ts-expect-error should run into error
@@ -318,7 +318,7 @@ describe('S3ClientAdapter', () => {
 
 			const res = await service.moveToTrash([pathToFile]);
 
-			expect(res).toEqual([]);
+			expect(res).toEqual(undefined);
 		});
 
 		it('should throw an InternalServerErrorException on error', async () => {
@@ -334,12 +334,11 @@ describe('S3ClientAdapter', () => {
 					const { pathToFile, bucket } = createParameter();
 					const filePath = 'directory/test.txt';
 
-					const expectedResponse: ListObjectsV2CommandOutput = {
+					const expectedResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
 						IsTruncated: false,
 						KeyCount: 1,
-						$metadata: {},
-					};
+					});
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
 
@@ -374,24 +373,23 @@ describe('S3ClientAdapter', () => {
 					const { pathToFile, bucket } = createParameter();
 					const filePath = 'directory/test.txt';
 
-					const expectedResponse: ListObjectsV2CommandOutput = {
+					const expectedResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
 						IsTruncated: true,
 						KeyCount: 1,
-						$metadata: {},
 						NextContinuationToken: 'test',
-					};
+					});
+
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
 					const spyMoveToTrash = jest.spyOn(service, 'moveToTrash');
-					spyMoveToTrash.mockResolvedValueOnce([]);
+					spyMoveToTrash.mockResolvedValueOnce();
 
-					const expectedNextResponse: ListObjectsV2CommandOutput = {
+					const expectedNextResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
 						IsTruncated: false,
 						KeyCount: 1,
-						$metadata: {},
-					};
+					});
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedNextResponse);
 
@@ -450,7 +448,7 @@ describe('S3ClientAdapter', () => {
 					const { pathToFile, bucket } = createParameter();
 					const filePath = 'directory/test.txt';
 
-					const expectedResponse = createListObjectsV2CommandOutput([{ Key: filePath }]);
+					const expectedResponse = createListObjectsV2CommandOutput.build({ Contents: [{ Key: filePath }] });
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
 
@@ -489,25 +487,25 @@ describe('S3ClientAdapter', () => {
 					const { pathToFile, bucket } = createParameter();
 					const filePath = 'directory/test.txt';
 
-					const expectedResponse: ListObjectsV2CommandOutput = {
+					const expectedResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
 						IsTruncated: true,
 						KeyCount: 1,
-						$metadata: {},
 						NextContinuationToken: 'test',
-					};
+					});
+
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedResponse);
 					const spyDelete = jest.spyOn(service, 'delete');
 					// @ts-expect-error ignore parameter type of mock function
 					spyDelete.mockResolvedValueOnce({});
 
-					const expectedNextResponse: ListObjectsV2CommandOutput = {
+					const expectedNextResponse = createListObjectsV2CommandOutput.build({
 						Contents: [{ Key: filePath }],
 						IsTruncated: false,
 						KeyCount: 1,
-						$metadata: {},
-					};
+					});
+
 					// @ts-expect-error ignore parameter type of mock function
 					client.send.mockResolvedValueOnce(expectedNextResponse);
 
@@ -540,8 +538,9 @@ describe('S3ClientAdapter', () => {
 			describe('when contents is undefined', () => {
 				const setup = () => {
 					const { pathToFile } = createParameter();
+					const expectedResponse = createListObjectsV2CommandOutput.build({});
 					// @ts-expect-error ignore parameter type of mock function
-					client.send.mockResolvedValueOnce({});
+					client.send.mockResolvedValueOnce(expectedResponse);
 
 					return { pathToFile };
 				};
@@ -604,12 +603,11 @@ describe('S3ClientAdapter', () => {
 				const filePath = 'directory/test.txt';
 				const error = new Error('S3ClientAdapter:delete');
 
-				const expectedResponse: ListObjectsV2CommandOutput = {
+				const expectedResponse = createListObjectsV2CommandOutput.build({
 					Contents: [{ Key: filePath }],
 					IsTruncated: false,
 					KeyCount: 1,
-					$metadata: {},
-				};
+				});
 				// @ts-expect-error ignore parameter type of mock function
 				client.send.mockResolvedValueOnce(expectedResponse);
 
