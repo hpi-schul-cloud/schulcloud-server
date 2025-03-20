@@ -20,9 +20,9 @@ export class InstanceAdminRule implements Rule<Instance> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof Instance;
+		const isApplicable = object instanceof Instance;
 
-		return isMatched;
+		return isApplicable;
 	}
 
 	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
@@ -56,6 +56,7 @@ export class InstanceAdminRule implements Rule<Instance> {
 			Permission.INSTANCE_EDIT,
 			...context.requiredPermissions,
 		]);
+
 		return hasPermission;
 	}
 }

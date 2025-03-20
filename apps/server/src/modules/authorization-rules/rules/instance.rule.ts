@@ -7,7 +7,8 @@ import {
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
 import { User } from '@modules/user/repo';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class InstanceRule implements Rule<Instance> {
@@ -19,9 +20,9 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof Instance;
+		const isApplicable = object instanceof Instance;
 
-		return isMatched;
+		return isApplicable;
 	}
 
 	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
@@ -31,14 +32,23 @@ export class InstanceRule implements Rule<Instance> {
 			hasPermission = this.hasReadAccess(user, context);
 		}
 		if (context.action === Action.write) {
-			throw new NotImplementedException('Action is not implemented.');
+			hasPermission = this.hasWriteAccess(user, context);
 		}
 
 		return hasPermission;
 	}
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_VIEW,
+			...context.requiredPermissions,
+		]);
+
+		return hasPermission;
+	}
+
+	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
+		const hasPermission = false;
 
 		return hasPermission;
 	}

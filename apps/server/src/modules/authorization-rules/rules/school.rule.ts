@@ -37,7 +37,6 @@ export class SchoolRule implements Rule<School> {
 		if (context.action === Action.write) {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
-
 		return hasPermission && isUsersSchool;
 	}
 

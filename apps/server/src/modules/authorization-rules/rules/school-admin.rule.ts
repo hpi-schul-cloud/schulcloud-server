@@ -56,6 +56,7 @@ export class SchoolAdminRule implements Rule<School> {
 			Permission.INSTANCE_EDIT,
 			...context.requiredPermissions,
 		]);
+
 		return hasPermission;
 	}
 }

@@ -19,9 +19,9 @@ export class UserAdminRule implements Rule<User> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof User;
+		const isApplicable = object instanceof User;
 
-		return isMatched;
+		return isApplicable;
 	}
 
 	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
@@ -55,6 +55,7 @@ export class UserAdminRule implements Rule<User> {
 			Permission.INSTANCE_EDIT,
 			...context.requiredPermissions,
 		]);
+
 		return hasPermission;
 	}
 }
