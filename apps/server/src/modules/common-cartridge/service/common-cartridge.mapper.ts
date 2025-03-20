@@ -80,9 +80,7 @@ export class CommonCartridgeExportMapper {
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
-					title: `${(lessonContent.content as ComponentEtherpadPropsDto).title} - ${
-						(lessonContent.content as ComponentEtherpadPropsDto).description
-					}`,
+					title: `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsDto).description}`,
 					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				};
 			case LessonContentDtoComponentValues.RESOURCES: {
