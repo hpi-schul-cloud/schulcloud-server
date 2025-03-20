@@ -4,11 +4,9 @@ import {
 	CourseGroupRule,
 	CourseRule,
 	GroupRule,
-	InstanceAdminRule,
 	InstanceRule,
 	LegacySchoolRule,
 	LessonRule,
-	SchoolAdminRule,
 	SchoolRule,
 	SchoolSystemOptionsRule,
 	SubmissionRule,
@@ -27,7 +25,6 @@ import {
 		CourseRule,
 		GroupRule,
 		LessonRule,
-		SchoolAdminRule,
 		SchoolRule,
 		SubmissionRule,
 		TaskRule,
@@ -38,7 +35,6 @@ import {
 		SystemRule,
 		SchoolSystemOptionsRule,
 		InstanceRule,
-		InstanceAdminRule,
 	],
 	exports: [
 		SystemRule, // Why export? This is a no go!

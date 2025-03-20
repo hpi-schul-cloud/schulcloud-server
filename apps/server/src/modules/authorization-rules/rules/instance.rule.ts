@@ -20,7 +20,7 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof Instance && !user.resolvePermissions().includes('INSTANCE_VIEW');
+		const isMatched = object instanceof Instance;
 
 		return isMatched;
 	}

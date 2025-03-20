@@ -14,7 +14,7 @@ export class SchoolRule implements Rule<School> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isApplicable = object instanceof School && !user.resolvePermissions().includes(Permission.SCHOOL_CREATE);
+		const isApplicable = object instanceof School;
 
 		return isApplicable;
 	}
