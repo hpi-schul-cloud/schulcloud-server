@@ -15,13 +15,13 @@ import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { pseudonymFactory } from '@testing/factory/domainobject';
 import { ObjectId } from 'bson';
 import { ExternalToolPseudonymEntity } from '../entity';
-import { ExternalToolPseudonymRepo } from '../repo';
+import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
+import { pseudonymFactory } from '../testing';
 import { PseudonymService } from './pseudonym.service';
 
 describe('PseudonymService', () => {

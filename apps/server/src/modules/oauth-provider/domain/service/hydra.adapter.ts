@@ -6,10 +6,10 @@ import { firstValueFrom, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { URL } from 'url';
 import { IOauthProviderFeatures, OauthProviderFeatures } from '../../oauth-provider-config';
+import { HydraOauthFailedLoggableException } from '../error';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
-	HydraOauthFailedLoggableException,
 	IntrospectResponse,
 	ProviderConsentResponse,
 	ProviderConsentSessionResponse,
@@ -17,7 +17,7 @@ import {
 	ProviderOauthClient,
 	ProviderRedirectResponse,
 	RejectRequestBody,
-} from '../index';
+} from '../interface';
 import { OauthProviderService } from './oauth-provider.service';
 
 @Injectable()

@@ -1,5 +1,4 @@
 import { Logger } from '@core/logger';
-import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
@@ -40,7 +39,7 @@ export class UsersAdminService {
 			userId
 		)) as UserResponse[];
 		if (user.length < 1) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 		return new UserResponse(user[0]);
 	}

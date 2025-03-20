@@ -1,5 +1,5 @@
+import { RoomRole, RoleName } from '@modules/role';
 import { ApiProperty } from '@nestjs/swagger';
-import { RoleName, RoomRole } from '@shared/domain/interface';
 import { IsArray, IsEnum, IsMongoId } from 'class-validator';
 
 export type AssignableRoomRole = Exclude<RoomRole, RoleName.ROOMOWNER>;

@@ -3,7 +3,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { LessonCopyService } from '@modules/lesson/service';
+import { LessonCopyService } from '@modules/lesson';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
@@ -11,7 +11,8 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { ToolConfig } from '@modules/tool/tool-config';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -35,7 +36,7 @@ describe('course copy service', () => {
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let userRepo: DeepMocked<UserRepo>;
+	let userService: DeepMocked<UserService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
 
@@ -49,8 +50,8 @@ describe('course copy service', () => {
 			providers: [
 				CourseCopyService,
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: CourseService,
@@ -77,8 +78,8 @@ describe('course copy service', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: ContextExternalToolService,
@@ -98,7 +99,7 @@ describe('course copy service', () => {
 		boardCopyService = module.get(BoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
-		userRepo = module.get(UserRepo);
+		userService = module.get(UserService);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		configService = module.get(ConfigService);
 	});
@@ -124,9 +125,10 @@ describe('course copy service', () => {
 				},
 			});
 
-			userRepo.findById.mockResolvedValue(user);
+			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			courseService.findById.mockResolvedValue(course);
 			courseService.findAllByUserId.mockResolvedValue(allCourses);
+
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			roomsService.updateLegacyBoard.mockResolvedValue(originalBoard);
 			contextExternalToolService.findAllByContext.mockResolvedValue(tools);
@@ -164,7 +166,7 @@ describe('course copy service', () => {
 		it('should fetch the user', async () => {
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(userRepo.findById).toBeCalledWith(user.id, true);
+			expect(userService.getUserEntityWithRoles).toBeCalledWith(user.id);
 		});
 
 		it('should fetch original course', async () => {
@@ -301,7 +303,7 @@ describe('course copy service', () => {
 
 			const destinationSchool = schoolEntityFactory.buildWithId();
 			const targetUser = userFactory.build({ school: destinationSchool });
-			userRepo.findById.mockResolvedValue(targetUser);
+			userService.getUserEntityWithRoles.mockResolvedValue(targetUser);
 
 			const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
 			const courseCopy = status.copyEntity as CourseEntity;
@@ -474,7 +476,7 @@ describe('course copy service', () => {
 			const course = allCourses[0];
 			const originalBoard = boardFactory.build({ course });
 
-			userRepo.findById.mockResolvedValue(user);
+			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			courseService.findById.mockResolvedValue(course);
 			courseService.findAllByUserId.mockResolvedValue(allCourses);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
@@ -533,9 +535,11 @@ describe('course copy service', () => {
 		const setup = () => {
 			const user = userFactory.build();
 			const course = courseEntityFactory.build();
+
+			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			courseService.findById.mockResolvedValue(course);
 			courseService.findAllByUserId.mockResolvedValue([course]);
-			userRepo.findById.mockResolvedValue(user);
+
 			// boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			// roomsService.updateBoard.mockResolvedValue(originalBoard);
 			const boardCopy = boardFactory.build();
@@ -557,7 +561,7 @@ describe('course copy service', () => {
 				const { course } = setup();
 				const destinationSchool = schoolEntityFactory.buildWithId();
 				const targetUser = userFactory.build({ school: destinationSchool });
-				userRepo.findById.mockResolvedValue(targetUser);
+				userService.getUserEntityWithRoles.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
 				const courseCopy = status.copyEntity as CourseEntity;
 
@@ -568,7 +572,7 @@ describe('course copy service', () => {
 				const { course } = setup();
 				const destinationSchool = schoolEntityFactory.buildWithId();
 				const targetUser = userFactory.build({ school: destinationSchool });
-				userRepo.findById.mockResolvedValue(targetUser);
+				userService.getUserEntityWithRoles.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
 				const courseCopy = status.copyEntity as CourseEntity;
 
@@ -629,7 +633,7 @@ describe('course copy service', () => {
 			courseService.findById.mockResolvedValue(originalCourse);
 			courseService.findAllByUserId.mockResolvedValue([originalCourse]);
 
-			userRepo.findById.mockResolvedValue(user);
+			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			roomsService.updateLegacyBoard.mockResolvedValue(originalBoard);
 
@@ -674,7 +678,7 @@ describe('course copy service', () => {
 			courseService.findById.mockResolvedValue(originalCourse);
 			courseService.findAllByUserId.mockResolvedValue([originalCourse]);
 
-			userRepo.findById.mockResolvedValue(user);
+			userService.getUserEntityWithRoles.mockResolvedValue(user);
 			boardRepo.findByCourseId.mockResolvedValue(originalBoard);
 			roomsService.updateLegacyBoard.mockResolvedValue(originalBoard);
 

@@ -4,9 +4,9 @@ import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonCopyParentParams, LessonCopyService, LessonService } from '@modules/lesson';
+import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { LessonEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { EntityId } from '@shared/domain/types';
 

@@ -8,13 +8,13 @@ import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { RoomModule } from '@modules/room';
 import { RoomMembershipModule } from '@modules/room-membership';
+import { TeamRepo } from '@modules/team/repo';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { TeamsRepo } from '@shared/repo/teams';
-import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import { BBBService } from './bbb';
 import { VideoConferenceDeprecatedController } from './controller';
+import { VideoConferenceRepo } from './repo';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
 
@@ -38,7 +38,7 @@ import { VideoConferenceDeprecatedUc } from './uc';
 		BBBService,
 		VideoConferenceRepo,
 		// TODO: N21-1010 clean up video conferences - remove repos
-		TeamsRepo,
+		TeamRepo,
 		VideoConferenceService,
 		// TODO: N21-885 remove VideoConferenceDeprecatedUc from providers
 		VideoConferenceDeprecatedUc,

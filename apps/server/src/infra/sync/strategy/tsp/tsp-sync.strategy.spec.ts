@@ -27,15 +27,15 @@ import {
 	oauthDataDtoFactory,
 	provisioningSystemDtoFactory,
 } from '@modules/provisioning/testing';
+import { RoleName } from '@modules/role';
 import { School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { System, SystemService, SystemType } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';

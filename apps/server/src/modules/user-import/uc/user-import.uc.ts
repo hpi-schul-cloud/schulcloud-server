@@ -2,19 +2,19 @@ import { Logger } from '@core/logger';
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationNotActiveLoggableException } from '@modules/user-import/loggable/user-login-migration-not-active.loggable-exception';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
+import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isError } from 'lodash';
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
-import { User, UserRepo } from '@modules/user/repo';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
@@ -50,7 +50,6 @@ export class UserImportUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemService: SystemService,
-		private readonly userRepo: UserRepo,
 		private readonly userService: UserService,
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
@@ -96,7 +95,7 @@ export class UserImportUc {
 		this.userImportService.checkFeatureEnabled(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
-		const userMatch = await this.userRepo.findById(userMatchId, true);
+		const userMatch = await this.userService.getUserEntityWithRoles(userMatchId);
 
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
@@ -169,8 +168,7 @@ export class UserImportUc {
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		// TODO Change to UserService to fix this workaround
-		const unmatchedCountedUsers = await this.userRepo.findForImportUser(currentUser.school, query, options);
+		const unmatchedCountedUsers = await this.userService.findForImportUser(currentUser.school, query, options);
 
 		return unmatchedCountedUsers;
 	}
@@ -357,7 +355,7 @@ export class UserImportUc {
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
-		const currentUser = await this.userRepo.findById(currentUserId, true);
+		const currentUser = await this.userService.getUserEntityWithRoles(currentUserId);
 		this.authorizationService.checkAllPermissions(currentUser, [permission]);
 
 		return currentUser;
@@ -390,7 +388,7 @@ export class UserImportUc {
 		account.password = undefined;
 		account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
 
-		await this.userRepo.save(user);
+		await this.userService.saveEntity(user);
 		await this.accountService.save(account);
 		await this.importUserRepo.delete(importUser);
 	}

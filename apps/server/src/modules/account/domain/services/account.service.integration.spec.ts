@@ -5,19 +5,18 @@ import { KeycloakAdministrationService } from '@infra/identity-management/keyclo
 import { KeycloakIdentityManagementService } from '@infra/identity-management/keycloak/service/keycloak-identity-management.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { UserRepo } from '@modules/user/repo';
+import { UserModule } from '@modules/user';
 import { ConfigModule } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
-import { Account, AccountSave } from '..';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountEntity, AccountMikroOrmRepo } from '../../repo';
 import { accountFactory } from '../../testing';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, AccountSave, IdmAccount } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -74,6 +73,7 @@ describe('AccountService Integration', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				IdentityManagementModule,
+				UserModule,
 				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 				ConfigModule.forRoot({
 					isGlobal: true,
@@ -91,8 +91,10 @@ describe('AccountService Integration', () => {
 				AccountService,
 				AccountServiceIdm,
 				AccountServiceDb,
-				AccountRepo,
-				UserRepo,
+				{
+					provide: ACCOUNT_REPO,
+					useValue: AccountMikroOrmRepo,
+				},
 				{
 					provide: KeycloakIdentityManagementService,
 					useValue: createMock<KeycloakIdentityManagementService>(),
@@ -115,7 +117,7 @@ describe('AccountService Integration', () => {
 		}).compile();
 		accountService = module.get(AccountService);
 		identityManagementService = module.get(IdentityManagementService);
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		em = module.get(EntityManager);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
 		isIdmReachable = await keycloakAdminService.testKcConnection();

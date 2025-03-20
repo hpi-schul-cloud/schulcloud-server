@@ -35,7 +35,7 @@ import { SharingApiModule } from '@modules/sharing/sharing-api.module';
 import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
-import { TeamsApiModule } from '@modules/teams/teams-api.module';
+import { TeamApiModule } from '@modules/team/team-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule } from '@modules/user-import';
 import { UserLicenseModule } from '@modules/user-license';
@@ -48,10 +48,12 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { MediumMetadataApiModule } from '../medium-metadata/medium-metadata-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -93,13 +95,15 @@ const serverModules = [
 	UserLoginMigrationApiModule,
 	BoardApiModule,
 	GroupApiModule,
-	TeamsApiModule,
+	TeamApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
 	MeApiModule,
 	MediaBoardApiModule,
+	MediaSourceApiModule,
+	MediumMetadataApiModule,
 	CollaborativeTextEditorApiModule,
 	AlertModule,
 	UserLicenseModule,

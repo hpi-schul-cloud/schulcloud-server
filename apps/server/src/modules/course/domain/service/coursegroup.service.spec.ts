@@ -9,7 +9,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { User, UserRepo } from '@modules/user/repo';
+import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -23,7 +23,6 @@ describe('CourseGroupService', () => {
 	let module: TestingModule;
 	let courseGroupRepo: DeepMocked<CourseGroupRepo>;
 	let courseGroupService: CourseGroupService;
-	let userRepo: DeepMocked<UserRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
@@ -31,10 +30,6 @@ describe('CourseGroupService', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupService,
-				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
 				{
 					provide: CourseGroupRepo,
 					useValue: createMock<CourseGroupRepo>(),
@@ -57,7 +52,6 @@ describe('CourseGroupService', () => {
 		}).compile();
 		courseGroupRepo = module.get(CourseGroupRepo);
 		courseGroupService = module.get(CourseGroupService);
-		userRepo = module.get(UserRepo);
 		eventBus = module.get(EventBus);
 	});
 
@@ -75,7 +69,6 @@ describe('CourseGroupService', () => {
 				const user = userFactory.buildWithId();
 				const courseGroups = courseGroupEntityFactory.buildListWithId(2, { students: [user] });
 
-				userRepo.findById.mockResolvedValue(user);
 				courseGroupRepo.findByUserId.mockResolvedValue([courseGroups, courseGroups.length]);
 
 				return {
@@ -109,7 +102,6 @@ describe('CourseGroupService', () => {
 			const courseGroup1 = courseGroupEntityFactory.buildWithId({ students: [user] });
 			const courseGroup2 = courseGroupEntityFactory.buildWithId({ students: [user] });
 
-			userRepo.findById.mockResolvedValue(user);
 			courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);
 
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
