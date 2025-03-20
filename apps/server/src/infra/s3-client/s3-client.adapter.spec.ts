@@ -286,6 +286,12 @@ describe('S3ClientAdapter', () => {
 			return { pathToFile, bucket };
 		};
 
+		it('should return void if path[] is empty', async () => {
+			const res = await service.moveToTrash([]);
+
+			expect(res).toEqual(undefined);
+		});
+
 		it('should call send() of client with copy objects', async () => {
 			const { pathToFile, bucket } = setup();
 
@@ -416,6 +422,29 @@ describe('S3ClientAdapter', () => {
 					await service.moveDirectoryToTrash(pathToFile);
 
 					expect(spyMoveToTrash).toBeCalledWith([filePath]);
+				});
+			});
+
+			describe('when a s3 call throw an error', () => {
+				const setup = () => {
+					const { pathToFile } = createParameter();
+					const error = new Error('testError');
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+					// @ts-ignore
+					client.send.mockRejectedValueOnce(error);
+
+					const expectedError = new InternalServerErrorException(
+						'S3ClientAdapter:moveDirectoryToTrash',
+						ErrorUtils.createHttpExceptionOptions(error)
+					);
+
+					return { pathToFile, expectedError };
+				};
+
+				it('should return InternalServerErrorException', async () => {
+					const { pathToFile, expectedError } = setup();
+
+					await expect(service.moveDirectoryToTrash(pathToFile)).rejects.toThrowError(expectedError);
 				});
 			});
 		});
