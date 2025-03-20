@@ -248,7 +248,7 @@ describe('FilesStorageService delete methods', () => {
 		it('should fileRecordRepo.markForDeleteByStorageLocation', async () => {
 			const { storageLocation, storageLocationId, params } = setup();
 
-			await service.deleteByStorageLocation(params);
+			await service.markForDeleteByStorageLocation(params);
 
 			expect(fileRecordRepo.markForDeleteByStorageLocation).toBeCalledWith(storageLocation, storageLocationId);
 		});
@@ -256,7 +256,7 @@ describe('FilesStorageService delete methods', () => {
 		it('should storageClient.moveDirectoryToTrash', async () => {
 			const { storageLocationId, params } = setup();
 
-			await service.deleteByStorageLocation(params);
+			await service.markForDeleteByStorageLocation(params);
 
 			expect(storageClient.moveDirectoryToTrash).toBeCalledWith(storageLocationId);
 		});
@@ -264,7 +264,7 @@ describe('FilesStorageService delete methods', () => {
 		it('should return result', async () => {
 			const { params } = setup();
 
-			const resultValue = await service.deleteByStorageLocation(params);
+			const resultValue = await service.markForDeleteByStorageLocation(params);
 
 			expect(resultValue).toBe(1);
 		});

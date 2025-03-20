@@ -29,7 +29,7 @@ export class FilesStorageAdminUC {
 		]);
 
 		await this.checkPermission(params.storageLocation, params.storageLocationId, context);
-		const result = await this.filesStorageAdminService.deleteByStorageLocation(params);
+		const result = await this.filesStorageAdminService.markForDeleteByStorageLocation(params);
 
 		return result;
 	}

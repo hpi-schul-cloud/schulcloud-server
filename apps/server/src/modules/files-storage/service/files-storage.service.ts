@@ -333,7 +333,7 @@ export class FilesStorageService {
 		return fileRecords;
 	}
 
-	public async deleteByStorageLocation(params: StorageLocationParams): Promise<number> {
+	public async markForDeleteByStorageLocation(params: StorageLocationParams): Promise<number> {
 		const { storageLocation, storageLocationId } = params;
 
 		const result = await this.fileRecordRepo.markForDeleteByStorageLocation(storageLocation, storageLocationId);
