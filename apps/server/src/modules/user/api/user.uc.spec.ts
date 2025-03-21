@@ -1,10 +1,9 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { roleFactory } from '@modules/role/testing';
-import { userDoFactory, userFactory } from '@modules/user/testing';
+import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { LanguageType, Permission } from '@shared/domain/interface';
+import { LanguageType } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
 import { UserService } from '../domain';
@@ -14,7 +13,6 @@ import { UserUc } from './user.uc';
 describe('UserUc', () => {
 	let module: TestingModule;
 	let userUc: UserUc;
-	let userRepo: DeepMocked<UserMikroOrmRepo>;
 	let userService: DeepMocked<UserService>;
 	let config: DeepMocked<ConfigService>;
 
@@ -42,7 +40,6 @@ describe('UserUc', () => {
 		}).compile();
 
 		userUc = module.get(UserUc);
-		userRepo = module.get(UserMikroOrmRepo);
 		userService = module.get(UserService);
 		config = module.get(ConfigService);
 		await setupEntities([User]);
@@ -50,24 +47,6 @@ describe('UserUc', () => {
 
 	it('should be defined', () => {
 		expect(userUc).toBeDefined();
-	});
-
-	describe('me', () => {
-		it('should return an array with the user and its permissions', async () => {
-			const permission = Permission.ACCOUNT_CREATE;
-			const role = roleFactory.build({ permissions: [permission] });
-			const user = userFactory.buildWithId({ roles: [role] });
-			userRepo.findById.mockResolvedValue(user);
-			const userSpy = jest.spyOn(user, 'resolvePermissions').mockReturnValueOnce([permission]);
-
-			const result = await userUc.me(user.id);
-
-			expect(result[0]).toEqual(user);
-			expect(result[1]).toEqual([permission]);
-
-			userRepo.findById.mockRestore();
-			userSpy.mockRestore();
-		});
 	});
 
 	describe('patchLanguage', () => {
