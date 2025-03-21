@@ -231,13 +231,14 @@ export class BoardUc {
 
 	private getPermissions(userId: EntityId, boardNodeAuthorizable: BoardNodeAuthorizable): Permission[] {
 		const user = boardNodeAuthorizable.users.find((user) => user.userId === userId);
-		if (user) {
-			if (user.roles.includes(BoardRoles.EDITOR)) {
-				return [Permission.BOARD_EDIT, Permission.BOARD_VIEW];
-			} else if (user.roles.includes(BoardRoles.READER)) {
-				return [Permission.BOARD_VIEW];
-			}
+		if (user?.roles.includes(BoardRoles.EDITOR)) {
+			return [Permission.BOARD_EDIT, Permission.BOARD_VIEW];
 		}
+
+		if (user?.roles.includes(BoardRoles.READER)) {
+			return [Permission.BOARD_VIEW];
+		}
+
 		return [];
 	}
 }
