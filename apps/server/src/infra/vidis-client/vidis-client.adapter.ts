@@ -50,7 +50,10 @@ export class VidisClientAdapter {
 	private buildAuthHeaderValue(vidisConfig: MediaSourceVidisConfig): string {
 		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
 		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
-		const basicAuthHeaderValue = `Basic ${btoa(`${decryptedUsername}:${decryptedPassword}`)}`;
+
+		const encodedCredentials = btoa(`${decryptedUsername}:${decryptedPassword}`);
+
+		const basicAuthHeaderValue = `Basic ${encodedCredentials}`;
 
 		return basicAuthHeaderValue;
 	}

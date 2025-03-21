@@ -19,7 +19,7 @@ class MockBusinessError extends BusinessError {
 
 describe(MediaMetadataSyncFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
-		describe('when the error passed is an BusinessError', () => {
+		describe('when the error passed is a business error', () => {
 			const setup = () => {
 				const mediumId = 'test-medium-id';
 				const mediaSourceFormat = MediaSourceDataFormat.VIDIS;
@@ -32,7 +32,7 @@ describe(MediaMetadataSyncFailedLoggable.name, () => {
 				};
 			};
 
-			it('should return the a log message based on the BusinessError', () => {
+			it('should return the a log message based on the business error', () => {
 				const { mediumId, mediaSourceFormat, error } = setup();
 				const loggable = new MediaMetadataSyncFailedLoggable(mediumId, mediaSourceFormat, error);
 
@@ -49,7 +49,7 @@ describe(MediaMetadataSyncFailedLoggable.name, () => {
 			});
 		});
 
-		describe('when the error passed is an Error', () => {
+		describe('when the error passed is a general error', () => {
 			const setup = () => {
 				const mediumId = 'test-medium-id';
 				const mediaSourceFormat = MediaSourceDataFormat.VIDIS;
@@ -62,7 +62,7 @@ describe(MediaMetadataSyncFailedLoggable.name, () => {
 				};
 			};
 
-			it('should return a log message based on the Error', () => {
+			it('should return a log message based on the error', () => {
 				const { mediumId, mediaSourceFormat, error } = setup();
 				const loggable = new MediaMetadataSyncFailedLoggable(mediumId, mediaSourceFormat, error);
 
@@ -73,7 +73,7 @@ describe(MediaMetadataSyncFailedLoggable.name, () => {
 					data: {
 						mediaSourceFormat: mediaSourceFormat,
 						mediumId: mediumId,
-						type: 'MEDIA_METADATA_SYNC_UNEXPECTED_ERROR',
+						type: 'MEDIA_METADATA_SYNC_ERROR',
 					},
 				});
 			});
@@ -103,7 +103,7 @@ describe(MediaMetadataSyncFailedLoggable.name, () => {
 					data: {
 						mediaSourceFormat: mediaSourceFormat,
 						mediumId: mediumId,
-						type: 'MEDIA_METADATA_SYNC_UNEXPECTED_ERROR',
+						type: 'MEDIA_METADATA_SYNC_UNKNOWN_ERROR',
 					},
 				});
 			});
