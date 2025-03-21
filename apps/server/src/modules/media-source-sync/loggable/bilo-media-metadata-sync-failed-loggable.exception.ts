@@ -14,13 +14,13 @@ export class BiloMediaMetadataSyncFailedLoggable implements Loggable {
 		let errorType = 'MEDIA_METADATA_SYNC_UNEXPECTED_ERROR';
 		const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
 
+		if (this.error instanceof Error) {
+			errorMessage = this.error.message;
+		}
+
 		if (ErrorUtils.isBusinessError(this.error)) {
 			errorMessage = `${this.error.title} ${this.error.message}`;
 			errorType = this.error.type;
-		}
-
-		if (this.error instanceof Error) {
-			errorMessage = this.error.message;
 		}
 
 		const logMessage: LogMessage = {
