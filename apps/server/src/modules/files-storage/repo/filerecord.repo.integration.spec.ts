@@ -2,7 +2,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { fileRecordFactory } from '../testing';
@@ -203,6 +202,20 @@ describe('FileRecordRepo', () => {
 			const result = await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
 
 			expect(result).toEqual(3);
+		});
+
+		it('should set deletedSince in database', async () => {
+			const { storageLocationId1 } = await setup();
+
+			await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+
+			const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
+
+			fileRecords.forEach((sportsBallPerson) => {
+				expect(sportsBallPerson).toMatchObject({
+					deletedSince: expect.any(Date),
+				});
+			});
 		});
 
 		it('should return zero after two calls', async () => {

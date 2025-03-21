@@ -3,6 +3,7 @@ import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { FileRecord } from '@modules/files-storage/entity';
 import { fileRecordFactory } from '@modules/files-storage/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -16,7 +17,7 @@ import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordResponse } from '../dto';
 import { availableStorageLocations } from './mocks';
 
-const baseRouteName = 'admin/file';
+const baseRouteName = '';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -56,9 +57,9 @@ describe(`${baseRouteName} (api)`, () => {
 	describe('delete files of storage location', () => {
 		describe('with not authenticated user', () => {
 			it('should return status 401', async () => {
-				const loggedInClient = new TestApiClient(app, baseRouteName);
+				const client = new TestApiClient(app, baseRouteName);
 
-				const result = await loggedInClient.delete(`/storage-location/school/123`);
+				const result = await client.delete(`admin/file/storage-location/school/123`);
 
 				expect(result.status).toEqual(401);
 			});
@@ -78,7 +79,7 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return status 400 for invalid storageLocationId', async () => {
 				const { loggedInClient } = setup();
 
-				const result = await loggedInClient.delete(`/storage-location/school/123`);
+				const result = await loggedInClient.delete(`admin/file/storage-location/school/123`);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -93,7 +94,7 @@ describe(`${baseRouteName} (api)`, () => {
 			it('should return status 400 for invalid storageLocation', async () => {
 				const { loggedInClient, validId } = setup();
 
-				const result = await loggedInClient.delete(`/storage-location/wrongLocation/${validId}`);
+				const result = await loggedInClient.delete(`admin/file/storage-location/wrongLocation/${validId}`);
 				const { validationErrors } = result.body as ApiValidationError;
 
 				expect(validationErrors).toEqual([
@@ -114,7 +115,7 @@ describe(`${baseRouteName} (api)`, () => {
 				fileName: string
 			) => {
 				const response = await loggedInClient
-					.post(`/upload/school/${schoolId}/schools/${parentId}`)
+					.post(`file/upload/school/${schoolId}/schools/${parentId}`)
 					.attach('file', Buffer.from('abcd'), fileName)
 					.set('connection', 'keep-alive')
 					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
@@ -146,20 +147,34 @@ describe(`${baseRouteName} (api)`, () => {
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
+				await uploadFile(loggedInClient, storageLocationId1, storageLocationId1, 'test1.txt');
+
 				return { loggedInClient, storageLocationId1 };
 			};
 
 			it('should return right type of data', async () => {
 				const { loggedInClient, storageLocationId1 } = await setup();
 
-				await uploadFile(loggedInClient, storageLocationId1, storageLocationId1, 'test1.txt');
+				const result = await loggedInClient.delete(`admin/file/storage-location/school/${storageLocationId1}`);
 
-				const result = await loggedInClient.delete(`/storage-location/school/${storageLocationId1}`);
 				expect(result.status).toEqual(200);
 				expect(result.body).toEqual({
-					deletedFiles: 3,
+					deletedFiles: 4,
 					storageLocation: 'school',
 					storageLocationId: storageLocationId1,
+				});
+			});
+
+			it('should set deletedSince in database', async () => {
+				const { loggedInClient, storageLocationId1 } = await setup();
+
+				await loggedInClient.delete(`admin/file/storage-location/school/${storageLocationId1}`);
+
+				const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
+				fileRecords.forEach((sportsBallPerson) => {
+					expect(sportsBallPerson).toMatchObject({
+						deletedSince: expect.any(Date),
+					});
 				});
 			});
 		});
