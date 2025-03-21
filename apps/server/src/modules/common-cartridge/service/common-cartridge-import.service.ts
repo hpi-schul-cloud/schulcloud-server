@@ -170,7 +170,7 @@ export class CommonCartridgeImportService {
 			return this.createTextFromResource(resource);
 		}
 
-		// TODO files
+		// TODO files and other resource types
 
 		return undefined;
 	}
