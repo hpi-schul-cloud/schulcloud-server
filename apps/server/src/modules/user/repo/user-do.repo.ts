@@ -1,16 +1,15 @@
-import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
-import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
+import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
 import { ObjectId } from 'bson';
-import { Consent, ParentConsent, UserConsent } from '../domain';
+import { Consent, MultipleUsersFoundLoggableException, ParentConsent, UserConsent, type UserDoRepo } from '../domain';
 import { UserSourceOptions } from '../domain/do/user-source-options';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';
@@ -22,7 +21,7 @@ import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
 
 @Injectable()
-export class UserDORepo extends BaseDORepo<UserDo, User> {
+export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements UserDoRepo {
 	get entityName(): EntityName<User> {
 		return User;
 	}
