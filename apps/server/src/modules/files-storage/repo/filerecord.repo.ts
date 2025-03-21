@@ -1,3 +1,4 @@
+import { EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -8,39 +9,52 @@ import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()
 export class FileRecordRepo extends BaseRepo<FileRecord> {
-	get entityName() {
+	get entityName(): EntityName<FileRecord> {
 		return FileRecord;
 	}
 
-	async findOneById(id: EntityId): Promise<FileRecord> {
+	public async findOneById(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(false);
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
 	}
 
-	async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
+	public async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
 	}
 
-	async findByParentId(parentId: EntityId, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
+	public async findByParentId(parentId: EntityId, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope().byParentId(parentId).byMarkedForDelete(false);
 		const result = await this.findAndCount(scope, options);
 
 		return result;
 	}
 
-	async findByStorageLocationIdAndParentId(
+	public async markForDeleteByStorageLocation(
+		storageLocation: StorageLocation,
+		storageLocationId: EntityId
+	): Promise<number> {
+		const scope = new FileRecordScope()
+			.byStorageLocation(storageLocation)
+			.byStorageLocationId(storageLocationId)
+			.byMarkedForDelete(false);
+		const result = await this._em.nativeUpdate(this.entityName, scope.query, { deletedSince: new Date() });
+
+		return result;
+	}
+
+	public async findByStorageLocationIdAndParentId(
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
-			.byStorageType(storageLocation)
+			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
 			.byParentId(parentId)
 			.byMarkedForDelete(false);
@@ -49,14 +63,14 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return result;
 	}
 
-	async findByStorageLocationIdAndParentIdAndMarkedForDelete(
+	public async findByStorageLocationIdAndParentIdAndMarkedForDelete(
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
-			.byStorageType(storageLocation)
+			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
 			.byParentId(parentId)
 			.byMarkedForDelete(true);
@@ -65,7 +79,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return result;
 	}
 
-	async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
+	public async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
 		// Must also find expires in future. Please do not add .byExpires().
 		const scope = new FileRecordScope().bySecurityCheckRequestToken(token);
 
@@ -74,7 +88,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
-	async findByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>> {
+	public async findByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope().byCreatorId(creatorId);
 		const result = await this.findAndCount(scope);
 
