@@ -47,34 +47,6 @@ export class ClassesRepo {
 		await this.em.flush();
 	}
 
-	public async updateMany(classes: Class[]): Promise<void> {
-		const classMap: Map<string, Class> = new Map<string, Class>(
-			classes.map((clazz: Class): [string, Class] => [clazz.id, clazz])
-		);
-
-		const existingEntities: ClassEntity[] = await this.em.find(ClassEntity, {
-			id: { $in: Array.from(classMap.keys()) },
-		});
-
-		if (existingEntities.length < classes.length) {
-			const missingEntityIds: string[] = Array.from(classMap.keys()).filter(
-				(classId) => !existingEntities.find((entity) => entity.id === classId)
-			);
-
-			throw new NotFoundLoggableException(Class.name, { id: missingEntityIds.toString() });
-		}
-
-		existingEntities.forEach((entity) => {
-			const updatedDomainObject: Class | undefined = classMap.get(entity.id);
-
-			const updatedEntity: ClassEntity = ClassMapper.mapToEntity(updatedDomainObject as Class);
-
-			this.em.assign(entity, updatedEntity);
-		});
-
-		await this.em.persistAndFlush(existingEntities);
-	}
-
 	public async findClassById(id: EntityId): Promise<Class | null> {
 		const clazz = await this.em.findOne(ClassEntity, { id });
 
@@ -91,8 +63,7 @@ export class ClassesRepo {
 		const count = await this.em.nativeUpdate(
 			ClassEntity,
 			{ $or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }] },
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			{ $pull: { userIds: new ObjectId(userId), teacherIds: new ObjectId(userId) } } as any
+			{ $pull: { userIds: new ObjectId(userId), teacherIds: new ObjectId(userId) } } as Partial<ClassEntity>
 		);
 
 		return count;

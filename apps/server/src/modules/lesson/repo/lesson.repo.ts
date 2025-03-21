@@ -1,4 +1,4 @@
-import { EntityDictionary, EntityName } from '@mikro-orm/core';
+import { EntityDictionary, EntityName, FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
@@ -69,10 +69,8 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 	public async deleteUser(userId: EntityId): Promise<number> {
 		const count = await this._em.nativeUpdate(
 			LessonEntity,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			{ contents: { $elemMatch: { user: new ObjectId(userId) } } } as any,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			{ $pull: { contents: { user: new ObjectId(userId) } } } as any
+			{ contents: { $elemMatch: { user: new ObjectId(userId) } } } as FilterQuery<LessonEntity>,
+			{ $pull: { contents: { user: new ObjectId(userId) } } } as Partial<LessonEntity>
 		);
 
 		return count;

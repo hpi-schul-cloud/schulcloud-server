@@ -37,23 +37,17 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 
 	public async deleteUserFromTeam(userId: EntityId): Promise<number> {
 		// delete userId from submission teamMembers
-		const count = await this._em.nativeUpdate(
-			this.entityName,
-			{ teamMembers: userId },
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			{ $pull: { teamMembers: userId } } as any
-		);
+		const count = await this._em.nativeUpdate(this.entityName, { teamMembers: userId }, {
+			$pull: { teamMembers: userId },
+		} as Partial<Submission>);
 
 		return count;
 	}
 
 	public async removeUssrReference(submissionIds: EntityId[]): Promise<number> {
-		const count = await this._em.nativeUpdate(
-			this.entityName,
-			{ id: { $in: submissionIds } },
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			{ $set: { studentId: undefined } } as any
-		);
+		const count = await this._em.nativeUpdate(this.entityName, { id: { $in: submissionIds } }, {
+			$set: { studentId: undefined },
+		} as Partial<Submission>);
 
 		return count;
 	}

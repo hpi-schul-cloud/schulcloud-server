@@ -117,7 +117,7 @@ describe('CourseService', () => {
 		});
 	});
 
-	describe('when deleting by userId', () => {
+	describe('deleteUserData', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course1 = courseEntityFactory.buildWithId({ students: [user] });

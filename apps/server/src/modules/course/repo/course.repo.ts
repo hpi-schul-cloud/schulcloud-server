@@ -99,8 +99,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		const count = await this._em.nativeUpdate(
 			CourseEntity,
 			{ $or: [{ teachers: userId }, { substitutionTeachers: userId }, { students: userId }] },
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			{ $pull: { teachers: userId, substitutionTeachers: userId, students: userId } } as any
+			{ $pull: { teachers: userId, substitutionTeachers: userId, students: userId } } as Partial<CourseEntity>
 		);
 
 		return count;
