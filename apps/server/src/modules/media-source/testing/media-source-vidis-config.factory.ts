@@ -9,6 +9,7 @@ export const mediaSourceVidisConfigFactory = BaseFactory.define<MediaSourceVidis
 			password: `media-source-password-${sequence}`,
 			baseUrl: 'https://media-source-endpoint.com',
 			region: 'test-region',
+			schoolNumberPrefix: 'NI_',
 		};
 
 		return config;

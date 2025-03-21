@@ -20,6 +20,7 @@ export class MediaSourceConfigMapper {
 			password: config.password,
 			baseUrl: config.baseUrl,
 			region: config.region,
+			schoolNumberPrefix: config.schoolNumberPrefix,
 		});
 
 		return configEmbeddable;
@@ -43,6 +44,7 @@ export class MediaSourceConfigMapper {
 			password: embeddable.password,
 			baseUrl: embeddable.baseUrl,
 			region: embeddable.region,
+			schoolNumberPrefix: embeddable.schoolNumberPrefix,
 		});
 
 		return config;
