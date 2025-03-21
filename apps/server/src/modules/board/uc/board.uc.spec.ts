@@ -237,12 +237,12 @@ describe(BoardUc.name, () => {
 	});
 
 	describe('findBoard', () => {
-		const setupAuthorizable = (user: User, board: ColumnBoard) => {
+		const setupAuthorizable = (user: User, board: ColumnBoard, roles = [BoardRoles.EDITOR]) => {
 			const boardAuthorizable = boardNodeAuthorizableFactory.build({
 				boardNode: board,
 				users: [
 					{
-						roles: [BoardRoles.EDITOR],
+						roles,
 						userId: user.id,
 					},
 				],
@@ -291,6 +291,52 @@ describe(BoardUc.name, () => {
 			const result = await uc.findBoard(user.id, board.id);
 
 			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_EDIT, Permission.BOARD_VIEW] });
+		});
+
+		it('should return the column board object + features', async () => {
+			const { user, board } = globalSetup();
+			setupAuthorizable(user, board);
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+			const result = await uc.findBoard(user.id, board.id);
+
+			expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_EDIT, Permission.BOARD_VIEW] });
+		});
+
+		describe('when user is board-editor ', () => {
+			it('should return an empty permissions array', async () => {
+				const { user, board } = globalSetup();
+				setupAuthorizable(user, board, [BoardRoles.EDITOR]);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				const result = await uc.findBoard(user.id, board.id);
+
+				expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_EDIT, Permission.BOARD_VIEW] });
+			});
+		});
+
+		describe('when user is board-reader ', () => {
+			it('should return an empty permissions array', async () => {
+				const { user, board } = globalSetup();
+				setupAuthorizable(user, board, [BoardRoles.READER]);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				const result = await uc.findBoard(user.id, board.id);
+
+				expect(result).toEqual({ board, features: [], permissions: [Permission.BOARD_VIEW] });
+			});
+		});
+
+		describe('when user does not have a board role', () => {
+			it('should return an empty permissions array', async () => {
+				const { user, board } = globalSetup();
+				setupAuthorizable(user, board, ['not-teacher-or-student'] as unknown as BoardRoles[]);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+
+				const result = await uc.findBoard(user.id, board.id);
+
+				expect(result).toEqual({ board, features: [], permissions: [] });
+			});
 		});
 	});
 
