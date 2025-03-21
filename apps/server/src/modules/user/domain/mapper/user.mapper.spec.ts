@@ -1,8 +1,8 @@
 import { roleFactory } from '@modules/role/testing';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
+import type { UserDto } from '../../api/dto/user.dto';
 import { User } from '../../repo';
-import { UserDto } from '../dto/user.dto';
 import { UserMapper } from './user.mapper';
 
 describe('UserMapper', () => {

@@ -1,6 +1,6 @@
-import { Role } from '@modules/role/repo';
+import type { Role } from '@modules/role/repo';
 import { ResolvedUserResponse } from '../../api/dto';
-import { User } from '../../repo';
+import type { User } from '../../repo';
 
 export class ResolvedUserMapper {
 	public static mapToResponse(user: User, permissions: string[] = [], roles: Role[] = []): ResolvedUserResponse {
