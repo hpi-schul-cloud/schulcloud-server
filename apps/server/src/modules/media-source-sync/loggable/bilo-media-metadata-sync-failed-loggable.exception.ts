@@ -1,16 +1,33 @@
+import { ErrorUtils } from '@core/error/utils';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
-import { MediaSourceDataFormat } from '../../media-source/enum';
+import { MediaSourceDataFormat } from '@modules/media-source/enum';
 
 export class BiloMediaMetadataSyncFailedLoggable implements Loggable {
-	constructor(private readonly mediumId: string, private readonly mediaSourceId: string) {}
+	constructor(
+		private readonly mediumId: string,
+		private readonly mediaSourceId: string,
+		private readonly error: unknown
+	) {}
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		let errorMessage = 'Unexpected error.';
+		let errorType = 'MEDIA_METADATA_SYNC_UNEXPECTED_ERROR';
+		const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
+
+		if (ErrorUtils.isBusinessError(this.error)) {
+			errorMessage = `${this.error.title} ${this.error.message}`;
+			errorType = this.error.type;
+		} else if (this.error instanceof Error) {
+			errorMessage = this.error.message;
+		}
+
 		const logMessage: LogMessage = {
-			message: `Metadata Synchronization for mediumId: ${this.mediumId} and mediaSourceId: ${this.mediaSourceId} failed.`,
+			message: `Metadata sync for ${mediaSourceDataFormat} medium ${this.mediumId} and media source ${this.mediaSourceId} failed with the following error message: ${errorMessage}`,
 			data: {
 				mediumId: this.mediumId,
 				mediaSourceId: this.mediaSourceId,
-				mediaSourceDataFormat: MediaSourceDataFormat.BILDUNGSLOGIN,
+				mediaSourceFormat: mediaSourceDataFormat,
+				type: errorType,
 			},
 		};
 
