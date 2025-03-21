@@ -60,68 +60,57 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		externalTools: ExternalTool[],
 		metadataItems: BiloMediaQueryDataResponse[]
 	): Promise<MediaSourceSyncReport> {
-		const createSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
-			MediaSourceSyncOperation.CREATE
-		);
-		const updateSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
-			MediaSourceSyncOperation.UPDATE
-		);
-		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
-		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
+		const statusReports = {
+			createSuccess: MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.CREATE),
+			updateSuccess: MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE),
+			failure: MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY),
+			undelivered: MediaSourceSyncOperationReportFactory.buildUndeliveredReport(),
+		};
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
-			const fetchedMetadata = metadataItems.find(
-				(metadataItem: BiloMediaQueryDataResponse) => externalTool.medium?.mediumId === metadataItem.id
+			const metadata = metadataItems.find(
+				(item: BiloMediaQueryDataResponse) => externalTool.medium?.mediumId === item.id
 			);
-
-			if (!fetchedMetadata) {
-				undeliveredReport.count += 1;
+			if (!metadata) {
+				statusReports.undelivered.count++;
+				return null;
+			}
+			if (this.isMetadataUpToDate(externalTool, metadata)) {
+				statusReports.updateSuccess.count++;
 				return null;
 			}
 
-			if (this.isMetadataUpToDate(externalTool, fetchedMetadata)) {
-				updateSuccessReport.count += 1;
-				return null;
-			}
-
-			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
+			const isFirstSync = !externalTool.medium?.metadataModifiedAt;
 			try {
-				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, fetchedMetadata);
+				await this.buildExternalToolMetadataUpdate(externalTool, metadata);
+				isFirstSync ? statusReports.createSuccess.count++ : statusReports.updateSuccess.count++;
+				return externalTool;
 			} catch (error: unknown) {
 				this.logger.debug(
 					new BiloMediaMetadataSyncFailedLoggable(
-						externalTool.medium?.mediumId as string,
-						externalTool.medium?.mediaSourceId as string,
+						externalTool.medium?.mediumId || 'unknown',
+						externalTool.medium?.mediaSourceId || 'unknown',
 						error
 					)
 				);
-				failureReport.count += 1;
+				statusReports.failure.count++;
 				return null;
 			}
-
-			if (isMetadataFirstSync) {
-				createSuccessReport.count += 1;
-			} else {
-				updateSuccessReport.count += 1;
-			}
-
-			return externalTool;
 		});
 
 		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
 			(updateResult: ExternalTool | null) => !!updateResult
 		);
-
 		await this.externalToolService.updateExternalTools(updatedExternalTools);
 
-		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
-			createSuccessReport,
-			updateSuccessReport,
-			failureReport,
-			undeliveredReport,
+		const syncStatusReport: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
+			statusReports.createSuccess,
+			statusReports.updateSuccess,
+			statusReports.failure,
+			statusReports.undelivered,
 		]);
 
-		return report;
+		return syncStatusReport;
 	}
 
 	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryDataResponse): boolean {
