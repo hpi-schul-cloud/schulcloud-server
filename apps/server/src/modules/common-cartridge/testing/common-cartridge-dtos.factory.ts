@@ -52,7 +52,7 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 		title: faker.lorem.sentence(),
 		columns: [columnFactory.build(), columnFactory.build()],
 		isVisible: faker.datatype.boolean(),
-		layout: faker.lorem.word(),
+		layout: BoardLayout.COLUMNS,
 		features: [],
 		timestamps: {
 			createdAt: faker.date.recent().toISOString(),

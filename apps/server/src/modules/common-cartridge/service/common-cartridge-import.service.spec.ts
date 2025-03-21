@@ -1,14 +1,23 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { BoardsClientAdapter } from '@infra/boards-client';
+import { CardClientAdapter } from '@infra/card-client';
+import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardsClientAdapter } from '@infra/boards-client';
 import type { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
+import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
 jest.mock('../import/common-cartridge-file-parser', () => {
 	const fileParserMock = createMock<CommonCartridgeFileParser>();
-	const rootId = faker.string.uuid();
+	const courseId = faker.string.uuid();
+	const boardId = faker.string.uuid();
+	const columnId = faker.string.uuid();
+	const cardId1 = faker.string.uuid();
+	const cardId2 = faker.string.uuid();
+	const elementId1 = faker.string.uuid();
+	const elementId2 = faker.string.uuid();
 
 	fileParserMock.getTitle.mockReturnValue(faker.lorem.words());
 	fileParserMock.getOrganizations.mockReturnValue([
@@ -16,7 +25,7 @@ jest.mock('../import/common-cartridge-file-parser', () => {
 			pathDepth: 0,
 			title: faker.lorem.words(),
 			path: faker.system.filePath(),
-			identifier: rootId,
+			identifier: courseId,
 			isInlined: true,
 			isResource: false,
 			resourcePath: faker.system.filePath(),
@@ -25,12 +34,52 @@ jest.mock('../import/common-cartridge-file-parser', () => {
 		{
 			pathDepth: 1,
 			title: faker.lorem.words(),
-			path: `${rootId}/${faker.system.filePath()}`,
-			identifier: faker.string.uuid(),
-			isInlined: true,
+			path: `${courseId}/${boardId}`,
+			identifier: columnId,
+			isInlined: false,
 			isResource: false,
 			resourcePath: faker.system.filePath(),
 			resourceType: faker.lorem.word(),
+		},
+		{
+			pathDepth: 2,
+			title: faker.lorem.words(),
+			path: `${courseId}/${boardId}/${columnId}`,
+			identifier: cardId1,
+			isInlined: false,
+			isResource: true,
+			resourcePath: 'https://www.webcontent.html',
+			resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+		},
+		{
+			pathDepth: 3,
+			title: faker.lorem.words(),
+			path: `${courseId}/${boardId}/${columnId}/${cardId1}`,
+			identifier: elementId1,
+			isInlined: false,
+			isResource: false,
+			resourcePath: 'https://www.webcontent.html',
+			resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+		},
+		{
+			pathDepth: 2,
+			title: faker.lorem.words(),
+			path: `${courseId}/${boardId}/${columnId}`,
+			identifier: cardId2,
+			isInlined: false,
+			isResource: false,
+			resourcePath: 'https://www.weblink.imswl_xmlv1p1',
+			resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+		},
+		{
+			pathDepth: 3,
+			title: faker.lorem.words(),
+			path: `${courseId}/${boardId}/${columnId}/${cardId1}`,
+			identifier: elementId2,
+			isInlined: false,
+			isResource: false,
+			resourcePath: 'https://www.weblink.imswl_xmlv1p1',
+			resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
 		},
 	]);
 
@@ -44,6 +93,8 @@ describe(CommonCartridgeImportService.name, () => {
 	let sut: CommonCartridgeImportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
+	let columnClientAdapterMock: DeepMocked<ColumnClientAdapter>;
+	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -57,12 +108,22 @@ describe(CommonCartridgeImportService.name, () => {
 					provide: BoardsClientAdapter,
 					useValue: createMock<BoardsClientAdapter>(),
 				},
+				{
+					provide: ColumnClientAdapter,
+					useValue: createMock<ColumnClientAdapter>(),
+				},
+				{
+					provide: CardClientAdapter,
+					useValue: createMock<CardClientAdapter>(),
+				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeImportService);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		boardsClientAdapterMock = module.get(BoardsClientAdapter);
+		columnClientAdapterMock = module.get(ColumnClientAdapter);
+		cardClientAdapterMock = module.get(CardClientAdapter);
 	});
 
 	afterEach(async () => {
@@ -107,7 +168,31 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file);
 
 				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(1);
-				expect(boardsClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(1);
+			});
+
+			it('should update column title', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(1);
+			});
+
+			it('should update card title', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(1);
+			});
+
+			// TODO:complete the test case to test all private methods
+			it('should update card element', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				// expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
