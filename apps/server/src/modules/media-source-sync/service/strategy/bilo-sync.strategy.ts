@@ -85,9 +85,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			}
 
 			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
-			let updatedTool = externalTool;
 			try {
-				updatedTool = await this.buildExternalToolMetadataUpdate(externalTool, fetchedMetadata);
+				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, fetchedMetadata);
 			} catch (error: unknown) {
 				this.logger.debug(
 					new ValidationErrorLoggableException(
@@ -105,7 +104,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 				updateSuccessReport.count += 1;
 			}
 
-			return updatedTool;
+			return externalTool;
 		});
 
 		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
