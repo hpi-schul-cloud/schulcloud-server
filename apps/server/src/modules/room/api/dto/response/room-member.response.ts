@@ -8,10 +8,10 @@ export class RoomMemberResponse {
 	@ApiProperty()
 	public lastName!: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: RoleName, enumName: 'RoleName' })
 	public roomRoleName!: RoleName;
 
-	@ApiProperty()
+	@ApiProperty({ enum: RoleName, enumName: 'RoleName', isArray: true })
 	public schoolRoleNames!: RoleName[];
 
 	@ApiProperty()
