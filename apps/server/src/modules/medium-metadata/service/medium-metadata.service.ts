@@ -1,4 +1,4 @@
-import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
+import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
 import {
@@ -22,7 +22,7 @@ export class MediumMetadataService {
 		this.mediumMetadataStrategyMap.set(this.vidisStrategy.getMediaSourceFormat(), this.vidisStrategy);
 	}
 
-	public async getMetadata(mediumId: string, mediaSourceId: string): Promise<MediumMetadataDto> {
+	public async getMetadataItem(mediumId: string, mediaSourceId: string): Promise<MediumMetadataDto> {
 		const mediaSource = await this.mediaSourceService.findBySourceId(mediaSourceId);
 		if (!mediaSource) {
 			throw new MediaSourceNotFoundLoggableException(mediaSourceId);
@@ -38,7 +38,23 @@ export class MediumMetadataService {
 			throw new MediumMetadataStrategyNotImplementedLoggableException(mediaSourceDataFormat);
 		}
 
-		const mediaMetadata: MediumMetadataDto = await strategy.getMediumMetadata(mediumId, mediaSource);
+		const mediaMetadata: MediumMetadataDto = await strategy.getMediumMetadataItem(mediumId, mediaSource);
+
+		return mediaMetadata;
+	}
+
+	public async getMetadataItems(mediumIds: string[], mediaSource: MediaSource): Promise<MediumMetadataDto[]> {
+		const mediaSourceDataFormat = mediaSource.format;
+		if (!mediaSourceDataFormat) {
+			throw new MediaSourceDataFormatNotFoundLoggableException(mediaSource.id);
+		}
+
+		const strategy = this.mediumMetadataStrategyMap.get(mediaSourceDataFormat);
+		if (!strategy) {
+			throw new MediumMetadataStrategyNotImplementedLoggableException(mediaSourceDataFormat);
+		}
+
+		const mediaMetadata: MediumMetadataDto[] = await strategy.getMediumMetadataItems(mediumIds, mediaSource);
 
 		return mediaMetadata;
 	}

@@ -1,18 +1,30 @@
-import { MediaSourceDataFormat } from '@modules/media-source';
-import { NotImplementedException } from '@nestjs/common';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
+import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
+import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MediumMetadataNotFoundLoggableException } from '../loggable';
+import { MediumMetadataMapper } from '../mapper';
 import { VidisStrategy } from './vidis.strategy';
 
 describe(VidisStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: VidisStrategy;
+	let vidisClientAdapter: DeepMocked<VidisClientAdapter>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [VidisStrategy],
+			providers: [
+				VidisStrategy,
+				{
+					provide: VidisClientAdapter,
+					useValue: createMock<VidisClientAdapter>(),
+				},
+			],
 		}).compile();
 
 		strategy = module.get(VidisStrategy);
+		vidisClientAdapter = module.get(VidisClientAdapter);
 	});
 
 	afterAll(async () => {
@@ -29,11 +41,116 @@ describe(VidisStrategy.name, () => {
 		});
 	});
 
-	describe('getMediumMetadata', () => {
-		describe('when not implemented', () => {
-			it('should throw NotImplementedException', () => {
-				const call = () => strategy.getMediumMetadata();
-				expect(call).toThrow(NotImplementedException);
+	describe('getMediumMetadataItem', () => {
+		describe('when vidis provides no metadata for the requested medium', () => {
+			const setup = () => {
+				const mediumId = 'test-medium-id';
+				const mediaSource = mediaSourceFactory.withVidis().build();
+
+				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce([]);
+
+				return {
+					mediumId,
+					mediaSource,
+				};
+			};
+
+			it('should throw an MediumMetadataNotFoundLoggableException', async () => {
+				const { mediumId, mediaSource } = setup();
+
+				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
+
+				await expect(promise).rejects.toThrow(
+					new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId)
+				);
+			});
+		});
+
+		describe('when vidis provides metadata for the requested medium', () => {
+			const setup = () => {
+				const offerId = 12345;
+				const mediumId = offerId.toString();
+				const mediaSource = mediaSourceFactory.withVidis().build();
+
+				const requestedOfferItem = vidisOfferItemFactory.build({ offerId });
+				const allOfferItems = vidisOfferItemFactory.buildList(5);
+				allOfferItems.push(requestedOfferItem);
+
+				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(allOfferItems);
+
+				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, requestedOfferItem);
+
+				return {
+					mediumId,
+					mediaSource,
+					expectedMetadata,
+				};
+			};
+
+			it('should return the fetched metadata', async () => {
+				const { mediumId, mediaSource, expectedMetadata } = setup();
+
+				const result = await strategy.getMediumMetadataItem(mediumId, mediaSource);
+
+				expect(result).toEqual(expectedMetadata);
+			});
+		});
+	});
+
+	describe('getMediumMetadataItems', () => {
+		describe('when vidis provides no metadata for the all of the requested mediums', () => {
+			const setup = () => {
+				const mediaSource = mediaSourceFactory.withVidis().build();
+
+				const offerItems = vidisOfferItemFactory.buildList(3);
+				const mediumIds: string[] = offerItems.map((item: OfferDTO) => {
+					const offerId = (item.offerId as number) + offerItems.length;
+					return offerId.toString();
+				});
+
+				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(offerItems);
+
+				return {
+					mediumIds,
+					mediaSource,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { mediumIds, mediaSource } = setup();
+
+				const result = await strategy.getMediumMetadataItems(mediumIds, mediaSource);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when vidis provides metadata for the all of the requested mediums', () => {
+			const setup = () => {
+				const mediaSource = mediaSourceFactory.withVidis().build();
+
+				const offerItems = vidisOfferItemFactory.buildList(3);
+				const mediumIds: string[] = offerItems.map((item: OfferDTO) => (item.offerId as number).toString());
+
+				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(offerItems);
+
+				const expectedMetadataItems = offerItems.map((item: OfferDTO) =>
+					MediumMetadataMapper.mapVidisMetadataToMediumMetadata((item.offerId as number).toString(), item)
+				);
+
+				return {
+					mediumIds,
+					mediaSource,
+					expectedMetadataItems,
+				};
+			};
+
+			it('should return the fetched metadata items', async () => {
+				const { mediumIds, mediaSource, expectedMetadataItems } = setup();
+
+				const result = await strategy.getMediumMetadataItems(mediumIds, mediaSource);
+
+				expect(result).toEqual(expect.arrayContaining(expectedMetadataItems));
 			});
 		});
 	});

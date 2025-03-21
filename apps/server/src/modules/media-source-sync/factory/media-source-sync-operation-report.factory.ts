@@ -51,4 +51,17 @@ export class MediaSourceSyncOperationReportFactory {
 
 		return operationReport;
 	}
+
+	public static buildWithPartialStatus(
+		operation: MediaSourceSyncOperation,
+		count?: number
+	): MediaSourceSyncOperationReport {
+		const operationReport: MediaSourceSyncOperationReport = {
+			operation: operation,
+			status: MediaSourceSyncStatus.PARTIAL,
+			count: count ?? 0,
+		};
+
+		return operationReport;
+	}
 }

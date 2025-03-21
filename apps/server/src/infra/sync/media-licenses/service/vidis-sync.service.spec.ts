@@ -1,5 +1,6 @@
 import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
 import { OfferDTO } from '@infra/vidis-client';
+import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSource } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
@@ -11,7 +12,6 @@ import { Logger } from '@core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeepPartial } from 'fishery';
-import { vidisOfferItemFactory } from '../testing';
 import { VidisSyncService } from './vidis-sync.service';
 
 describe(VidisSyncService.name, () => {

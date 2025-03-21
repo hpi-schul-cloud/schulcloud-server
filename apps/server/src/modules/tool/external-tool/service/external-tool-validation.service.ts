@@ -17,7 +17,7 @@ export class ExternalToolValidationService {
 		private readonly configService: ConfigService<ToolConfig, true>
 	) {}
 
-	async validateCreate(externalTool: ExternalTool): Promise<void> {
+	public async validateCreate(externalTool: ExternalTool): Promise<void> {
 		await this.externalToolParameterValidationService.validateCommon(externalTool);
 
 		await this.validateOauth2Config(externalTool);
@@ -31,7 +31,7 @@ export class ExternalToolValidationService {
 		}
 	}
 
-	async validateUpdate(toolId: string, externalTool: ExternalTool): Promise<void> {
+	public async validateUpdate(toolId: string, externalTool: ExternalTool): Promise<void> {
 		if (toolId !== externalTool.id) {
 			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
 		}

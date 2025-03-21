@@ -7,22 +7,30 @@ import {
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
-import { BiloSyncStrategy } from './strategy';
+import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './strategy';
 
 @Injectable()
-export class MediaSourceSyncService {
-	private syncStrategyMap: Map<MediaSourceDataFormat, MediaSourceSyncStrategy>;
+export class MediaMetadataSyncService {
+	private metadataSyncStrategyMap: Map<MediaSourceDataFormat, MediaSourceSyncStrategy>;
 
 	constructor(
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly biloSyncStrategy: BiloSyncStrategy
+		private readonly biloMetadataSyncStrategy: BiloMetadataSyncStrategy,
+		private readonly vidisMetadataSyncStrategy: VidisMetadataSyncStrategy
 	) {
-		this.syncStrategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
-		this.syncStrategyMap.set(this.biloSyncStrategy.getMediaSourceFormat(), this.biloSyncStrategy);
+		this.metadataSyncStrategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
+		this.metadataSyncStrategyMap.set(
+			this.biloMetadataSyncStrategy.getMediaSourceFormat(),
+			this.biloMetadataSyncStrategy
+		);
+		this.metadataSyncStrategyMap.set(
+			this.vidisMetadataSyncStrategy.getMediaSourceFormat(),
+			this.vidisMetadataSyncStrategy
+		);
 	}
 
 	public async syncAllMediaMetadata(dataFormat: MediaSourceDataFormat): Promise<MediaSourceSyncReport> {
-		const strategy = this.syncStrategyMap.get(dataFormat);
+		const strategy = this.metadataSyncStrategyMap.get(dataFormat);
 
 		if (!strategy) {
 			throw new SyncStrategyNotImplementedLoggableException(dataFormat);

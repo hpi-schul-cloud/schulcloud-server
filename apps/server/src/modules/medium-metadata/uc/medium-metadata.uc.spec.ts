@@ -84,7 +84,7 @@ describe(MediumMetadataUc.name, () => {
 				const mockMetadata: MediumMetadataDto = mediumMetadataDtoFactory.build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				mediumMetadataService.getMetadata.mockResolvedValue(mockMetadata);
+				mediumMetadataService.getMetadataItem.mockResolvedValue(mockMetadata);
 
 				return {
 					user,

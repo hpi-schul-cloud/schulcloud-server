@@ -8,7 +8,7 @@ export class ExternalToolLogoWrongFileTypeLoggableException extends BusinessErro
 			{
 				type: 'EXTERNAL_TOOL_LOGO_WRONG_FILE_TYPE',
 				title: 'External tool logo wrong file type.',
-				defaultMessage: 'External tool logo has the wrong file type. Only JPEG and PNG files are supported.',
+				defaultMessage: 'External tool logo has the wrong file type. Only JPEG, PNG and GIF files are supported.',
 			},
 			HttpStatus.BAD_REQUEST
 		);
@@ -17,7 +17,7 @@ export class ExternalToolLogoWrongFileTypeLoggableException extends BusinessErro
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'EXTERNAL_TOOL_LOGO_WRONG_FILE_TYPE',
-			message: 'External tool logo has the wrong file type. Only JPEG and PNG files are supported.',
+			message: 'External tool logo has the wrong file type. Only JPEG, PNG and GIF files are supported.',
 			stack: this.stack,
 		};
 	}

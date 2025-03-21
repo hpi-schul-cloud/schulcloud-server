@@ -4,9 +4,12 @@ import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import {
+	MediumMetadataNotFoundLoggableException,
+	MediumMetadataStrategyNotImplementedLoggableException,
+} from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
 import { BiloStrategy } from './bilo.strategy';
-import { MediumMetadataNotFoundLoggableException } from '../loggable/medium-metadata-not-found-loggable.exception';
 
 describe(BiloStrategy.name, () => {
 	let module: TestingModule;
@@ -45,7 +48,7 @@ describe(BiloStrategy.name, () => {
 		});
 	});
 
-	describe('getMediumMetadata', () => {
+	describe('getMediumMetadataItem', () => {
 		describe('when mediumId and media source are given', () => {
 			const setup = () => {
 				const mediumId = 'medium-id';
@@ -63,7 +66,7 @@ describe(BiloStrategy.name, () => {
 			it('should return the fetched media metadata', async () => {
 				const { mediumId, mediaSource, expectedMediaMetadataDto } = setup();
 
-				const result = await strategy.getMediumMetadata(mediumId, mediaSource);
+				const result = await strategy.getMediumMetadataItem(mediumId, mediaSource);
 
 				expect(result).toEqual(expectedMediaMetadataDto);
 			});
@@ -82,10 +85,23 @@ describe(BiloStrategy.name, () => {
 			it('should throw not found exception', async () => {
 				const { mediumId, mediaSource } = setup();
 
-				const result = strategy.getMediumMetadata(mediumId, mediaSource);
+				const result = strategy.getMediumMetadataItem(mediumId, mediaSource);
 
 				await expect(result).rejects.toThrow(MediumMetadataNotFoundLoggableException);
 			});
+		});
+	});
+
+	describe('getMediumMetadataItems', () => {
+		it('should throw an MediumMetadataStrategyNotImplementedLoggableException', async () => {
+			const mediumId = 'medium-id';
+			const mediaSource = mediaSourceFactory.withBildungslogin().build();
+
+			const promise = strategy.getMediumMetadataItems([mediumId], mediaSource);
+
+			await expect(promise).rejects.toThrow(
+				new MediumMetadataStrategyNotImplementedLoggableException(MediaSourceDataFormat.BILDUNGSLOGIN)
+			);
 		});
 	});
 });
