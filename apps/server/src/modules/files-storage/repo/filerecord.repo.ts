@@ -39,7 +39,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocationId: EntityId
 	): Promise<number> {
 		const scope = new FileRecordScope()
-			.byStorageType(storageLocation)
+			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
 			.byMarkedForDelete(false);
 		const result = await this._em.nativeUpdate(this.entityName, scope.query, { deletedSince: new Date() });
@@ -54,7 +54,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
-			.byStorageType(storageLocation)
+			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
 			.byParentId(parentId)
 			.byMarkedForDelete(false);
@@ -70,7 +70,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		options?: IFindOptions<FileRecord>
 	): Promise<Counted<FileRecord[]>> {
 		const scope = new FileRecordScope()
-			.byStorageType(storageLocation)
+			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
 			.byParentId(parentId)
 			.byMarkedForDelete(true);
