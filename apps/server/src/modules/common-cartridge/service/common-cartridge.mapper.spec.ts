@@ -156,9 +156,7 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
-					title: `${(lessonContent.content as ComponentEtherpadPropsDto).title} - ${
-						(lessonContent.content as ComponentEtherpadPropsDto).description
-					}`,
+					title: `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsDto).description}`,
 					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				});
 			});
