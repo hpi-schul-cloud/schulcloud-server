@@ -6,13 +6,14 @@ import { MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
 import { mediaSourceSyncReportFactory } from '../testing';
 import { MediaMetadataSyncService } from './media-metadata-sync.service';
-import { BiloMetadataSyncStrategy } from './strategy';
+import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './strategy';
 
 describe(MediaMetadataSyncService.name, () => {
 	let module: TestingModule;
 	let service: MediaMetadataSyncService;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
-	let biloSyncStrategy: DeepMocked<BiloMetadataSyncStrategy>;
+	let biloMetadataSyncStrategy: DeepMocked<BiloMetadataSyncStrategy>;
+	let vidisMetadataSyncStrategy: DeepMocked<VidisMetadataSyncStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,12 +27,17 @@ describe(MediaMetadataSyncService.name, () => {
 					provide: BiloMetadataSyncStrategy,
 					useValue: createMock<BiloMetadataSyncStrategy>(),
 				},
+				{
+					provide: VidisMetadataSyncStrategy,
+					useValue: createMock<VidisMetadataSyncStrategy>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(MediaMetadataSyncService);
 		mediaSourceService = module.get(MediaSourceService);
-		biloSyncStrategy = module.get(BiloMetadataSyncStrategy);
+		biloMetadataSyncStrategy = module.get(BiloMetadataSyncStrategy);
+		vidisMetadataSyncStrategy = module.get(VidisMetadataSyncStrategy);
 	});
 
 	afterAll(async () => {
@@ -46,20 +52,19 @@ describe(MediaMetadataSyncService.name, () => {
 		describe('when a media source data format with sync strategy is passed', () => {
 			describe('when the media source can be found', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withBildungslogin().build();
+					const biloMediaSource = mediaSourceFactory.withBildungslogin().build();
 					const report = mediaSourceSyncReportFactory.build();
 
-					biloSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
-					mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
-
-					const mediaSourceDataFormat = mediaSource.format as MediaSourceDataFormat;
+					biloMetadataSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
+					mediaSourceService.findByFormat.mockResolvedValue(biloMediaSource);
 
 					const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
-						[mediaSourceDataFormat, biloSyncStrategy],
+						[biloMediaSource.format as MediaSourceDataFormat, biloMetadataSyncStrategy],
+						[MediaSourceDataFormat.VIDIS, vidisMetadataSyncStrategy],
 					]);
 					Reflect.set(service, 'metadataSyncStrategyMap', strategyMap);
 
-					return { mediaSourceDataFormat, report };
+					return { mediaSourceDataFormat: biloMediaSource.format as MediaSourceDataFormat, report };
 				};
 
 				it('should sync the media metadata using the sync strategy', async () => {
@@ -67,7 +72,7 @@ describe(MediaMetadataSyncService.name, () => {
 
 					await service.syncAllMediaMetadata(mediaSourceDataFormat);
 
-					expect(biloSyncStrategy.syncAllMediaMetadata).toBeCalled();
+					expect(biloMetadataSyncStrategy.syncAllMediaMetadata).toBeCalled();
 				});
 
 				it('should return a sync report', async () => {
@@ -84,11 +89,11 @@ describe(MediaMetadataSyncService.name, () => {
 					const mediaSourceDataFormat = MediaSourceDataFormat.BILDUNGSLOGIN;
 					const report = mediaSourceSyncReportFactory.build();
 
-					biloSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
+					biloMetadataSyncStrategy.syncAllMediaMetadata.mockResolvedValue(report);
 					mediaSourceService.findByFormat.mockResolvedValue(null);
 
 					const strategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>([
-						[mediaSourceDataFormat, biloSyncStrategy],
+						[mediaSourceDataFormat, biloMetadataSyncStrategy],
 					]);
 					Reflect.set(service, 'metadataSyncStrategyMap', strategyMap);
 

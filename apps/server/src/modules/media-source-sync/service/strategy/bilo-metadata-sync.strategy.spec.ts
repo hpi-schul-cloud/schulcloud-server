@@ -10,9 +10,10 @@ import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/do
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MediaSourceSyncReport } from '../../interface';
-import { mediaSourceSyncOperationReportFactory } from '../../testing';
+import { mediaSourceSyncOperationReportFactory, mediaSourceSyncReportFactory } from '../../testing';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { BiloMetadataSyncStrategy } from './bilo-metadata-sync.strategy';
+import { MediaSourceSyncReportFactory } from '@modules/media-source-sync/factory';
 
 describe(BiloMetadataSyncStrategy.name, () => {
 	let module: TestingModule;
@@ -68,23 +69,19 @@ describe(BiloMetadataSyncStrategy.name, () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
 
+				const emptyReport = MediaSourceSyncReportFactory.buildEmptyReport();
+
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([]);
 
-				return { mediaSource };
+				return { mediaSource, emptyReport };
 			};
 
 			it('should return an empty report', async () => {
-				const { mediaSource } = setup();
+				const { mediaSource, emptyReport } = setup();
 
 				const result = await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(result).toEqual({
-					totalCount: 0,
-					successCount: 0,
-					undeliveredCount: 0,
-					failedCount: 0,
-					operations: [],
-				});
+				expect(result).toEqual(emptyReport);
 			});
 
 			it('should not fetch and sync any media metadata', async () => {
@@ -136,12 +133,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					)
 				);
 
-				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-					totalCount: mediums.length,
-					successCount: mediums.length,
-					undeliveredCount: 0,
-					failedCount: 0,
-				};
+				const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+					.withOthersEmpty({ totalCount: mediums.length, successCount: mediums.length })
+					.build();
+				delete expectedSyncReport.operations;
 
 				const expectedOperations = [
 					mediaSourceSyncOperationReportFactory.build({
@@ -221,12 +216,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 						)
 					);
 
-					const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-						totalCount: mediums.length,
-						successCount: mediums.length,
-						undeliveredCount: 0,
-						failedCount: 0,
-					};
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+						.withOthersEmpty({ totalCount: mediums.length, successCount: mediums.length })
+						.build();
+					delete expectedSyncReport.operations;
 
 					const expectedOperations = [
 						mediaSourceSyncOperationReportFactory.build({
@@ -287,12 +280,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
 					biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce(metadataItems);
 
-					const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-						totalCount: mediums.length,
-						successCount: mediums.length,
-						undeliveredCount: 0,
-						failedCount: 0,
-					};
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+						.withOthersEmpty({ totalCount: mediums.length, successCount: mediums.length })
+						.build();
+					delete expectedSyncReport.operations;
 
 					const expectedOperations = [
 						mediaSourceSyncOperationReportFactory.build({
@@ -353,12 +344,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
 					biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce(metadataItems);
 
-					const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-						totalCount: mediums.length,
-						successCount: mediums.length,
-						undeliveredCount: 0,
-						failedCount: 0,
-					};
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+						.withOthersEmpty({ totalCount: mediums.length, successCount: mediums.length })
+						.build();
+					delete expectedSyncReport.operations;
 
 					const expectedOperations = [
 						mediaSourceSyncOperationReportFactory.build({
@@ -395,12 +384,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
 				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce([]);
 
-				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-					totalCount: mediums.length,
-					successCount: 0,
-					undeliveredCount: 3,
-					failedCount: 0,
-				};
+				const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+					.withOthersEmpty({ totalCount: mediums.length, undeliveredCount: mediums.length })
+					.build();
+				delete expectedSyncReport.operations;
 
 				const expectedOperations = [
 					mediaSourceSyncOperationReportFactory.build({
@@ -478,12 +465,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					),
 				];
 
-				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-					totalCount: mediums.length,
-					successCount: 1,
-					undeliveredCount: 0,
-					failedCount: 2,
-				};
+				const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+					.withOthersEmpty({ totalCount: mediums.length, successCount: 1, failedCount: 2 })
+					.build();
+				delete expectedSyncReport.operations;
 
 				const expectedOperations = [
 					mediaSourceSyncOperationReportFactory.build({

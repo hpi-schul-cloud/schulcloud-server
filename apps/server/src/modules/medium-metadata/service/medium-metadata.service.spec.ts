@@ -112,7 +112,7 @@ describe(MediumMetadataService.name, () => {
 			});
 		});
 
-		describe('when the media source has no  data format', () => {
+		describe('when the media source has no data format', () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.build();
 				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);

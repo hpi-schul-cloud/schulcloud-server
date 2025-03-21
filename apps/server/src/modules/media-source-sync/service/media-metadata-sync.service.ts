@@ -7,7 +7,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
-import { BiloMetadataSyncStrategy } from './strategy';
+import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './strategy';
 
 @Injectable()
 export class MediaMetadataSyncService {
@@ -15,10 +15,18 @@ export class MediaMetadataSyncService {
 
 	constructor(
 		private readonly mediaSourceService: MediaSourceService,
-		private readonly biloSyncStrategy: BiloMetadataSyncStrategy
+		private readonly biloMetadataSyncStrategy: BiloMetadataSyncStrategy,
+		private readonly vidisMetadataSyncStrategy: VidisMetadataSyncStrategy
 	) {
 		this.metadataSyncStrategyMap = new Map<MediaSourceDataFormat, MediaSourceSyncStrategy>();
-		this.metadataSyncStrategyMap.set(this.biloSyncStrategy.getMediaSourceFormat(), this.biloSyncStrategy);
+		this.metadataSyncStrategyMap.set(
+			this.biloMetadataSyncStrategy.getMediaSourceFormat(),
+			this.biloMetadataSyncStrategy
+		);
+		this.metadataSyncStrategyMap.set(
+			this.vidisMetadataSyncStrategy.getMediaSourceFormat(),
+			this.vidisMetadataSyncStrategy
+		);
 	}
 
 	public async syncAllMediaMetadata(dataFormat: MediaSourceDataFormat): Promise<MediaSourceSyncReport> {

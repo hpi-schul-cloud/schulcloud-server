@@ -23,9 +23,8 @@ export class MediumMetadataMapper {
 	public static mapVidisMetadataToMediumMetadata(mediumId: string, metadataItem: OfferDTO): MediumMetadataDto {
 		const mediumMetadata: MediumMetadataDto = new MediumMetadataDto({
 			mediumId,
-			name: metadataItem.offerTitle ?? '',
+			name: metadataItem.offerTitle ?? metadataItem.offerLongTitle ?? '',
 			description: metadataItem.offerDescription,
-			publisher: metadataItem.educationProviderOrganizationName,
 			logo: metadataItem.offerLogo,
 		});
 

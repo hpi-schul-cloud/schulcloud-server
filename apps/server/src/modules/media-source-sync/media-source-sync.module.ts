@@ -1,12 +1,12 @@
 import { LoggerModule } from '@core/logger';
 import { BiloClientModule } from '@infra/bilo-client';
 import { MediaSourceModule } from '@modules/media-source';
+import { MediumMetadataModule } from '@modules/medium-metadata';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { MediaMetadataSyncService } from './service';
-import { BiloMetadataSyncStrategy } from './service/strategy';
-import { MediumMetadataModule } from '@modules/medium-metadata';
+import { BiloMetadataSyncStrategy, VidisMetadataSyncStrategy } from './service/strategy';
 
 @Module({
 	imports: [
@@ -17,7 +17,7 @@ import { MediumMetadataModule } from '@modules/medium-metadata';
 		ExternalToolModule,
 		MediumMetadataModule,
 	],
-	providers: [MediaMetadataSyncService, BiloMetadataSyncStrategy],
+	providers: [MediaMetadataSyncService, BiloMetadataSyncStrategy, VidisMetadataSyncStrategy],
 	exports: [MediaMetadataSyncService],
 })
 export class MediaSourceSyncModule {}
