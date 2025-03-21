@@ -7,7 +7,7 @@ export class ConsentEntity {
 	@Embedded(() => UserConsentEntity, { nullable: true, object: true })
 	userConsent?: UserConsentEntity;
 
-	@Embedded(() => ParentConsentEntity, { array: true, nullable: true, object: true })
+	@Embedded(() => ParentConsentEntity, { array: true, nullable: true })
 	parentConsents?: ParentConsentEntity[];
 
 	constructor(props: ConsentEntity) {
