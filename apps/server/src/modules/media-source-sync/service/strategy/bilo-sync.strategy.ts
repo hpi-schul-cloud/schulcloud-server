@@ -71,10 +71,12 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 			const metadata = metadataItems.find(
 				(item: BiloMediaQueryDataResponse) => externalTool.medium?.mediumId === item.id
 			);
+
 			if (!metadata) {
 				statusReports.undelivered.count++;
 				return null;
 			}
+
 			if (this.isMetadataUpToDate(externalTool, metadata)) {
 				statusReports.updateSuccess.count++;
 				return null;
@@ -82,7 +84,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 			const isFirstSync = !externalTool.medium?.metadataModifiedAt;
 			try {
-				await this.buildExternalToolMetadataUpdate(externalTool, metadata);
+				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, metadata);
 				isFirstSync ? statusReports.createSuccess.count++ : statusReports.updateSuccess.count++;
 				return externalTool;
 			} catch (error: unknown) {
@@ -101,6 +103,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
 			(updateResult: ExternalTool | null) => !!updateResult
 		);
+
 		await this.externalToolService.updateExternalTools(updatedExternalTools);
 
 		const syncStatusReport: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
@@ -114,11 +117,9 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 	}
 
 	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryDataResponse): boolean {
-		if (!externalTool.medium || !externalTool.medium.metadataModifiedAt) {
-			return false;
-		}
-
-		const isUpToDate = externalTool.medium.metadataModifiedAt.getTime() >= metadata.modified;
+		const isUpToDate =
+			!!externalTool.medium?.metadataModifiedAt &&
+			externalTool.medium.metadataModifiedAt.getTime() >= new Date(metadata.modified).getTime();
 
 		return isUpToDate;
 	}
