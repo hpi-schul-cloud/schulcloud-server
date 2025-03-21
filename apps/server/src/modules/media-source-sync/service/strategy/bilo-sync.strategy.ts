@@ -91,7 +91,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 				this.logger.debug(
 					new BiloMediaMetadataSyncFailedLoggable(
 						externalTool.medium?.mediumId as string,
-						externalTool.medium?.mediaSourceId as string
+						externalTool.medium?.mediaSourceId as string,
+						error
 					)
 				);
 				failureReport.count += 1;
