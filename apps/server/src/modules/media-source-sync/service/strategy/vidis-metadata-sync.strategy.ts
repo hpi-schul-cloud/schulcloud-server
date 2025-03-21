@@ -113,8 +113,8 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 			return false;
 		}
 
-		const hasNameAndUnequal = vidisMetadata.name !== '' && vidisMetadata.name !== vidisMetadata.name;
-		const hasLogoAndUnequal = !vidisMetadata.logo && vidisMetadata.logo !== vidisMetadata.logo;
+		const hasNameAndUnequal = vidisMetadata.name !== '' && externalTool.name !== vidisMetadata.name;
+		const hasLogoAndUnequal = vidisMetadata.logo !== undefined && externalTool.logo !== vidisMetadata.logo;
 
 		const isUpToDate = !hasNameAndUnequal && !hasLogoAndUnequal;
 

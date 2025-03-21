@@ -164,7 +164,11 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
-					const offerItem = vidisOfferItemFactory.build({ offerTitle: 'test-vidis-title' });
+					const offerItem = vidisOfferItemFactory.build({
+						offerTitle: 'test-vidis-title',
+						offerLogo: undefined,
+						offerDescription: 'Test Vidis Description',
+					});
 					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
 						(offerItem.offerId as number).toString(),
 						offerItem
@@ -175,7 +179,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 							mediumId: metadataItem.mediumId.toString(),
 							mediaSourceId: mediaSource.sourceId,
 						})
-						.build({ name: `${metadataItem.name}-other` });
+						.build({ name: `${metadataItem.name}-other`, description: metadataItem.description });
 
 					const mockedLogoImageType = ImageMimeType.PNG;
 					const updatedExternalTool = externalToolFactory.buildWithId(
@@ -183,8 +187,6 @@ describe(VidisMetadataSyncStrategy.name, () => {
 							...externalTool.getProps(),
 							name: metadataItem.name,
 							description: metadataItem.description,
-							logo: metadataItem.logo,
-							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 						},
 						externalTool.id
 					);
@@ -237,7 +239,10 @@ describe(VidisMetadataSyncStrategy.name, () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
 					const offerItem = vidisOfferItemFactory.build({
+						offerTitle: undefined,
+						offerLongTitle: undefined,
 						offerLogo: btoa('VIDIS Test Logo'),
+						offerDescription: 'Test Vidis Description',
 					});
 					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
 						(offerItem.offerId as number).toString(),
@@ -249,7 +254,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 							mediumId: metadataItem.mediumId.toString(),
 							mediaSourceId: mediaSource.sourceId,
 						})
-						.build({ logo: btoa('Other VIDIS Test Logo') });
+						.build({ logo: btoa('Other VIDIS Test Logo'), description: metadataItem.description });
 
 					const mockedLogoImageType = ImageMimeType.PNG;
 					const updatedExternalTool = externalToolFactory.buildWithId(
@@ -257,7 +262,6 @@ describe(VidisMetadataSyncStrategy.name, () => {
 							...externalTool.getProps(),
 							logo: metadataItem.logo,
 							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
-							name: metadataItem.name,
 							description: metadataItem.description,
 						},
 						externalTool.id
