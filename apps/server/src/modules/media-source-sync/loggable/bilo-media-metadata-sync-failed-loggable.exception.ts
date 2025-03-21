@@ -17,7 +17,9 @@ export class BiloMediaMetadataSyncFailedLoggable implements Loggable {
 		if (ErrorUtils.isBusinessError(this.error)) {
 			errorMessage = `${this.error.title} ${this.error.message}`;
 			errorType = this.error.type;
-		} else if (this.error instanceof Error) {
+		}
+
+		if (this.error instanceof Error) {
 			errorMessage = this.error.message;
 		}
 
