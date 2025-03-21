@@ -33,7 +33,9 @@ export class BiloStrategy implements MediumMetadataStrategy {
 		return mediumMetadataDto;
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async getMediumMetadataItems(mediumIds: string[], mediaSource: MediaSource): Promise<MediumMetadataDto[]> {
+		await Promise.resolve();
 		throw new MediumMetadataStrategyNotImplementedLoggableException(MediaSourceDataFormat.BILDUNGSLOGIN);
 	}
 }
