@@ -1,44 +1,42 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
-import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
+import { type EntityData, type FindOptions, NotFoundError, type QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { MultipleUsersFoundLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
-import { Role } from '@modules/role/repo';
+import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/repo';
+import type { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType, SortOrder } from '@shared/domain/interface';
+import { type IFindOptions, LanguageType, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { UserDo, UserSourceOptions } from '../domain';
-import { UserDiscoverableQuery } from '../domain/query/user-query';
+import { MultipleUsersFoundLoggableException, UserDiscoverableQuery, type UserDo, UserSourceOptions } from '../domain';
 import { userDoFactory, userFactory } from '../testing';
-import { UserDORepo } from './user-do.repo';
+import { UserDoMikroOrmRepo } from './user-do.repo';
 import { User } from './user.entity';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
-	let repo: UserDORepo;
+	let repo: UserDoMikroOrmRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
 			providers: [
-				UserDORepo,
+				UserDoMikroOrmRepo,
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
-		repo = module.get(UserDORepo);
+		repo = module.get(UserDoMikroOrmRepo);
 		em = module.get(EntityManager);
 	});
 

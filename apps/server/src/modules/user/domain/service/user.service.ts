@@ -5,11 +5,11 @@ import {
 	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
-	DeletionService,
-	DomainDeletionReport,
+	type DeletionService,
+	type DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
-	DomainOperationReport,
+	type DomainOperationReport,
 	DomainOperationReportBuilder,
 	OperationReportHelper,
 	OperationType,
@@ -17,28 +17,30 @@ import {
 	UserDeletedEvent,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { RoleDto, RoleName, RoleService } from '@modules/role';
-import { SchoolEntity } from '@modules/school/repo';
-import { ImportUserNameMatchFilter } from '@modules/user-import/domain/interface';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { type RoleDto, RoleName, RoleService } from '@modules/role';
+import type { SchoolEntity } from '@modules/school/repo';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
-import { Counted, EntityId } from '@shared/domain/types';
-import { UserDto } from '../../api/dto';
-import { UserMapper } from '../../api/mapper';
-import { UserConfig, UserDo } from '../../domain';
-import { User, UserDORepo, UserRepo } from '../../repo';
+import type { IFindOptions, LanguageType } from '@shared/domain/interface';
+import type { Counted, EntityId } from '@shared/domain/types';
+import type { UserDto } from '../../api/dto';
+import type { UserConfig, UserDo } from '../../domain';
+import type { User } from '../../repo/user.entity';
+import { UserMikroOrmRepo } from '../../repo/user.repo';
+import { USER_DO_REPO, UserDoRepo } from '../interface';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable';
-import { UserDiscoverableQuery, UserQuery } from '../query';
+import { UserDiscoverableQuery, type UserQuery } from '../query';
+import type { UserName } from '../type';
+import { UserMapper } from '../mapper';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
 export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
-		private readonly userRepo: UserRepo,
-		private readonly userDORepo: UserDORepo,
+		@Inject(USER_DO_REPO) private readonly userDoRepo: UserDoRepo,
+		private readonly userRepo: UserMikroOrmRepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly registrationPinService: RegistrationPinService,
@@ -81,25 +83,25 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async findById(id: string): Promise<UserDo> {
-		const userDO = await this.userDORepo.findById(id, true);
+		const userDO = await this.userDoRepo.findById(id, true);
 
 		return userDO;
 	}
 
 	public async findByIds(ids: string[]): Promise<UserDo[]> {
-		const userDOs = await this.userDORepo.findByIds(ids, true);
+		const userDOs = await this.userDoRepo.findByIds(ids, true);
 
 		return userDOs;
 	}
 
 	public async findByIdOrNull(id: string): Promise<UserDo | null> {
-		const userDO = await this.userDORepo.findByIdOrNull(id, true);
+		const userDO = await this.userDoRepo.findByIdOrNull(id, true);
 
 		return userDO;
 	}
 
 	public async save(user: UserDo): Promise<UserDo> {
-		const savedUser = await this.userDORepo.save(user);
+		const savedUser = await this.userDoRepo.save(user);
 
 		return savedUser;
 	}
@@ -109,13 +111,13 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async saveAll(users: UserDo[]): Promise<UserDo[]> {
-		const savedUsers = await this.userDORepo.saveAll(users);
+		const savedUsers = await this.userDoRepo.saveAll(users);
 
 		return savedUsers;
 	}
 
 	public async findUsers(query: UserQuery, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
-		const users = await this.userDORepo.find(query, options);
+		const users = await this.userDoRepo.find(query, options);
 
 		return users;
 	}
@@ -152,7 +154,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async addSecondarySchoolToUsers(userIds: string[], schoolId: EntityId): Promise<void> {
-		const users = await this.userDORepo.findByIds(userIds, true);
+		const users = await this.userDoRepo.findByIds(userIds, true);
 		const guestStudent = await this.roleService.findByName(RoleName.GUESTSTUDENT);
 		const guestTeacher = await this.roleService.findByName(RoleName.GUESTTEACHER);
 
@@ -174,27 +176,27 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 				user.secondarySchools.push({ schoolId, role: new RoleReference(guestRole) });
 			});
 
-		await this.userDORepo.saveAll(users);
+		await this.userDoRepo.saveAll(users);
 	}
 
 	public async removeSecondarySchoolFromUsers(userIds: string[], schoolId: EntityId): Promise<void> {
-		const users = await this.userDORepo.findByIds(userIds, true);
+		const users = await this.userDoRepo.findByIds(userIds, true);
 
 		users.forEach((user) => {
 			user.secondarySchools = user.secondarySchools.filter((school) => school.schoolId !== schoolId);
 		});
 
-		await this.userDORepo.saveAll(users);
+		await this.userDoRepo.saveAll(users);
 	}
 
 	public async findByExternalId(externalId: string, systemId: EntityId): Promise<UserDo | null> {
-		const user = await this.userDORepo.findByExternalId(externalId, systemId);
+		const user = await this.userDoRepo.findByExternalId(externalId, systemId);
 
 		return user;
 	}
 
 	public async findByEmail(email: string): Promise<UserDo[]> {
-		const user = await this.userDORepo.findByEmail(email);
+		const user = await this.userDoRepo.findByEmail(email);
 
 		return user;
 	}
@@ -358,17 +360,17 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public findByTspUids(tspUids: string[]): Promise<UserDo[]> {
-		const userDOs = this.userDORepo.findByTspUids(tspUids);
+		const userDOs = this.userDoRepo.findByTspUids(tspUids);
 
 		return userDOs;
 	}
 
 	public findForImportUser(
 		school: SchoolEntity,
-		filters?: ImportUserNameMatchFilter,
+		userName?: UserName,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
-		const users = this.userRepo.findForImportUser(school, filters, options);
+		const users = this.userRepo.findForImportUser(school, userName, options);
 
 		return users;
 	}
