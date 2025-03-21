@@ -137,7 +137,7 @@ describe('Room Controller (API)', () => {
 					expect.objectContaining({
 						userId: teacherUser.id,
 						roomRoleName: roomEditorRole.name,
-						schoolRoleName: RoleName.TEACHER,
+						schoolRoleNames: [RoleName.TEACHER],
 					})
 				);
 				students.forEach((student) => {
@@ -145,7 +145,7 @@ describe('Room Controller (API)', () => {
 						expect.objectContaining({
 							userId: student.id,
 							roomRoleName: roomViewerRole.name,
-							schoolRoleName: RoleName.STUDENT,
+							schoolRoleNames: [RoleName.STUDENT],
 						})
 					);
 				});
@@ -154,7 +154,7 @@ describe('Room Controller (API)', () => {
 						expect.objectContaining({
 							userId: teacher.id,
 							roomRoleName: roomEditorRole.name,
-							schoolRoleName: RoleName.TEACHER,
+							schoolRoleNames: [RoleName.TEACHER],
 						})
 					);
 				});
