@@ -9,10 +9,15 @@ import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domai
 import { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
+import { ObjectId } from 'bson';
+import { Consent, ParentConsent, UserConsent } from '../domain';
 import { UserSourceOptions } from '../domain/do/user-source-options';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';
+import { ConsentEntity } from './consent.entity';
+import { ParentConsentEntity } from './parent-consent.entity';
 import { UserScope } from './scope/user.scope';
+import { UserConsentEntity } from './user-consent.entity';
 import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
 
@@ -168,6 +173,7 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 			birthday: entity.birthday,
 			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 			lastSyncedAt: entity.lastSyncedAt,
+			consent: entity.consent ? this.mapConsentEntityToDo(entity.consent) : undefined,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -217,6 +223,7 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
 				: undefined,
 			lastSyncedAt: entityDO.lastSyncedAt,
+			consent: entityDO.consent ? this.mapConsentToEntity(entityDO.consent) : undefined,
 		};
 	}
 
@@ -234,6 +241,66 @@ export class UserDORepo extends BaseDORepo<UserDo, User> {
 		const userDOs = users.map((user) => this.mapEntityToDO(user));
 
 		return userDOs;
+	}
+
+	private mapConsentEntityToDo(consentEntity: ConsentEntity): Consent {
+		const consent = new Consent({
+			userConsent: consentEntity.userConsent
+				? new UserConsent({
+						form: consentEntity.userConsent.form,
+						dateOfPrivacyConsent: consentEntity.userConsent.dateOfPrivacyConsent,
+						dateOfTermsOfUseConsent: consentEntity.userConsent.dateOfTermsOfUseConsent,
+						privacyConsent: consentEntity.userConsent.privacyConsent,
+						termsOfUseConsent: consentEntity.userConsent.termsOfUseConsent,
+				  })
+				: undefined,
+			parentConsents:
+				consentEntity.parentConsents !== undefined
+					? consentEntity.parentConsents.map(
+							(parentConsent) =>
+								new ParentConsent({
+									id: parentConsent._id.toHexString(),
+									form: parentConsent.form,
+									dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
+									dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
+									privacyConsent: parentConsent.privacyConsent,
+									termsOfUseConsent: parentConsent.termsOfUseConsent,
+								})
+					  )
+					: undefined,
+		});
+
+		return consent;
+	}
+
+	private mapConsentToEntity(consent: Consent): ConsentEntity {
+		const consentEntity = new ConsentEntity({
+			userConsent: consent.userConsent
+				? new UserConsentEntity({
+						form: consent.userConsent.form,
+						dateOfPrivacyConsent: consent.userConsent.dateOfPrivacyConsent,
+						dateOfTermsOfUseConsent: consent.userConsent.dateOfTermsOfUseConsent,
+						privacyConsent: consent.userConsent.privacyConsent,
+						termsOfUseConsent: consent.userConsent.termsOfUseConsent,
+				  })
+				: undefined,
+			parentConsents:
+				consent.parentConsents !== undefined
+					? consent.parentConsents.map(
+							(parentConsent) =>
+								new ParentConsentEntity({
+									_id: new ObjectId(parentConsent.id),
+									form: parentConsent.form,
+									dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
+									dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
+									privacyConsent: parentConsent.privacyConsent,
+									termsOfUseConsent: parentConsent.termsOfUseConsent,
+								})
+					  )
+					: undefined,
+		});
+
+		return consentEntity;
 	}
 
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
