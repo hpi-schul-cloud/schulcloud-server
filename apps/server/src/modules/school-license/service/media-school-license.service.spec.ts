@@ -349,7 +349,7 @@ describe(MediaSchoolLicenseService.name, () => {
 			});
 		});
 
-		describe('when school with without official school number was found ', () => {
+		describe('when school without official school number was found ', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: undefined });
 

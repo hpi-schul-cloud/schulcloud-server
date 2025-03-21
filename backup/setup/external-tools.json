@@ -1168,7 +1168,7 @@
 			"$date": "2024-03-25T09:17:04.688Z"
 		},
 		"name": "VIDIS Test Medium 1",
-		"description": "Available for school numbers: 20202, 40404, 101010",
+		"description": "Available for school numbers: 20202, 40404",
 		"medium": {
 			"mediumId": "1422092",
 			"mediaSourceId": "vidis.fwu.de"
@@ -1191,7 +1191,7 @@
 			"$date": "2024-03-25T09:17:04.688Z"
 		},
 		"name": "VIDIS Test Medium 2",
-		"description": "Available for school numbers: 30303, 20202, 101010",
+		"description": "Available for school numbers: 30303, 20202",
 		"medium": {
 			"mediumId": "1454059",
 			"mediaSourceId": "vidis.fwu.de"
