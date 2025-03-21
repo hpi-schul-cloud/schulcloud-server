@@ -591,7 +591,8 @@
 		},
 		"name": "roomviewer",
 		"permissions": [
-			"ROOM_VIEW"
+			"ROOM_VIEW",
+			"ROOM_LEAVE"
 		]
 	},
 	{
@@ -601,7 +602,7 @@
 		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
-			"ROOM_EDIT",
+			"ROOM_CONTENT_EDIT",
 			"ROOM_LEAVE"
 		]
 	},
@@ -631,7 +632,8 @@
 			"ROOM_MEMBERS_ADD",
 			"ROOM_MEMBERS_REMOVE",
 			"ROOM_CHANGE_OWNER",
-			"ROOM_MEMBERS_CHANGE_ROLE"
+			"ROOM_MEMBERS_CHANGE_ROLE",
+			"ROOM_CONTENT_EDIT"
 		]
 	},
 	{
@@ -645,7 +647,8 @@
 			"ROOM_MEMBERS_ADD",
 			"ROOM_MEMBERS_REMOVE",
 			"ROOM_MEMBERS_CHANGE_ROLE",
-			"ROOM_LEAVE"
+			"ROOM_LEAVE",
+			"ROOM_CONTENT_EDIT"
 		]
 	},
 	{

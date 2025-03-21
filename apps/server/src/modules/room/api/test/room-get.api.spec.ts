@@ -1,9 +1,8 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -95,13 +94,10 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const role = roleFactory.buildWithId({
-					name: RoleName.ROOMVIEWER,
-					permissions: [Permission.ROOM_VIEW],
-				});
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role, user: studentUser }],
+					users: [{ role: roomViewerRole, user: studentUser }],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -110,7 +106,7 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([room, studentAccount, studentUser, role, userGroupEntity, roomMembership]);
+				await em.persistAndFlush([room, studentAccount, studentUser, roomViewerRole, userGroupEntity, roomMembership]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -124,7 +120,7 @@ describe('Room Controller (API)', () => {
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
-					permissions: [Permission.ROOM_VIEW],
+					permissions: [Permission.ROOM_VIEW, Permission.ROOM_LEAVE],
 				};
 
 				return { loggedInClient, room, expectedResponse };

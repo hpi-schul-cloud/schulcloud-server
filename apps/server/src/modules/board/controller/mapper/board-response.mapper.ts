@@ -2,9 +2,10 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { BoardFeature, Column, ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 export class BoardResponseMapper {
-	static mapToResponse(board: ColumnBoard, features: BoardFeature[]): BoardResponse {
+	public static mapToResponse(board: ColumnBoard, features: BoardFeature[], permissions: Permission[]): BoardResponse {
 		const result = new BoardResponse({
 			id: board.id,
 			title: board.title,
@@ -22,6 +23,7 @@ export class BoardResponseMapper {
 			isVisible: board.isVisible,
 			layout: board.layout,
 			features,
+			permissions,
 		});
 		return result;
 	}

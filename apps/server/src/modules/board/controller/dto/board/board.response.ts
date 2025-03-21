@@ -3,9 +3,10 @@ import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { BoardFeature, BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 import { ColumnResponse } from './column.response';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 export class BoardResponse {
-	constructor({ id, title, columns, timestamps, isVisible, layout, features }: BoardResponse) {
+	constructor({ id, title, columns, timestamps, isVisible, layout, features, permissions }: BoardResponse) {
 		this.id = id;
 		this.title = title;
 		this.columns = columns;
@@ -13,6 +14,7 @@ export class BoardResponse {
 		this.isVisible = isVisible;
 		this.layout = layout;
 		this.features = features;
+		this.permissions = permissions;
 	}
 
 	@ApiProperty({
@@ -40,4 +42,7 @@ export class BoardResponse {
 
 	@ApiProperty({ enum: BoardFeature, isArray: true, enumName: 'BoardFeature' })
 	features: BoardFeature[];
+
+	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
+	permissions: Permission[];
 }

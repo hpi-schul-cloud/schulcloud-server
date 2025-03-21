@@ -17,6 +17,7 @@ import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { TeamRepo } from '@modules/team/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
@@ -474,13 +475,10 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room editor role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleEditor = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT],
-				});
+				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
-					users: [{ userId: user.id, roleId: roleEditor.id }],
+					users: [{ userId: user.id, roleId: roomEditorRole.id }],
 				});
 				const room = roomFactory.build();
 				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -490,7 +488,7 @@ describe(VideoConferenceService.name, () => {
 				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: user.id, roles: [roleEditor] }],
+					members: [{ userId: user.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -656,10 +654,10 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room viewer role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
-					users: [{ userId: user.id, roleId: roleViewer.id }],
+					users: [{ userId: user.id, roleId: roomViewerRole.id }],
 				});
 				const room = roomFactory.build();
 				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -670,13 +668,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roleViewer] }],
+						members: [{ userId: user.id, roles: [roomViewerRole] }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roleViewer] }],
+						members: [{ userId: user.id, roles: [roomViewerRole] }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -1096,10 +1094,10 @@ describe(VideoConferenceService.name, () => {
 			const team = teamFactory
 				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
 				.build();
-			const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupFactory.build({
 				type: GroupTypes.ROOM,
-				users: [{ userId: roomUser.id, roleId: roleEditor.id }],
+				users: [{ userId: roomUser.id, roleId: roomEditorRole.id }],
 			});
 			const room = roomFactory.build();
 			roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -1107,13 +1105,13 @@ describe(VideoConferenceService.name, () => {
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				})
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				});
 

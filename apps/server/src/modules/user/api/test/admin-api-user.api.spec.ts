@@ -3,6 +3,7 @@ import { AccountEntity } from '@modules/account/repo';
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
@@ -16,7 +17,6 @@ describe('Admin API - Users (API)', () => {
 	let app: INestApplication;
 	let testApiClient: TestApiClient;
 	let em: EntityManager;
-	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +26,10 @@ describe('Admin API - Users (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
+
+		testApiClient = new TestApiClient(app, baseRouteName, apiKeys[0], true);
 	});
 
 	afterAll(async () => {
