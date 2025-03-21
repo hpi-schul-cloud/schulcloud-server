@@ -26,7 +26,6 @@ import { Page, RoleReference } from '@shared/domain/domainobject';
 import type { IFindOptions, LanguageType } from '@shared/domain/interface';
 import type { Counted, EntityId } from '@shared/domain/types';
 import type { UserDto } from '../../api/dto';
-import { UserMapper } from '../../api/mapper';
 import type { UserConfig, UserDo } from '../../domain';
 import type { User } from '../../repo/user.entity';
 import { UserMikroOrmRepo } from '../../repo/user.repo';
@@ -34,6 +33,7 @@ import { USER_DO_REPO, UserDoRepo } from '../interface';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable';
 import { UserDiscoverableQuery, type UserQuery } from '../query';
 import type { UserName } from '../type';
+import { UserMapper } from '../mapper';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

@@ -1,6 +1,6 @@
-import { Role } from '@modules/role/repo';
+import type { Role } from '@modules/role/repo';
 import { UserDto } from '../../api/dto/user.dto';
-import { User } from '../../repo';
+import type { User } from '../../repo';
 
 export class UserMapper {
 	public static mapFromEntityToDto(entity: User): UserDto {
