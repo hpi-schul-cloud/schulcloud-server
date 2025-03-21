@@ -1,4 +1,5 @@
 import { LogMessage } from '@core/logger';
+import { MediaSourceDataFormat } from '../../media-source/enum';
 import { BiloMediaMetadataSyncFailedLoggable } from './bilo-media-metadata-sync-failed-loggable.exception';
 
 describe(BiloMediaMetadataSyncFailedLoggable.name, () => {
@@ -25,6 +26,7 @@ describe(BiloMediaMetadataSyncFailedLoggable.name, () => {
 				data: {
 					mediumId,
 					mediaSourceId,
+					mediaSourceDataFormat: MediaSourceDataFormat.BILDUNGSLOGIN,
 				},
 			} as LogMessage);
 		});

@@ -1,4 +1,5 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { MediaSourceDataFormat } from '../../media-source/enum';
 
 export class BiloMediaMetadataSyncFailedLoggable implements Loggable {
 	constructor(private readonly mediumId: string, private readonly mediaSourceId: string) {}
@@ -9,6 +10,7 @@ export class BiloMediaMetadataSyncFailedLoggable implements Loggable {
 			data: {
 				mediumId: this.mediumId,
 				mediaSourceId: this.mediaSourceId,
+				mediaSourceDataFormat: MediaSourceDataFormat.BILDUNGSLOGIN,
 			},
 		};
 
