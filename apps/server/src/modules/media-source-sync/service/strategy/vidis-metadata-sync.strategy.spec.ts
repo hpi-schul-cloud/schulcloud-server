@@ -85,7 +85,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 	describe('syncAllMediaMetadata', () => {
 		describe('when all media metadata are delivered', () => {
-			describe('when the metadata has all metadata fields', () => {
+			describe('when the all metadata values are outdated', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
@@ -160,7 +160,211 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				});
 			});
 
-			describe('when the fetched metadata does not has medium title', () => {
+			describe('when only the medium title is outdated', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.withVidis().build();
+
+					const offerItem = vidisOfferItemFactory.build({ offerTitle: 'test-vidis-title' });
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
+						(offerItem.offerId as number).toString(),
+						offerItem
+					);
+
+					const externalTool = externalToolFactory
+						.withMedium({
+							mediumId: metadataItem.mediumId.toString(),
+							mediaSourceId: mediaSource.sourceId,
+						})
+						.build({ name: `${metadataItem.name}-other` });
+
+					const mockedLogoImageType = ImageMimeType.PNG;
+					const updatedExternalTool = externalToolFactory.buildWithId(
+						{
+							...externalTool.getProps(),
+							name: metadataItem.name,
+							description: metadataItem.description,
+							logo: metadataItem.logo,
+							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
+						},
+						externalTool.id
+					);
+
+					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
+					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
+
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+						.withOthersEmpty({ totalCount: 1, successCount: 1 })
+						.build();
+					delete expectedSyncReport.operations;
+
+					const expectedOperations = [
+						mediaSourceSyncOperationReportFactory.build({
+							status: MediaSourceSyncStatus.SUCCESS,
+							operation: MediaSourceSyncOperation.UPDATE,
+							count: 1,
+						}),
+					];
+
+					return {
+						mediaSource,
+						updatedExternalTool,
+						expectedSyncReport,
+						expectedOperations,
+					};
+				};
+
+				it('should return sync report with update success status', async () => {
+					const { mediaSource, expectedSyncReport, expectedOperations } = setup();
+
+					const result = await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(result).toMatchObject(expectedSyncReport);
+					expect(result.operations).toEqual(expect.arrayContaining(expectedOperations));
+				});
+
+				it('should update the media metadata', async () => {
+					const { mediaSource, updatedExternalTool } = setup();
+
+					await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(externalToolService.updateExternalTools).toBeCalledWith([updatedExternalTool]);
+				});
+			});
+
+			describe('when only the medium logo is outdated', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.withVidis().build();
+
+					const offerItem = vidisOfferItemFactory.build({
+						offerLogo: btoa('VIDIS Test Logo'),
+					});
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
+						(offerItem.offerId as number).toString(),
+						offerItem
+					);
+
+					const externalTool = externalToolFactory
+						.withMedium({
+							mediumId: metadataItem.mediumId.toString(),
+							mediaSourceId: mediaSource.sourceId,
+						})
+						.build({ logo: btoa('Other VIDIS Test Logo') });
+
+					const mockedLogoImageType = ImageMimeType.PNG;
+					const updatedExternalTool = externalToolFactory.buildWithId(
+						{
+							...externalTool.getProps(),
+							logo: metadataItem.logo,
+							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
+							name: metadataItem.name,
+							description: metadataItem.description,
+						},
+						externalTool.id
+					);
+
+					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
+					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
+
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+						.withOthersEmpty({ totalCount: 1, successCount: 1 })
+						.build();
+					delete expectedSyncReport.operations;
+
+					const expectedOperations = [
+						mediaSourceSyncOperationReportFactory.build({
+							status: MediaSourceSyncStatus.SUCCESS,
+							operation: MediaSourceSyncOperation.UPDATE,
+							count: 1,
+						}),
+					];
+
+					return {
+						mediaSource,
+						updatedExternalTool,
+						expectedSyncReport,
+						expectedOperations,
+					};
+				};
+
+				it('should return sync report with update success status', async () => {
+					const { mediaSource, expectedSyncReport, expectedOperations } = setup();
+
+					const result = await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(result).toMatchObject(expectedSyncReport);
+					expect(result.operations).toEqual(expect.arrayContaining(expectedOperations));
+				});
+
+				it('should update the media metadata', async () => {
+					const { mediaSource, updatedExternalTool } = setup();
+
+					await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(externalToolService.updateExternalTools).toBeCalledWith([updatedExternalTool]);
+				});
+			});
+
+			describe('when the metadata is up-to-date', () => {
+				const setup = () => {
+					const mediaSource = mediaSourceFactory.withVidis().build();
+
+					const offerItem = vidisOfferItemFactory.build();
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
+						(offerItem.offerId as number).toString(),
+						offerItem
+					);
+
+					const externalTool = externalToolFactory
+						.withMedium({
+							mediumId: metadataItem.mediumId.toString(),
+							mediaSourceId: mediaSource.sourceId,
+						})
+						.build({ name: metadataItem.name, logo: metadataItem.logo, description: metadataItem.description });
+
+					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
+					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
+
+					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+						.withOthersEmpty({ totalCount: 1, successCount: 1 })
+						.build();
+					delete expectedSyncReport.operations;
+
+					const expectedOperations = [
+						mediaSourceSyncOperationReportFactory.build({
+							status: MediaSourceSyncStatus.SUCCESS,
+							operation: MediaSourceSyncOperation.UPDATE,
+							count: 1,
+						}),
+					];
+
+					return {
+						mediaSource,
+						expectedSyncReport,
+						expectedOperations,
+					};
+				};
+
+				it('should return sync report with update success status', async () => {
+					const { mediaSource, expectedSyncReport, expectedOperations } = setup();
+
+					const result = await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(result).toMatchObject(expectedSyncReport);
+					expect(result.operations).toEqual(expect.arrayContaining(expectedOperations));
+				});
+
+				it('should not update any media metadata', async () => {
+					const { mediaSource } = setup();
+
+					await strategy.syncAllMediaMetadata(mediaSource);
+
+					expect(externalToolService.updateExternalTools).not.toBeCalled();
+				});
+			});
+
+			describe('when the fetched metadata does provide a medium title', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
@@ -178,7 +382,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 							mediumId: metadataItem.mediumId.toString(),
 							mediaSourceId: mediaSource.sourceId,
 						})
-						.build();
+						.build({ description: `${metadataItem.description as string} Other` });
 
 					const mockedLogoImageType = ImageMimeType.PNG;
 					const updatedExternalTool = externalToolFactory.buildWithId(
@@ -251,7 +455,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 							mediumId: metadataItem.mediumId.toString(),
 							mediaSourceId: mediaSource.sourceId,
 						})
-						.build();
+						.build({ description: `${metadataItem.description as string} Other` });
 
 					const updatedExternalTool = externalToolFactory.buildWithId(
 						{

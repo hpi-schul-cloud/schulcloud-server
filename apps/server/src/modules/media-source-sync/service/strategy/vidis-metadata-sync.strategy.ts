@@ -57,6 +57,11 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 				return null;
 			}
 
+			if (this.isMetadataUpToDate(externalTool, fetchedMetadata)) {
+				updateSuccessReport.count += 1;
+				return null;
+			}
+
 			if (fetchedMetadata.name !== '') {
 				externalTool.name = fetchedMetadata.name;
 			}
@@ -101,6 +106,19 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		]);
 
 		return report;
+	}
+
+	private isMetadataUpToDate(externalTool: ExternalTool, vidisMetadata: MediumMetadataDto): boolean {
+		if (externalTool.description != vidisMetadata.description) {
+			return false;
+		}
+
+		const hasNameAndUnequal = vidisMetadata.name !== '' && vidisMetadata.name !== vidisMetadata.name;
+		const hasLogoAndUnequal = !vidisMetadata.logo && vidisMetadata.logo !== vidisMetadata.logo;
+
+		const isUpToDate = !hasNameAndUnequal && !hasLogoAndUnequal;
+
+		return isUpToDate;
 	}
 
 	private syncAndValidateLogo(
