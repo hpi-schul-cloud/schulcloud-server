@@ -7,8 +7,8 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
-import { USER_REPO, UserService } from '../domain';
-import { User, type UserMikroOrmRepo } from '../repo';
+import { UserService } from '../domain';
+import { User, UserMikroOrmRepo } from '../repo';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {
@@ -31,7 +31,7 @@ describe('UserUc', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: USER_REPO,
+					provide: UserMikroOrmRepo,
 					useValue: createMock<UserMikroOrmRepo>(),
 				},
 				{
@@ -42,7 +42,7 @@ describe('UserUc', () => {
 		}).compile();
 
 		userUc = module.get(UserUc);
-		userRepo = module.get(USER_REPO);
+		userRepo = module.get(UserMikroOrmRepo);
 		userService = module.get(UserService);
 		config = module.get(ConfigService);
 		await setupEntities([User]);

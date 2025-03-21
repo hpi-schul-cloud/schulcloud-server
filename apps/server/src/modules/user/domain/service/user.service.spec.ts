@@ -26,10 +26,10 @@ import { type IFindOptions, LanguageType, Permission, SortOrder } from '@shared/
 import type { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { UserDto } from '../../api/dto';
-import { User } from '../../repo';
+import { User, UserMikroOrmRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
 import { UserDo } from '../do';
-import { USER_DO_REPO, USER_REPO, type UserDoRepo, type UserRepo } from '../interface';
+import { USER_DO_REPO, type UserDoRepo } from '../interface';
 import { UserDiscoverableQuery, type UserQuery } from '../query';
 import { UserService } from './user.service';
 
@@ -37,7 +37,7 @@ describe('UserService', () => {
 	let service: UserService;
 	let module: TestingModule;
 
-	let userRepo: DeepMocked<UserRepo>;
+	let userRepo: DeepMocked<UserMikroOrmRepo>;
 	let userDoRepo: DeepMocked<UserDoRepo>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
@@ -56,8 +56,8 @@ describe('UserService', () => {
 					useValue: createMock<EntityManager>(),
 				},
 				{
-					provide: USER_REPO,
-					useValue: createMock<UserRepo>(),
+					provide: UserMikroOrmRepo,
+					useValue: createMock<UserMikroOrmRepo>(),
 				},
 				{
 					provide: USER_DO_REPO,
@@ -97,7 +97,7 @@ describe('UserService', () => {
 		}).compile();
 		service = module.get(UserService);
 
-		userRepo = module.get(USER_REPO);
+		userRepo = module.get(UserMikroOrmRepo);
 		userDoRepo = module.get(USER_DO_REPO);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);

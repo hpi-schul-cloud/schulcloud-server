@@ -1,15 +1,15 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { LanguageType } from '@shared/domain/interface';
 import type { EntityId } from '@shared/domain/types';
-import { USER_REPO, type UserConfig, UserService } from '../domain';
+import { type UserConfig, UserService } from '../domain';
 import { type User, UserMikroOrmRepo } from '../repo';
 import type { ChangeLanguageParams } from './dto';
 
 @Injectable()
 export class UserUc {
 	constructor(
-		@Inject(USER_REPO) private readonly userRepo: UserMikroOrmRepo,
+		private readonly userRepo: UserMikroOrmRepo,
 		private readonly userService: UserService,
 		private readonly configService: ConfigService<UserConfig, true>
 	) {}

@@ -5,12 +5,12 @@ import { Injectable } from '@nestjs/common';
 import type { IFindOptions } from '@shared/domain/interface';
 import type { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import type { UserName, UserRepo } from '../domain';
+import type { UserName } from '../domain';
 import { UserScope } from './scope/user.scope';
 import { User } from './user.entity';
 
 @Injectable()
-export class UserMikroOrmRepo extends BaseRepo<User> implements UserRepo {
+export class UserMikroOrmRepo extends BaseRepo<User> {
 	get entityName(): typeof User {
 		return User;
 	}

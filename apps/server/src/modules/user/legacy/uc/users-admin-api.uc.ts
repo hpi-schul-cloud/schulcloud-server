@@ -6,9 +6,8 @@ import {
 } from '@modules/authorization';
 import { RoleName, RoleService } from '@modules/role';
 import { User, UserMikroOrmRepo } from '@modules/user/repo';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
-import { USER_REPO } from '../../domain';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { RequestedRoleEnum } from '../enum';
 import { UsersAdminService } from '../service';
@@ -16,7 +15,7 @@ import { UsersAdminService } from '../service';
 @Injectable()
 export class UsersAdminApiUc {
 	constructor(
-		@Inject(USER_REPO) private readonly userRepo: UserMikroOrmRepo,
+		private readonly userRepo: UserMikroOrmRepo,
 		private readonly roleService: RoleService,
 		private readonly adminUsersService: UsersAdminService,
 		private readonly authorizationService: AuthorizationService

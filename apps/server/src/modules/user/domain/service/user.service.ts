@@ -28,8 +28,9 @@ import type { Counted, EntityId } from '@shared/domain/types';
 import type { UserDto } from '../../api/dto';
 import { UserMapper } from '../../api/mapper';
 import type { UserConfig, UserDo } from '../../domain';
-import type { User } from '../../repo';
-import { USER_DO_REPO, USER_REPO, UserDoRepo, UserRepo } from '../interface';
+import type { User } from '../../repo/user.entity';
+import { UserMikroOrmRepo } from '../../repo/user.repo';
+import { USER_DO_REPO, UserDoRepo } from '../interface';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable';
 import { UserDiscoverableQuery, type UserQuery } from '../query';
 import type { UserName } from '../type';
@@ -38,8 +39,8 @@ import type { UserName } from '../type';
 @EventsHandler(UserDeletedEvent)
 export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
-		@Inject(USER_REPO) private readonly userRepo: UserRepo,
 		@Inject(USER_DO_REPO) private readonly userDoRepo: UserDoRepo,
+		private readonly userRepo: UserMikroOrmRepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly registrationPinService: RegistrationPinService,
