@@ -1,12 +1,12 @@
 import { LogMessage } from '@core/logger';
-import { ValidationErrorLoggableException } from './validation-error-loggable.exception';
+import { BiloMediaMetadataSyncFailedLoggable } from './bilo-media-metadata-sync-failed-loggable.exception';
 
-describe(ValidationErrorLoggableException.name, () => {
+describe(BiloMediaMetadataSyncFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const mediumId = 'mediumId';
 			const mediaSourceId = 'mediaSourceId';
-			const exception = new ValidationErrorLoggableException(mediumId, mediaSourceId);
+			const exception = new BiloMediaMetadataSyncFailedLoggable(mediumId, mediaSourceId);
 
 			return {
 				exception,

@@ -8,7 +8,7 @@ import { ExternalToolLogoService } from '@modules/tool/external-tool/service/ext
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
-import { ValidationErrorLoggableException } from '../../loggable/validation-error-loggable.exception';
+import { BiloMediaMetadataSyncFailedLoggable } from '../../loggable/bilo-media-metadata-sync-failed-loggable.exception';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
@@ -89,7 +89,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, fetchedMetadata);
 			} catch (error: unknown) {
 				this.logger.debug(
-					new ValidationErrorLoggableException(
+					new BiloMediaMetadataSyncFailedLoggable(
 						externalTool.medium?.mediumId as string,
 						externalTool.medium?.mediaSourceId as string
 					)

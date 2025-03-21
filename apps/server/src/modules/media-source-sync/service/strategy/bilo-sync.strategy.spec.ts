@@ -9,9 +9,9 @@ import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/do
 import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool/service';
 import { externalToolFactory, externalToolMediumFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ValidationError } from '../../../../shared/common/error';
+import { ValidationError } from '@shared/common/error';
 import { MediaSourceSyncReport } from '../../interface';
-import { ValidationErrorLoggableException } from '../../loggable/validation-error-loggable.exception';
+import { BiloMediaMetadataSyncFailedLoggable } from '../../loggable';
 import { mediaSourceSyncOperationReportFactory } from '../../testing';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { BiloSyncStrategy } from './bilo-sync.strategy';
@@ -535,7 +535,7 @@ describe(BiloSyncStrategy.name, () => {
 
 				await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(logger.debug).toHaveBeenCalledWith(expect.any(ValidationErrorLoggableException));
+				expect(logger.debug).toHaveBeenCalledWith(expect.any(BiloMediaMetadataSyncFailedLoggable));
 				expect(logger.debug).toHaveBeenCalledTimes(badBiloMetadata.length);
 			});
 
