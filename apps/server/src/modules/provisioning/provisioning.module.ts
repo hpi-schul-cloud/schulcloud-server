@@ -19,7 +19,6 @@ import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningPro
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
-	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
 	SchulconnexResponseMapper,
@@ -65,7 +64,6 @@ import {
 		SchulconnexToolProvisioningService,
 		SchulconnexSyncProvisioningStrategy,
 		SchulconnexAsyncProvisioningStrategy,
-		IservProvisioningStrategy,
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
