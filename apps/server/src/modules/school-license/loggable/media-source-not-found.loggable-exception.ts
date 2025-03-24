@@ -1,12 +1,12 @@
-import { NotFoundException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { NotFoundException } from '@nestjs/common';
 
 export class MediaSourceNotFoundLoggableException extends NotFoundException implements Loggable {
 	constructor(private readonly mediaSourceName: string) {
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			message: 'Unable to fetch media school licenses, because media source cannot be found.',
 			data: {

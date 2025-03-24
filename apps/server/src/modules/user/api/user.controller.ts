@@ -1,8 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ChangeLanguageParams, ResolvedUserResponse, SuccessfulResponse } from './dto';
-import { ResolvedUserMapper } from './mapper';
+import { ChangeLanguageParams, SuccessfulResponse } from './dto';
 import { UserUc } from './user.uc';
 
 @ApiTags('User')
@@ -10,16 +9,6 @@ import { UserUc } from './user.uc';
 @Controller('user')
 export class UserController {
 	constructor(private readonly userUc: UserUc) {}
-
-	@Get('me')
-	public async me(@CurrentUser() currentUser: ICurrentUser): Promise<ResolvedUserResponse> {
-		const [user, permissions] = await this.userUc.me(currentUser.userId);
-
-		// only the root roles of the user get published
-		const resolvedUser = ResolvedUserMapper.mapToResponse(user, permissions, user.roles.getItems());
-
-		return resolvedUser;
-	}
 
 	@Patch('/language')
 	public async changeLanguage(

@@ -17,7 +17,7 @@ export class MediumMetadataUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.MEDIA_SOURCE_ADMIN]);
 
-		const metadata: MediumMetadataDto = await this.mediumMetadataService.getMetadata(mediumId, mediaSourceId);
+		const metadata: MediumMetadataDto = await this.mediumMetadataService.getMetadataItem(mediumId, mediaSourceId);
 
 		return metadata;
 	}
