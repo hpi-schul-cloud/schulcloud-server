@@ -1,4 +1,6 @@
 export class MediumMetadataDto {
+	public mediumId: string;
+
 	public name: string;
 
 	public description?: string;
@@ -7,15 +9,19 @@ export class MediumMetadataDto {
 
 	public logoUrl?: string;
 
+	public logo?: string;
+
 	public previewLogoUrl?: string;
 
 	public modifiedAt?: Date;
 
 	constructor(response: MediumMetadataDto) {
+		this.mediumId = response.mediumId;
 		this.name = response.name;
 		this.description = response.description;
 		this.publisher = response.publisher;
 		this.logoUrl = response.logoUrl;
+		this.logo = response.logo;
 		this.previewLogoUrl = response.previewLogoUrl;
 		this.modifiedAt = response.modifiedAt;
 	}
