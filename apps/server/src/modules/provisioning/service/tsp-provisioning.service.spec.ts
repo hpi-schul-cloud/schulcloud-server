@@ -100,7 +100,9 @@ describe('TspProvisioningService', () => {
 
 				userServiceMock.findByExternalId.mockResolvedValueOnce(userDoFactory.build());
 				roleServiceMock.findByNames.mockResolvedValueOnce(roleDtoFactory.buildList(1));
-				userServiceMock.saveAll.mockResolvedValueOnce(userDoFactory.buildListWithId(1));
+				userServiceMock.saveAll
+					.mockResolvedValueOnce(userDoFactory.buildListWithId(1))
+					.mockResolvedValueOnce(userDoFactory.buildListWithId(1));
 				accountServiceMock.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
 				accountServiceMock.saveAll.mockResolvedValueOnce(accountDoFactory.buildList(1));
 
@@ -115,7 +117,7 @@ describe('TspProvisioningService', () => {
 				expect(result).toBe(1);
 				expect(userServiceMock.findByExternalId).toHaveBeenCalledTimes(1);
 				expect(roleServiceMock.findByNames).toHaveBeenCalledTimes(1);
-				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.saveAll).toHaveBeenCalledTimes(2);
 				expect(accountServiceMock.findByUserId).toHaveBeenCalledTimes(1);
 				expect(accountServiceMock.saveAll).toHaveBeenCalledTimes(1);
 				expect(classServiceMock.findClassWithSchoolIdAndExternalId).toHaveBeenCalledTimes(0);
