@@ -51,6 +51,7 @@ describe('MediaSourceConfigMapper', () => {
 					password: domainObject.password,
 					baseUrl: domainObject.baseUrl,
 					region: domainObject.region,
+					schoolNumberPrefix: domainObject.schoolNumberPrefix,
 				});
 
 				return { domainObject, expected };
@@ -116,6 +117,7 @@ describe('MediaSourceConfigMapper', () => {
 					password: embeddable.password,
 					baseUrl: embeddable.baseUrl,
 					region: embeddable.region,
+					schoolNumberPrefix: embeddable.schoolNumberPrefix,
 				});
 
 				return { embeddable, expected };

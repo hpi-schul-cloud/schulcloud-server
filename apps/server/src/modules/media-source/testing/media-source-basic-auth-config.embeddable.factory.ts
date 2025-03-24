@@ -10,6 +10,7 @@ export const mediaSourceVidisConfigEmbeddableFactory = BaseFactory.define<
 		password: `media-source-client-secret-${sequence}`,
 		baseUrl: 'https://media-source-endpoint.com',
 		region: 'test-region',
+		schoolNumberPrefix: 'NI_',
 	};
 
 	return embeddable;
