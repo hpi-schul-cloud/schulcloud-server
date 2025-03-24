@@ -77,7 +77,12 @@ describe('Class Actions', () => {
 
 		it('should throw an error if school could not be found', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+				SchoolRepo,
+				'findSchoolByPreviousExternalIdAndSystem'
+			);
 			findSchoolByLdapIdAndSystemStub.returns(null);
+			findSchoolByPreviousExternalIdAndSystemStub.returns(null);
 
 			await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
 		});
