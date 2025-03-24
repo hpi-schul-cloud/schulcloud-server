@@ -3,6 +3,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
@@ -12,22 +14,20 @@ import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
-import { Role } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { roleFactory } from '@testing/factory/role.factory';
 import { CustomParameter } from '../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolMetadata,
 	ExternalToolParameterDatasheetTemplateProperty,
 	ExternalToolProps,
+	ExternalToolUtilization,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
@@ -42,7 +42,6 @@ import {
 	customParameterFactory,
 	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
-	externalToolMediumFactory,
 	fileRecordRefFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
@@ -60,7 +59,7 @@ describe(ExternalToolUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
-	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
+	let commonToolMetadataService: DeepMocked<CommonToolUtilizationService>;
 	let pdfService: DeepMocked<DatasheetPdfService>;
 	let externalToolImageService: DeepMocked<ExternalToolImageService>;
 	let encryptionService: DeepMocked<EncryptionService>;
@@ -98,8 +97,8 @@ describe(ExternalToolUc.name, () => {
 					useValue: createMock<ExternalToolLogoService>(),
 				},
 				{
-					provide: CommonToolMetadataService,
-					useValue: createMock<CommonToolMetadataService>(),
+					provide: CommonToolUtilizationService,
+					useValue: createMock<CommonToolUtilizationService>(),
 				},
 				{
 					provide: DatasheetPdfService,
@@ -123,7 +122,7 @@ describe(ExternalToolUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
-		commonToolMetadataService = module.get(CommonToolMetadataService);
+		commonToolMetadataService = module.get(CommonToolUtilizationService);
 		pdfService = module.get(DatasheetPdfService);
 		externalToolImageService = module.get(ExternalToolImageService);
 		encryptionService = module.get(DefaultEncryptionService);
@@ -197,7 +196,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser } = setupAuthorization();
 				const { externalTool } = setupDefault();
 
-				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
@@ -206,7 +205,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser, user } = setupAuthorization();
 				const { externalTool } = setupDefault();
 
-				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
@@ -218,7 +217,7 @@ describe(ExternalToolUc.name, () => {
 					throw new UnauthorizedException();
 				});
 
-				const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalTool, 'jwt');
+				const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalTool);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -228,7 +227,7 @@ describe(ExternalToolUc.name, () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool, mockLogoBase64 } = setupDefault();
 
-			await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+			await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			expect(toolValidationService.validateCreate).toHaveBeenCalledWith(
 				new ExternalTool({
@@ -246,7 +245,7 @@ describe(ExternalToolUc.name, () => {
 				throw new UnprocessableEntityException();
 			});
 
-			const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+			const result: Promise<ExternalTool> = uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			await expect(result).rejects.toThrow(UnprocessableEntityException);
 		});
@@ -255,7 +254,7 @@ describe(ExternalToolUc.name, () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool, mockLogoBase64 } = setupDefault();
 
-			await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+			await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			expect(externalToolService.createExternalTool).toHaveBeenCalledWith(
 				new ExternalTool({
@@ -270,7 +269,7 @@ describe(ExternalToolUc.name, () => {
 			const { currentUser } = setupAuthorization();
 			const { externalTool } = setupDefault();
 
-			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+			const result: ExternalTool = await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 			expect(result).toEqual(externalTool);
 		});
@@ -293,7 +292,7 @@ describe(ExternalToolUc.name, () => {
 			it('should call ExternalToolLogoService', async () => {
 				const { currentUser, externalTool } = setup();
 
-				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(logoService.fetchLogo).toHaveBeenCalledWith(
 					expect.objectContaining<ExternalToolProps>({ ...externalTool.getProps(), id: expect.any(String) })
@@ -311,8 +310,6 @@ describe(ExternalToolUc.name, () => {
 					thumbnailUrl: 'https://thumbnail.url',
 				};
 
-				const jwt = 'jwt';
-
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				const savedExternalTool = new ExternalTool({ ...externalTool, id: new ObjectId().toHexString() });
 				externalToolService.createExternalTool.mockResolvedValueOnce(savedExternalTool);
@@ -322,29 +319,27 @@ describe(ExternalToolUc.name, () => {
 				return {
 					currentUser,
 					externalTool,
-					jwt,
 					savedExternalTool,
 					thumbnailFileRecordRef,
 				};
 			};
 
 			it('should call external tool image service', async () => {
-				const { currentUser, externalTool, jwt, savedExternalTool } = setup();
+				const { currentUser, externalTool, savedExternalTool } = setup();
 
-				await uc.createExternalTool(currentUser.userId, externalTool, jwt);
+				await uc.createExternalTool(currentUser.userId, externalTool);
 
 				expect(externalToolImageService.uploadImageFileFromUrl).toHaveBeenCalledWith(
 					externalTool.thumbnailUrl,
 					ExternalTool.thumbnailNameAffix,
-					savedExternalTool.id,
-					jwt
+					savedExternalTool.id
 				);
 			});
 
 			it('should update external tool with thumbnail file record', async () => {
-				const { currentUser, externalTool, jwt, thumbnailFileRecordRef } = setup();
+				const { currentUser, externalTool, thumbnailFileRecordRef } = setup();
 
-				await uc.createExternalTool(currentUser.userId, externalTool, jwt);
+				await uc.createExternalTool(currentUser.userId, externalTool);
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<ExternalTool>>({ thumbnail: thumbnailFileRecordRef })
@@ -368,7 +363,7 @@ describe(ExternalToolUc.name, () => {
 			it('should call the encryption service', async () => {
 				const { currentUser, externalTool } = setupLTI();
 
-				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(encryptionService.encrypt).toHaveBeenCalledWith('secret');
 			});
@@ -376,7 +371,7 @@ describe(ExternalToolUc.name, () => {
 			it('should call the service to save a tool', async () => {
 				const { currentUser, externalTool } = setupLTI();
 
-				await uc.createExternalTool(currentUser.userId, externalTool.getProps(), 'jwt');
+				await uc.createExternalTool(currentUser.userId, externalTool.getProps());
 
 				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
 					1,
@@ -417,7 +412,6 @@ describe(ExternalToolUc.name, () => {
 					...externalTool2.getProps(),
 					thumbnailUrl: 'https://thumbnail.url2',
 				};
-				const jwt = 'jwt';
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				logoService.fetchLogo.mockResolvedValueOnce(undefined);
@@ -433,14 +427,13 @@ describe(ExternalToolUc.name, () => {
 					externalTool2,
 					externalToolCreate2,
 					thumbnailFileRecordRef,
-					jwt,
 				};
 			};
 
 			it('should not call encryption service', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
 
-				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()], 'jwt');
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
 
 				expect(encryptionService.encrypt).not.toHaveBeenCalled();
 			});
@@ -448,7 +441,7 @@ describe(ExternalToolUc.name, () => {
 			it('should check the users permission', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
 
-				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()], 'jwt');
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
 			});
@@ -456,7 +449,7 @@ describe(ExternalToolUc.name, () => {
 			it('should validate each tool', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
 
-				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()], 'jwt');
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
 
 				expect(toolValidationService.validateCreate).toHaveBeenNthCalledWith(
 					1,
@@ -477,7 +470,7 @@ describe(ExternalToolUc.name, () => {
 			it('should save each tool', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
 
-				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()], 'jwt');
+				await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
 
 				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
 					1,
@@ -498,11 +491,7 @@ describe(ExternalToolUc.name, () => {
 			it('should return a result report', async () => {
 				const { user, externalTool1, externalTool2 } = setup();
 
-				const result = await uc.importExternalTools(
-					user.id,
-					[externalTool1.getProps(), externalTool2.getProps()],
-					'jwt'
-				);
+				const result = await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
 
 				expect(result).toEqual<ExternalToolImportResult[]>([
 					{
@@ -521,21 +510,19 @@ describe(ExternalToolUc.name, () => {
 			});
 
 			it('should save thumbnails for each tool', async () => {
-				const { user, externalTool1, externalToolCreate1, externalTool2, externalToolCreate2, jwt } = setup();
+				const { user, externalTool1, externalToolCreate1, externalTool2, externalToolCreate2 } = setup();
 
-				await uc.importExternalTools(user.id, [externalToolCreate1, externalToolCreate2], jwt);
+				await uc.importExternalTools(user.id, [externalToolCreate1, externalToolCreate2]);
 
 				expect(externalToolImageService.uploadImageFileFromUrl).toHaveBeenCalledWith(
 					externalToolCreate1.thumbnailUrl,
 					ExternalTool.thumbnailNameAffix,
-					externalTool1.id,
-					jwt
+					externalTool1.id
 				);
 				expect(externalToolImageService.uploadImageFileFromUrl).toHaveBeenCalledWith(
 					externalToolCreate2.thumbnailUrl,
 					ExternalTool.thumbnailNameAffix,
-					externalTool2.id,
-					jwt
+					externalTool2.id
 				);
 			});
 		});
@@ -559,8 +546,6 @@ describe(ExternalToolUc.name, () => {
 					thumbnailUrl: 'https://thumbnail.url1',
 				};
 
-				const jwt = 'jwt';
-
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				logoService.fetchLogo.mockResolvedValueOnce(undefined);
 				const thumbnailFileRecordRef = fileRecordRefFactory.build();
@@ -573,14 +558,13 @@ describe(ExternalToolUc.name, () => {
 					externalTool1,
 					externalToolCreate1,
 					thumbnailFileRecordRef,
-					jwt,
 				};
 			};
 
 			it('should call encryption service', async () => {
 				const { user, externalTool1 } = setup();
 
-				await uc.importExternalTools(user.id, [externalTool1.getProps()], 'jwt');
+				await uc.importExternalTools(user.id, [externalTool1.getProps()]);
 
 				expect(encryptionService.encrypt).toHaveBeenCalled();
 			});
@@ -588,7 +572,7 @@ describe(ExternalToolUc.name, () => {
 			it('should save tool', async () => {
 				const { user, externalTool1 } = setup();
 
-				await uc.importExternalTools(user.id, [externalTool1.getProps()], 'jwt');
+				await uc.importExternalTools(user.id, [externalTool1.getProps()]);
 
 				expect(externalToolService.createExternalTool).toHaveBeenNthCalledWith(
 					1,
@@ -637,11 +621,7 @@ describe(ExternalToolUc.name, () => {
 			it('should return an error in the result report', async () => {
 				const { user, externalTool1, externalTool2, error } = setup();
 
-				const results = await uc.importExternalTools(
-					user.id,
-					[externalTool1.getProps(), externalTool2.getProps()],
-					'jwt'
-				);
+				const results = await uc.importExternalTools(user.id, [externalTool1.getProps(), externalTool2.getProps()]);
 
 				expect(results).toHaveLength(2);
 				expect(results[1]).toEqual<ExternalToolImportResult>({
@@ -792,7 +772,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser } = setupAuthorization();
 				const { toolId, externalToolToUpdateProps } = setup();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			});
@@ -801,7 +781,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser, user } = setupAuthorization();
 				const { toolId, externalToolToUpdateProps } = setup();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -820,8 +800,7 @@ describe(ExternalToolUc.name, () => {
 				const result: Promise<ExternalTool> = uc.updateExternalTool(
 					currentUser.userId,
 					toolId,
-					externalToolToUpdateProps,
-					'jwt'
+					externalToolToUpdateProps
 				);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
@@ -832,7 +811,7 @@ describe(ExternalToolUc.name, () => {
 			const { currentUser } = setupAuthorization();
 			const { toolId, externalToolToUpdateProps, mockLogoBase64 } = setup();
 
-			await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
+			await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
 
 			expect(toolValidationService.validateUpdate).toHaveBeenCalledWith(
 				toolId,
@@ -850,8 +829,7 @@ describe(ExternalToolUc.name, () => {
 			const result: Promise<ExternalTool> = uc.updateExternalTool(
 				currentUser.userId,
 				toolId,
-				externalToolToUpdateProps,
-				'jwt'
+				externalToolToUpdateProps
 			);
 
 			await expect(result).rejects.toThrow(UnprocessableEntityException);
@@ -861,7 +839,7 @@ describe(ExternalToolUc.name, () => {
 			const { currentUser } = setupAuthorization();
 			const { toolId, externalToolToUpdateProps } = setup();
 
-			await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps, 'jwt');
+			await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
 
 			expect(externalToolService.updateExternalTool).toHaveBeenCalled();
 		});
@@ -870,12 +848,7 @@ describe(ExternalToolUc.name, () => {
 			const { currentUser } = setupAuthorization();
 			const { toolId, externalToolToUpdateProps, updatedExternalTool } = setup();
 
-			const result: ExternalTool = await uc.updateExternalTool(
-				currentUser.userId,
-				toolId,
-				externalToolToUpdateProps,
-				'jwt'
-			);
+			const result: ExternalTool = await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdateProps);
 
 			expect(result).toEqual(updatedExternalTool);
 		});
@@ -899,7 +872,7 @@ describe(ExternalToolUc.name, () => {
 			it('should call ExternalToolLogoService', async () => {
 				const { currentUser, externalTool } = setupLogo();
 
-				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool.getProps(), 'jwt');
+				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool.getProps());
 
 				expect(logoService.fetchLogo).toHaveBeenCalledWith(
 					expect.objectContaining<ExternalToolProps>({ ...externalTool.getProps(), id: expect.any(String) })
@@ -917,8 +890,6 @@ describe(ExternalToolUc.name, () => {
 					thumbnailUrl: '',
 				};
 
-				const jwt = 'jwt';
-
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				const existingExternalTool = externalToolFactory.withFileRecordRef().build();
 				externalToolService.findById.mockResolvedValue(existingExternalTool);
@@ -926,15 +897,14 @@ describe(ExternalToolUc.name, () => {
 				return {
 					currentUser,
 					externalTool,
-					jwt,
 					existingExternalTool,
 				};
 			};
 
 			it('should delete existing thumbnail', async () => {
-				const { currentUser, externalTool, jwt } = setupThumbnail();
+				const { currentUser, externalTool } = setupThumbnail();
 
-				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool, jwt);
+				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool);
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
 					expect.objectContaining({ thumbnail: undefined })
@@ -952,8 +922,6 @@ describe(ExternalToolUc.name, () => {
 					thumbnailUrl: 'https://thumbnail.url',
 				};
 
-				const jwt = 'jwt';
-
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				const existingExternalTool = externalToolFactory.withFileRecordRef().build();
 				externalToolService.findById.mockResolvedValue(existingExternalTool);
@@ -964,40 +932,37 @@ describe(ExternalToolUc.name, () => {
 				return {
 					currentUser,
 					externalTool,
-					jwt,
 					thumbnailFileRecordRef,
 					existingExternalTool,
 				};
 			};
 
 			it('should call ExternalToolImageService', async () => {
-				const { currentUser, externalTool, jwt } = setupThumbnail();
+				const { currentUser, externalTool } = setupThumbnail();
 
-				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool, jwt);
+				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool);
 
 				expect(externalToolImageService.uploadImageFileFromUrl).toHaveBeenCalledWith(
 					externalTool.thumbnailUrl,
 					ExternalTool.thumbnailNameAffix,
-					externalTool.id,
-					jwt
+					externalTool.id
 				);
 			});
 
 			it('should delete old thumbnail', async () => {
-				const { currentUser, externalTool, jwt, existingExternalTool } = setupThumbnail();
+				const { currentUser, externalTool, existingExternalTool } = setupThumbnail();
 
-				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool, jwt);
+				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool);
 
 				expect(externalToolImageService.deleteImageFile).toHaveBeenCalledWith(
-					existingExternalTool.thumbnail?.fileRecordId,
-					jwt
+					existingExternalTool.thumbnail?.fileRecordId
 				);
 			});
 
 			it('should update external tool with thumbnail file record', async () => {
-				const { currentUser, externalTool, jwt, thumbnailFileRecordRef } = setupThumbnail();
+				const { currentUser, externalTool, thumbnailFileRecordRef } = setupThumbnail();
 
-				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool, jwt);
+				await uc.updateExternalTool(currentUser.userId, externalTool.id, externalTool);
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<ExternalTool>>({ thumbnail: thumbnailFileRecordRef })
@@ -1048,7 +1013,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser } = setupAuthorization();
 				const { toolId, externalToolDOtoUpdate, lti11ToolConfig } = setupLTI();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 				expect(encryptionService.encrypt).toHaveBeenNthCalledWith(1, lti11ToolConfig.secret);
 			});
@@ -1057,7 +1022,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser } = setupAuthorization();
 				const { toolId, externalToolDOtoUpdate, updatedExternalToolDO } = setupLTI();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(updatedExternalToolDO);
 			});
@@ -1113,7 +1078,7 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser } = setupAuthorization();
 				const { toolId, externalToolDOtoUpdate } = setupLTI();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 				expect(encryptionService.encrypt).not.toHaveBeenCalledWith();
 			});
@@ -1122,54 +1087,9 @@ describe(ExternalToolUc.name, () => {
 				const { currentUser } = setupAuthorization();
 				const { toolId, externalToolDOtoUpdate, updatedExternalToolDO } = setupLTI();
 
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate, 'jwt');
+				await uc.updateExternalTool(currentUser.userId, toolId, externalToolDOtoUpdate);
 
 				expect(externalToolService.updateExternalTool).toHaveBeenCalledWith(updatedExternalToolDO);
-			});
-		});
-
-		describe('when the external tool has a medium with a last metadata modified date', () => {
-			const setupMedium = () => {
-				const mediumWithDate = externalToolMediumFactory.build({ metadataModifiedAt: new Date() });
-
-				const currentExternalTool = externalToolFactory.build({ medium: mediumWithDate });
-				const toolId = currentExternalTool.id;
-
-				const externalToolToUpdate: ExternalToolUpdate = {
-					...currentExternalTool.getProps(),
-					id: toolId,
-					name: 'newName',
-					description: 'newDescription',
-					medium: {
-						...mediumWithDate,
-						metadataModifiedAt: undefined,
-					},
-				};
-
-				const pendingExternalTool: ExternalTool = externalToolFactory.buildWithId(
-					{
-						...externalToolToUpdate,
-						medium: mediumWithDate,
-					},
-					toolId
-				);
-
-				externalToolService.findById.mockResolvedValueOnce(currentExternalTool);
-
-				return {
-					toolId,
-					externalToolToUpdate,
-					pendingExternalTool,
-				};
-			};
-
-			it('should not update the metadata modified date to be undefined', async () => {
-				const { currentUser } = setupAuthorization();
-				const { toolId, externalToolToUpdate, pendingExternalTool } = setupMedium();
-
-				await uc.updateExternalTool(currentUser.userId, toolId, externalToolToUpdate, 'jwt');
-
-				expect(externalToolService.updateExternalTool).toBeCalledWith(pendingExternalTool);
 			});
 		});
 	});
@@ -1179,7 +1099,6 @@ describe(ExternalToolUc.name, () => {
 			const toolId = 'toolId';
 			const currentUser = currentUserFactory.build();
 			const user: User = userFactory.buildWithId();
-			const jwt = 'jwt';
 			const externalTool = externalToolFactory.build();
 
 			authorizationService.getUserWithPermissions.mockResolvedValue(user);
@@ -1189,7 +1108,6 @@ describe(ExternalToolUc.name, () => {
 				toolId,
 				currentUser,
 				user,
-				jwt,
 				externalTool,
 			};
 		};
@@ -1197,7 +1115,7 @@ describe(ExternalToolUc.name, () => {
 		it('should check that the user has TOOL_ADMIN permission', async () => {
 			const { toolId, currentUser, user, externalTool } = setup();
 
-			await uc.deleteExternalTool(currentUser.userId, toolId, 'jwt');
+			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(currentUser.userId);
 			expect(authorizationService.checkPermission).toHaveBeenCalledWith(
@@ -1210,21 +1128,21 @@ describe(ExternalToolUc.name, () => {
 		it('should call ExternalToolService', async () => {
 			const { toolId, currentUser, externalTool } = setup();
 
-			await uc.deleteExternalTool(currentUser.userId, toolId, 'jwt');
+			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(externalTool);
 		});
 
 		it('should call ExternalToolImageService', async () => {
-			const { toolId, currentUser, jwt } = setup();
+			const { toolId, currentUser } = setup();
 
-			await uc.deleteExternalTool(currentUser.userId, toolId, jwt);
+			await uc.deleteExternalTool(currentUser.userId, toolId);
 
-			expect(externalToolImageService.deleteAllFiles).toHaveBeenCalledWith(toolId, jwt);
+			expect(externalToolImageService.deleteAllFiles).toHaveBeenCalledWith(toolId);
 		});
 	});
 
-	describe('getMetadataForExternalTool', () => {
+	describe('getUtilizationForExternalTool', () => {
 		describe('when authorize user', () => {
 			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
@@ -1250,7 +1168,7 @@ describe(ExternalToolUc.name, () => {
 			it('get user with permissions', async () => {
 				const { toolId, user } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, toolId);
+				await uc.getUtilizationForExternalTool(user.id, toolId);
 
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
@@ -1258,7 +1176,7 @@ describe(ExternalToolUc.name, () => {
 			it('should check that the user has TOOL_ADMIN permission', async () => {
 				const { user, tool } = setup();
 
-				await uc.getMetadataForExternalTool(user.id, tool.id);
+				await uc.getUtilizationForExternalTool(user.id, tool.id);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -1285,7 +1203,7 @@ describe(ExternalToolUc.name, () => {
 			it('should throw UnauthorizedException ', async () => {
 				const { toolId, user } = setup();
 
-				const result: Promise<ExternalToolMetadata> = uc.getMetadataForExternalTool(user.id, toolId);
+				const result: Promise<ExternalToolUtilization> = uc.getUtilizationForExternalTool(user.id, toolId);
 
 				await expect(result).rejects.toThrow(UnauthorizedException);
 			});
@@ -1295,12 +1213,12 @@ describe(ExternalToolUc.name, () => {
 			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
 
-				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+				const externalToolMetadata: ExternalToolUtilization = new ExternalToolUtilization({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: { course: 3, boardElement: 3, mediaBoard: 2 },
 				});
 
-				commonToolMetadataService.getMetadataForExternalTool.mockResolvedValue(externalToolMetadata);
+				commonToolMetadataService.getUtilizationForExternalTool.mockResolvedValue(externalToolMetadata);
 
 				const user: User = userFactory.buildWithId();
 				const currentUser = currentUserFactory.build();
@@ -1318,15 +1236,15 @@ describe(ExternalToolUc.name, () => {
 			it('get metadata for external tool', async () => {
 				const { toolId, currentUser } = setup();
 
-				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+				await uc.getUtilizationForExternalTool(currentUser.userId, toolId);
 
-				expect(commonToolMetadataService.getMetadataForExternalTool).toHaveBeenCalledWith(toolId);
+				expect(commonToolMetadataService.getUtilizationForExternalTool).toHaveBeenCalledWith(toolId);
 			});
 
 			it('return metadata of external tool', async () => {
 				const { toolId, currentUser, externalToolMetadata } = setup();
 
-				const result = await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+				const result = await uc.getUtilizationForExternalTool(currentUser.userId, toolId);
 
 				expect(result).toEqual(externalToolMetadata);
 			});

@@ -77,4 +77,10 @@ describe('transform', () => {
 		const result = await ajaxBodyTransformPipe.transform(emptyAjaxPostBodyParams4);
 		expect(result).toBeUndefined();
 	});
+	it('when value contains no valid data', async () => {
+		const result = await ajaxBodyTransformPipe.transform({
+			someInvalidValue: 'invalid',
+		} as unknown as AjaxPostBodyParams);
+		expect(result).toBeUndefined();
+	});
 });

@@ -1,7 +1,6 @@
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { RoleName } from '@modules/role';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 import { Counter, Gauge, Summary, register } from 'prom-client';
 
 type ClientId = string;

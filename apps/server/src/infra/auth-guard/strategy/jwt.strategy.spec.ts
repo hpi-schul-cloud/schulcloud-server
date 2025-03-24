@@ -2,9 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { jwtPayloadFactory } from '@testing/factory/jwtpayload.factory';
 import { JwtValidationAdapter } from '../adapter/jwt-validation.adapter';
 import { JwtStrategy } from './jwt.strategy';
+import { jwtPayloadFactory } from '../testing';
 
 describe('jwt strategy', () => {
 	let validationAdapter: DeepMocked<JwtValidationAdapter>;

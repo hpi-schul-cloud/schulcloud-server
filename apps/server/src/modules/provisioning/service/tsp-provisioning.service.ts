@@ -1,17 +1,13 @@
 import { TspUserInfo } from '@infra/sync/strategy/tsp/';
 import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
-import { RoleService } from '@modules/role';
+import { RoleName, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import { UserService, UserDo } from '@modules/user';
+import { Consent, ParentConsent, UserConsent, UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
-import { Consent } from '@shared/domain/domainobject/consent';
-import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
-import { UserConsent } from '@shared/domain/domainobject/user-consent';
-import { RoleName } from '@shared/domain/interface';
 import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
@@ -154,6 +150,7 @@ export class TspProvisioningService {
 	): Class {
 		currentClass.schoolId = school.id;
 		currentClass.name = clazz.name ?? currentClass.name;
+		currentClass.gradeLevel = clazz.gradeLevel ?? currentClass.gradeLevel;
 		currentClass.year = school.currentYear?.id;
 		currentClass.source = this.ENTITY_SOURCE;
 		currentClass.sourceOptions = new ClassSourceOptions({ tspUid: clazz.externalId });
@@ -171,6 +168,7 @@ export class TspProvisioningService {
 	private createClass(clazz: ExternalClassDto, school: School, teacherIds: string[], studentIds: string[]): Class {
 		const newClass = ClassFactory.create({
 			name: clazz.name,
+			gradeLevel: clazz.gradeLevel,
 			schoolId: school.id,
 			year: school.currentYear?.id,
 			teacherIds,
@@ -198,9 +196,16 @@ export class TspProvisioningService {
 		}
 		const savedUser = await this.userService.save(user);
 
-		const account = await this.accountService.findByUserId(savedUser.id ?? '');
-		const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
-		await this.accountService.save(updated);
+		try {
+			const account = await this.accountService.findByUserId(savedUser.id ?? '');
+			const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
+			await this.accountService.save(updated);
+		} catch (error) {
+			if (existingUser === null) {
+				await this.userService.deleteUser(savedUser.id ?? '');
+			}
+			throw new BadDataLoggableException('Error while saving account', { externalId: data.externalUser.externalId });
+		}
 
 		return user;
 	}
@@ -222,7 +227,7 @@ export class TspProvisioningService {
 				firstName: externalUser.firstName,
 				lastName: externalUser.lastName,
 				email: this.createTspEmail(externalUser.externalId),
-				birthday: externalUser.birthday,
+				birthday: new Date(),
 				externalId: externalUser.externalId,
 				secondarySchools: [],
 				lastSyncedAt: new Date(),

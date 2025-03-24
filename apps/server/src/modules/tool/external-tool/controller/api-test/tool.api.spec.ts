@@ -1,7 +1,7 @@
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
-import { FileRecordResponse } from '@modules/files-storage/controller/dto';
 import { instanceEntityFactory } from '@modules/instance/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
@@ -30,9 +30,9 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolImportResultListResponse,
 	ExternalToolImportResultResponse,
-	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
+	ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {
@@ -46,7 +46,6 @@ describe('ToolController (API)', () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
-
 		app = moduleRef.createNestApplication();
 		axiosMock = new MockAdapter(axios);
 
@@ -56,12 +55,13 @@ describe('ToolController (API)', () => {
 		testApiClient = new TestApiClient(app, 'tools/external-tools');
 	});
 
-	afterAll(async () => {
-		await app.close();
+	afterEach(async () => {
+		axiosMock.reset();
+		await cleanupCollections(em);
 	});
 
-	afterEach(async () => {
-		await cleanupCollections(em);
+	afterAll(async () => {
+		await app.close();
 	});
 
 	describe('[POST] tools/external-tools', () => {
@@ -109,7 +109,7 @@ describe('ToolController (API)', () => {
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
-				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -281,7 +281,7 @@ describe('ToolController (API)', () => {
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer);
 
-				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -533,7 +533,7 @@ describe('ToolController (API)', () => {
 				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
 				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
-				const fileRecordResponse: Partial<FileRecordResponse> = { id: new ObjectId().toHexString() };
+				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onDelete(/api\/v3\/file\/delete/).reply(HttpStatus.OK);
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
 
@@ -860,7 +860,7 @@ describe('ToolController (API)', () => {
 				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+				expect(response.body).toEqual<ExternalToolUtilizationResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
 						course: 1,

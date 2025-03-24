@@ -14,7 +14,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolErrorEnum } from '../../domain/error';
+import { SchoolErrorEnum } from '../../domain/loggable';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;

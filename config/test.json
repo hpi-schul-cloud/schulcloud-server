@@ -58,10 +58,6 @@
 		"S3_ACCESS_KEY": "S3RVER",
 		"S3_SECRET_KEY": "S3RVER"
 	},
-	"TSP_SCHOOL_SYNCER": {
-		"SCHOOL_LIMIT": 10,
-		"STUDENTS_TEACHERS_CLASSES_LIMIT": 150
-	},
 	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
