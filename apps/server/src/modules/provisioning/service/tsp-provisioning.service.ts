@@ -48,6 +48,8 @@ export class TspProvisioningService {
 			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], school.id, user);
 		});
 
+		// Has to be done two times otherwise user.consent.parentConsents is empty
+		await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 
 		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);

@@ -47,9 +47,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 
 		const persistedEntity = existingEntity
 			? this._em.assign(existingEntity, entityData)
-			: this._em.create(entityName, entityData as RequiredEntityData<E>, {
-					managed: true,
-			  });
+			: this._em.create(entityName, entityData as RequiredEntityData<E>);
 
 		return { domainObject, persistedEntity };
 	}
