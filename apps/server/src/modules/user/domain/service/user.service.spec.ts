@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -14,30 +14,31 @@ import {
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
-import { Role } from '@modules/role/repo';
+import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type IFindOptions, LanguageType, Permission, SortOrder } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { UserDto } from '../../api/dto';
-import { User, UserDORepo, UserRepo } from '../../repo';
+import { User, UserMikroOrmRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
 import { UserDo } from '../do';
-import { UserDiscoverableQuery, UserQuery } from '../query';
+import { USER_DO_REPO, type UserDoRepo } from '../interface';
+import { UserDiscoverableQuery, type UserQuery } from '../query';
 import { UserService } from './user.service';
 
 describe('UserService', () => {
 	let service: UserService;
 	let module: TestingModule;
 
-	let userRepo: DeepMocked<UserRepo>;
-	let userDORepo: DeepMocked<UserDORepo>;
+	let userRepo: DeepMocked<UserMikroOrmRepo>;
+	let userDoRepo: DeepMocked<UserDoRepo>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let registrationPinService: DeepMocked<RegistrationPinService>;
@@ -55,12 +56,12 @@ describe('UserService', () => {
 					useValue: createMock<EntityManager>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
+					provide: UserMikroOrmRepo,
+					useValue: createMock<UserMikroOrmRepo>(),
 				},
 				{
-					provide: UserDORepo,
-					useValue: createMock<UserDORepo>(),
+					provide: USER_DO_REPO,
+					useValue: createMock<UserDoRepo>(),
 				},
 				{
 					provide: ConfigService,
@@ -96,8 +97,8 @@ describe('UserService', () => {
 		}).compile();
 		service = module.get(UserService);
 
-		userRepo = module.get(UserRepo);
-		userDORepo = module.get(UserDORepo);
+		userRepo = module.get(UserMikroOrmRepo);
+		userDoRepo = module.get(USER_DO_REPO);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		registrationPinService = module.get(RegistrationPinService);
@@ -201,7 +202,7 @@ describe('UserService', () => {
 				schoolId: 'schoolId',
 				externalId: 'externalUserId',
 			});
-			userDORepo.findById.mockResolvedValue(userDO);
+			userDoRepo.findById.mockResolvedValue(userDO);
 		});
 
 		it('should provide the userDO', async () => {
@@ -221,7 +222,7 @@ describe('UserService', () => {
 				schoolId: 'schoolId',
 				externalId: 'externalUserId',
 			});
-			userDORepo.findByIds.mockResolvedValue([userDO]);
+			userDoRepo.findByIds.mockResolvedValue([userDO]);
 		});
 
 		it('should provide the userDOs', async () => {
@@ -239,7 +240,7 @@ describe('UserService', () => {
 				const userId = new ObjectId().toHexString();
 				const user = userDoFactory.buildWithId({ id: userId });
 
-				userDORepo.findByIdOrNull.mockResolvedValue(user);
+				userDoRepo.findByIdOrNull.mockResolvedValue(user);
 
 				return {
 					user,
@@ -260,7 +261,7 @@ describe('UserService', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 
-				userDORepo.findByIdOrNull.mockResolvedValue(null);
+				userDoRepo.findByIdOrNull.mockResolvedValue(null);
 
 				return { userId };
 			};
@@ -338,7 +339,7 @@ describe('UserService', () => {
 					email: 'email',
 				});
 
-				userDORepo.save.mockResolvedValue(user);
+				userDoRepo.save.mockResolvedValue(user);
 
 				return {
 					user,
@@ -350,7 +351,7 @@ describe('UserService', () => {
 
 				await service.save(user);
 
-				expect(userDORepo.save).toHaveBeenCalledWith(user);
+				expect(userDoRepo.save).toHaveBeenCalledWith(user);
 			});
 
 			it('should return the saved user', async () => {
@@ -414,7 +415,7 @@ describe('UserService', () => {
 					externalId: 'externalId',
 				});
 
-				userDORepo.findByExternalId.mockResolvedValue(user);
+				userDoRepo.findByExternalId.mockResolvedValue(user);
 
 				const result = await service.findByExternalId('externalId', 'systemId');
 
@@ -424,7 +425,7 @@ describe('UserService', () => {
 
 		describe('when a user with this external id does not exist', () => {
 			it('should return null', async () => {
-				userDORepo.findByExternalId.mockResolvedValue(null);
+				userDoRepo.findByExternalId.mockResolvedValue(null);
 
 				const result = await service.findByExternalId('externalId', 'systemId');
 
@@ -438,7 +439,7 @@ describe('UserService', () => {
 			it('should return the user', async () => {
 				const user = userDoFactory.buildWithId();
 
-				userDORepo.findByEmail.mockResolvedValue([user]);
+				userDoRepo.findByEmail.mockResolvedValue([user]);
 
 				const result = await service.findByEmail(user.email);
 
@@ -457,7 +458,7 @@ describe('UserService', () => {
 
 			await service.findUsers(query, options);
 
-			expect(userDORepo.find).toHaveBeenCalledWith(query, options);
+			expect(userDoRepo.find).toHaveBeenCalledWith(query, options);
 		});
 	});
 
@@ -469,7 +470,7 @@ describe('UserService', () => {
 
 			await service.findBySchoolRole(schoolId, role.name);
 
-			expect(userDORepo.find).toHaveBeenCalledWith({ schoolId, roleId: role.id }, undefined);
+			expect(userDoRepo.find).toHaveBeenCalledWith({ schoolId, roleId: role.id }, undefined);
 		});
 	});
 
@@ -480,7 +481,7 @@ describe('UserService', () => {
 			const teachers = userDoFactory.buildListWithId(2, { schoolId: school.id, roles: [role] });
 
 			const expectedResult = new Page<UserDo>(teachers, 2);
-			userDORepo.find.mockResolvedValue(expectedResult);
+			userDoRepo.find.mockResolvedValue(expectedResult);
 			roleService.findByName.mockResolvedValue(role);
 
 			return { school, role, expectedResult };
@@ -501,7 +502,7 @@ describe('UserService', () => {
 
 				await service.findPublicTeachersBySchool(school.id);
 
-				expect(userDORepo.find).toHaveBeenCalledWith({ schoolId: school.id, roleId: role.id }, undefined);
+				expect(userDoRepo.find).toHaveBeenCalledWith({ schoolId: school.id, roleId: role.id }, undefined);
 			});
 		});
 
@@ -512,7 +513,7 @@ describe('UserService', () => {
 
 				await service.findPublicTeachersBySchool(school.id);
 
-				expect(userDORepo.find).toHaveBeenCalledWith(
+				expect(userDoRepo.find).toHaveBeenCalledWith(
 					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.NOT_FALSE },
 					undefined
 				);
@@ -526,7 +527,7 @@ describe('UserService', () => {
 
 				await service.findPublicTeachersBySchool(school.id);
 
-				expect(userDORepo.find).toHaveBeenCalledWith(
+				expect(userDoRepo.find).toHaveBeenCalledWith(
 					{ schoolId: school.id, roleId: role.id, discoverable: UserDiscoverableQuery.TRUE },
 					undefined
 				);
@@ -549,24 +550,24 @@ describe('UserService', () => {
 		describe('when find is successfull', () => {
 			it('should call the repo with given school and filters', async () => {
 				const school = schoolEntityFactory.build();
-				const filters = { name: 'name' };
+				const userName = 'name';
 				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
 
-				await service.findForImportUser(school, filters, options);
+				await service.findForImportUser(school, userName, options);
 
-				expect(userRepo.findForImportUser).toHaveBeenCalledWith(school, filters, options);
+				expect(userRepo.findForImportUser).toHaveBeenCalledWith(school, userName, options);
 			});
 		});
 
 		describe('when find is not successfull', () => {
 			it('should call the repo with given school and filters', async () => {
 				const school = schoolEntityFactory.build();
-				const filters = { name: 'name' };
+				const userName = 'name';
 				const options: IFindOptions<UserDo> = { order: { id: SortOrder.asc } };
 				const error = new Error('Error');
 				userRepo.findForImportUser.mockRejectedValueOnce(error);
 
-				await expect(service.findForImportUser(school, filters, options)).rejects.toThrowError(error);
+				await expect(service.findForImportUser(school, userName, options)).rejects.toThrowError(error);
 			});
 		});
 	});
@@ -595,7 +596,7 @@ describe('UserService', () => {
 				const user = userDoFactory.buildWithId({ roles: [role] });
 				const targetSchool = schoolFactory.build();
 
-				userDORepo.findByIds.mockResolvedValueOnce([user]);
+				userDoRepo.findByIds.mockResolvedValueOnce([user]);
 
 				return { user, role, targetSchool };
 			};
@@ -606,7 +607,7 @@ describe('UserService', () => {
 
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
-				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith([
 					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
@@ -621,7 +622,7 @@ describe('UserService', () => {
 
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
-				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith([
 					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
@@ -636,7 +637,7 @@ describe('UserService', () => {
 
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
-				expect(userDORepo.saveAll).toHaveBeenCalledWith([
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith([
 					expect.objectContaining<Partial<UserDo>>({
 						secondarySchools: [
 							{ schoolId: targetSchool.id, role: { id: guestStudent.id, name: RoleName.GUESTSTUDENT } },
@@ -661,7 +662,7 @@ describe('UserService', () => {
 				const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const user = userDoFactory.buildWithId({ roles: [role], schoolId: targetSchool.id });
 
-				userDORepo.findByIds.mockResolvedValueOnce([user]);
+				userDoRepo.findByIds.mockResolvedValueOnce([user]);
 
 				return { user, targetSchool };
 			};
@@ -672,7 +673,7 @@ describe('UserService', () => {
 
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
-				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith(
 					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
 				);
 			});
@@ -688,7 +689,7 @@ describe('UserService', () => {
 					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestRole) }],
 				});
 
-				userDORepo.findByIds.mockResolvedValueOnce([user]);
+				userDoRepo.findByIds.mockResolvedValueOnce([user]);
 
 				return { user, targetSchool };
 			};
@@ -700,7 +701,7 @@ describe('UserService', () => {
 
 				await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
 
-				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith(
 					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: expectedSecondarySchools })])
 				);
 			});
@@ -718,7 +719,7 @@ describe('UserService', () => {
 					secondarySchools: [{ schoolId: targetSchool.id, role: new RoleDto(guestTeacher) }],
 				});
 
-				userDORepo.findByIds.mockResolvedValueOnce([user]);
+				userDoRepo.findByIds.mockResolvedValueOnce([user]);
 
 				return { user, targetSchool, guestTeacher };
 			};
@@ -728,7 +729,7 @@ describe('UserService', () => {
 
 				await service.removeSecondarySchoolFromUsers([user.id as EntityId], targetSchool.id);
 
-				expect(userDORepo.saveAll).toHaveBeenCalledWith(
+				expect(userDoRepo.saveAll).toHaveBeenCalledWith(
 					expect.arrayContaining([expect.objectContaining({ id: user.id, secondarySchools: [] })])
 				);
 			});
@@ -741,7 +742,7 @@ describe('UserService', () => {
 
 			await service.saveAll(users);
 
-			expect(userDORepo.saveAll).toHaveBeenCalledWith(users);
+			expect(userDoRepo.saveAll).toHaveBeenCalledWith(users);
 		});
 	});
 
@@ -1270,7 +1271,7 @@ describe('UserService', () => {
 		describe('when looking for users with tspUids', () => {
 			const setup = () => {
 				const user = userDoFactory.build();
-				userDORepo.findByTspUids.mockResolvedValueOnce([user]);
+				userDoRepo.findByTspUids.mockResolvedValueOnce([user]);
 
 				return { user };
 			};
@@ -1281,7 +1282,7 @@ describe('UserService', () => {
 				const result = await service.findByTspUids(['tspUid']);
 
 				expect(result).toStrictEqual([user]);
-				expect(userDORepo.findByTspUids).toHaveBeenCalledTimes(1);
+				expect(userDoRepo.findByTspUids).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
