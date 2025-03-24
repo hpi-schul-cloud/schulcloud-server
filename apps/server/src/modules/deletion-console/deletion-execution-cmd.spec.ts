@@ -37,97 +37,69 @@ export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule
 	}
 }
 
-export const createTestCLI = async (
-	options: TestCliOptions,
-	callback?: (app: INestApplicationContext, bootstrap: TestBootstrapConsole) => Promise<void>
-): Promise<{ app: INestApplicationContext; bootstrap: TestBootstrapConsole }> => {
-	const bootstrap = new TestBootstrapConsole(options);
-	const app = await bootstrap.init();
-	await app.init();
-	if (callback) {
-		await callback(app, bootstrap);
-		await app.close();
-	}
-	return { app, bootstrap };
-};
-
 describe('DeletionExecutionConsole (e2e)', () => {
-	const setup = async () => {
-		const { app, bootstrap } = await createTestCLI({
+	let app: INestApplicationContext;
+	let bootstrap: TestBootstrapConsole;
+
+	beforeAll(async () => {
+		bootstrap = new TestBootstrapConsole({
 			module: DeletionConsoleTestModule,
 			useDecorators: true,
 			cliName: 'deletion-console',
 			commandName: 'execution',
 		});
 
-		return { app, bootstrap };
-	};
+		app = await bootstrap.init();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
+		// jest.restoreAllMocks();
+	});
+
+	afterAll(async () => {
+		await app.close();
+	});
 
 	describe('module', () => {
-		it('initialize the cli', async () => {
-			const { app, bootstrap } = await setup();
-
+		it('initialize the cli', () => {
 			const cli = bootstrap.getService().getCli('execution');
 
 			expect(cli).toBeDefined();
-
-			await app.close();
 		});
 
-		it('Should init the application context', async () => {
-			const { app, bootstrap } = await setup();
-
+		it('Should init the application context', () => {
 			expect(app).toBeInstanceOf(NestApplicationContext);
 			const options = bootstrap.getOptions();
 			expect(options.contextOptions?.logger).toHaveLength(1);
 			expect(options.contextOptions?.logger).toContain('error');
-
-			await app.close();
 		});
 	});
 
 	describe('execution ', () => {
-		const setup = async (
-			callback: (app: INestApplicationContext, bootstrap: TestBootstrapConsole) => Promise<void>
-		) => {
-			await createTestCLI(
-				{
-					module: DeletionConsoleTestModule,
-					useDecorators: true,
-					cliName: 'deletion-console',
-					commandName: 'execution',
-				},
-				callback
-			);
-		};
-
 		it('should execute a command with multiple args', async () => {
-			await setup(async (app, bootstrap) => {
-				const service = app.get(DeletionExecutionConsole);
-				const mockHandler = jest.spyOn(service, 'triggerDeletionExecution').mockImplementation();
+			const service = app.get(DeletionExecutionConsole);
+			const mockHandler = jest.spyOn(service, 'triggerDeletionExecution').mockImplementation();
 
-				await bootstrap.execute(['trigger', '--limit', '10', '--runFailed', 'true']);
+			await bootstrap.execute(['trigger', '--limit', '10', '--runFailed', 'true']);
 
-				expect(mockHandler).toHaveBeenCalledTimes(1);
-				expect(mockHandler.mock.calls[0][0]).toEqual({ limit: '10', runFailed: 'true' });
+			expect(mockHandler).toHaveBeenCalledTimes(1);
+			expect(mockHandler.mock.calls[0][0]).toEqual({ limit: '10', runFailed: 'true' });
 
-				mockHandler.mockRestore();
-			});
+			mockHandler.mockRestore();
 		});
 
 		it('should call the use case with the correct arguments', async () => {
-			await setup(async (app, bootstrap) => {
-				const uc = app.get(DeletionExecutionUc);
-				const mockUc = jest.spyOn(uc, 'triggerDeletionExecution').mockImplementation();
+			const uc = app.get(DeletionExecutionUc);
+			const mockUc = jest.spyOn(uc, 'triggerDeletionExecution').mockImplementation();
 
-				const args = ['trigger', '--limit', '10', '--runFailed', 'true'];
+			const args = ['trigger', '--limit', '10', '--runFailed', 'true'];
 
-				await bootstrap.boot([process.argv0, 'deletion-console', 'execution', ...args]);
+			await bootstrap.boot([process.argv0, 'deletion-console', 'execution', ...args]);
 
-				expect(mockUc).toHaveBeenNthCalledWith(1, 10, true);
+			expect(mockUc).toHaveBeenNthCalledWith(1, 10, true);
 
-				mockUc.mockRestore();
-			});
+			mockUc.mockRestore();
 		});
 	});
 });
