@@ -469,11 +469,11 @@ describe(BiloSyncStrategy.name, () => {
 				const badBiloMetadata: BiloMediaQueryDataResponse[] = [
 					biloMediaQueryDataResponseFactory.build({
 						id: externalTools[1].medium?.mediumId,
-						cover: undefined,
+						coverSmall: undefined,
 					}),
 					biloMediaQueryDataResponseFactory.build({
 						id: externalTools[2].medium?.mediumId,
-						cover: undefined,
+						coverSmall: undefined,
 					}),
 				];
 
