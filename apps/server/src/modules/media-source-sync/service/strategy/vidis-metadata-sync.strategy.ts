@@ -42,10 +42,12 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		externalTools: ExternalTool[],
 		metadataItemsFromVidis: MediumMetadataDto[]
 	): Promise<MediaSourceSyncReport> {
-		const updateSuccessReport = OperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE);
-		const failureReport = OperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
-		const partialReport = OperationReportFactory.buildWithPartialStatus(MediaSourceSyncOperation.ANY);
-		const undeliveredReport = OperationReportFactory.buildUndeliveredReport();
+		const statusReports = {
+			updateSuccess: OperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE),
+			failure: OperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY),
+			partial: OperationReportFactory.buildWithPartialStatus(MediaSourceSyncOperation.ANY),
+			undelivered: OperationReportFactory.buildUndeliveredReport(),
+		};
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
 			const fetchedMetadata = metadataItemsFromVidis.find(
@@ -53,12 +55,12 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 			);
 
 			if (!fetchedMetadata) {
-				undeliveredReport.count += 1;
+				statusReports.undelivered.count++;
 				return null;
 			}
 
 			if (this.isMetadataUpToDate(externalTool, fetchedMetadata)) {
-				updateSuccessReport.count += 1;
+				statusReports.updateSuccess.count++;
 				return null;
 			}
 
@@ -76,15 +78,15 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 					this.logger.warning(
 						new MediaMetadataSyncFailedLoggable(fetchedMetadata.mediumId, this.getMediaSourceFormat(), error)
 					);
-					failureReport.count += 1;
+					statusReports.failure.count++;
 					return null;
 				}
 			}
 
 			if (status === MediaSourceSyncStatus.SUCCESS) {
-				updateSuccessReport.count += 1;
+				statusReports.updateSuccess.count++;
 			} else {
-				partialReport.count += 1;
+				statusReports.partial.count++;
 			}
 
 			return externalTool;
@@ -99,10 +101,10 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		}
 
 		const report: MediaSourceSyncReport = ReportFactory.buildFromOperations([
-			updateSuccessReport,
-			failureReport,
-			partialReport,
-			undeliveredReport,
+			statusReports.updateSuccess,
+			statusReports.failure,
+			statusReports.partial,
+			statusReports.undelivered,
 		]);
 
 		return report;
