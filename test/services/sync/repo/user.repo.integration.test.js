@@ -244,6 +244,17 @@ describe('user repo', () => {
 			expect(user1).not.to.be.undefined;
 			expect(user2).not.to.be.undefined;
 		});
+
+		describe('when the user has migrated', () => {
+			it('should find the user by its old ldap dn and school', async () => {
+				const { previousLdapDn, school, migratedUser } = await setup();
+
+				const res = await UserRepo.findByLdapDnsAndSchool([previousLdapDn], school._id);
+
+				expect(res.length).to.equal(1);
+				expect(res[0]._id.toString()).to.equal(migratedUser._id.toString());
+			});
+		});
 	});
 
 	describe('createOrUpdateImportUser', () => {

@@ -27,6 +27,17 @@ class SchoolAction extends BaseConsumerAction {
 			return;
 		}
 
+		if (!school) {
+			const migratedSchool = await SchoolRepo.findSchoolByPreviousExternalIdAndSystem(
+				schoolData.ldapSchoolIdentifier,
+				schoolData.systems
+			);
+			if (migratedSchool) {
+				// School has already been migrated and does not have to be taken into account by sync
+				return;
+			}
+		}
+
 		if (schoolData.officialSchoolNumber) {
 			// school without ldapId exists in our db - don't create as new
 			const checkSchool = await SchoolRepo.findSchoolByOfficialSchoolNumber(schoolData.officialSchoolNumber);

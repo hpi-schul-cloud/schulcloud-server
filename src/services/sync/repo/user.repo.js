@@ -129,11 +129,28 @@ const findByLdapIdAndSchool = async (ldapId, schoolId) =>
 		.lean()
 		.exec();
 
+const findByPreviousExternalIdAndSchool = async (previousExternalId, schoolId) =>
+	userModel
+		.findOne({
+			previousExternalId,
+			schoolId,
+		})
+		.lean()
+		.exec();
+
 const findByLdapDnsAndSchool = async (ldapDns, schoolId) =>
 	userModel
 		.find({
-			schoolId,
-			ldapDn: { $in: ldapDns },
+			$or: [
+				{
+					schoolId,
+					ldapDn: { $in: ldapDns },
+				},
+				{
+					schoolId,
+					previousExternalId: { $in: ldapDns },
+				},
+			],
 		})
 		.populate('roles')
 		.lean()
@@ -145,6 +162,7 @@ const UserRepo = {
 	deleteUser,
 	findUserBySchoolAndName,
 	findByLdapIdAndSchool,
+	findByPreviousExternalIdAndSchool,
 	findByLdapDnsAndSchool,
 	// import user methods (used in LDAP)
 	addClassToImportUsers,

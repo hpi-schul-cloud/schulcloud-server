@@ -23,6 +23,16 @@ const findSchoolByLdapIdAndSystem = async (ldapSchoolIdentifier, systems) =>
 		.lean({ virtuals: true })
 		.exec();
 
+const findSchoolByPreviousExternalIdAndSystem = async (previousExternalId, systems) =>
+	schoolModel
+		.findOne({
+			previousExternalId,
+			systems: { $in: systems },
+		})
+		.populate('userLoginMigration')
+		.lean({ virtuals: true })
+		.exec();
+
 const findSchoolByOfficialSchoolNumber = async (officialSchoolNumber) => {
 	if (!officialSchoolNumber) {
 		return;
@@ -40,6 +50,7 @@ const SchoolRepo = {
 	updateSchoolName,
 	findSchoolByLdapIdAndSystem,
 	findSchoolByOfficialSchoolNumber,
+	findSchoolByPreviousExternalIdAndSystem,
 	getYears,
 	findFederalState,
 };
