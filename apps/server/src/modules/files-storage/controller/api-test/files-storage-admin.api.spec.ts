@@ -171,8 +171,8 @@ describe(`${baseRouteName} (api)`, () => {
 				await loggedInClient.delete(`admin/file/storage-location/school/${storageLocationId1}`);
 
 				const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
-				fileRecords.forEach((sportsBallPerson) => {
-					expect(sportsBallPerson).toMatchObject({
+				fileRecords.forEach((fileRecord) => {
+					expect(fileRecord).toMatchObject({
 						deletedSince: expect.any(Date),
 					});
 				});
