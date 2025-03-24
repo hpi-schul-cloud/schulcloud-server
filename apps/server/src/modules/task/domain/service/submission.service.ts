@@ -117,9 +117,7 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 
 		const [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
 
-		if (!(submissionsCount > 0)) {
-			const result = DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []);
-
+		if (submissionsCount <= 0) {
 			this.logger.info(
 				new DataDeletionDomainOperationLoggable(
 					'no references from Submissions found',
@@ -130,6 +128,9 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 					0
 				)
 			);
+
+			const result = DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []);
+
 			return result;
 		}
 

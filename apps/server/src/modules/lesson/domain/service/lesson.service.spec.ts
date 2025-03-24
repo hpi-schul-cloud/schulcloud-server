@@ -182,6 +182,7 @@ describe('LessonService', () => {
 				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+				lessonRepo.removeUserReference.mockResolvedValue(2);
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
 					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [lesson1.id, lesson2.id]),
