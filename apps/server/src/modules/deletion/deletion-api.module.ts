@@ -5,6 +5,7 @@ import { FilesModule } from '@modules/files';
 import { NewsModule } from '@modules/news';
 import { PseudonymModule } from '@modules/pseudonym';
 import { RocketChatUserModule } from '@modules/rocketchat-user';
+import { SagaModule } from '@modules/saga';
 import { TeamModule } from '@modules/team';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
@@ -29,6 +30,7 @@ import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
 		PseudonymModule,
 		FilesModule,
 		RocketChatUserModule,
+		SagaModule,
 		UserModule,
 	],
 	controllers: [DeletionRequestController, DeletionExecutionController, DeletionBatchController],
