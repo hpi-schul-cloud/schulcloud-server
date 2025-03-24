@@ -1,7 +1,7 @@
-import { CurrentUser, type ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, Patch } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { type ChangeLanguageParams, SuccessfulResponse } from './dto';
+import { ChangeLanguageParams, SuccessfulResponse } from './dto';
 import { UserUc } from './user.uc';
 
 @ApiTags('User')
