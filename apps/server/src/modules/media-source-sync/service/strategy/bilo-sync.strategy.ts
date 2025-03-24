@@ -8,7 +8,7 @@ import { ExternalToolLogoService } from '@modules/tool/external-tool/service/ext
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
-import { BiloMediaMetadataSyncFailedLoggable } from '../../loggable/bilo-media-metadata-sync-failed-loggable.exception';
+import { BiloMediaMetadataSyncFailedLoggable } from '../../loggable';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
@@ -84,9 +84,8 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 			const isFirstSync = !externalTool.medium?.metadataModifiedAt;
 			try {
-				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, metadata);
+				await this.buildExternalToolMetadataUpdate(externalTool, metadata);
 				isFirstSync ? statusReports.createSuccess.count++ : statusReports.updateSuccess.count++;
-				return externalTool;
 			} catch (error: unknown) {
 				this.logger.debug(
 					new BiloMediaMetadataSyncFailedLoggable(
@@ -131,7 +130,7 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		externalTool.name = metadata.title;
 		externalTool.description = metadata.description;
 		externalTool.logoUrl = metadata.coverSmall.href;
-		externalTool.logo = await this.externalToolLogoService.fetchLogo({ logoUrl: metadata.cover.href });
+		externalTool.logo = await this.externalToolLogoService.fetchLogo({ logoUrl: metadata.coverSmall.href });
 
 		if (externalTool.medium) {
 			externalTool.medium.publisher = metadata.publisher;
@@ -141,15 +140,5 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 		await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
 
 		return externalTool;
-	}
-
-	private async updateExternalToolThumbnail(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		externalTool: ExternalTool,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		thumbnailUrl: string
-	): Promise<void> {
-		// TODO N21-2398 updating thumbnail requires jwt (not possible for now)
-		await Promise.resolve();
 	}
 }
