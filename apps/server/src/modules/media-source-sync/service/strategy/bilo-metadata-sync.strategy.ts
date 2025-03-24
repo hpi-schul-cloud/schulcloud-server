@@ -10,7 +10,7 @@ import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface'
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
-export class BiloSyncStrategy implements MediaSourceSyncStrategy {
+export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly biloMediaClientAdapter: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,

@@ -1,3 +1,3 @@
 export * from './external-tool.module';
 export * from './domain';
-export { ExternalToolService } from './service';
+export { ExternalToolService, ExternalToolLogoService, ExternalToolValidationService } from './service';
