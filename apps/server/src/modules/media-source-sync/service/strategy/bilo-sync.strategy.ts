@@ -84,8 +84,9 @@ export class BiloSyncStrategy implements MediaSourceSyncStrategy {
 
 			const isFirstSync = !externalTool.medium?.metadataModifiedAt;
 			try {
-				await this.buildExternalToolMetadataUpdate(externalTool, metadata);
+				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, metadata);
 				isFirstSync ? statusReports.createSuccess.count++ : statusReports.updateSuccess.count++;
+				return externalTool;
 			} catch (error: unknown) {
 				this.logger.debug(
 					new BiloMediaMetadataSyncFailedLoggable(
