@@ -241,6 +241,7 @@ describe('FilesStorageService delete methods', () => {
 			const params = { storageLocation, storageLocationId };
 
 			fileRecordRepo.markForDeleteByStorageLocation.mockResolvedValue(1);
+			storageClient.moveDirectoryToTrash.mockResolvedValue();
 
 			return { storageLocation, storageLocationId, params };
 		};
@@ -256,7 +257,7 @@ describe('FilesStorageService delete methods', () => {
 		it('should call storageClient.moveDirectoryToTrash', async () => {
 			const { storageLocationId, params } = setup();
 
-			await service.markForDeleteByStorageLocation(params);
+			await service.markForDeleteByStorageLocation(params)
 
 			expect(storageClient.moveDirectoryToTrash).toBeCalledWith(storageLocationId);
 		});
