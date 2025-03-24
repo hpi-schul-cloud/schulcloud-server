@@ -29,10 +29,10 @@ export abstract class BaseEntityWithTimestamps<Optional = never> implements Auth
 	@SerializedPrimaryKey()
 	id!: string;
 
-	@Property({ type: Date, onCreate: () => new Date() })
+	@Property({ type: Date })
 	createdAt = new Date();
 
-	@Property({ type: Date, onCreate: () => new Date(), onUpdate: () => new Date() })
+	@Property({ type: Date, onUpdate: () => new Date() })
 	updatedAt = new Date();
 }
 
