@@ -88,6 +88,8 @@ build
 /.idea/
 /apps/server/src/modules/board/loadtest/**/*.html
 /apps/server/src/modules/board/loadtest/artilleryreport.json
+apps/server/src/modules/common-cartridge/test.http
+apps/server/src/modules/common-cartridge/us_history_since_1877.imscc
 
 # Docker
 docker-compose.yml
