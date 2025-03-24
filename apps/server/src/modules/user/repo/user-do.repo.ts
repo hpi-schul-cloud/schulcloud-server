@@ -244,62 +244,80 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 
 	private mapConsentEntityToDo(consentEntity: ConsentEntity): Consent {
 		const consent = new Consent({
-			userConsent: consentEntity.userConsent
-				? new UserConsent({
-						form: consentEntity.userConsent.form,
-						dateOfPrivacyConsent: consentEntity.userConsent.dateOfPrivacyConsent,
-						dateOfTermsOfUseConsent: consentEntity.userConsent.dateOfTermsOfUseConsent,
-						privacyConsent: consentEntity.userConsent.privacyConsent,
-						termsOfUseConsent: consentEntity.userConsent.termsOfUseConsent,
-				  })
-				: undefined,
+			userConsent: consentEntity.userConsent ? this.mapUserConsentEntityToDo(consentEntity.userConsent) : undefined,
 			parentConsents:
 				consentEntity.parentConsents !== undefined
-					? consentEntity.parentConsents.map(
-							(parentConsent) =>
-								new ParentConsent({
-									id: parentConsent._id.toHexString(),
-									form: parentConsent.form,
-									dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
-									dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
-									privacyConsent: parentConsent.privacyConsent,
-									termsOfUseConsent: parentConsent.termsOfUseConsent,
-								})
-					  )
+					? this.mapParentConsentEntitiesToDo(consentEntity.parentConsents)
 					: undefined,
 		});
 
 		return consent;
 	}
 
+	private mapUserConsentEntityToDo(userConsentEntity: UserConsentEntity): UserConsent {
+		const userConsent = new UserConsent({
+			form: userConsentEntity.form,
+			dateOfPrivacyConsent: userConsentEntity.dateOfPrivacyConsent,
+			dateOfTermsOfUseConsent: userConsentEntity.dateOfTermsOfUseConsent,
+			privacyConsent: userConsentEntity.privacyConsent,
+			termsOfUseConsent: userConsentEntity.termsOfUseConsent,
+		});
+
+		return userConsent;
+	}
+
+	private mapParentConsentEntitiesToDo(parentConsentEntities: ParentConsentEntity[]): ParentConsent[] {
+		const parentConsents = parentConsentEntities.map(
+			(parentConsent) =>
+				new ParentConsent({
+					id: parentConsent._id.toHexString(),
+					form: parentConsent.form,
+					dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
+					dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
+					privacyConsent: parentConsent.privacyConsent,
+					termsOfUseConsent: parentConsent.termsOfUseConsent,
+				})
+		);
+
+		return parentConsents;
+	}
+
 	private mapConsentToEntity(consent: Consent): ConsentEntity {
 		const consentEntity = new ConsentEntity({
-			userConsent: consent.userConsent
-				? new UserConsentEntity({
-						form: consent.userConsent.form,
-						dateOfPrivacyConsent: consent.userConsent.dateOfPrivacyConsent,
-						dateOfTermsOfUseConsent: consent.userConsent.dateOfTermsOfUseConsent,
-						privacyConsent: consent.userConsent.privacyConsent,
-						termsOfUseConsent: consent.userConsent.termsOfUseConsent,
-				  })
-				: undefined,
+			userConsent: consent.userConsent ? this.mapUserConsentToEntity(consent.userConsent) : undefined,
 			parentConsents:
-				consent.parentConsents !== undefined
-					? consent.parentConsents.map(
-							(parentConsent) =>
-								new ParentConsentEntity({
-									_id: new ObjectId(parentConsent.id),
-									form: parentConsent.form,
-									dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
-									dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
-									privacyConsent: parentConsent.privacyConsent,
-									termsOfUseConsent: parentConsent.termsOfUseConsent,
-								})
-					  )
-					: undefined,
+				consent.parentConsents !== undefined ? this.mapParentConsentsToEntity(consent.parentConsents) : undefined,
 		});
 
 		return consentEntity;
+	}
+
+	private mapParentConsentsToEntity(parentConsents: ParentConsent[]): ParentConsentEntity[] {
+		const parentConsentEntities = parentConsents.map(
+			(parentConsent) =>
+				new ParentConsentEntity({
+					_id: new ObjectId(parentConsent.id),
+					form: parentConsent.form,
+					dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
+					dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
+					privacyConsent: parentConsent.privacyConsent,
+					termsOfUseConsent: parentConsent.termsOfUseConsent,
+				})
+		);
+
+		return parentConsentEntities;
+	}
+
+	private mapUserConsentToEntity(userConsent: UserConsent): UserConsentEntity {
+		const userConsentEntity = new UserConsentEntity({
+			form: userConsent.form,
+			dateOfPrivacyConsent: userConsent.dateOfPrivacyConsent,
+			dateOfTermsOfUseConsent: userConsent.dateOfTermsOfUseConsent,
+			privacyConsent: userConsent.privacyConsent,
+			termsOfUseConsent: userConsent.termsOfUseConsent,
+		});
+
+		return userConsentEntity;
 	}
 
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
