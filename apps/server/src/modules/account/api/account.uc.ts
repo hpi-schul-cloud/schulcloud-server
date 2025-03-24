@@ -8,8 +8,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { AccountService } from '..';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
+import { Account, AccountSave, AccountService, UpdateAccount, UpdateMyAccount } from '../domain';
 import {
 	AccountSearchDto,
 	AccountSearchType,
@@ -138,7 +137,7 @@ export class AccountUc {
 		const targetAccount = await this.accountService.findById(accountId);
 
 		if (!targetAccount.userId) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 
 		const targetUser = await this.authorizationService.getUserWithPermissions(targetAccount.userId);

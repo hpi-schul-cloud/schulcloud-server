@@ -3,8 +3,8 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Pseudonym } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { Pseudonym } from '../repo';
 import { PseudonymService } from '../service';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class PseudonymUc {
 		private readonly schoolService: LegacySchoolService
 	) {}
 
-	async findPseudonymByPseudonym(userId: EntityId, pseudonym: string): Promise<Pseudonym> {
+	public async findPseudonymByPseudonym(userId: EntityId, pseudonym: string): Promise<Pseudonym> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
 		const foundPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
