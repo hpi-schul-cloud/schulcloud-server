@@ -102,11 +102,13 @@ describe(VidisStrategy.name, () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.withVidis().build();
 
-				const offerItems = vidisOfferItemFactory.buildList(3);
-				const mediumIds: string[] = offerItems.map((item: OfferDTO) => {
-					const offerId = (item.offerId as number) + offerItems.length;
-					return offerId.toString();
-				});
+				const offerIds = [100, 101, 102];
+				const offerItems = offerIds.map((_id: number, i: number) =>
+					vidisOfferItemFactory.build({ offerId: offerIds[i] })
+				);
+				const mediumIds: string[] = offerItems.map((_item: OfferDTO, i: number) =>
+					(offerIds[i] + offerItems.length).toString()
+				);
 
 				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(offerItems);
 
@@ -129,13 +131,17 @@ describe(VidisStrategy.name, () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.withVidis().build();
 
-				const offerItems = vidisOfferItemFactory.buildList(3);
-				const mediumIds: string[] = offerItems.map((item: OfferDTO) => (item.offerId as number).toString());
+				const offerIds = [100, 101, 102];
+
+				const offerItems = offerIds.map((_id: number, i: number) =>
+					vidisOfferItemFactory.build({ offerId: offerIds[i] })
+				);
+				const mediumIds: string[] = offerItems.map((_item: OfferDTO, i: number) => offerIds[i].toString());
 
 				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(offerItems);
 
-				const expectedMetadataItems = offerItems.map((item: OfferDTO) =>
-					MediumMetadataMapper.mapVidisMetadataToMediumMetadata((item.offerId as number).toString(), item)
+				const expectedMetadataItems = offerItems.map((_item: OfferDTO, i: number) =>
+					MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerIds[i].toString(), offerItems[i])
 				);
 
 				return {

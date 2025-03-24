@@ -64,7 +64,7 @@ describe(MediaMetadataSyncService.name, () => {
 					]);
 					Reflect.set(service, 'metadataSyncStrategyMap', strategyMap);
 
-					return { mediaSourceDataFormat: biloMediaSource.format as MediaSourceDataFormat, report };
+					return { mediaSourceDataFormat: MediaSourceDataFormat.BILDUNGSLOGIN, report };
 				};
 
 				it('should sync the media metadata using the sync strategy', async () => {

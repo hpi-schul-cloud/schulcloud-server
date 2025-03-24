@@ -14,7 +14,7 @@ import { VidisSyncService } from '../service';
 export class VidisSyncStrategy extends SyncStrategy {
 	constructor(
 		private readonly vidisSyncService: VidisSyncService,
-		private readonly vidisFetchService: VidisClientAdapter,
+		private readonly vidisClientAdapter: VidisClientAdapter,
 		private readonly mediaSourceService: MediaSourceService
 	) {
 		super();
@@ -31,7 +31,7 @@ export class VidisSyncStrategy extends SyncStrategy {
 			throw new MediaSourceNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
 
-		const vidisOfferItems = await this.vidisFetchService.getOfferItemsByRegion(mediaSource);
+		const vidisOfferItems = await this.vidisClientAdapter.getOfferItemsByRegion(mediaSource);
 
 		await this.vidisSyncService.syncMediaSchoolLicenses(mediaSource, vidisOfferItems);
 	}

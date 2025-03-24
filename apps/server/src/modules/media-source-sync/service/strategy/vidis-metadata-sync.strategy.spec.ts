@@ -89,9 +89,13 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
-					const offerItems = vidisOfferItemFactory.buildList(3);
-					const metadataItems = offerItems.map((item: OfferDTO) =>
-						MediumMetadataMapper.mapVidisMetadataToMediumMetadata((item.offerId as number).toString(), item)
+					const offerIds = [100, 101, 102];
+
+					const offerItems = offerIds.map((_id: number, i: number) =>
+						vidisOfferItemFactory.build({ offerId: offerIds[i] })
+					);
+					const metadataItems = offerItems.map((_item: OfferDTO, i: number) =>
+						MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerIds[i].toString(), offerItems[i])
 					);
 
 					const externalTools = metadataItems.map((_item: MediumMetadataDto, i: number) =>
@@ -164,15 +168,14 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
+					const offerId = 100;
 					const offerItem = vidisOfferItemFactory.build({
+						offerId,
 						offerTitle: 'test-vidis-title',
 						offerLogo: undefined,
 						offerDescription: 'Test Vidis Description',
 					});
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -238,16 +241,15 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
+					const offerId = 100;
 					const offerItem = vidisOfferItemFactory.build({
+						offerId,
 						offerTitle: undefined,
 						offerLongTitle: undefined,
 						offerLogo: btoa('VIDIS Test Logo'),
 						offerDescription: 'Test Vidis Description',
 					});
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -314,11 +316,9 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
-					const offerItem = vidisOfferItemFactory.build();
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const offerId = 100;
+					const offerItem = vidisOfferItemFactory.build({ offerId });
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -372,14 +372,13 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
+					const offerId = 100;
 					const offerItem = vidisOfferItemFactory.build({
+						offerId,
 						offerTitle: undefined,
 						offerLongTitle: undefined,
 					});
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -446,13 +445,12 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
+					const offerId = 100;
 					const offerItem = vidisOfferItemFactory.build({
+						offerId,
 						offerLogo: undefined,
 					});
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -516,11 +514,9 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
-					const offerItem = vidisOfferItemFactory.build();
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const offerId = 100;
+					const offerItem = vidisOfferItemFactory.build({ offerId });
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -604,11 +600,9 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
-					const offerItem = vidisOfferItemFactory.build();
-					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(
-						(offerItem.offerId as number).toString(),
-						offerItem
-					);
+					const offerId = 100;
+					const offerItem = vidisOfferItemFactory.build({ offerId });
+					const metadataItem = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerId.toString(), offerItem);
 
 					const externalTool = externalToolFactory
 						.withMedium({
@@ -693,9 +687,12 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.withVidis().build();
 
-					const offerItems = vidisOfferItemFactory.buildList(2);
-					const metadataItems = offerItems.map((item: OfferDTO) =>
-						MediumMetadataMapper.mapVidisMetadataToMediumMetadata((item.offerId as number).toString(), item)
+					const offerIds = [100, 101];
+					const offerItems = offerIds.map((_id: number, i: number) =>
+						vidisOfferItemFactory.build({ offerId: offerIds[i] })
+					);
+					const metadataItems = offerItems.map((_item: OfferDTO, i: number) =>
+						MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerIds[i].toString(), offerItems[i])
 					);
 
 					const externalTools = metadataItems.map((_metadata: MediumMetadataDto, i: number) =>
@@ -796,18 +793,21 @@ describe(VidisMetadataSyncStrategy.name, () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.withVidis().build();
 
-				const offerItems = vidisOfferItemFactory.buildList(5);
-				const externalTools = offerItems.map((item: OfferDTO) =>
+				const offerIds = [100, 101, 102, 103, 104];
+				const offerItems = offerIds.map((_id: number, i: number) =>
+					vidisOfferItemFactory.build({ offerId: offerIds[i] })
+				);
+				const metadataItems = offerItems.map((_item: OfferDTO, i: number) =>
+					MediumMetadataMapper.mapVidisMetadataToMediumMetadata(offerIds[i].toString(), offerItems[i])
+				);
+
+				const externalTools = offerItems.map((_item: OfferDTO, i: number) =>
 					externalToolFactory
 						.withMedium({
-							mediumId: ((item.offerId as number) + offerItems.length).toString(),
+							mediumId: (offerIds[i] + offerItems.length).toString(),
 							mediaSourceId: mediaSource.sourceId,
 						})
 						.build()
-				);
-
-				const metadataItems = offerItems.map((item: OfferDTO) =>
-					MediumMetadataMapper.mapVidisMetadataToMediumMetadata((item.offerId as number).toString(), item)
 				);
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
