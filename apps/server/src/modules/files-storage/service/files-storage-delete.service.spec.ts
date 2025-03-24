@@ -41,6 +41,7 @@ describe('FilesStorageService delete methods', () => {
 	let service: FilesStorageService;
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 	let storageClient: DeepMocked<S3ClientAdapter>;
+	let legacyLogger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
 		await setupEntities([FileRecord]);
@@ -74,6 +75,7 @@ describe('FilesStorageService delete methods', () => {
 		service = module.get(FilesStorageService);
 		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
+		legacyLogger = module.get(LegacyLogger);
 	});
 
 	beforeEach(() => {
@@ -235,39 +237,73 @@ describe('FilesStorageService delete methods', () => {
 	});
 
 	describe('deleteByStorageLocation', () => {
-		const setup = () => {
-			const storageLocation = StorageLocation.SCHOOL;
-			const storageLocationId = new ObjectId().toHexString();
-			const params = { storageLocation, storageLocationId };
+		describe('WHEN valid files exists', () => {
+			const setup = () => {
+				const storageLocation = StorageLocation.SCHOOL;
+				const storageLocationId = new ObjectId().toHexString();
+				const params = { storageLocation, storageLocationId };
 
-			fileRecordRepo.markForDeleteByStorageLocation.mockResolvedValue(1);
-			storageClient.moveDirectoryToTrash.mockResolvedValue();
+				fileRecordRepo.markForDeleteByStorageLocation.mockResolvedValueOnce(1);
+				storageClient.moveDirectoryToTrash.mockResolvedValueOnce();
 
-			return { storageLocation, storageLocationId, params };
-		};
+				return { storageLocation, storageLocationId, params };
+			};
 
-		it('should call fileRecordRepo.markForDeleteByStorageLocation', async () => {
-			const { storageLocation, storageLocationId, params } = setup();
+			it('should call fileRecordRepo.markForDeleteByStorageLocation', async () => {
+				const { storageLocation, storageLocationId, params } = setup();
 
-			await service.markForDeleteByStorageLocation(params);
+				await service.markForDeleteByStorageLocation(params);
 
-			expect(fileRecordRepo.markForDeleteByStorageLocation).toBeCalledWith(storageLocation, storageLocationId);
+				expect(fileRecordRepo.markForDeleteByStorageLocation).toBeCalledWith(storageLocation, storageLocationId);
+			});
+
+			it('should call storageClient.moveDirectoryToTrash', async () => {
+				const { storageLocationId, params } = setup();
+
+				await service.markForDeleteByStorageLocation(params);
+
+				expect(storageClient.moveDirectoryToTrash).toBeCalledWith(storageLocationId);
+			});
+
+			it('should return result', async () => {
+				const { params } = setup();
+
+				const resultValue = await service.markForDeleteByStorageLocation(params);
+
+				expect(resultValue).toBe(1);
+			});
 		});
 
-		it('should call storageClient.moveDirectoryToTrash', async () => {
-			const { storageLocationId, params } = setup();
+		describe('WHEN storageClient throws an error', () => {
+			const setup = () => {
+				const storageLocation = StorageLocation.SCHOOL;
+				const storageLocationId = new ObjectId().toHexString();
+				const params = { storageLocation, storageLocationId };
+				const error = new Error('Timeout');
 
-			await service.markForDeleteByStorageLocation(params)
+				fileRecordRepo.markForDeleteByStorageLocation.mockResolvedValueOnce(1);
+				storageClient.moveDirectoryToTrash.mockRejectedValueOnce(error);
 
-			expect(storageClient.moveDirectoryToTrash).toBeCalledWith(storageLocationId);
-		});
+				const expectedProps = [
+					{
+						action: 'markForDeleteByStorageLocation',
+						message: 'Error while moving directory to trash',
+						storageLocation: params.storageLocation,
+						storageLocationId: params.storageLocationId,
+					},
+					error,
+				];
 
-		it('should return result', async () => {
-			const { params } = setup();
+				return { storageLocation, storageLocationId, params, expectedProps };
+			};
 
-			const resultValue = await service.markForDeleteByStorageLocation(params);
+			it('should call legacyLogger.error with expected props', async () => {
+				const { params, expectedProps } = setup();
 
-			expect(resultValue).toBe(1);
+				await service.markForDeleteByStorageLocation(params);
+
+				expect(legacyLogger.error).toBeCalledWith(...expectedProps);
+			});
 		});
 	});
 });
