@@ -66,11 +66,13 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 		return lessons;
 	}
 
-	public async deleteUser(userId: EntityId): Promise<number> {
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		// replace all user references with undefined
 		const count = await this._em.nativeUpdate(
-			LessonEntity,
-			{ contents: { $elemMatch: { user: new ObjectId(userId) } } } as FilterQuery<LessonEntity>,
-			{ $pull: { contents: { user: new ObjectId(userId) } } } as Partial<LessonEntity>
+			this.entityName,
+			{ contents: { $elemMatch: { user: id } } } as FilterQuery<LessonEntity>,
+			{ $set: { 'contents.$.user': undefined } } as Partial<LessonEntity>
 		);
 
 		return count;

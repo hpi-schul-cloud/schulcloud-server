@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FilterQuery } from '@mikro-orm/core';
 import { CourseGroupEntity } from '@modules/course/repo';
 import { Injectable } from '@nestjs/common';
@@ -35,16 +36,16 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return result;
 	}
 
-	public async deleteUserFromTeam(userId: EntityId): Promise<number> {
-		// delete userId from submission teamMembers
-		const count = await this._em.nativeUpdate(this.entityName, { teamMembers: userId }, {
-			$pull: { teamMembers: userId },
+	public async deleteUserFromTeams(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		const count = await this._em.nativeUpdate(this.entityName, { teamMembers: id }, {
+			$pull: { teamMembers: id },
 		} as Partial<Submission>);
 
 		return count;
 	}
 
-	public async removeUssrReference(submissionIds: EntityId[]): Promise<number> {
+	public async removeUserReference(submissionIds: EntityId[]): Promise<number> {
 		const count = await this._em.nativeUpdate(this.entityName, { id: { $in: submissionIds } }, {
 			$set: { studentId: undefined },
 		} as Partial<Submission>);

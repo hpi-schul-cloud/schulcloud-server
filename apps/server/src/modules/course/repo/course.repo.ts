@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
@@ -94,12 +95,15 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		return course;
 	}
 
-	public async deleteUser(userId: EntityId): Promise<number> {
-		// remove user from teachers, substitutionTeachers, students
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
 		const count = await this._em.nativeUpdate(
 			CourseEntity,
-			{ $or: [{ teachers: userId }, { substitutionTeachers: userId }, { students: userId }] },
-			{ $pull: { teachers: userId, substitutionTeachers: userId, students: userId } } as Partial<CourseEntity>
+			{
+				$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
+			},
+			// Note: MikroOrm does not convert fieldNames to db filed names in this case
+			{ $pull: { teacherIds: id, substitutionIds: id, userIds: id } } as Partial<CourseEntity>
 		);
 
 		return count;

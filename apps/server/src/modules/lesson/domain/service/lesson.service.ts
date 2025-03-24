@@ -76,7 +76,7 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 		const lessons = await this.lessonRepo.findByUserId(userId);
 		const lessonIds = this.getLessonsId(lessons);
 
-		const numberOfUpdatedLessons = await this.lessonRepo.deleteUser(userId);
+		const numberOfUpdatedLessons = await this.lessonRepo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedLessons, lessonIds),

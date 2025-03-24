@@ -167,7 +167,7 @@ describe('LessonService', () => {
 		});
 	});
 
-	describe('deleteUserDataFromTeams', () => {
+	describe('deleteUserData', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId();
@@ -199,6 +199,14 @@ describe('LessonService', () => {
 				await lessonService.deleteUserData(userId.toHexString());
 
 				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
+			});
+
+			it('should call lessonRepo.removeUserReference', async () => {
+				const { userId } = setup();
+
+				await lessonService.deleteUserData(userId.toHexString());
+
+				expect(lessonRepo.removeUserReference).toBeCalledWith(userId.toHexString());
 			});
 
 			it('should update lessons without deleted user', async () => {

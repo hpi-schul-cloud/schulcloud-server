@@ -63,7 +63,7 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 		);
 		const [courses] = await this.repo.findAllByUserId(userId);
 
-		const count = await this.repo.deleteUser(userId);
+		const count = await this.repo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.COURSE, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCoursesId(courses)),

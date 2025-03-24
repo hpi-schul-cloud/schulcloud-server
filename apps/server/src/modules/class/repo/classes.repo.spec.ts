@@ -106,7 +106,7 @@ describe(ClassesRepo.name, () => {
 		});
 	});
 
-	describe('deleteUser', () => {
+	describe('removeUserReference', () => {
 		describe('when deleting user data from classes', () => {
 			const setup = async () => {
 				const testUser1 = new ObjectId();
@@ -132,7 +132,7 @@ describe(ClassesRepo.name, () => {
 				const { testUser1 } = await setup();
 
 				jest.spyOn(em, 'nativeUpdate');
-				await repo.deleteUser(testUser1.toHexString());
+				await repo.removeUserReference(testUser1.toHexString());
 
 				expect(em.nativeUpdate).toHaveBeenCalled();
 
@@ -142,7 +142,7 @@ describe(ClassesRepo.name, () => {
 			it('should actually remove the user reference from the classes', async () => {
 				const { testUser1 } = await setup();
 
-				await repo.deleteUser(testUser1.toHexString());
+				await repo.removeUserReference(testUser1.toHexString());
 
 				const result1 = await repo.findAllByUserId(testUser1.toHexString());
 				expect(result1).toHaveLength(0);
@@ -151,7 +151,7 @@ describe(ClassesRepo.name, () => {
 			it('should return count of 2 classes updated', async () => {
 				const { testUser1 } = await setup();
 
-				const numberOfUpdatedClasses = await repo.deleteUser(testUser1.toHexString());
+				const numberOfUpdatedClasses = await repo.removeUserReference(testUser1.toHexString());
 
 				expect(numberOfUpdatedClasses).toEqual(2);
 			});
@@ -159,7 +159,7 @@ describe(ClassesRepo.name, () => {
 			it('should not affect other users in same classes', async () => {
 				const { testUser1, class1, testUser2 } = await setup();
 
-				await repo.deleteUser(testUser1.toHexString());
+				await repo.removeUserReference(testUser1.toHexString());
 
 				const classes = await repo.findClassById(class1.id);
 				expect(classes?.userIds).toEqual([testUser2.toHexString()]);
@@ -168,7 +168,7 @@ describe(ClassesRepo.name, () => {
 			it('should not affect other classes', async () => {
 				const { testUser1, testUser3 } = await setup();
 
-				await repo.deleteUser(testUser1.toHexString());
+				await repo.removeUserReference(testUser1.toHexString());
 
 				const result = await repo.findAllByUserId(testUser3.toHexString());
 				expect(result).toHaveLength(2);

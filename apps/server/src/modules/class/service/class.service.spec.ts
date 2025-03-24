@@ -206,7 +206,7 @@ describe(ClassService.name, () => {
 				const { userId1 } = setup();
 				await service.deleteUserData(userId1.toHexString());
 
-				expect(classesRepo.deleteUser).toBeCalledWith(userId1.toHexString());
+				expect(classesRepo.removeUserReference).toBeCalledWith(userId1.toHexString());
 			});
 
 			it('should return DomainDeletionReport', async () => {

@@ -74,7 +74,7 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 		}
 
 		const classes = await this.classesRepo.findAllByUserId(userId);
-		const numberOfUpdatedClasses = await this.classesRepo.deleteUser(userId);
+		const numberOfUpdatedClasses = await this.classesRepo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.CLASS, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedClasses, this.getClassesId(classes)),

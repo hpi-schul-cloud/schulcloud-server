@@ -31,9 +31,11 @@ export class CourseGroupRepo extends BaseRepo<CourseGroupEntity> {
 		return [courseGroups, count];
 	}
 
-	public async deleteUser(userId: EntityId): Promise<number> {
-		const count = await this._em.nativeUpdate(CourseGroupEntity, { students: new ObjectId(userId) }, {
-			$pull: { students: new ObjectId(userId) },
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		const count = await this._em.nativeUpdate(this.entityName, { students: id }, {
+			// Note MikroOrm does not convert here students name to userId db field
+			$pull: { userIds: id },
 		} as Partial<CourseGroupEntity>);
 
 		return count;

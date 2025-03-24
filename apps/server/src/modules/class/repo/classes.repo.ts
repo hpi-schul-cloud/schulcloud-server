@@ -59,12 +59,11 @@ export class ClassesRepo {
 		return domainObject;
 	}
 
-	public async deleteUser(userId: EntityId): Promise<number> {
-		const count = await this.em.nativeUpdate(
-			ClassEntity,
-			{ $or: [{ userIds: new ObjectId(userId) }, { teacherIds: new ObjectId(userId) }] },
-			{ $pull: { userIds: new ObjectId(userId), teacherIds: new ObjectId(userId) } } as Partial<ClassEntity>
-		);
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		const count = await this.em.nativeUpdate(ClassEntity, { $or: [{ userIds: id }, { teacherIds: id }] }, {
+			$pull: { userIds: id, teacherIds: id },
+		} as Partial<ClassEntity>);
 
 		return count;
 	}

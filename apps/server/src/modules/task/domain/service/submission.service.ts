@@ -139,8 +139,8 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 
 		const groupSubmissionsCount = submissionsIds.length;
 
-		await this.submissionRepo.removeUssrReference(submissionsIds);
-		await this.submissionRepo.deleteUserFromTeam(userId);
+		await this.submissionRepo.removeUserReference(submissionsIds);
+		await this.submissionRepo.deleteUserFromTeams(userId);
 
 		const result = DomainOperationReportBuilder.build(OperationType.UPDATE, groupSubmissionsCount, submissionsIds);
 
