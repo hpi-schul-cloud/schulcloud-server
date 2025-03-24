@@ -7,6 +7,7 @@ import { FileRecordRef } from '../domain';
 
 @Injectable()
 export class ExternalToolImageService {
+	// Please use the FilesStorageClient instead of directly the api.
 	constructor(private readonly fileApi: FileApi, private readonly instanceService: InstanceService) {}
 
 	public async uploadImageFileFromUrl(

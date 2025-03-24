@@ -29,6 +29,7 @@ import { Configuration, FileApi } from './generated';
 			inject: [ConfigService, REQUEST],
 		},
 	],
+	// FileApi should not nessasary to export, please remove it
 	exports: [FilesStorageClientAdapter, FileApi],
 })
 export class FilesStorageClientModule {}
