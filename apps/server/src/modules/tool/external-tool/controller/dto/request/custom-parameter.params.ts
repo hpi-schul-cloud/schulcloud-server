@@ -40,6 +40,7 @@ export class CustomParameterPostParams {
 	@IsEnum(CustomParameterScopeTypeParams)
 	@ApiProperty({
 		enum: CustomParameterScopeTypeParams,
+		enumName: 'CustomParameterScopeTypeParams',
 		description: 'Scope where the parameter has to be configured.',
 		example: CustomParameterScopeTypeParams.SCHOOL,
 	})
@@ -48,6 +49,7 @@ export class CustomParameterPostParams {
 	@IsEnum(CustomParameterLocationParams)
 	@ApiProperty({
 		enum: CustomParameterLocationParams,
+		enumName: 'CustomParameterLocationParams',
 		description: 'Location where the parameter is transmitted in the HTTP request to the tool provider.',
 		example: CustomParameterLocationParams.QUERY,
 	})
@@ -56,6 +58,7 @@ export class CustomParameterPostParams {
 	@IsEnum(CustomParameterTypeParams)
 	@ApiProperty({
 		enum: CustomParameterTypeParams,
+		enumName: 'CustomParameterTypeParams',
 		description: 'Input field type. Auto parameters have to be global and cannot have a defaultValue.',
 		example: CustomParameterTypeParams.BOOLEAN,
 	})
