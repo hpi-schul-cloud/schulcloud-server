@@ -335,9 +335,19 @@ export class FilesStorageService {
 
 	public async markForDeleteByStorageLocation(params: StorageLocationParams): Promise<number> {
 		const { storageLocation, storageLocationId } = params;
-
 		const result = await this.fileRecordRepo.markForDeleteByStorageLocation(storageLocation, storageLocationId);
-		await this.storageClient.moveDirectoryToTrash(storageLocationId);
+
+		this.storageClient.moveDirectoryToTrash(storageLocationId).catch((error) => {
+			this.logger.error(
+				{
+					message: 'Error while moving directory to trash',
+					action: 'markForDeleteByStorageLocation',
+					storageLocation,
+					storageLocationId,
+				},
+				error
+			);
+		});
 
 		return result;
 	}
