@@ -1,4 +1,4 @@
-import { vidisPageOfferFactory } from '@infra/sync/media-licenses/testing';
+import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { PageOfferDTO } from '@infra/vidis-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';

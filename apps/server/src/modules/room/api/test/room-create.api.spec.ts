@@ -1,16 +1,14 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntity } from '@modules/group/entity';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -72,26 +70,13 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const role = roleFactory.buildWithId({
-					name: RoleName.TEACHER,
-					permissions: [Permission.ROOM_CREATE, Permission.ROOM_EDIT, Permission.ROOM_VIEW],
-				});
-				const roomOwnerRole = roleFactory.buildWithId({
-					name: RoleName.ROOMOWNER,
-					permissions: [
-						Permission.ROOM_CREATE,
-						Permission.ROOM_EDIT,
-						Permission.ROOM_VIEW,
-						Permission.ROOM_MEMBERS_ADD,
-						Permission.ROOM_MEMBERS_REMOVE,
-					],
-				});
-				await em.persistAndFlush([teacherAccount, teacherUser, role, roomOwnerRole]);
+				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				await em.persistAndFlush([teacherAccount, teacherUser, roomEditorRole, roomOwnerRole]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, teacherUser, role };
+				return { loggedInClient, teacherUser, roomEditorRole };
 			};
 
 			describe('when the required parameters are given', () => {
