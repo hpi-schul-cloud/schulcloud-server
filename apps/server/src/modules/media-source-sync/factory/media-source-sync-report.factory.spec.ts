@@ -12,6 +12,7 @@ describe(MediaSourceSyncReportFactory.name, () => {
 				const createFailedCount = 8;
 				const updateFailedCount = 7;
 				const undeliveredCount = 3;
+				const partialCount = 7;
 
 				const operations = [
 					mediaSourceSyncOperationReportFactory.build({
@@ -39,18 +40,24 @@ describe(MediaSourceSyncReportFactory.name, () => {
 						status: MediaSourceSyncStatus.UNDELIVERED,
 						count: undeliveredCount,
 					}),
+					mediaSourceSyncOperationReportFactory.build({
+						operation: MediaSourceSyncOperation.ANY,
+						status: MediaSourceSyncStatus.PARTIAL,
+						count: partialCount,
+					}),
 				];
 
 				const successCount = createSuccessCount + updateSuccessCount;
 				const failedCount = createFailedCount + updateFailedCount;
 
-				const totalCount = successCount + failedCount + undeliveredCount;
+				const totalCount = successCount + failedCount + undeliveredCount + partialCount;
 
 				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
 					totalCount,
 					successCount,
 					undeliveredCount,
 					failedCount,
+					partialCount,
 				};
 
 				return { operations, expectedSyncReport };
@@ -74,6 +81,7 @@ describe(MediaSourceSyncReportFactory.name, () => {
 				const createFailedCount = 0;
 				const updateFailedCount = 5;
 				const undeliveredCount = 0;
+				const partialCount = 0;
 
 				const operations = [
 					mediaSourceSyncOperationReportFactory.build({
@@ -101,12 +109,17 @@ describe(MediaSourceSyncReportFactory.name, () => {
 						status: MediaSourceSyncStatus.UNDELIVERED,
 						count: undeliveredCount,
 					}),
+					mediaSourceSyncOperationReportFactory.build({
+						operation: MediaSourceSyncOperation.ANY,
+						status: MediaSourceSyncStatus.PARTIAL,
+						count: partialCount,
+					}),
 				];
 
 				const successCount = createSuccessCount + updateSuccessCount;
 				const failedCount = createFailedCount + updateFailedCount;
 
-				const totalCount = successCount + failedCount + undeliveredCount;
+				const totalCount = successCount + failedCount + undeliveredCount + partialCount;
 
 				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
 					totalCount,

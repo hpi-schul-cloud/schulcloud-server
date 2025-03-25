@@ -72,6 +72,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"sync-console": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/sync-console.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"files-storage": {
 			"type": "application",
 			"root": "apps/server",
