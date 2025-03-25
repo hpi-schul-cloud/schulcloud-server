@@ -571,7 +571,7 @@ describe('S3ClientAdapter', () => {
 				};
 
 				it('should call send() of client with directory path', async () => {
-					const { pathToFile, bucket, directory } = setup();
+					const { bucket, directory } = setup();
 
 					await service.deleteDirectory(directory);
 
