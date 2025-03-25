@@ -83,6 +83,11 @@ jest.mock('../import/common-cartridge-file-parser', () => {
 		},
 	]);
 
+	fileParserMock.getResource.mockReturnValue({
+		type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+		html: '<p>Example content</p>',
+	});
+
 	return {
 		CommonCartridgeFileParser: jest.fn(() => fileParserMock),
 	};
@@ -192,7 +197,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file);
 
-				// expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
+				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
