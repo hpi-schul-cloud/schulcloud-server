@@ -11,6 +11,7 @@ import {
 	PutObjectCommandInput,
 	S3Client,
 	ServiceOutputTypes,
+	waitUntilObjectNotExists,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { ErrorUtils } from '@core/error/utils';
@@ -138,7 +139,7 @@ export class S3ClientAdapter {
 
 	public async moveDirectoryToTrash(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.debug({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
+			this.logger.log({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
 
 			const data = await this.listObjects(path, nextMarker);
 			const filteredPathObjects = this.filterValidPathKeys(data);
@@ -203,7 +204,7 @@ export class S3ClientAdapter {
 
 	public async delete(paths: string[]): Promise<void> {
 		try {
-			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+			this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 			if (paths.length === 0) return;
 
 			const pathObjects = paths.map((p) => {
@@ -215,6 +216,12 @@ export class S3ClientAdapter {
 			});
 
 			await this.client.send(req);
+			for (const pathObject of pathObjects) {
+				await waitUntilObjectNotExists(
+					{ client: this.client, maxWaitTime: 60 },
+					{ Bucket: this.config.bucket, Key: pathObject.Key }
+				);
+			}
 		} catch (err) {
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
@@ -278,7 +285,7 @@ export class S3ClientAdapter {
 
 	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.debug({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
+			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
 			const data = await this.listObjects(path, nextMarker);
 			const filteredPathObjects = this.filterValidPathKeys(data);
