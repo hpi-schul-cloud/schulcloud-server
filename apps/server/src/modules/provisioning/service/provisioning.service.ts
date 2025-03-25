@@ -4,7 +4,6 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
 import {
-	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
 	ProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
@@ -23,13 +22,11 @@ export class ProvisioningService {
 		private readonly systemService: SystemService,
 		private readonly schulconnexSyncProvisioningStrategy: SchulconnexSyncProvisioningStrategy,
 		private readonly schulconnexAsyncProvisioningStrategy: SchulconnexAsyncProvisioningStrategy,
-		private readonly iservStrategy: IservProvisioningStrategy,
 		private readonly oidcMockStrategy: OidcMockProvisioningStrategy,
 		private readonly tspStrategy: TspProvisioningStrategy
 	) {
 		this.registerStrategy(schulconnexSyncProvisioningStrategy);
 		this.registerStrategy(schulconnexAsyncProvisioningStrategy);
-		this.registerStrategy(iservStrategy);
 		this.registerStrategy(oidcMockStrategy);
 		this.registerStrategy(tspStrategy);
 	}
