@@ -49,7 +49,7 @@ import BoardCollaborationConfiguration from './dto/board-collaboration-config';
 @WsJwtAuthentication()
 export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	@WebSocketServer()
-	server!: Server;
+	private server!: Server;
 
 	// TODO: use loggables instead of legacy logger
 	constructor(
@@ -219,8 +219,8 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { board, features } = await this.boardUc.findBoard(userId, data.boardId);
-			const responsePayload = BoardResponseMapper.mapToResponse(board, features);
+			const { board, features, permissions } = await this.boardUc.findBoard(userId, data.boardId);
+			const responsePayload = BoardResponseMapper.mapToResponse(board, features, permissions);
 			await emitter.joinRoom(board);
 			emitter.emitSuccess(responsePayload);
 		} catch (err) {
@@ -409,24 +409,24 @@ export class BoardCollaborationGateway implements OnGatewayDisconnect {
 	}
 
 	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {
-		const getRoomName = (boardNode: AnyBoardNode | EntityId) => {
+		const getRoomName = (boardNode: AnyBoardNode | EntityId): string => {
 			const rootId = typeof boardNode === 'string' ? boardNode : boardNode.rootId;
 			return `board_${rootId}`;
 		};
 		return {
-			async joinRoom(boardNode: AnyBoardNode) {
+			async joinRoom(boardNode: AnyBoardNode): Promise<void> {
 				const room = getRoomName(boardNode);
 				await socket.join(room);
 			},
-			emitSuccess(data: object) {
+			emitSuccess(data: object): void {
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
-			emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId) {
+			emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId): void {
 				const room = getRoomName(boardNodeOrRootId);
 				socket.to(room).emit(`${action}-success`, { ...data, isOwnAction: false });
 				socket.emit(`${action}-success`, { ...data, isOwnAction: true });
 			},
-			emitFailure(data: object) {
+			emitFailure(data: object): void {
 				socket.emit(`${action}-failure`, data);
 			},
 		};
