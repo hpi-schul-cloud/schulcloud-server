@@ -5,6 +5,7 @@ export class ToolLaunchRequestResponse {
 	@ApiProperty({
 		description: 'The Launch Request method (GET or POST)',
 		enum: LaunchRequestMethod,
+		enumName: 'LaunchRequestMethod',
 		example: LaunchRequestMethod.GET,
 	})
 	method!: LaunchRequestMethod;

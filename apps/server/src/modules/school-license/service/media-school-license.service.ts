@@ -10,7 +10,6 @@ import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import {
 	BuildMediaSchoolLicenseFailedLoggable,
-	FederalStateAbbreviationOfSchoolNotFoundLoggableException,
 	MediaSourceNotFoundLoggableException,
 	SchoolNumberNotFoundLoggableException,
 } from '../loggable';
@@ -68,24 +67,19 @@ export class MediaSchoolLicenseService {
 	public async updateMediaSchoolLicenses(schoolId: EntityId): Promise<void> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
-		const abbreviation: string | undefined = school.federalState?.abbreviation;
 		const { officialSchoolNumber } = school;
-
-		if (!abbreviation) {
-			throw new FederalStateAbbreviationOfSchoolNotFoundLoggableException(schoolId);
-		}
 
 		if (!officialSchoolNumber) {
 			throw new SchoolNumberNotFoundLoggableException(schoolId);
 		}
 
-		const schoolName = `${abbreviation}_${officialSchoolNumber}`;
-
 		const mediaSource: MediaSource | null = await this.mediaSourceService.findByFormat(MediaSourceDataFormat.VIDIS);
 
-		if (!mediaSource) {
+		if (!mediaSource || !mediaSource.vidisConfig) {
 			throw new MediaSourceNotFoundLoggableException(MediaSourceDataFormat.VIDIS);
 		}
+
+		const schoolName = `${mediaSource.vidisConfig.schoolNumberPrefix}${officialSchoolNumber}`;
 
 		const offersFromMediaSource: OfferDTO[] = await this.mediaSchoolLicenseFetchService.fetchOffersForSchoolFromVidis(
 			mediaSource,
