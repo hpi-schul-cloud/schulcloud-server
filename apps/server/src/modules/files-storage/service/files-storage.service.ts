@@ -1,3 +1,4 @@
+import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
@@ -338,6 +339,7 @@ export class FilesStorageService {
 		const result = await this.fileRecordRepo.markForDeleteByStorageLocation(storageLocation, storageLocationId);
 
 		this.storageClient.moveDirectoryToTrash(storageLocationId).catch((error) => {
+			console.log(error);
 			this.logger.error(
 				{
 					message: 'Error while moving directory to trash',
@@ -345,7 +347,7 @@ export class FilesStorageService {
 					storageLocation,
 					storageLocationId,
 				},
-				error
+				ErrorUtils.createHttpExceptionOptions(error)
 			);
 		});
 
