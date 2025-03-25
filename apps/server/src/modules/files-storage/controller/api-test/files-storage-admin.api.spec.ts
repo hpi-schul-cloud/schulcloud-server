@@ -159,6 +159,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 				// In the positive case we can use download api to check the data
 				const file = await loggedInClient.get(`file/download/${fileRecordId}/test1.txt`);
+				console.log(file);
 				expect(file.text).toEqual('abcd');
 
 				// This should not be needed because we can do it with the api above

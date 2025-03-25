@@ -60,8 +60,10 @@ export class S3ClientAdapter {
 				Key: path,
 				Range: bytesRange,
 			});
+			console.log('req', req);
 
 			const data = await this.client.send(req);
+			console.log('data', data);
 			const stream = data.Body as Readable;
 
 			this.checkStreamResponsive(stream, path);
