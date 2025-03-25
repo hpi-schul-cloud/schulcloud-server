@@ -4,6 +4,8 @@ import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FileRecord } from '@modules/files-storage/entity';
+import { FILES_STORAGE_S3_CONNECTION } from '@modules/files-storage/files-storage.config';
+import { createPath } from '@modules/files-storage/helper';
 import { fileRecordFactory } from '@modules/files-storage/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,7 +15,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../files-storage-test.module';
-import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordResponse } from '../dto';
 import { availableStorageLocations } from './mocks';
 
@@ -29,6 +30,7 @@ describe(`${baseRouteName} (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let s3Client: S3ClientAdapter;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -36,8 +38,6 @@ describe(`${baseRouteName} (api)`, () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
-			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
-			.useValue(createMock<S3ClientAdapter>())
 			.overrideProvider(NodeClam)
 			.useValue(createMock<NodeClam>())
 			.overrideProvider(AuthorizationClientAdapter)
@@ -47,6 +47,7 @@ describe(`${baseRouteName} (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+		s3Client = module.get(FILES_STORAGE_S3_CONNECTION);
 		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
@@ -147,13 +148,23 @@ describe(`${baseRouteName} (api)`, () => {
 
 				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-				await uploadFile(loggedInClient, storageLocationId1, storageLocationId1, 'test1.txt');
+				const response = await uploadFile(loggedInClient, storageLocationId1, storageLocationId1, 'test1.txt');
+				const fileRecordId = response.id;
 
-				return { loggedInClient, storageLocationId1 };
+				return { loggedInClient, storageLocationId1, fileRecordId };
 			};
 
 			it('should return right type of data', async () => {
-				const { loggedInClient, storageLocationId1 } = await setup();
+				const { loggedInClient, storageLocationId1, fileRecordId } = await setup();
+
+				// In the positive case we can use download api to check the data
+				const file = await loggedInClient.get(`file/download/${fileRecordId}/test1.txt`);
+				expect(file.text).toEqual('abcd');
+
+				// This should not be needed because we can do it with the api above
+				const path = createPath(storageLocationId1, fileRecordId);
+				const fileData = await s3Client.get(path);
+				expect(fileData.contentLength).toEqual(4);
 
 				const result = await loggedInClient.delete(`admin/file/storage-location/school/${storageLocationId1}`);
 
@@ -163,6 +174,12 @@ describe(`${baseRouteName} (api)`, () => {
 					storageLocation: 'school',
 					storageLocationId: storageLocationId1,
 				});
+
+				// Needed because deletion is not awaited in service. Maybee this becomes a loop in final version?
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+
+				// In the negative case we must call s3 client directly
+				await expect(s3Client.get(path)).rejects.toThrowError();
 			});
 
 			it('should set deletedSince in database', async () => {
@@ -171,8 +188,8 @@ describe(`${baseRouteName} (api)`, () => {
 				await loggedInClient.delete(`admin/file/storage-location/school/${storageLocationId1}`);
 
 				const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
-				fileRecords.forEach((fileRecord) => {
-					expect(fileRecord).toMatchObject({
+				fileRecords.forEach((sportsBallPerson) => {
+					expect(sportsBallPerson).toMatchObject({
 						deletedSince: expect.any(Date),
 					});
 				});
