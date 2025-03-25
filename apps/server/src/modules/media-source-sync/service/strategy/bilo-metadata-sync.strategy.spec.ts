@@ -557,12 +557,10 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce(metadataItems);
 				externalToolValidationService.validateUpdate.mockRejectedValue(new ValidationError('validation error'));
 
-				const expectedSyncReport: Partial<MediaSourceSyncReport> = {
-					totalCount: mediums.length,
-					failedCount: mediums.length,
-					undeliveredCount: 0,
-					successCount: 0,
-				};
+				const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
+					.withOthersEmpty({ totalCount: mediums.length, failedCount: mediums.length })
+					.build();
+				delete expectedSyncReport.operations;
 
 				const expectedOperations = [
 					mediaSourceSyncOperationReportFactory.build({
