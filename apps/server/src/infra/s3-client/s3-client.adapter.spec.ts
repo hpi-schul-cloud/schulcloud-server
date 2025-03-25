@@ -578,7 +578,7 @@ describe('S3ClientAdapter', () => {
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: pathToFile },
+							input: { Bucket: bucket, Prefix: directory },
 						})
 					);
 				});
