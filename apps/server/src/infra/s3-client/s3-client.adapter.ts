@@ -150,6 +150,7 @@ export class S3ClientAdapter {
 				await this.moveDirectoryToTrash(path, data.NextContinuationToken);
 			}
 		} catch (err) {
+			console.log(JSON.stringify(err));
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:moveDirectoryToTrash',
 				ErrorUtils.createHttpExceptionOptions(err)
@@ -180,7 +181,7 @@ export class S3ClientAdapter {
 
 	public async copy(paths: CopyFiles[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.debug({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+			this.logger.warn({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
 			const copyRequests = paths.map(async (path) => {
 				const req = new CopyObjectCommand({
@@ -198,13 +199,14 @@ export class S3ClientAdapter {
 
 			return result;
 		} catch (err) {
+			console.log('COPY', JSON.stringify(err));
 			throw new InternalServerErrorException('S3ClientAdapter:copy', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
 	public async delete(paths: string[]): Promise<void> {
 		try {
-			this.logger.log({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+			this.logger.warn({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 			if (paths.length === 0) return;
 
 			const pathObjects = paths.map((p) => {
@@ -223,6 +225,7 @@ export class S3ClientAdapter {
 				);
 			}
 		} catch (err) {
+			console.log('DELETE', JSON.stringify(err));
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
