@@ -20,7 +20,19 @@ export class UserRule implements Rule<User> {
 	) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
-
+	// Es wäre möglich isApplicable und hasPermission unter Rule weg zu kapseln, solange es
+	// genau dieser Implementierung folgt. instanceof User könnte problematisch sein k.a. was ts ermöglicht
+	// zu beachten ist das write und read alles enthält, was für die jeweilige Action zum auflösen notwendig ist.
+	// Es gibt aber auch nur genau einen Punkt wo man z.B. read Berechtigung des Users prüfen muss.
+	// Die Abweichung der Admin Rule ist eigentlich nur das sie nicht auf die Scope Berechtigung (user Zugehörigkeit) prüft,
+	// sondern auf die zusätliche Berechtigung um den Scope auszuhebeln.
+	// Die Rule legt in beiden Fällen den äußeren Rahmen fest und kann im UC dann weiter eingeschränkt werden.
+	// Die Rules für user, school und Instance sind auch sehr trivial Implementiert.
+	// Da die Scope Auflösung auch trivial ist.
+	// Die Berechtigung muss aber auf jedenfall hier drin sein um z.B. dem SystemUser zu erlauben, das er alle Dateien löschen darf,
+	// aber sich selber nicht editieren kann da er z.B. kein USER_EDIT hat. (Spannend ist es wenn er user editieren soll)
+	// Vielleicht ist dann eher ein USER_EDIT_SELF anstelle von user.id === object.id notwendig.
+	// Ein ähnlichen Fall haben wir dann bei Schools bei der Sichtbarkeit.
 	public isApplicable(user: User, object: unknown): boolean {
 		const isMatched = object instanceof User;
 
