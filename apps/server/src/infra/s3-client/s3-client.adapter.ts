@@ -194,8 +194,15 @@ export class S3ClientAdapter {
 
 				return data;
 			});
+			const settled = await Promise.allSettled(copyRequests);
 
-			const result = await Promise.all(copyRequests);
+			const rejected = settled.filter((p) => p.status === 'rejected');
+			if (rejected.length > 0) {
+				const errors = rejected.map((p: PromiseRejectedResult) => p.reason as Error);
+				console.log('REJECTED-BY-COPY', JSON.stringify(errors));
+			}
+
+			const result = settled.filter((p) => p.status === 'fulfilled').map((p) => p.value);
 
 			return result;
 		} catch (err) {

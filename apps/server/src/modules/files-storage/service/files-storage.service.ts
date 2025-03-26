@@ -339,7 +339,7 @@ export class FilesStorageService {
 		const result = await this.fileRecordRepo.markForDeleteByStorageLocation(storageLocation, storageLocationId);
 
 		this.storageClient.moveDirectoryToTrash(storageLocationId).catch((error) => {
-			console.log(error);
+			console.log('markForDeleteByStorageLocation', JSON.stringify(error));
 			this.logger.error(
 				{
 					message: 'Error while moving directory to trash',
