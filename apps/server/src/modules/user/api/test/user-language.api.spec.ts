@@ -1,12 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@modules/server';
-import { User } from '../../repo';
 import { ApiValidationError } from '@shared/common/error';
 import { LanguageType } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { User } from '../../repo';
 
 const baseRouteName = '/user/language';
 
@@ -23,7 +24,10 @@ describe(baseRouteName, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		apiClient = new TestApiClient(app, baseRouteName);
+
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
+		apiClient = new TestApiClient(app, baseRouteName, apiKeys[0], true);
 	});
 
 	afterAll(async () => {
