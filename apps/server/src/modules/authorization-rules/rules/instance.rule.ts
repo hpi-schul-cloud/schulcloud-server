@@ -19,6 +19,10 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	public hasPermission(): boolean {
+		/**
+		 * Currently we have no user relations for instance,
+		 * to figure out write and read permissions.
+		 */
 		const isNotImplemented = false;
 
 		return isNotImplemented;
