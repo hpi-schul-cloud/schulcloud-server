@@ -52,7 +52,10 @@ export class TspProvisioningService {
 			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], school.id, user);
 		});
 
+		// Has to be done two times otherwise user.consent.parentConsents is empty
+		await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
+
 		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
 		const foundAccounts = await Promise.all(
 			savedUserIds.map((userId) => this.accountService.findByUserId(userId ?? ''))
@@ -228,9 +231,8 @@ export class TspProvisioningService {
 				externalId: externalUser.externalId,
 				secondarySchools: [],
 				lastSyncedAt: new Date(),
+				consent: this.createTspConsent(),
 			});
-
-			this.createTspConsent(newUser);
 
 			return newUser;
 		}
@@ -240,7 +242,8 @@ export class TspProvisioningService {
 		existingUser.firstName = externalUser.firstName || existingUser.firstName;
 		existingUser.lastName = externalUser.lastName || existingUser.lastName;
 		existingUser.email = externalUser.email || existingUser.email;
-		existingUser.birthday = externalUser.birthday;
+		existingUser.birthday = externalUser.birthday || existingUser.birthday || new Date();
+		existingUser.consent = existingUser.consent || this.createTspConsent();
 		existingUser.lastSyncedAt = new Date();
 
 		return existingUser;
@@ -288,7 +291,7 @@ export class TspProvisioningService {
 		return email.toLowerCase();
 	}
 
-	private createTspConsent(user: UserDo): void {
+	private createTspConsent(): Consent {
 		const userConsent = new UserConsent({
 			form: 'digital',
 			privacyConsent: true,
@@ -308,9 +311,9 @@ export class TspProvisioningService {
 
 		const consent = new Consent({
 			userConsent,
-			parentConsent: [parentConsent],
+			parentConsents: [parentConsent],
 		});
 
-		user.consent = consent;
+		return consent;
 	}
 }
