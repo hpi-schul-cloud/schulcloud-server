@@ -28,10 +28,6 @@ export class InstanceAdminRule implements Rule<Instance> {
 	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
 		let hasPermission = false;
 
-		const canExecuteInstanceOperations = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
-		]);
-
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, context);
 		}
@@ -39,12 +35,13 @@ export class InstanceAdminRule implements Rule<Instance> {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
 
-		return canExecuteInstanceOperations && hasPermission;
+		return hasPermission;
 	}
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.INSTANCE_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
@@ -54,6 +51,7 @@ export class InstanceAdminRule implements Rule<Instance> {
 	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.INSTANCE_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 

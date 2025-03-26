@@ -28,10 +28,6 @@ export class SchoolAdminRule implements Rule<School> {
 	public hasPermission(user: User, school: School, context: AuthorizationContext): boolean {
 		let hasPermission = false;
 
-		const canExecuteUserOperations = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
-		]);
-
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, context);
 		}
@@ -39,12 +35,13 @@ export class SchoolAdminRule implements Rule<School> {
 			hasPermission = this.hasWriteAccess(user, context);
 		}
 
-		return canExecuteUserOperations && hasPermission;
+		return hasPermission;
 	}
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.SCHOOL_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
@@ -54,6 +51,7 @@ export class SchoolAdminRule implements Rule<School> {
 	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.SCHOOL_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 

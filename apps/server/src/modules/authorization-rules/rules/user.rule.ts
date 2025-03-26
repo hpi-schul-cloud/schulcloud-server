@@ -7,6 +7,7 @@ import {
 } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 /**
  * Check this rule in BC-9292
@@ -26,29 +27,38 @@ export class UserRule implements Rule<User> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: User, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		const isOwner = user.id === entity.id;
 
 		if (context.action === Action.read) {
-			hasPermission = this.hasReadAccess(user, context);
+			hasPermission = this.hasReadAccess(user, object, context);
 		}
 		if (context.action === Action.write) {
-			hasPermission = this.hasWriteAccess(user, context);
+			hasPermission = this.hasWriteAccess(user, object, context);
 		}
 
-		return hasPermission || isOwner;
-	}
-
-	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
 		return hasPermission;
 	}
 
-	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	private hasReadAccess(user: User, object: User, context: AuthorizationContext): boolean {
+		const isOwner = user.id === object.id;
+		const isSameSchool = user.getSchoolId() === object.getSchoolId();
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.USER_VIEW,
+			...context.requiredPermissions,
+		]);
 
-		return hasPermission;
+		return (hasPermission && isSameSchool) || isOwner;
+	}
+
+	private hasWriteAccess(user: User, object: User, context: AuthorizationContext): boolean {
+		const isOwner = user.id === object.id;
+		const isSameSchool = user.getSchoolId() === object.getSchoolId();
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.USER_EDIT,
+			...context.requiredPermissions,
+		]);
+
+		return (hasPermission && isSameSchool) || isOwner;
 	}
 }
