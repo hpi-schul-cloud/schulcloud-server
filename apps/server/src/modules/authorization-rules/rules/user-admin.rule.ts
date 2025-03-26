@@ -43,7 +43,7 @@ export class UserAdminRule implements Rule<User> {
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.INSTANCE_VIEW,
+			Permission.USER_VIEW,
 			...context.requiredPermissions,
 		]);
 
@@ -52,7 +52,7 @@ export class UserAdminRule implements Rule<User> {
 
 	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.INSTANCE_EDIT,
+			Permission.USER_EDIT,
 			...context.requiredPermissions,
 		]);
 

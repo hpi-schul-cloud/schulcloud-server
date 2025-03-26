@@ -25,31 +25,9 @@ export class InstanceRule implements Rule<Instance> {
 		return isApplicable;
 	}
 
-	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
-		let hasPermission = false;
+	public hasPermission(): boolean {
+		const isNotImplemented = false;
 
-		if (context.action === Action.read) {
-			hasPermission = this.hasReadAccess(user, context);
-		}
-		if (context.action === Action.write) {
-			hasPermission = this.hasWriteAccess(user, context);
-		}
-
-		return hasPermission;
-	}
-
-	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.INSTANCE_VIEW,
-			...context.requiredPermissions,
-		]);
-
-		return hasPermission;
-	}
-
-	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = false;
-
-		return hasPermission;
+		return isNotImplemented;
 	}
 }

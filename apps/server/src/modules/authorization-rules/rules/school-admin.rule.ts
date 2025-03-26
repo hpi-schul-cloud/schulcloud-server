@@ -44,7 +44,7 @@ export class SchoolAdminRule implements Rule<School> {
 
 	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.INSTANCE_VIEW,
+			Permission.SCHOOL_VIEW,
 			...context.requiredPermissions,
 		]);
 
@@ -53,7 +53,7 @@ export class SchoolAdminRule implements Rule<School> {
 
 	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.INSTANCE_EDIT,
+			Permission.SCHOOL_EDIT,
 			...context.requiredPermissions,
 		]);
 
