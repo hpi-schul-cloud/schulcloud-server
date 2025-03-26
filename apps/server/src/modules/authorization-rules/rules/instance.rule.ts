@@ -1,14 +1,7 @@
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@modules/authorization';
+import { AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { Instance } from '@modules/instance';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class InstanceRule implements Rule<Instance> {
