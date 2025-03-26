@@ -1,0 +1,1 @@
+export { CourseSynchronizationHistoryService } from './service';
