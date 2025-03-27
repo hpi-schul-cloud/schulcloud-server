@@ -1,12 +1,14 @@
-import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { ExternalToolService } from '@modules/tool';
-import { ExternalTool, ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolValidationService } from '@modules/tool/external-tool/service';
+import { ExternalToolLogoService } from '@modules/tool/external-tool/service/external-tool-logo.service';
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaSourceSyncReport, MediaSourceSyncStrategy } from '../../interface';
+import { BiloMediaMetadataSyncFailedLoggable } from '../../loggable';
 import { MediaSourceSyncOperation } from '../../types';
 
 @Injectable()
@@ -14,6 +16,8 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 	constructor(
 		private readonly biloMediaClientAdapter: BiloMediaClientAdapter,
 		private readonly externalToolService: ExternalToolService,
+		private readonly externalToolValidationService: ExternalToolValidationService,
+		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly logger: Logger
 	) {}
 
@@ -56,52 +60,44 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 		externalTools: ExternalTool[],
 		metadataItems: BiloMediaQueryDataResponse[]
 	): Promise<MediaSourceSyncReport> {
-		const createSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
-			MediaSourceSyncOperation.CREATE
-		);
-		const updateSuccessReport = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(
-			MediaSourceSyncOperation.UPDATE
-		);
-		const failureReport = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY);
-		const undeliveredReport = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
+		const statusReports = {
+			createSuccess: MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.CREATE),
+			updateSuccess: MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(MediaSourceSyncOperation.UPDATE),
+			failure: MediaSourceSyncOperationReportFactory.buildWithFailedStatus(MediaSourceSyncOperation.ANY),
+			undelivered: MediaSourceSyncOperationReportFactory.buildUndeliveredReport(),
+		};
 
 		const updatePromises = externalTools.map(async (externalTool: ExternalTool): Promise<ExternalTool | null> => {
-			const fetchedMetadata = metadataItems.find(
-				(metadataItem: BiloMediaQueryDataResponse) => externalTool.medium?.mediumId === metadataItem.id
+			const metadata = metadataItems.find(
+				(item: BiloMediaQueryDataResponse) => externalTool.medium?.mediumId === item.id
 			);
 
-			if (!fetchedMetadata) {
-				undeliveredReport.count += 1;
+			if (!metadata) {
+				statusReports.undelivered.count++;
 				return null;
 			}
 
-			if (this.isMetadataUpToDate(externalTool, fetchedMetadata)) {
-				updateSuccessReport.count += 1;
+			if (this.isMetadataUpToDate(externalTool, metadata)) {
+				statusReports.updateSuccess.count++;
 				return null;
 			}
 
-			const isMetadataFirstSync = !externalTool.medium?.metadataModifiedAt;
-
+			const isFirstSync = !externalTool.medium?.metadataModifiedAt;
 			try {
-				await this.mapBiloMetadataToExternalTool(externalTool, fetchedMetadata);
+				externalTool = await this.buildExternalToolMetadataUpdate(externalTool, metadata);
+				isFirstSync ? statusReports.createSuccess.count++ : statusReports.updateSuccess.count++;
+				return externalTool;
 			} catch (error: unknown) {
 				this.logger.debug(
-					new ErrorLoggable(error, {
-						mediumId: externalTool.medium?.mediumId as string,
-						mediumMediaSourceId: externalTool.medium?.mediaSourceId as string,
-					})
+					new BiloMediaMetadataSyncFailedLoggable(
+						externalTool.medium?.mediumId || 'unknown',
+						externalTool.medium?.mediaSourceId || 'unknown',
+						error
+					)
 				);
-				failureReport.count += 1;
+				statusReports.failure.count++;
 				return null;
 			}
-
-			if (isMetadataFirstSync) {
-				createSuccessReport.count += 1;
-			} else {
-				updateSuccessReport.count += 1;
-			}
-
-			return externalTool;
 		});
 
 		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
@@ -110,48 +106,40 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 
 		await this.externalToolService.updateExternalTools(updatedExternalTools);
 
-		const report: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
-			createSuccessReport,
-			updateSuccessReport,
-			failureReport,
-			undeliveredReport,
+		const syncStatusReport: MediaSourceSyncReport = MediaSourceSyncReportFactory.buildFromOperations([
+			statusReports.createSuccess,
+			statusReports.updateSuccess,
+			statusReports.failure,
+			statusReports.undelivered,
 		]);
 
-		return report;
+		return syncStatusReport;
 	}
 
 	private isMetadataUpToDate(externalTool: ExternalTool, metadata: BiloMediaQueryDataResponse): boolean {
-		if (!externalTool.medium || !externalTool.medium.metadataModifiedAt) {
-			return false;
-		}
-
-		const isUpToDate = externalTool.medium.metadataModifiedAt.getTime() >= metadata.modified;
+		const isUpToDate =
+			!!externalTool.medium?.metadataModifiedAt &&
+			externalTool.medium.metadataModifiedAt.getTime() >= new Date(metadata.modified).getTime();
 
 		return isUpToDate;
 	}
 
-	private async mapBiloMetadataToExternalTool(
+	private async buildExternalToolMetadataUpdate(
 		externalTool: ExternalTool,
-		metadataItem: BiloMediaQueryDataResponse
-	): Promise<void> {
-		externalTool.name = metadataItem.title;
-		externalTool.description = metadataItem.description;
-		externalTool.logoUrl = metadataItem.coverSmall.href;
+		metadata: BiloMediaQueryDataResponse
+	): Promise<ExternalTool> {
+		externalTool.name = metadata.title;
+		externalTool.description = metadata.description;
+		externalTool.logoUrl = metadata.coverSmall.href;
+		externalTool.logo = await this.externalToolLogoService.fetchLogo({ logoUrl: metadata.coverSmall.href });
 
-		const medium = externalTool.medium as ExternalToolMedium;
-		medium.publisher = metadataItem.publisher;
-		medium.metadataModifiedAt = new Date(metadataItem.modified);
+		if (externalTool.medium) {
+			externalTool.medium.publisher = metadata.publisher;
+			externalTool.medium.metadataModifiedAt = new Date(metadata.modified);
+		}
 
-		await this.updateExternalToolThumbnail(externalTool, metadataItem.cover.href);
-	}
+		await this.externalToolValidationService.validateUpdate(externalTool.id, externalTool);
 
-	private async updateExternalToolThumbnail(
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		externalTool: ExternalTool,
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		thumbnailUrl: string
-	): Promise<void> {
-		// TODO N21-2398 updating thumbnail requires jwt (not possible for now)
-		await Promise.resolve();
+		return externalTool;
 	}
 }
