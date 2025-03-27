@@ -251,12 +251,13 @@ export class RoomUc {
 	}
 
 	private mapToMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
+		const schoolRoleNames = user.roles.map((role) => role.name);
 		return new RoomMemberResponse({
 			userId: member.userId,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			roomRoleName: member.roles[0].name,
-			schoolRoleName: user.roles[0].name,
+			schoolRoleNames,
 			schoolName: user.schoolName ?? '',
 		});
 	}

@@ -15,6 +15,7 @@ export class RoomRolesTestFactory {
 			permissions: [
 				Permission.ROOM_VIEW,
 				Permission.ROOM_EDIT,
+				Permission.ROOM_CONTENT_EDIT,
 				Permission.ROOM_MEMBERS_ADD,
 				Permission.ROOM_MEMBERS_REMOVE,
 				Permission.ROOM_MEMBERS_CHANGE_ROLE,
@@ -27,18 +28,20 @@ export class RoomRolesTestFactory {
 			permissions: [
 				Permission.ROOM_VIEW,
 				Permission.ROOM_EDIT,
+				Permission.ROOM_CONTENT_EDIT,
 				Permission.ROOM_MEMBERS_ADD,
 				Permission.ROOM_MEMBERS_REMOVE,
 				Permission.ROOM_MEMBERS_CHANGE_ROLE,
+				Permission.ROOM_LEAVE,
 			],
 		});
 		const roomEditorRole = roleFactory.buildWithId({
 			name: RoleName.ROOMEDITOR,
-			permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
+			permissions: [Permission.ROOM_VIEW, Permission.ROOM_CONTENT_EDIT, Permission.ROOM_LEAVE],
 		});
 		const roomViewerRole = roleFactory.buildWithId({
 			name: RoleName.ROOMVIEWER,
-			permissions: [Permission.ROOM_VIEW],
+			permissions: [Permission.ROOM_VIEW, Permission.ROOM_LEAVE],
 		});
 
 		return {
