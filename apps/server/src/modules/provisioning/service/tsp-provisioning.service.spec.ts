@@ -13,6 +13,8 @@ import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
+import { UserConsent } from '@shared/domain/domainobject/user-consent';
 import { RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@testing/factory/role.factory';
 import { BadDataLoggableException } from '../loggable';
@@ -612,6 +614,177 @@ describe('TspProvisioningService', () => {
 				const { data, school } = setup();
 
 				await expect(() => sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
+			});
+		});
+
+		describe('when an error occurs while saving account', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build(),
+					externalSchool: externalSchoolDtoFactory.build(),
+				});
+				const user = userDoFactory.build({ id: faker.string.uuid(), roles: [] });
+
+				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
+
+				accountServiceMock.findByUserId.mockRejectedValueOnce(new Error('Test error'));
+
+				return { data, school, user };
+			};
+
+			it('should delete the user and throw BadDataLoggableException', async () => {
+				const { data, school, user } = setup();
+
+				await expect(sut.provisionUser(data, school)).rejects.toThrow(BadDataLoggableException);
+				expect(userServiceMock.deleteUser).toHaveBeenCalledWith(user.id);
+			});
+		});
+
+		describe('when user has incomplete consent', () => {
+			const setup = (parentConsents: ParentConsent[] | undefined, userConsent: UserConsent | undefined) => {
+				const school = schoolFactory.build();
+				const data = oauthDataDtoFactory.build({
+					system: provisioningSystemDtoFactory.build(),
+					externalUser: externalUserDtoFactory.build(),
+					externalSchool: externalSchoolDtoFactory.build(),
+				});
+				const user = userDoFactory.build({
+					id: faker.string.uuid(),
+					consent: {
+						parentConsents,
+						userConsent,
+					},
+				});
+
+				userServiceMock.findByExternalId.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user);
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([]);
+
+				return { data, school };
+			};
+
+			it('should create consent if parent consent is empty and user consent is undefined', async () => {
+				const { data, school } = setup([], undefined);
+
+				await sut.provisionUser(data, school);
+
+				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+
+				expect(userServiceMock.save.mock.calls[0][0].consent?.parentConsents?.[0]).toMatchObject({
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: expect.any(Date),
+					dateOfTermsOfUseConsent: expect.any(Date),
+				});
+
+				expect(userServiceMock.save.mock.calls[0][0].consent?.userConsent).toMatchObject({
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: expect.any(Date),
+					dateOfTermsOfUseConsent: expect.any(Date),
+				});
+			});
+
+			it('should create consent if user consent exists but parent consent is missing', async () => {
+				const { data, school } = setup(undefined, {
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: new Date(),
+					dateOfTermsOfUseConsent: new Date(),
+				});
+
+				await sut.provisionUser(data, school);
+
+				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+
+				expect(userServiceMock.save.mock.calls[0][0].consent?.parentConsents?.[0]).toMatchObject({
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: expect.any(Date),
+					dateOfTermsOfUseConsent: expect.any(Date),
+				});
+			});
+
+			it('should create consent if parent consent exists but user consent is missing', async () => {
+				const { data, school } = setup(
+					[
+						{
+							id: faker.string.uuid(),
+							form: 'digital',
+							privacyConsent: true,
+							termsOfUseConsent: true,
+							dateOfPrivacyConsent: new Date(),
+							dateOfTermsOfUseConsent: new Date(),
+						},
+					],
+					undefined
+				);
+
+				await sut.provisionUser(data, school);
+
+				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+
+				expect(userServiceMock.save.mock.calls[0][0].consent?.userConsent).toMatchObject({
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: expect.any(Date),
+					dateOfTermsOfUseConsent: expect.any(Date),
+				});
+			});
+
+			it('should not create a new consent if both parent consent and user consent exist', async () => {
+				const currentDate = new Date();
+				const { data, school } = setup(
+					[
+						{
+							id: faker.string.uuid(),
+							form: 'digital',
+							privacyConsent: true,
+							termsOfUseConsent: true,
+							dateOfPrivacyConsent: currentDate,
+							dateOfTermsOfUseConsent: currentDate,
+						},
+					],
+					{
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						dateOfPrivacyConsent: currentDate,
+						dateOfTermsOfUseConsent: currentDate,
+					}
+				);
+
+				await sut.provisionUser(data, school);
+
+				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+
+				expect(userServiceMock.save.mock.calls[0][0].consent?.parentConsents?.[0]).toMatchObject({
+					id: expect.any(String),
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: currentDate,
+					dateOfTermsOfUseConsent: currentDate,
+				});
+
+				expect(userServiceMock.save.mock.calls[0][0].consent?.userConsent).toMatchObject({
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: currentDate,
+					dateOfTermsOfUseConsent: currentDate,
+				});
 			});
 		});
 	});
