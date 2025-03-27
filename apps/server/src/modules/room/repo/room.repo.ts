@@ -62,10 +62,12 @@ export class RoomRepo {
 	public async save(room: Room | Room[]): Promise<void> {
 		const rooms = Utils.asArray(room);
 
-		rooms.forEach((r) => {
-			const entity = RoomDomainMapper.mapDoToEntity(r);
+		const promises = rooms.map(async (r) => {
+			const entity = await this.mapDoToEntity(r);
 			this.em.persist(entity);
 		});
+
+		await Promise.all(promises);
 
 		await this.flush();
 	}
@@ -74,7 +76,7 @@ export class RoomRepo {
 		const rooms = Utils.asArray(room);
 
 		rooms.forEach((r) => {
-			const entity = RoomDomainMapper.mapDoToEntity(r);
+			const entity = this.mapDoToEntity(r);
 			this.em.remove(entity);
 		});
 
@@ -83,5 +85,18 @@ export class RoomRepo {
 
 	private async flush(): Promise<void> {
 		return this.em.flush();
+	}
+
+	private async mapDoToEntity(room: Room): Promise<RoomEntity> {
+		const entity = (await this.em.findOne(RoomEntity, room.id)) || new RoomEntity();
+
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore // TODO: do this differently
+		const { props } = room;
+
+		Object.assign(entity, props); // TODO: deal with embedded arrays (and objects?)
+		entity.domainObject = room;
+
+		return entity;
 	}
 }
