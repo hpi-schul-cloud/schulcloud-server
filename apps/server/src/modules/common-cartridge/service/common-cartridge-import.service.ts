@@ -145,6 +145,7 @@ export class CommonCartridgeImportService {
 			if (resource && contentElementType) {
 				const resourceBody = this.mapToResourceBody(resource, cardElementProps);
 
+				// coverage
 				if (!resourceBody) {
 					return;
 				}
@@ -172,7 +173,7 @@ export class CommonCartridgeImportService {
 
 		// TODO files and other resource types
 
-		return undefined;
+		return undefined; // coverage
 	}
 
 	private createTextFromResource(

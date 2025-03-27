@@ -7,98 +7,17 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
+import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 
 jest.mock('../import/common-cartridge-file-parser');
-
-// jest.mock('../import/common-cartridge-file-parser', () => {
-// 	const fileParserMock = createMock<CommonCartridgeFileParser>();
-// const courseId = faker.string.uuid();
-// const boardId = faker.string.uuid();
-// const columnId = faker.string.uuid();
-// 	const cardId1 = faker.string.uuid();
-// 	// const cardId2 = faker.string.uuid();
-// 	const elementId1 = faker.string.uuid();
-// 	// const elementId2 = faker.string.uuid();
-
-// 	fileParserMock.getTitle.mockReturnValue(faker.lorem.words());
-// 	fileParserMock.getOrganizations.mockReturnValue([
-// 		{
-// 	pathDepth: 0,
-// 	title: faker.lorem.words(),
-// 	path: faker.system.filePath(),
-// 	identifier: courseId,
-// 	isInlined: true,
-// 	isResource: false,
-// 	resourcePath: faker.system.filePath(),
-// 	resourceType: faker.lorem.word(),
-// },
-// {
-// 	pathDepth: 1,
-// 	title: faker.lorem.words(),
-// 	path: `${courseId}/${boardId}`,
-// 	identifier: columnId,
-// 	isInlined: false,
-// 	isResource: false,
-// 	resourcePath: faker.system.filePath(),
-// 	resourceType: faker.lorem.word(),
-// },
-// 		{
-// 			pathDepth: 2,
-// 			title: faker.lorem.words(),
-// 			path: `${courseId}/${boardId}/${columnId}`,
-// 			identifier: cardId1,
-// 			isInlined: false,
-// 			isResource: true,
-// 			resourcePath: 'https://www.webcontent.html',
-// 			resourceType: faker.lorem.word(),
-// 		},
-// 		{
-// 			pathDepth: 3,
-// 			title: faker.lorem.words(),
-// 			path: `${courseId}/${boardId}/${columnId}/${cardId1}`,
-// 			identifier: elementId1,
-// 			isInlined: false,
-// 			isResource: false,
-// 			resourcePath: 'https://www.webcontent.html',
-// 			resourceType: faker.lorem.word(),
-// 		},
-// 		// {
-// 		// 	pathDepth: 2,
-// 		// 	title: faker.lorem.words(),
-// 		// 	path: `${courseId}/${boardId}/${columnId}`,
-// 		// 	identifier: cardId2,
-// 		// 	isInlined: false,
-// 		// 	isResource: false,
-// 		// 	resourcePath: 'https://www.weblink.imswl_xmlv1p1',
-// 		// 	resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-// 		// },
-// 		// {
-// 		// 	pathDepth: 3,
-// 		// 	title: faker.lorem.words(),
-// 		// 	path: `${courseId}/${boardId}/${columnId}/${cardId1}`,
-// 		// 	identifier: elementId2,
-// 		// 	isInlined: false,
-// 		// 	isResource: false,
-// 		// 	resourcePath: 'https://www.weblink.imswl_xmlv1p1',
-// 		// 	resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-// 		// },
-// 	]);
-
-// 	fileParserMock.getResource.mockReturnValue({
-// 		type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-// 		html: '<p>Example content</p>',
-// 	});
-
-// 	return {
-// 		CommonCartridgeFileParser: jest.fn(() => fileParserMock),
-// 	};
-// });
 
 describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeImportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
+	let columnClientAdapterMock: DeepMocked<ColumnClientAdapter>;
+	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let commonCartridgeFileParser: jest.Mocked<CommonCartridgeFileParser>;
 
 	beforeEach(async () => {
@@ -127,6 +46,8 @@ describe(CommonCartridgeImportService.name, () => {
 		sut = module.get(CommonCartridgeImportService);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		boardsClientAdapterMock = module.get(BoardsClientAdapter);
+		columnClientAdapterMock = module.get(ColumnClientAdapter);
+		cardClientAdapterMock = module.get(CardClientAdapter);
 		commonCartridgeFileParser = createMock<CommonCartridgeFileParser>();
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
 	});
@@ -146,7 +67,78 @@ describe(CommonCartridgeImportService.name, () => {
 	describe('importFile', () => {
 		describe('when importing a file', () => {
 			const setup = () => {
+				const boardId = faker.string.uuid();
+				const columnId = faker.string.uuid();
+				const cardId = faker.string.uuid();
+				const elementId = faker.string.uuid();
 				const file = Buffer.from('');
+				commonCartridgeFileParser.getTitle.mockReturnValue('test course');
+				commonCartridgeFileParser.getOrganizations.mockReturnValue([
+					{
+						pathDepth: 0,
+						title: 'Mock Board',
+						identifier: boardId,
+						path: boardId,
+						isInlined: false,
+						isResource: false,
+						resourcePath: '',
+						resourceType: '',
+					},
+					{
+						pathDepth: 1,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId}`,
+						identifier: columnId,
+						isInlined: false,
+						isResource: false,
+						resourcePath: faker.system.filePath(),
+						resourceType: faker.lorem.word(),
+					},
+					{
+						pathDepth: 2,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId}/${cardId}`,
+						identifier: cardId,
+						isInlined: false,
+						isResource: true,
+						resourcePath: 'https://www.webcontent.html',
+						resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					},
+					{
+						pathDepth: 3,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId}/${cardId}/${elementId}`,
+						identifier: elementId,
+						isInlined: false,
+						isResource: false,
+						resourcePath: 'https://www.webcontent.html',
+						resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					},
+					{
+						pathDepth: 2,
+						title: 'card without resource',
+						path: `${boardId}/${columnId}/${cardId}`,
+						identifier: cardId,
+						isInlined: false,
+						isResource: false,
+						resourcePath: 'https://www.webcontent.html',
+						resourceType: CommonCartridgeResourceTypeV1P1.UNKNOWN,
+					},
+					{
+						pathDepth: 3,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId}/${cardId}/${elementId}`,
+						identifier: elementId,
+						isInlined: false,
+						isResource: false,
+						resourcePath: 'https://www.webcontent.html',
+						resourceType: CommonCartridgeResourceTypeV1P1.UNKNOWN,
+					},
+				]);
+
+				coursesClientAdapterMock.createCourse.mockResolvedValue({ courseId: faker.string.uuid() });
+
+				boardsClientAdapterMock.createBoard.mockResolvedValue({ id: boardId });
 
 				return { file };
 			};
@@ -154,33 +146,22 @@ describe(CommonCartridgeImportService.name, () => {
 			it('should create a course', async () => {
 				const { file } = setup();
 
-				commonCartridgeFileParser.getTitle.mockReturnValue('test course');
-
-				commonCartridgeFileParser.getOrganizations.mockReturnValue([]);
-
 				await sut.importFile(file);
 
 				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'test course' });
 			});
 
+			it('should give Untitled Course as title if no title is found', async () => {
+				const { file } = setup();
+				commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
+
+				await sut.importFile(file);
+
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'Untitled Course' });
+			});
+
 			it('should create a board', async () => {
 				const { file } = setup();
-
-				commonCartridgeFileParser.getTitle.mockReturnValue('test course');
-				commonCartridgeFileParser.getOrganizations.mockReturnValue([
-					{
-						pathDepth: 0,
-						title: 'Mock Board',
-						identifier: faker.string.uuid(),
-						path: faker.string.uuid(),
-						isInlined: false,
-						isResource: false,
-						resourcePath: '',
-						resourceType: '',
-					},
-				]);
-
-				coursesClientAdapterMock.createCourse.mockResolvedValue({ courseId: faker.string.uuid() });
 
 				await sut.importFile(file);
 
@@ -190,6 +171,80 @@ describe(CommonCartridgeImportService.name, () => {
 					parentId: expect.any(String),
 					parentType: 'course',
 				});
+			});
+
+			it('should create a column', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(expect.any(String));
+			});
+
+			it('should update column title', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create a card', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(2);
+			});
+
+			it('should update card title', async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create a rich text element', async () => {
+				const { file } = setup();
+
+				commonCartridgeFileParser.getResource.mockReturnValue({
+					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					html: '<p>Example content</p>',
+				});
+
+				await sut.importFile(file);
+
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(1);
+				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
+			});
+
+			it('should create a link element', async () => {
+				const { file } = setup();
+
+				commonCartridgeFileParser.getResource.mockReturnValue({
+					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					title: 'Example link',
+					url: 'https://www.example.com',
+				});
+
+				await sut.importFile(file);
+
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(1);
+				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
+			});
+
+			it('should not create an element if the resource type is not supported', async () => {
+				const { file } = setup();
+
+				commonCartridgeFileParser.getResource.mockReturnValue({
+					type: CommonCartridgeResourceTypeV1P1.UNKNOWN,
+				});
+
+				await sut.importFile(file);
+
+				expect(cardClientAdapterMock.createCardElement).not.toHaveBeenCalled();
+				expect(cardClientAdapterMock.updateCardElement).not.toHaveBeenCalled();
 			});
 		});
 	});
