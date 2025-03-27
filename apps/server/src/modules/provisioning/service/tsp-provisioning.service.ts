@@ -246,8 +246,11 @@ export class TspProvisioningService {
 		existingUser.lastName = externalUser.lastName || existingUser.lastName;
 		existingUser.email = externalUser.email || existingUser.email;
 		existingUser.birthday = externalUser.birthday || existingUser.birthday || new Date();
-		existingUser.consent = existingUser.consent || this.createTspConsent();
 		existingUser.lastSyncedAt = new Date();
+
+		if (!existingUser.consent || !existingUser.consent.parentConsents?.length || !existingUser.consent.userConsent) {
+			existingUser.consent = this.createTspConsent();
+		}
 
 		return existingUser;
 	}
