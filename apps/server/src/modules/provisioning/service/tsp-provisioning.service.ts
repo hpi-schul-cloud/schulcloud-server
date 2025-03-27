@@ -182,7 +182,7 @@ export class TspProvisioningService {
 
 		return newClass;
 	}
-
+	// TODO: debug this method to find the parent consent bug 
 	public async provisionUser(data: OauthDataDto, school: School): Promise<UserDo> {
 		TypeGuard.requireKeys(
 			data,
