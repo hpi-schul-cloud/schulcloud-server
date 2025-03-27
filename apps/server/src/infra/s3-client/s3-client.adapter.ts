@@ -31,7 +31,7 @@ export class S3ClientAdapter {
 		private logger: LegacyLogger,
 		private errorHandler: DomainErrorHandler
 	) {
-		this.logger.setContext(S3ClientAdapter.name);
+		this.logger.setContext(`${S3ClientAdapter.name}:${config.connectionName}`);
 	}
 
 	// is public but only used internally

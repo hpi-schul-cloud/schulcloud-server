@@ -348,7 +348,7 @@ describe(S3ClientAdapter.name, () => {
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: 'test/text.txt' },
+							input: { Bucket: bucket, Prefix: 'test/text.txt', MaxKeys: 1000 },
 						})
 					);
 				});
@@ -402,13 +402,13 @@ describe(S3ClientAdapter.name, () => {
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: directory },
+							input: { Bucket: bucket, Prefix: directory, MaxKeys: 1000 },
 						})
 					);
 					expect(client.send).toHaveBeenNthCalledWith(
 						2,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: directory, ContinuationToken: nextFilePath },
+							input: { Bucket: bucket, Prefix: directory, ContinuationToken: nextFilePath, MaxKeys: 1000 },
 						})
 					);
 				});
@@ -557,7 +557,7 @@ describe(S3ClientAdapter.name, () => {
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: directory },
+							input: { Bucket: bucket, Prefix: directory, MaxKeys: 1000 },
 						})
 					);
 				});
@@ -615,13 +615,13 @@ describe(S3ClientAdapter.name, () => {
 					expect(client.send).toHaveBeenNthCalledWith(
 						1,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: directory },
+							input: { Bucket: bucket, Prefix: directory, MaxKeys: 1000 },
 						})
 					);
 					expect(client.send).toHaveBeenNthCalledWith(
 						2,
 						expect.objectContaining({
-							input: { Bucket: bucket, Prefix: directory, ContinuationToken: nextFilePath },
+							input: { Bucket: bucket, Prefix: directory, ContinuationToken: nextFilePath, MaxKeys: 1000 },
 						})
 					);
 				});
@@ -979,6 +979,7 @@ describe(S3ClientAdapter.name, () => {
 							Bucket: 'test-bucket',
 							Prefix: path,
 							ContinuationToken: undefined,
+							MaxKeys: 1000,
 						},
 					})
 				);
@@ -990,6 +991,7 @@ describe(S3ClientAdapter.name, () => {
 							Bucket: 'test-bucket',
 							Prefix: path,
 							ContinuationToken: '1',
+							MaxKeys: 1000,
 						},
 					})
 				);
@@ -1001,6 +1003,7 @@ describe(S3ClientAdapter.name, () => {
 							Bucket: 'test-bucket',
 							Prefix: path,
 							ContinuationToken: '2',
+							MaxKeys: 1000,
 						},
 					})
 				);

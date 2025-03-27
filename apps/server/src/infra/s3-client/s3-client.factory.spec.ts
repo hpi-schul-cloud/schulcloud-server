@@ -2,16 +2,15 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { ConfiguredRetryStrategy, RETRY_MODES } from '@aws-sdk/util-retry';
 import { DomainErrorHandler } from '@core/error';
 import { LegacyLogger } from '@core/logger';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock } from '@golevelup/ts-jest';
+import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { S3ClientFactory } from './s3-client.factory';
 
 jest.mock('@aws-sdk/client-s3');
 jest.mock('./s3-client.adapter');
-jest.mock('@core/error');
-jest.mock('@core/logger');
 
-const createParameter = () => {
+const setup = () => {
 	const bucket = 'test-bucket';
 	const config = {
 		connectionName: 'test-connection',
@@ -21,24 +20,19 @@ const createParameter = () => {
 		accessKeyId: '',
 		secretAccessKey: '',
 	};
+	const logger = createMock<LegacyLogger>();
+	const configuration = createMock<S3Config>();
+	const errorHandler = createMock<DomainErrorHandler>();
+	const client = createMock<S3Client>();
 
-	return { config, bucket };
+	return { config, bucket, logger, configuration, errorHandler, client };
 };
 
 describe(S3ClientFactory.name, () => {
-	let module: TestingModule;
 	let service: S3ClientFactory;
 
-	beforeAll(async () => {
-		module = await Test.createTestingModule({
-			providers: [S3ClientFactory, DomainErrorHandler, LegacyLogger],
-		}).compile();
-
-		service = module.get(S3ClientFactory);
-	});
-
-	afterAll(async () => {
-		await module.close();
+	beforeAll(() => {
+		service = new S3ClientFactory();
 	});
 
 	afterEach(() => {
@@ -52,8 +46,8 @@ describe(S3ClientFactory.name, () => {
 
 	describe('build', () => {
 		it('should create S3Client with correctly config', () => {
-			const { config } = createParameter();
-			service.build(config);
+			const { config, logger, errorHandler } = setup();
+			service.build(config, logger, errorHandler);
 
 			expect(S3Client).toHaveBeenCalledWith({
 				region: config.region,
@@ -70,20 +64,15 @@ describe(S3ClientFactory.name, () => {
 		});
 
 		it('should create S3ClientAdapter with correctly config', () => {
-			const { config } = createParameter();
-			service.build(config);
+			const { config, logger, errorHandler, client } = setup();
+			service.build(config, logger, errorHandler);
 
-			expect(S3ClientAdapter).toHaveBeenCalledWith(
-				expect.any(S3Client),
-				config,
-				expect.any(LegacyLogger),
-				expect.any(DomainErrorHandler)
-			);
+			expect(S3ClientAdapter).toHaveBeenCalledWith(client, config, logger, errorHandler);
 		});
 
 		it('should return an instance of S3ClientAdapter', () => {
-			const { config } = createParameter();
-			const result = service.build(config);
+			const { config, logger, errorHandler } = setup();
+			const result = service.build(config, logger, errorHandler);
 
 			expect(result).toBeInstanceOf(S3ClientAdapter);
 		});

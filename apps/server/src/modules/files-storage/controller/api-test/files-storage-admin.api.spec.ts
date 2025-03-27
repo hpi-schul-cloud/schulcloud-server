@@ -55,7 +55,7 @@ describe(`${baseRouteName} (api)`, () => {
 	});
 
 	describe('delete files of storage location', () => {
-		describe('with not authenticated user', () => {
+		describe('when not authenticated user', () => {
 			it('should return status 401', async () => {
 				const client = new TestApiClient(app, baseRouteName);
 
@@ -65,7 +65,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 		});
 
-		describe('with bad request data', () => {
+		describe('when bad request data', () => {
 			const setup = () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 
@@ -107,7 +107,7 @@ describe(`${baseRouteName} (api)`, () => {
 			});
 		});
 
-		describe(`with valid request data`, () => {
+		describe(`when valid request data`, () => {
 			const uploadFile = async (
 				loggedInClient: TestApiClient,
 				schoolId: string,
