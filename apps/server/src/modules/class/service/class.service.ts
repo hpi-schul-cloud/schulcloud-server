@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	DataDeletedEvent,
@@ -15,9 +16,8 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import { Class } from '../domain';
-import { ClassesRepo } from '../repo';
+import { ClassesRepo, ClassScope } from '../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -35,6 +35,12 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	}
+
+	public async find(scope: ClassScope): Promise<Class[]> {
+		const classes: Class[] = await this.classesRepo.find(scope);
+
+		return classes;
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {

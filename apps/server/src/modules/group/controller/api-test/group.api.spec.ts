@@ -49,6 +49,7 @@ describe('Group (API)', () => {
 				const school = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser = userFactory.buildWithId({ school, roles: [teacherRole] });
 				const system = systemEntityFactory.buildWithId();
@@ -82,6 +83,7 @@ describe('Group (API)', () => {
 					adminUser,
 					teacherRole,
 					teacherUser,
+					studentRole,
 					system,
 					classEntity,
 					group,
