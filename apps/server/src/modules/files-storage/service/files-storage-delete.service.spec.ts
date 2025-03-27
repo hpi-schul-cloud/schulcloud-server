@@ -15,6 +15,7 @@ import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordRepo } from '../repo';
 import { fileRecordFactory } from '../testing';
 import { FilesStorageService } from './files-storage.service';
+import { ErrorUtils } from '@core/error/utils';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
@@ -291,7 +292,7 @@ describe('FilesStorageService delete methods', () => {
 						storageLocation: params.storageLocation,
 						storageLocationId: params.storageLocationId,
 					},
-					error,
+					ErrorUtils.createHttpExceptionOptions(error),
 				];
 
 				return { storageLocation, storageLocationId, params, expectedProps };

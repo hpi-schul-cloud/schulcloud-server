@@ -11,25 +11,25 @@ import {
 	PutObjectCommandInput,
 	S3Client,
 	ServiceOutputTypes,
-	waitUntilObjectNotExists,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { Readable } from 'stream';
-import { S3_CLIENT, S3_CONFIG } from './constants';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 
-@Injectable()
 export class S3ClientAdapter {
 	private deletedFolderName = 'trash';
+	private S3_MAX_DEFAULT_VALUE_FOR_KEYS = 1000;
 
 	constructor(
-		@Inject(S3_CLIENT) readonly client: S3Client,
-		@Inject(S3_CONFIG) readonly config: S3Config,
-		private logger: LegacyLogger
+		private readonly client: S3Client,
+		private readonly config: S3Config,
+		private logger: LegacyLogger,
+		private errorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(S3ClientAdapter.name);
 	}
@@ -139,7 +139,7 @@ export class S3ClientAdapter {
 
 	public async moveDirectoryToTrash(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.log({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
+			this.logger.debug({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
 
 			const data = await this.listObjects(path, nextMarker);
 			const filteredPathObjects = this.filterValidPathKeys(data);
@@ -150,7 +150,6 @@ export class S3ClientAdapter {
 				await this.moveDirectoryToTrash(path, data.NextContinuationToken);
 			}
 		} catch (err) {
-			console.log(JSON.stringify(err));
 			throw new InternalServerErrorException(
 				'S3ClientAdapter:moveDirectoryToTrash',
 				ErrorUtils.createHttpExceptionOptions(err)
@@ -181,7 +180,7 @@ export class S3ClientAdapter {
 
 	public async copy(paths: CopyFiles[]): Promise<CopyObjectCommandOutput[]> {
 		try {
-			this.logger.warn({ action: 'copy', params: { paths, bucket: this.config.bucket } });
+			this.logger.debug({ action: 'copy', params: { paths, bucket: this.config.bucket } });
 
 			const copyRequests = paths.map(async (path) => {
 				const req = new CopyObjectCommand({
@@ -194,26 +193,31 @@ export class S3ClientAdapter {
 
 				return data;
 			});
-			const settled = await Promise.allSettled(copyRequests);
 
-			const rejected = settled.filter((p) => p.status === 'rejected');
-			if (rejected.length > 0) {
-				const errors = rejected.map((p: PromiseRejectedResult) => p.reason as Error);
-				console.log('REJECTED-BY-COPY', JSON.stringify(errors));
-			}
-
-			const result = settled.filter((p) => p.status === 'fulfilled').map((p) => p.value);
+			const settledPromises = await Promise.allSettled(copyRequests);
+			const result = this.handleSettledPromises(settledPromises, 'S3ClientAdapter:copy:settledPromises');
 
 			return result;
 		} catch (err) {
-			console.log('COPY', JSON.stringify(err));
 			throw new InternalServerErrorException('S3ClientAdapter:copy', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
 
+	private handleSettledPromises<T>(settled: PromiseSettledResult<T>[], errorMessage: string): T[] {
+		const rejected = settled.filter((p) => p.status === 'rejected');
+		if (rejected.length > 0) {
+			const reasons = rejected.map((p: PromiseRejectedResult): unknown => p.reason);
+			this.errorHandler.exec(new Error(errorMessage, ErrorUtils.createHttpExceptionOptions(reasons)));
+		}
+
+		const result = settled.filter((p) => p.status === 'fulfilled').map((p) => p.value);
+
+		return result;
+	}
+
 	public async delete(paths: string[]): Promise<void> {
 		try {
-			this.logger.warn({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
 			if (paths.length === 0) return;
 
 			const pathObjects = paths.map((p) => {
@@ -225,14 +229,7 @@ export class S3ClientAdapter {
 			});
 
 			await this.client.send(req);
-			for (const pathObject of pathObjects) {
-				await waitUntilObjectNotExists(
-					{ client: this.client, maxWaitTime: 60 },
-					{ Bucket: this.config.bucket, Key: pathObject.Key }
-				);
-			}
 		} catch (err) {
-			console.log('DELETE', JSON.stringify(err));
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}
@@ -295,7 +292,7 @@ export class S3ClientAdapter {
 
 	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
-			this.logger.log({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
+			this.logger.debug({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
 			const data = await this.listObjects(path, nextMarker);
 			const filteredPathObjects = this.filterValidPathKeys(data);
@@ -313,7 +310,11 @@ export class S3ClientAdapter {
 		}
 	}
 
-	private async listObjects(path: string, nextMarker?: string, maxKeys?: number): Promise<ListObjectsV2CommandOutput> {
+	private async listObjects(
+		path: string,
+		nextMarker?: string,
+		maxKeys = this.S3_MAX_DEFAULT_VALUE_FOR_KEYS
+	): Promise<ListObjectsV2CommandOutput> {
 		const req = new ListObjectsV2Command({
 			Bucket: this.config.bucket,
 			Prefix: path,
@@ -341,7 +342,7 @@ export class S3ClientAdapter {
 	/* istanbul ignore next */
 	private checkStreamResponsive(stream: Readable, context: string): void {
 		let timer: NodeJS.Timeout;
-		const refreshTimeout = () => {
+		const refreshTimeout = (): void => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
 				this.logger.log(`Stream unresponsive: S3 object key ${context}`);

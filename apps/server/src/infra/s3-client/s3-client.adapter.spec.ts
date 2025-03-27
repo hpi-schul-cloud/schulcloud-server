@@ -1,12 +1,11 @@
 import { S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'node:stream';
-import { S3_CLIENT, S3_CONFIG } from './constants';
 import { File, S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { createListObjectsV2CommandOutput } from './testing';
@@ -27,44 +26,24 @@ const createParameter = () => {
 	return { config, pathToFile, bytesRange, bucket, directory };
 };
 
-describe('S3ClientAdapter', () => {
-	let module: TestingModule;
+describe(S3ClientAdapter.name, () => {
 	let service: S3ClientAdapter;
 	let client: DeepMocked<S3Client>;
 
-	beforeAll(async () => {
+	beforeAll(() => {
 		const { config } = createParameter();
 
-		module = await Test.createTestingModule({
-			providers: [
-				S3ClientAdapter,
-				{
-					provide: S3_CLIENT,
-					useValue: createMock<S3Client>({
-						config: {
-							endpoint: () => {
-								return { protocol: '', hostname: '' };
-							},
-						},
-					}),
+		const logger = createMock<LegacyLogger>();
+		const configuration = createMock<S3Config>(config);
+		const errorHandler = createMock<DomainErrorHandler>();
+		client = createMock<S3Client>({
+			config: {
+				endpoint: () => {
+					return { protocol: '', hostname: '' };
 				},
-				{
-					provide: S3_CONFIG,
-					useValue: createMock<S3Config>(config),
-				},
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
-			],
-		}).compile();
-
-		service = module.get(S3ClientAdapter);
-		client = module.get(S3_CLIENT);
-	});
-
-	afterAll(async () => {
-		await module.close();
+			},
+		});
+		service = new S3ClientAdapter(client, configuration, logger, errorHandler);
 	});
 
 	afterEach(() => {
