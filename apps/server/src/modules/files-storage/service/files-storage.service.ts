@@ -1,3 +1,5 @@
+import { ErrorUtils } from '@core/error/utils';
+import { LegacyLogger } from '@core/logger';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import {
@@ -10,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import {
@@ -35,7 +36,7 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { GetFileResponse } from '../interface';
+import { GetFileResponse, StorageLocationParams } from '../interface';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
 import { FileRecordRepo } from '../repo';
 
@@ -64,7 +65,7 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async getFileRecordMarkedForDelete(params: SingleFileParams) {
+	public async getFileRecordMarkedForDelete(params: SingleFileParams): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
 
 		return fileRecord;
@@ -122,7 +123,7 @@ export class FilesStorageService {
 		return { mimeType: file.mimeType, stream: file.data };
 	}
 
-	private isStreamMimeTypeDetectionPossible(mimeType: string) {
+	private isStreamMimeTypeDetectionPossible(mimeType: string): boolean {
 		const mimTypes = [
 			'text/csv',
 			'image/svg+xml',
@@ -239,7 +240,7 @@ export class FilesStorageService {
 		}
 	}
 
-	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams) {
+	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams): Promise<FileRecord> {
 		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams.parentId);
 
@@ -250,7 +251,7 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams) {
+	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams): Promise<void> {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
 		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
@@ -296,7 +297,7 @@ export class FilesStorageService {
 	}
 
 	// delete
-	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]) {
+	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]): Promise<void> {
 		const paths = getPaths(fileRecords);
 
 		await this.storageClient.moveToTrash(paths);
@@ -311,7 +312,7 @@ export class FilesStorageService {
 		}
 	}
 
-	public async delete(fileRecords: FileRecord[]) {
+	public async delete(fileRecords: FileRecord[]): Promise<void> {
 		this.logger.debug({ action: 'delete', fileRecords });
 
 		const markedFileRecords = markForDelete(fileRecords);
@@ -333,8 +334,27 @@ export class FilesStorageService {
 		return fileRecords;
 	}
 
+	public async markForDeleteByStorageLocation(params: StorageLocationParams): Promise<number> {
+		const { storageLocation, storageLocationId } = params;
+		const result = await this.fileRecordRepo.markForDeleteByStorageLocation(storageLocation, storageLocationId);
+
+		this.storageClient.moveDirectoryToTrash(storageLocationId).catch((error) => {
+			this.logger.error(
+				{
+					message: 'Error while moving directory to trash',
+					action: 'markForDeleteByStorageLocation',
+					storageLocation,
+					storageLocationId,
+				},
+				ErrorUtils.createHttpExceptionOptions(error)
+			);
+		});
+
+		return result;
+	}
+
 	// restore
-	private async restoreFilesInFileStorageClient(fileRecords: FileRecord[]) {
+	private async restoreFilesInFileStorageClient(fileRecords: FileRecord[]): Promise<void> {
 		const paths = getPaths(fileRecords);
 
 		await this.storageClient.restore(paths);
@@ -363,7 +383,7 @@ export class FilesStorageService {
 		return [fileRecords, count];
 	}
 
-	public async restore(fileRecords: FileRecord[]) {
+	public async restore(fileRecords: FileRecord[]): Promise<void> {
 		this.logger.debug({ action: 'restore', fileRecords });
 
 		const unmarkFileRecords = unmarkForDelete(fileRecords);
@@ -404,7 +424,7 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	private async sendToAntiVirusService(fileRecord: FileRecord) {
+	private async sendToAntiVirusService(fileRecord: FileRecord): Promise<void> {
 		if (fileRecord.isPending()) {
 			await this.antivirusService.send(fileRecord.getSecurityToken());
 		}

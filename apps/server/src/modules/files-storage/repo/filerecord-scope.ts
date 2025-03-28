@@ -5,44 +5,44 @@ import { FileRecord } from '../entity';
 import { StorageLocation } from '../interface';
 
 export class FileRecordScope extends Scope<FileRecord> {
-	byParentId(parentId: EntityId): FileRecordScope {
+	public byParentId(parentId: EntityId): FileRecordScope {
 		this.addQuery({ _parentId: new ObjectId(parentId) });
 
 		return this;
 	}
 
-	byFileRecordId(fileRecordId: EntityId): FileRecordScope {
+	public byFileRecordId(fileRecordId: EntityId): FileRecordScope {
 		this.addQuery({ id: fileRecordId });
 
 		return this;
 	}
 
-	byStorageType(storageLocation: StorageLocation): FileRecordScope {
+	public byStorageLocation(storageLocation: StorageLocation): FileRecordScope {
 		this.addQuery({ storageLocation });
 
 		return this;
 	}
 
-	byStorageLocationId(storageLocationId: EntityId): FileRecordScope {
+	public byStorageLocationId(storageLocationId: EntityId): FileRecordScope {
 		this.addQuery({ _storageLocationId: new ObjectId(storageLocationId) });
 
 		return this;
 	}
 
-	bySecurityCheckRequestToken(token: string): FileRecordScope {
+	public bySecurityCheckRequestToken(token: string): FileRecordScope {
 		this.addQuery({ securityCheck: { requestToken: token } });
 
 		return this;
 	}
 
-	byMarkedForDelete(isMarked = true): FileRecordScope {
+	public byMarkedForDelete(isMarked = true): FileRecordScope {
 		const query = isMarked ? { deletedSince: { $ne: null } } : { deletedSince: null };
 		this.addQuery(query);
 
 		return this;
 	}
 
-	byCreatorId(creatorId: EntityId): FileRecordScope {
+	public byCreatorId(creatorId: EntityId): FileRecordScope {
 		this.addQuery({ _creatorId: new ObjectId(creatorId) });
 
 		return this;

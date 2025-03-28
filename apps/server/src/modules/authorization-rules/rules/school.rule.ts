@@ -25,7 +25,10 @@ export class SchoolRule implements Rule<School> {
 		if (isUsersSchool) {
 			hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		} else {
-			hasPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.SCHOOL_EDIT_ALL]);
+			hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+				Permission.SCHOOL_EDIT_ALL,
+				...context.requiredPermissions,
+			]);
 		}
 
 		return hasPermission;
