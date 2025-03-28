@@ -486,7 +486,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 				expect(accountServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -506,7 +506,7 @@ describe('TspProvisioningService', () => {
 				];
 
 				userServiceMock.findByExternalId.mockResolvedValueOnce(user);
-				userServiceMock.save.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 				roleServiceMock.findByNames.mockResolvedValueOnce(roles);
 
@@ -518,7 +518,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 				expect(accountServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -571,7 +571,7 @@ describe('TspProvisioningService', () => {
 				const user = userDoFactory.build({ id: faker.string.uuid(), roles: [] });
 
 				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
-				userServiceMock.save.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
@@ -583,7 +583,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 				expect(accountServiceMock.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -603,7 +603,7 @@ describe('TspProvisioningService', () => {
 				const user = userDoFactory.build({ id: undefined, roles: [] });
 
 				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
-				userServiceMock.save.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
@@ -628,7 +628,7 @@ describe('TspProvisioningService', () => {
 				const user = userDoFactory.build({ id: faker.string.uuid(), roles: [] });
 
 				userServiceMock.findByExternalId.mockResolvedValueOnce(null);
-				userServiceMock.save.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
@@ -662,7 +662,7 @@ describe('TspProvisioningService', () => {
 				});
 
 				userServiceMock.findByExternalId.mockResolvedValueOnce(user);
-				userServiceMock.save.mockResolvedValueOnce(user);
+				userServiceMock.save.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 				roleServiceMock.findByNames.mockResolvedValueOnce([]);
 
@@ -674,7 +674,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 
 				expect(userServiceMock.save.mock.calls[0][0].consent?.parentConsents?.[0]).toMatchObject({
 					form: 'digital',
@@ -704,7 +704,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 
 				expect(userServiceMock.save.mock.calls[0][0].consent?.parentConsents?.[0]).toMatchObject({
 					form: 'digital',
@@ -732,7 +732,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 
 				expect(userServiceMock.save.mock.calls[0][0].consent?.userConsent).toMatchObject({
 					form: 'digital',
@@ -767,7 +767,7 @@ describe('TspProvisioningService', () => {
 
 				await sut.provisionUser(data, school);
 
-				expect(userServiceMock.save).toHaveBeenCalledTimes(1);
+				expect(userServiceMock.save).toHaveBeenCalledTimes(2);
 
 				expect(userServiceMock.save.mock.calls[0][0].consent?.parentConsents?.[0]).toMatchObject({
 					id: expect.any(String),

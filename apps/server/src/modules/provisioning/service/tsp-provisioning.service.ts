@@ -201,6 +201,9 @@ export class TspProvisioningService {
 		if (!user) {
 			throw new BadDataLoggableException(`Couldn't process user`, { externalId: data.externalUser.externalId });
 		}
+
+		// Has to be done two times otherwise user.consent.parentConsents is empty
+		await this.userService.save(user);
 		const savedUser = await this.userService.save(user);
 
 		try {
