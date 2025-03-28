@@ -3,7 +3,6 @@
 .openapi-generator-ignore
 api.ts
 api/board-api.ts
-api/board-column-api.ts
 base.ts
 common.ts
 configuration.ts
@@ -17,5 +16,4 @@ models/column-response.ts
 models/create-board-body-params.ts
 models/create-board-response.ts
 models/index.ts
-models/rename-body-params.ts
 models/timestamps-response.ts
