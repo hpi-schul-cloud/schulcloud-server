@@ -193,7 +193,7 @@ export class CommonCartridgeImportService {
 	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
 		return {
 			content: {
-				title: resource.title,
+				title: resource.title ?? resource.url,
 				url: resource.url,
 				description: '',
 				imageUrl: '',
