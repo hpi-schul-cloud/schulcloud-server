@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseSynchronizationHistorySaveProps } from '../do';
+import { CourseSynchronizationHistory, CourseSynchronizationHistorySaveProps } from '../do';
 import { COURSE_SYNCHRONIZATION_HISTORY_REPO, CourseSynchronizationHistoryRepo } from '../repo';
 import { courseSynchronizationHistoryFactory } from '../testing';
 import { CourseSynchronizationHistoryService } from './course-synchronization-history.service';
@@ -84,6 +84,59 @@ describe(CourseSynchronizationHistoryService.name, () => {
 			const result = await service.save(saveProps);
 
 			expect(result).toEqual(expectedSavedHistory);
+		});
+	});
+
+	describe('saveAll', () => {
+		const setup = () => {
+			const now = Date.now();
+			const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(5, {
+				expirationDate: new Date(now + expirationInSeconds * 1000),
+			});
+
+			const savePropsList = courseSyncHistories.map(
+				(expectedHistory: CourseSynchronizationHistory): CourseSynchronizationHistorySaveProps => {
+					return {
+						...expectedHistory.getProps(),
+					};
+				}
+			);
+
+			historyRepo.saveAll.mockResolvedValueOnce(courseSyncHistories);
+
+			jest.spyOn(Date, 'now').mockReturnValue(now);
+
+			return { courseSyncHistories, savePropsList };
+		};
+
+		it('should save the histories with correct expiration date', async () => {
+			const { courseSyncHistories, savePropsList } = setup();
+
+			await service.saveAll(savePropsList);
+
+			const saveAllArgs = historyRepo.saveAll.mock.calls[0][0];
+			saveAllArgs.forEach((savedHistory: CourseSynchronizationHistory) => {
+				const expectedHistory = courseSyncHistories.find(
+					(courseSyncHistory: CourseSynchronizationHistory) =>
+						courseSyncHistory.externalGroupId === savedHistory.externalGroupId
+				);
+
+				expect(expectedHistory).not.toBeUndefined();
+				expect(savedHistory).toEqual(
+					expect.objectContaining({
+						...expectedHistory?.getProps(),
+						id: expect.any(String),
+					})
+				);
+			});
+		});
+
+		it('should return the saved histories', async () => {
+			const { courseSyncHistories, savePropsList } = setup();
+
+			const result = await service.saveAll(savePropsList);
+
+			expect(result).toEqual(courseSyncHistories);
 		});
 	});
 

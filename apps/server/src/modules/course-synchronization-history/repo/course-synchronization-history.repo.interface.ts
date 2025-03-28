@@ -3,6 +3,8 @@ import { CourseSynchronizationHistory } from '../do';
 export interface CourseSynchronizationHistoryRepo {
 	save(domainObject: CourseSynchronizationHistory): Promise<CourseSynchronizationHistory>;
 
+	saveAll(domainObjects: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]>;
+
 	findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory | null>;
 }
 

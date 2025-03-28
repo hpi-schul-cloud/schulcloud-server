@@ -3,6 +3,7 @@ import { CourseEntity } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { CourseSynchronizationHistory } from '../../do';
 import { courseSynchronizationHistoryEntityFactory, courseSynchronizationHistoryFactory } from '../../testing';
 import { COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../course-synchronization-history.repo.interface';
 import { CourseSynchronizationHistoryEntity } from '../entity';
@@ -58,8 +59,13 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				await repo.save(historyDO);
 
 				const savedEntity = await em.findOneOrFail(CourseSynchronizationHistoryEntity, expectedSavedEntity.id);
-				expect(savedEntity.externalGroupId).toEqual(expectedSavedEntity.externalGroupId);
-				expect(savedEntity.expirationDate).toEqual(expectedSavedEntity.expirationDate);
+
+				expect(savedEntity).toEqual<CourseSynchronizationHistoryEntity>({
+					...expectedSavedEntity,
+					createdAt: expect.any(Date) as unknown as Date,
+					updatedAt: expect.any(Date) as unknown as Date,
+					synchronizedCourse: expect.any(CourseEntity),
+				});
 				expect(savedEntity.synchronizedCourse.id).toEqual(expectedSavedEntity.synchronizedCourse.id);
 			});
 
@@ -68,9 +74,66 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 
 				const result = await repo.save(historyDO);
 
-				expect(result.externalGroupId).toEqual(expectedSavedEntity.externalGroupId);
-				expect(result.expirationDate).toEqual(expectedSavedEntity.expirationDate);
-				expect(result.synchronizedCourse).toEqual(expectedSavedEntity.synchronizedCourse.id);
+				expect(result).toEqual<CourseSynchronizationHistoryEntity>({
+					...expectedSavedEntity,
+					synchronizedCourse: expect.objectContaining({
+						id: expectedSavedEntity.synchronizedCourse.id,
+					}),
+				});
+			});
+		});
+	});
+
+	describe('saveAll', () => {
+		describe('when a list of course synchronization history DOs is passed', () => {
+			const setup = async () => {
+				const expectedSavedEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
+
+				const syncedCourseEntities = expectedSavedEntities.map(
+					(entity: CourseSynchronizationHistoryEntity) => entity.synchronizedCourse
+				);
+
+				await em.persistAndFlush(syncedCourseEntities);
+				em.clear();
+
+				const historyDOs = expectedSavedEntities.map((entity: CourseSynchronizationHistoryEntity) =>
+					courseSynchronizationHistoryFactory.build({
+						id: entity.id,
+						externalGroupId: entity.externalGroupId,
+						synchronizedCourse: entity.synchronizedCourse.id,
+						expirationDate: entity.expirationDate,
+					})
+				);
+
+				return { historyDOs, expectedSavedEntities };
+			};
+
+			it('should save all the course synchronization histories', async () => {
+				const { historyDOs, expectedSavedEntities } = await setup();
+
+				await repo.saveAll(historyDOs);
+
+				for (const expectedEntity of expectedSavedEntities) {
+					const savedEntity = await em.findOneOrFail(CourseSynchronizationHistoryEntity, expectedEntity.id);
+					expect(savedEntity.externalGroupId).toEqual(expectedEntity.externalGroupId);
+					expect(savedEntity.expirationDate).toEqual(expectedEntity.expirationDate);
+					expect(savedEntity.synchronizedCourse.id).toEqual(expectedEntity.synchronizedCourse.id);
+				}
+			});
+
+			it('should return a list of the saved course synchronization histories', async () => {
+				const { historyDOs, expectedSavedEntities } = await setup();
+
+				const result = await repo.saveAll(historyDOs);
+
+				expectedSavedEntities.forEach((expectedEntity: CourseSynchronizationHistoryEntity) => {
+					const resultDO = result.find((historyDO: CourseSynchronizationHistory) => historyDO.id === expectedEntity.id);
+
+					expect(resultDO).not.toBeUndefined();
+					expect(resultDO?.externalGroupId).toEqual(expectedEntity.externalGroupId);
+					expect(resultDO?.expirationDate).toEqual(expectedEntity.expirationDate);
+					expect(resultDO?.synchronizedCourse).toEqual(expectedEntity.synchronizedCourse.id);
+				});
 			});
 		});
 	});
