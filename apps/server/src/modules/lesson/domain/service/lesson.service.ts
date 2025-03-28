@@ -21,7 +21,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Counted, EntityId } from '@shared/domain/types';
-import { ComponentProperties, LessonEntity, LessonRepo } from '../../repo';
+import { LessonEntity, LessonRepo } from '../../repo';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -74,27 +74,12 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 			)
 		);
 		const lessons = await this.lessonRepo.findByUserId(userId);
+		const lessonIds = this.getLessonsId(lessons);
 
-		const updatedLessons = lessons.map((lesson: LessonEntity) => {
-			lesson.contents.map((c: ComponentProperties) => {
-				if (c.user?.toHexString() === userId) {
-					c.user = undefined;
-				}
-				return c;
-			});
-			return lesson;
-		});
-
-		await this.lessonRepo.save(updatedLessons);
-
-		const numberOfUpdatedLessons = updatedLessons.length;
+		const numberOfUpdatedLessons = await this.lessonRepo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
-			DomainOperationReportBuilder.build(
-				OperationType.UPDATE,
-				numberOfUpdatedLessons,
-				this.getLessonsId(updatedLessons)
-			),
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedLessons, lessonIds),
 		]);
 
 		this.logger.info(

@@ -50,11 +50,9 @@ export class CourseGroupService implements DeletionService, IEventHandler<UserDe
 				StatusModel.PENDING
 			)
 		);
-		const [courseGroups, count] = await this.repo.findByUserId(userId);
+		const [courseGroups] = await this.repo.findByUserId(userId);
 
-		courseGroups.forEach((courseGroup) => courseGroup.removeStudent(userId));
-
-		await this.repo.save(courseGroups);
+		const count = await this.repo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCourseGroupsId(courseGroups)),
