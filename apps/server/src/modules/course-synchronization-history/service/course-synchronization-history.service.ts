@@ -1,18 +1,28 @@
-import { CourseSynchronizationHistoryRepo, COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../repo';
 import { Inject } from '@nestjs/common';
-import { CourseSynchronizationHistory, CourseSynchronizationHistorySaveProps } from '../do';
+import { ConfigService } from '@nestjs/config';
+import type { CourseSynchronizationHistoryConfig } from '../course-synchronization-history.config';
+import {
+	CourseSynchronizationHistory,
+	CourseSynchronizationHistoryFactory,
+	CourseSynchronizationHistorySaveProps,
+} from '../do';
+import { CourseSynchronizationHistoryRepo, COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../repo';
 
 export class CourseSynchronizationHistoryService {
 	constructor(
 		@Inject(COURSE_SYNCHRONIZATION_HISTORY_REPO)
-		private readonly courseSynchronizationHistoryRepo: CourseSynchronizationHistoryRepo
+		private readonly courseSynchronizationHistoryRepo: CourseSynchronizationHistoryRepo,
+		private readonly configService: ConfigService<CourseSynchronizationHistoryConfig, true>
 	) {}
 
 	public async save(saveProps: CourseSynchronizationHistorySaveProps): Promise<CourseSynchronizationHistory> {
-		// TODO: config for expiration
-		const history: CourseSynchronizationHistory = new CourseSynchronizationHistory({
+		const expirationInSeconds = this.configService.getOrThrow<number>(
+			'COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS'
+		);
+
+		const history = CourseSynchronizationHistoryFactory.build({
 			...saveProps,
-			expirationDate: new Date(Date.now() + 5 * 60 * 60 * 1000),
+			expirationDate: new Date(Date.now() + expirationInSeconds * 1000),
 		});
 
 		const saveResult: CourseSynchronizationHistory = await this.courseSynchronizationHistoryRepo.save(history);

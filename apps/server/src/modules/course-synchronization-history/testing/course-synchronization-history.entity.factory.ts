@@ -1,9 +1,9 @@
-import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { groupEntityFactory } from '@modules/group/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { ExternalSourceEmbeddable } from '@modules/system/repo';
+import { BaseFactory } from '@testing/factory/base.factory';
 import { CourseSynchronizationHistoryEntity, CourseSynchronizationHistoryEntityProps } from '../repo/entity';
 
 export const courseSynchronizationHistoryEntityFactory = BaseFactory.define<
@@ -13,7 +13,6 @@ export const courseSynchronizationHistoryEntityFactory = BaseFactory.define<
 	const externalGroupId = `external-group-id-${sequence}`;
 
 	const group = groupEntityFactory.buildWithId({
-		users: [],
 		externalSource: new ExternalSourceEmbeddable({
 			externalId: externalGroupId,
 			system: systemEntityFactory.buildWithId(),

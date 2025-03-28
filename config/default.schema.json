@@ -1729,6 +1729,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for media metadata sync."
+		},
+		"COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS": {
+			"type": "number",
+			"default": 864000,
+			"description": "Number of seconds for a course synchronization history to expire."
 		}
 	},
 	"required": []
