@@ -121,7 +121,7 @@ describe(CommonCartridgeImportService.name, () => {
 						identifier: cardId,
 						isInlined: false,
 						isResource: false,
-						resourcePath: 'https://www.webcontent.html',
+						resourcePath: faker.system.filePath(),
 						resourceType: CommonCartridgeResourceTypeV1P1.UNKNOWN,
 					},
 					{
@@ -131,7 +131,7 @@ describe(CommonCartridgeImportService.name, () => {
 						identifier: elementId,
 						isInlined: false,
 						isResource: false,
-						resourcePath: 'https://www.webcontent.html',
+						resourcePath: faker.system.filePath(),
 						resourceType: CommonCartridgeResourceTypeV1P1.UNKNOWN,
 					},
 				]);

@@ -144,12 +144,6 @@ export class CommonCartridgeImportService {
 
 			if (resource && contentElementType) {
 				const resourceBody = this.mapToResourceBody(resource, cardElementProps);
-
-				// coverage
-				if (!resourceBody) {
-					return;
-				}
-
 				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
 				await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
 			}
@@ -159,7 +153,7 @@ export class CommonCartridgeImportService {
 	private mapToResourceBody(
 		resource: CommonCartridgeImportResourceProps,
 		cardElementProps: CommonCartridgeImportOrganizationProps
-	): UpdateElementContentBodyParamsData | undefined {
+	): UpdateElementContentBodyParamsData {
 		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
 			return this.createLinkFromResource(resource);
 		}
@@ -168,17 +162,15 @@ export class CommonCartridgeImportService {
 			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
 			cardElementProps.resourcePath.endsWith('.html')
 		) {
-			return this.createTextFromResource(resource);
+			return this.createTextFromHtmlResource(resource);
 		}
 
-		// TODO files and other resource types
-
-		return undefined; // coverage
+		return this.createTextFromString('Unsupported Resource Type:' + resource.type);
 	}
 
-	private createTextFromResource(
+	private createTextFromHtmlResource(
 		resource: CommonCartridgeImportWebContentResourceProps
-	): RichTextElementContentBody | undefined {
+	): RichTextElementContentBody {
 		return {
 			type: 'richText',
 			content: {
@@ -188,7 +180,17 @@ export class CommonCartridgeImportService {
 		};
 	}
 
-	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody | undefined {
+	private createTextFromString(resource: string): RichTextElementContentBody {
+		return {
+			type: 'richText',
+			content: {
+				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
+				text: resource,
+			},
+		};
+	}
+
+	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
 		return {
 			content: {
 				title: resource.title,
