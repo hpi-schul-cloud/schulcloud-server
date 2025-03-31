@@ -1,8 +1,8 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { Inject } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
 import { S3ClientAdapter } from './s3-client.adapter';
 import { S3ClientModule } from './s3-client.module';
 
@@ -66,6 +66,7 @@ describe('S3ClientModule', () => {
 		});
 
 		it('should has correctly connection', () => {
+			// @ts-expect-error this is a private property
 			expect(s3ClientAdapterOne.config).toBe(s3ClientConfigOne);
 		});
 	});
@@ -76,6 +77,7 @@ describe('S3ClientModule', () => {
 		});
 
 		it('should has correctly connection', () => {
+			// @ts-expect-error this is a private property
 			expect(s3ClientAdapterTwo.config).toBe(s3ClientConfigTwo);
 		});
 	});
