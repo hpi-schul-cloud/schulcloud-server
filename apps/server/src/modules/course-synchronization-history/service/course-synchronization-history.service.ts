@@ -22,7 +22,7 @@ export class CourseSynchronizationHistoryService {
 
 		const history = CourseSynchronizationHistoryFactory.build({
 			...saveProps,
-			expirationDate: new Date(Date.now() + expirationInSeconds * 1000),
+			expiresAt: new Date(Date.now() + expirationInSeconds * 1000),
 		});
 
 		const saveResult: CourseSynchronizationHistory = await this.courseSynchronizationHistoryRepo.save(history);
@@ -41,7 +41,7 @@ export class CourseSynchronizationHistoryService {
 			(saveProps: CourseSynchronizationHistorySaveProps) =>
 				CourseSynchronizationHistoryFactory.build({
 					...saveProps,
-					expirationDate: new Date(Date.now() + expirationInSeconds * 1000),
+					expiresAt: new Date(Date.now() + expirationInSeconds * 1000),
 				})
 		);
 

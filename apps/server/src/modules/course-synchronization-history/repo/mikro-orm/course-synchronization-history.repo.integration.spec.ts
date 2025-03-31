@@ -47,7 +47,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 					id: expectedSavedEntity.id,
 					externalGroupId: expectedSavedEntity.externalGroupId,
 					synchronizedCourse: syncedCourseEntity.id,
-					expirationDate: expectedSavedEntity.expirationDate,
+					expiresAt: expectedSavedEntity.expiresAt,
 				});
 
 				return { historyDO, expectedSavedEntity };
@@ -70,16 +70,11 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 			});
 
 			it('should return the saved course synchronization history', async () => {
-				const { historyDO, expectedSavedEntity } = await setup();
+				const { historyDO } = await setup();
 
 				const result = await repo.save(historyDO);
 
-				expect(result).toEqual<CourseSynchronizationHistoryEntity>({
-					...expectedSavedEntity,
-					synchronizedCourse: expect.objectContaining({
-						id: expectedSavedEntity.synchronizedCourse.id,
-					}),
-				});
+				expect(result).toEqual(historyDO);
 			});
 		});
 	});
@@ -101,7 +96,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 						id: entity.id,
 						externalGroupId: entity.externalGroupId,
 						synchronizedCourse: entity.synchronizedCourse.id,
-						expirationDate: entity.expirationDate,
+						expiresAt: entity.expiresAt,
 					})
 				);
 
@@ -115,24 +110,25 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 
 				for (const expectedEntity of expectedSavedEntities) {
 					const savedEntity = await em.findOneOrFail(CourseSynchronizationHistoryEntity, expectedEntity.id);
-					expect(savedEntity.externalGroupId).toEqual(expectedEntity.externalGroupId);
-					expect(savedEntity.expirationDate).toEqual(expectedEntity.expirationDate);
+
+					expect(savedEntity).toEqual<CourseSynchronizationHistoryEntity>({
+						...expectedEntity,
+						createdAt: expect.any(Date) as unknown as Date,
+						updatedAt: expect.any(Date) as unknown as Date,
+						synchronizedCourse: expect.any(CourseEntity),
+					});
 					expect(savedEntity.synchronizedCourse.id).toEqual(expectedEntity.synchronizedCourse.id);
 				}
 			});
 
 			it('should return a list of the saved course synchronization histories', async () => {
-				const { historyDOs, expectedSavedEntities } = await setup();
+				const { historyDOs } = await setup();
 
 				const result = await repo.saveAll(historyDOs);
 
-				expectedSavedEntities.forEach((expectedEntity: CourseSynchronizationHistoryEntity) => {
-					const resultDO = result.find((historyDO: CourseSynchronizationHistory) => historyDO.id === expectedEntity.id);
-
-					expect(resultDO).not.toBeUndefined();
-					expect(resultDO?.externalGroupId).toEqual(expectedEntity.externalGroupId);
-					expect(resultDO?.expirationDate).toEqual(expectedEntity.expirationDate);
-					expect(resultDO?.synchronizedCourse).toEqual(expectedEntity.synchronizedCourse.id);
+				historyDOs.forEach((expectedDO: CourseSynchronizationHistory) => {
+					const resultDO = result.find((historyDO: CourseSynchronizationHistory) => historyDO.id === expectedDO.id);
+					expect(resultDO).toEqual(expectedDO);
 				});
 			});
 		});

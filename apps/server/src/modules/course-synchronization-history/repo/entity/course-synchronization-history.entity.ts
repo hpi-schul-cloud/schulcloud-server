@@ -10,7 +10,7 @@ export interface CourseSynchronizationHistoryEntityProps {
 
 	synchronizedCourse: CourseEntity;
 
-	expirationDate: Date;
+	expiresAt: Date;
 }
 
 @Entity({ tableName: 'course-synchronization-history' })
@@ -23,7 +23,7 @@ export class CourseSynchronizationHistoryEntity extends BaseEntityWithTimestamps
 
 	@Index({ options: { expireAfterSeconds: 0 } })
 	@Property()
-	expirationDate: Date;
+	expiresAt: Date;
 
 	constructor(props: CourseSynchronizationHistoryEntityProps) {
 		super();
@@ -32,6 +32,6 @@ export class CourseSynchronizationHistoryEntity extends BaseEntityWithTimestamps
 		}
 		this.externalGroupId = props.externalGroupId;
 		this.synchronizedCourse = props.synchronizedCourse;
-		this.expirationDate = props.expirationDate;
+		this.expiresAt = props.expiresAt;
 	}
 }

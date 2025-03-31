@@ -10,7 +10,7 @@ export class CourseSynchronizationHistoryMapper {
 			id: entity.id,
 			externalGroupId: entity.externalGroupId,
 			synchronizedCourse: entity.synchronizedCourse.id,
-			expirationDate: entity.expirationDate,
+			expiresAt: entity.expiresAt,
 		});
 
 		return domainObject;
@@ -23,7 +23,7 @@ export class CourseSynchronizationHistoryMapper {
 		const props: EntityData<CourseSynchronizationHistoryEntity> = {
 			externalGroupId: domainObject.externalGroupId,
 			synchronizedCourse: em.getReference(CourseEntity, domainObject.synchronizedCourse),
-			expirationDate: domainObject.expirationDate,
+			expiresAt: domainObject.expiresAt,
 		};
 
 		return props;

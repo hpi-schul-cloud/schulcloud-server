@@ -1,14 +1,14 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
-export type CourseSynchronizationHistorySaveProps = Omit<CourseSynchronizationHistoryProps, 'id' | 'expirationDate'>;
+export type CourseSynchronizationHistorySaveProps = Omit<CourseSynchronizationHistoryProps, 'id' | 'expiresAt'>;
 
 export interface CourseSynchronizationHistoryProps extends AuthorizableObject {
 	externalGroupId: string;
 
 	synchronizedCourse: EntityId;
 
-	expirationDate: Date;
+	expiresAt: Date;
 }
 
 export class CourseSynchronizationHistory extends DomainObject<CourseSynchronizationHistoryProps> {
@@ -20,7 +20,7 @@ export class CourseSynchronizationHistory extends DomainObject<CourseSynchroniza
 		return this.props.synchronizedCourse;
 	}
 
-	get expirationDate(): Date {
-		return this.props.expirationDate;
+	get expiresAt(): Date {
+		return this.props.expiresAt;
 	}
 }

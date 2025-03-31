@@ -29,7 +29,7 @@ describe(CourseSynchronizationHistoryMapper.name, () => {
 				id: entity.id,
 				externalGroupId: entity.externalGroupId,
 				synchronizedCourse: entity.synchronizedCourse.id,
-				expirationDate: entity.expirationDate,
+				expiresAt: entity.expiresAt,
 			});
 		});
 	});

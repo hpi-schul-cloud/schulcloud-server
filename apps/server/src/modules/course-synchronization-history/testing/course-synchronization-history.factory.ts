@@ -10,7 +10,7 @@ export const courseSynchronizationHistoryFactory = DomainObjectFactory.define<
 		id: new ObjectId().toHexString(),
 		externalGroupId: `external-group-id-${sequence}`,
 		synchronizedCourse: new ObjectId().toHexString(),
-		expirationDate: new Date(Date.now() + 3 * 60 * 60 * 1000),
+		expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000),
 	};
 
 	return history;

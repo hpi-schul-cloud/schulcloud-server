@@ -25,7 +25,7 @@ export const courseSynchronizationHistoryEntityFactory = BaseFactory.define<
 		synchronizedCourse: courseEntityFactory.buildWithId({
 			syncedWithGroup: group,
 		}),
-		expirationDate: new Date(Date.now() + 5 * 60 * 60 * 1000),
+		expiresAt: new Date(Date.now() + 5 * 60 * 60 * 1000),
 		externalGroupId,
 	};
 
