@@ -134,6 +134,7 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_AUDIO_RECORDING_ENABLED: boolean;
 }
 
 const config: ServerConfig = {
@@ -348,6 +349,9 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_AUDIO_RECORDING_ENABLED: Configuration.get(
+		'FEATURE_COLUMN_BOARD_AUDIO_RECORDING_ENABLED'
+	) as boolean,
 };
 
 export const serverConfig = (): ServerConfig => config;

@@ -8,6 +8,7 @@ import { Column } from './column.do';
 import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
+import { AudioRecordElement } from './audio-record-element.do';
 import { LinkElement } from './link-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
@@ -42,6 +43,13 @@ export class BoardNodeFactory {
 		let element!: AnyContentElement;
 
 		switch (type) {
+			case ContentElementType.AUDIO_RECORD:
+				element = new AudioRecordElement({
+					...this.getBaseProps(),
+					caption: '',
+					alternativeText: '',
+				});
+				break;
 			case ContentElementType.FILE:
 				element = new FileElement({
 					...this.getBaseProps(),

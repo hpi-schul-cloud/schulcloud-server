@@ -1,3 +1,4 @@
+import { AudioElementResponse } from './audio-record-element.response';
 import { CollaborativeTextEditorElementResponse } from './collaborative-text-editor-element.response';
 import { DeletedElementResponse } from './deleted-element.response';
 import { DrawingElementResponse } from './drawing-element.response';
@@ -9,6 +10,7 @@ import { SubmissionContainerElementResponse } from './submission-container-eleme
 import { VideoConferenceElementResponse } from './video-conference-element.response';
 
 export type AnyContentElementResponse =
+	| AudioElementResponse
 	| FileElementResponse
 	| LinkElementResponse
 	| RichTextElementResponse
