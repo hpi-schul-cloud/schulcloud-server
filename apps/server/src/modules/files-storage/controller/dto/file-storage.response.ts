@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller/dto';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
+import { EntityId } from '@shared/domain/types';
 import { FileRecord, PreviewStatus, ScanStatus } from '../../entity';
 import { API_VERSION_PATH } from '../../files-storage.const';
-import { FileRecordParentType } from '../../interface';
+import { FileRecordParentType, StorageLocation } from '../../interface';
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
@@ -103,4 +104,21 @@ export class CopyFileListResponse extends PaginationResponse<CopyFileResponse[]>
 
 	@ApiProperty({ type: [CopyFileResponse] })
 	data: CopyFileResponse[];
+}
+
+export class DeleteByStorageLocationResponse {
+	constructor(data: DeleteByStorageLocationResponse) {
+		this.storageLocationId = data.storageLocationId;
+		this.storageLocation = data.storageLocation;
+		this.deletedFiles = data.deletedFiles;
+	}
+
+	@ApiProperty()
+	storageLocationId: EntityId;
+
+	@ApiProperty({ enum: StorageLocation, enumName: 'StorageLocation' })
+	storageLocation: StorageLocation;
+
+	@ApiProperty()
+	deletedFiles: number;
 }

@@ -3,5 +3,6 @@ import { MediumMetadataDto } from '../../dto';
 
 export interface MediumMetadataStrategy {
 	getMediaSourceFormat(): MediaSourceDataFormat;
-	getMediumMetadata(mediumId: string, mediaSource: MediaSource): Promise<MediumMetadataDto>;
+	getMediumMetadataItem(mediumId: string, mediaSource: MediaSource): Promise<MediumMetadataDto>;
+	getMediumMetadataItems(mediumIds: string[], mediaSource: MediaSource): Promise<MediumMetadataDto[]>;
 }

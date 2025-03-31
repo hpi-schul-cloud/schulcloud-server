@@ -80,9 +80,9 @@ export class CommonCartridgeExportMapper {
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
-					title: `${(lessonContent.content as ComponentEtherpadPropsDto).title} - ${
-						(lessonContent.content as ComponentEtherpadPropsDto).description
-					}`,
+					title: (lessonContent.content as ComponentEtherpadPropsDto).description
+						? `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsDto).description}`
+						: lessonContent.title,
 					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				};
 			case LessonContentDtoComponentValues.RESOURCES: {
@@ -169,7 +169,7 @@ export class CommonCartridgeExportMapper {
 		return {
 			type: CommonCartridgeResourceType.WEB_LINK,
 			identifier: createIdentifier(element.id),
-			title: element.content.title,
+			title: element.content.title ? element.content.title : element.content.url,
 			url: element.content.url,
 		};
 	}

@@ -1,21 +1,16 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LanguageType } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { UserConfig } from '../domain';
-import { User, UserRepo } from '../repo';
-import { ChangeLanguageParams } from './dto';
+import type { LanguageType } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
+import { type UserConfig, UserService } from '../domain';
+import type { ChangeLanguageParams } from './dto';
 
 @Injectable()
 export class UserUc {
-	constructor(private readonly userRepo: UserRepo, private readonly configService: ConfigService<UserConfig, true>) {}
-
-	public async me(userId: EntityId): Promise<[User, string[]]> {
-		const user = await this.userRepo.findById(userId, true);
-		const permissions = user.resolvePermissions();
-
-		return [user, permissions];
-	}
+	constructor(
+		private readonly userService: UserService,
+		private readonly configService: ConfigService<UserConfig, true>
+	) {}
 
 	private checkAvaibleLanguages(settedLanguage: LanguageType): void | Error {
 		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(settedLanguage)) {
@@ -25,9 +20,9 @@ export class UserUc {
 
 	public async patchLanguage(userId: EntityId, params: ChangeLanguageParams): Promise<boolean> {
 		this.checkAvaibleLanguages(params.language);
-		const user = await this.userRepo.findById(userId);
+		const user = await this.userService.findById(userId);
 		user.language = params.language;
-		await this.userRepo.save(user);
+		await this.userService.save(user);
 
 		return true;
 	}

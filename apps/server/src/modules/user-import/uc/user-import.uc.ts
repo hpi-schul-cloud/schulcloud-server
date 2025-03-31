@@ -168,7 +168,7 @@ export class UserImportUc {
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		const unmatchedCountedUsers = await this.userService.findForImportUser(currentUser.school, query, options);
+		const unmatchedCountedUsers = await this.userService.findForImportUser(currentUser.school, query.name, options);
 
 		return unmatchedCountedUsers;
 	}

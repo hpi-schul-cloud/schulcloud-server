@@ -1,18 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { VidisClientAdapter } from '@infra/vidis-client';
+import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediaSourceNotFoundLoggableException } from '@modules/school-license/loggable';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
-import { VidisFetchService, VidisSyncService } from '../service';
-import { vidisOfferItemFactory } from '../testing';
+import { VidisSyncService } from '../service';
 import { VidisSyncStrategy } from './vidis-sync.strategy';
 
 describe(VidisSyncService.name, () => {
 	let module: TestingModule;
 	let strategy: VidisSyncStrategy;
 	let vidisSyncService: DeepMocked<VidisSyncService>;
-	let vidisFetchService: DeepMocked<VidisFetchService>;
+	let vidisClientAdapter: DeepMocked<VidisClientAdapter>;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
 
 	beforeAll(async () => {
@@ -24,8 +25,8 @@ describe(VidisSyncService.name, () => {
 					useValue: createMock<VidisSyncService>(),
 				},
 				{
-					provide: VidisFetchService,
-					useValue: createMock<VidisFetchService>(),
+					provide: VidisClientAdapter,
+					useValue: createMock<VidisClientAdapter>(),
 				},
 				{
 					provide: MediaSourceService,
@@ -36,7 +37,7 @@ describe(VidisSyncService.name, () => {
 
 		strategy = module.get(VidisSyncStrategy);
 		vidisSyncService = module.get(VidisSyncService);
-		vidisFetchService = module.get(VidisFetchService);
+		vidisClientAdapter = module.get(VidisClientAdapter);
 		mediaSourceService = module.get(MediaSourceService);
 	});
 
@@ -67,7 +68,7 @@ describe(VidisSyncService.name, () => {
 
 				mediaSourceService.findByFormat.mockResolvedValueOnce(mediaSource);
 
-				vidisFetchService.getOfferItemsFromVidis.mockResolvedValueOnce(vidisOfferItems);
+				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(vidisOfferItems);
 
 				return {
 					mediaSource,
@@ -89,7 +90,7 @@ describe(VidisSyncService.name, () => {
 
 				await strategy.sync();
 
-				expect(vidisFetchService.getOfferItemsFromVidis).toBeCalledWith(mediaSource);
+				expect(vidisClientAdapter.getOfferItemsByRegion).toBeCalledWith(mediaSource);
 			});
 
 			it('should sync the activated offer items with media school licenses in svs', async () => {

@@ -2,15 +2,13 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
@@ -53,20 +51,13 @@ describe(`board update visibility with room relation (api)`, () => {
 		const noAccessUser = userFactory.buildWithId();
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const roleRoomEdit = roleFactory.buildWithId({
-			name: RoleName.ROOMEDITOR,
-			permissions: [Permission.ROOM_EDIT],
-		});
-		const roleRoomView = roleFactory.buildWithId({
-			name: RoleName.ROOMVIEWER,
-			permissions: [Permission.ROOM_VIEW],
-		});
+		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
-				{ user: userWithEditRole, role: roleRoomEdit },
-				{ user: userWithViewRole, role: roleRoomView },
+				{ user: userWithEditRole, role: roomEditorRole },
+				{ user: userWithViewRole, role: roomViewerRole },
 			],
 		});
 
@@ -81,8 +72,8 @@ describe(`board update visibility with room relation (api)`, () => {
 			userWithEditRole,
 			userWithViewRole,
 			noAccessUser,
-			roleRoomEdit,
-			roleRoomView,
+			roomEditorRole,
+			roomViewerRole,
 			userGroup,
 			room,
 			roomMembership,
