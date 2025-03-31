@@ -1,50 +1,20 @@
 import { Inject } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import type { CourseSynchronizationHistoryConfig } from '../course-synchronization-history.config';
-import {
-	CourseSynchronizationHistory,
-	CourseSynchronizationHistoryFactory,
-	CourseSynchronizationHistorySaveProps,
-} from '../do';
+import { CourseSynchronizationHistory } from '../do';
 import { CourseSynchronizationHistoryRepo, COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../repo';
 
 export class CourseSynchronizationHistoryService {
 	constructor(
 		@Inject(COURSE_SYNCHRONIZATION_HISTORY_REPO)
-		private readonly courseSynchronizationHistoryRepo: CourseSynchronizationHistoryRepo,
-		private readonly configService: ConfigService<CourseSynchronizationHistoryConfig, true>
+		private readonly courseSynchronizationHistoryRepo: CourseSynchronizationHistoryRepo
 	) {}
 
-	public async save(saveProps: CourseSynchronizationHistorySaveProps): Promise<CourseSynchronizationHistory> {
-		const expirationInSeconds = this.configService.getOrThrow<number>(
-			'COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS'
-		);
-
-		const history = CourseSynchronizationHistoryFactory.build({
-			...saveProps,
-			expiresAt: new Date(Date.now() + expirationInSeconds * 1000),
-		});
-
-		const saveResult: CourseSynchronizationHistory = await this.courseSynchronizationHistoryRepo.save(history);
+	public async save(syncHistory: CourseSynchronizationHistory): Promise<CourseSynchronizationHistory> {
+		const saveResult: CourseSynchronizationHistory = await this.courseSynchronizationHistoryRepo.save(syncHistory);
 
 		return saveResult;
 	}
 
-	public async saveAll(
-		savePropsList: CourseSynchronizationHistorySaveProps[]
-	): Promise<CourseSynchronizationHistory[]> {
-		const expirationInSeconds = this.configService.getOrThrow<number>(
-			'COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS'
-		);
-
-		const syncHistories: CourseSynchronizationHistory[] = savePropsList.map(
-			(saveProps: CourseSynchronizationHistorySaveProps) =>
-				CourseSynchronizationHistoryFactory.build({
-					...saveProps,
-					expiresAt: new Date(Date.now() + expirationInSeconds * 1000),
-				})
-		);
-
+	public async saveAll(syncHistories: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]> {
 		const saveResult: CourseSynchronizationHistory[] = await this.courseSynchronizationHistoryRepo.saveAll(
 			syncHistories
 		);
@@ -52,8 +22,8 @@ export class CourseSynchronizationHistoryService {
 		return saveResult;
 	}
 
-	public async findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory | null> {
-		const foundHistory: CourseSynchronizationHistory | null =
+	public async findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory[]> {
+		const foundHistory: CourseSynchronizationHistory[] =
 			await this.courseSynchronizationHistoryRepo.findByExternalGroupId(externalGroupId);
 
 		return foundHistory;

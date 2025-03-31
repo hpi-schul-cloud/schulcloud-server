@@ -12,3 +12,5 @@ export { GroupProvisioningInfoLoggable } from './group-provisioning-info.loggabl
 export { GroupProvisioningSuccessfulLoggable } from './group-provisioning-successful.loggable';
 export { GroupRemovalSuccessfulLoggable } from './group-removal-successful.loggable';
 export { LicenseProvisioningSuccessfulLoggable } from './license-provisioning-successful.loggable';
+export { CourseSyncHistoryExpirationConfigMissingLoggable } from './course-sync-history-expiration-config-missing.loggable';
+export { CourseSyncHistoryGroupExternalIdMissingLoggable } from './course-sync-history-group-external-id-missing.loggable';

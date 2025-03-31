@@ -135,24 +135,31 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 	});
 
 	describe('findByExternalGroupId', () => {
-		describe('when a history with the passed external group id exists', () => {
+		describe('when histories with the passed external group id exist', () => {
 			const setup = async () => {
-				const historyEntity = courseSynchronizationHistoryEntityFactory.build();
+				const externalGroupId = 'test-external-group-id';
+
+				const historyEntities = courseSynchronizationHistoryEntityFactory.buildList(3, {
+					externalGroupId,
+				});
 				const otherHistoryEntity = courseSynchronizationHistoryEntityFactory.build();
 
-				await em.persistAndFlush([historyEntity, otherHistoryEntity]);
+				await em.persistAndFlush([...historyEntities, otherHistoryEntity]);
 
-				const expectedDO = CourseSynchronizationHistoryMapper.mapEntityToDO(historyEntity);
+				const expectedDOs = historyEntities.map((entity: CourseSynchronizationHistoryEntity) =>
+					CourseSynchronizationHistoryMapper.mapEntityToDO(entity)
+				);
 
-				return { externalGroupId: historyEntity.externalGroupId, expectedDO };
+				return { externalGroupId, expectedDOs };
 			};
 
 			it('should return the found course synchronization history', async () => {
-				const { externalGroupId, expectedDO } = await setup();
+				const { externalGroupId, expectedDOs } = await setup();
 
 				const result = await repo.findByExternalGroupId(externalGroupId);
 
-				expect(result).toEqual(expectedDO);
+				expect(result.length).toEqual(expectedDOs.length);
+				expect(result).toEqual(expect.arrayContaining(expectedDOs));
 			});
 		});
 
@@ -165,12 +172,12 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				return { externalGroupId: 'test-external-group-id' };
 			};
 
-			it('should return null', async () => {
+			it('should return an empty array', async () => {
 				const { externalGroupId } = await setup();
 
 				const result = await repo.findByExternalGroupId(externalGroupId);
 
-				expect(result).toBeNull();
+				expect(result.length).toEqual(0);
 			});
 		});
 	});

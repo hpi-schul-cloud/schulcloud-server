@@ -1,8 +1,4 @@
-export {
-	CourseSynchronizationHistory,
-	CourseSynchronizationHistoryProps,
-	CourseSynchronizationHistorySaveProps,
-} from './course-synchronization-history';
+export { CourseSynchronizationHistory, CourseSynchronizationHistoryProps } from './course-synchronization-history';
 export {
 	CourseSynchronizationHistoryBuildParams,
 	CourseSynchronizationHistoryFactory,

@@ -3,6 +3,7 @@ import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-c
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
 import { CourseModule } from '@modules/course';
+import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';
 import { GroupModule } from '@modules/group';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -52,6 +53,7 @@ import {
 		SchoolExternalToolModule,
 		SchoolModule,
 		ClassModule,
+		CourseSynchronizationHistoryModule,
 	],
 	providers: [
 		ProvisioningService,

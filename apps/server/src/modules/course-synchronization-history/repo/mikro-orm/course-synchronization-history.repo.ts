@@ -1,9 +1,9 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { CourseSynchronizationHistory } from '../../do';
+import { CourseSynchronizationHistoryRepo } from '../course-synchronization-history.repo.interface';
 import { CourseSynchronizationHistoryEntity } from '../entity';
 import { CourseSynchronizationHistoryMapper } from '../mapper';
-import { CourseSynchronizationHistoryRepo } from '../course-synchronization-history.repo.interface';
 
 export class CourseSynchronizationHistoryMirkoOrmRepo
 	extends BaseDomainObjectRepo<CourseSynchronizationHistory, CourseSynchronizationHistoryEntity>
@@ -21,20 +21,19 @@ export class CourseSynchronizationHistoryMirkoOrmRepo
 		return entityProps;
 	}
 
-	public async findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory | null> {
-		const entity: CourseSynchronizationHistoryEntity | null = await this.em.findOne(
-			CourseSynchronizationHistoryEntity,
-			{
-				externalGroupId,
-			}
-		);
+	public async findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory[]> {
+		const entities: CourseSynchronizationHistoryEntity[] = await this.em.find(CourseSynchronizationHistoryEntity, {
+			externalGroupId,
+		});
 
-		if (!entity) {
-			return null;
+		if (!entities.length) {
+			return [];
 		}
 
-		const domainObject = CourseSynchronizationHistoryMapper.mapEntityToDO(entity);
+		const domainObjects = entities.map((entity: CourseSynchronizationHistoryEntity) =>
+			CourseSynchronizationHistoryMapper.mapEntityToDO(entity)
+		);
 
-		return domainObject;
+		return domainObjects;
 	}
 }

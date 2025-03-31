@@ -1,3 +1,7 @@
+import {
+	CourseSynchronizationHistory,
+	CourseSynchronizationHistoryService,
+} from '@modules/course-synchronization-history';
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
@@ -10,7 +14,11 @@ import { CourseDoService } from './course-do.service';
 
 @Injectable()
 export class CourseSyncService {
-	constructor(private readonly courseService: CourseDoService, private readonly roleService: RoleService) {}
+	constructor(
+		private readonly courseService: CourseDoService,
+		private readonly roleService: RoleService,
+		private readonly courseSynchronizationHistoryService: CourseSynchronizationHistoryService
+	) {}
 
 	public async startSynchronization(course: Course, group: Group, user: User): Promise<void> {
 		if (course.syncedWithGroup) {
@@ -47,6 +55,24 @@ export class CourseSyncService {
 		const courses: Course[] = await this.courseService.findBySyncedGroup(newGroup);
 
 		await this.synchronize(courses, newGroup, oldGroup);
+	}
+
+	public async synchronizeCourseFromHistory(group: Group, oldGroup?: Group): Promise<void> {
+		const externalGroupId = group.externalSource?.externalId;
+		if (!externalGroupId) {
+			return;
+		}
+
+		const histories = await this.courseSynchronizationHistoryService.findByExternalGroupId(externalGroupId);
+		if (!histories.length) {
+			return;
+		}
+
+		const courses = await Promise.all(
+			histories.map((history: CourseSynchronizationHistory) => this.courseService.findById(history.synchronizedCourse))
+		);
+
+		await this.synchronize(courses, group, oldGroup);
 	}
 
 	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {

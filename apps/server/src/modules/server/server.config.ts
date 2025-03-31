@@ -13,7 +13,6 @@ import type { AlertConfig } from '@modules/alert';
 import type { AuthenticationConfig } from '@modules/authentication';
 import type { BoardConfig, MediaBoardConfig } from '@modules/board';
 import type { CollaborativeTextEditorConfig } from '@modules/collaborative-text-editor';
-import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
 import type { FilesStorageClientConfig as FilesMetadataClientConfig } from '@modules/files-storage-client';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
@@ -81,8 +80,7 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
 		ManagementServerConfig,
-		RoomMembershipConfig,
-		CourseSynchronizationHistoryConfig {
+		RoomMembershipConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -350,8 +348,8 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
-	COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS: Configuration.get(
-		'COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS'
+	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
+		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
 	) as number,
 };
 

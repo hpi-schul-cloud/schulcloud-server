@@ -6,7 +6,11 @@ import { Injectable } from '@nestjs/common';
 export class SchulconnexCourseSyncService {
 	constructor(private readonly courseSyncService: CourseSyncService) {}
 
-	async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
+	public async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
 		await this.courseSyncService.synchronizeCourseWithGroup(newGroup, oldGroup);
+	}
+
+	public async synchronizeCourseFromHistory(newGroup: Group, oldGroup?: Group): Promise<void> {
+		await this.courseSyncService.synchronizeCourseFromHistory(newGroup, oldGroup);
 	}
 }

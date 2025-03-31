@@ -5,7 +5,7 @@ export interface CourseSynchronizationHistoryRepo {
 
 	saveAll(domainObjects: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]>;
 
-	findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory | null>;
+	findByExternalGroupId(externalGroupId: string): Promise<CourseSynchronizationHistory[]>;
 }
 
 export const COURSE_SYNCHRONIZATION_HISTORY_REPO = 'COURSE_SYNCHRONIZATION_HISTORY_REPO';

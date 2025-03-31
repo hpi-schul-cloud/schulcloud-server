@@ -1,6 +1,11 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseDoService } from '@modules/course';
+import { Course, CourseDoService } from '@modules/course';
+import {
+	CourseSynchronizationHistory,
+	CourseSynchronizationHistoryFactory,
+	CourseSynchronizationHistoryService,
+} from '@modules/course-synchronization-history';
 import { Group, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
 	LegacySchoolService,
@@ -10,11 +15,18 @@ import {
 import { RoleService } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
-import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import {
+	SchoolForGroupNotFoundLoggable,
+	UserForGroupNotFoundLoggable,
+	CourseSyncHistoryExpirationConfigMissingLoggable,
+	CourseSyncHistoryGroupExternalIdMissingLoggable,
+} from '../../../loggable';
+import type { ProvisioningConfig } from '../../../provisioning.config';
 
 @Injectable()
 export class SchulconnexGroupProvisioningService {
@@ -25,6 +37,8 @@ export class SchulconnexGroupProvisioningService {
 		private readonly groupService: GroupService,
 		private readonly courseService: CourseDoService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
+		private readonly courseSynchronizationHistoryService: CourseSynchronizationHistoryService,
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
 
@@ -196,10 +210,13 @@ export class SchulconnexGroupProvisioningService {
 
 			if (group.isEmpty()) {
 				const courses = await this.courseService.findBySyncedGroup(group);
-				if (!courses || courses.length === 0) {
-					await this.groupService.delete(group);
-					return null;
+
+				if (courses.length) {
+					await this.desyncCoursesAndCreateHistories(group, courses);
 				}
+
+				await this.groupService.delete(group);
+				return null;
 			}
 
 			return this.groupService.save(group);
@@ -223,14 +240,51 @@ export class SchulconnexGroupProvisioningService {
 		if (group.isEmpty()) {
 			const courses = await this.courseService.findBySyncedGroup(group);
 
-			if (!courses.length) {
-				await this.groupService.delete(group);
-				return null;
+			if (courses.length) {
+				await this.desyncCoursesAndCreateHistories(group, courses);
 			}
+
+			await this.groupService.delete(group);
+			return null;
 		}
 
 		const savedGroup = await this.groupService.save(group);
 
 		return savedGroup;
+	}
+
+	private async desyncCoursesAndCreateHistories(group: Group, courses: Course[]): Promise<void> {
+		const externalGroupId: string | undefined = group.externalSource?.externalId;
+		if (!externalGroupId) {
+			this.logger.warning(new CourseSyncHistoryGroupExternalIdMissingLoggable(group.id));
+			return;
+		}
+
+		const expirationInSeconds: number | undefined = this.configService.get(
+			'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
+		);
+		if (expirationInSeconds === undefined) {
+			this.logger.warning(new CourseSyncHistoryExpirationConfigMissingLoggable());
+			return;
+		}
+
+		const expiresAt = new Date(Date.now() + expirationInSeconds * 1000);
+
+		const histories: CourseSynchronizationHistory[] = [];
+		courses.forEach((course: Course) => {
+			histories.push(
+				CourseSynchronizationHistoryFactory.build({
+					externalGroupId,
+					expiresAt,
+					synchronizedCourse: course.id,
+				})
+			);
+
+			course.syncedWithGroup = undefined;
+			course.excludeFromSync = undefined;
+		});
+
+		await this.courseSynchronizationHistoryService.saveAll(histories);
+		await this.courseService.saveAll(courses);
 	}
 }

@@ -1,8 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
-export type CourseSynchronizationHistorySaveProps = Omit<CourseSynchronizationHistoryProps, 'id' | 'expiresAt'>;
-
 export interface CourseSynchronizationHistoryProps extends AuthorizableObject {
 	externalGroupId: string;
 

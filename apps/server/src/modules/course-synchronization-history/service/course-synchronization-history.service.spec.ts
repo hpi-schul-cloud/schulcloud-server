@@ -1,7 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CourseSynchronizationHistory, CourseSynchronizationHistorySaveProps } from '../do';
 import { COURSE_SYNCHRONIZATION_HISTORY_REPO, CourseSynchronizationHistoryRepo } from '../repo';
 import { courseSynchronizationHistoryFactory } from '../testing';
 import { CourseSynchronizationHistoryService } from './course-synchronization-history.service';
@@ -11,8 +9,6 @@ describe(CourseSynchronizationHistoryService.name, () => {
 	let service: CourseSynchronizationHistoryService;
 	let historyRepo: DeepMocked<CourseSynchronizationHistoryRepo>;
 
-	const expirationInSeconds = 3 * 24 * 60 * 60;
-
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -20,17 +16,6 @@ describe(CourseSynchronizationHistoryService.name, () => {
 				{
 					provide: COURSE_SYNCHRONIZATION_HISTORY_REPO,
 					useValue: createMock<CourseSynchronizationHistoryRepo>(),
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>({
-						getOrThrow: jest.fn().mockImplementation((key: string) => {
-							if (key === 'COURSE_SYNCHRONIZATION_HISTORY_EXPIRES_IN_SECONDS') {
-								return expirationInSeconds;
-							}
-							throw new Error('Config key not found');
-						}),
-					}),
 				},
 			],
 		}).compile();
@@ -49,94 +34,53 @@ describe(CourseSynchronizationHistoryService.name, () => {
 
 	describe('save', () => {
 		const setup = () => {
-			const now = Date.now();
-			const expectedSavedHistory = courseSynchronizationHistoryFactory.build({
-				expirationDate: new Date(now + expirationInSeconds * 1000),
-			});
+			const syncHistory = courseSynchronizationHistoryFactory.build();
 
-			const saveProps: CourseSynchronizationHistorySaveProps = {
-				...expectedSavedHistory.getProps(),
-			};
+			historyRepo.save.mockResolvedValueOnce(syncHistory);
 
-			historyRepo.save.mockResolvedValueOnce(expectedSavedHistory);
-
-			jest.spyOn(Date, 'now').mockReturnValueOnce(now);
-
-			return { expectedSavedHistory, saveProps };
+			return { syncHistory };
 		};
 
 		it('should save the history with correct expiration date', async () => {
-			const { expectedSavedHistory, saveProps } = setup();
+			const { syncHistory } = setup();
 
-			await service.save(saveProps);
+			await service.save(syncHistory);
 
-			expect(historyRepo.save).toBeCalledWith(
-				expect.objectContaining({
-					...expectedSavedHistory.getProps(),
-					id: expect.any(String),
-				})
-			);
+			expect(historyRepo.save).toBeCalledWith(syncHistory);
 		});
 
 		it('should return the saved history', async () => {
-			const { expectedSavedHistory, saveProps } = setup();
+			const { syncHistory } = setup();
 
-			const result = await service.save(saveProps);
+			const result = await service.save(syncHistory);
 
-			expect(result).toEqual(expectedSavedHistory);
+			expect(result).toEqual(syncHistory);
 		});
 	});
 
 	describe('saveAll', () => {
 		const setup = () => {
-			const now = Date.now();
-			const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(5, {
-				expirationDate: new Date(now + expirationInSeconds * 1000),
-			});
+			const syncHistories = courseSynchronizationHistoryFactory.buildList(5);
 
-			const savePropsList = courseSyncHistories.map(
-				(expectedHistory: CourseSynchronizationHistory): CourseSynchronizationHistorySaveProps => {
-					return {
-						...expectedHistory.getProps(),
-					};
-				}
-			);
+			historyRepo.saveAll.mockResolvedValueOnce(syncHistories);
 
-			historyRepo.saveAll.mockResolvedValueOnce(courseSyncHistories);
-
-			jest.spyOn(Date, 'now').mockReturnValue(now);
-
-			return { courseSyncHistories, savePropsList };
+			return { syncHistories };
 		};
 
 		it('should save the histories with correct expiration date', async () => {
-			const { courseSyncHistories, savePropsList } = setup();
+			const { syncHistories } = setup();
 
-			await service.saveAll(savePropsList);
+			await service.saveAll(syncHistories);
 
-			const saveAllArgs = historyRepo.saveAll.mock.calls[0][0];
-			saveAllArgs.forEach((savedHistory: CourseSynchronizationHistory) => {
-				const expectedHistory = courseSyncHistories.find(
-					(courseSyncHistory: CourseSynchronizationHistory) =>
-						courseSyncHistory.externalGroupId === savedHistory.externalGroupId
-				);
-
-				expect(expectedHistory).not.toBeUndefined();
-				expect(savedHistory).toEqual(
-					expect.objectContaining({
-						...expectedHistory?.getProps(),
-						id: expect.any(String),
-					})
-				);
-			});
+			expect(historyRepo.saveAll).toBeCalledWith(syncHistories);
 		});
 
 		it('should return the saved histories', async () => {
-			const { courseSyncHistories, savePropsList } = setup();
+			const { syncHistories } = setup();
 
-			const result = await service.saveAll(savePropsList);
+			const result = await service.saveAll(syncHistories);
 
-			expect(result).toEqual(courseSyncHistories);
+			expect(result).toEqual(syncHistories);
 		});
 	});
 
@@ -145,35 +89,17 @@ describe(CourseSynchronizationHistoryService.name, () => {
 			const setup = () => {
 				const history = courseSynchronizationHistoryFactory.build();
 
-				historyRepo.findByExternalGroupId.mockResolvedValueOnce(history);
+				historyRepo.findByExternalGroupId.mockResolvedValueOnce([history]);
 
 				return { history };
 			};
 
-			it('should return the found history', async () => {
+			it('should return the found history in a list', async () => {
 				const { history } = setup();
 
 				const result = await service.findByExternalGroupId(history.externalGroupId);
 
-				expect(result).toEqual(history);
-			});
-		});
-
-		describe('when the repo did not find any history', () => {
-			const setup = () => {
-				const externalGroupId = 'external-group-id';
-
-				historyRepo.findByExternalGroupId.mockResolvedValueOnce(null);
-
-				return { externalGroupId };
-			};
-
-			it('should return null', async () => {
-				const { externalGroupId } = setup();
-
-				const result = await service.findByExternalGroupId(externalGroupId);
-
-				expect(result).toBeNull();
+				expect(result).toEqual([history]);
 			});
 		});
 	});
