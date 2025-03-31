@@ -1,13 +1,13 @@
 export class UserConsent {
-	form: string;
+	public form: string;
 
-	privacyConsent: boolean;
+	public privacyConsent: boolean;
 
-	termsOfUseConsent: boolean;
+	public termsOfUseConsent: boolean;
 
-	dateOfPrivacyConsent: Date;
+	public dateOfPrivacyConsent: Date;
 
-	dateOfTermsOfUseConsent: Date;
+	public dateOfTermsOfUseConsent: Date;
 
 	constructor(props: UserConsent) {
 		this.form = props.form;
