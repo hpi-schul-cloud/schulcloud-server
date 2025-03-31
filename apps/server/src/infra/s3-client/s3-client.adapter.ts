@@ -128,11 +128,6 @@ export class S3ClientAdapter {
 			// because the second copyRequest try override existing files in trash folder
 			await this.delete(paths);
 		} catch (err: unknown) {
-			if (TypeGuard.getValueFromDeepObjectKey(err, ['cause', 'name']) === 'NoSuchKey') {
-				this.logger.warn(`could not find one of the files for deletion with ids ${paths.join(',')}`);
-
-				return;
-			}
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
 	}

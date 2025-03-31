@@ -301,17 +301,6 @@ describe(S3ClientAdapter.name, () => {
 		});
 
 		describe('WHEN client throws error', () => {
-			it('should return undefined on error with Code "NoSuchKey"', async () => {
-				const { pathToFile } = setup();
-
-				// @ts-expect-error should run into error
-				client.send.mockRejectedValueOnce(new S3ServiceException({ name: 'NoSuchKey' }));
-
-				const res = await service.moveToTrash([pathToFile]);
-
-				expect(res).toEqual(undefined);
-			});
-
 			it('should throw an InternalServerErrorException on error', async () => {
 				const { pathToFile } = setup();
 
