@@ -8,6 +8,7 @@ import {
 import { School } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 /**
  * Check this rule in BC-9295
@@ -27,28 +28,35 @@ export class SchoolRule implements Rule<School> {
 		return isApplicable;
 	}
 
-	public hasPermission(user: User, entity: School, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, object: School, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		const isUsersSchool = user.school.id === entity.id;
 
 		if (context.action === Action.read) {
-			hasPermission = this.hasReadAccess(user, context);
+			hasPermission = this.hasReadAccess(user, object, context);
 		}
 		if (context.action === Action.write) {
-			hasPermission = this.hasWriteAccess(user, context);
+			hasPermission = this.hasWriteAccess(user, object, context);
 		}
+		return hasPermission;
+	}
+
+	private hasReadAccess(user: User, object: School, context: AuthorizationContext): boolean {
+		const isUsersSchool = user.school.id === object.id;
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_VIEW,
+			...context.requiredPermissions,
+		]);
+
 		return hasPermission && isUsersSchool;
 	}
 
-	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	private hasWriteAccess(user: User, object: School, context: AuthorizationContext): boolean {
+		const isUsersSchool = user.school.id === object.id;
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_EDIT,
+			...context.requiredPermissions,
+		]);
 
-		return hasPermission;
-	}
-
-	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
-		return hasPermission;
+		return hasPermission && isUsersSchool;
 	}
 }
