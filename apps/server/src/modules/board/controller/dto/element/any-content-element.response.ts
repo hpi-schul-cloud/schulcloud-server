@@ -1,4 +1,4 @@
-import { AudioElementResponse } from './audio-record-element.response';
+import { AudioRecordElementResponse } from './audio-record-element.response';
 import { CollaborativeTextEditorElementResponse } from './collaborative-text-editor-element.response';
 import { DeletedElementResponse } from './deleted-element.response';
 import { DrawingElementResponse } from './drawing-element.response';
@@ -10,7 +10,7 @@ import { SubmissionContainerElementResponse } from './submission-container-eleme
 import { VideoConferenceElementResponse } from './video-conference-element.response';
 
 export type AnyContentElementResponse =
-	| AudioElementResponse
+	| AudioRecordElementResponse
 	| FileElementResponse
 	| LinkElementResponse
 	| RichTextElementResponse
@@ -20,6 +20,9 @@ export type AnyContentElementResponse =
 	| CollaborativeTextEditorElementResponse
 	| DeletedElementResponse
 	| VideoConferenceElementResponse;
+
+export const isAudioRecordResponse = (element: AnyContentElementResponse): element is AudioRecordElementResponse =>
+	element instanceof AudioRecordElementResponse;
 
 export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
 	element instanceof FileElementResponse;

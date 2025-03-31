@@ -1,4 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
+import { AudioRecordElement } from './audio-record-element.do';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -34,6 +35,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
 	[BoardNodeType.VIDEO_CONFERENCE_ELEMENT]: VideoConferenceElement,
 	[BoardNodeType.DELETED_ELEMENT]: DeletedElement,
+	[BoardNodeType.AUDIO_RECORD_ELEMENT]: AudioRecordElement,
 } as const;
 
 export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>

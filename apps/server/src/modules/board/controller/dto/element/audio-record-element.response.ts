@@ -3,8 +3,8 @@ import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class AudioElementContent {
-	constructor({ caption, alternativeText }: AudioElementContent) {
+export class AudioRecordElementContent {
+	constructor({ caption, alternativeText }: AudioRecordElementContent) {
 		this.caption = caption;
 		this.alternativeText = alternativeText;
 	}
@@ -18,8 +18,8 @@ export class AudioElementContent {
 	public alternativeText: string;
 }
 
-export class AudioElementResponse {
-	constructor({ id, content, timestamps, type }: AudioElementResponse) {
+export class AudioRecordElementResponse {
+	constructor({ id, content, timestamps, type }: AudioRecordElementResponse) {
 		this.id = id;
 		this.content = content;
 		this.timestamps = timestamps;
@@ -33,7 +33,7 @@ export class AudioElementResponse {
 	public type: ContentElementType.AUDIO_RECORD;
 
 	@ApiProperty()
-	public content: AudioElementContent;
+	public content: AudioRecordElementContent;
 
 	@ApiProperty()
 	public timestamps: TimestampsResponse;

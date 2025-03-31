@@ -1,3 +1,4 @@
+import { type AudioRecordElement, isAudioRecordElement } from '../audio-record-element.do';
 import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from '../collaborative-text-editor.do';
 import { type DeletedElement, isDeletedElement } from '../deleted-element.do';
 import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
@@ -18,7 +19,8 @@ export type AnyContentElement =
 	| RichTextElement
 	| SubmissionContainerElement
 	| DeletedElement
-	| VideoConferenceElement;
+	| VideoConferenceElement
+	| AudioRecordElement;
 
 export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
 	const result =
@@ -30,7 +32,8 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 		isRichTextElement(boardNode) ||
 		isSubmissionContainerElement(boardNode) ||
 		isDeletedElement(boardNode) ||
-		isVideoConferenceElement(boardNode);
+		isVideoConferenceElement(boardNode) ||
+		isAudioRecordElement(boardNode);
 
 	return result;
 };
