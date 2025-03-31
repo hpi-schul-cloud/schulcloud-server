@@ -68,6 +68,8 @@ export class UserDo extends BaseDO {
 
 	public consent?: Consent;
 
+	public source?: string;
+
 	public sourceOptions?: UserSourceOptions;
 
 	public lastSyncedAt?: Date;
@@ -101,6 +103,7 @@ export class UserDo extends BaseDO {
 		this.previousExternalId = domainObject.previousExternalId;
 		this.birthday = domainObject.birthday;
 		this.consent = domainObject.consent;
+		this.source = domainObject.source;
 		this.sourceOptions = domainObject.sourceOptions;
 		this.lastSyncedAt = domainObject.lastSyncedAt;
 	}

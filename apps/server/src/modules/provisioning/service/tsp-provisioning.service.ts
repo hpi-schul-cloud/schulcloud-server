@@ -238,6 +238,7 @@ export class TspProvisioningService {
 				secondarySchools: [],
 				lastSyncedAt: new Date(),
 				consent: this.createTspConsent(),
+				source: this.ENTITY_SOURCE,
 			});
 
 			return newUser;
@@ -250,6 +251,7 @@ export class TspProvisioningService {
 		existingUser.email = externalUser.email || existingUser.email;
 		existingUser.birthday = externalUser.birthday || existingUser.birthday || new Date();
 		existingUser.lastSyncedAt = new Date();
+		existingUser.source = existingUser.source || this.ENTITY_SOURCE;
 
 		if (!existingUser.consent || !existingUser.consent.parentConsents?.length || !existingUser.consent.userConsent) {
 			existingUser.consent = this.createTspConsent();
