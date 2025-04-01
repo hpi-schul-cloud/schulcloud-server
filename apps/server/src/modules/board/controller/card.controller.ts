@@ -134,6 +134,7 @@ export class CardController {
 		status: 201,
 		schema: {
 			oneOf: [
+				{ $ref: getSchemaPath(AudioRecordElementResponse) },
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
