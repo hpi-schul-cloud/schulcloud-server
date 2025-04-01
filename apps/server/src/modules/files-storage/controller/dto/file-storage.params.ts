@@ -3,7 +3,23 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { FileRecordParentType, PreviewOutputMimeTypes, PreviewWidth, StorageLocation } from '../../interface';
+import {
+	FileRecordParentType,
+	PreviewOutputMimeTypes,
+	PreviewWidth,
+	StorageLocation,
+	StorageLocationParams,
+} from '../../interface';
+
+export class StorageLocationParamsDto implements StorageLocationParams {
+	@ApiProperty()
+	@IsMongoId()
+	storageLocationId!: EntityId;
+
+	@ApiProperty({ enum: StorageLocation, enumName: 'StorageLocation' })
+	@IsEnum(StorageLocation)
+	storageLocation!: StorageLocation;
+}
 
 export class FileRecordParams {
 	@ApiProperty()

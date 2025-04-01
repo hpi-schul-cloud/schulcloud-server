@@ -9,7 +9,7 @@ import {
 	SingleFileParams,
 } from '../controller/dto';
 import { FileRecord } from '../entity';
-import { FileRecordParentType, GetFileResponse } from '../interface';
+import { FileRecordParentType, GetFileResponse, StorageLocation } from '../interface';
 
 export class FilesStorageMapper {
 	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizationBodyParamsReferenceType> = new Map([
@@ -24,8 +24,22 @@ export class FilesStorageMapper {
 		[FileRecordParentType.ExternalTool, AuthorizationBodyParamsReferenceType.EXTERNAL_TOOLS],
 	]);
 
+	private static storageLocationMap: Map<StorageLocation, AuthorizationBodyParamsReferenceType> = new Map([
+		[StorageLocation.INSTANCE, AuthorizationBodyParamsReferenceType.INSTANCES],
+		[StorageLocation.SCHOOL, AuthorizationBodyParamsReferenceType.SCHOOLS],
+	]);
+
 	public static mapToAllowedAuthorizationEntityType(type: FileRecordParentType): AuthorizationBodyParamsReferenceType {
-		const res: AuthorizationBodyParamsReferenceType | undefined = this.authorizationEntityMap.get(type);
+		const res = this.authorizationEntityMap.get(type);
+
+		if (!res) {
+			throw new NotImplementedException();
+		}
+
+		return res;
+	}
+	public static mapToAllowedStorageLocationType(type: StorageLocation): AuthorizationBodyParamsReferenceType {
+		const res = this.storageLocationMap.get(type);
 
 		if (!res) {
 			throw new NotImplementedException();

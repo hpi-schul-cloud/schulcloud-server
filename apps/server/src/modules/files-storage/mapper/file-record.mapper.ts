@@ -1,5 +1,12 @@
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
+import {
+	DeleteByStorageLocationResponse,
+	FileRecordListResponse,
+	FileRecordResponse,
+	ScanResultDto,
+	ScanResultParams,
+} from '../controller/dto';
 import { FileRecord, ScanStatus } from '../entity';
+import { StorageLocationParams } from '../interface';
 
 export class FileRecordMapper {
 	public static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
@@ -58,5 +65,14 @@ export class FileRecordMapper {
 			status: ScanStatus.ERROR,
 			reason: 'No scan result',
 		});
+	}
+
+	public static mapToDeleteByStorageLocationResponse(
+		params: StorageLocationParams,
+		deletedFiles: number
+	): DeleteByStorageLocationResponse {
+		const response = new DeleteByStorageLocationResponse({ ...params, deletedFiles });
+
+		return response;
 	}
 }
