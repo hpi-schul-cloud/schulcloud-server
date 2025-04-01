@@ -18,14 +18,18 @@ export class VidisSyncService {
 	public async syncMediaSchoolLicenses(mediaSource: MediaSource, vidisOfferItems: OfferDTO[]): Promise<void> {
 		await this.mediaSchoolLicenseService.deleteAllByMediaSource(mediaSource.id);
 
+		const schoolNumberPrefix: string = mediaSource.vidisConfig?.schoolNumberPrefix || '';
+
 		const syncItemPromises: Promise<void>[] = vidisOfferItems.map(async (item: OfferDTO): Promise<void> => {
 			if (!item.schoolActivations || !item.offerId) {
 				return;
 			}
 
-			const mediumId = item.offerId.toString();
+			const mediumId: string = item.offerId.toString();
 
-			const officialSchoolNumbersFromVidis = item.schoolActivations.map((activation) => this.removePrefix(activation));
+			const officialSchoolNumbersFromVidis: string[] = item.schoolActivations.map((activation: string): string =>
+				this.removePrefix(schoolNumberPrefix, activation)
+			);
 
 			await this.createLicenses(officialSchoolNumbersFromVidis, mediaSource, mediumId);
 		});
@@ -33,8 +37,8 @@ export class VidisSyncService {
 		await Promise.all(syncItemPromises);
 	}
 
-	private removePrefix(input: string): string {
-		return input.replace(/^.*?(\d{5})$/, '$1');
+	private removePrefix(prefix: string, input: string): string {
+		return input.replace(prefix, '');
 	}
 
 	private async buildMediaSchoolLicense(
