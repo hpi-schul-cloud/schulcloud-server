@@ -1,7 +1,13 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseDoService } from '@modules/course';
+import { Course, CourseDoService } from '@modules/course';
+import { CourseProps } from '@modules/course/domain';
+import {
+	CourseSynchronizationHistory,
+	CourseSynchronizationHistoryProps,
+	CourseSynchronizationHistoryService,
+} from '@modules/course-synchronization-history';
 import { courseFactory } from '@modules/course/testing';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
@@ -16,10 +22,15 @@ import { RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import {
+	CourseSyncHistoryGroupExternalSourceMissingLoggableException,
+	SchoolForGroupNotFoundLoggable,
+	UserForGroupNotFoundLoggable,
+} from '../../../loggable';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
 describe(SchulconnexGroupProvisioningService.name, () => {
@@ -32,7 +43,10 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 	let groupService: DeepMocked<GroupService>;
 	let courseService: DeepMocked<CourseDoService>;
 	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
+	let courseSyncHistoryService: DeepMocked<CourseSynchronizationHistoryService>;
+	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<Logger>;
+
 	const mockDate = new Date(2024, 1, 1);
 
 	beforeAll(async () => {
@@ -64,6 +78,14 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					useValue: createMock<SchoolSystemOptionsService>(),
 				},
 				{
+					provide: CourseSynchronizationHistoryService,
+					useValue: createMock<CourseSynchronizationHistoryService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -77,6 +99,9 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 		groupService = module.get(GroupService);
 		courseService = module.get(CourseDoService);
 		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
+		courseSyncHistoryService = module.get(CourseSynchronizationHistoryService);
+		configService = module.get(ConfigService);
+
 		logger = module.get(Logger);
 
 		jest.useFakeTimers();
@@ -760,63 +785,146 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			});
 
 			describe('when group is empty after removal of the User but synced with a course', () => {
-				const setup = () => {
-					const systemId = 'systemId';
-					const externalUserId = 'externalUserId';
-					const role = roleFactory.buildWithId();
-					const user = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
-					const course = courseFactory.build();
+				describe('when the group does not have an external source', () => {
+					const setup = () => {
+						const systemId = 'systemId';
+						const externalUserId = 'externalUserId';
+						const role = roleFactory.buildWithId();
+						const user = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+						const course = courseFactory.build();
 
-					const firstExistingGroup = groupFactory.build({
-						users: [{ userId: user.id as string, roleId: role.id }],
-						externalSource: new ExternalSource({
-							externalId: 'externalId-1',
+						const group = groupFactory.build({
+							users: [{ userId: user.id as string, roleId: role.id }],
+							externalSource: undefined,
+						});
+
+						const externalGroup = externalGroupDtoFactory.build({
+							user: { externalUserId, roleName: role.name },
+						});
+
+						userService.findByExternalId.mockResolvedValue(user);
+						groupService.findGroups.mockResolvedValue(new Page<Group>([group], 1));
+						courseService.findBySyncedGroup.mockResolvedValue([course]);
+
+						return {
+							externalGroup,
 							systemId,
-							lastSyncedAt: mockDate,
-						}),
-					});
-					const secondExistingGroup = groupFactory.build({
-						users: [{ userId: user.id as string, roleId: role.id }],
-						externalSource: new ExternalSource({
-							externalId: 'externalId-2',
-							systemId,
-							lastSyncedAt: mockDate,
-						}),
-					});
-					const existingGroups = [firstExistingGroup, secondExistingGroup];
-
-					const firstExternalGroup = externalGroupDtoFactory.build({
-						externalId: existingGroups[0].externalSource?.externalId,
-						user: { externalUserId, roleName: role.name },
-					});
-					const externalGroups = [firstExternalGroup];
-
-					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findGroups.mockResolvedValue(new Page<Group>(existingGroups, 2));
-					courseService.findBySyncedGroup.mockResolvedValue([course]);
-
-					return {
-						externalGroups,
-						systemId,
-						externalUserId,
-						existingGroups,
+							externalUserId,
+						};
 					};
-				};
 
-				it('should not delete the group', async () => {
-					const { externalGroups, systemId, externalUserId } = setup();
+					it('should return an empty array', async () => {
+						const { externalGroup, systemId, externalUserId } = setup();
 
-					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+						const result = await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
 
-					expect(groupService.delete).not.toHaveBeenCalled();
+						expect(result.length).toEqual(0);
+					});
+
+					it('should not update or remove the group', async () => {
+						const { externalGroup, systemId, externalUserId } = setup();
+
+						await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
+
+						expect(groupService.save).not.toBeCalled();
+						expect(groupService.delete).not.toBeCalled();
+					});
+
+					it('should not create any course sync history or desync any course', async () => {
+						const { externalGroup, systemId, externalUserId } = setup();
+
+						await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
+
+						expect(courseSyncHistoryService.saveAll).not.toBeCalled();
+						expect(courseService.saveAll).not.toBeCalled();
+					});
 				});
 
-				it('should save the group', async () => {
-					const { externalGroups, systemId, externalUserId, existingGroups } = setup();
+				describe('when the group has an external source', () => {
+					const setup = () => {
+						const systemId = new ObjectId().toHexString();
+						const externalUserId = 'externalUserId';
+						const role = roleFactory.buildWithId();
+						const user = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
+						const course = courseFactory.build();
 
-					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+						const externalGroupId = 'external-group-id';
 
-					expect(groupService.save).toHaveBeenCalledWith(existingGroups[1]);
+						const group = groupFactory.build({
+							users: [{ userId: user.id as string, roleId: role.id }],
+							externalSource: new ExternalSource({
+								systemId,
+								externalId: externalGroupId,
+								lastSyncedAt: new Date(),
+							}),
+						});
+
+						const externalGroup = externalGroupDtoFactory.build({
+							user: { externalUserId, roleName: role.name },
+							externalId: `other-${externalUserId}`,
+						});
+
+						const mockExpirationSeconds = 5 * 24 * 60 * 60;
+
+						userService.findByExternalId.mockResolvedValue(user);
+						groupService.findGroups.mockResolvedValue(new Page<Group>([group], 1));
+						courseService.findBySyncedGroup.mockResolvedValue([course]);
+						configService.getOrThrow.mockReturnValueOnce(mockExpirationSeconds);
+						jest.spyOn(Date, 'now').mockReturnValueOnce(mockDate.getTime());
+
+						return {
+							externalUserId,
+							externalGroup,
+							systemId,
+							group,
+							course,
+							mockExpirationSeconds,
+						};
+					};
+
+					it('should create a course sync history for each synced course', async () => {
+						const { externalUserId, externalGroup, systemId, group, course, mockExpirationSeconds } = setup();
+
+						await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
+
+						expect(courseSyncHistoryService.saveAll).toBeCalled();
+
+						const savedHistoriesArg = courseSyncHistoryService.saveAll.mock.calls[0][0];
+
+						expect(savedHistoriesArg.length).toEqual(1);
+						expect(savedHistoriesArg[0].getProps()).toEqual<CourseSynchronizationHistoryProps>({
+							id: expect.any(String),
+							externalGroupId: group.externalSource?.externalId as string,
+							synchronizedCourse: course.id,
+							expiresAt: new Date(mockDate.getTime() + mockExpirationSeconds * 1000),
+						});
+					});
+
+					it('should desynchronize the courses from the group', async () => {
+						const { externalGroup, systemId, externalUserId, course } = setup();
+
+						await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
+
+						expect(courseService.saveAll).toBeCalled();
+
+						const savedCoursesArg = courseService.saveAll.mock.calls[0][0];
+
+						expect(savedCoursesArg.length).toEqual(1);
+						expect(savedCoursesArg[0].getProps()).toEqual<CourseProps>({
+							...course.getProps(),
+							syncedWithGroup: undefined,
+							excludeFromSync: undefined,
+						});
+					});
+
+					it('should delete the group', async () => {
+						const { group, externalGroup, systemId, externalUserId } = setup();
+
+						await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
+
+						expect(groupService.delete).toBeCalledTimes(1);
+						expect(groupService.delete).toBeCalledWith(group);
+					});
 				});
 			});
 
@@ -970,54 +1078,114 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			});
 		});
 
-		describe('when group is empty after removing the user, but a synchronized course is attached', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const role = roleFactory.buildWithId();
+		describe('when group is empty after removing the user, but synchronized courses are attached', () => {
+			describe('when the group does not have an external source', () => {
+				const setup = () => {
+					const userId = new ObjectId().toHexString();
+					const role = roleFactory.buildWithId();
 
-				const group = groupFactory.build({
-					users: [{ userId, roleId: role.id }],
-				});
-				const course = courseFactory.build({ syncedWithGroup: group.id });
+					const group = groupFactory.build({
+						users: [{ userId, roleId: role.id }],
+						externalSource: undefined,
+					});
+					const course = courseFactory.build({ syncedWithGroup: group.id });
 
-				groupService.findById.mockResolvedValueOnce(group);
-				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
-				groupService.save.mockResolvedValueOnce(group);
+					groupService.findById.mockResolvedValueOnce(group);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
+					groupService.save.mockResolvedValueOnce(group);
 
-				return {
-					group,
-					course,
-					userId,
+					return {
+						group,
+						course,
+						userId,
+					};
 				};
-			};
 
-			it('should not delete the group', async () => {
-				const { group, userId } = setup();
+				it('should throw an CourseSyncHistoryGroupExternalSourceMissingLoggableException', async () => {
+					const { group, userId } = setup();
 
-				await service.removeUserFromGroup(userId, group.id);
+					const promise = service.removeUserFromGroup(userId, group.id);
 
-				expect(groupService.delete).not.toHaveBeenCalled();
+					await expect(promise).rejects.toThrow(
+						new CourseSyncHistoryGroupExternalSourceMissingLoggableException(group.id)
+					);
+				});
 			});
 
-			it('should save the group without users', async () => {
-				const { group, userId } = setup();
+			describe('when the group has an external source', () => {
+				const setup = () => {
+					const userId = new ObjectId().toHexString();
+					const role = roleFactory.buildWithId();
 
-				await service.removeUserFromGroup(userId, group.id);
+					const group = groupFactory.build({
+						users: [{ userId, roleId: role.id }],
+					});
+					const courses = courseFactory.buildList(2, { syncedWithGroup: group.id });
 
-				expect(groupService.save).toHaveBeenCalledWith(
-					new Group({
-						...group.getProps(),
-						users: [],
-					})
-				);
-			});
+					const mockExpirationSeconds = 5 * 24 * 60 * 60;
 
-			it('should return the group', async () => {
-				const { group, userId } = setup();
+					groupService.findById.mockResolvedValueOnce(group);
+					courseService.findBySyncedGroup.mockResolvedValueOnce(courses);
+					groupService.save.mockResolvedValueOnce(group);
+					configService.getOrThrow.mockReturnValueOnce(mockExpirationSeconds);
+					jest.spyOn(Date, 'now').mockReturnValue(mockDate.getTime());
 
-				const result = await service.removeUserFromGroup(userId, group.id);
+					return {
+						group,
+						courses,
+						userId,
+						mockExpirationSeconds,
+					};
+				};
 
-				expect(result).toEqual(group);
+				it('should create a course sync history for each synced course', async () => {
+					const { group, courses, userId, mockExpirationSeconds } = setup();
+
+					await service.removeUserFromGroup(userId, group.id);
+
+					expect(courseSyncHistoryService.saveAll).toBeCalled();
+
+					const savedHistoriesArg = courseSyncHistoryService.saveAll.mock.calls[0][0];
+					savedHistoriesArg.forEach((savedHistory: CourseSynchronizationHistory) => {
+						const course = courses.find((course: Course) => course.id === savedHistory.synchronizedCourse);
+
+						expect(course).toBeDefined();
+						expect(savedHistory.getProps()).toEqual<CourseSynchronizationHistoryProps>({
+							id: expect.any(String),
+							externalGroupId: group.externalSource?.externalId as string,
+							synchronizedCourse: course?.id as string,
+							expiresAt: new Date(mockDate.getTime() + mockExpirationSeconds * 1000),
+						});
+					});
+				});
+
+				it('should desynchronize the courses from the group', async () => {
+					const { group, courses, userId } = setup();
+
+					await service.removeUserFromGroup(userId, group.id);
+
+					expect(courseService.saveAll).toBeCalled();
+
+					const savedCoursesArg = courseService.saveAll.mock.calls[0][0];
+					savedCoursesArg.forEach((savedCourse: Course) => {
+						const course = courses.find((course: Course) => course.id === savedCourse.id);
+
+						expect(course).toBeDefined();
+						expect(savedCourse.getProps()).toEqual<CourseProps>({
+							...(course as Course).getProps(),
+							syncedWithGroup: undefined,
+							excludeFromSync: undefined,
+						});
+					});
+				});
+
+				it('should delete the group', async () => {
+					const { group, userId } = setup();
+
+					await service.removeUserFromGroup(userId, group.id);
+
+					expect(groupService.delete).toBeCalledWith(group);
+				});
 			});
 		});
 

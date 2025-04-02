@@ -23,8 +23,7 @@ import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../..
 import {
 	SchoolForGroupNotFoundLoggable,
 	UserForGroupNotFoundLoggable,
-	CourseSyncHistoryExpirationConfigMissingLoggable,
-	CourseSyncHistoryGroupExternalIdMissingLoggable,
+	CourseSyncHistoryGroupExternalSourceMissingLoggableException,
 } from '../../../loggable';
 import type { ProvisioningConfig } from '../../../provisioning.config';
 
@@ -256,18 +255,12 @@ export class SchulconnexGroupProvisioningService {
 	private async desyncCoursesAndCreateHistories(group: Group, courses: Course[]): Promise<void> {
 		const externalGroupId: string | undefined = group.externalSource?.externalId;
 		if (!externalGroupId) {
-			this.logger.warning(new CourseSyncHistoryGroupExternalIdMissingLoggable(group.id));
-			return;
+			throw new CourseSyncHistoryGroupExternalSourceMissingLoggableException(group.id);
 		}
 
-		const expirationInSeconds: number | undefined = this.configService.get(
+		const expirationInSeconds: number = this.configService.getOrThrow<number>(
 			'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
 		);
-		if (expirationInSeconds === undefined) {
-			this.logger.warning(new CourseSyncHistoryExpirationConfigMissingLoggable());
-			return;
-		}
-
 		const expiresAt = new Date(Date.now() + expirationInSeconds * 1000);
 
 		const histories: CourseSynchronizationHistory[] = [];

@@ -72,4 +72,44 @@ describe(SchulconnexCourseSyncService.name, () => {
 			});
 		});
 	});
+
+	describe('synchronizeCourseFromHistory', () => {
+		describe('when synchronizing with a new group', () => {
+			const setup = () => {
+				const newGroup: Group = groupFactory.build();
+
+				return {
+					newGroup,
+				};
+			};
+
+			it('should synchronize with the group', async () => {
+				const { newGroup } = setup();
+
+				await service.synchronizeCourseFromHistory(newGroup);
+
+				expect(courseSyncService.synchronizeCourseFromHistory).toHaveBeenCalledWith(newGroup, undefined);
+			});
+		});
+
+		describe('when synchronizing with a new group and an old group', () => {
+			const setup = () => {
+				const newGroup: Group = groupFactory.build();
+				const oldGroup: Group = groupFactory.build();
+
+				return {
+					newGroup,
+					oldGroup,
+				};
+			};
+
+			it('should synchronize with the group', async () => {
+				const { newGroup, oldGroup } = setup();
+
+				await service.synchronizeCourseFromHistory(newGroup, oldGroup);
+
+				expect(courseSyncService.synchronizeCourseFromHistory).toHaveBeenCalledWith(newGroup, oldGroup);
+			});
+		});
+	});
 });
