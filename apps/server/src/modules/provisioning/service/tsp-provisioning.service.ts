@@ -197,6 +197,9 @@ export class TspProvisioningService {
 		if (!user) {
 			throw new BadDataLoggableException(`Couldn't process user`, { externalId: data.externalUser.externalId });
 		}
+
+		// Has to be done two times otherwise user.consent.parentConsents is empty
+		await this.userService.save(user);
 		const savedUser = await this.userService.save(user);
 
 		try {
@@ -235,6 +238,7 @@ export class TspProvisioningService {
 				secondarySchools: [],
 				lastSyncedAt: new Date(),
 				consent: this.createTspConsent(),
+				source: this.ENTITY_SOURCE,
 			});
 
 			return newUser;
@@ -246,8 +250,12 @@ export class TspProvisioningService {
 		existingUser.lastName = externalUser.lastName || existingUser.lastName;
 		existingUser.email = externalUser.email || existingUser.email;
 		existingUser.birthday = externalUser.birthday || existingUser.birthday || new Date();
-		existingUser.consent = existingUser.consent || this.createTspConsent();
 		existingUser.lastSyncedAt = new Date();
+		existingUser.source = existingUser.source || this.ENTITY_SOURCE;
+
+		if (!existingUser.consent || !existingUser.consent.parentConsents?.length || !existingUser.consent.userConsent) {
+			existingUser.consent = this.createTspConsent();
+		}
 
 		return existingUser;
 	}
