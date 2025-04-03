@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -33,54 +33,8 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
-	describe('save', () => {
-		describe('when a course synchronization history do is passed', () => {
-			const setup = async () => {
-				const expectedSavedEntity = courseSynchronizationHistoryEntityFactory.build();
-
-				const syncedCourseEntity = expectedSavedEntity.synchronizedCourse;
-
-				await em.persistAndFlush([syncedCourseEntity]);
-				em.clear();
-
-				const historyDO = courseSynchronizationHistoryFactory.build({
-					id: expectedSavedEntity.id,
-					externalGroupId: expectedSavedEntity.externalGroupId,
-					synchronizedCourse: syncedCourseEntity.id,
-					expiresAt: expectedSavedEntity.expiresAt,
-				});
-
-				return { historyDO, expectedSavedEntity };
-			};
-
-			it('should save the course synchronization history', async () => {
-				const { historyDO, expectedSavedEntity } = await setup();
-
-				await repo.save(historyDO);
-
-				const savedEntity = await em.findOneOrFail(CourseSynchronizationHistoryEntity, expectedSavedEntity.id);
-
-				expect(savedEntity).toEqual<CourseSynchronizationHistoryEntity>({
-					...expectedSavedEntity,
-					createdAt: expect.any(Date) as unknown as Date,
-					updatedAt: expect.any(Date) as unknown as Date,
-					synchronizedCourse: expect.any(CourseEntity),
-				});
-				expect(savedEntity.synchronizedCourse.id).toEqual(expectedSavedEntity.synchronizedCourse.id);
-			});
-
-			it('should return the saved course synchronization history', async () => {
-				const { historyDO } = await setup();
-
-				const result = await repo.save(historyDO);
-
-				expect(result).toEqual(historyDO);
-			});
-		});
-	});
-
 	describe('saveAll', () => {
-		describe('when a list of course synchronization history DOs is passed', () => {
+		describe('when a list of course sync history DOs is passed', () => {
 			const setup = async () => {
 				const expectedSavedEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
 
@@ -103,7 +57,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				return { historyDOs, expectedSavedEntities };
 			};
 
-			it('should save all the course synchronization histories', async () => {
+			it('should save all the course sync histories', async () => {
 				const { historyDOs, expectedSavedEntities } = await setup();
 
 				await repo.saveAll(historyDOs);
@@ -121,7 +75,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				}
 			});
 
-			it('should return a list of the saved course synchronization histories', async () => {
+			it('should return a list of the saved course sync histories', async () => {
 				const { historyDOs } = await setup();
 
 				const result = await repo.saveAll(historyDOs);
@@ -153,7 +107,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				return { externalGroupId, expectedDOs };
 			};
 
-			it('should return the found course synchronization history', async () => {
+			it('should return the found course sync history', async () => {
 				const { externalGroupId, expectedDOs } = await setup();
 
 				const result = await repo.findByExternalGroupId(externalGroupId);
@@ -178,6 +132,72 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				const result = await repo.findByExternalGroupId(externalGroupId);
 
 				expect(result.length).toEqual(0);
+			});
+		});
+	});
+
+	describe('delete', () => {
+		describe('when a list of course sync histories is passed', () => {
+			const setup = async () => {
+				const syncHistoryEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
+				const otherEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
+
+				await em.persistAndFlush([...syncHistoryEntities, ...otherEntities]);
+				em.clear();
+
+				const syncHistoryDOs = syncHistoryEntities.map((entity: CourseSynchronizationHistoryEntity) =>
+					courseSynchronizationHistoryFactory.build({
+						id: entity.id,
+						externalGroupId: entity.externalGroupId,
+						synchronizedCourse: entity.synchronizedCourse.id,
+						expiresAt: entity.expiresAt,
+					})
+				);
+
+				const syncHistoryIds = syncHistoryEntities.map(
+					(entity: CourseSynchronizationHistoryEntity) => new ObjectId(entity.id)
+				);
+
+				return { syncHistoryDOs, syncHistoryIds };
+			};
+
+			it('should delete the passed course sync histories', async () => {
+				const { syncHistoryDOs, syncHistoryIds } = await setup();
+
+				await repo.delete(syncHistoryDOs);
+
+				const foundEntities = await em.find(CourseSynchronizationHistoryEntity, { _id: { $in: syncHistoryIds } });
+
+				expect(foundEntities.length).toEqual(0);
+			});
+		});
+
+		describe('when a single course sync history is passed', () => {
+			const setup = async () => {
+				const syncHistoryEntity = courseSynchronizationHistoryEntityFactory.build();
+				const otherEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
+
+				await em.persistAndFlush([syncHistoryEntity, ...otherEntities]);
+				em.clear();
+
+				const syncHistoryDO = courseSynchronizationHistoryFactory.build({
+					id: syncHistoryEntity.id,
+					externalGroupId: syncHistoryEntity.externalGroupId,
+					synchronizedCourse: syncHistoryEntity.synchronizedCourse.id,
+					expiresAt: syncHistoryEntity.expiresAt,
+				});
+
+				return { syncHistoryDO };
+			};
+
+			it('should delete the passed course sync history', async () => {
+				const { syncHistoryDO } = await setup();
+
+				await repo.delete(syncHistoryDO);
+
+				const foundEntity = await em.findOne(CourseSynchronizationHistoryEntity, syncHistoryDO.id);
+
+				expect(foundEntity).toEqual(null);
 			});
 		});
 	});

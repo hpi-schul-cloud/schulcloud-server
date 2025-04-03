@@ -8,15 +8,9 @@ export class CourseSynchronizationHistoryService {
 		private readonly courseSynchronizationHistoryRepo: CourseSynchronizationHistoryRepo
 	) {}
 
-	public async save(syncHistory: CourseSynchronizationHistory): Promise<CourseSynchronizationHistory> {
-		const saveResult: CourseSynchronizationHistory = await this.courseSynchronizationHistoryRepo.save(syncHistory);
-
-		return saveResult;
-	}
-
-	public async saveAll(syncHistories: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]> {
+	public async saveAll(courseSyncHistories: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]> {
 		const saveResult: CourseSynchronizationHistory[] = await this.courseSynchronizationHistoryRepo.saveAll(
-			syncHistories
+			courseSyncHistories
 		);
 
 		return saveResult;
@@ -27,5 +21,11 @@ export class CourseSynchronizationHistoryService {
 			await this.courseSynchronizationHistoryRepo.findByExternalGroupId(externalGroupId);
 
 		return foundHistory;
+	}
+
+	public async delete(
+		courseSyncHistories: CourseSynchronizationHistory[] | CourseSynchronizationHistory
+	): Promise<void> {
+		await this.courseSynchronizationHistoryRepo.delete(courseSyncHistories);
 	}
 }

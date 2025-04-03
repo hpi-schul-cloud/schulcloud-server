@@ -7,7 +7,7 @@ import { CourseSynchronizationHistoryService } from './course-synchronization-hi
 describe(CourseSynchronizationHistoryService.name, () => {
 	let module: TestingModule;
 	let service: CourseSynchronizationHistoryService;
-	let historyRepo: DeepMocked<CourseSynchronizationHistoryRepo>;
+	let courseSyncHistoryRepo: DeepMocked<CourseSynchronizationHistoryRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,7 +21,7 @@ describe(CourseSynchronizationHistoryService.name, () => {
 		}).compile();
 
 		service = module.get(CourseSynchronizationHistoryService);
-		historyRepo = module.get(COURSE_SYNCHRONIZATION_HISTORY_REPO);
+		courseSyncHistoryRepo = module.get(COURSE_SYNCHRONIZATION_HISTORY_REPO);
 	});
 
 	afterAll(async () => {
@@ -32,47 +32,21 @@ describe(CourseSynchronizationHistoryService.name, () => {
 		jest.clearAllMocks();
 	});
 
-	describe('save', () => {
-		const setup = () => {
-			const syncHistory = courseSynchronizationHistoryFactory.build();
-
-			historyRepo.save.mockResolvedValueOnce(syncHistory);
-
-			return { syncHistory };
-		};
-
-		it('should save the history with correct expiration date', async () => {
-			const { syncHistory } = setup();
-
-			await service.save(syncHistory);
-
-			expect(historyRepo.save).toBeCalledWith(syncHistory);
-		});
-
-		it('should return the saved history', async () => {
-			const { syncHistory } = setup();
-
-			const result = await service.save(syncHistory);
-
-			expect(result).toEqual(syncHistory);
-		});
-	});
-
 	describe('saveAll', () => {
 		const setup = () => {
 			const syncHistories = courseSynchronizationHistoryFactory.buildList(5);
 
-			historyRepo.saveAll.mockResolvedValueOnce(syncHistories);
+			courseSyncHistoryRepo.saveAll.mockResolvedValueOnce(syncHistories);
 
 			return { syncHistories };
 		};
 
-		it('should save the histories with correct expiration date', async () => {
+		it('should save the histories in the repo', async () => {
 			const { syncHistories } = setup();
 
 			await service.saveAll(syncHistories);
 
-			expect(historyRepo.saveAll).toBeCalledWith(syncHistories);
+			expect(courseSyncHistoryRepo.saveAll).toBeCalledWith(syncHistories);
 		});
 
 		it('should return the saved histories', async () => {
@@ -89,7 +63,7 @@ describe(CourseSynchronizationHistoryService.name, () => {
 			const setup = () => {
 				const history = courseSynchronizationHistoryFactory.build();
 
-				historyRepo.findByExternalGroupId.mockResolvedValueOnce([history]);
+				courseSyncHistoryRepo.findByExternalGroupId.mockResolvedValueOnce([history]);
 
 				return { history };
 			};
@@ -100,6 +74,28 @@ describe(CourseSynchronizationHistoryService.name, () => {
 				const result = await service.findByExternalGroupId(history.externalGroupId);
 
 				expect(result).toEqual([history]);
+			});
+		});
+	});
+
+	describe('delete', () => {
+		describe('when a list of course sync histories is passed', () => {
+			it('should delete the course sync histories in the repo', async () => {
+				const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(3);
+
+				await service.delete(courseSyncHistories);
+
+				expect(courseSyncHistoryRepo.delete).toBeCalledWith(courseSyncHistories);
+			});
+		});
+
+		describe('when a single course sync history is passed', () => {
+			it('should delete the course sync history in the repo', async () => {
+				const courseSyncHistory = courseSynchronizationHistoryFactory.build();
+
+				await service.delete(courseSyncHistory);
+
+				expect(courseSyncHistoryRepo.delete).toBeCalledWith(courseSyncHistory);
 			});
 		});
 	});
