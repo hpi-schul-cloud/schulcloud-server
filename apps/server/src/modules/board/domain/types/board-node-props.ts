@@ -41,6 +41,11 @@ export interface ExternalToolElementProps extends BoardNodeProps {
 	contextExternalToolId?: string;
 }
 
+export interface AudioRecordElementProps extends BoardNodeProps {
+	alternativeText?: string;
+	caption?: string;
+}
+
 export interface FileElementProps extends BoardNodeProps {
 	alternativeText?: string;
 	caption?: string;

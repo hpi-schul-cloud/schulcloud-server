@@ -7,6 +7,7 @@ import {
 	isRichTextElementResponse,
 	RichTextElementResponse,
 } from '../dto';
+import { AudioRecordElementResponseMapper } from './audio-record-element-response.mapper';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { CollaborativeTextEditorElementResponseMapper } from './collaborative-text-editor-element-response.mapper';
 import { DeletedElementResponseMapper } from './deleted-element-response.mapper';
@@ -20,6 +21,7 @@ import { VideoConferenceElementResponseMapper } from './video-conference-element
 
 export class ContentElementResponseFactory {
 	private static mappers: BaseResponseMapper[] = [
+		AudioRecordElementResponseMapper.getInstance(),
 		FileElementResponseMapper.getInstance(),
 		LinkElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
@@ -31,7 +33,7 @@ export class ContentElementResponseFactory {
 		VideoConferenceElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
+	public static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
 		const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 
 		if (!elementMapper) {
@@ -43,7 +45,7 @@ export class ContentElementResponseFactory {
 		return result;
 	}
 
-	static mapSubmissionContentToResponse(
+	public static mapSubmissionContentToResponse(
 		element: RichTextElement | FileElement
 	): FileElementResponse | RichTextElementResponse {
 		const result = this.mapToResponse(element);

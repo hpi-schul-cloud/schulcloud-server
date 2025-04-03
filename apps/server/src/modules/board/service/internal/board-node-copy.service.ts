@@ -30,6 +30,7 @@ import {
 	SubmissionItem,
 	VideoConferenceElement,
 } from '../../domain';
+import { AudioRecordElement } from '../../domain/audio-record-element.do';
 
 export interface CopyContext {
 	targetSchoolId: EntityId;
@@ -58,6 +59,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.CARD:
 				result = await this.copyCard(boardNode as Card, context);
+				break;
+			case BoardNodeType.AUDIO_RECORD_ELEMENT:
+				result = await this.copyFileElement(boardNode as AudioRecordElement, context);
 				break;
 			case BoardNodeType.FILE_ELEMENT:
 				result = await this.copyFileElement(boardNode as FileElement, context);
