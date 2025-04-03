@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { CourseModule } from '@modules/course';
+import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';
 import { GroupModule } from '@modules/group';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
@@ -8,7 +9,6 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SchulconnexGroupRemovalConsumer } from './amqp';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
-import { CourseSynchronizationHistoryService } from '@modules/course-synchronization-history';
 
 @Module({
 	imports: [
@@ -19,7 +19,7 @@ import { CourseSynchronizationHistoryService } from '@modules/course-synchroniza
 		SystemModule,
 		GroupModule,
 		CourseModule,
-		CourseSynchronizationHistoryService,
+		CourseSynchronizationHistoryModule,
 	],
 	providers: [SchulconnexGroupRemovalConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })
