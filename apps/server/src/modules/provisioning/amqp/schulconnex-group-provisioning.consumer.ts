@@ -48,6 +48,10 @@ export class SchulconnexGroupProvisioningConsumer {
 			await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(provisionedGroup, existingGroup ?? undefined);
 		}
 
+		if (!existingGroup && provisionedGroup) {
+			await this.schulconnexCourseSyncService.synchronizeCourseFromHistory(provisionedGroup);
+		}
+
 		if (provisionedGroup) {
 			this.logger.info(
 				new GroupProvisioningSuccessfulLoggable(provisionedGroup.id, payload.externalGroup.externalId, payload.systemId)

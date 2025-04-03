@@ -422,6 +422,14 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					existingGroup
 				);
 			});
+
+			it('should not synchronize the courses from any existing course sync histories', async () => {
+				const { oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(schulconnexCourseSyncService.synchronizeCourseFromHistory).not.toHaveBeenCalled();
+			});
 		});
 
 		describe('when a new group is provisioned', () => {
@@ -464,6 +472,14 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 				await strategy.apply(oauthData);
 
 				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup, undefined);
+			});
+
+			it('should synchronize the courses from any existing course sync histories', async () => {
+				const { oauthData, updatedGroup } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(schulconnexCourseSyncService.synchronizeCourseFromHistory).toHaveBeenCalledWith(updatedGroup);
 			});
 		});
 

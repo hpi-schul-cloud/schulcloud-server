@@ -1,3 +1,4 @@
+export * from './entity';
 export {
 	COURSE_SYNCHRONIZATION_HISTORY_REPO,
 	CourseSynchronizationHistoryRepo,

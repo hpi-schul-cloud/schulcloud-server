@@ -8,9 +8,19 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { SchulconnexGroupRemovalConsumer } from './amqp';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
+import { CourseSynchronizationHistoryService } from '@modules/course-synchronization-history';
 
 @Module({
-	imports: [LoggerModule, LegacySchoolModule, UserModule, RoleModule, SystemModule, GroupModule, CourseModule],
+	imports: [
+		LoggerModule,
+		LegacySchoolModule,
+		UserModule,
+		RoleModule,
+		SystemModule,
+		GroupModule,
+		CourseModule,
+		CourseSynchronizationHistoryService,
+	],
 	providers: [SchulconnexGroupRemovalConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })
 export class SchulconnexGroupRemovalConsumerModule {}
