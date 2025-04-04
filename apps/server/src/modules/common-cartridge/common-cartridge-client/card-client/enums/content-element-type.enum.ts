@@ -8,4 +8,5 @@ export enum ContentElementType {
 	COLLABORATIVE_TEXT_EDITOR = 'collaborativeTextEditor',
 	DELETED = 'deleted',
 	VIDEO_CONFERENCE = 'videoConference',
+	FILE_FOLDER = 'fileFolder',
 }

@@ -7,6 +7,7 @@ import {
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
@@ -24,7 +25,8 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	SubmissionContainerElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
-	VideoConferenceElementResponse
+	VideoConferenceElementResponse,
+	FileFolderElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -61,6 +63,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(FileFolderElementResponse) },
 			],
 		},
 	})

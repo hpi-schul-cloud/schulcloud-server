@@ -28,6 +28,7 @@ export const ContentElementType = {
 	COLLABORATIVE_TEXT_EDITOR: 'collaborativeTextEditor',
 	DELETED: 'deleted',
 	VIDEO_CONFERENCE: 'videoConference',
+	FILE_FOLDER: 'fileFolder',
 } as const;
 
 export type ContentElementType = typeof ContentElementType[keyof typeof ContentElementType];

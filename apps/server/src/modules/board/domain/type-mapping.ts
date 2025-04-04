@@ -7,6 +7,7 @@ import { DeletedElement } from './deleted-element.do';
 import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
+import { FileFolderElement } from './file-folder-element.do';
 import { LinkElement } from './link-element.do';
 import { MediaBoard, MediaExternalToolElement, MediaLine } from './media-board';
 import { RichTextElement } from './rich-text-element.do';
@@ -25,6 +26,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.DRAWING_ELEMENT]: DrawingElement,
 	[BoardNodeType.EXTERNAL_TOOL]: ExternalToolElement,
 	[BoardNodeType.FILE_ELEMENT]: FileElement,
+	[BoardNodeType.FILE_FOLDER_ELEMENT]: FileFolderElement,
 	[BoardNodeType.LINK_ELEMENT]: LinkElement,
 	[BoardNodeType.MEDIA_BOARD]: MediaBoard,
 	[BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT]: MediaExternalToolElement,

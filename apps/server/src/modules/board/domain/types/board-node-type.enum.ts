@@ -3,6 +3,7 @@ export enum BoardNodeType {
 	COLUMN = 'column',
 	CARD = 'card',
 	FILE_ELEMENT = 'file-element',
+	FILE_FOLDER_ELEMENT = 'file-folder-element',
 	LINK_ELEMENT = 'link-element',
 	RICH_TEXT_ELEMENT = 'rich-text-element',
 	DRAWING_ELEMENT = 'drawing-element',
