@@ -907,7 +907,7 @@ describe(CourseSyncService.name, () => {
 				});
 			});
 
-			describe('when the teachers are not synced from group', () => {
+			describe('when the teachers are not part of the group', () => {
 				const setup = () => {
 					const studentUserId = new ObjectId().toHexString();
 					const teacherUserId = new ObjectId().toHexString();
@@ -983,7 +983,7 @@ describe(CourseSyncService.name, () => {
 				});
 			});
 
-			describe('when the teachers are not synced from group and are excluded from the sync (partial sync)', () => {
+			describe('when the teachers are not part of the group and are excluded from the sync (partial sync)', () => {
 				const setup = () => {
 					const substituteTeacherId = new ObjectId().toHexString();
 					const studentUserId = new ObjectId().toHexString();

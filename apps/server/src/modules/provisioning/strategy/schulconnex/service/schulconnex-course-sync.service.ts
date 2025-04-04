@@ -58,6 +58,7 @@ export class SchulconnexCourseSyncService {
 					externalGroupId,
 					expiresAt,
 					synchronizedCourse: course.id,
+					excludeFromSync: course.excludeFromSync,
 				})
 			);
 

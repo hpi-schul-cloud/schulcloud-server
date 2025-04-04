@@ -240,6 +240,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 						externalGroupId: group.externalSource?.externalId as string,
 						synchronizedCourse: course?.id as string,
 						expiresAt: new Date(mockDate.getTime() + mockExpirationSeconds * 1000),
+						excludeFromSync: course?.excludeFromSync,
 					});
 				});
 			});
