@@ -457,7 +457,7 @@ describe('NewsRepo', () => {
 			});
 
 			it('should actually remove the user reference from the news', async () => {
-				const { user2, news2, news3 } = await setup();
+				const { user2, news2 } = await setup();
 
 				await repo.removeUserReference(user2.id);
 
