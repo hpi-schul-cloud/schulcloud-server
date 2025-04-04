@@ -6,29 +6,27 @@ import type { BaseResponseMapper } from './base-mapper.interface';
 export class FileFolderElementResponseMapper implements BaseResponseMapper {
 	private static instance: FileFolderElementResponseMapper;
 
-	private constructor() {}
-
-	static getInstance(): FileFolderElementResponseMapper {
+	public static getInstance(): FileFolderElementResponseMapper {
 		if (!FileFolderElementResponseMapper.instance) {
 			FileFolderElementResponseMapper.instance = new FileFolderElementResponseMapper();
 		}
 		return FileFolderElementResponseMapper.instance;
 	}
 
-	canMap(element: unknown): element is FileFolderElement {
+	public canMap(element: unknown): element is FileFolderElement {
 		return element instanceof FileFolderElement;
 	}
 
-	mapToResponse(element: FileFolderElement): FileFolderElementResponse {
-		const content = new FileFolderElementContent({
-			title: element.title,
-		});
-
-		return new FileFolderElementResponse({
+	public mapToResponse(element: FileFolderElement): FileFolderElementResponse {
+		const result = new FileFolderElementResponse({
 			id: element.id,
 			type: ContentElementType.FILE_FOLDER,
-			content,
+			content: new FileFolderElementContent({
+				title: element.title,
+			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 		});
+
+		return result;
 	}
 }
