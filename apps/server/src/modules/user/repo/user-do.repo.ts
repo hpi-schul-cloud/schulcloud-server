@@ -173,6 +173,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 			lastSyncedAt: entity.lastSyncedAt,
 			consent: entity.consent ? this.mapConsentEntityToDo(entity.consent) : undefined,
+			source: entity.source,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -223,6 +224,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 				: undefined,
 			lastSyncedAt: entityDO.lastSyncedAt,
 			consent: entityDO.consent ? this.mapConsentToEntity(entityDO.consent) : undefined,
+			source: entityDO.source,
 		};
 	}
 
