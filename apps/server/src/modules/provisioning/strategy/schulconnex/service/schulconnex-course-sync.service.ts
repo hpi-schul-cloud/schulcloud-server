@@ -29,22 +29,28 @@ export class SchulconnexCourseSyncService {
 			return;
 		}
 
-		const histories: CourseSynchronizationHistory[] =
+		const syncHistories: CourseSynchronizationHistory[] =
 			await this.courseSynchronizationHistoryService.findByExternalGroupId(externalGroupId);
-		if (!histories.length) {
+		if (!syncHistories.length) {
 			return;
 		}
 
 		const courses: Course[] = await Promise.all(
-			histories.map((history: CourseSynchronizationHistory) => this.courseService.findById(history.synchronizedCourse))
+			syncHistories.map(async (history: CourseSynchronizationHistory): Promise<Course> => {
+				const courseFromHistory = await this.courseService.findById(history.synchronizedCourse);
+				courseFromHistory.excludeFromSync = history.excludeFromSync;
+
+				return courseFromHistory;
+			})
 		);
 
 		const coursesWithoutSync: Course[] = courses.filter((course: Course) => !course.syncedWithGroup);
+
 		if (coursesWithoutSync.length) {
 			await this.courseSyncService.synchronize(coursesWithoutSync, group);
 		}
 
-		await this.courseSynchronizationHistoryService.delete(histories);
+		await this.courseSynchronizationHistoryService.delete(syncHistories);
 	}
 
 	public async desyncCoursesAndCreateHistories(group: Group, courses: Course[]): Promise<void> {

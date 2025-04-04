@@ -11,6 +11,7 @@ export class CourseSynchronizationHistoryMapper {
 			externalGroupId: entity.externalGroupId,
 			synchronizedCourse: entity.synchronizedCourse.id,
 			expiresAt: entity.expiresAt,
+			excludeFromSync: entity.excludeFromSync,
 		});
 
 		return domainObject;
@@ -24,6 +25,7 @@ export class CourseSynchronizationHistoryMapper {
 			externalGroupId: domainObject.externalGroupId,
 			synchronizedCourse: em.getReference(CourseEntity, domainObject.synchronizedCourse),
 			expiresAt: domainObject.expiresAt,
+			excludeFromSync: domainObject.excludeFromSync,
 		};
 
 		return props;

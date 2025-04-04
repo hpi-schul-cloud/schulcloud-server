@@ -11,6 +11,7 @@ export const courseSynchronizationHistoryFactory = DomainObjectFactory.define<
 		externalGroupId: `external-group-id-${sequence}`,
 		synchronizedCourse: new ObjectId().toHexString(),
 		expiresAt: new Date(Date.now() + 3 * 60 * 60 * 1000),
+		excludeFromSync: [],
 	};
 
 	return history;

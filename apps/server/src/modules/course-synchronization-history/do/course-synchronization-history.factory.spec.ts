@@ -15,6 +15,7 @@ describe(CourseSynchronizationHistoryFactory.name, () => {
 				externalGroupId: 'test-external-group-id',
 				synchronizedCourse: new ObjectId().toHexString(),
 				expiresAt: new Date(),
+				excludeFromSync: [],
 			};
 
 			const history = CourseSynchronizationHistoryFactory.build(params);

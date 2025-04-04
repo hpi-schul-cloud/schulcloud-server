@@ -21,12 +21,13 @@ export const courseSynchronizationHistoryEntityFactory = BaseFactory.define<
 	});
 
 	const entity: CourseSynchronizationHistoryEntityProps = {
+		externalGroupId,
 		id: new ObjectId().toHexString(),
 		synchronizedCourse: courseEntityFactory.buildWithId({
 			syncedWithGroup: group,
 		}),
 		expiresAt: new Date(Date.now() + 5 * 60 * 60 * 1000),
-		externalGroupId,
+		excludeFromSync: [],
 	};
 
 	return entity;

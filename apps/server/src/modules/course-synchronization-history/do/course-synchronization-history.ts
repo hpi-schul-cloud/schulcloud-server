@@ -1,3 +1,4 @@
+import { SyncAttribute } from '@modules/course';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
@@ -7,6 +8,8 @@ export interface CourseSynchronizationHistoryProps extends AuthorizableObject {
 	synchronizedCourse: EntityId;
 
 	expiresAt: Date;
+
+	excludeFromSync?: SyncAttribute[];
 }
 
 export class CourseSynchronizationHistory extends DomainObject<CourseSynchronizationHistoryProps> {
@@ -20,5 +23,9 @@ export class CourseSynchronizationHistory extends DomainObject<CourseSynchroniza
 
 	get expiresAt(): Date {
 		return this.props.expiresAt;
+	}
+
+	get excludeFromSync(): SyncAttribute[] | undefined {
+		return this.props.excludeFromSync;
 	}
 }

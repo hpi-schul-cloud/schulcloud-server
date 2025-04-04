@@ -51,6 +51,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 						externalGroupId: entity.externalGroupId,
 						synchronizedCourse: entity.synchronizedCourse.id,
 						expiresAt: entity.expiresAt,
+						excludeFromSync: entity.excludeFromSync,
 					})
 				);
 
@@ -151,6 +152,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 						externalGroupId: entity.externalGroupId,
 						synchronizedCourse: entity.synchronizedCourse.id,
 						expiresAt: entity.expiresAt,
+						excludeFromSync: entity.excludeFromSync,
 					})
 				);
 
@@ -185,6 +187,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 					externalGroupId: syncHistoryEntity.externalGroupId,
 					synchronizedCourse: syncHistoryEntity.synchronizedCourse.id,
 					expiresAt: syncHistoryEntity.expiresAt,
+					excludeFromSync: syncHistoryEntity.excludeFromSync,
 				});
 
 				return { syncHistoryDO };
