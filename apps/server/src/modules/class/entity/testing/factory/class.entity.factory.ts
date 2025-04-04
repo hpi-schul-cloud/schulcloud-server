@@ -21,7 +21,7 @@ export const classEntityFactory = ClassEntityFactory.define(ClassEntity, ({ sequ
 		teacherIds: [new ObjectId(), new ObjectId()],
 		invitationLink: `link-${sequence}`,
 		year: new ObjectId(),
-		gradeLevel: sequence,
+		gradeLevel: 3,
 		ldapDN: `dn-${sequence}`,
 		successor: new ObjectId(),
 		source: `source-${sequence}`,

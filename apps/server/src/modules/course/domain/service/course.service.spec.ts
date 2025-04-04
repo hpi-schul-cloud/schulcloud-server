@@ -117,7 +117,7 @@ describe('CourseService', () => {
 		});
 	});
 
-	describe('when deleting by userId', () => {
+	describe('deleteUserData', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const course1 = courseEntityFactory.buildWithId({ students: [user] });
@@ -143,7 +143,13 @@ describe('CourseService', () => {
 			expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
 		});
 
-		it('should update courses without deleted user', async () => {
+		it('should call repo.removeUserReference', async () => {
+			const { user } = setup();
+			await courseService.deleteUserData(user.id);
+			expect(courseRepo.removeUserReference).toBeCalledWith(user.id);
+		});
+
+		it('should return DomainDeletionReport', async () => {
 			const { expectedResult, user } = setup();
 			const result = await courseService.deleteUserData(user.id);
 			expect(result).toEqual(expectedResult);

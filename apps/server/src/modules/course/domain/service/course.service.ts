@@ -61,11 +61,9 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 				StatusModel.PENDING
 			)
 		);
-		const [courses, count] = await this.repo.findAllByUserId(userId);
+		const [courses] = await this.repo.findAllByUserId(userId);
 
-		courses.forEach((course: CourseEntity) => course.removeUser(userId));
-
-		await this.repo.save(courses);
+		const count = await this.repo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.COURSE, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCoursesId(courses)),

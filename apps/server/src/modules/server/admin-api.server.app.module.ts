@@ -19,6 +19,8 @@ import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
+import { TeamApiModule } from '../team/team-api.module';
+import { LearnroomApiModule } from '../learnroom/learnroom-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(adminApiServerConfig)),
@@ -33,6 +35,8 @@ const serverModules = [
 		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
 	}),
 	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
+	TeamApiModule,
+	LearnroomApiModule,
 ];
 
 @Module({

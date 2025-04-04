@@ -156,7 +156,7 @@ describe(ClassService.name, () => {
 		});
 	});
 
-	describe('deleteUserDataFromClasses', () => {
+	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
 				const userId = undefined as unknown as EntityId;
@@ -191,21 +191,28 @@ describe(ClassService.name, () => {
 
 				return {
 					expectedResult,
-					userId1,
+					userId1: userId1.toHexString(),
 				};
 			};
 
 			it('should call classesRepo.findAllByUserId', async () => {
 				const { userId1 } = setup();
-				await service.deleteUserData(userId1.toHexString());
+				await service.deleteUserData(userId1);
 
-				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1.toHexString());
+				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1);
 			});
 
-			it('should update classes without updated user', async () => {
+			it('should call classesRepo.deleteUser', async () => {
+				const { userId1 } = setup();
+				await service.deleteUserData(userId1);
+
+				expect(classesRepo.removeUserReference).toBeCalledWith(userId1);
+			});
+
+			it('should return DomainDeletionReport', async () => {
 				const { expectedResult, userId1 } = setup();
 
-				const result = await service.deleteUserData(userId1.toHexString());
+				const result = await service.deleteUserData(userId1);
 
 				expect(result).toEqual(expectedResult);
 			});
