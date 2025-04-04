@@ -298,4 +298,11 @@ export class User extends BaseEntityWithTimestamps {
 
 		return userInfo;
 	}
+
+	// TODO: Show case
+	public getSchoolId(): EntityId {
+		const schoolId = this.school.id.toString();
+
+		return schoolId;
+	}
 }

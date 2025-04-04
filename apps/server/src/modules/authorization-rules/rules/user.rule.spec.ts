@@ -32,8 +32,8 @@ describe('UserRule', () => {
 	});
 
 	beforeEach(() => {
-		role = roleFactory.build({ permissions: [permissionA, permissionB] });
-		user = userFactory.build({ roles: [role] });
+		role = roleFactory.buildWithId({ permissions: [permissionA, permissionB] });
+		user = userFactory.buildWithId({ roles: [role] });
 	});
 
 	describe('constructor', () => {
@@ -43,37 +43,37 @@ describe('UserRule', () => {
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
-		entity = userFactory.build();
-		user = userFactory.build({ roles: [role], school: entity });
+		entity = userFactory.buildWithId();
+		user = userFactory.buildWithId({ roles: [role], school: entity });
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	it('should return "true" if user in scope', () => {
-		user = userFactory.build({ roles: [role], school: entity });
+		user = userFactory.buildWithId({ roles: [role], school: entity });
 		entity = user;
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "true" if user in scope but has not permission', () => {
-		user = userFactory.build({ roles: [role], school: entity });
+		user = userFactory.buildWithId({ roles: [role], school: entity });
 		entity = user;
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "true" if user has permission but not owner', () => {
-		user = userFactory.build({ roles: [role], school: entity });
-		entity = userFactory.build();
+		user = userFactory.buildWithId({ roles: [role], school: entity });
+		entity = userFactory.buildWithId();
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 		expect(res).toBe(true);
 	});
 
 	it('should return "false" if user has not permission', () => {
-		entity = userFactory.build();
-		user = userFactory.build({ roles: [role], school: entity });
+		entity = userFactory.buildWithId();
+		user = userFactory.buildWithId({ roles: [role], school: entity });
 		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
 		expect(res).toBe(false);
 	});

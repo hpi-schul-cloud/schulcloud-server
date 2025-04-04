@@ -1,12 +1,5 @@
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@modules/authorization';
+import { AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { Instance } from '@modules/instance';
-import { RoleName } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 
@@ -20,21 +13,18 @@ export class InstanceRule implements Rule<Instance> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof Instance;
+		const isApplicable = object instanceof Instance;
 
-		return isMatched;
+		return isApplicable;
 	}
 
-	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	public hasPermission(): boolean {
+		/**
+		 * Currently we have no user relations for instance,
+		 * to figure out write and read permissions.
+		 */
+		const isNotImplemented = false;
 
-		// As temporary solution until the user with write access to instance added as group, we must check the role.
-		if (context.action === Action.write) {
-			const hasRole = this.authorizationHelper.hasRole(user, RoleName.SUPERHERO);
-
-			return hasPermission && hasRole;
-		}
-
-		return hasPermission;
+		return isNotImplemented;
 	}
 }

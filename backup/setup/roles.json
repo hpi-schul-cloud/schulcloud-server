@@ -205,7 +205,8 @@
 			"USER_LOGIN_MIGRATION_FORCE",
 			"USER_LOGIN_MIGRATION_ROLLBACK",
 			"INSTANCE_VIEW",
-			"SCHOOL_EDIT_ALL",
+			"INSTANCE_EDIT",
+			"CAN_EXECUTE_INSTANCE_OPERATIONS",
 			"MEDIA_SOURCE_ADMIN"
 		],
 		"__v": 2
@@ -216,7 +217,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2024-11-12T16:35:53.763Z"
+			"$date": "2025-03-18T12:57:44.793Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -608,6 +609,20 @@
 	},
 	{
 		"_id": {
+			"$oid": "67404edd76a89449722a7fb1"
+		},
+		"name": "groupSubstitutionTeacher",
+		"permissions": [],
+		"createdAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"updatedAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
 			"$oid": "674444262ba8186272dc8abb"
 		},
 		"name": "guestStudent",
@@ -650,19 +665,5 @@
 			"ROOM_LEAVE",
 			"ROOM_CONTENT_EDIT"
 		]
-	},
-	{
-		"_id": {
-			"$oid": "67404edd76a89449722a7fb1"
-		},
-		"name": "groupSubstitutionTeacher",
-		"permissions": [],
-		"createdAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"updatedAt": {
-			"$date": "2024-11-22T09:29:01.346Z"
-		},
-		"__v": 0
 	}
 ]
