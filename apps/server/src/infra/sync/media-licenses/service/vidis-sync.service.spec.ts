@@ -1,16 +1,16 @@
+import { Logger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
 import { OfferDTO } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSource } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
+import { School, SchoolService } from '@modules/school';
 import { MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
 import { MediaSchoolLicenseProps } from '@modules/school-license/domain';
-import { School, SchoolService } from '@modules/school';
+import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { schoolFactory } from '@modules/school/testing';
-import { Logger } from '@core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeepPartial } from 'fishery';
 import { VidisSyncService } from './vidis-sync.service';
 
@@ -199,11 +199,15 @@ describe(VidisSyncService.name, () => {
 
 			describe('when the school activations have the vidis-specific prefix', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.build();
-					const schoolActivations = ['DE-NI-00100', 'DE-NI-00200', 'DE-NI-00300'];
+					const mediaSource = mediaSourceFactory
+						.withVidis({
+							schoolNumberPrefix: 'DE-NI-',
+						})
+						.build();
+					const schoolActivations = ['DE-NI-00100', 'DE-NI-00200', 'OTHER-00300'];
 					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations });
 
-					const expectedSchoolNumbers = ['00100', '00200', '00300'];
+					const expectedSchoolNumbers = ['00100', '00200', 'OTHER-00300'];
 					const schools: School[] = expectedSchoolNumbers.map((officialSchoolNumber: string) =>
 						schoolFactory.build({ officialSchoolNumber })
 					);

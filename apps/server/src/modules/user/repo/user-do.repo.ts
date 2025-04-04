@@ -7,16 +7,16 @@ import { Page, RoleReference } from '@shared/domain/domainobject';
 import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from '@shared/domain/interface';
 import type { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
-import type { Scope } from '@shared/repo/scope';
-import {
-	MultipleUsersFoundLoggableException,
-	SecondarySchoolReference,
-	UserDo,
-	type UserDoRepo,
-	type UserQuery,
-	UserSourceOptions,
-} from '../domain';
+import { Scope } from '@shared/repo/scope';
+import { ObjectId } from 'bson';
+import { Consent, MultipleUsersFoundLoggableException, ParentConsent, UserConsent, type UserDoRepo } from '../domain';
+import { UserSourceOptions } from '../domain/do/user-source-options';
+import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
+import { UserQuery } from '../domain/query/user-query';
+import { ConsentEntity } from './consent.entity';
+import { ParentConsentEntity } from './parent-consent.entity';
 import { UserScope } from './scope/user.scope';
+import { UserConsentEntity } from './user-consent.entity';
 import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
 
@@ -172,6 +172,8 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			birthday: entity.birthday,
 			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 			lastSyncedAt: entity.lastSyncedAt,
+			consent: entity.consent ? this.mapConsentEntityToDo(entity.consent) : undefined,
+			source: entity.source,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -221,6 +223,8 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
 				: undefined,
 			lastSyncedAt: entityDO.lastSyncedAt,
+			consent: entityDO.consent ? this.mapConsentToEntity(entityDO.consent) : undefined,
+			source: entityDO.source,
 		};
 	}
 
@@ -238,6 +242,84 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		const userDOs = users.map((user) => this.mapEntityToDO(user));
 
 		return userDOs;
+	}
+
+	private mapConsentEntityToDo(consentEntity: ConsentEntity): Consent {
+		const consent = new Consent({
+			userConsent: consentEntity.userConsent ? this.mapUserConsentEntityToDo(consentEntity.userConsent) : undefined,
+			parentConsents:
+				consentEntity.parentConsents !== undefined
+					? this.mapParentConsentEntitiesToDo(consentEntity.parentConsents)
+					: undefined,
+		});
+
+		return consent;
+	}
+
+	private mapUserConsentEntityToDo(userConsentEntity: UserConsentEntity): UserConsent {
+		const userConsent = new UserConsent({
+			form: userConsentEntity.form,
+			dateOfPrivacyConsent: userConsentEntity.dateOfPrivacyConsent,
+			dateOfTermsOfUseConsent: userConsentEntity.dateOfTermsOfUseConsent,
+			privacyConsent: userConsentEntity.privacyConsent,
+			termsOfUseConsent: userConsentEntity.termsOfUseConsent,
+		});
+
+		return userConsent;
+	}
+
+	private mapParentConsentEntitiesToDo(parentConsentEntities: ParentConsentEntity[]): ParentConsent[] {
+		const parentConsents = parentConsentEntities.map(
+			(parentConsent) =>
+				new ParentConsent({
+					id: parentConsent._id.toHexString(),
+					form: parentConsent.form,
+					dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
+					dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
+					privacyConsent: parentConsent.privacyConsent,
+					termsOfUseConsent: parentConsent.termsOfUseConsent,
+				})
+		);
+
+		return parentConsents;
+	}
+
+	private mapConsentToEntity(consent: Consent): ConsentEntity {
+		const consentEntity = new ConsentEntity({
+			userConsent: consent.userConsent ? this.mapUserConsentToEntity(consent.userConsent) : undefined,
+			parentConsents:
+				consent.parentConsents !== undefined ? this.mapParentConsentsToEntity(consent.parentConsents) : undefined,
+		});
+
+		return consentEntity;
+	}
+
+	private mapParentConsentsToEntity(parentConsents: ParentConsent[]): ParentConsentEntity[] {
+		const parentConsentEntities = parentConsents.map(
+			(parentConsent) =>
+				new ParentConsentEntity({
+					_id: new ObjectId(parentConsent.id),
+					form: parentConsent.form,
+					dateOfPrivacyConsent: parentConsent.dateOfPrivacyConsent,
+					dateOfTermsOfUseConsent: parentConsent.dateOfTermsOfUseConsent,
+					privacyConsent: parentConsent.privacyConsent,
+					termsOfUseConsent: parentConsent.termsOfUseConsent,
+				})
+		);
+
+		return parentConsentEntities;
+	}
+
+	private mapUserConsentToEntity(userConsent: UserConsent): UserConsentEntity {
+		const userConsentEntity = new UserConsentEntity({
+			form: userConsent.form,
+			dateOfPrivacyConsent: userConsent.dateOfPrivacyConsent,
+			dateOfTermsOfUseConsent: userConsent.dateOfTermsOfUseConsent,
+			privacyConsent: userConsent.privacyConsent,
+			termsOfUseConsent: userConsent.termsOfUseConsent,
+		});
+
+		return userConsentEntity;
 	}
 
 	private createQueryOrderMap(sort: SortOrderMap<User>): QueryOrderMap<User> {
