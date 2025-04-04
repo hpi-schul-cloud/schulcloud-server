@@ -2,7 +2,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-
 import { FileRecord } from '../entity';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { fileRecordFactory } from '../testing';
@@ -172,6 +171,62 @@ describe('FileRecordRepo', () => {
 			expect(results.map((o) => o.id).sort(sortFunction)).toEqual(
 				[fileRecords1[0].id, fileRecords1[1].id, fileRecords1[2].id].sort(sortFunction)
 			);
+		});
+	});
+
+	describe('markForDeleteByStorageLocation', () => {
+		describe('when there are many data records with different storageLocationId', () => {
+			const setup = async () => {
+				const storageLocationId1 = new ObjectId().toHexString();
+				const fileRecords1 = fileRecordFactory.buildList(3, {
+					storageLocationId: storageLocationId1,
+				});
+
+				const storageLocationId2 = new ObjectId().toHexString();
+				const fileRecords2 = fileRecordFactory.buildList(3, {
+					storageLocationId: storageLocationId2,
+				});
+
+				const markedForDeleteFileRecords = fileRecordFactory.markedForDelete().buildList(3, {
+					storageLocationId: storageLocationId1,
+				});
+
+				await em.persistAndFlush([...fileRecords1, ...fileRecords2, ...markedForDeleteFileRecords]);
+				em.clear();
+
+				return { fileRecords1, fileRecords2, storageLocationId1 };
+			};
+
+			it('should only find searched fileRecords', async () => {
+				const { storageLocationId1 } = await setup();
+
+				const result = await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+
+				expect(result).toEqual(3);
+			});
+
+			it('should set deletedSince in database', async () => {
+				const { storageLocationId1 } = await setup();
+
+				await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+
+				const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
+
+				fileRecords.forEach((fileRecord) => {
+					expect(fileRecord).toMatchObject({
+						deletedSince: expect.any(Date),
+					});
+				});
+			});
+
+			it('should return zero after two calls', async () => {
+				const { storageLocationId1 } = await setup();
+
+				await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+				const result = await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
+
+				expect(result).toEqual(0);
+			});
 		});
 	});
 
