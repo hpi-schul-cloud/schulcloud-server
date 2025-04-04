@@ -40,6 +40,7 @@ import {
 	FileRecordListResponse,
 	FileRecordParams,
 	FileRecordResponse,
+	FilesStorageStatsResponse,
 	FileUrlParams,
 	PreviewParams,
 	RenameFileParams,
@@ -319,5 +320,15 @@ export class FilesStorageController {
 		const response = await this.filesStorageUC.copyOneFile(currentUser.userId, params, copyFileParam);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Get file statistics for a parent element' })
+	@ApiResponse({ status: 200, type: FilesStorageStatsResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@Get('/stats/:storageLocation/:storageLocationId/:parentType/:parentId')
+	public async getStats(@Param() params: FileRecordParams): Promise<FilesStorageStatsResponse> {
+		const stats = await this.filesStorageUC.getFileStats(params);
+		return new FilesStorageStatsResponse(stats.totalSize, stats.totalCount);
 	}
 }

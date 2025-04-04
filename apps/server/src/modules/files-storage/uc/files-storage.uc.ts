@@ -314,4 +314,13 @@ export class FilesStorageUC {
 
 		return countedFileRecords;
 	}
+
+	public async getFileStats(params: FileRecordParams): Promise<{ totalSize: number; totalCount: number }> {
+		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.read);
+		const [fileRecords, count] = await this.filesStorageService.getFileRecordsOfParent(params.parentId);
+
+		const totalSize = fileRecords.reduce((sum, file) => sum + file.size, 0);
+
+		return { totalSize, totalCount: count };
+	}
 }
