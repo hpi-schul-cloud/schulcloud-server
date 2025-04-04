@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseDoService, CourseSyncService, SyncAttribute } from '@modules/course';
+import { Course, CourseDoService, CourseSyncService } from '@modules/course';
 import { CourseProps } from '@modules/course/domain';
 import { courseFactory } from '@modules/course/testing';
 import {
@@ -103,15 +103,15 @@ describe(SchulconnexCourseSyncService.name, () => {
 		});
 	});
 
-	describe('synchronizeCourseFromHistory', () => {
+	describe('synchronizeCoursesFromHistory', () => {
 		describe('when the group has no external source', () => {
 			it('should not do any synchronization', async () => {
 				const group = groupFactory.build({ externalSource: undefined });
 
-				await service.synchronizeCourseFromHistory(group);
+				await service.synchronizeCoursesFromHistory(group);
 
 				expect(courseSyncHistoryService.findByExternalGroupId).not.toBeCalled();
-				expect(courseSyncService.synchronize).not.toBeCalled();
+				expect(courseSyncService.synchronizeCoursesFromHistory).not.toBeCalled();
 				expect(courseSyncHistoryService.delete).not.toBeCalled();
 			});
 		});
@@ -121,157 +121,48 @@ describe(SchulconnexCourseSyncService.name, () => {
 				const group = groupFactory.build();
 				courseSyncHistoryService.findByExternalGroupId.mockResolvedValueOnce([]);
 
-				await service.synchronizeCourseFromHistory(group);
+				await service.synchronizeCoursesFromHistory(group);
 
-				expect(courseSyncService.synchronize).not.toBeCalled();
+				expect(courseSyncService.synchronizeCoursesFromHistory).not.toBeCalled();
 				expect(courseSyncHistoryService.delete).not.toBeCalled();
 			});
 		});
 
 		describe('when there are sync histories for the courses', () => {
-			describe('when the courses are not synced with another group', () => {
-				const setup = () => {
-					const externalGroupId = 'external-group-id';
+			const setup = () => {
+				const externalGroupId = 'external-group-id';
 
-					const group = groupFactory.build({
-						externalSource: new ExternalSource({
-							externalId: externalGroupId,
-							systemId: new ObjectId().toHexString(),
-							lastSyncedAt: new Date(),
-						}),
-					});
-
-					const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(3, {
-						externalGroupId,
-					});
-
-					const courses = courseSyncHistories.map((history: CourseSynchronizationHistory) => {
-						const course = courseFactory.build({
-							id: history.synchronizedCourse,
-							syncedWithGroup: undefined,
-							excludeFromSync: history.excludeFromSync,
-						});
-						courseService.findById.mockResolvedValueOnce(course);
-						return course;
-					});
-
-					courseSyncHistoryService.findByExternalGroupId.mockResolvedValueOnce(courseSyncHistories);
-
-					return { group, courses, courseSyncHistories };
-				};
-
-				it('should sync the courses with the group', async () => {
-					const { group, courses } = setup();
-
-					await service.synchronizeCourseFromHistory(group);
-
-					expect(courseSyncService.synchronize).toBeCalledWith(courses, group);
+				const group = groupFactory.build({
+					externalSource: new ExternalSource({
+						externalId: externalGroupId,
+						systemId: new ObjectId().toHexString(),
+						lastSyncedAt: new Date(),
+					}),
 				});
 
-				it('should remove the course sync histories of the courses', async () => {
-					const { group, courseSyncHistories } = setup();
-
-					await service.synchronizeCourseFromHistory(group);
-
-					expect(courseSyncHistoryService.delete).toBeCalledWith(courseSyncHistories);
+				const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(3, {
+					externalGroupId,
 				});
+
+				courseSyncHistoryService.findByExternalGroupId.mockResolvedValueOnce(courseSyncHistories);
+
+				return { group, courseSyncHistories };
+			};
+
+			it('should sync the courses from the histories', async () => {
+				const { group, courseSyncHistories } = setup();
+
+				await service.synchronizeCoursesFromHistory(group);
+
+				expect(courseSyncService.synchronizeCoursesFromHistory).toBeCalledWith(group, courseSyncHistories);
 			});
 
-			describe('when the courses are already synced with another group', () => {
-				const setup = () => {
-					const externalGroupId = 'external-group-id';
+			it('should remove the course sync histories of the courses', async () => {
+				const { group, courseSyncHistories } = setup();
 
-					const group = groupFactory.build({
-						externalSource: new ExternalSource({
-							externalId: externalGroupId,
-							systemId: new ObjectId().toHexString(),
-							lastSyncedAt: new Date(),
-						}),
-					});
+				await service.synchronizeCoursesFromHistory(group);
 
-					const otherGroup = groupFactory.build();
-
-					const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(3, {
-						externalGroupId,
-					});
-
-					courseSyncHistories.forEach((history: CourseSynchronizationHistory) => {
-						const course = courseFactory.build({
-							id: history.synchronizedCourse,
-							syncedWithGroup: otherGroup.id,
-							excludeFromSync: history.excludeFromSync,
-						});
-						courseService.findById.mockResolvedValueOnce(course);
-					});
-
-					courseSyncHistoryService.findByExternalGroupId.mockResolvedValueOnce(courseSyncHistories);
-
-					return { group, courseSyncHistories };
-				};
-
-				it('should not overwrite the existing course syncs', async () => {
-					const { group } = setup();
-
-					await service.synchronizeCourseFromHistory(group);
-
-					expect(courseSyncService.synchronize).not.toBeCalled();
-				});
-
-				it('should remove the course sync histories of the courses', async () => {
-					const { group, courseSyncHistories } = setup();
-
-					await service.synchronizeCourseFromHistory(group);
-
-					expect(courseSyncHistoryService.delete).toBeCalledWith(courseSyncHistories);
-				});
-			});
-
-			describe('when the course sync histories and courses do not have the same value for excludeFromSync ', () => {
-				const setup = () => {
-					const externalGroupId = 'external-group-id';
-
-					const group = groupFactory.build({
-						externalSource: new ExternalSource({
-							externalId: externalGroupId,
-							systemId: new ObjectId().toHexString(),
-							lastSyncedAt: new Date(),
-						}),
-					});
-
-					const mockExcludeFromSync: SyncAttribute[] = [SyncAttribute.TEACHERS];
-					const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(3, {
-						excludeFromSync: mockExcludeFromSync,
-					});
-
-					const courses = courseSyncHistories.map((history: CourseSynchronizationHistory) => {
-						const course = courseFactory.build({
-							id: history.synchronizedCourse,
-							syncedWithGroup: undefined,
-							excludeFromSync: undefined,
-						});
-						courseService.findById.mockResolvedValueOnce(course);
-						return course;
-					});
-
-					courseSyncHistoryService.findByExternalGroupId.mockResolvedValueOnce(courseSyncHistories);
-
-					const expectedOverwrittenCourses = courses.map((course: Course) =>
-						courseFactory.build({
-							...course.getProps(),
-							excludeFromSync: mockExcludeFromSync,
-						})
-					);
-
-					return { group, expectedOverwrittenCourses };
-				};
-
-				it('should overwrite the value of excludeFromSync of the courses with values from the histories', async () => {
-					const { group, expectedOverwrittenCourses } = setup();
-
-					await service.synchronizeCourseFromHistory(group);
-
-					expect(courseSyncService.synchronize).toBeCalledWith(expectedOverwrittenCourses, group);
-				});
+				expect(courseSyncHistoryService.delete).toBeCalledWith(courseSyncHistories);
 			});
 		});
 	});

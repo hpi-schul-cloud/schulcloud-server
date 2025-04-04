@@ -49,7 +49,7 @@ export class SchulconnexGroupProvisioningConsumer {
 		}
 
 		if (!existingGroup && provisionedGroup) {
-			await this.schulconnexCourseSyncService.synchronizeCourseFromHistory(provisionedGroup);
+			await this.schulconnexCourseSyncService.synchronizeCoursesFromHistory(provisionedGroup);
 		}
 
 		if (provisionedGroup) {

@@ -23,7 +23,7 @@ export class SchulconnexCourseSyncService {
 		await this.courseSyncService.synchronizeCourseWithGroup(newGroup, oldGroup);
 	}
 
-	public async synchronizeCourseFromHistory(group: Group): Promise<void> {
+	public async synchronizeCoursesFromHistory(group: Group): Promise<void> {
 		const externalGroupId = group.externalSource?.externalId;
 		if (!externalGroupId) {
 			return;
@@ -35,20 +35,7 @@ export class SchulconnexCourseSyncService {
 			return;
 		}
 
-		const courses: Course[] = await Promise.all(
-			syncHistories.map(async (history: CourseSynchronizationHistory): Promise<Course> => {
-				const courseFromHistory = await this.courseService.findById(history.synchronizedCourse);
-				courseFromHistory.excludeFromSync = history.excludeFromSync;
-
-				return courseFromHistory;
-			})
-		);
-
-		const coursesWithoutSync: Course[] = courses.filter((course: Course) => !course.syncedWithGroup);
-
-		if (coursesWithoutSync.length) {
-			await this.courseSyncService.synchronize(coursesWithoutSync, group);
-		}
+		await this.courseSyncService.synchronizeCoursesFromHistory(group, syncHistories);
 
 		await this.courseSynchronizationHistoryService.delete(syncHistories);
 	}

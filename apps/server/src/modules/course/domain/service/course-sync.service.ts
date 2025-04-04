@@ -1,3 +1,4 @@
+import { CourseSynchronizationHistory } from '@modules/course-synchronization-history';
 import { Group, GroupUser } from '@modules/group';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
@@ -49,7 +50,27 @@ export class CourseSyncService {
 		await this.synchronize(courses, newGroup, oldGroup);
 	}
 
-	public async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
+	public async synchronizeCoursesFromHistory(
+		group: Group,
+		courseSyncHistories: CourseSynchronizationHistory[]
+	): Promise<void> {
+		const courses: Course[] = await Promise.all(
+			courseSyncHistories.map(async (history: CourseSynchronizationHistory): Promise<Course> => {
+				const courseFromHistory = await this.courseService.findById(history.synchronizedCourse);
+				courseFromHistory.excludeFromSync = history.excludeFromSync;
+
+				return courseFromHistory;
+			})
+		);
+
+		const coursesWithoutSync: Course[] = courses.filter((course: Course) => !course.syncedWithGroup);
+
+		if (coursesWithoutSync.length) {
+			await this.synchronize(coursesWithoutSync, group);
+		}
+	}
+
+	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
 		const [studentRole, teacherRole, substituteTeacherRole] = await Promise.all([
 			this.roleService.findByName(RoleName.STUDENT),
 			this.roleService.findByName(RoleName.TEACHER),

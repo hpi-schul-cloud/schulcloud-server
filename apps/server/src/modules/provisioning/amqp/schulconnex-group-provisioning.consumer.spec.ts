@@ -130,7 +130,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 					externalGroup,
 				});
 
-				expect(schulconnexCourseSyncService.synchronizeCourseFromHistory).toHaveBeenCalledWith(provisionedGroup);
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).toHaveBeenCalledWith(provisionedGroup);
 			});
 
 			it('should log a success info', async () => {
@@ -209,7 +209,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 					externalGroup,
 				});
 
-				expect(schulconnexCourseSyncService.synchronizeCourseFromHistory).not.toHaveBeenCalled();
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
 			});
 
 			it('should log a success info', async () => {

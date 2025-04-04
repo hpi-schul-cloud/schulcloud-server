@@ -428,7 +428,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexCourseSyncService.synchronizeCourseFromHistory).not.toHaveBeenCalled();
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
 			});
 		});
 
@@ -479,7 +479,7 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexCourseSyncService.synchronizeCourseFromHistory).toHaveBeenCalledWith(updatedGroup);
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).toHaveBeenCalledWith(updatedGroup);
 			});
 		});
 
