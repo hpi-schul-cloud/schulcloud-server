@@ -18,4 +18,5 @@ models/offer-dto.ts
 models/page-activation-dto.ts
 models/page-offer-dto.ts
 models/page-school-dto.ts
+models/school-activation-dto.ts
 models/school-dto.ts

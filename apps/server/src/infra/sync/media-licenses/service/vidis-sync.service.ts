@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { OfferDTO } from '@infra/vidis-client';
+import { OfferDTO, SchoolActivationDTO } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSource } from '@modules/media-source';
 import { School, SchoolService } from '@modules/school';
@@ -27,8 +27,8 @@ export class VidisSyncService {
 
 			const mediumId: string = item.offerId.toString();
 
-			const officialSchoolNumbersFromVidis: string[] = item.schoolActivations.map((activation: string): string =>
-				this.removePrefix(schoolNumberPrefix, activation)
+			const officialSchoolNumbersFromVidis: string[] = item.schoolActivations.map(
+				(activation: SchoolActivationDTO): string => this.removePrefix(schoolNumberPrefix, activation.regionName)
 			);
 
 			await this.createLicenses(officialSchoolNumbersFromVidis, mediaSource, mediumId);
