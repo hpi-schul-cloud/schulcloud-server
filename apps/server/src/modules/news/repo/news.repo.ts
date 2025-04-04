@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
@@ -9,7 +10,7 @@ import { NewsScope } from './scope/news-scope';
 
 @Injectable()
 export class NewsRepo extends BaseRepo<News> {
-	propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
+	private readonly propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
 
 	get entityName() {
 		return News;
@@ -20,7 +21,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param targets
 	 * @param options
 	 */
-	async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions<News>): Promise<Counted<News[]>> {
+	public async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
 		scope.byPublished();
@@ -35,7 +36,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param creatorId - creatorId
 	 * @param options
 	 */
-	async findAllUnpublishedByUser(
+	public async findAllUnpublishedByUser(
 		targets: NewsTargetFilter[],
 		creatorId: EntityId,
 		options?: IFindOptions<News>
@@ -50,10 +51,32 @@ export class NewsRepo extends BaseRepo<News> {
 	}
 
 	/** resolves a news document with some elements (school, target, and updator/creator) populated already */
-	async findOneById(id: EntityId): Promise<News> {
+	public async findOneById(id: EntityId): Promise<News> {
 		const newsEntity = await this._em.findOneOrFail(News, id);
 		await this._em.populate(newsEntity, this.propertiesToPopulate as never[]);
 		return newsEntity;
+	}
+
+	public async findByCreatorOrUpdaterId(userId: EntityId): Promise<Counted<News[]>> {
+		const scope = new NewsScope('$or');
+		scope.byCreator(userId);
+		scope.byUpdater(userId);
+
+		const countedNewsList = await this.findNewsAndCount(scope.query);
+		return countedNewsList;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<[number, number]> {
+		const id = new ObjectId(userId);
+		const countCreator = await this._em.nativeUpdate(News, { creator: id }, {
+			$set: { creatorId: undefined },
+		} as Partial<News>);
+
+		const countUpdater = await this._em.nativeUpdate(News, { updater: id }, {
+			$set: { updaterId: undefined },
+		} as Partial<News>);
+
+		return [countCreator, countUpdater];
 	}
 
 	/** resolves a news documents list with some elements (school, target, and updator/creator) populated already */
@@ -73,14 +96,5 @@ export class NewsRepo extends BaseRepo<News> {
 		const courseNews = newsEntities.filter((news) => news instanceof CourseNews);
 		await this._em.populate(courseNews, [discriminatorColumn]);
 		return [newsEntities, count];
-	}
-
-	async findByCreatorOrUpdaterId(userId: EntityId): Promise<Counted<News[]>> {
-		const scope = new NewsScope('$or');
-		scope.byCreator(userId);
-		scope.byUpdater(userId);
-
-		const countedNewsList = await this.findNewsAndCount(scope.query);
-		return countedNewsList;
 	}
 }
