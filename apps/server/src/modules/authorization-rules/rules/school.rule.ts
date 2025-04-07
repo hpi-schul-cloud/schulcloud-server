@@ -62,6 +62,7 @@ export class SchoolRule implements Rule<School> {
 	}
 
 	private isUserSchool(user: User, object: School): boolean {
+		// better currentUser.isMemberOfSchool(object);
 		const isUserSchool = user.school.id === object.id;
 
 		return isUserSchool;
