@@ -10,8 +10,11 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 
+// System Nutzer CAN_EXECUTE_INSTANCE_OPERATIONS, (SCHOOL_EDIT) | UPLOAD_DATA_POLICY_DOCUMENTS
+// System Nutzer möchte seine Rolle verändern -> api -> uc -> Rule
+// kein Nutzer darf jemals seine eigene Rolle verändern?
 @Injectable()
-export class SchoolAdminRule implements Rule<School> {
+export class SchoolInstanceOperationRule implements Rule<School> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService

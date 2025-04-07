@@ -10,10 +10,10 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { setupEntities } from '@testing/database';
-import { SchoolAdminRule } from './school-admin.rule';
+import { SchoolInstanceOperationRule } from './school-instance-operation.rule';
 
-describe(SchoolAdminRule.name, () => {
-	let rule: SchoolAdminRule;
+describe(SchoolInstanceOperationRule.name, () => {
+	let rule: SchoolInstanceOperationRule;
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 	let injectionService: AuthorizationInjectionService;
 	let module: TestingModule;
@@ -22,10 +22,10 @@ describe(SchoolAdminRule.name, () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
-			providers: [SchoolAdminRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [SchoolInstanceOperationRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		rule = await module.get(SchoolAdminRule);
+		rule = await module.get(SchoolInstanceOperationRule);
 		authorizationHelper = await module.get(AuthorizationHelper);
 		injectionService = await module.get(AuthorizationInjectionService);
 	});

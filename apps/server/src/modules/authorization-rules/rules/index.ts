@@ -9,7 +9,7 @@ export * from './instance-admin.rule';
 export * from './instance.rule';
 export * from './legacy-school.rule';
 export * from './lesson.rule';
-export * from './school-admin.rule';
+export * from './school-instance-operation.rule';
 export * from './school-system-options.rule';
 export * from './school.rule';
 export * from './submission.rule';

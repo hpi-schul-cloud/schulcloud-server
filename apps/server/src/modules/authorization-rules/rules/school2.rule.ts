@@ -1,3 +1,4 @@
+/* eslint-disable filename-rules/match */
 import {
 	Action,
 	AuthorizationContext,
@@ -9,6 +10,8 @@ import { School } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
+
+// TODO: Wenn die Berechtigungen in der gleichen Rule sind, anstatt eine zweite einzufügen
 
 /**
  * Check this rule in BC-9295
@@ -48,7 +51,13 @@ export class SchoolRule implements Rule<School> {
 			...context.requiredPermissions,
 		]);
 
-		return hasPermission && isUserSchool;
+		const hasInstanceOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceOperationPermission || (hasPermission && isUserSchool);
 	}
 
 	private hasWriteAccess(user: User, object: School, context: AuthorizationContext): boolean {
@@ -58,7 +67,13 @@ export class SchoolRule implements Rule<School> {
 			...context.requiredPermissions,
 		]);
 
-		return hasPermission && isUserSchool;
+		const hasInstanceOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.SCHOOL_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceOperationPermission || (hasPermission && isUserSchool);
 	}
 
 	private isUserSchool(user: User, object: School): boolean {
