@@ -17,13 +17,13 @@
 /**
  * 
  * @export
- * @interface VideoConferenceElementContent
+ * @interface FileFolderElementContent
  */
-export interface VideoConferenceElementContent {
+export interface FileFolderElementContent {
     /**
      * 
      * @type {string}
-     * @memberof VideoConferenceElementContent
+     * @memberof FileFolderElementContent
      */
     'title': string;
 }

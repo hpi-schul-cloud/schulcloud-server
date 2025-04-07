@@ -6,6 +6,7 @@ import {
 	DrawingElementContent,
 	ExternalToolElementContent,
 	FileElementContent,
+	FileFolderElementContent,
 	LinkElementContent,
 	RichTextElementContent,
 	SubmissionContainerElementContent,
@@ -178,7 +179,7 @@ export class CardResponseMapper {
 					break;
 				}
 				case ContentElementType.FILE_FOLDER: {
-					const content = element.content as { title: string };
+					const content: FileFolderElementContent = element.content as FileFolderElementContent;
 					elements.push(
 						new FileFolderElementResponseDto(
 							element.id,

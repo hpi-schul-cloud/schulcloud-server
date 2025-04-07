@@ -14,6 +14,8 @@ export * from './external-tool-element-content';
 export * from './external-tool-element-response';
 export * from './file-element-content';
 export * from './file-element-response';
+export * from './file-folder-element-content';
+export * from './file-folder-element-response';
 export * from './link-element-content';
 export * from './link-element-response';
 export * from './move-card-body-params';

@@ -23,6 +23,8 @@ models/external-tool-element-content.ts
 models/external-tool-element-response.ts
 models/file-element-content.ts
 models/file-element-response.ts
+models/file-folder-element-content.ts
+models/file-folder-element-response.ts
 models/index.ts
 models/link-element-content.ts
 models/link-element-response.ts
@@ -34,6 +36,6 @@ models/set-height-body-params.ts
 models/submission-container-element-content.ts
 models/submission-container-element-response.ts
 models/timestamps-response.ts
-models/visibility-settings-response.ts
 models/video-conference-element-content.ts
 models/video-conference-element-response.ts
+models/visibility-settings-response.ts

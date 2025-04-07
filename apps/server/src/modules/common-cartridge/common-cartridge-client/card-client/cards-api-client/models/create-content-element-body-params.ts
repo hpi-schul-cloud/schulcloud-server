@@ -24,7 +24,7 @@ import type { ContentElementType } from './content-element-type';
  */
 export interface CreateContentElementBodyParams {
     /**
-     * 
+     * The type of element
      * @type {ContentElementType}
      * @memberof CreateContentElementBodyParams
      */
