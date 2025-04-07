@@ -64,6 +64,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -84,6 +85,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"board-element"
 		]
@@ -116,6 +118,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -153,6 +156,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -183,6 +187,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -202,6 +207,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -242,6 +248,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -265,6 +272,7 @@
 		},
 		"url": "https://nextcloud-nbc.dbildungscloud.dev/",
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -308,6 +316,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -348,6 +357,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -401,6 +411,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -454,6 +465,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -487,6 +499,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -519,6 +532,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -586,6 +600,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -653,6 +668,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -709,6 +725,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -765,6 +782,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -784,6 +802,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -824,6 +843,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -864,6 +884,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -883,6 +904,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -902,6 +924,7 @@
 		"isHidden": true,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -922,6 +945,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"course"
 		]
@@ -944,6 +968,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"media-board"
 		]
@@ -966,6 +991,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"course",
 			"board-element",
@@ -1155,6 +1181,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -1178,6 +1205,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -1201,6 +1229,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -1224,6 +1253,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	}
 ]
