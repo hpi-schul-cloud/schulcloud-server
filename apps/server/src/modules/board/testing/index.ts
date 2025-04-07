@@ -8,6 +8,7 @@ export * from './drawing-element.factory';
 export * from './entity';
 export * from './external-tool-element.factory';
 export * from './file-element.factory';
+export * from './file-folder-element.factory';
 export * from './link-element.factory';
 export * from './media-available-line-element.factory';
 export * from './media-available-line.factory';
