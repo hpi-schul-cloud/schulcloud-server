@@ -5,6 +5,7 @@ import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { Submission } from './submission.entity';
+import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 // TODO: add scope helper
 
@@ -36,7 +37,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		return result;
 	}
 
-	public async deleteUserFromTeams(userId: EntityId): Promise<number> {
+	public async deleteUserFromGroupSubmissions(userId: EntityId): Promise<number> {
 		const id = new ObjectId(userId);
 		const count = await this._em.nativeUpdate(this.entityName, { teamMembers: id }, {
 			$pull: { teamMembers: id },
@@ -46,8 +47,9 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 	}
 
 	public async removeUserReference(submissionIds: EntityId[]): Promise<number> {
+		const submissionFieldName = getFieldName(this._em, 'student', Submission.name);
 		const count = await this._em.nativeUpdate(this.entityName, { id: { $in: submissionIds } }, {
-			$set: { studentId: undefined },
+			$unset: { [submissionFieldName]: '' },
 		} as Partial<Submission>);
 
 		return count;

@@ -401,10 +401,10 @@ describe('NewsRepo', () => {
 				await repo.removeUserReference(user1.id);
 
 				const result1 = await repo.findById(news1.id);
-				expect(result1.creator).toBeNull();
+				expect(result1.creator).toBeUndefined();
 
 				const result3 = await repo.findById(news3.id);
-				expect(result3.creator).toBeNull();
+				expect(result3.creator).toBeUndefined();
 
 				const result = await repo.findByCreatorOrUpdaterId(user1.id);
 				expect(result[1]).toEqual(0);
@@ -462,7 +462,7 @@ describe('NewsRepo', () => {
 				await repo.removeUserReference(user2.id);
 
 				const result2 = await repo.findById(news2.id);
-				expect(result2.updater).toBeNull();
+				expect(result2.updater).toBeUndefined();
 
 				const result = await repo.findByCreatorOrUpdaterId(user2.id);
 				expect(result[1]).toEqual(0);

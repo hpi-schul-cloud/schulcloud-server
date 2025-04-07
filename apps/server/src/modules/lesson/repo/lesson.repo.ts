@@ -72,7 +72,7 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 		const count = await this._em.nativeUpdate(
 			this.entityName,
 			{ contents: { $elemMatch: { user: id } } } as FilterQuery<LessonEntity>,
-			{ $set: { 'contents.$.user': undefined } } as Partial<LessonEntity>
+			{ $unset: { 'contents.$.user': '' } } as Partial<LessonEntity>
 		);
 
 		return count;

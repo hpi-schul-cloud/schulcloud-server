@@ -257,7 +257,7 @@ describe('LessonRepo', () => {
 
 			const result2 = await repo.findById(lesson1.id);
 			const receivedContents = result2.contents;
-			expect(receivedContents[0].user).toBeNull();
+			expect(receivedContents[0].user).toBeUndefined();
 		});
 
 		it('should return count of 2 lessons updated', async () => {

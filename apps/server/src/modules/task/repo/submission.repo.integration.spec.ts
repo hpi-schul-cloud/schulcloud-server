@@ -160,7 +160,7 @@ describe('submission repo', () => {
 		it('should call nativeUpdate', async () => {
 			const { student1 } = await setup();
 			jest.spyOn(em, 'nativeUpdate');
-			await repo.deleteUserFromTeams(student1.id);
+			await repo.deleteUserFromGroupSubmissions(student1.id);
 
 			expect(em.nativeUpdate).toHaveBeenCalled();
 			jest.restoreAllMocks();
@@ -169,7 +169,7 @@ describe('submission repo', () => {
 		it('should return the number of updated submissions', async () => {
 			const { student1 } = await setup();
 
-			const count = await repo.deleteUserFromTeams(student1.id);
+			const count = await repo.deleteUserFromGroupSubmissions(student1.id);
 
 			expect(count).toEqual(2);
 		});
@@ -177,7 +177,7 @@ describe('submission repo', () => {
 		it('should remove the user from the team members of the submissions', async () => {
 			const { student1, student2, submission1, submission2 } = await setup();
 
-			await repo.deleteUserFromTeams(student1.id);
+			await repo.deleteUserFromGroupSubmissions(student1.id);
 
 			const result1 = await repo.findById(submission1.id);
 			expect(result1.teamMembers.getItems().map((user) => user.id)).toEqual([student2.id]);
@@ -213,7 +213,7 @@ describe('submission repo', () => {
 			await repo.removeUserReference([submission1.id]);
 
 			const result1 = await repo.findById(submission1.id);
-			expect(result1.student).toBeNull();
+			expect(result1.student).toBeUndefined();
 		});
 
 		it('should not affect other submissions', async () => {

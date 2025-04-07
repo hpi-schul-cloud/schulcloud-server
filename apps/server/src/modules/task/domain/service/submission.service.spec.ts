@@ -349,7 +349,7 @@ describe('Submission Service', () => {
 
 				await service.removeUserReferencesFromSubmissions(user1.id);
 
-				expect(submissionRepo.deleteUserFromTeams).toHaveBeenCalledWith(user1.id);
+				expect(submissionRepo.deleteUserFromGroupSubmissions).toHaveBeenCalledWith(user1.id);
 			});
 		});
 	});

@@ -7,6 +7,7 @@ import { BaseRepo } from '@shared/repo/base.repo';
 import { NewsTargetFilter } from './news-target-filter';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsScope } from './scope/news-scope';
+import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class NewsRepo extends BaseRepo<News> {
@@ -68,12 +69,16 @@ export class NewsRepo extends BaseRepo<News> {
 
 	public async removeUserReference(userId: EntityId): Promise<[number, number]> {
 		const id = new ObjectId(userId);
+
+		const creatorFieldName = getFieldName(this._em, 'creator', News.name);
+		const updaterFieldName = getFieldName(this._em, 'updater', News.name);
+
 		const countCreator = await this._em.nativeUpdate(News, { creator: id }, {
-			$set: { creatorId: undefined },
+			$unset: { [creatorFieldName]: '' },
 		} as Partial<News>);
 
 		const countUpdater = await this._em.nativeUpdate(News, { updater: id }, {
-			$set: { updaterId: undefined },
+			$unset: { [updaterFieldName]: '' },
 		} as Partial<News>);
 
 		return [countCreator, countUpdater];
