@@ -145,7 +145,9 @@ export class CommonCartridgeImportService {
 			if (resource && contentElementType) {
 				const resourceBody = this.mapToResourceBody(resource, cardElementProps);
 				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
-				await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
+				if (resourceBody) {
+					await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
+				}
 			}
 		}
 	}
@@ -153,7 +155,7 @@ export class CommonCartridgeImportService {
 	private mapToResourceBody(
 		resource: CommonCartridgeImportResourceProps,
 		cardElementProps: CommonCartridgeImportOrganizationProps
-	): UpdateElementContentBodyParamsData {
+	): UpdateElementContentBodyParamsData | undefined {
 		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
 			return this.createLinkFromResource(resource);
 		}
@@ -165,7 +167,7 @@ export class CommonCartridgeImportService {
 			return this.createTextFromHtmlResource(resource);
 		}
 
-		return this.createTextFromString('Unsupported Resource Type:' + resource.type);
+		return undefined;
 	}
 
 	private createTextFromHtmlResource(
@@ -176,16 +178,6 @@ export class CommonCartridgeImportService {
 			content: {
 				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
 				text: resource.html,
-			},
-		};
-	}
-
-	private createTextFromString(resource: string): RichTextElementContentBody {
-		return {
-			type: 'richText',
-			content: {
-				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
-				text: resource,
 			},
 		};
 	}
