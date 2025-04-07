@@ -164,7 +164,7 @@
 		"updatedAt": {
 			"$date": "2023-10-17T12:15:26.461Z"
 		},
-		"name": "Cypress-Test-Group-Course-Sync",
+		"name": "Cypress-Test-Group-Course-Sync1",
 		"type": "other",
 		"users": [
 			{
