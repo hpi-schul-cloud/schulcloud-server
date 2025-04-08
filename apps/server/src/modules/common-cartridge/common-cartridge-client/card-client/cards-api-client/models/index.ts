@@ -4,7 +4,6 @@ export * from './card-response';
 export * from './card-response-elements-inner';
 export * from './collaborative-text-editor-element-response';
 export * from './content-element-type';
-export * from './create-content-element-body-params';
 export * from './deleted-element-content';
 export * from './deleted-element-response';
 export * from './drawing-element-content';

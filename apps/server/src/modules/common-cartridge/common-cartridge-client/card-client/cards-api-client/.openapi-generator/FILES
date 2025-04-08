@@ -10,7 +10,6 @@ models/card-response-elements-inner.ts
 models/card-response.ts
 models/collaborative-text-editor-element-response.ts
 models/content-element-type.ts
-models/create-content-element-body-params.ts
 models/deleted-element-content.ts
 models/deleted-element-response.ts
 models/drawing-element-content.ts
