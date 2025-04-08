@@ -467,17 +467,6 @@ describe('course repo', () => {
 				};
 			};
 
-			it('should call nativeUpdate', async () => {
-				const { user } = await setup();
-
-				jest.spyOn(em, 'nativeUpdate');
-
-				await repo.removeUserReference(user.id);
-
-				expect(em.nativeUpdate).toHaveBeenCalled();
-				jest.restoreAllMocks();
-			});
-
 			it('should actually remove the user reference from the courses', async () => {
 				const { user, course1, course2, course3 } = await setup();
 

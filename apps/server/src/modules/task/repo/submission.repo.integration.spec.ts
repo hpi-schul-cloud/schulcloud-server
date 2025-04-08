@@ -157,15 +157,6 @@ describe('submission repo', () => {
 			return { student1, student2, submission1, submission2 };
 		};
 
-		it('should call nativeUpdate', async () => {
-			const { student1 } = await setup();
-			jest.spyOn(em, 'nativeUpdate');
-			await repo.deleteUserFromGroupSubmissions(student1.id);
-
-			expect(em.nativeUpdate).toHaveBeenCalled();
-			jest.restoreAllMocks();
-		});
-
 		it('should return the number of updated submissions', async () => {
 			const { student1 } = await setup();
 

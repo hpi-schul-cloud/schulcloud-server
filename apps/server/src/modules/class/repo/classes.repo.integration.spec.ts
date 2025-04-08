@@ -128,17 +128,6 @@ describe(ClassesRepo.name, () => {
 				};
 			};
 
-			it('should use nativeUpdate', async () => {
-				const { testUser1 } = await setup();
-
-				jest.spyOn(em, 'nativeUpdate');
-				await repo.removeUserReference(testUser1.toHexString());
-
-				expect(em.nativeUpdate).toHaveBeenCalled();
-
-				jest.restoreAllMocks();
-			});
-
 			it('should actually remove the user reference from the classes', async () => {
 				const { testUser1 } = await setup();
 

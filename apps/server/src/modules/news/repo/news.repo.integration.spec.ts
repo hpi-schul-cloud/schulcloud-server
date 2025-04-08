@@ -386,15 +386,6 @@ describe('NewsRepo', () => {
 				};
 			};
 
-			it('should call nativeUpdate', async () => {
-				const { user1 } = await setup();
-				jest.spyOn(em, 'nativeUpdate');
-				await repo.removeUserReference(user1.id);
-				expect(em.nativeUpdate).toHaveBeenCalled();
-
-				jest.restoreAllMocks();
-			});
-
 			it('should actually remove the user reference from the news', async () => {
 				const { user1, news1, news3 } = await setup();
 
@@ -446,15 +437,6 @@ describe('NewsRepo', () => {
 					news3,
 				};
 			};
-
-			it('should call nativeUpdate', async () => {
-				const { user2 } = await setup();
-				jest.spyOn(em, 'nativeUpdate');
-				await repo.removeUserReference(user2.id);
-				expect(em.nativeUpdate).toHaveBeenCalled();
-
-				jest.restoreAllMocks();
-			});
 
 			it('should actually remove the user reference from the news', async () => {
 				const { user2, news2 } = await setup();

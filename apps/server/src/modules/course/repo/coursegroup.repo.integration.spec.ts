@@ -168,16 +168,6 @@ describe('course group repo', () => {
 				};
 			};
 
-			it('should call nativeUpdate', async () => {
-				const { userId } = await setup();
-
-				jest.spyOn(em, 'nativeUpdate');
-				await repo.removeUserReference(userId);
-
-				expect(em.nativeUpdate).toHaveBeenCalled();
-				jest.restoreAllMocks();
-			});
-
 			it('should remove user from course group', async () => {
 				const { userId, courseGroup1 } = await setup();
 

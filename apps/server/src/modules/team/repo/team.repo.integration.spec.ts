@@ -153,18 +153,6 @@ describe('team repo', () => {
 			return { teamUser1, teamUser2, team1, team2, team3, team4 };
 		};
 
-		it('should call nativeUpdate', async () => {
-			const { teamUser1 } = await setup();
-
-			jest.spyOn(em, 'nativeUpdate');
-
-			await repo.removeUserReferences(teamUser1.user.id);
-
-			expect(em.nativeUpdate).toHaveBeenCalled();
-
-			jest.restoreAllMocks();
-		});
-
 		it('should return number of updated teams', async () => {
 			const { teamUser1 } = await setup();
 
