@@ -7,7 +7,7 @@ import { S3ClientModule } from '@infra/s3-client';
 import { Module } from '@nestjs/common';
 import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
-import { FilesStorageService, PreviewService } from './service';
+import { FilesStorageService, PreviewService } from './domain';
 
 const imports = [
 	LoggerModule,

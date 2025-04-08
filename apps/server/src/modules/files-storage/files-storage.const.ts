@@ -9,6 +9,7 @@ export enum FilesStorageInternalActions {
 }
 export const API_VERSION_PATH = '/api/v3';
 
+// TODO: move to api/uc
 export const FileStorageAuthorizationContext = {
 	create: AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_CREATE]),
 	read: AuthorizationContextBuilder.read([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_VIEW]),
