@@ -38,6 +38,6 @@ spec:
           requests:
             cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
             memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
-      restartPolicy: Neverr
+      restartPolicy: Never
   ttlSecondsAfterFinished: 180
   backoffLimit: 5
