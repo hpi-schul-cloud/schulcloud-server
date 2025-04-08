@@ -485,7 +485,7 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public async copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
+	public copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
 		const copy = new FileFolderElement({
 			...original.getProps(),
 			...this.buildSpecificProps([]),
