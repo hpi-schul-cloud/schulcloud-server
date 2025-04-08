@@ -9,7 +9,7 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';

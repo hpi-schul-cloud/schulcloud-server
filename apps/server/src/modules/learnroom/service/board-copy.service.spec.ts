@@ -7,7 +7,7 @@ import { columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';

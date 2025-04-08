@@ -1,6 +1,6 @@
 import { setupEntities } from '@testing/database';
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../api/dto';
+import { FileRecord, ScanStatus } from '../repo/entity';
 import { fileRecordFactory } from '../testing';
 import { FileRecordMapper } from './file-record.mapper';
 

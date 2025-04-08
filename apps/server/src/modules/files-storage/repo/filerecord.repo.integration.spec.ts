@@ -2,8 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { FileRecord } from '../entity';
-import { FileRecordParentType, StorageLocation } from '../interface';
+import { FileRecord } from './entity';
+import { FileRecordParentType, StorageLocation } from '../domain/interface';
 import { fileRecordFactory } from '../testing';
 import { FileRecordRepo } from './filerecord.repo';
 

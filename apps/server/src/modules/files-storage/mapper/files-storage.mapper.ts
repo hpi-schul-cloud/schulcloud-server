@@ -7,9 +7,9 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord } from '../entity';
-import { FileRecordParentType, GetFileResponse, StorageLocation } from '../interface';
+} from '../api/dto';
+import { FileRecord } from '../repo/entity';
+import { FileRecordParentType, GetFileResponse, StorageLocation } from '../domain/interface';
 
 export class FilesStorageMapper {
 	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizationBodyParamsReferenceType> = new Map([

@@ -11,7 +11,7 @@ import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { RoomService } from '@modules/room';

@@ -1,4 +1,4 @@
-import { CopyFileResponse } from '../controller/dto';
+import { CopyFileResponse } from '../api/dto';
 
 export class CopyFileResponseBuilder {
 	public static build(id: string, sourceId: string, name: string): CopyFileResponse {

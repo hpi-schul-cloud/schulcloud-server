@@ -3,7 +3,7 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FilesStorageProducer } from './files-storage.producer';

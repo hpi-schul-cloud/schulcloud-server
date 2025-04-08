@@ -13,11 +13,11 @@ import {
 	FilesStorageAdminController,
 	FilesStorageConfigController,
 	FilesStorageController,
-} from './controller';
+} from './api/controller';
 import { authorizationClientConfig, config } from './files-storage.config';
 import { ENTITIES } from './files-storage.entity.imports';
 import { FilesStorageModule } from './files-storage.module';
-import { FilesStorageAdminUC, FilesStorageUC } from './uc';
+import { FilesStorageAdminUC, FilesStorageUC } from './api/uc';
 
 @Module({
 	imports: [

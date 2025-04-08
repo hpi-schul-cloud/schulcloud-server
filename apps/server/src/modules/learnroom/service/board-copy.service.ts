@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { LessonCopyService } from '@modules/lesson';
 import { isLesson, LessonEntity } from '@modules/lesson/repo';
 import { TaskCopyService } from '@modules/task';

@@ -7,9 +7,9 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord, PreviewStatus } from '../entity';
-import { FileRecordParentType } from '../interface';
+} from '../api/dto';
+import { FileRecord, PreviewStatus } from '../repo/entity';
+import { FileRecordParentType } from '../domain/interface';
 import { fileRecordFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 

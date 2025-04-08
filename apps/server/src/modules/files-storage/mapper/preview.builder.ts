@@ -1,8 +1,8 @@
 import { PreviewFileOptions } from '@infra/preview-generator';
-import { PreviewParams } from '../controller/dto';
-import { FileRecord } from '../entity';
-import { createPath, createPreviewFilePath, createPreviewNameHash, getFormat } from '../helper';
-import { PreviewFileParams } from '../interface';
+import { PreviewParams } from '../api/dto';
+import { FileRecord } from '../repo/entity';
+import { createPath, createPreviewFilePath, createPreviewNameHash, getFormat } from '../domain/helper';
+import { PreviewFileParams } from '../domain/interface';
 
 export class PreviewBuilder {
 	public static buildParams(

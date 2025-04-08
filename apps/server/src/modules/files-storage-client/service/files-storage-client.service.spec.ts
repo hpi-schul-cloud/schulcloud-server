@@ -12,7 +12,7 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { StorageLocation } from '@modules/files-storage/interface';
+import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task } from '@modules/task/repo';

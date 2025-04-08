@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { FileRecord } from '../entity';
-import { StorageLocation } from '../interface';
+import { FileRecord } from './entity';
+import { StorageLocation } from '../domain/interface';
 import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()
