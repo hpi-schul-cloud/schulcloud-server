@@ -1,5 +1,4 @@
 export * from './api-validation-error';
-export * from './card-controller-create-element201-response';
 export * from './card-list-response';
 export * from './card-response';
 export * from './card-response-elements-inner';

@@ -8,7 +8,6 @@ configuration.ts
 git_push.sh
 index.ts
 models/api-validation-error.ts
-models/card-controller-create-element201-response.ts
 models/card-list-response.ts
 models/card-response-elements-inner.ts
 models/card-response.ts

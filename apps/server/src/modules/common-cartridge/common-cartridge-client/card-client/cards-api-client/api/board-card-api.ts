@@ -24,105 +24,13 @@ import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError
 // @ts-ignore
 import type { ApiValidationError } from '../models';
 // @ts-ignore
-import type { CardControllerCreateElement201Response } from '../models';
-// @ts-ignore
 import type { CardListResponse } from '../models';
-// @ts-ignore
-import type { CreateContentElementBodyParams } from '../models';
-// @ts-ignore
-import type { MoveCardBodyParams } from '../models';
-// @ts-ignore
-import type { RenameBodyParams } from '../models';
-// @ts-ignore
-import type { SetHeightBodyParams } from '../models';
 /**
  * BoardCardApi - axios parameter creator
  * @export
  */
 export const BoardCardApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
-        /**
-         * 
-         * @summary Create a new element on a card.
-         * @param {string} cardId The id of the card.
-         * @param {CreateContentElementBodyParams} createContentElementBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerCreateElement: async (cardId: string, createContentElementBodyParams: CreateContentElementBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'cardId' is not null or undefined
-            assertParamExists('cardControllerCreateElement', 'cardId', cardId)
-            // verify required parameter 'createContentElementBodyParams' is not null or undefined
-            assertParamExists('cardControllerCreateElement', 'createContentElementBodyParams', createContentElementBodyParams)
-            const localVarPath = `/cards/{cardId}/elements`
-                .replace(`{${"cardId"}}`, encodeURIComponent(String(cardId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(createContentElementBodyParams, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Delete a single card.
-         * @param {string} cardId The id of the card.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerDeleteCard: async (cardId: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'cardId' is not null or undefined
-            assertParamExists('cardControllerDeleteCard', 'cardId', cardId)
-            const localVarPath = `/cards/{cardId}`
-                .replace(`{${"cardId"}}`, encodeURIComponent(String(cardId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'DELETE', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
         /**
          * 
          * @summary Get a list of cards by their ids.
@@ -164,138 +72,6 @@ export const BoardCardApiAxiosParamCreator = function (configuration?: Configura
                 options: localVarRequestOptions,
             };
         },
-        /**
-         * 
-         * @summary Move a single card.
-         * @param {string} cardId The id of the card.
-         * @param {MoveCardBodyParams} moveCardBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerMoveCard: async (cardId: string, moveCardBodyParams: MoveCardBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'cardId' is not null or undefined
-            assertParamExists('cardControllerMoveCard', 'cardId', cardId)
-            // verify required parameter 'moveCardBodyParams' is not null or undefined
-            assertParamExists('cardControllerMoveCard', 'moveCardBodyParams', moveCardBodyParams)
-            const localVarPath = `/cards/{cardId}/position`
-                .replace(`{${"cardId"}}`, encodeURIComponent(String(cardId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PUT', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(moveCardBodyParams, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update the height of a single card.
-         * @param {string} cardId The id of the card.
-         * @param {SetHeightBodyParams} setHeightBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerUpdateCardHeight: async (cardId: string, setHeightBodyParams: SetHeightBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'cardId' is not null or undefined
-            assertParamExists('cardControllerUpdateCardHeight', 'cardId', cardId)
-            // verify required parameter 'setHeightBodyParams' is not null or undefined
-            assertParamExists('cardControllerUpdateCardHeight', 'setHeightBodyParams', setHeightBodyParams)
-            const localVarPath = `/cards/{cardId}/height`
-                .replace(`{${"cardId"}}`, encodeURIComponent(String(cardId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(setHeightBodyParams, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
-        /**
-         * 
-         * @summary Update the title of a single card.
-         * @param {string} cardId The id of the card.
-         * @param {RenameBodyParams} renameBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerUpdateCardTitle: async (cardId: string, renameBodyParams: RenameBodyParams, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'cardId' is not null or undefined
-            assertParamExists('cardControllerUpdateCardTitle', 'cardId', cardId)
-            // verify required parameter 'renameBodyParams' is not null or undefined
-            assertParamExists('cardControllerUpdateCardTitle', 'renameBodyParams', renameBodyParams)
-            const localVarPath = `/cards/{cardId}/title`
-                .replace(`{${"cardId"}}`, encodeURIComponent(String(cardId)));
-            // use dummy base URL string because the URL constructor only accepts absolute URLs.
-            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
-            let baseOptions;
-            if (configuration) {
-                baseOptions = configuration.baseOptions;
-            }
-
-            const localVarRequestOptions = { method: 'PATCH', ...baseOptions, ...options};
-            const localVarHeaderParameter = {} as any;
-            const localVarQueryParameter = {} as any;
-
-            // authentication bearer required
-            // http bearer authentication required
-            await setBearerAuthToObject(localVarHeaderParameter, configuration)
-
-
-    
-            localVarHeaderParameter['Content-Type'] = 'application/json';
-
-            setSearchParams(localVarUrlObj, localVarQueryParameter);
-            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(renameBodyParams, localVarRequestOptions, configuration)
-
-            return {
-                url: toPathString(localVarUrlObj),
-                options: localVarRequestOptions,
-            };
-        },
     }
 };
 
@@ -308,33 +84,6 @@ export const BoardCardApiFp = function(configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary Create a new element on a card.
-         * @param {string} cardId The id of the card.
-         * @param {CreateContentElementBodyParams} createContentElementBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async cardControllerCreateElement(cardId: string, createContentElementBodyParams: CreateContentElementBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CardControllerCreateElement201Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.cardControllerCreateElement(cardId, createContentElementBodyParams, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BoardCardApi.cardControllerCreateElement']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Delete a single card.
-         * @param {string} cardId The id of the card.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async cardControllerDeleteCard(cardId: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.cardControllerDeleteCard(cardId, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BoardCardApi.cardControllerDeleteCard']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
          * @summary Get a list of cards by their ids.
          * @param {Array<string>} ids Array of Ids to be loaded
          * @param {*} [options] Override http request option.
@@ -344,48 +93,6 @@ export const BoardCardApiFp = function(configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.cardControllerGetCards(ids, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['BoardCardApi.cardControllerGetCards']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Move a single card.
-         * @param {string} cardId The id of the card.
-         * @param {MoveCardBodyParams} moveCardBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async cardControllerMoveCard(cardId: string, moveCardBodyParams: MoveCardBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.cardControllerMoveCard(cardId, moveCardBodyParams, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BoardCardApi.cardControllerMoveCard']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Update the height of a single card.
-         * @param {string} cardId The id of the card.
-         * @param {SetHeightBodyParams} setHeightBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async cardControllerUpdateCardHeight(cardId: string, setHeightBodyParams: SetHeightBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.cardControllerUpdateCardHeight(cardId, setHeightBodyParams, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BoardCardApi.cardControllerUpdateCardHeight']?.[localVarOperationServerIndex]?.url;
-            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
-        },
-        /**
-         * 
-         * @summary Update the title of a single card.
-         * @param {string} cardId The id of the card.
-         * @param {RenameBodyParams} renameBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        async cardControllerUpdateCardTitle(cardId: string, renameBodyParams: RenameBodyParams, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.cardControllerUpdateCardTitle(cardId, renameBodyParams, options);
-            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['BoardCardApi.cardControllerUpdateCardTitle']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
@@ -400,27 +107,6 @@ export const BoardCardApiFactory = function (configuration?: Configuration, base
     return {
         /**
          * 
-         * @summary Create a new element on a card.
-         * @param {string} cardId The id of the card.
-         * @param {CreateContentElementBodyParams} createContentElementBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerCreateElement(cardId: string, createContentElementBodyParams: CreateContentElementBodyParams, options?: any): AxiosPromise<CardControllerCreateElement201Response> {
-            return localVarFp.cardControllerCreateElement(cardId, createContentElementBodyParams, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Delete a single card.
-         * @param {string} cardId The id of the card.
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerDeleteCard(cardId: string, options?: any): AxiosPromise<void> {
-            return localVarFp.cardControllerDeleteCard(cardId, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
          * @summary Get a list of cards by their ids.
          * @param {Array<string>} ids Array of Ids to be loaded
          * @param {*} [options] Override http request option.
@@ -428,39 +114,6 @@ export const BoardCardApiFactory = function (configuration?: Configuration, base
          */
         cardControllerGetCards(ids: Array<string>, options?: any): AxiosPromise<CardListResponse> {
             return localVarFp.cardControllerGetCards(ids, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Move a single card.
-         * @param {string} cardId The id of the card.
-         * @param {MoveCardBodyParams} moveCardBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerMoveCard(cardId: string, moveCardBodyParams: MoveCardBodyParams, options?: any): AxiosPromise<void> {
-            return localVarFp.cardControllerMoveCard(cardId, moveCardBodyParams, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update the height of a single card.
-         * @param {string} cardId The id of the card.
-         * @param {SetHeightBodyParams} setHeightBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerUpdateCardHeight(cardId: string, setHeightBodyParams: SetHeightBodyParams, options?: any): AxiosPromise<void> {
-            return localVarFp.cardControllerUpdateCardHeight(cardId, setHeightBodyParams, options).then((request) => request(axios, basePath));
-        },
-        /**
-         * 
-         * @summary Update the title of a single card.
-         * @param {string} cardId The id of the card.
-         * @param {RenameBodyParams} renameBodyParams 
-         * @param {*} [options] Override http request option.
-         * @throws {RequiredError}
-         */
-        cardControllerUpdateCardTitle(cardId: string, renameBodyParams: RenameBodyParams, options?: any): AxiosPromise<void> {
-            return localVarFp.cardControllerUpdateCardTitle(cardId, renameBodyParams, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -473,27 +126,6 @@ export const BoardCardApiFactory = function (configuration?: Configuration, base
 export interface BoardCardApiInterface {
     /**
      * 
-     * @summary Create a new element on a card.
-     * @param {string} cardId The id of the card.
-     * @param {CreateContentElementBodyParams} createContentElementBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApiInterface
-     */
-    cardControllerCreateElement(cardId: string, createContentElementBodyParams: CreateContentElementBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<CardControllerCreateElement201Response>;
-
-    /**
-     * 
-     * @summary Delete a single card.
-     * @param {string} cardId The id of the card.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApiInterface
-     */
-    cardControllerDeleteCard(cardId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
      * @summary Get a list of cards by their ids.
      * @param {Array<string>} ids Array of Ids to be loaded
      * @param {*} [options] Override http request option.
@@ -501,39 +133,6 @@ export interface BoardCardApiInterface {
      * @memberof BoardCardApiInterface
      */
     cardControllerGetCards(ids: Array<string>, options?: RawAxiosRequestConfig): AxiosPromise<CardListResponse>;
-
-    /**
-     * 
-     * @summary Move a single card.
-     * @param {string} cardId The id of the card.
-     * @param {MoveCardBodyParams} moveCardBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApiInterface
-     */
-    cardControllerMoveCard(cardId: string, moveCardBodyParams: MoveCardBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
-     * @summary Update the height of a single card.
-     * @param {string} cardId The id of the card.
-     * @param {SetHeightBodyParams} setHeightBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApiInterface
-     */
-    cardControllerUpdateCardHeight(cardId: string, setHeightBodyParams: SetHeightBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<void>;
-
-    /**
-     * 
-     * @summary Update the title of a single card.
-     * @param {string} cardId The id of the card.
-     * @param {RenameBodyParams} renameBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApiInterface
-     */
-    cardControllerUpdateCardTitle(cardId: string, renameBodyParams: RenameBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
 }
 
@@ -546,31 +145,6 @@ export interface BoardCardApiInterface {
 export class BoardCardApi extends BaseAPI implements BoardCardApiInterface {
     /**
      * 
-     * @summary Create a new element on a card.
-     * @param {string} cardId The id of the card.
-     * @param {CreateContentElementBodyParams} createContentElementBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApi
-     */
-    public cardControllerCreateElement(cardId: string, createContentElementBodyParams: CreateContentElementBodyParams, options?: RawAxiosRequestConfig) {
-        return BoardCardApiFp(this.configuration).cardControllerCreateElement(cardId, createContentElementBodyParams, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Delete a single card.
-     * @param {string} cardId The id of the card.
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApi
-     */
-    public cardControllerDeleteCard(cardId: string, options?: RawAxiosRequestConfig) {
-        return BoardCardApiFp(this.configuration).cardControllerDeleteCard(cardId, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
      * @summary Get a list of cards by their ids.
      * @param {Array<string>} ids Array of Ids to be loaded
      * @param {*} [options] Override http request option.
@@ -579,45 +153,6 @@ export class BoardCardApi extends BaseAPI implements BoardCardApiInterface {
      */
     public cardControllerGetCards(ids: Array<string>, options?: RawAxiosRequestConfig) {
         return BoardCardApiFp(this.configuration).cardControllerGetCards(ids, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Move a single card.
-     * @param {string} cardId The id of the card.
-     * @param {MoveCardBodyParams} moveCardBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApi
-     */
-    public cardControllerMoveCard(cardId: string, moveCardBodyParams: MoveCardBodyParams, options?: RawAxiosRequestConfig) {
-        return BoardCardApiFp(this.configuration).cardControllerMoveCard(cardId, moveCardBodyParams, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update the height of a single card.
-     * @param {string} cardId The id of the card.
-     * @param {SetHeightBodyParams} setHeightBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApi
-     */
-    public cardControllerUpdateCardHeight(cardId: string, setHeightBodyParams: SetHeightBodyParams, options?: RawAxiosRequestConfig) {
-        return BoardCardApiFp(this.configuration).cardControllerUpdateCardHeight(cardId, setHeightBodyParams, options).then((request) => request(this.axios, this.basePath));
-    }
-
-    /**
-     * 
-     * @summary Update the title of a single card.
-     * @param {string} cardId The id of the card.
-     * @param {RenameBodyParams} renameBodyParams 
-     * @param {*} [options] Override http request option.
-     * @throws {RequiredError}
-     * @memberof BoardCardApi
-     */
-    public cardControllerUpdateCardTitle(cardId: string, renameBodyParams: RenameBodyParams, options?: RawAxiosRequestConfig) {
-        return BoardCardApiFp(this.configuration).cardControllerUpdateCardTitle(cardId, renameBodyParams, options).then((request) => request(this.axios, this.basePath));
     }
 }
 
