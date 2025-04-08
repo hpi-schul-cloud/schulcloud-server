@@ -17,6 +17,7 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import { SubmissionItemUc } from '../uc/submission-item.uc';
 import {
+	AudioRecordElementResponse,
 	CreateContentElementBodyParams,
 	FileElementResponse,
 	RichTextElementResponse,
@@ -98,11 +99,11 @@ export class BoardSubmissionController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':submissionItemId/elements')
-	async createElement(
+	public async createElement(
 		@Param() urlParams: SubmissionItemUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<FileElementResponse | RichTextElementResponse> {
+	): Promise<FileElementResponse | RichTextElementResponse | AudioRecordElementResponse> {
 		const { type } = bodyParams;
 		const element = await this.submissionItemUc.createElement(currentUser.userId, urlParams.submissionItemId, type);
 		const response = ContentElementResponseFactory.mapSubmissionContentToResponse(element);

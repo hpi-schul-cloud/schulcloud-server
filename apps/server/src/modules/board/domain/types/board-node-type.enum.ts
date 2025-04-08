@@ -2,6 +2,7 @@ export enum BoardNodeType {
 	COLUMN_BOARD = 'column-board',
 	COLUMN = 'column',
 	CARD = 'card',
+	AUDIO_RECORD_ELEMENT = 'audio-record-element',
 	FILE_ELEMENT = 'file-element',
 	LINK_ELEMENT = 'link-element',
 	RICH_TEXT_ELEMENT = 'rich-text-element',

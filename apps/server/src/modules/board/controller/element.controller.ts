@@ -18,6 +18,7 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {
 	AnyContentElementResponse,
+	AudioRecordElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
 	DrawingElementContentBody,
@@ -53,7 +54,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Put(':contentElementId/position')
-	async moveElement(
+	public async moveElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: MoveContentElementBody,
 		@CurrentUser() currentUser: ICurrentUser
@@ -80,6 +81,7 @@ export class ElementController {
 		status: 200,
 		schema: {
 			oneOf: [
+				{ $ref: getSchemaPath(AudioRecordElementResponse) },
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
@@ -95,7 +97,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(200)
 	@Patch(':contentElementId/content')
-	async updateElement(
+	public async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -116,7 +118,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':contentElementId')
-	async deleteElement(
+	public async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
@@ -131,7 +133,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
 	@Post(':contentElementId/submissions')
-	async createSubmissionItem(
+	public async createSubmissionItem(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -153,7 +155,7 @@ export class ElementController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':contentElementId/permission')
-	async readPermission(
+	public async readPermission(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {

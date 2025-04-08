@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { EntityId, InputFormat } from '@shared/domain/types';
+import { AudioRecordElement } from './audio-record-element.do';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -42,6 +43,13 @@ export class BoardNodeFactory {
 		let element!: AnyContentElement;
 
 		switch (type) {
+			case ContentElementType.AUDIO_RECORD:
+				element = new AudioRecordElement({
+					...this.getBaseProps(),
+					caption: 'caption',
+					alternativeText: 'altText',
+				});
+				break;
 			case ContentElementType.FILE:
 				element = new FileElement({
 					...this.getBaseProps(),

@@ -33,6 +33,24 @@ export class FileElementContentBody extends ElementContentBody {
 	content!: FileContentBody;
 }
 
+export class AudioRecordContentBody {
+	@IsString()
+	@ApiProperty({})
+	caption!: string;
+
+	@IsString()
+	@ApiProperty({})
+	alternativeText!: string;
+}
+export class AudioRecordElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: () => ContentElementType.AUDIO_RECORD })
+	type!: ContentElementType.AUDIO_RECORD;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: AudioRecordContentBody;
+}
+
 export class LinkContentBody {
 	@IsString()
 	@ApiProperty({})
@@ -152,6 +170,7 @@ export class VideoConferenceElementContentBody extends ElementContentBody {
 }
 
 export type AnyElementContentBody =
+	| AudioRecordContentBody
 	| FileContentBody
 	| DrawingContentBody
 	| LinkContentBody
@@ -167,6 +186,7 @@ export class UpdateElementContentBodyParams {
 			property: 'type',
 			subTypes: [
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
+				{ value: AudioRecordElementContentBody, name: ContentElementType.AUDIO_RECORD },
 				{ value: LinkElementContentBody, name: ContentElementType.LINK },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
@@ -179,6 +199,7 @@ export class UpdateElementContentBodyParams {
 	})
 	@ApiProperty({
 		oneOf: [
+			{ $ref: getSchemaPath(AudioRecordElementContentBody) },
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(LinkElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
@@ -189,6 +210,7 @@ export class UpdateElementContentBodyParams {
 		],
 	})
 	public data!:
+		| AudioRecordElementContentBody
 		| FileElementContentBody
 		| LinkElementContentBody
 		| RichTextElementContentBody

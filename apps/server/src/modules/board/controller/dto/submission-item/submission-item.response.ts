@@ -1,8 +1,8 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { AudioRecordElementResponse, FileElementResponse, RichTextElementResponse } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
-import { FileElementResponse, RichTextElementResponse } from '../element';
 
-@ApiExtraModels(FileElementResponse, RichTextElementResponse)
+@ApiExtraModels(FileElementResponse, RichTextElementResponse, AudioRecordElementResponse)
 export class SubmissionItemResponse {
 	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {
 		this.id = id;
@@ -13,16 +13,16 @@ export class SubmissionItemResponse {
 	}
 
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	timestamps: TimestampsResponse;
+	public timestamps: TimestampsResponse;
 
 	@ApiProperty()
-	completed: boolean;
+	public completed: boolean;
 
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
-	userId: string;
+	public userId: string;
 
 	@ApiProperty({
 		type: 'array',
@@ -30,5 +30,5 @@ export class SubmissionItemResponse {
 			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }, { $ref: getSchemaPath(RichTextElementResponse) }],
 		},
 	})
-	elements: (RichTextElementResponse | FileElementResponse)[];
+	public elements: (RichTextElementResponse | FileElementResponse | AudioRecordElementResponse)[];
 }
