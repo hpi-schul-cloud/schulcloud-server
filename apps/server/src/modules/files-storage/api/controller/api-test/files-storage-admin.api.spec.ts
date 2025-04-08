@@ -3,7 +3,7 @@ import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord } from '@modules/files-storage/repo/entity';
+import { FileRecord } from '../../../repo/entity'; // TODO: invalid import
 import { fileRecordFactory } from '@modules/files-storage/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

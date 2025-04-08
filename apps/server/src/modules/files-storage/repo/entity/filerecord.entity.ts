@@ -299,7 +299,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
 	}
 
-	public get fileNameWithoutExtension(): string {
+	get fileNameWithoutExtension(): string {
 		const filenameObj = path.parse(this.name);
 
 		return filenameObj.name;

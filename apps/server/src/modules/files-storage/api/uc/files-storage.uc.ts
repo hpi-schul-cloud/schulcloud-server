@@ -103,7 +103,7 @@ export class FilesStorageUC {
 		}
 	}
 
-	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
+	private uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		const promise = new Promise<FileRecord>((resolve, reject) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
 			let fileRecordPromise: Promise<FileRecord>;

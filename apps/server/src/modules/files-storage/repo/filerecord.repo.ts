@@ -4,7 +4,7 @@ import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { FileRecord } from './entity';
-import { StorageLocation } from '../domain/interface';
+import { StorageLocation } from '../domain';
 import { FileRecordScope } from './filerecord-scope';
 
 @Injectable()

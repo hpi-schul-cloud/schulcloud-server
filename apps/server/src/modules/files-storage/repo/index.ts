@@ -1,1 +1,1 @@
-export * from './filerecord.repo';
+export { FileRecordRepo } from './filerecord.repo';

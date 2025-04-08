@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileRecord } from './entity';
-import { FileRecordParentType, StorageLocation } from '../domain/interface';
+import { FileRecordParentType, StorageLocation } from '../domain';
 import { fileRecordFactory } from '../testing';
 import { FileRecordRepo } from './filerecord.repo';
 
@@ -74,7 +74,7 @@ describe('FileRecordRepo', () => {
 			await em.persistAndFlush(fileRecord);
 			em.clear();
 
-			const exec = async () => repo.findOneByIdMarkedForDelete(fileRecord.id);
+			const exec = () => repo.findOneByIdMarkedForDelete(fileRecord.id);
 
 			await expect(exec).rejects.toThrowError();
 		});

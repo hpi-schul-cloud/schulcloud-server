@@ -21,13 +21,14 @@ export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	return unmarkedFileRecords;
 }
 
+// TODO: Move/create Factory
 export function createFileRecord(
 	name: string,
 	size: number,
 	mimeType: string,
 	params: FileRecordParams,
 	userId: string
-) {
+): FileRecord {
 	const entity = new FileRecord({
 		size,
 		name,

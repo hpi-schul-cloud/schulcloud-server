@@ -155,7 +155,7 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
@@ -199,7 +199,7 @@ describe('FilesStorageService upload methods', () => {
 				let param: FileRecord | undefined;
 
 				fileRecordRepo.save.mockReset();
-				fileRecordRepo.save.mockImplementationOnce(async (fr) => {
+				fileRecordRepo.save.mockImplementationOnce((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
@@ -209,7 +209,7 @@ describe('FilesStorageService upload methods', () => {
 					return Promise.resolve();
 				});
 
-				fileRecordRepo.save.mockImplementationOnce(async (fr) => {
+				fileRecordRepo.save.mockImplementationOnce((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
@@ -317,10 +317,12 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				storageClient.create.mockRejectedValueOnce(error);
@@ -348,10 +350,12 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				configService.get.mockReturnValueOnce(true);
@@ -387,10 +391,12 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				// @ts-expect-error - fileTypeStream is mocked
@@ -434,10 +440,12 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				antivirusService.send.mockRejectedValueOnce(error);
@@ -466,10 +474,12 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				return { params, file, userId };
@@ -495,10 +505,12 @@ describe('FilesStorageService upload methods', () => {
 
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
-				fileRecordRepo.save.mockImplementation(async (fr) => {
+				fileRecordRepo.save.mockImplementation((fr) => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				return { params, file, userId, getMimeTypeSpy, mimeType };
