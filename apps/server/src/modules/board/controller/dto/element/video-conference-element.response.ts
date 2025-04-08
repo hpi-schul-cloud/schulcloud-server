@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ContentElementType } from '../../../domain';
+import { bsonStringPattern } from '../bson-string-pattern';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class VideoConferenceElementContent {
@@ -19,7 +20,7 @@ export class VideoConferenceElementResponse {
 		this.content = content;
 	}
 
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({ pattern: bsonStringPattern })
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })

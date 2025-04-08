@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { ContentElementType } from '../../../domain';
+import { bsonStringPattern } from '../bson-string-pattern';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileFolderElementContent {
@@ -21,7 +22,7 @@ export class FileFolderElementResponse {
 		this.type = type;
 	}
 
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({ pattern: bsonStringPattern })
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })

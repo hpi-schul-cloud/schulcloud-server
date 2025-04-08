@@ -1,5 +1,6 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
+import { bsonStringPattern } from '../bson-string-pattern';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,
@@ -39,7 +40,7 @@ export class CardResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 
