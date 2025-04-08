@@ -1,5 +1,4 @@
 export * from './board';
-export * from './bson-string-pattern';
 export * from './card';
 export * from './card.url.params';
 export * from './element';

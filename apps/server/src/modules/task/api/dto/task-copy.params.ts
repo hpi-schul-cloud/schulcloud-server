@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { IsMongoId, IsOptional } from 'class-validator';
 
 /**
@@ -8,7 +9,7 @@ export class TaskCopyApiParams {
 	@IsOptional()
 	@IsMongoId()
 	@ApiPropertyOptional({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'Destination course parent Id the task is copied to',
 	})
 	courseId?: string;
@@ -16,7 +17,7 @@ export class TaskCopyApiParams {
 	@IsOptional()
 	@IsMongoId()
 	@ApiPropertyOptional({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'Destination lesson parent Id the task is copied to',
 	})
 	lessonId?: string;

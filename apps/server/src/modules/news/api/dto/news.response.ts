@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { PaginationResponse } from '@shared/controller/dto';
 import { NewsTargetModel } from '../../domain';
 import { SchoolInfoResponse } from './school-info.response';
@@ -46,7 +47,7 @@ export class NewsResponse {
 
 	@ApiProperty({
 		description: 'The id of the News entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 
@@ -85,7 +86,7 @@ export class NewsResponse {
 	targetModel: string;
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'Specific target id to which the News entity is related',
 	})
 	targetId: string;

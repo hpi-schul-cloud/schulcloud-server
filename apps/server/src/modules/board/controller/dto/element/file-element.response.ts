@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { ContentElementType } from '../../../domain';
-import { bsonStringPattern } from '../bson-string-pattern';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {

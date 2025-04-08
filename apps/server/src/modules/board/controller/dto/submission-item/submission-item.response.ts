@@ -1,5 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { bsonStringPattern } from '../bson-string-pattern';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { FileElementResponse, RichTextElementResponse } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 

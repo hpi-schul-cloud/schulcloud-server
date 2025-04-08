@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { ContentElementType } from '../../../domain';
-import { bsonStringPattern } from '../bson-string-pattern';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class VideoConferenceElementContent {

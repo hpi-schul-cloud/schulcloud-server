@@ -1,6 +1,6 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
-import { bsonStringPattern } from '../bson-string-pattern';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,

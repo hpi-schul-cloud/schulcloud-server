@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { BoardFeature, BoardLayout } from '../../../domain';
-import { bsonStringPattern } from '../bson-string-pattern';
 import { TimestampsResponse } from '../timestamps.response';
 import { ColumnResponse } from './column.response';
 

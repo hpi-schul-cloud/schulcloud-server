@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { bsonStringPattern } from '../bson-string-pattern';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 
 export class CardSkeletonResponse {
 	constructor({ cardId, height }: CardSkeletonResponse) {
