@@ -1,22 +1,11 @@
+import { fileFolderElementFactory } from '../testing';
 import { FileFolderElement, isFileFolderElement } from './file-folder-element.do';
-import { BoardNodeProps } from './types';
 
 describe('FileFolderElement', () => {
 	let folderElement: FileFolderElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		folderElement = new FileFolderElement({
-			...boardNodeProps,
+		folderElement = fileFolderElementFactory.build({
 			title: 'Test title',
 		});
 	});
