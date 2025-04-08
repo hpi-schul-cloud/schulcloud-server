@@ -1,7 +1,7 @@
 import { CopyFiles } from '@infra/s3-client';
 import { EntityId } from '@shared/domain/types';
 import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../error';
 
 export function createPath(storageLocationId: EntityId, fileRecordId: EntityId): string {
 	if (!storageLocationId || !fileRecordId) {

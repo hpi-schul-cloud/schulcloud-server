@@ -29,7 +29,6 @@ import {
 	SingleFileParams,
 } from '../dto';
 import { FileRecord } from '../../repo/entity'; // TODO: invalid import
-import { ErrorType } from '../../error';
 import { FileStorageAuthorizationContext } from '../../files-storage.const';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../../mapper';
 import {
@@ -39,6 +38,7 @@ import {
 	FileRecordParentType,
 	GetFileResponse,
 	StorageLocation,
+	ErrorType,
 } from '../../domain';
 
 @Injectable()

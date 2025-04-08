@@ -22,11 +22,11 @@ import {
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
-} from '../domain/controller/dto';
-import { FileDto } from '../domain/dto';
-import { FileRecord, ScanStatus } from '../repo/entity';
+} from '../../api/dto'; // TODO: invalid import
+import { FileDto } from '../dto';
+import { FileRecord, ScanStatus } from '../../repo/entity';
 import { ErrorType } from '../error';
-import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../files-storage.config';
+import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import {
 	createCopyFiles,
 	createFileRecord,
@@ -37,8 +37,8 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { GetFileResponse, StorageLocationParams } from '../interface';
-import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../mapper';
-import { FileRecordRepo } from '../repo';
+import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
+import { FileRecordRepo } from '../../repo';
 
 @Injectable()
 export class FilesStorageService {

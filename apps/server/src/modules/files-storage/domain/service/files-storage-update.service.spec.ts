@@ -10,7 +10,7 @@ import { setupEntities } from '@testing/database';
 import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordMapper, FilesStorageMapper } from '../../mapper';

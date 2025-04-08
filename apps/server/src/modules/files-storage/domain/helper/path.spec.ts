@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
 import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../error';
 import { fileRecordFactory } from '../../testing';
 
 describe('Path Helper', () => {

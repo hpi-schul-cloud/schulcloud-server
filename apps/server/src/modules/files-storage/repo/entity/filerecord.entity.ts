@@ -6,8 +6,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import path from 'path';
 import { v4 as uuid } from 'uuid';
-import { ErrorType } from '../../error';
-import { FileRecordParentType, StorageLocation } from '../../domain/interface';
+import { FileRecordParentType, StorageLocation, ErrorType } from '../../domain';
 
 export enum ScanStatus {
 	PENDING = 'pending',

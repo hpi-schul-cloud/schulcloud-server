@@ -4,7 +4,7 @@ import { Inject, Injectable, NotFoundException, UnprocessableEntityException } f
 import { LegacyLogger } from '@core/logger';
 import { PreviewParams } from '../../api/dto'; // TODO: invalid import
 import { FileRecord, PreviewStatus } from '../../repo/entity';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { createPreviewDirectoryPath, getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';

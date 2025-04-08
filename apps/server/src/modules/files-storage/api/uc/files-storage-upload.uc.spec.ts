@@ -19,7 +19,7 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { FileRecordParams } from '../dto';
 import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../../error';
+import { ErrorType } from '../../domain/error';
 import { FileStorageAuthorizationContext } from '../../files-storage.const';
 import { FileRecordParentType, StorageLocation, FilesStorageService, PreviewService } from '../../domain';
 import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
