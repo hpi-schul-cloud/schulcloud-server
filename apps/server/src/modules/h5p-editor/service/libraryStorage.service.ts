@@ -1,28 +1,29 @@
+import { S3ClientAdapter } from '@infra/s3-client';
 import {
 	H5pError,
-	LibraryName,
-	streamToString,
 	type IAdditionalLibraryMetadata,
 	type IFileStats,
 	type IInstalledLibrary,
 	type ILibraryMetadata,
 	type ILibraryName,
 	type ILibraryStorage,
+	LibraryName,
+	streamToString,
 } from '@lumieducation/h5p-server';
 import { ConflictException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { S3ClientAdapter } from '@infra/s3-client';
 import mime from 'mime';
 import path from 'node:path/posix';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto';
-import { InstalledLibrary } from '../entity/library.entity';
+import { InstalledLibrary } from '../entity';
 import { H5P_LIBRARIES_S3_CONNECTION } from '../h5p-editor.config';
-import { LibraryRepo } from '../repo/library.repo';
+import { LibraryRepo } from '../repo';
 
 @Injectable()
 export class LibraryStorage implements ILibraryStorage {
 	/**
-	 * @param
+	 * @param libraryRepo
+	 * @param s3Client
 	 */
 	constructor(
 		private readonly libraryRepo: LibraryRepo,
@@ -43,7 +44,7 @@ export class LibraryStorage implements ILibraryStorage {
 		}
 	}
 
-	private getS3Key(library: ILibraryName, filename: string) {
+	private getS3Key(library: ILibraryName, filename: string): string {
 		const uberName = LibraryName.toUberName(library);
 		const s3Key = `h5p-libraries/${uberName}/${filename}`;
 
@@ -52,7 +53,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Adds a file to a library. Library metadata must be installed using `installLibrary` first.
-	 * @param library
+	 * @param libraryName
 	 * @param filename
 	 * @param dataStream
 	 * @returns true if successful
@@ -84,7 +85,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Adds the metadata of the library
-	 * @param libraryMetadata
+	 * @param libMeta
 	 * @param restricted
 	 * @returns The newly created library object
 	 */
@@ -109,7 +110,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Removes all files of a library, but keeps the metadata
-	 * @param library
+	 * @param libraryName
 	 */
 	public async clearFiles(libraryName: ILibraryName): Promise<void> {
 		const isInstalled = await this.isInstalled(libraryName);
@@ -127,7 +128,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Deletes metadata and all files of the library
-	 * @param library
+	 * @param libraryName
 	 */
 	public async deleteLibrary(libraryName: ILibraryName): Promise<void> {
 		const isInstalled = await this.isInstalled(libraryName);
@@ -149,7 +150,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Checks if the file exists in the library
-	 * @param library
+	 * @param libraryName
 	 * @param filename
 	 * @returns true if the file exists, false otherwise
 	 */
@@ -238,7 +239,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Returns information about a library file
-	 * @param library
+	 * @param libraryName
 	 * @param file
 	 */
 	public async getFileStats(libraryName: ILibraryName, file: string): Promise<IFileStats> {
@@ -283,7 +284,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Lists all languages supported by a library
-	 * @param library
+	 * @param libraryName
 	 */
 	public async getLanguages(libraryName: ILibraryName): Promise<string[]> {
 		const prefix = this.getS3Key(libraryName, 'language');
@@ -310,7 +311,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Checks if a library is installed
-	 * @param library
+	 * @param libraryName
 	 */
 	public async isInstalled(libraryName: ILibraryName): Promise<boolean> {
 		const library = await this.libraryRepo.findNewestByNameAndVersion(
@@ -334,7 +335,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Returns all files that are a part of the library
-	 * @param library
+	 * @param libraryName
 	 * @param withMetadata wether to include metadata file
 	 * @returns an array of filenames
 	 */
@@ -352,7 +353,7 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Updates the additional metadata properties that are added to the stored libraries.
-	 * @param library
+	 * @param libraryName
 	 * @param additionalMetadata
 	 */
 	public async updateAdditionalMetadata(
@@ -381,9 +382,9 @@ export class LibraryStorage implements ILibraryStorage {
 
 	/**
 	 * Updates the library metadata
-	 * @param libraryMetadata
+	 * @param library
 	 */
-	async updateLibrary(library: ILibraryMetadata): Promise<IInstalledLibrary> {
+	public async updateLibrary(library: ILibraryMetadata): Promise<IInstalledLibrary> {
 		const existingLibrary = await this.libraryRepo.findOneByNameAndVersionOrFail(
 			library.machineName,
 			library.majorVersion,
@@ -420,7 +421,14 @@ export class LibraryStorage implements ILibraryStorage {
 	 * @param file file
 	 * @returns a readable stream, mimetype and size
 	 */
-	public async getLibraryFile(ubername: string, file: string) {
+	public async getLibraryFile(
+		ubername: string,
+		file: string
+	): Promise<{
+		stream: Readable;
+		mimetype: string;
+		size?: number;
+	}> {
 		const libraryName = LibraryName.fromUberName(ubername);
 
 		this.checkFilename(file);
