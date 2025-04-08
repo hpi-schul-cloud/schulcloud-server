@@ -115,4 +115,5 @@ export type AnyBoardNodeProps =
 	| SubmissionContainerElementProps
 	| SubmissionItemProps
 	| VideoConferenceElementProps
-	| MediaBoardNodeProps;
+	| MediaBoardNodeProps
+	| AudioRecordElementProps;

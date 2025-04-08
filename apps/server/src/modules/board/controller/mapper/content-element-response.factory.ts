@@ -2,9 +2,7 @@ import { NotImplementedException, UnprocessableEntityException } from '@nestjs/c
 import { AnyBoardNode, FileElement, RichTextElement } from '../../domain';
 import {
 	AnyContentElementResponse,
-	AudioRecordElementResponse,
 	FileElementResponse,
-	isAudioRecordResponse,
 	isFileElementResponse,
 	isRichTextElementResponse,
 	RichTextElementResponse,
@@ -49,9 +47,9 @@ export class ContentElementResponseFactory {
 
 	public static mapSubmissionContentToResponse(
 		element: RichTextElement | FileElement
-	): FileElementResponse | RichTextElementResponse | AudioRecordElementResponse {
+	): FileElementResponse | RichTextElementResponse {
 		const result = this.mapToResponse(element);
-		if (!isAudioRecordResponse(result) && !isFileElementResponse(result) && !isRichTextElementResponse(result)) {
+		if (!isFileElementResponse(result) && !isRichTextElementResponse(result)) {
 			throw new UnprocessableEntityException();
 		}
 		return result;
