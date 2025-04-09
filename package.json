@@ -149,7 +149,8 @@
 		"generate-client:card-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key card-api",
 		"pregenerate-client:element-api": "rimraf ./apps/server/src/infra/element-client/generated",
 		"generate-client:element-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key element-api",
-		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api"
+		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
+		"generate-client:cards-api": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/modules/common-cartridge/common-cartridge-client/card-client/cards-api-client' -c 'openapitools-config.json' -f 'operationId:CardController_getCards'"
 	},
 	"overrides": {
 		"gm": {

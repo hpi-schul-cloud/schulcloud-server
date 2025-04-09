@@ -1,22 +1,11 @@
+import { fileElementFactory } from '../testing';
 import { FileElement, isFileElement } from './file-element.do';
-import { BoardNodeProps } from './types';
 
 describe('FileElement', () => {
 	let fileElement: FileElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		fileElement = new FileElement({
-			...boardNodeProps,
+		fileElement = fileElementFactory.build({
 			alternativeText: 'Test alt text',
 			caption: 'Test caption',
 		});

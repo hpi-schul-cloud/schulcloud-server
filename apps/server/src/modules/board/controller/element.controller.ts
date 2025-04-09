@@ -26,6 +26,8 @@ import {
 	ExternalToolElementResponse,
 	FileElementContentBody,
 	FileElementResponse,
+	FileFolderElementContentBody,
+	FileFolderElementResponse,
 	LinkElementContentBody,
 	LinkElementResponse,
 	MoveContentElementBody,
@@ -74,7 +76,8 @@ export class ElementController {
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
 		DrawingElementContentBody,
-		VideoConferenceElementContentBody
+		VideoConferenceElementContentBody,
+		FileFolderElementContentBody
 	)
 	@ApiResponse({
 		status: 200,
@@ -87,6 +90,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(FileFolderElementResponse) },
 			],
 		},
 	})
