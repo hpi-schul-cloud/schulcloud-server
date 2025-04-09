@@ -1,22 +1,11 @@
+import { mediaExternalToolElementFactory } from '../../testing';
 import { MediaExternalToolElement, isMediaExternalToolElement } from './media-external-tool-element.do';
-import { BoardNodeProps } from '../types';
 
 describe('MediaExternalToolElement', () => {
 	let mediaExternalToolElement: MediaExternalToolElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		mediaExternalToolElement = new MediaExternalToolElement({
-			...boardNodeProps,
+		mediaExternalToolElement = mediaExternalToolElementFactory.build({
 			contextExternalToolId: 'test-id',
 		});
 	});
