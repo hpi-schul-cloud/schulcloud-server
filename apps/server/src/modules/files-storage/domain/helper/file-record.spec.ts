@@ -4,7 +4,7 @@ import { setupEntities } from '@testing/database';
 import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecordParams } from '../../api/dto';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordEntityFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface';
 
 describe('File Record Helper', () => {
@@ -13,9 +13,9 @@ describe('File Record Helper', () => {
 		const storageLocationId: EntityId = new ObjectId().toHexString();
 
 		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
+			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 		];
 
 		return { fileRecords, userId };
@@ -112,7 +112,7 @@ describe('File Record Helper', () => {
 
 	describe('getPreviewName is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordEntityFactory.buildWithId();
 			const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
 
 			return { fileRecord, outputFormat };

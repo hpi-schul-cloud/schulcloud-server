@@ -3,7 +3,7 @@ import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { fileRecordFactory } from '@modules/files-storage/testing';
+import { fileRecordEntityFactory } from '@modules/files-storage/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
@@ -129,16 +129,16 @@ describe(`${baseRouteName} (api)`, () => {
 				const loggedInClient = testApiClient.loginByUser(superheroAccount, superheroUser);
 
 				const storageLocationId1 = new ObjectId().toHexString();
-				const fileRecords1 = fileRecordFactory.buildList(3, {
+				const fileRecords1 = fileRecordEntityFactory.buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 
 				const storageLocationId2 = new ObjectId().toHexString();
-				const fileRecords2 = fileRecordFactory.buildList(3, {
+				const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 					storageLocationId: storageLocationId2,
 				});
 
-				const markedForDeleteFileRecords = fileRecordFactory.markedForDelete().buildList(3, {
+				const markedForDeleteFileRecords = fileRecordEntityFactory.markedForDelete().buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 

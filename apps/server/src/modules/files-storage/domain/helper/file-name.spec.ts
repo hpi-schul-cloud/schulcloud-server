@@ -4,7 +4,7 @@ import { setupEntities } from '@testing/database';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordEntityFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 
 describe('File Name Helper', () => {
@@ -13,9 +13,9 @@ describe('File Name Helper', () => {
 		const storageLocationId: EntityId = new ObjectId().toHexString();
 
 		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
+			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 		];
 
 		return fileRecords;

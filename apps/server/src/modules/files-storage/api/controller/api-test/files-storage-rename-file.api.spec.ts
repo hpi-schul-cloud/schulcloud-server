@@ -7,9 +7,9 @@ import { ApiValidationError } from '@shared/common/error';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
-import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FileRecordParentType } from '../../../domain';
-import { fileRecordFactory } from '../../../testing';
+import { FilesStorageTestModule } from '../../../files-storage-test.module';
+import { fileRecordEntityFactory } from '../../../testing';
 import { FileRecordResponse } from '../../dto';
 
 const baseRouteName = '/file/rename';
@@ -51,8 +51,8 @@ describe(`${baseRouteName} (api)`, () => {
 			parentId: validId,
 			parentType: FileRecordParentType.School,
 		};
-		const fileRecords = fileRecordFactory.buildList(3, fileParams);
-		const fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: studentUser.id });
+		const fileRecords = fileRecordEntityFactory.buildList(3, fileParams);
+		const fileRecord = fileRecordEntityFactory.build({ ...fileParams, name: 'test.txt', creatorId: studentUser.id });
 		fileRecords.push(fileRecord);
 
 		await em.persistAndFlush(fileRecords);

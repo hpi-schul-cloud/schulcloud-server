@@ -10,7 +10,7 @@ import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { CopyFileResponseBuilder } from '../../mapper';
 import { FileRecordEntity, ScanStatus } from '../../repo'; // TODO: invalid import
-import { fileRecordFactory } from '../../testing';
+import { fileRecordEntityFactory } from '../../testing';
 import { createCopyFiles } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -20,9 +20,9 @@ const buildFileRecordsWithParams = () => {
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
+		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {

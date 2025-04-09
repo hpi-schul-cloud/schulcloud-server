@@ -16,7 +16,7 @@ import { FileRecordParentType } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
 import { PreviewStatus } from '../../../repo';
-import { fileRecordFactory } from '../../../testing';
+import { fileRecordEntityFactory } from '../../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../../dto';
 import { availableParentTypes } from './mocks';
 
@@ -291,7 +291,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should return elements of requested scope', async () => {
 				const { loggedInClient, fileRecordId } = await setup();
-				const otherFileRecords = fileRecordFactory.buildList(3, {
+				const otherFileRecords = fileRecordEntityFactory.buildList(3, {
 					parentType: FileRecordParentType.School,
 				});
 

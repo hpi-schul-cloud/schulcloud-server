@@ -7,14 +7,14 @@ import { FileRecordEntity, FileRecordProperties, FileRecordSecurityCheckEmbeddab
 
 const yesterday = new Date(Date.now() - 86400000);
 
-class FileRecordFactory extends BaseFactory<FileRecordEntity, FileRecordProperties> {
+class FileRecordEntityFactory extends BaseFactory<FileRecordEntity, FileRecordProperties> {
 	public markedForDelete(): this {
 		const params: DeepPartial<FileRecordProperties> = { deletedSince: yesterday };
 		return this.params(params);
 	}
 }
 
-export const fileRecordFactory = FileRecordFactory.define(FileRecordEntity, ({ sequence }) => {
+export const fileRecordEntityFactory = FileRecordEntityFactory.define(FileRecordEntity, ({ sequence }) => {
 	return {
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,

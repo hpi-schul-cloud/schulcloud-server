@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
 import { ErrorType, FileRecordParentType, StorageLocation } from '../domain';
-import { fileRecordFactory } from '../testing';
+import { fileRecordEntityFactory } from '../testing';
 import {
 	FileRecordEntity,
 	FileRecordProperties,
@@ -81,25 +81,25 @@ describe('FileRecord Entity', () => {
 
 	describe('when embedding the security status', () => {
 		it('should set the embedded status property', () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, '');
 			expect(fileRecord.securityCheck?.status).toEqual(ScanStatus.VERIFIED);
 		});
 
 		it('should set the embedded reason property', () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
 			expect(fileRecord.securityCheck?.reason).toEqual('scanned');
 		});
 
 		it('should set the embedded requestToken property', () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 			//	fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
 			expect(fileRecord.securityCheck?.requestToken).toBeDefined();
 		});
 
 		it('should set to `undifined` the embedded requestToken property', () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordEntityFactory.build();
 			fileRecord.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'scanned');
 			expect(fileRecord.securityCheck?.requestToken).toBeUndefined();
 		});
@@ -129,7 +129,7 @@ describe('FileRecord Entity', () => {
 	describe('setName is called', () => {
 		describe('WHEN new name has length > 0', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 				const newName = 'newName';
 
 				return { fileRecord, newName };
@@ -146,7 +146,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN new name is empty string', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 				const newName = '';
 
 				return { fileRecord, newName };
@@ -168,7 +168,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN name is equal', () => {
 			const setup = () => {
 				const name = 'name123';
-				const fileRecord = fileRecordFactory.build({ name });
+				const fileRecord = fileRecordEntityFactory.build({ name });
 
 				return { fileRecord, name };
 			};
@@ -185,7 +185,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN name is not equal', () => {
 			const setup = () => {
 				const name = 'name123';
-				const fileRecord = fileRecordFactory.build({ name: 'name' });
+				const fileRecord = fileRecordEntityFactory.build({ name: 'name' });
 
 				return { fileRecord, name };
 			};
@@ -204,7 +204,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN name exists', () => {
 			const setup = () => {
 				const name = 'name123';
-				const fileRecord = fileRecordFactory.build({ name });
+				const fileRecord = fileRecordEntityFactory.build({ name });
 
 				return { fileRecord, name };
 			};
@@ -222,7 +222,7 @@ describe('FileRecord Entity', () => {
 	describe('getSecurityToken is called', () => {
 		describe('WHEN security token exists', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				return { fileRecord };
 			};
@@ -244,7 +244,7 @@ describe('FileRecord Entity', () => {
 				const parentId = new ObjectId().toHexString();
 				const storageLocationId = new ObjectId().toHexString();
 				const storageLocation = StorageLocation.INSTANCE;
-				const fileRecord = fileRecordFactory.build({ parentType, parentId, storageLocationId, storageLocation });
+				const fileRecord = fileRecordEntityFactory.build({ parentType, parentId, storageLocationId, storageLocation });
 
 				return { fileRecord, parentId, parentType, storageLocationId, storageLocation };
 			};
@@ -262,7 +262,7 @@ describe('FileRecord Entity', () => {
 	describe('isBlocked is called', () => {
 		describe('WHEN file record security status is BLOCKED', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
@@ -280,7 +280,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record security status is not BLOCKED', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -300,7 +300,7 @@ describe('FileRecord Entity', () => {
 	describe('hasScanStatusError is called', () => {
 		describe('WHEN file record security status is ERROR', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.ERROR;
 
@@ -318,7 +318,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record security status is not ERROR', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -338,7 +338,7 @@ describe('FileRecord Entity', () => {
 	describe('hasScanStatusWontCheck is called', () => {
 		describe('WHEN file record security status is WONT_CHECK', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.WONT_CHECK;
 
@@ -356,7 +356,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record security status is not WONT_CHECK', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -376,7 +376,7 @@ describe('FileRecord Entity', () => {
 	describe('isPending is called', () => {
 		describe('WHEN file record security status is PENDING', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.PENDING;
 
@@ -394,7 +394,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record security status is not PENDING', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -414,7 +414,7 @@ describe('FileRecord Entity', () => {
 	describe('isVerified is called', () => {
 		describe('WHEN file record security status is VERIFIED', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -432,7 +432,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file record security status is not VERIFIED', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build();
+				const fileRecord = fileRecordEntityFactory.build();
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
@@ -451,7 +451,7 @@ describe('FileRecord Entity', () => {
 
 	describe('copy is called', () => {
 		const getCopyData = () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordEntityFactory.buildWithId();
 			const userId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 			const storageLocationId = new ObjectId().toHexString();
@@ -608,7 +608,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is PENDING', () => {
 			const setup = () => {
 				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.PENDING;
 
@@ -627,7 +627,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is PENDING and mime type is not previewable', () => {
 			const setup = () => {
 				const mimeType = 'application/octet-stream';
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.PENDING;
 
@@ -647,7 +647,7 @@ describe('FileRecord Entity', () => {
 			describe('MIMETYPE is supported', () => {
 				const setup = () => {
 					const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
-					const fileRecord = fileRecordFactory.build({ mimeType });
+					const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -665,7 +665,7 @@ describe('FileRecord Entity', () => {
 
 			describe('MIMETYPE is not supported', () => {
 				const setup = () => {
-					const fileRecord = fileRecordFactory.build();
+					const fileRecord = fileRecordEntityFactory.build();
 
 					fileRecord.securityCheck.status = ScanStatus.VERIFIED;
 
@@ -685,7 +685,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is ERROR', () => {
 			const setup = () => {
 				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.ERROR;
 
@@ -704,7 +704,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is BLOCKED', () => {
 			const setup = () => {
 				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
@@ -723,7 +723,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is BLOCKED and mime type is not previewable', () => {
 			const setup = () => {
 				const mimeType = 'application/octet-stream';
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
 
@@ -742,7 +742,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is WONT_CHECK', () => {
 			const setup = () => {
 				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = ScanStatus.WONT_CHECK;
 
@@ -761,7 +761,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN file record securityCheck status is of other than ScanStatus Enum value', () => {
 			const setup = () => {
 				const mimeType = PreviewInputMimeTypes.IMAGE_JPEG;
-				const fileRecord = fileRecordFactory.build({ mimeType });
+				const fileRecord = fileRecordEntityFactory.build({ mimeType });
 
 				fileRecord.securityCheck.status = 'OTHER_STATUS' as ScanStatus;
 
@@ -781,7 +781,7 @@ describe('FileRecord Entity', () => {
 	describe('fileNameWithoutExtension is called', () => {
 		describe('WHEN file name has extension', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build({ name: 'file-name.jpg' });
+				const fileRecord = fileRecordEntityFactory.build({ name: 'file-name.jpg' });
 
 				return { fileRecord };
 			};
@@ -797,7 +797,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file name has not extension', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build({ name: 'file-name' });
+				const fileRecord = fileRecordEntityFactory.build({ name: 'file-name' });
 
 				return { fileRecord };
 			};
@@ -813,7 +813,7 @@ describe('FileRecord Entity', () => {
 
 		describe('WHEN file name starts with dot', () => {
 			const setup = () => {
-				const fileRecord = fileRecordFactory.build({ name: '.bild.123.jpg' });
+				const fileRecord = fileRecordEntityFactory.build({ name: '.bild.123.jpg' });
 
 				return { fileRecord };
 			};
@@ -832,7 +832,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN creatorId exists', () => {
 			const setup = () => {
 				const creatorId = new ObjectId().toHexString();
-				const fileRecord = fileRecordFactory.build({ creatorId });
+				const fileRecord = fileRecordEntityFactory.build({ creatorId });
 
 				return { fileRecord, creatorId };
 			};
@@ -851,7 +851,7 @@ describe('FileRecord Entity', () => {
 		describe('WHEN isUploading is true', () => {
 			const setup = () => {
 				const isUploading = true;
-				const fileRecord = fileRecordFactory.build({ isUploading });
+				const fileRecord = fileRecordEntityFactory.build({ isUploading });
 
 				return { fileRecord, isUploading };
 			};
