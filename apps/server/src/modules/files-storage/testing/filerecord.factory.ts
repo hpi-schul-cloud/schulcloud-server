@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { StorageLocation } from '../domain/interface';
-import { FileRecordEntity, FileRecordProperties, FileRecordSecurityCheck } from '../repo/filerecord.entity';
+import { FileRecordEntity, FileRecordProperties, FileRecordSecurityCheckEmbeddable } from '../repo/filerecord.entity';
 
 const yesterday = new Date(Date.now() - 86400000);
 
@@ -19,7 +19,7 @@ export const fileRecordFactory = FileRecordFactory.define(FileRecordEntity, ({ s
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,
 		mimeType: 'application/octet-stream',
-		securityCheck: new FileRecordSecurityCheck({}),
+		securityCheck: new FileRecordSecurityCheckEmbeddable({}),
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),

@@ -32,7 +32,7 @@ export interface FileRecordSecurityCheckProperties {
 	requestToken?: string;
 }
 @Embeddable()
-export class FileRecordSecurityCheck {
+export class FileRecordSecurityCheckEmbeddable {
 	@Enum()
 	status: ScanStatus = ScanStatus.PENDING;
 
@@ -105,8 +105,8 @@ export class FileRecordEntity extends BaseEntityWithTimestamps {
 	@Property()
 	mimeType: string; // TODO mime-type enum?
 
-	@Embedded(() => FileRecordSecurityCheck, { object: true, nullable: false })
-	securityCheck: FileRecordSecurityCheck;
+	@Embedded(() => FileRecordSecurityCheckEmbeddable, { object: true, nullable: false })
+	securityCheck: FileRecordSecurityCheckEmbeddable;
 
 	@Index()
 	@Enum()
@@ -170,7 +170,7 @@ export class FileRecordEntity extends BaseEntityWithTimestamps {
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
 		}
-		this.securityCheck = new FileRecordSecurityCheck({});
+		this.securityCheck = new FileRecordSecurityCheckEmbeddable({});
 		this.deletedSince = props.deletedSince;
 	}
 

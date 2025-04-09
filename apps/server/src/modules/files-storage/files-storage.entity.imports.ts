@@ -1,5 +1,5 @@
 import { User } from '@modules/user/repo';
-import { FileRecordEntity, FileRecordSecurityCheck } from './repo';
+import { FileRecordEntity, FileRecordSecurityCheckEmbeddable } from './repo/filerecord.entity';
 
-export const ENTITIES = [FileRecordEntity, FileRecordSecurityCheck];
+export const ENTITIES = [FileRecordEntity, FileRecordSecurityCheckEmbeddable];
 export const TEST_ENTITIES = [...ENTITIES, User];

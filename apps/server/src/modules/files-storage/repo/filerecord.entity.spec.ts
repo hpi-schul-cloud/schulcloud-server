@@ -7,7 +7,7 @@ import { fileRecordFactory } from '../testing';
 import {
 	FileRecordEntity,
 	FileRecordProperties,
-	FileRecordSecurityCheck,
+	FileRecordSecurityCheckEmbeddable,
 	PreviewStatus,
 	ScanStatus,
 } from './filerecord.entity';
@@ -107,19 +107,19 @@ describe('FileRecord Entity', () => {
 
 	describe('FileRecordSecurityCheck', () => {
 		it('should set the requestToken via the constructor', () => {
-			const securityCheck = new FileRecordSecurityCheck({ requestToken: '08154711' });
+			const securityCheck = new FileRecordSecurityCheckEmbeddable({ requestToken: '08154711' });
 			expect(securityCheck.requestToken).toEqual('08154711');
 			expect(securityCheck.status).toEqual(securityCheck.status);
 			expect(securityCheck.reason).toEqual(securityCheck.reason);
 		});
 		it('should set the status via the constructor', () => {
-			const securityCheck = new FileRecordSecurityCheck({ status: ScanStatus.PENDING });
+			const securityCheck = new FileRecordSecurityCheckEmbeddable({ status: ScanStatus.PENDING });
 			expect(securityCheck.status).toEqual(ScanStatus.PENDING);
 			expect(securityCheck.requestToken).toEqual(securityCheck.requestToken);
 			expect(securityCheck.reason).toEqual(securityCheck.reason);
 		});
 		it('should set the reason via the constructor', () => {
-			const securityCheck = new FileRecordSecurityCheck({ reason: 'test-reason' });
+			const securityCheck = new FileRecordSecurityCheckEmbeddable({ reason: 'test-reason' });
 			expect(securityCheck.reason).toEqual('test-reason');
 			expect(securityCheck.status).toEqual(securityCheck.status);
 			expect(securityCheck.requestToken).toEqual(securityCheck.requestToken);
