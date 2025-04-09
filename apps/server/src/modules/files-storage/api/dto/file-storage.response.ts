@@ -3,14 +3,13 @@ import { PaginationResponse } from '@shared/controller/dto';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
 import { FileRecord, PreviewStatus, ScanStatus } from '../../repo/entity'; // TODO: invalid import
-import { API_VERSION_PATH } from '../../files-storage.const';
 import { FileRecordParentType, StorageLocation } from '../../domain/';
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
-		this.url = `${API_VERSION_PATH}/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;
+		this.url = `/api/v3/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;
 		this.size = fileRecord.size;
 		this.securityCheckStatus = fileRecord.securityCheck.status;
 		this.parentId = fileRecord.parentId;

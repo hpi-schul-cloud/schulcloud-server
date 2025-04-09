@@ -29,7 +29,6 @@ import {
 	SingleFileParams,
 } from '../dto';
 import { FileRecord } from '../../repo/entity'; // TODO: invalid import
-import { FileStorageAuthorizationContext } from '../../files-storage.const';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../../mapper';
 import {
 	FilesStorageService,
@@ -40,6 +39,14 @@ import {
 	StorageLocation,
 	ErrorType,
 } from '../../domain';
+
+// TODO: Delete files-storage uc spec tests and remove export?
+export const FileStorageAuthorizationContext = {
+	create: AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_CREATE]),
+	read: AuthorizationContextBuilder.read([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_VIEW]),
+	update: AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_EDIT]),
+	delete: AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_REMOVE]),
+};
 
 @Injectable()
 export class FilesStorageUC {
