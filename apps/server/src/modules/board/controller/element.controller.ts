@@ -18,6 +18,7 @@ import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {
 	AnyContentElementResponse,
+	AudioRecordElementContentBody,
 	AudioRecordElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
@@ -70,6 +71,7 @@ export class ElementController {
 	@ApiOperation({ summary: 'Update a single content element.' })
 	@ApiExtraModels(
 		FileElementContentBody,
+		AudioRecordElementContentBody,
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
