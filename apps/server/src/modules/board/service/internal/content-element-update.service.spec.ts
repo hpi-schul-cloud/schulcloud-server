@@ -5,6 +5,7 @@ import {
 	DrawingContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
+	FileFolderContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
@@ -15,6 +16,7 @@ import {
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	fileFolderElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
@@ -60,6 +62,17 @@ describe('ContentElementUpdateService', () => {
 
 		expect(element.caption).toBe('caption');
 		expect(element.alternativeText).toBe('alternativeText');
+		expect(repo.save).toHaveBeenCalledWith(element);
+	});
+
+	it('should update FileFolderElement', async () => {
+		const element = fileFolderElementFactory.build();
+		const content = new FileFolderContentBody();
+		content.title = 'title';
+
+		await service.updateContent(element, content);
+
+		expect(element.title).toBe('title');
 		expect(repo.save).toHaveBeenCalledWith(element);
 	});
 

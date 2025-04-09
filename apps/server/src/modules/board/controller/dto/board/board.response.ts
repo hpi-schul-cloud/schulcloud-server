@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
+import { Permission } from '@shared/domain/interface/permission.enum';
 import { BoardFeature, BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 import { ColumnResponse } from './column.response';
-import { Permission } from '@shared/domain/interface/permission.enum';
 
 export class BoardResponse {
 	constructor({ id, title, columns, timestamps, isVisible, layout, features, permissions }: BoardResponse) {
@@ -18,7 +19,7 @@ export class BoardResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

@@ -18,41 +18,41 @@
 import type { ContentElementType } from './content-element-type';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { TimestampsResponse } from './timestamps-response';
+import type { FileFolderElementContent } from './file-folder-element-content';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { VideoConferenceElementContent } from './video-conference-element-content';
+import type { TimestampsResponse } from './timestamps-response';
 
 /**
  * 
  * @export
- * @interface VideoConferenceElementResponse
+ * @interface FileFolderElementResponse
  */
-export interface VideoConferenceElementResponse {
+export interface FileFolderElementResponse {
     /**
      * 
      * @type {string}
-     * @memberof VideoConferenceElementResponse
+     * @memberof FileFolderElementResponse
      */
     'id': string;
     /**
      * 
      * @type {ContentElementType}
-     * @memberof VideoConferenceElementResponse
+     * @memberof FileFolderElementResponse
      */
     'type': ContentElementType;
     /**
      * 
-     * @type {TimestampsResponse}
-     * @memberof VideoConferenceElementResponse
+     * @type {FileFolderElementContent}
+     * @memberof FileFolderElementResponse
      */
-    'timestamps': TimestampsResponse;
+    'content': FileFolderElementContent;
     /**
      * 
-     * @type {VideoConferenceElementContent}
-     * @memberof VideoConferenceElementResponse
+     * @type {TimestampsResponse}
+     * @memberof FileFolderElementResponse
      */
-    'content': VideoConferenceElementContent;
+    'timestamps': TimestampsResponse;
 }
 
 
