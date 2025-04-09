@@ -11,10 +11,10 @@ import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordMapper, FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity, FileRecordRepo } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
-import { FileRecordParentType, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
@@ -65,7 +65,7 @@ describe('FilesStorageService update methods', () => {
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
-					provide: FileRecordRepo,
+					provide: FILE_RECORD_REPO,
 					useValue: createMock<FileRecordRepo>(),
 				},
 				{
@@ -84,7 +84,7 @@ describe('FilesStorageService update methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		fileRecordRepo = module.get(FileRecordRepo);
+		fileRecordRepo = module.get(FILE_RECORD_REPO);
 	});
 
 	beforeEach(() => {

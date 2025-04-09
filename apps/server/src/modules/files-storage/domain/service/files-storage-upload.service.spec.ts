@@ -11,12 +11,12 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordEntity, FileRecordRepo } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory, readableStreamWithFileTypeFactory } from '../../testing';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
-import { FileRecordParentType, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
@@ -64,7 +64,7 @@ describe('FilesStorageService upload methods', () => {
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
-					provide: FileRecordRepo,
+					provide: FILE_RECORD_REPO,
 					useValue: createMock<FileRecordRepo>(),
 				},
 				{
@@ -84,7 +84,7 @@ describe('FilesStorageService upload methods', () => {
 
 		service = module.get(FilesStorageService);
 		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
-		fileRecordRepo = module.get(FileRecordRepo);
+		fileRecordRepo = module.get(FILE_RECORD_REPO);
 		antivirusService = module.get(AntivirusService);
 		configService = module.get(ConfigService);
 	});

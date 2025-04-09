@@ -9,10 +9,10 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { CopyFileResponseBuilder } from '../../mapper';
-import { FileRecordEntity, FileRecordRepo, ScanStatus } from '../../repo'; // TODO: invalid import
+import { FileRecordEntity, ScanStatus } from '../../repo'; // TODO: invalid import
 import { fileRecordFactory } from '../../testing';
 import { createCopyFiles } from '../helper';
-import { FileRecordParentType, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
@@ -53,7 +53,7 @@ describe('FilesStorageService copy methods', () => {
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
-					provide: FileRecordRepo,
+					provide: FILE_RECORD_REPO,
 					useValue: createMock<FileRecordRepo>(),
 				},
 				{
@@ -73,7 +73,7 @@ describe('FilesStorageService copy methods', () => {
 
 		service = module.get(FilesStorageService);
 		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
-		fileRecordRepo = module.get(FileRecordRepo);
+		fileRecordRepo = module.get(FILE_RECORD_REPO);
 		antivirusService = module.get(AntivirusService);
 	});
 

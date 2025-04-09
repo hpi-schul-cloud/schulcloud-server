@@ -5,21 +5,21 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileRecordParentType, StorageLocation } from '../domain';
 import { fileRecordFactory } from '../testing';
 import { FileRecordEntity } from './filerecord.entity';
-import { FileRecordRepo } from './filerecord.repo';
+import { FileRecordMikroOrmRepo } from './filerecord.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);
 
 describe('FileRecordRepo', () => {
 	let module: TestingModule;
-	let repo: FileRecordRepo;
+	let repo: FileRecordMikroOrmRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FileRecordEntity] })],
-			providers: [FileRecordRepo],
+			providers: [FileRecordMikroOrmRepo],
 		}).compile();
-		repo = module.get(FileRecordRepo);
+		repo = module.get(FileRecordMikroOrmRepo);
 		em = module.get(EntityManager);
 	});
 

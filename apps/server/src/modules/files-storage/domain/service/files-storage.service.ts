@@ -25,7 +25,7 @@ import {
 } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity, FileRecordRepo, ScanStatus } from '../../repo';
+import { FileRecordEntity, ScanStatus } from '../../repo';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import {
@@ -37,12 +37,12 @@ import {
 	resolveFileNameDuplicates,
 	unmarkForDelete,
 } from '../helper';
-import { GetFileResponse, StorageLocationParams } from '../interface';
+import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
 
 @Injectable()
 export class FilesStorageService {
 	constructor(
-		private readonly fileRecordRepo: FileRecordRepo,
+		@Inject(FILE_RECORD_REPO) private readonly fileRecordRepo: FileRecordRepo,
 		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
 		private readonly configService: ConfigService<FileStorageConfig, true>,

@@ -4,11 +4,12 @@ import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { StorageLocation } from '../domain';
+import { FileRecordRepo } from '../domain/interface/file-record.repo.interface';
 import { FileRecordEntity } from './filerecord.entity';
 import { FileRecordScope } from './scope/filerecord-scope';
 
 @Injectable()
-export class FileRecordRepo extends BaseRepo<FileRecordEntity> {
+export class FileRecordMikroOrmRepo extends BaseRepo<FileRecordEntity> implements FileRecordRepo {
 	get entityName(): EntityName<FileRecordEntity> {
 		return FileRecordEntity;
 	}
