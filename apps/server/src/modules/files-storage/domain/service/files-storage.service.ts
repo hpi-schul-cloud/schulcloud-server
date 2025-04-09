@@ -38,6 +38,7 @@ import {
 	unmarkForDelete,
 } from '../helper';
 import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
+import { StoreLocationMetadata } from '../file-record.factory';
 
 @Injectable()
 export class FilesStorageService {
@@ -83,7 +84,7 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecordEntity> {
+	public async uploadFile(userId: EntityId, params: StoreLocationMetadata, file: FileDto): Promise<FileRecordEntity> {
 		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
 		// MimeType Detection consumes part of the stream, so the restored stream is passed on
 		file.data = stream;
@@ -97,7 +98,7 @@ export class FilesStorageService {
 
 	private async createFileRecord(
 		file: FileDto,
-		params: FileRecordParams,
+		params: StoreLocationMetadata,
 		userId: EntityId
 	): Promise<{ fileRecord: FileRecordEntity; stream: Readable }> {
 		const fileName = await this.resolveFileName(file, params);
@@ -417,7 +418,7 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecordEntity> {
-		const fileRecord = sourceFile.copy(userId, targetParams);
+		const fileRecord = sourceFile.copy(userId, targetParams); // TODO: FileRecordFactory.copy(sourceFile, userId, targetParams)
 		await this.fileRecordRepo.save(fileRecord);
 
 		return fileRecord;

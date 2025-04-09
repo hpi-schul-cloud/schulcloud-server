@@ -9,7 +9,8 @@ import {
 	PreviewWidth,
 	StorageLocation,
 	StorageLocationParams,
-} from '../../domain/interface';
+	StoreLocationMetadata,
+} from '../../domain';
 
 export class StorageLocationParamsDto implements StorageLocationParams {
 	@ApiProperty()
@@ -20,8 +21,8 @@ export class StorageLocationParamsDto implements StorageLocationParams {
 	@IsEnum(StorageLocation)
 	public storageLocation!: StorageLocation;
 }
-
-export class FileRecordParams {
+// TODO: StoreLocationMetadata vs StorageLocationParams
+export class FileRecordParams implements StoreLocationMetadata {
 	@ApiProperty()
 	@IsMongoId()
 	public storageLocationId!: EntityId;
