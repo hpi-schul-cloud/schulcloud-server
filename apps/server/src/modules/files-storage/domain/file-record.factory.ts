@@ -17,7 +17,7 @@ export class FileRecordFactory {
 		return fileRecord;
 	}
 
-	public static buildFromInput(
+	public static buildFromExternalInput(
 		name: string,
 		size: number,
 		mimeType: string,
@@ -45,7 +45,7 @@ export class FileRecordFactory {
 		return fileRecord;
 	}
 
-	public static buildFromPersistenz(props: FileRecordProps): FileRecord {
+	public static buildFromFileRecordProps(props: FileRecordProps): FileRecord {
 		const fileRecord = FileRecordFactory.build(props);
 
 		return fileRecord;
