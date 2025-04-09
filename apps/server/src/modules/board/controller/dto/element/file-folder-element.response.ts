@@ -4,23 +4,18 @@ import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class FileElementContent {
-	constructor({ caption, alternativeText }: FileElementContent) {
-		this.caption = caption;
-		this.alternativeText = alternativeText;
+export class FileFolderElementContent {
+	constructor({ title }: FileFolderElementContent) {
+		this.title = title;
 	}
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	caption: string;
-
-	@ApiProperty()
-	@DecodeHtmlEntities()
-	alternativeText: string;
+	title: string;
 }
 
-export class FileElementResponse {
-	constructor({ id, content, timestamps, type }: FileElementResponse) {
+export class FileFolderElementResponse {
+	constructor({ id, content, timestamps, type }: FileFolderElementResponse) {
 		this.id = id;
 		this.content = content;
 		this.timestamps = timestamps;
@@ -31,10 +26,10 @@ export class FileElementResponse {
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
-	type: ContentElementType.FILE;
+	type: ContentElementType.FILE_FOLDER;
 
 	@ApiProperty()
-	content: FileElementContent;
+	content: FileFolderElementContent;
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;

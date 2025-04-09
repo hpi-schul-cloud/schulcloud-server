@@ -1,14 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFileDto } from '@modules/files-storage-client/dto';
+import { CopyElementType, CopyHelperService, CopyStatusEnum, type CopyStatus } from '@modules/copy-helper';
+import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
-import { ToolConfig } from '@modules/tool/tool-config';
+import {
+	CopyContextExternalToolRejectData,
+	type ContextExternalTool,
+} from '@modules/tool/context-external-tool/domain';
+import type { ToolConfig } from '@modules/tool/tool-config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain/types';
+import type { EntityId } from '@shared/domain/types';
 import {
-	AnyBoardNode,
 	BoardNodeType,
 	Card,
 	CollaborativeTextEditorElement,
@@ -19,16 +21,18 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileFolderElement,
 	getBoardNodeType,
 	handleNonExhaustiveSwitch,
 	LinkElement,
-	MediaBoard,
-	MediaExternalToolElement,
-	MediaLine,
 	RichTextElement,
 	SubmissionContainerElement,
-	SubmissionItem,
-	VideoConferenceElement,
+	type AnyBoardNode,
+	type MediaBoard,
+	type MediaExternalToolElement,
+	type MediaLine,
+	type SubmissionItem,
+	type VideoConferenceElement,
 } from '../../domain';
 
 export interface CopyContext {
@@ -97,6 +101,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT:
 				result = await this.copyMediaExternalToolElement(boardNode as MediaExternalToolElement, context);
+				break;
+			case BoardNodeType.FILE_FOLDER_ELEMENT:
+				result = await this.copyFileFolderElement(boardNode as FileFolderElement, context);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -475,5 +482,22 @@ export class BoardNodeCopyService {
 			updatedAt: new Date(),
 			children: childrenResults.map((r) => r.copyEntity).filter((c) => c !== undefined) as AnyBoardNode[],
 		};
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public copyFileFolderElement(original: FileFolderElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new FileFolderElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.FILE_FOLDER_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: [],
+		};
+
+		return Promise.resolve(result);
 	}
 }

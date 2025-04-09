@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
@@ -39,7 +40,7 @@ export class CreateNewsParams {
 
 	@IsMongoId()
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'Specific target id to which the News entity is related',
 	})
 	targetId!: string;

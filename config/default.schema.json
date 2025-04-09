@@ -1215,6 +1215,11 @@
 			"default": false,
 			"description": "Toggle for activating the column board."
 		},
+		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable file folder elements in column board."
+		},
 		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
 			"type": "boolean",
 			"default": false,
