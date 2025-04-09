@@ -4,8 +4,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileRecordParentType, StorageLocation } from '../domain';
 import { fileRecordEntityFactory } from '../testing';
-import { FileRecordEntity } from './filerecord.entity';
-import { FileRecordMikroOrmRepo } from './filerecord.repo';
+import { FileRecordEntity } from './file-record.entity';
+import { FileRecordMikroOrmRepo } from './file-record.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);
 

@@ -5,8 +5,8 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { StorageLocation } from '../domain';
 import { FileRecordRepo } from '../domain/interface/file-record.repo.interface';
-import { FileRecordEntity } from './filerecord.entity';
-import { FileRecordScope } from './scope/filerecord-scope';
+import { FileRecordEntity } from './file-record.entity';
+import { FileRecordScope } from './scope/file-record-scope';
 
 @Injectable()
 export class FileRecordMikroOrmRepo extends BaseRepo<FileRecordEntity> implements FileRecordRepo {

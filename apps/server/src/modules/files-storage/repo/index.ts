@@ -1,2 +1,2 @@
-export { FileRecordEntity, PreviewStatus, ScanStatus } from './filerecord.entity';
-export { FileRecordMikroOrmRepo } from './filerecord.repo';
+export { FileRecordEntity, PreviewStatus, ScanStatus } from './file-record.entity';
+export { FileRecordMikroOrmRepo } from './file-record.repo';

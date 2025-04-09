@@ -3,14 +3,14 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { StoreLocationMetadata } from '../../domain/file-record.factory';
 import {
 	FileRecordParentType,
 	PreviewOutputMimeTypes,
 	PreviewWidth,
 	StorageLocation,
 	StorageLocationParams,
-	StoreLocationMetadata,
-} from '../../domain';
+} from '../../domain/interface';
 
 export class StorageLocationParamsDto implements StorageLocationParams {
 	@ApiProperty()

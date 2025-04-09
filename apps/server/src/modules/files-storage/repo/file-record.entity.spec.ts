@@ -10,7 +10,7 @@ import {
 	FileRecordSecurityCheckEmbeddable,
 	PreviewStatus,
 	ScanStatus,
-} from './filerecord.entity';
+} from './file-record.entity';
 
 describe('FileRecord Entity', () => {
 	beforeAll(async () => {

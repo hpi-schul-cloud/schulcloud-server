@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { StorageLocation } from '../domain/interface';
-import { FileRecordEntity, FileRecordProperties, FileRecordSecurityCheckEmbeddable } from '../repo/filerecord.entity';
+import { FileRecordEntity, FileRecordProperties, FileRecordSecurityCheckEmbeddable } from '../repo/file-record.entity';
 
 const yesterday = new Date(Date.now() - 86400000);
 
