@@ -234,6 +234,7 @@
 		"lodash": "^4.17.21",
 		"mixwith": "^0.1.1",
 		"moment": "^2.30.1",
+		"mongodb": "^5.9.2",
 		"mongodb-memory-server-global": "^9.1.8",
 		"mongodb-uri": "^0.9.7",
 		"mongoose": "^6.13.8",
