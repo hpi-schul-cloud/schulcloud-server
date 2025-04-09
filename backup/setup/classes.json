@@ -187,19 +187,16 @@
 		},
 		"userIds": [
 			{
-				"$oid": "6492d0dead0aa141f4e36440"
-			},
-			{
-				"$oid": "6492d064ad0aa141f4e363ca"
+				"$oid": "0000d224816abba584714c9c"
 			}
 		],
 		"teacherIds": [
 			{
-				"$oid": "6492cfa7ad0aa141f4e36354"
+				"$oid": "0000d231816abba584714c9e"
 			}
 		],
 		"schoolId": {
-			"$oid": "6492cc63ad0aa141f4e361d1"
+			"$oid": "5f2987e020834114b8efd6f8"
 		},
 		"name": "a",
 		"gradeLevel": 7,

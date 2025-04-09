@@ -1,5 +1,6 @@
 import { LegacyLogger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+import { UseRequestContext } from '@mikro-orm/core';
+import { SagaService } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
@@ -14,6 +15,9 @@ import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionTargetRefBuilder } from '../controller/dto/builder';
 
+// NOTE: This module should not listen to events.
+// All events should be directly handled by the saga module.
+// In case we need to log something from this module, we could inject a step(s) into the saga.
 @Injectable()
 @EventsHandler(DataDeletedEvent)
 export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
@@ -24,8 +28,8 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		private readonly deletionLogService: DeletionLogService,
 		private readonly logger: LegacyLogger,
 		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM,
-		private readonly configService: ConfigService<DeletionConfig, true>
+		private readonly configService: ConfigService<DeletionConfig, true>,
+		private readonly sagaService: SagaService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 		this.config = [
@@ -95,13 +99,10 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			if (max > 0) {
 				this.logger.debug({ action: 'processing deletion request', deletionRequests });
 
-				// eslint-disable-next-line no-await-in-loop
-				await Promise.all(
-					deletionRequests.map(async (req) => {
-						await this.executeDeletionRequest(req);
-					})
-				);
-
+				deletionRequests.map(async (req) => {
+					await this.sagaService.executeSaga('userDeletion', { userId: req.targetRefId });
+					await this.executeDeletionRequest(req);
+				});
 				// eslint-disable-next-line no-await-in-loop
 				await this.delayForDeletion();
 			}
