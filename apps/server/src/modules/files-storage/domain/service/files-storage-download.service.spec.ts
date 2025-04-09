@@ -8,14 +8,13 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
-import { FileRecord, ScanStatus } from '../../repo/entity'; // TODO: invalid import
-import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileResponseBuilder } from '../../mapper';
+import { FileRecord, FileRecordRepo, ScanStatus } from '../../repo'; // TODO: invalid import
+import { fileRecordFactory } from '../../testing';
+import { ErrorType } from '../error';
 import { createPath } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
-import { FileResponseBuilder } from '../../mapper';
-import { FileRecordRepo } from '../../repo';
-import { fileRecordFactory } from '../../testing';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {

@@ -2,9 +2,9 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller/dto';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
-import { FileRecord, PreviewStatus, ScanStatus } from '../../repo/entity'; // TODO: invalid import
+import { FileRecordParentType, StorageLocation } from '../../domain/interface';
 import { API_VERSION_PATH } from '../../files-storage.const';
-import { FileRecordParentType, StorageLocation } from '../../domain/';
+import { FileRecord, PreviewStatus, ScanStatus } from '../../repo'; // TODO: invalid import
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {

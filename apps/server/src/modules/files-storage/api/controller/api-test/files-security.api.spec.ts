@@ -6,9 +6,9 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import type { Server } from 'node:net';
-import { FileRecord } from '../../../repo/entity';
-import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FileRecordParentType, StorageLocation } from '../../../domain';
+import { FilesStorageTestModule } from '../../../files-storage-test.module';
+import { FileRecord } from '../../../repo';
 import { fileRecordFactory } from '../../../testing';
 import { ScanResultParams } from '../../dto';
 

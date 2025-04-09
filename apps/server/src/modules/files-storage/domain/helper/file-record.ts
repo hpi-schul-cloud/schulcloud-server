@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { FileRecordParams } from '../../api/dto';
-import { FileRecord } from '../../repo/entity';
+import { FileRecord } from '../../repo';
 import { PreviewOutputMimeTypes } from '../interface';
 
 export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {

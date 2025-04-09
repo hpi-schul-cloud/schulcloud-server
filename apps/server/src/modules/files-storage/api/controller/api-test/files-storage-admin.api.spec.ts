@@ -3,7 +3,6 @@ import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { FileRecord } from '../../../repo/entity'; // TODO: invalid import
 import { fileRecordFactory } from '@modules/files-storage/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +13,7 @@ import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
+import { FileRecord } from '../../../repo'; // TODO: invalid import
 import { FileRecordResponse } from '../../dto';
 import { availableStorageLocations } from './mocks';
 

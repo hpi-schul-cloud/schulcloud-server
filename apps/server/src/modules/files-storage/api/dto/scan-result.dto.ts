@@ -1,4 +1,4 @@
-import { ScanStatus } from '../../repo/entity';
+import { ScanStatus } from '../../repo';
 
 export class ScanResultDto {
 	public status: ScanStatus;

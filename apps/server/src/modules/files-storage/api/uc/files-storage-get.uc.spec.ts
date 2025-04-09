@@ -9,11 +9,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { FileRecordParams } from '../dto';
-import { FileRecord } from '../../repo/entity';
+import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FileStorageAuthorizationContext } from '../../files-storage.const';
-import { FileRecordParentType, StorageLocation, FilesStorageService, PreviewService } from '../../domain';
+import { FileRecord } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { FileRecordParams } from '../dto';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {

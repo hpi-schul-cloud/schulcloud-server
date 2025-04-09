@@ -3,9 +3,9 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecordParams } from '../../api/dto';
-import { FileRecord } from '../../repo/entity';
-import { PreviewOutputMimeTypes } from '../interface';
+import { FileRecord } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { PreviewOutputMimeTypes } from '../interface';
 
 describe('File Record Helper', () => {
 	const setupFileRecords = () => {

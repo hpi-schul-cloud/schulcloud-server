@@ -2,9 +2,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
-import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../error';
+import { FileRecord } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { ErrorType } from '../error';
 
 describe('Path Helper', () => {
 	beforeAll(async () => {

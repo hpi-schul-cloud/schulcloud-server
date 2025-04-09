@@ -10,14 +10,13 @@ import { setupEntities } from '@testing/database';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
-import { FileDto } from '../dto';
-import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileRecord, FileRecordRepo } from '../../repo';
+import { fileRecordFactory, readableStreamWithFileTypeFactory } from '../../testing';
+import { FileDto } from '../dto';
+import { ErrorType } from '../error';
 import { createFileRecord, resolveFileNameDuplicates } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
-import { FileRecordRepo } from '../../repo';
-import { fileRecordFactory, readableStreamWithFileTypeFactory } from '../../testing';
 import { FilesStorageService } from './files-storage.service';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {

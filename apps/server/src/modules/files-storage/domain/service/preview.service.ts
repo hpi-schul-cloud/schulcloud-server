@@ -1,14 +1,14 @@
+import { LegacyLogger } from '@core/logger';
 import { PreviewProducer } from '@infra/preview-generator';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { LegacyLogger } from '@core/logger';
 import { PreviewParams } from '../../api/dto'; // TODO: invalid import
-import { FileRecord, PreviewStatus } from '../../repo/entity';
-import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
+import { FileRecord, PreviewStatus } from '../../repo';
+import { ErrorType } from '../error';
 import { createPreviewDirectoryPath, getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
-import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
 
 @Injectable()
 export class PreviewService {

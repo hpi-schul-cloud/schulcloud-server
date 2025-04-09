@@ -9,13 +9,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
-import { FileRecord } from '../../repo/entity';
-import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordParentType, StorageLocation } from '../interface';
 import { FileRecordMapper, FilesStorageMapper } from '../../mapper';
-import { FileRecordRepo } from '../../repo';
+import { FileRecord, FileRecordRepo } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { ErrorType } from '../error';
+import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {

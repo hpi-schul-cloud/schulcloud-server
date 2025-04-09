@@ -1,4 +1,4 @@
-import { CopyFileResponse } from '../api/dto';
+import { CopyFileResponse } from '../api/dto/file-storage.response';
 
 export class CopyFileResponseBuilder {
 	public static build(id: string, sourceId: string, name: string): CopyFileResponse {

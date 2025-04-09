@@ -5,8 +5,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { FileRecord } from '../../repo/entity'; // TODO: invalid import
-import { FilesStorageService, PreviewService, FileRecordParentType, StorageLocation } from '../../domain';
+import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
+import { FileRecord } from '../../repo'; // TODO: invalid import
 import { fileRecordFactory } from '../../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from '../dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
