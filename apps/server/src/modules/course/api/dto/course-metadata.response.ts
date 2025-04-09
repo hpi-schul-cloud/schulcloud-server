@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { PaginationResponse } from '@shared/controller/dto';
 import { EntityId } from '@shared/domain/types';
 
@@ -23,7 +24,7 @@ export class CourseMetadataResponse {
 
 	@ApiProperty({
 		description: 'The id of the Grid element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

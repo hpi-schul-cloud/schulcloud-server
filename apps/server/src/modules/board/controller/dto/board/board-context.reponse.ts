@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { BoardExternalReferenceType } from '../../../domain';
 
 export class BoardContextResponse {
@@ -8,7 +9,7 @@ export class BoardContextResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

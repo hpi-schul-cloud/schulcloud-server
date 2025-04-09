@@ -1,22 +1,11 @@
+import { drawingElementFactory } from '../testing';
 import { DrawingElement, isDrawingElement } from './drawing-element.do';
-import { BoardNodeProps } from './types';
 
 describe('DrawingElement', () => {
 	let drawingElement: DrawingElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		drawingElement = new DrawingElement({
-			...boardNodeProps,
+		drawingElement = drawingElementFactory.build({
 			description: 'Test description',
 		});
 	});

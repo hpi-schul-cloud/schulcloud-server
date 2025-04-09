@@ -17,13 +17,13 @@
 /**
  * 
  * @export
- * @interface RenameBodyParams
+ * @interface FileFolderElementContent
  */
-export interface RenameBodyParams {
+export interface FileFolderElementContent {
     /**
      * 
      * @type {string}
-     * @memberof RenameBodyParams
+     * @memberof FileFolderElementContent
      */
     'title': string;
 }
