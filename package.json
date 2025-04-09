@@ -186,7 +186,6 @@
 		"@nestjs/passport": "^10.0.3",
 		"@nestjs/platform-express": "^10.4.15",
 		"@nestjs/platform-socket.io": "^10.4.15",
-		"@nestjs/platform-ws": "^10.4.15",
 		"@nestjs/swagger": "^8.1.1",
 		"@nestjs/websockets": "^10.4.15",
 		"@socket.io/mongo-adapter": "^0.3.2",
