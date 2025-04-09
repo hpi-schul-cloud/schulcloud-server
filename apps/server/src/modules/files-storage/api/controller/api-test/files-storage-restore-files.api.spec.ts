@@ -11,10 +11,10 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import { PreviewStatus } from '../../../repo/entity';
+import { FileRecordParentType } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { FileRecordParentType } from '../../../domain';
+import { PreviewStatus } from '../../../repo';
 import { fileRecordFactory } from '../../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../../dto';
 import { availableParentTypes } from './mocks';

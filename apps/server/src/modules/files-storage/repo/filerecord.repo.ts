@@ -3,9 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { FileRecord } from './entity';
 import { StorageLocation } from '../domain';
-import { FileRecordScope } from './filerecord-scope';
+import { FileRecord } from './filerecord.entity';
+import { FileRecordScope } from './scope/filerecord-scope';
 
 @Injectable()
 export class FileRecordRepo extends BaseRepo<FileRecord> {

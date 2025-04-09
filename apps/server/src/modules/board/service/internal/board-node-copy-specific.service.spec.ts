@@ -23,6 +23,7 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileFolderElement,
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -36,6 +37,7 @@ import {
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	fileFolderElementFactory,
 	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -249,6 +251,23 @@ describe(BoardNodeCopyService.name, () => {
 
 			expect(copyContext.copyFilesOfParent).toHaveBeenCalledWith(fileElement.id, result.copyEntity?.id);
 			expect(result.elements ?? []).toEqual([expect.objectContaining({ title: fileCopyStatus.name })]);
+		});
+	});
+
+	describe('copy file folder element', () => {
+		const setup = () => {
+			const { copyContext } = setupContext();
+			const fileFolderElement = fileFolderElementFactory.build();
+
+			return { copyContext, fileFolderElement };
+		};
+
+		it('should copy the node', async () => {
+			const { copyContext, fileFolderElement } = setup();
+
+			const result = await service.copyFileFolderElement(fileFolderElement, copyContext);
+
+			expect(result.copyEntity).toBeInstanceOf(FileFolderElement);
 		});
 	});
 

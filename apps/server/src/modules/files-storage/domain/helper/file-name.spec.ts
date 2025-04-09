@@ -3,9 +3,9 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
-import { FileRecord } from '../../repo/entity';
-import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
+import { FileRecord } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 
 describe('File Name Helper', () => {
 	const setupFileRecords = () => {

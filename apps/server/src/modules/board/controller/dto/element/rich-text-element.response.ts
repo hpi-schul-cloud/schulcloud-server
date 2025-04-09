@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { InputFormat } from '@shared/domain/types';
 import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
@@ -24,7 +25,7 @@ export class RichTextElementResponse {
 		this.type = type;
 	}
 
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({ pattern: bsonStringPattern })
 	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })

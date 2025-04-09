@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { NewsTargetModel } from '../../domain';
@@ -16,7 +17,7 @@ export class FilterNewsParams {
 	@IsOptional()
 	@IsMongoId()
 	@ApiPropertyOptional({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'Specific target id to which the news are related (works only together with targetModel)',
 	})
 	targetId?: string;

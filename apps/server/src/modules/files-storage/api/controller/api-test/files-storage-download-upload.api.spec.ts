@@ -10,11 +10,11 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
-import { FileRecord } from '../../../repo/entity';
 import { ErrorType } from '../../../domain/error';
+import { TestHelper } from '../../../domain/helper/test-helper';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { TestHelper } from '../../../domain/helper/test-helper';
+import { FileRecord } from '../../../repo';
 import { availableParentTypes } from './mocks';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {

@@ -8,8 +8,8 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../api/dto';
-import { FileRecord, PreviewStatus } from '../repo/entity';
 import { FileRecordParentType } from '../domain/interface';
+import { FileRecord, PreviewStatus } from '../repo';
 import { fileRecordFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 

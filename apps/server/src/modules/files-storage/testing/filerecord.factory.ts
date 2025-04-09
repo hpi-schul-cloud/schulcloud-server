@@ -2,8 +2,8 @@ import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '../repo/entity';
-import { StorageLocation } from '../domain';
+import { StorageLocation } from '../domain/interface';
+import { FileRecord, FileRecordProperties, FileRecordSecurityCheck } from '../repo';
 
 const yesterday = new Date(Date.now() - 86400000);
 

@@ -7,15 +7,15 @@ import { NotFoundException, UnprocessableEntityException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
-import { FileRecord, ScanStatus } from '../../repo/entity';
-import { ErrorType } from '../error';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileResponseBuilder } from '../../mapper';
+import { FileRecord, ScanStatus } from '../../repo';
+import { fileRecordFactory } from '../../testing';
+import { ErrorType } from '../error';
 import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
 import { TestHelper } from '../helper/test-helper'; // TODO: Move to testing
 import { FileRecordParentType, PreviewWidth, StorageLocation } from '../interface';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
-import { FileResponseBuilder } from '../../mapper';
-import { fileRecordFactory } from '../../testing';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
 

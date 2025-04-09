@@ -10,12 +10,12 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { FileRecordParams, SingleFileParams } from '../dto';
-import { FileRecord } from '../../repo/entity';
+import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FileStorageAuthorizationContext } from '../../files-storage.const';
-import { FileRecordParentType, StorageLocation, FilesStorageService, PreviewService } from '../../domain';
 import { FilesStorageMapper } from '../../mapper';
+import { FileRecord } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { FileRecordParams, SingleFileParams } from '../dto';
 import { FilesStorageUC } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {

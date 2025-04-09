@@ -17,13 +17,13 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
-import { FileRecordParams } from '../dto';
-import { FileRecord } from '../../repo/entity';
+import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { ErrorType } from '../../domain/error';
 import { FileStorageAuthorizationContext } from '../../files-storage.const';
-import { FileRecordParentType, StorageLocation, FilesStorageService, PreviewService } from '../../domain';
 import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
+import { FileRecord } from '../../repo';
 import { fileRecordFactory } from '../../testing';
+import { FileRecordParams } from '../dto';
 import { FilesStorageUC } from './files-storage.uc';
 
 const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>

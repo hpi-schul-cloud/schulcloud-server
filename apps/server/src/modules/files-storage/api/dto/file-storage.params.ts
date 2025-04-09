@@ -9,7 +9,7 @@ import {
 	PreviewWidth,
 	StorageLocation,
 	StorageLocationParams,
-} from '../../domain';
+} from '../../domain/interface';
 
 export class StorageLocationParamsDto implements StorageLocationParams {
 	@ApiProperty()

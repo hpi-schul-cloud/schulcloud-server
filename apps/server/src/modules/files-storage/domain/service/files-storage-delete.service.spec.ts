@@ -1,3 +1,4 @@
+import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
@@ -8,14 +9,12 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
-import { FileRecord } from '../../repo/entity'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { FileRecord, FileRecordRepo } from '../../repo'; // TODO: invalid import
+import { fileRecordFactory } from '../../testing';
 import { getPaths } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
-import { FileRecordRepo } from '../../repo';
-import { fileRecordFactory } from '../../testing';
 import { FilesStorageService } from './files-storage.service';
-import { ErrorUtils } from '@core/error/utils';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();

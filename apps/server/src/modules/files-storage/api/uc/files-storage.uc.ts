@@ -17,6 +17,17 @@ import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
 import {
+	ErrorType,
+	FileRecordParentType,
+	FilesStorageConfigResponse,
+	FilesStorageService,
+	GetFileResponse,
+	PreviewService,
+	StorageLocation,
+} from '../../domain';
+import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../../mapper';
+import { FileRecord } from '../../repo'; // TODO: invalid import
+import {
 	CopyFileParams,
 	CopyFileResponse,
 	CopyFilesOfParentParams,
@@ -28,17 +39,6 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../dto';
-import { FileRecord } from '../../repo/entity'; // TODO: invalid import
-import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../../mapper';
-import {
-	FilesStorageService,
-	PreviewService,
-	FilesStorageConfigResponse,
-	FileRecordParentType,
-	GetFileResponse,
-	StorageLocation,
-	ErrorType,
-} from '../../domain';
 
 // TODO: Delete files-storage uc spec tests and remove export?
 export const FileStorageAuthorizationContext = {

@@ -5,8 +5,8 @@ import {
 	ScanResultDto,
 	ScanResultParams,
 } from '../api/dto';
-import { FileRecord, ScanStatus } from '../repo/entity';
 import { StorageLocationParams } from '../domain/interface';
+import { FileRecord, ScanStatus } from '../repo';
 
 export class FileRecordMapper {
 	public static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
