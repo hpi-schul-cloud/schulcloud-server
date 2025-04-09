@@ -12,12 +12,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
-import { FileStorageAuthorizationContext } from '../../files-storage.const';
 import { CopyFileResponseBuilder } from '../../mapper';
-import { FileRecord } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { CopyFilesOfParentParams, FileRecordParams } from '../dto';
-import { FilesStorageUC } from './files-storage.uc';
+import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
@@ -81,7 +80,7 @@ describe('FilesStorageUC', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

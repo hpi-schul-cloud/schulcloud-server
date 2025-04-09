@@ -3,10 +3,10 @@ import { PaginationResponse } from '@shared/controller/dto';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
 import { FileRecordParentType, StorageLocation } from '../../domain';
-import { FileRecord, PreviewStatus, ScanStatus } from '../../repo'; // TODO: invalid import
+import { FileRecordEntity, PreviewStatus, ScanStatus } from '../../repo'; // TODO: invalid import
 
 export class FileRecordResponse {
-	constructor(fileRecord: FileRecord) {
+	constructor(fileRecord: FileRecordEntity) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
 		this.url = `/api/v3/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;

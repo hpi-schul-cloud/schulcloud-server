@@ -2,13 +2,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
-import { FileRecord } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 
 describe('Path Helper', () => {
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	const setupFileRecords = () => {

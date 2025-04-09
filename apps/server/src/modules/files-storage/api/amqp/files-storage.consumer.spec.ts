@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
-import { FileRecord } from '../../repo'; // TODO: invalid import
+import { FileRecordEntity } from '../../repo'; // TODO: invalid import
 import { fileRecordFactory } from '../../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from '../dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
@@ -26,7 +26,7 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecord]);
+		orm = await setupEntities([FileRecordEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageConsumer,

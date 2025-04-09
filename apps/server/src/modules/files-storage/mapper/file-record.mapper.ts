@@ -6,17 +6,17 @@ import {
 	ScanResultParams,
 } from '../api/dto';
 import { StorageLocationParams } from '../domain/interface';
-import { FileRecord, ScanStatus } from '../repo';
+import { FileRecordEntity, ScanStatus } from '../repo';
 
 export class FileRecordMapper {
-	public static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
+	public static mapToFileRecordResponse(fileRecord: FileRecordEntity): FileRecordResponse {
 		const fileRecordResponse = new FileRecordResponse(fileRecord);
 
 		return fileRecordResponse;
 	}
 
 	public static mapToFileRecordListResponse(
-		fileRecords: FileRecord[],
+		fileRecords: FileRecordEntity[],
 		total: number,
 		skip?: number,
 		limit?: number

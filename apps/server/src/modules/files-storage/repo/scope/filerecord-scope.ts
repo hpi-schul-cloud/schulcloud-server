@@ -2,9 +2,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { StorageLocation } from '../../domain';
-import { FileRecord } from '../filerecord.entity';
+import { FileRecordEntity } from '../filerecord.entity';
 
-export class FileRecordScope extends Scope<FileRecord> {
+export class FileRecordScope extends Scope<FileRecordEntity> {
 	public byParentId(parentId: EntityId): FileRecordScope {
 		this.addQuery({ _parentId: new ObjectId(parentId) });
 

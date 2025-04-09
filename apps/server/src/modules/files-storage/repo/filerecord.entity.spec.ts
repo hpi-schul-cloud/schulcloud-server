@@ -5,7 +5,7 @@ import { setupEntities } from '@testing/database';
 import { ErrorType, FileRecordParentType, StorageLocation } from '../domain';
 import { fileRecordFactory } from '../testing';
 import {
-	FileRecord,
+	FileRecordEntity,
 	FileRecordProperties,
 	FileRecordSecurityCheck,
 	PreviewStatus,
@@ -14,7 +14,7 @@ import {
 
 describe('FileRecord Entity', () => {
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	describe('when creating a new instance using the constructor', () => {
@@ -35,7 +35,7 @@ describe('FileRecord Entity', () => {
 
 		it('should provide target id', () => {
 			const parentId = new ObjectId().toHexString();
-			const fileRecord = new FileRecord({
+			const fileRecord = new FileRecordEntity({
 				...props,
 				parentId,
 			});
@@ -44,7 +44,7 @@ describe('FileRecord Entity', () => {
 
 		it('should provide creator id', () => {
 			const creatorId = new ObjectId().toHexString();
-			const fileRecord = new FileRecord({
+			const fileRecord = new FileRecordEntity({
 				...props,
 				creatorId,
 			});
@@ -53,7 +53,7 @@ describe('FileRecord Entity', () => {
 
 		it('should provide storageLocationId', () => {
 			const storageLocationId = new ObjectId().toHexString();
-			const fileRecord = new FileRecord({
+			const fileRecord = new FileRecordEntity({
 				...props,
 				storageLocationId,
 			});
@@ -62,7 +62,7 @@ describe('FileRecord Entity', () => {
 
 		it('should provide isCopyFrom', () => {
 			const isCopyFrom = new ObjectId().toHexString();
-			const fileRecord = new FileRecord({
+			const fileRecord = new FileRecordEntity({
 				...props,
 				isCopyFrom,
 			});
@@ -71,7 +71,7 @@ describe('FileRecord Entity', () => {
 
 		it('should provide isUploading', () => {
 			const isUploading = true;
-			const fileRecord = new FileRecord({
+			const fileRecord = new FileRecordEntity({
 				...props,
 				isUploading,
 			});
@@ -482,7 +482,7 @@ describe('FileRecord Entity', () => {
 
 				const result = fileRecord.copy(userId, targetParentInfo);
 
-				expect(result).toBeInstanceOf(FileRecord);
+				expect(result).toBeInstanceOf(FileRecordEntity);
 			});
 
 			it('should create a new instance', () => {

@@ -14,7 +14,7 @@ import { ErrorType } from '../../../domain/error';
 import { TestHelper } from '../../../domain/helper/test-helper';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { FileRecord } from '../../../repo';
+import { FileRecordEntity } from '../../../repo';
 import { availableParentTypes } from './mocks';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
@@ -153,7 +153,7 @@ describe('files-storage controller (API)', () => {
 				const { loggedInClient, validId, user } = setup();
 
 				const result = await uploadFile(`/upload/school/${validId}/schools/${validId}`, loggedInClient);
-				const response = result.body as FileRecord;
+				const response = result.body as FileRecordEntity;
 
 				expect(response).toStrictEqual(
 					expect.objectContaining({
@@ -175,7 +175,7 @@ describe('files-storage controller (API)', () => {
 				await uploadFile(`/upload/school/${validId}/schools/${validId}`, loggedInClient);
 
 				const result = await uploadFile(`/upload/school/${validId}/schools/${validId}`, loggedInClient);
-				const response = result.body as FileRecord;
+				const response = result.body as FileRecordEntity;
 
 				expect(response.name).toEqual('test (1).txt');
 			});
@@ -306,7 +306,7 @@ describe('files-storage controller (API)', () => {
 						.attach('file', Buffer.from('abcd'), 'test.txt')
 						.set('connection', 'keep-alive')
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-					const response = result.body as FileRecord;
+					const response = result.body as FileRecordEntity;
 
 					const body = {
 						url: `http://localhost:${appPort}/file/download/${response.id}/${response.name}`,
@@ -331,7 +331,7 @@ describe('files-storage controller (API)', () => {
 					const { validId, loggedInClient, body, user } = await setup();
 
 					const result = await loggedInClient.post(`/upload-from-url/school/${validId}/schools/${validId}`, body);
-					const response = result.body as FileRecord;
+					const response = result.body as FileRecordEntity;
 
 					expect(response).toStrictEqual(
 						expect.objectContaining({
@@ -368,7 +368,7 @@ describe('files-storage controller (API)', () => {
 						.attach('file', Buffer.from('abcd'), 'test.txt')
 						.set('connection', 'keep-alive')
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-					const response = result.body as FileRecord;
+					const response = result.body as FileRecordEntity;
 					const body = {
 						url: `http://localhost:${appPort}/file/download/${response.id}/${response.name}`,
 						fileName: 'test.txt',
@@ -386,7 +386,7 @@ describe('files-storage controller (API)', () => {
 					const { validId, loggedInClient, body } = await setup();
 
 					const result = await loggedInClient.post(`/upload-from-url/school/${validId}/schools/${validId}`, body);
-					const response = result.body as FileRecord;
+					const response = result.body as FileRecordEntity;
 
 					expect(response.name).toEqual('test (2).txt');
 				});
@@ -419,7 +419,7 @@ describe('files-storage controller (API)', () => {
 					.attach('file', Buffer.from('abcd'), 'test.txt')
 					.set('connection', 'keep-alive')
 					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-				const fileRecord = result.body as FileRecord;
+				const fileRecord = result.body as FileRecordEntity;
 
 				return { validId, loggedInClient, fileRecord };
 			};
@@ -476,7 +476,7 @@ describe('files-storage controller (API)', () => {
 						.attach('file', Buffer.from('abcd'), 'test.txt')
 						.set('connection', 'keep-alive')
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-					const uploadedFile = result.body as FileRecord;
+					const uploadedFile = result.body as FileRecordEntity;
 
 					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'image/webp' });
 
@@ -533,7 +533,7 @@ describe('files-storage controller (API)', () => {
 						.attach('file', Buffer.from('abcd'), 'test.txt')
 						.set('connection', 'keep-alive')
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-					const uploadedFile = result.body as FileRecord;
+					const uploadedFile = result.body as FileRecordEntity;
 
 					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'application/pdf' });
 
@@ -596,9 +596,9 @@ describe('files-storage controller (API)', () => {
 					.attach('file', Buffer.from('abcd'), 'test.txt')
 					.set('connection', 'keep-alive')
 					.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
-				const fileRecord = result.body as FileRecord;
+				const fileRecord = result.body as FileRecordEntity;
 
-				const newRecord = await em.findOneOrFail(FileRecord, { id: fileRecord.id });
+				const newRecord = await em.findOneOrFail(FileRecordEntity, { id: fileRecord.id });
 
 				return { newRecord, fileApiClient };
 			};

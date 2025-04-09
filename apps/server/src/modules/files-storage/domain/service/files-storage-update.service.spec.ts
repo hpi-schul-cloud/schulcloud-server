@@ -11,7 +11,7 @@ import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordMapper, FilesStorageMapper } from '../../mapper';
-import { FileRecord, FileRecordRepo } from '../../repo';
+import { FileRecordEntity, FileRecordRepo } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { FileRecordParentType, StorageLocation } from '../interface';
@@ -55,7 +55,7 @@ describe('FilesStorageService update methods', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -9,7 +9,7 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
-import { FileRecord, ScanStatus } from '../../repo';
+import { FileRecordEntity, ScanStatus } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
@@ -57,7 +57,7 @@ describe('PreviewService', () => {
 	let previewProducer: DeepMocked<PreviewProducer>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

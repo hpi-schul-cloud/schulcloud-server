@@ -4,7 +4,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileRecordParentType, StorageLocation } from '../domain';
 import { fileRecordFactory } from '../testing';
-import { FileRecord } from './filerecord.entity';
+import { FileRecordEntity } from './filerecord.entity';
 import { FileRecordRepo } from './filerecord.repo';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);
@@ -16,7 +16,7 @@ describe('FileRecordRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FileRecord] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [FileRecordEntity] })],
 			providers: [FileRecordRepo],
 		}).compile();
 		repo = module.get(FileRecordRepo);
@@ -32,7 +32,7 @@ describe('FileRecordRepo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(FileRecord);
+		expect(repo.entityName).toBe(FileRecordEntity);
 	});
 
 	describe('findOneById', () => {
@@ -210,7 +210,7 @@ describe('FileRecordRepo', () => {
 
 				await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
 
-				const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
+				const fileRecords = await em.find(FileRecordEntity, { _storageLocationId: new ObjectId(storageLocationId1) });
 
 				fileRecords.forEach((fileRecord) => {
 					expect(fileRecord).toMatchObject({
@@ -233,7 +233,7 @@ describe('FileRecordRepo', () => {
 	describe('findByStorageLocationIdAndParentId', () => {
 		const parentId1 = new ObjectId().toHexString();
 		const storageLocationId1 = new ObjectId().toHexString();
-		let fileRecords1: FileRecord[];
+		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.buildList(3, {
@@ -355,7 +355,7 @@ describe('FileRecordRepo', () => {
 	describe('findBySchoolIdAndParentIdAndMarkedForDelete', () => {
 		const parentId1 = new ObjectId().toHexString();
 		const storageLocationId1 = new ObjectId().toHexString();
-		let fileRecords1: FileRecord[];
+		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
 			fileRecords1 = fileRecordFactory.markedForDelete().buildList(3, {
@@ -440,7 +440,7 @@ describe('FileRecordRepo', () => {
 	});
 
 	describe('findBySecurityCheckRequestToken', () => {
-		let fileRecord: FileRecord;
+		let fileRecord: FileRecordEntity;
 
 		beforeEach(() => {
 			const storageLocationId = new ObjectId().toHexString();
@@ -461,7 +461,7 @@ describe('FileRecordRepo', () => {
 
 			const result = await repo.findBySecurityCheckRequestToken(token);
 
-			expect(result).toBeInstanceOf(FileRecord);
+			expect(result).toBeInstanceOf(FileRecordEntity);
 			expect(result.securityCheck.requestToken).toEqual(token);
 		});
 

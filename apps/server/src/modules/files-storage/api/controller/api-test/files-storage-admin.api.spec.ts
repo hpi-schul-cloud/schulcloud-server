@@ -13,7 +13,7 @@ import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { FileRecord } from '../../../repo'; // TODO: invalid import
+import { FileRecordEntity } from '../../../repo'; // TODO: invalid import
 import { FileRecordResponse } from '../../dto';
 import { availableStorageLocations } from './mocks';
 
@@ -170,7 +170,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 				await loggedInClient.delete(`admin/file/storage-location/school/${storageLocationId1}`);
 
-				const fileRecords = await em.find(FileRecord, { _storageLocationId: new ObjectId(storageLocationId1) });
+				const fileRecords = await em.find(FileRecordEntity, { _storageLocationId: new ObjectId(storageLocationId1) });
 				fileRecords.forEach((fileRecord) => {
 					expect(fileRecord).toMatchObject({
 						deletedSince: expect.any(Date),

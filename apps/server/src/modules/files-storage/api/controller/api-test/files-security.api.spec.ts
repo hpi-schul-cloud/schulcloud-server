@@ -8,7 +8,7 @@ import NodeClam from 'clamscan';
 import type { Server } from 'node:net';
 import { FileRecordParentType, StorageLocation } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
-import { FileRecord } from '../../../repo';
+import { FileRecordEntity } from '../../../repo';
 import { fileRecordFactory } from '../../../testing';
 import { ScanResultParams } from '../../dto';
 
@@ -75,7 +75,7 @@ describe(`${baseRouteName} (api)`, () => {
 			em.clear();
 
 			const response = await testApiClient.put(`/update-status/${token}`, scanResult);
-			const changedFileRecord = await em.findOneOrFail(FileRecord, fileRecord.id);
+			const changedFileRecord = await em.findOneOrFail(FileRecordEntity, fileRecord.id);
 
 			expect(changedFileRecord.securityCheck.status).toStrictEqual('verified');
 			expect(response.status).toEqual(200);

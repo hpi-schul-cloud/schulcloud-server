@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecord, FileRecordRepo } from '../../repo';
+import { FileRecordEntity, FileRecordRepo } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { getPaths, unmarkForDelete } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
@@ -45,7 +45,7 @@ describe('FilesStorageService restore methods', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

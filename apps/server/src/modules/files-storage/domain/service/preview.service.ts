@@ -5,7 +5,7 @@ import { Inject, Injectable, NotFoundException, UnprocessableEntityException } f
 import { PreviewParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
-import { FileRecord, PreviewStatus } from '../../repo';
+import { FileRecordEntity, PreviewStatus } from '../../repo';
 import { ErrorType } from '../error';
 import { createPreviewDirectoryPath, getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
@@ -21,7 +21,7 @@ export class PreviewService {
 	}
 
 	public async download(
-		fileRecord: FileRecord,
+		fileRecord: FileRecordEntity,
 		previewParams: PreviewParams,
 		bytesRange?: string
 	): Promise<GetFileResponse> {
@@ -34,7 +34,7 @@ export class PreviewService {
 		return response;
 	}
 
-	public async deletePreviews(fileRecords: FileRecord[]): Promise<void> {
+	public async deletePreviews(fileRecords: FileRecordEntity[]): Promise<void> {
 		const paths = fileRecords.map((fileRecord) =>
 			createPreviewDirectoryPath(fileRecord.storageLocationId, fileRecord.id)
 		);
@@ -44,7 +44,7 @@ export class PreviewService {
 		await Promise.all(promises);
 	}
 
-	private checkIfPreviewPossible(fileRecord: FileRecord): void | UnprocessableEntityException {
+	private checkIfPreviewPossible(fileRecord: FileRecordEntity): void | UnprocessableEntityException {
 		if (fileRecord.getPreviewStatus() !== PreviewStatus.PREVIEW_POSSIBLE) {
 			this.logger.warn(`could not generate preview for : ${fileRecord.id} ${fileRecord.mimeType}`);
 			throw new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);

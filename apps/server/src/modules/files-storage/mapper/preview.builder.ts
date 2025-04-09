@@ -2,11 +2,11 @@ import { PreviewFileOptions } from '@infra/preview-generator';
 import { PreviewParams } from '../api/dto';
 import { createPath, createPreviewFilePath, createPreviewNameHash, getFormat } from '../domain/helper';
 import { PreviewFileParams } from '../domain/interface';
-import { FileRecord } from '../repo';
+import { FileRecordEntity } from '../repo';
 
 export class PreviewBuilder {
 	public static buildParams(
-		fileRecord: FileRecord,
+		fileRecord: FileRecordEntity,
 		previewParams: PreviewParams,
 		bytesRange: string | undefined
 	): PreviewFileParams {

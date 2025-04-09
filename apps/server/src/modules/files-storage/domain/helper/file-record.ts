@@ -1,9 +1,9 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { FileRecordParams } from '../../api/dto';
-import { FileRecord } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { PreviewOutputMimeTypes } from '../interface';
 
-export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
+export function markForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity[] {
 	const markedFileRecords = fileRecords.map((fileRecord) => {
 		fileRecord.markForDelete();
 		return fileRecord;
@@ -12,7 +12,7 @@ export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	return markedFileRecords;
 }
 
-export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
+export function unmarkForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity[] {
 	const unmarkedFileRecords = fileRecords.map((fileRecord) => {
 		fileRecord.unmarkForDelete();
 		return fileRecord;
@@ -28,8 +28,8 @@ export function createFileRecord(
 	mimeType: string,
 	params: FileRecordParams,
 	userId: string
-): FileRecord {
-	const entity = new FileRecord({
+): FileRecordEntity {
+	const entity = new FileRecordEntity({
 		size,
 		name,
 		mimeType,
@@ -54,7 +54,7 @@ export function getFormat(mimeType: string): string {
 	return format;
 }
 
-export function getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
+export function getPreviewName(fileRecord: FileRecordEntity, outputFormat?: PreviewOutputMimeTypes): string {
 	const { fileNameWithoutExtension, name } = fileRecord;
 
 	if (!outputFormat) {

@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecord, FileRecordRepo } from '../../repo';
+import { FileRecordEntity, FileRecordRepo } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { FileRecordParentType, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -52,7 +52,7 @@ describe('FilesStorageService get methods', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecordParams } from '../../api/dto';
-import { FileRecord } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface';
 
@@ -22,7 +22,7 @@ describe('File Record Helper', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	describe('markForDelete()', () => {
@@ -90,7 +90,7 @@ describe('File Record Helper', () => {
 			};
 
 			expect(newFileRecord).toEqual(expect.objectContaining({ ...expectedObject }));
-			expect(newFileRecord).toEqual(expect.any(FileRecord));
+			expect(newFileRecord).toEqual(expect.any(FileRecordEntity));
 		});
 	});
 

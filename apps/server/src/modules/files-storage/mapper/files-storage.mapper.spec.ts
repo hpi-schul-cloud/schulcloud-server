@@ -9,13 +9,13 @@ import {
 	SingleFileParams,
 } from '../api/dto';
 import { FileRecordParentType } from '../domain/interface';
-import { FileRecord, PreviewStatus } from '../repo';
+import { FileRecordEntity, PreviewStatus } from '../repo';
 import { fileRecordFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	describe('mapToAllowedAuthorizationEntityType()', () => {

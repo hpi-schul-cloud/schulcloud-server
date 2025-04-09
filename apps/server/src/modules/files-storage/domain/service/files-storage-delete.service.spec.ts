@@ -10,7 +10,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecord, FileRecordRepo } from '../../repo'; // TODO: invalid import
+import { FileRecordEntity, FileRecordRepo } from '../../repo'; // TODO: invalid import
 import { fileRecordFactory } from '../../testing';
 import { getPaths } from '../helper';
 import { FileRecordParentType, StorageLocation } from '../interface';
@@ -44,7 +44,7 @@ describe('FilesStorageService delete methods', () => {
 	let legacyLogger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

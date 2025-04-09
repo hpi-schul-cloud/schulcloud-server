@@ -11,7 +11,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecord, FileRecordRepo } from '../../repo';
+import { FileRecordEntity, FileRecordRepo } from '../../repo';
 import { fileRecordFactory, readableStreamWithFileTypeFactory } from '../../testing';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
@@ -54,7 +54,7 @@ describe('FilesStorageService upload methods', () => {
 	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -155,7 +155,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -195,21 +195,21 @@ describe('FilesStorageService upload methods', () => {
 
 				// haveBeenCalledWith can't be use here because fileRecord is a reference and
 				// it will always compare the final state of the object
-				let param: FileRecord | undefined;
+				let param: FileRecordEntity | undefined;
 
 				fileRecordRepo.save.mockReset();
 				fileRecordRepo.save.mockImplementationOnce((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
-					param = JSON.parse(JSON.stringify(fr)) as FileRecord;
+					param = JSON.parse(JSON.stringify(fr)) as FileRecordEntity;
 
 					return Promise.resolve();
 				});
 
 				fileRecordRepo.save.mockImplementationOnce((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -254,7 +254,7 @@ describe('FilesStorageService upload methods', () => {
 
 				const result = await service.uploadFile(userId, params, file);
 
-				expect(result).toBeInstanceOf(FileRecord);
+				expect(result).toBeInstanceOf(FileRecordEntity);
 			});
 
 			describe('Antivirus handling by upload ', () => {
@@ -317,7 +317,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -350,7 +350,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -391,7 +391,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -440,7 +440,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -474,7 +474,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 
@@ -505,7 +505,7 @@ describe('FilesStorageService upload methods', () => {
 				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecord && !fr._id) {
+					if (fr instanceof FileRecordEntity && !fr._id) {
 						fr._id = new ObjectId();
 					}
 

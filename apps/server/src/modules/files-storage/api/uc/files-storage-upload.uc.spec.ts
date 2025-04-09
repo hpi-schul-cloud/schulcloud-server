@@ -19,12 +19,11 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { ErrorType } from '../../domain/error';
-import { FileStorageAuthorizationContext } from '../../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
-import { FileRecord } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { FileRecordParams } from '../dto';
-import { FilesStorageUC } from './files-storage.uc';
+import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>
 	axiosResponseFactory.build({
@@ -81,7 +80,7 @@ describe('FilesStorageUC upload methods', () => {
 	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -308,8 +307,8 @@ describe('FilesStorageUC upload methods', () => {
 					mimeType: fileRecord.mimeType,
 				};
 
-				let resolveUploadFile: (value: FileRecord | PromiseLike<FileRecord>) => void;
-				const fileRecordPromise = new Promise<FileRecord>((resolve) => {
+				let resolveUploadFile: (value: FileRecordEntity | PromiseLike<FileRecordEntity>) => void;
+				const fileRecordPromise = new Promise<FileRecordEntity>((resolve) => {
 					resolveUploadFile = resolve;
 				});
 				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
@@ -379,7 +378,7 @@ describe('FilesStorageUC upload methods', () => {
 				const size = request.headers['content-length'];
 
 				let rejectUploadFile: (value: Error) => void;
-				const fileRecordPromise = new Promise<FileRecord>((resolve, reject) => {
+				const fileRecordPromise = new Promise<FileRecordEntity>((resolve, reject) => {
 					rejectUploadFile = reject;
 				});
 				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);

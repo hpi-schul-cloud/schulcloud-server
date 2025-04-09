@@ -4,30 +4,33 @@ import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { StorageLocation } from '../domain';
-import { FileRecord } from './filerecord.entity';
+import { FileRecordEntity } from './filerecord.entity';
 import { FileRecordScope } from './scope/filerecord-scope';
 
 @Injectable()
-export class FileRecordRepo extends BaseRepo<FileRecord> {
-	get entityName(): EntityName<FileRecord> {
-		return FileRecord;
+export class FileRecordRepo extends BaseRepo<FileRecordEntity> {
+	get entityName(): EntityName<FileRecordEntity> {
+		return FileRecordEntity;
 	}
 
-	public async findOneById(id: EntityId): Promise<FileRecord> {
+	public async findOneById(id: EntityId): Promise<FileRecordEntity> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(false);
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
 	}
 
-	public async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
+	public async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecordEntity> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
 		const fileRecord = await this.findOneOrFail(scope);
 
 		return fileRecord;
 	}
 
-	public async findByParentId(parentId: EntityId, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>> {
+	public async findByParentId(
+		parentId: EntityId,
+		options?: IFindOptions<FileRecordEntity>
+	): Promise<Counted<FileRecordEntity[]>> {
 		const scope = new FileRecordScope().byParentId(parentId).byMarkedForDelete(false);
 		const result = await this.findAndCount(scope, options);
 
@@ -51,8 +54,8 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>
-	): Promise<Counted<FileRecord[]>> {
+		options?: IFindOptions<FileRecordEntity>
+	): Promise<Counted<FileRecordEntity[]>> {
 		const scope = new FileRecordScope()
 			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
@@ -67,8 +70,8 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		storageLocation: StorageLocation,
 		storageLocationId: EntityId,
 		parentId: EntityId,
-		options?: IFindOptions<FileRecord>
-	): Promise<Counted<FileRecord[]>> {
+		options?: IFindOptions<FileRecordEntity>
+	): Promise<Counted<FileRecordEntity[]>> {
 		const scope = new FileRecordScope()
 			.byStorageLocation(storageLocation)
 			.byStorageLocationId(storageLocationId)
@@ -79,7 +82,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return result;
 	}
 
-	public async findBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
+	public async findBySecurityCheckRequestToken(token: string): Promise<FileRecordEntity> {
 		// Must also find expires in future. Please do not add .byExpires().
 		const scope = new FileRecordScope().bySecurityCheckRequestToken(token);
 
@@ -88,7 +91,7 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return fileRecord;
 	}
 
-	public async findByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>> {
+	public async findByCreatorId(creatorId: EntityId): Promise<Counted<FileRecordEntity[]>> {
 		const scope = new FileRecordScope().byCreatorId(creatorId);
 		const result = await this.findAndCount(scope);
 
@@ -97,12 +100,12 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 
 	private async findAndCount(
 		scope: FileRecordScope,
-		options?: IFindOptions<FileRecord>
-	): Promise<Counted<FileRecord[]>> {
+		options?: IFindOptions<FileRecordEntity>
+	): Promise<Counted<FileRecordEntity[]>> {
 		const { pagination } = options || {};
 		const order = { createdAt: SortOrder.desc, id: SortOrder.asc };
 
-		const [fileRecords, count] = await this._em.findAndCount(FileRecord, scope.query, {
+		const [fileRecords, count] = await this._em.findAndCount(FileRecordEntity, scope.query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
 			orderBy: order,
@@ -111,8 +114,8 @@ export class FileRecordRepo extends BaseRepo<FileRecord> {
 		return [fileRecords, count];
 	}
 
-	private async findOneOrFail(scope: FileRecordScope): Promise<FileRecord> {
-		const fileRecord = await this._em.findOneOrFail(FileRecord, scope.query);
+	private async findOneOrFail(scope: FileRecordScope): Promise<FileRecordEntity> {
+		const fileRecord = await this._em.findOneOrFail(FileRecordEntity, scope.query);
 
 		return fileRecord;
 	}

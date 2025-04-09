@@ -91,7 +91,7 @@ interface ParentInfo {
 @Index({ properties: ['storageLocation', '_storageLocationId', '_parentId'], options: { background: true } })
 // https://github.com/mikro-orm/mikro-orm/issues/1230
 @Index({ options: { 'securityCheck.requestToken': 1 } })
-export class FileRecord extends BaseEntityWithTimestamps {
+export class FileRecordEntity extends BaseEntityWithTimestamps {
 	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
 	@Property({ nullable: true })
 	deletedSince?: Date;
@@ -185,11 +185,11 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this.securityCheck.requestToken;
 	}
 
-	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
+	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecordEntity {
 		const { size, name, mimeType, id } = this;
 		const { parentType, parentId, storageLocation, storageLocationId } = targetParentInfo;
 
-		const fileRecordCopy = new FileRecord({
+		const fileRecordCopy = new FileRecordEntity({
 			size,
 			name,
 			mimeType,

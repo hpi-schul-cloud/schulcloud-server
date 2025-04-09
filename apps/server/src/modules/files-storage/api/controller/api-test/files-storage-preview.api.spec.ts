@@ -18,7 +18,7 @@ import { ErrorType } from '../../../domain/error';
 import { TestHelper } from '../../../domain/helper/test-helper';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { FileRecord, ScanStatus } from '../../../repo';
+import { FileRecordEntity, ScanStatus } from '../../../repo';
 import { FileRecordResponse } from '../../dto';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
@@ -84,7 +84,7 @@ describe('File Controller (API) - preview', () => {
 	});
 
 	const setScanStatus = async (fileRecordId: EntityId, status: ScanStatus) => {
-		const fileRecord = await em.findOneOrFail(FileRecord, fileRecordId);
+		const fileRecord = await em.findOneOrFail(FileRecordEntity, fileRecordId);
 		fileRecord.securityCheck.status = status;
 		await em.flush();
 	};
@@ -194,7 +194,7 @@ describe('File Controller (API) - preview', () => {
 						.query(defaultQueryParameters);
 					const result = response.body as ApiValidationError;
 
-					expect(result.message).toEqual('The requested FileRecord: [object Object] has not been found.');
+					expect(result.message).toEqual('The requested FileRecordEntity: [object Object] has not been found.');
 					expect(response.status).toEqual(404);
 				});
 			});

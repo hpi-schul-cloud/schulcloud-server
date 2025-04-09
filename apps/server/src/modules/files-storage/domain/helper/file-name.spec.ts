@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
-import { FileRecord } from '../../repo';
+import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 
@@ -22,7 +22,7 @@ describe('File Name Helper', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	describe('hasDuplicateName is called', () => {

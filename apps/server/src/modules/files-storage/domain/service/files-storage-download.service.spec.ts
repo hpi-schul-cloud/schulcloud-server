@@ -10,7 +10,7 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
-import { FileRecord, FileRecordRepo, ScanStatus } from '../../repo'; // TODO: invalid import
+import { FileRecordEntity, FileRecordRepo, ScanStatus } from '../../repo'; // TODO: invalid import
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
@@ -43,7 +43,7 @@ describe('FilesStorageService download methods', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
