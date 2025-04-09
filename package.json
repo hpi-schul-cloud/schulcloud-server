@@ -232,6 +232,7 @@
 		"jwks-rsa": "^3.1.0",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.21",
+		"mime": "^1.6.0",
 		"mixwith": "^0.1.1",
 		"moment": "^2.30.1",
 		"mongodb": "^5.9.2",
