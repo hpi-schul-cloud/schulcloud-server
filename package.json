@@ -270,7 +270,6 @@
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^11.0.5",
 		"winston": "^3.17.0",
-		"ws": "^8.18.0",
 		"xml2js": "^0.6.2",
 		"yaml": "^2.7.0"
 	},
@@ -298,7 +297,6 @@
 		"@types/sanitize-html": "^2.13.0",
 		"@types/source-map-support": "^0.5.10",
 		"@types/supertest": "^6.0.2",
-		"@types/ws": "^8.5.13",
 		"@typescript-eslint/eslint-plugin": "^5.47.1",
 		"@typescript-eslint/parser": "^5.47.1",
 		"@typescript-eslint/typescript-estree": "^5.47.1",
