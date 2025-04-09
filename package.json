@@ -263,8 +263,6 @@
 		"sanitize-html": "^2.14.0",
 		"socket.io": "^4.8.1",
 		"source-map-support": "^0.5.21",
-		"swagger-ui-dist": "^5.18.2",
-		"swagger-ui-express": "^5.0.1",
 		"tiny-async-pool": "^1.2.0",
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^11.0.5",
