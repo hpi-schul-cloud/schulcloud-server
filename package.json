@@ -260,7 +260,6 @@
 		"reflect-metadata": "^0.2.2",
 		"response-time": "^2.3.3",
 		"rimraf": "^6.0.1",
-		"rss-parser": "^3.13.0",
 		"rxjs": "^7.8.1",
 		"sanitize-html": "^2.14.0",
 		"socket.io": "^4.8.1",
