@@ -5,9 +5,10 @@ import { CardClientAdapter } from '@infra/card-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CommonCartridgeImportOrganizationProps, CommonCartridgeImportResourceProps } from '..';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
 jest.mock('../import/common-cartridge-file-parser');
 
@@ -245,6 +246,20 @@ describe(CommonCartridgeImportService.name, () => {
 
 				expect(cardClientAdapterMock.createCardElement).not.toHaveBeenCalled();
 				expect(cardClientAdapterMock.updateCardElement).not.toHaveBeenCalled();
+			});
+
+			it('should return undefined if resource type is not WEB_CONTENT with .html', () => {
+				const resource: CommonCartridgeImportResourceProps = {
+					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+				} as CommonCartridgeImportResourceProps;
+
+				const cardElementProps: CommonCartridgeImportOrganizationProps = {
+					resourcePath: 'some-path.txt',
+				} as CommonCartridgeImportOrganizationProps;
+
+				const result = sut['mapToResourceBody'](resource, cardElementProps);
+
+				expect(result).toBeUndefined();
 			});
 		});
 	});
