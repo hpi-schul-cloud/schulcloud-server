@@ -139,6 +139,7 @@ describe('MediumMetadataController (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
+
 		describe('when mediaSourceId not valid', () => {
 			const setup = async () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [

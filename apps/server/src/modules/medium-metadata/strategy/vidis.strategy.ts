@@ -1,14 +1,19 @@
 import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
+import { ImageMimeType } from '../../tool/common';
 import { MediumMetadataDto } from '../dto';
 import { MediumMetadataNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
+import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';
 import { MediumMetadataStrategy } from './interface';
 
 @Injectable()
 export class VidisStrategy implements MediumMetadataStrategy {
-	constructor(private readonly vidisClientAdapter: VidisClientAdapter) {}
+	constructor(
+		private readonly vidisClientAdapter: VidisClientAdapter,
+		private readonly mediumMetadataLogoService: MediumMetadataLogoService
+	) {}
 
 	public getMediaSourceFormat(): MediaSourceDataFormat {
 		return MediaSourceDataFormat.VIDIS;
@@ -23,6 +28,16 @@ export class VidisStrategy implements MediumMetadataStrategy {
 
 		if (!requestedMetadataItem) {
 			throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
+		}
+
+		if (requestedMetadataItem.offerLogo) {
+			const contentType: ImageMimeType | undefined = this.mediumMetadataLogoService.detectAndValidateLogoImageType(
+				requestedMetadataItem.offerLogo
+			);
+
+			requestedMetadataItem.offerLogo = contentType
+				? `data:${contentType.valueOf()};base64,${requestedMetadataItem.offerLogo}`
+				: undefined;
 		}
 
 		const mediumMetadataDto = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, requestedMetadataItem);

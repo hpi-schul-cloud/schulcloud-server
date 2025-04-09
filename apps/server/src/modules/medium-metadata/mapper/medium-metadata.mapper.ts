@@ -21,12 +21,16 @@ export class MediumMetadataMapper {
 	}
 
 	public static mapVidisMetadataToMediumMetadata(mediumId: string, metadataItem: OfferDTO): MediumMetadataDto {
+		console.log('Vidis metadata item:', metadataItem);
+
 		const mediumMetadata: MediumMetadataDto = new MediumMetadataDto({
 			mediumId,
 			name: metadataItem.offerTitle ?? metadataItem.offerLongTitle ?? '',
 			description: metadataItem.offerDescription,
-			logo: metadataItem.offerLogo,
+			logoUrl: metadataItem.offerLogo,
 		});
+
+		console.log('Mapped Vidis metadata:', mediumMetadata);
 
 		return mediumMetadata;
 	}
