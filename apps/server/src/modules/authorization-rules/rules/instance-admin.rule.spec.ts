@@ -1,6 +1,5 @@
 import { DeepMocked } from '@golevelup/ts-jest';
 import {
-	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -11,11 +10,11 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { InstanceRule } from './instance.rule';
+import { InstanceAdminRule } from './instance-admin.rule';
 
-describe(InstanceRule.name, () => {
+describe(InstanceAdminRule.name, () => {
 	let module: TestingModule;
-	let rule: InstanceRule;
+	let rule: InstanceAdminRule;
 	let injectionService: AuthorizationInjectionService;
 
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
@@ -24,10 +23,10 @@ describe(InstanceRule.name, () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
-			providers: [InstanceRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [InstanceAdminRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
-		rule = module.get(InstanceRule);
+		rule = module.get(InstanceAdminRule);
 		authorizationHelper = module.get(AuthorizationHelper);
 		injectionService = module.get(AuthorizationInjectionService);
 	});
@@ -43,9 +42,9 @@ describe(InstanceRule.name, () => {
 	});
 
 	describe('isApplicable', () => {
-		describe('when the entity is applicable', () => {
+		describe('when the user and object are applicable', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.asSuperhero().build();
 				const instance = instanceFactory.build();
 
 				return {
@@ -65,7 +64,7 @@ describe(InstanceRule.name, () => {
 
 		describe('when the entity is not applicable', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userFactory.asSuperhero().build();
 				const notInstance = userFactory.build();
 
 				return {
@@ -77,7 +76,7 @@ describe(InstanceRule.name, () => {
 			it('should return false', () => {
 				const { user, notInstance } = setup();
 
-				const result = rule.isApplicable(user, notInstance as unknown as InstanceRule);
+				const result = rule.isApplicable(user, notInstance as unknown as InstanceAdminRule);
 
 				expect(result).toEqual(false);
 			});
@@ -90,7 +89,7 @@ describe(InstanceRule.name, () => {
 				const setup = () => {
 					const user = userFactory.asSuperhero().build();
 					const instance = instanceFactory.build();
-					const context = AuthorizationContextBuilder.write([Permission.INSTANCE_VIEW]);
+					const context = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
 
 					return {
 						user,
@@ -99,10 +98,22 @@ describe(InstanceRule.name, () => {
 					};
 				};
 
-				it('should throw an Error:Action is not implemented.', () => {
+				it('should call hasAllPermissions with expected props', () => {
+					const { user, instance, context } = setup();
+					const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
+
+					rule.hasPermission(user, instance, context);
+
+					expect(spy).toHaveBeenCalledWith(user, [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS]);
+					expect(spy).toHaveBeenCalledWith(user, [Permission.INSTANCE_EDIT, ...context.requiredPermissions]);
+				});
+
+				it('should return true', () => {
 					const { user, instance, context } = setup();
 
-					expect(() => rule.hasPermission(user, instance, context)).toThrowError('Action is not implemented.');
+					const result = rule.hasPermission(user, instance, context);
+
+					expect(result).toEqual(true);
 				});
 			});
 
@@ -110,7 +121,7 @@ describe(InstanceRule.name, () => {
 				const setup = () => {
 					const user = userFactory.asSuperhero().build();
 					const instance = instanceFactory.build();
-					const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.INSTANCE_VIEW]);
+					const context = AuthorizationContextBuilder.read([Permission.CREATE_SUPPORT_JWT]);
 
 					return {
 						user,
@@ -119,13 +130,14 @@ describe(InstanceRule.name, () => {
 					};
 				};
 
-				it('should check all permissions', () => {
+				it('should call hasAllPermissions with expected props', () => {
 					const { user, instance, context } = setup();
 					const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 
 					rule.hasPermission(user, instance, context);
 
-					expect(spy).toHaveBeenCalledWith(user, context.requiredPermissions);
+					expect(spy).toHaveBeenCalledWith(user, [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS]);
+					expect(spy).toHaveBeenCalledWith(user, [Permission.INSTANCE_VIEW, ...context.requiredPermissions]);
 				});
 
 				it('should return true', () => {
@@ -143,8 +155,7 @@ describe(InstanceRule.name, () => {
 				const setup = () => {
 					const user = userFactory.asStudent().build();
 					const instance = instanceFactory.build();
-					const context = AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]);
-
+					const context = AuthorizationContextBuilder.write([Permission.FILESTORAGE_VIEW]);
 					return {
 						user,
 						instance,
@@ -152,32 +163,12 @@ describe(InstanceRule.name, () => {
 					};
 				};
 
-				it('should throw an Error:Action is not implemented.', () => {
-					const { user, instance, context } = setup();
-
-					expect(() => rule.hasPermission(user, instance, context)).toThrowError('Action is not implemented.');
-				});
-			});
-
-			describe('when the user has read permission', () => {
-				const setup = () => {
-					const user = userFactory.asStudent().build();
-					const instance = instanceFactory.build();
-					const context = AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]);
-
-					return {
-						user,
-						instance,
-						context,
-					};
-				};
-
-				it('should return true', () => {
+				it('should return false', () => {
 					const { user, instance, context } = setup();
 
 					const result = rule.hasPermission(user, instance, context);
 
-					expect(result).toEqual(true);
+					expect(result).toEqual(false);
 				});
 			});
 		});

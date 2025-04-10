@@ -3,7 +3,7 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { NotImplementedException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { RuleManager } from '.';
@@ -76,7 +76,7 @@ describe('RuleManager', () => {
 
 				const result = service.selectRule(user, object, context);
 
-				expect(result).toEqual(applicableRule);
+				expect(result).toEqual([applicableRule]);
 			});
 		});
 
@@ -107,15 +107,21 @@ describe('RuleManager', () => {
 				const object = courseEntityFactory.build();
 				const context = AuthorizationContextBuilder.read([]);
 
-				injectionService.getAuthorizationRules.mockReturnValueOnce([buildApplicableRule(), buildApplicableRule()]);
+				injectionService.getAuthorizationRules.mockReturnValueOnce([
+					buildApplicableRule(),
+					buildApplicableRule(),
+					buildNotApplicableRule(),
+				]);
 
 				return { user, object, context };
 			};
 
-			it('should throw InternalServerErrorException', () => {
+			it('should return two roles', () => {
 				const { user, object, context } = setup();
 
-				expect(() => service.selectRule(user, object, context)).toThrow(InternalServerErrorException);
+				const result = service.selectRule(user, object, context);
+
+				expect(result).toHaveLength(2);
 			});
 		});
 	});
