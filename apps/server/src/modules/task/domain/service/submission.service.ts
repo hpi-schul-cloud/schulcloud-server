@@ -105,27 +105,35 @@ export class SubmissionService implements DeletionService {
 			)
 		);
 
-		let [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
+		const [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
 
-		if (submissionsCount > 0) {
-			submissionsEntities = submissionsEntities.filter((submission) => submission.isGroupSubmission());
-			submissionsCount = submissionsEntities.length;
+		if (submissionsCount <= 0) {
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'no references from Submissions found',
+					DomainName.SUBMISSIONS,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			const result = DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []);
+
+			return result;
 		}
 
-		if (submissionsCount > 0) {
-			submissionsEntities.forEach((submission) => {
-				submission.removeStudentById(userId);
-				submission.removeUserFromTeamMembers(userId);
-			});
-
-			await this.submissionRepo.save(submissionsEntities);
-		}
-
-		const result = DomainOperationReportBuilder.build(
-			OperationType.UPDATE,
-			submissionsCount,
-			this.getSubmissionsId(submissionsEntities)
+		const submissionsIds = this.getSubmissionsId(
+			submissionsEntities.filter((submission) => submission.isGroupSubmission())
 		);
+
+		const groupSubmissionsCount = submissionsIds.length;
+
+		await this.submissionRepo.removeUserReference(submissionsIds);
+		await this.submissionRepo.deleteUserFromGroupSubmissions(userId);
+
+		const result = DomainOperationReportBuilder.build(OperationType.UPDATE, groupSubmissionsCount, submissionsIds);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -133,7 +141,7 @@ export class SubmissionService implements DeletionService {
 				DomainName.SUBMISSIONS,
 				userId,
 				StatusModel.FINISHED,
-				submissionsCount,
+				groupSubmissionsCount,
 				0
 			)
 		);

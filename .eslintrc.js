@@ -260,6 +260,10 @@ module.exports = {
 										group: ['@modules/*', '!@modules/account'],
 										message: 'testing may NOT import from @modules',
 									},
+									{
+										group: ['@infra/*'],
+										message: 'testing may NOT import from @infra',
+									},
 								],
 							},
 						],

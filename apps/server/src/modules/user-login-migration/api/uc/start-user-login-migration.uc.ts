@@ -31,12 +31,14 @@ export class StartUserLoginMigrationUc {
 			schoolId
 		);
 
+		if (userLoginMigration && userLoginMigration.closedAt) {
+			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
+		}
+
 		if (!userLoginMigration) {
 			userLoginMigration = await this.userLoginMigrationService.startMigration(schoolId);
 
 			this.logger.info(new UserLoginMigrationStartLoggable(userId, userLoginMigration.id));
-		} else if (userLoginMigration.closedAt) {
-			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);
 		}
 
 		return userLoginMigration;

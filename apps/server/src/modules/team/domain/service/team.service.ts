@@ -42,13 +42,7 @@ export class TeamService implements DeletionService {
 		);
 		const teams = await this.teamRepo.findByUserId(userId);
 
-		teams.forEach((team) => {
-			team.userIds = team.userIds.filter((u) => u.userId.id !== userId);
-		});
-
-		await this.teamRepo.save(teams);
-
-		const numberOfUpdatedTeams = teams.length;
+		const numberOfUpdatedTeams = await this.teamRepo.removeUserReferences(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedTeams, this.getTeamsId(teams)),

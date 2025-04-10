@@ -1,10 +1,16 @@
 import { Logger } from '@core/logger';
 import { FeathersAuthorizationService } from '@modules/authorization';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { CrudOperation } from '@shared/types/crud-operation.enum';
-import { CreateNews, INewsScope, IUpdateNews, NewsCrudOperationLoggable, NewsTargetModel } from '../domain';
+import {
+	CreateNews,
+	CrudOperation,
+	INewsScope,
+	IUpdateNews,
+	NewsCrudOperationLoggable,
+	NewsTargetModel,
+} from '../domain';
 import { News, NewsRepo, NewsTargetFilter } from '../repo';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -12,7 +18,6 @@ type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 @Injectable()
 export class NewsUc {
 	constructor(
-		@Inject(forwardRef(() => FeathersAuthorizationService))
 		private authorizationService: FeathersAuthorizationService,
 		private newsRepo: NewsRepo,
 		private logger: Logger

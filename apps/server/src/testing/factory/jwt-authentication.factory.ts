@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { CreateJwtPayload } from '@infra/auth-guard';
 import jwt, { Algorithm } from 'jsonwebtoken';
 

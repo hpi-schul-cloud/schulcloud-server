@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
@@ -10,7 +11,7 @@ export class TaskUpdateParams implements TaskUpdate {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'The id of an course object.',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		required: true,
 		nullable: false,
 	})
@@ -21,7 +22,7 @@ export class TaskUpdateParams implements TaskUpdate {
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'The id of an lesson object.',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	lessonId?: string;
 

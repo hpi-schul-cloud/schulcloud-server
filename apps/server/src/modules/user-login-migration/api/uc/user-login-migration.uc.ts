@@ -223,6 +223,8 @@ export class UserLoginMigrationUc {
 			this.logger.info(new SchoolMigrationSuccessfulLoggable(school, activeUserLoginMigration));
 		} else if (school.externalId !== externalSchoolId) {
 			throw new UserLoginMigrationInvalidExternalSchoolIdLoggableException(externalSchoolId);
+		} else {
+			// school already migrated
 		}
 
 		const hasUserMigrated = this.userMigrationService.hasUserMigratedInMigrationPhase(

@@ -3,15 +3,15 @@ import { IdentityManagementModule } from '@infra/identity-management';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
+import { DeletionModule } from '@modules/deletion';
 import { ConfigService } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AccountConfig } from './account-config';
+import { ACCOUNT_REPO, AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
 import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
-import { AccountRepo } from './repo/micro-orm/account.repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
-import { DeletionModule } from '@modules/deletion';
+import { AccountMikroOrmRepo } from './repo';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
@@ -23,7 +23,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 @Module({
 	imports: [CqrsModule, IdentityManagementModule, SystemModule, LoggerModule, UserModule, DeletionModule],
 	providers: [
-		AccountRepo,
+		{ provide: ACCOUNT_REPO, useClass: AccountMikroOrmRepo },
 		AccountServiceDb,
 		AccountServiceIdm,
 		AccountService,

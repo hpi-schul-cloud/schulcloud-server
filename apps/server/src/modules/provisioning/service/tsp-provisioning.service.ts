@@ -3,14 +3,11 @@ import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleName, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import { UserDo, UserService } from '@modules/user';
+import { Consent, ParentConsent, UserConsent, UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
-import { Consent } from '@shared/domain/domainobject/consent';
-import { ParentConsent } from '@shared/domain/domainobject/parent-consent';
-import { UserConsent } from '@shared/domain/domainobject/user-consent';
 import { ObjectId } from 'bson';
 import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
@@ -51,7 +48,10 @@ export class TspProvisioningService {
 			return this.createOrUpdateUser(oauthDataDto.externalUser, roleRefs[index], school.id, user);
 		});
 
+		// Has to be done two times otherwise user.consent.parentConsents is empty
+		await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
 		const savedUsers = await this.userService.saveAll(updatedUsers.filter((user) => user !== undefined));
+
 		const savedUserIds = savedUsers.map((savedUser) => savedUser.id);
 		const foundAccounts = await Promise.all(
 			savedUserIds.map((userId) => this.accountService.findByUserId(userId ?? ''))
@@ -197,6 +197,9 @@ export class TspProvisioningService {
 		if (!user) {
 			throw new BadDataLoggableException(`Couldn't process user`, { externalId: data.externalUser.externalId });
 		}
+
+		// Has to be done two times otherwise user.consent.parentConsents is empty
+		await this.userService.save(user);
 		const savedUser = await this.userService.save(user);
 
 		try {
@@ -234,9 +237,9 @@ export class TspProvisioningService {
 				externalId: externalUser.externalId,
 				secondarySchools: [],
 				lastSyncedAt: new Date(),
+				consent: this.createTspConsent(),
+				source: this.ENTITY_SOURCE,
 			});
-
-			this.createTspConsent(newUser);
 
 			return newUser;
 		}
@@ -246,8 +249,13 @@ export class TspProvisioningService {
 		existingUser.firstName = externalUser.firstName || existingUser.firstName;
 		existingUser.lastName = externalUser.lastName || existingUser.lastName;
 		existingUser.email = externalUser.email || existingUser.email;
-		existingUser.birthday = externalUser.birthday;
+		existingUser.birthday = externalUser.birthday || existingUser.birthday || new Date();
 		existingUser.lastSyncedAt = new Date();
+		existingUser.source = existingUser.source || this.ENTITY_SOURCE;
+
+		if (!existingUser.consent || !existingUser.consent.parentConsents?.length || !existingUser.consent.userConsent) {
+			existingUser.consent = this.createTspConsent();
+		}
 
 		return existingUser;
 	}
@@ -294,7 +302,7 @@ export class TspProvisioningService {
 		return email.toLowerCase();
 	}
 
-	private createTspConsent(user: UserDo): void {
+	private createTspConsent(): Consent {
 		const userConsent = new UserConsent({
 			form: 'digital',
 			privacyConsent: true,
@@ -314,9 +322,9 @@ export class TspProvisioningService {
 
 		const consent = new Consent({
 			userConsent,
-			parentConsent: [parentConsent],
+			parentConsents: [parentConsent],
 		});
 
-		user.consent = consent;
+		return consent;
 	}
 }

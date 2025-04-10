@@ -10,11 +10,11 @@ import { UserLoginMigrationService, UserMigrationService } from '@modules/user-l
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isError } from 'lodash';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUserFilter, ImportUserMatchCreatorScope, ImportUserNameMatchFilter } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
@@ -168,7 +168,7 @@ export class UserImportUc {
 
 		this.userImportService.checkFeatureEnabled(school);
 
-		const unmatchedCountedUsers = await this.userService.findForImportUser(currentUser.school, query, options);
+		const unmatchedCountedUsers = await this.userService.findForImportUser(currentUser.school, query.name, options);
 
 		return unmatchedCountedUsers;
 	}

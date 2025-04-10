@@ -89,7 +89,7 @@ export class BoardContextService {
 
 	private getBoardRolesFromRoomMembership(member: UserWithRoomRoles): BoardRoles[] {
 		const isReader = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_VIEW);
-		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_EDIT);
+		const isEditor = member.roles.flatMap((role) => role.permissions ?? []).includes(Permission.ROOM_CONTENT_EDIT);
 
 		if (isEditor) {
 			return [BoardRoles.EDITOR];
