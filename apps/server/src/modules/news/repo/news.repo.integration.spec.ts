@@ -355,4 +355,109 @@ describe('NewsRepo', () => {
 			expect(result[1]).toEqual(0);
 		});
 	});
+
+	describe('removeUserReference', () => {
+		describe('when user is creator of news', () => {
+			const setup = async () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.build();
+
+				const news1 = teamNewsFactory.build({
+					creator: user1,
+				});
+				const news2 = teamNewsFactory.build({
+					creator: user2,
+					updater: user1,
+				});
+				const news3 = teamNewsFactory.build({
+					creator: user1,
+					updater: user2,
+				});
+
+				await em.persistAndFlush([user1, user2, news1, news2, news3]);
+				em.clear();
+
+				return {
+					user1,
+					user2,
+					news1,
+					news2,
+					news3,
+				};
+			};
+
+			it('should actually remove the user reference from the news', async () => {
+				const { user1, news1, news3 } = await setup();
+
+				await repo.removeUserReference(user1.id);
+
+				const result1 = await repo.findById(news1.id);
+				expect(result1.creator).toBeUndefined();
+
+				const result3 = await repo.findById(news3.id);
+				expect(result3.creator).toBeUndefined();
+
+				const result = await repo.findByCreatorOrUpdaterId(user1.id);
+				expect(result[1]).toEqual(0);
+				expect(result[0].length).toEqual(0);
+			});
+
+			it('should not remove the other user updater from same news item', async () => {
+				const { user1, user2, news3 } = await setup();
+				await repo.removeUserReference(user1.id);
+
+				const result = await repo.findById(news3.id);
+				expect(result.updater?.id).toEqual(user2.id);
+			});
+		});
+
+		describe('when user is updater of news', () => {
+			const setup = async () => {
+				const user1 = userFactory.build();
+				const user2 = userFactory.build();
+				const news1 = teamNewsFactory.build({
+					creator: user1,
+				});
+				const news2 = teamNewsFactory.build({
+					updater: user2,
+				});
+				const news3 = teamNewsFactory.build({
+					creator: user1,
+					updater: user2,
+				});
+
+				await em.persistAndFlush([news1, news2, news3]);
+				em.clear();
+
+				return {
+					user1,
+					user2,
+					news1,
+					news2,
+					news3,
+				};
+			};
+
+			it('should actually remove the user reference from the news', async () => {
+				const { user2, news2 } = await setup();
+
+				await repo.removeUserReference(user2.id);
+
+				const result2 = await repo.findById(news2.id);
+				expect(result2.updater).toBeUndefined();
+
+				const result = await repo.findByCreatorOrUpdaterId(user2.id);
+				expect(result[1]).toEqual(0);
+				expect(result[0].length).toEqual(0);
+			});
+
+			it('should not remove the other user creator from same news item', async () => {
+				const { user1, user2, news3 } = await setup();
+				await repo.removeUserReference(user2.id);
+
+				const result = await repo.findById(news3.id);
+				expect(result.creator?.id).toEqual(user1.id);
+			});
+		});
+	});
 });
