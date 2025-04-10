@@ -282,7 +282,6 @@
 		"@openapitools/openapi-generator-cli": "^2.18.4",
 		"@types/adm-zip": "^0.5.7",
 		"@types/amqplib": "^0.10.7",
-		"@types/bcryptjs": "^2.4.6",
 		"@types/busboy": "^1.5.4",
 		"@types/clamscan": "^2.4.1",
 		"@types/crypto-js": "^4.2.2",
