@@ -3,14 +3,17 @@ import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ImageMimeType } from '../../tool/common';
 import { MediumMetadataNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
+import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';
 import { VidisStrategy } from './vidis.strategy';
 
 describe(VidisStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: VidisStrategy;
 	let vidisClientAdapter: DeepMocked<VidisClientAdapter>;
+	let mediumMetadataLogoService: DeepMocked<MediumMetadataLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,11 +23,16 @@ describe(VidisStrategy.name, () => {
 					provide: VidisClientAdapter,
 					useValue: createMock<VidisClientAdapter>(),
 				},
+				{
+					provide: MediumMetadataLogoService,
+					useValue: createMock<MediumMetadataLogoService>(),
+				},
 			],
 		}).compile();
 
 		strategy = module.get(VidisStrategy);
 		vidisClientAdapter = module.get(VidisClientAdapter);
+		mediumMetadataLogoService = module.get(MediumMetadataLogoService);
 	});
 
 	afterAll(async () => {
@@ -77,8 +85,15 @@ describe(VidisStrategy.name, () => {
 				allOfferItems.push(requestedOfferItem);
 
 				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(allOfferItems);
+				const mimetype: ImageMimeType = ImageMimeType.PNG;
 
-				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, requestedOfferItem);
+				mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValue(mimetype);
+
+				const expectedLogoUrl = `data:${mimetype};base64,${requestedOfferItem.offerLogo ?? ''}`;
+				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, {
+					...requestedOfferItem,
+					offerLogo: expectedLogoUrl,
+				});
 
 				return {
 					mediumId,
