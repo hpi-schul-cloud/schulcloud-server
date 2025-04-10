@@ -288,7 +288,7 @@
 		"@types/express": "^4.17.21",
 		"@types/jest": "^29.2.1",
 		"@types/lodash": "^4.17.14",
-		"@types/node": "^22.14.0",
+		"@types/node": "22.10.7",
 		"@types/passport-jwt": "^4.0.1",
 		"@types/passport-local": "^1.0.38",
 		"@types/response-time": "^2.3.8",
