@@ -61,7 +61,7 @@ export class BoardNodeCopyService {
 				result = await this.copyCard(boardNode as Card, context);
 				break;
 			case BoardNodeType.AUDIO_RECORD_ELEMENT:
-				result = await this.copyFileElement(boardNode as AudioRecordElement, context);
+				result = await this.copyAudioRecordElement(boardNode as AudioRecordElement, context);
 				break;
 			case BoardNodeType.FILE_ELEMENT:
 				result = await this.copyFileElement(boardNode as FileElement, context);
@@ -187,6 +187,32 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.FILE_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+			elements: fileCopyStatus,
+		};
+
+		return result;
+	}
+
+	public async copyAudioRecordElement(original: AudioRecordElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new AudioRecordElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
+
+		const fileCopyStatus = fileCopy.map((copyFileDto) => {
+			return {
+				type: CopyElementType.AUDIO_RECORD,
+				status: copyFileDto.id ? CopyStatusEnum.SUCCESS : CopyStatusEnum.FAIL,
+				title: copyFileDto.name ?? `(old fileid: ${copyFileDto.sourceId})`,
+			};
+		});
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.AUDIO_RECORD_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 			elements: fileCopyStatus,
 		};
