@@ -8,13 +8,13 @@ import {
 	OperationType,
 	StatusModel,
 	UserDeletionInjectionService,
-} from '@modules/deletion';
+} from '../../deletion';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
-import { BoardExternalReferenceType, MediaBoard } from '../../domain';
-import { BoardNodeService } from '../board-node.service';
-import { MediaBoardService } from '../media-board/media-board.service';
+import { BoardExternalReferenceType, MediaBoard } from '../domain';
+import { BoardNodeService } from './board-node.service';
+import { MediaBoardService } from './media-board/media-board.service';
 
 @Injectable()
 export class BoardUserDeleteService implements DeletionService {

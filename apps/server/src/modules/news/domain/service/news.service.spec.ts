@@ -1,18 +1,15 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { NewsRepo } from '../../repo';
@@ -23,10 +20,9 @@ describe(NewsService.name, () => {
 	let module: TestingModule;
 	let service: NewsService;
 	let repo: DeepMocked<NewsRepo>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User]);
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -40,21 +36,16 @@ describe(NewsService.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
 
 		service = module.get(NewsService);
 		repo = module.get(NewsRepo);
-		eventBus = module.get(EventBus);
 	});
 
 	afterEach(() => {
@@ -159,38 +150,6 @@ describe(NewsService.name, () => {
 
 				expect(result).toEqual(expectedResultWithoutUpdatedNews);
 			});
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.FILERECORDS;
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-				]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		it('should call deleteUserData in classService', async () => {
-			const { deletionRequestId, expectedData, targetRefId } = setup();
-
-			jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-			await service.deleteUserData(targetRefId);
-
-			expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
 		});
 	});
 });

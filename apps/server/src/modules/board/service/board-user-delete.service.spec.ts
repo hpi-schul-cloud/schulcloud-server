@@ -1,22 +1,19 @@
 import { Logger } from '@core/logger';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	UserDeletedEvent,
-} from '@modules/deletion';
-import { EventBus } from '@nestjs/cqrs';
+	UserDeletionInjectionService,
+} from '../../deletion';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { BoardNodeEntity } from '../../repo';
-import { mediaBoardFactory } from '../../testing';
-import { BoardNodeService } from '../board-node.service';
-import { MediaBoardService } from '../media-board';
+import { BoardNodeEntity } from '../repo';
+import { mediaBoardFactory } from '../testing';
+import { BoardNodeService } from './board-node.service';
+import { MediaBoardService } from './media-board';
 import { BoardUserDeleteService } from './board-user-delete.service';
 
 describe(BoardUserDeleteService.name, () => {
@@ -25,9 +22,10 @@ describe(BoardUserDeleteService.name, () => {
 
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		await setupEntities([BoardNodeEntity]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				BoardUserDeleteService,
@@ -44,12 +42,10 @@ describe(BoardUserDeleteService.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: createMock<EventBus>(),
-				},
-				{
-					provide: MikroORM,
-					useValue: await setupEntities([BoardNodeEntity]),
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
@@ -57,7 +53,6 @@ describe(BoardUserDeleteService.name, () => {
 		service = module.get(BoardUserDeleteService);
 		boardNodeService = module.get(BoardNodeService);
 		mediaBoardService = module.get(MediaBoardService);
-		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -100,34 +95,6 @@ describe(BoardUserDeleteService.name, () => {
 						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [board.id]),
 					])
 				);
-			});
-		});
-	});
-
-	describe('handle', () => {
-		describe('when deleting a user', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const deletionRequestId = new ObjectId().toHexString();
-				const report = DomainDeletionReportBuilder.build(DomainName.CLASS, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
-				]);
-
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(report);
-
-				return {
-					userId,
-					deletionRequestId,
-					report,
-				};
-			};
-
-			it('should return a report report', async () => {
-				const { userId, deletionRequestId, report } = setup();
-
-				await service.handle(new UserDeletedEvent(deletionRequestId, userId));
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, report));
 			});
 		});
 	});

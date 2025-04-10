@@ -152,36 +152,6 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
-	describe('findInProgressCount', () => {
-		describe('when finding in progress deletionRequests', () => {
-			const setup = () => {
-				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 1000;
-				const newerThan = new Date(Date.now() - thresholdNewerMs);
-
-				const count = 2;
-
-				deletionRequestRepo.findInProgressCount.mockResolvedValue(count);
-
-				return { count, newerThan };
-			};
-
-			it('should call deletionRequestRepo.findInProgressCount', async () => {
-				const { newerThan } = setup();
-
-				await service.findInProgressCount();
-
-				expect(deletionRequestRepo.findInProgressCount).toBeCalledWith(newerThan);
-			});
-
-			it('should return count of in progress deletionRequests', async () => {
-				const { count } = setup();
-				const result = await service.findInProgressCount();
-
-				expect(result).toEqual(count);
-			});
-		});
-	});
-
 	describe('findByStatusAndTargetRefId', () => {
 		describe('when status is registered', () => {
 			const setup = () => {

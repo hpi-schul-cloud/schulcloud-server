@@ -1445,11 +1445,6 @@
 					"type": "number",
 					"default": 20,
 					"description": "max amount of deletion requests to be processed simultaneously"
-				},
-				"DELETION_DELAY_MILLISECONDS": {
-					"type": "number",
-					"default": 5000,
-					"description": "delay in milliseconds to sleep before processing another batch of deletion requests"
 				}
 			},
 			"default": {}
