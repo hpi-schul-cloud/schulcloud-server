@@ -47,12 +47,7 @@ export class NewsService implements DeletionService, IEventHandler<UserDeletedEv
 
 		const [newsWithUserData, counterOfNews] = await this.newsRepo.findByCreatorOrUpdaterId(userId);
 
-		newsWithUserData.forEach((newsEntity) => {
-			newsEntity.removeCreatorReference(userId);
-			newsEntity.removeUpdaterReference(userId);
-		});
-
-		await this.newsRepo.save(newsWithUserData);
+		await this.newsRepo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.NEWS, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, counterOfNews, this.getNewsId(newsWithUserData)),

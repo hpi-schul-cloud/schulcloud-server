@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { CourseGroupEntity } from './coursegroup.entity';
+import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class CourseGroupRepo extends BaseRepo<CourseGroupEntity> {
@@ -29,5 +30,16 @@ export class CourseGroupRepo extends BaseRepo<CourseGroupEntity> {
 			students: new ObjectId(userId),
 		});
 		return [courseGroups, count];
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		const fieldName = getFieldName(this._em, 'students', CourseGroupEntity.name);
+
+		const count = await this._em.nativeUpdate(this.entityName, { students: id }, {
+			$pull: { [fieldName]: id },
+		} as Partial<CourseGroupEntity>);
+
+		return count;
 	}
 }
