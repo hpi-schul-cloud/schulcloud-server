@@ -1,11 +1,11 @@
-import path from 'path';
-import { v4 as uuid } from 'uuid';
 import { PreviewInputMimeTypes } from '@infra/preview-generator';
+import { BadRequestException } from '@nestjs/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { FileRecordParentType, StorageLocation } from './interface';
-import { BadRequestException } from '@nestjs/common';
+import path from 'path';
+import { v4 as uuid } from 'uuid';
 import { ErrorType } from './error';
+import { FileRecordParentType, StorageLocation } from './interface';
 
 export interface FileRecordSecurityCheckProps {
 	status: ScanStatus;

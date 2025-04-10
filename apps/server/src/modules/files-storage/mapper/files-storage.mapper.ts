@@ -8,6 +8,7 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../api/dto';
+import { FileRecord } from '../domain';
 import { FileRecordParentType, GetFileResponse, StorageLocation } from '../domain/interface';
 import { FileRecordEntity } from '../repo';
 
@@ -54,7 +55,7 @@ export class FilesStorageMapper {
 		return singleFileParams;
 	}
 
-	public static mapFileRecordToFileRecordParams(fileRecord: FileRecordEntity): FileRecordParams {
+	public static mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
 		const fileRecordParams = plainToClass(FileRecordParams, {
 			storageLocationId: fileRecord.storageLocationId,
 			storageLocation: fileRecord.storageLocation,
