@@ -1,11 +1,11 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ExternalToolPseudonymRepo } from './repo';
 import { PseudonymService } from './service';
 import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [LoggerModule, forwardRef(() => DeletionModule)],
+	imports: [LoggerModule, DeletionModule],
 	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger],
 	exports: [PseudonymService],
 })

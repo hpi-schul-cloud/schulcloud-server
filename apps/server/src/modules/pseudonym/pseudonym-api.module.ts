@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { PseudonymModule } from './pseudonym.module';
@@ -7,7 +7,7 @@ import { PseudonymUc } from './uc';
 import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [PseudonymModule, AuthorizationModule, LegacySchoolModule, forwardRef(() => DeletionModule)],
+	imports: [PseudonymModule, AuthorizationModule, LegacySchoolModule, DeletionModule],
 	providers: [PseudonymUc],
 	controllers: [PseudonymController],
 })

@@ -8,7 +8,7 @@ import { NewsService } from './domain';
 
 // imports from deletion module?
 @Module({
-	imports: [LoggerModule, forwardRef(() => AuthorizationModule), forwardRef(() => DeletionModule)],
+	imports: [LoggerModule, forwardRef(() => AuthorizationModule), DeletionModule],
 	controllers: [NewsController, TeamNewsController],
 	providers: [NewsUc, NewsRepo, NewsService],
 	exports: [NewsUc, NewsService],

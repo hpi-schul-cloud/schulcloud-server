@@ -213,7 +213,13 @@ export class DatabaseManagementUc {
 				}
 
 				// create bson-objects from text
-				const bsonDocuments = JSON.parse(fileContent) as object[];
+				let bsonDocuments: object[];
+				try {
+					bsonDocuments = JSON.parse(fileContent) as object[];
+				} catch (e) {
+					this.logger.error(`Failed to parse file ${filePath}: ${e}`);
+					throw new Error(`Failed to parse file ${filePath}: ${e}`);
+				}
 				// deserialize bson (format of mongoexport) to json documents we can import to mongo
 				const jsonDocuments = this.bsonConverter.deserialize(bsonDocuments);
 
