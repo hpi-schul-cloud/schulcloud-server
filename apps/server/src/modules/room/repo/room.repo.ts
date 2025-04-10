@@ -87,16 +87,19 @@ export class RoomRepo {
 		return this.em.flush();
 	}
 
+	// belongs into mapper
 	private async mapDoToEntity(room: Room): Promise<RoomEntity> {
-		const entity = (await this.em.findOne(RoomEntity, room.id)) || new RoomEntity();
+		if (false) {
+			RoomDomainMapper.mapDoToEntity(room);
+		} else {
+			const entity = (await this.em.findOne(RoomEntity, room.id)) || new RoomEntity();
 
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore // TODO: do this differently
-		const { props } = room;
+			const props = room.getProps();
 
-		Object.assign(entity, props); // TODO: deal with embedded arrays (and objects?)
-		entity.domainObject = room;
+			Object.assign(entity, props); // TODO: deal with embedded arrays (and objects?)
+			entity.domainObject = room;
 
-		return entity;
+			return entity;
+		}
 	}
 }

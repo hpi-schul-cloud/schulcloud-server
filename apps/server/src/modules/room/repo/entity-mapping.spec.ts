@@ -45,6 +45,7 @@ describe('RoomRepo', () => {
 		});
 
 		it('copy', async () => {
+			// create
 			const room = RoomDomainFactory.build({
 				name: 'myTestRoomThatICreate',
 				color: RoomColor.RED,
@@ -52,14 +53,16 @@ describe('RoomRepo', () => {
 			});
 			await repo.save(room);
 
+			// copy
 			const original = await repo.findById(room.id);
 			const copyParams: RoomParams = { ...original.getProps() };
 			delete copyParams.id;
 			delete copyParams.createdAt;
 			delete copyParams.updatedAt;
 			const copy = RoomDomainFactory.build(copyParams);
-
 			await repo.save(copy);
+
+			// test
 			const result = await repo.findById(copy.id);
 			expect(result).toEqual(copy);
 		});
