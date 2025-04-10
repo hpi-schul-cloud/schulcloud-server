@@ -48,6 +48,22 @@ import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './m
 export class ElementController {
 	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}
 
+	@ApiOperation({ summary: 'Get metadata for a single content element.' })
+	@ApiResponse({ status: 200, schema: { type: 'object', additionalProperties: true } })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':contentElementId/metadata')
+	public async getElementMetadata(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<Record<string, any>> {
+		const metadata = await this.elementUc.getElementMetadata(currentUser.userId, urlParams.contentElementId);
+		const response = ContentElementResponseFactory.mapToResponse(metadata.element);
+
+		return { element: response, path: metadata.path };
+	}
+
 	@ApiOperation({ summary: 'Move a single content element.' })
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 400, type: ApiValidationError })
@@ -55,7 +71,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Put(':contentElementId/position')
-	async moveElement(
+	public async moveElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: MoveContentElementBody,
 		@CurrentUser() currentUser: ICurrentUser
@@ -99,7 +115,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(200)
 	@Patch(':contentElementId/content')
-	async updateElement(
+	public async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -120,7 +136,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':contentElementId')
-	async deleteElement(
+	public async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
@@ -135,7 +151,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
 	@Post(':contentElementId/submissions')
-	async createSubmissionItem(
+	public async createSubmissionItem(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -157,7 +173,7 @@ export class ElementController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':contentElementId/permission')
-	async readPermission(
+	public async readPermission(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {

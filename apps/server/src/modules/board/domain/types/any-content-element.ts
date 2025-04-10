@@ -1,3 +1,4 @@
+import { EntityId } from '@shared/domain/types';
 import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from '../collaborative-text-editor.do';
 import { type DeletedElement, isDeletedElement } from '../deleted-element.do';
 import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
@@ -37,3 +38,22 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 
 	return result;
 };
+
+// @TODO check namings
+export enum ReferenceNodeType {
+	COURSE = 'course',
+	ROOM = 'room',
+	BOARD = 'board',
+}
+
+export interface ReferenceNodeInfo {
+	readonly id: EntityId;
+	readonly type: ReferenceNodeType;
+	readonly name: string;
+	readonly child?: ReferenceNodeInfo;
+}
+
+export interface ContentElementWithReferenceNode {
+	readonly element: AnyContentElement;
+	readonly path: ReferenceNodeInfo[];
+}

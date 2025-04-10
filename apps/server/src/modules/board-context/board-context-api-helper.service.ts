@@ -6,7 +6,7 @@ import { SchoolFeature } from '@modules/school/domain';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { BoardFeature } from '../board/domain';
+import { BoardFeature, ReferenceNodeInfo, ReferenceNodeType } from '../board/domain';
 import { LegacySchoolService } from '../legacy-school';
 import { ServerConfig } from '../server';
 import { VideoConferenceConfig } from '../video-conference';
@@ -22,6 +22,29 @@ export class BoardContextApiHelperService {
 		private readonly legacySchoolService: LegacySchoolService,
 		private readonly configService: ConfigService<ServiceConfig, true>
 	) {}
+
+	public async getReferenceForContentElement(nodeId: EntityId): Promise<ReferenceNodeInfo[]> {
+		const items: ReferenceNodeInfo[] = [];
+
+		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, nodeId, 0);
+		const { context } = columnBoard;
+
+		if (context.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseService.findById(context.id);
+
+			items.push({ id: course.id, name: course.name, type: ReferenceNodeType.COURSE });
+		}
+
+		if (context.type === BoardExternalReferenceType.Room) {
+			const room = await this.roomService.getSingleRoom(context.id);
+
+			items.push({ id: room.id, name: room.name, type: ReferenceNodeType.ROOM });
+		}
+
+		items.push({ id: columnBoard.id, name: columnBoard.title, type: ReferenceNodeType.BOARD });
+
+		return items;
+	}
 
 	public async getSchoolIdForBoardNode(nodeId: EntityId): Promise<EntityId> {
 		const boardContext = await this.getBoardContext(nodeId);
