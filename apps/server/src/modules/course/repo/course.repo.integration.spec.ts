@@ -443,40 +443,72 @@ describe('course repo', () => {
 		});
 	});
 
-	describe('update Courses', () => {
-		describe('when user is existing', () => {
+	describe('removeUserReference', () => {
+		describe('when deleting a student from all courses', () => {
 			const setup = async () => {
 				const user = userFactory.build();
 				const otherUser = userFactory.build();
-				await em.persistAndFlush([user, otherUser]);
-				const course1 = courseEntityFactory.build({ name: 'course #1', students: [user, otherUser] });
-				const course2 = courseEntityFactory.build({ name: 'course #2', substitutionTeachers: [user, otherUser] });
-				const course3 = courseEntityFactory.build({ name: 'course #3', teachers: [user, otherUser] });
-				const course4 = courseEntityFactory.build({ name: 'course #1', students: [otherUser] });
 
-				await em.persistAndFlush([course1, course2, course3, course4]);
+				const course1 = courseEntityFactory.buildWithId({ name: 'course #1', students: [user, otherUser] });
+				const course2 = courseEntityFactory.buildWithId({ name: 'course #2', substitutionTeachers: [user, otherUser] });
+				const course3 = courseEntityFactory.buildWithId({ name: 'course #3', teachers: [user, otherUser] });
+				const course4 = courseEntityFactory.buildWithId({ name: 'course #4', students: [otherUser] });
+
+				await em.persistAndFlush([user, otherUser, course1, course2, course3, course4]);
+				em.clear();
 
 				return {
 					user,
+					otherUser,
 					course1,
 					course2,
 					course3,
+					course4,
 				};
 			};
 
-			it('should update Courses without deleted user', async () => {
+			it('should actually remove the user reference from the courses', async () => {
 				const { user, course1, course2, course3 } = await setup();
 
-				// Arrange expected Array after User deletion
-				course1.students.remove((u) => u.id === user.id);
-				course2.substitutionTeachers.remove((u) => u.id === user.id);
-				course3.teachers.remove((u) => u.id === user.id);
+				await repo.removeUserReference(user.id);
 
-				// Act
-				await repo.save([course1, course2, course3]);
+				const [result1] = await repo.findAllByUserId(user.id);
+				expect(result1.length).toEqual(0);
 
-				const [, count] = await repo.findAllByUserId(user.id);
-				expect(count).toEqual(0);
+				const courseEntity1 = await repo.findById(course1.id);
+				expect(courseEntity1.getStudentIds()).not.toContain(user.id);
+
+				const courseEntity2 = await repo.findById(course2.id);
+				expect(courseEntity2.getSubstitutionTeacherIds()).not.toContain(user.id);
+
+				const courseEntity3 = await repo.findById(course3.id);
+				expect(courseEntity3.getTeacherIds()).not.toContain(user.id);
+			});
+
+			it('should return count of 3 courses updated', async () => {
+				const { user } = await setup();
+
+				const numberOfUpdatedCourses = await repo.removeUserReference(user.id);
+
+				expect(numberOfUpdatedCourses).toEqual(3);
+			});
+
+			it('should not affect other users in the same course', async () => {
+				const { user, otherUser, course1 } = await setup();
+
+				await repo.removeUserReference(user.id);
+
+				const courseEntity1 = await repo.findById(course1.id);
+				expect(courseEntity1.getStudentIds()).toContain(otherUser.id);
+			});
+
+			it('should not affect other courses', async () => {
+				const { user, otherUser, course4 } = await setup();
+
+				await repo.removeUserReference(user.id);
+
+				const courseEntity1 = await repo.findById(course4.id);
+				expect(courseEntity1.getStudentIds()).toEqual([otherUser.id]);
 			});
 		});
 	});
