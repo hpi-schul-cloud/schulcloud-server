@@ -142,7 +142,8 @@
 		"pregenerate-client:boards-api": "rimraf ./apps/server/src/infra/boards-client/generated",
 		"generate-client:boards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key boards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
-		"generate-client:cards-api": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/modules/common-cartridge/common-cartridge-client/card-client/cards-api-client' -c 'openapitools-config.json' -f 'operationId:CardController_getCards'"
+		"generate-client:cards-api": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/modules/common-cartridge/common-cartridge-client/card-client/cards-api-client' -c 'openapitools-config.json' -f 'operationId:CardController_getCards'",
+		"knip": "knip"
 	},
 	"overrides": {
 		"gm": {
@@ -288,7 +289,7 @@
 		"@types/express": "^4.17.21",
 		"@types/jest": "^29.2.1",
 		"@types/lodash": "^4.17.14",
-		"@types/node": "^22.10.7",
+		"@types/node": "^22.14.0",
 		"@types/passport-jwt": "^4.0.1",
 		"@types/passport-local": "^1.0.38",
 		"@types/response-time": "^2.3.8",
@@ -314,6 +315,7 @@
 		"eslint-plugin-promise": "^7.2.1",
 		"freeport": "^1.0.5",
 		"jest": "^29.7.0",
+		"knip": "^5.50.0",
 		"mocha": "^11.0.1",
 		"nyc": "^17.1.0",
 		"prettier": "^2.8.1",
@@ -324,6 +326,6 @@
 		"socket.io-client": "^4.8.1",
 		"supertest": "^7.0.0",
 		"ts-jest": "^29.2.5",
-		"typescript": "^5.7.3"
+		"typescript": "^5.8.3"
 	}
 }
