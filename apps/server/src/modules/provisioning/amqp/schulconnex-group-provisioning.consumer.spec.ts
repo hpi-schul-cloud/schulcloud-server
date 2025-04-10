@@ -299,6 +299,18 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 
 				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).not.toHaveBeenCalled();
 			});
+
+			it('should not synchronize the courses from any existing course sync histories', async () => {
+				const { systemId, externalSchool, externalGroup } = setup();
+
+				await consumer.provisionGroups({
+					systemId,
+					externalSchool,
+					externalGroup,
+				});
+
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
+			});
 		});
 	});
 });

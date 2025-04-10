@@ -103,10 +103,10 @@ export class SchulconnexSyncProvisioningStrategy extends SchulconnexBaseProvisio
 						provisionedGroup,
 						existingGroup ?? undefined
 					);
-				}
 
-				if (!existingGroup && provisionedGroup) {
-					await this.schulconnexCourseSyncService.synchronizeCoursesFromHistory(provisionedGroup);
+					if (!existingGroup) {
+						await this.schulconnexCourseSyncService.synchronizeCoursesFromHistory(provisionedGroup);
+					}
 				}
 			});
 

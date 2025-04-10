@@ -46,10 +46,9 @@ export class SchulconnexGroupProvisioningConsumer {
 
 		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
 			await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(provisionedGroup, existingGroup ?? undefined);
-		}
-
-		if (!existingGroup && provisionedGroup) {
-			await this.schulconnexCourseSyncService.synchronizeCoursesFromHistory(provisionedGroup);
+			if (!existingGroup) {
+				await this.schulconnexCourseSyncService.synchronizeCoursesFromHistory(provisionedGroup);
+			}
 		}
 
 		if (provisionedGroup) {
