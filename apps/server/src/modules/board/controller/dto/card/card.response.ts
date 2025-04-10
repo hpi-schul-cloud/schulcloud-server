@@ -2,6 +2,7 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import {
 	AnyContentElementResponse,
+	AudioRecordElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
 	DrawingElementResponse,
@@ -18,6 +19,7 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 @ApiExtraModels(
 	ExternalToolElementResponse,
 	FileElementResponse,
+	AudioRecordElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	DrawingElementResponse,
@@ -61,6 +63,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(AudioRecordElementResponse) },
 			],
 		},
 	})
