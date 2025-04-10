@@ -167,7 +167,7 @@ describe('LessonService', () => {
 		});
 	});
 
-	describe('deleteUserDataFromTeams', () => {
+	describe('deleteUserData', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const userId = new ObjectId();
@@ -182,6 +182,7 @@ describe('LessonService', () => {
 				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
+				lessonRepo.removeUserReference.mockResolvedValue(2);
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
 					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [lesson1.id, lesson2.id]),
@@ -199,6 +200,14 @@ describe('LessonService', () => {
 				await lessonService.deleteUserData(userId.toHexString());
 
 				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
+			});
+
+			it('should call lessonRepo.removeUserReference', async () => {
+				const { userId } = setup();
+
+				await lessonService.deleteUserData(userId.toHexString());
+
+				expect(lessonRepo.removeUserReference).toBeCalledWith(userId.toHexString());
 			});
 
 			it('should update lessons without deleted user', async () => {

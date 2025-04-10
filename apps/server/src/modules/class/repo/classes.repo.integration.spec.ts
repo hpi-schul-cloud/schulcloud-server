@@ -3,7 +3,6 @@ import { classEntityFactory } from '@modules/class/entity/testing/factory/class.
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { randomUUID } from 'crypto';
@@ -107,7 +106,7 @@ describe(ClassesRepo.name, () => {
 		});
 	});
 
-	describe('updateMany', () => {
+	describe('removeUserReference', () => {
 		describe('when deleting user data from classes', () => {
 			const setup = async () => {
 				const testUser1 = new ObjectId();
@@ -129,49 +128,39 @@ describe(ClassesRepo.name, () => {
 				};
 			};
 
-			it('should update classes without deleted user', async () => {
-				const { class1, class2, testUser1, testUser2, testUser3 } = await setup();
+			it('should actually remove the user reference from the classes', async () => {
+				const { testUser1 } = await setup();
 
-				class1.userIds = [testUser2];
-				class2.userIds = [testUser3];
-
-				const updatedArray = [class1, class2];
-				const domainObjectsArray = ClassMapper.mapToDOs(updatedArray);
-
-				await repo.updateMany(domainObjectsArray);
+				await repo.removeUserReference(testUser1.toHexString());
 
 				const result1 = await repo.findAllByUserId(testUser1.toHexString());
 				expect(result1).toHaveLength(0);
-
-				const result2 = await repo.findAllByUserId(testUser2.toHexString());
-				expect(result2).toHaveLength(2);
-
-				const result3 = await repo.findAllByUserId(testUser3.toHexString());
-				expect(result3).toHaveLength(2);
 			});
-		});
 
-		describe('when updating a class that does not exist', () => {
-			const setup = async () => {
-				const class1 = classEntityFactory.buildWithId();
-				const class2 = classEntityFactory.buildWithId();
+			it('should return count of 2 classes updated', async () => {
+				const { testUser1 } = await setup();
 
-				await em.persistAndFlush([class1]);
-				em.clear();
+				const numberOfUpdatedClasses = await repo.removeUserReference(testUser1.toHexString());
 
-				return {
-					class1,
-					class2,
-				};
-			};
+				expect(numberOfUpdatedClasses).toEqual(2);
+			});
 
-			it('should throw an error', async () => {
-				const { class1, class2 } = await setup();
+			it('should not affect other users in same classes', async () => {
+				const { testUser1, class1, testUser2 } = await setup();
 
-				const updatedArray = [class1, class2];
-				const domainObjectsArray = ClassMapper.mapToDOs(updatedArray);
+				await repo.removeUserReference(testUser1.toHexString());
 
-				await expect(repo.updateMany(domainObjectsArray)).rejects.toThrow(NotFoundLoggableException);
+				const classes = await repo.findClassById(class1.id);
+				expect(classes?.userIds).toEqual([testUser2.toHexString()]);
+			});
+
+			it('should not affect other classes', async () => {
+				const { testUser1, testUser3 } = await setup();
+
+				await repo.removeUserReference(testUser1.toHexString());
+
+				const result = await repo.findAllByUserId(testUser3.toHexString());
+				expect(result).toHaveLength(2);
 			});
 		});
 	});
