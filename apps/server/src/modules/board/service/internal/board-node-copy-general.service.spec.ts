@@ -18,6 +18,7 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	fileFolderElementFactory,
+	h5pElementFactory,
 	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -101,6 +102,7 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyMediaExternalToolElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyDeletedElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyVideoConferenceElement').mockResolvedValue(mockStatus);
+		jest.spyOn(service, 'copyH5PElement').mockResolvedValue(mockStatus);
 
 		return { copyContext, mockStatus };
 	};
@@ -306,6 +308,20 @@ describe(BoardNodeCopyService.name, () => {
 				const result = await service.copy(node, copyContext);
 
 				expect(service.copyVideoConferenceElement).toHaveBeenCalledWith(node, copyContext);
+				expect(result).toEqual(mockStatus);
+			});
+		});
+
+		describe('when called with external tool element', () => {
+			it('should copy external tool element', async () => {
+				const { copyContext, mockStatus } = setup();
+				const node = h5pElementFactory.build({
+					contentId: new ObjectId().toHexString(),
+				});
+
+				const result = await service.copy(node, copyContext);
+
+				expect(service.copyH5PElement).toHaveBeenCalledWith(node, copyContext);
 				expect(result).toEqual(mockStatus);
 			});
 		});

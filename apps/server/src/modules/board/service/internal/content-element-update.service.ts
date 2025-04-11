@@ -2,15 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import {
+	type AnyElementContentBody,
 	DrawingContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
 	FileFolderContentBody,
+	H5PContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
 	VideoConferenceContentBody,
-	type AnyElementContentBody,
 } from '../../controller/dto';
 import type {
 	AnyContentElement,
@@ -24,10 +25,12 @@ import type {
 	VideoConferenceElement,
 } from '../../domain';
 import {
+	H5PElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
 	isFileFolderElement,
+	isH5PElement,
 	isLinkElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
@@ -57,6 +60,8 @@ export class ContentElementUpdateService {
 			this.updateVideoConferenceElement(element, content);
 		} else if (isFileFolderElement(element) && content instanceof FileFolderContentBody) {
 			this.updateFileFolderElement(element, content);
+		} else if (isH5PElement(element) && content instanceof H5PContentBody) {
+			this.updateH5PElement(element, content);
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
@@ -105,7 +110,7 @@ export class ContentElementUpdateService {
 	}
 
 	public updateExternalToolElement(element: ExternalToolElement, content: ExternalToolContentBody): void {
-		if (content.contextExternalToolId !== undefined) {
+		if (content.contextExternalToolId !== undefined && element.contextExternalToolId === undefined) {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			element.contextExternalToolId = content.contextExternalToolId;
 		}
@@ -117,5 +122,11 @@ export class ContentElementUpdateService {
 
 	public updateFileFolderElement(element: FileFolderElement, content: FileFolderContentBody): void {
 		element.title = content.title;
+	}
+
+	public updateH5PElement(element: H5PElement, content: H5PContentBody): void {
+		if (content.contentId !== undefined && element.contentId === undefined) {
+			element.contentId = content.contentId;
+		}
 	}
 }

@@ -166,6 +166,22 @@ export class FileFolderElementContentBody extends ElementContentBody {
 	content!: FileFolderContentBody;
 }
 
+export class H5PContentBody {
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional()
+	public contentId?: string;
+}
+
+export class H5PElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: () => ContentElementType.H5P })
+	public type!: ContentElementType.H5P;
+
+	@ValidateNested()
+	@ApiProperty()
+	public content!: H5PContentBody;
+}
+
 export type AnyElementContentBody =
 	| FileContentBody
 	| DrawingContentBody
@@ -174,7 +190,8 @@ export type AnyElementContentBody =
 	| SubmissionContainerContentBody
 	| ExternalToolContentBody
 	| VideoConferenceContentBody
-	| FileFolderContentBody;
+	| FileFolderContentBody
+	| H5PContentBody;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -190,6 +207,7 @@ export class UpdateElementContentBodyParams {
 				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 				{ value: VideoConferenceElementContentBody, name: ContentElementType.VIDEO_CONFERENCE },
 				{ value: FileFolderElementContentBody, name: ContentElementType.FILE_FOLDER },
+				{ value: H5PElementContentBody, name: ContentElementType.H5P },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -204,6 +222,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(DrawingElementContentBody) },
 			{ $ref: getSchemaPath(VideoConferenceElementContentBody) },
 			{ $ref: getSchemaPath(FileFolderElementContentBody) },
+			{ $ref: getSchemaPath(H5PElementContentBody) },
 		],
 	})
 	public data!:
@@ -214,5 +233,6 @@ export class UpdateElementContentBodyParams {
 		| ExternalToolElementContentBody
 		| DrawingElementContentBody
 		| VideoConferenceElementContentBody
-		| FileFolderElementContentBody;
+		| FileFolderElementContentBody
+		| H5PElementContentBody;
 }

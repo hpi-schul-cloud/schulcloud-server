@@ -4,6 +4,7 @@ import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
 import { type ExternalToolElement, isExternalToolElement } from '../external-tool-element.do';
 import { type FileElement, isFileElement } from '../file-element.do';
 import { type FileFolderElement, isFileFolderElement } from '../file-folder-element.do';
+import { H5PElement, isH5PElement } from '../h5p-element.do';
 import { isLinkElement, type LinkElement } from '../link-element.do';
 import { isRichTextElement, type RichTextElement } from '../rich-text-element.do';
 import { isSubmissionContainerElement, type SubmissionContainerElement } from '../submission-container-element.do';
@@ -20,10 +21,11 @@ export type AnyContentElement =
 	| RichTextElement
 	| SubmissionContainerElement
 	| DeletedElement
-	| VideoConferenceElement;
+	| VideoConferenceElement
+	| H5PElement;
 
 export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
-	const result =
+	const result: boolean =
 		isCollaborativeTextEditorElement(boardNode) ||
 		isDrawingElement(boardNode) ||
 		isExternalToolElement(boardNode) ||
@@ -33,7 +35,8 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 		isRichTextElement(boardNode) ||
 		isSubmissionContainerElement(boardNode) ||
 		isDeletedElement(boardNode) ||
-		isVideoConferenceElement(boardNode);
+		isVideoConferenceElement(boardNode) ||
+		isH5PElement(boardNode);
 
 	return result;
 };

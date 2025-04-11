@@ -14,6 +14,7 @@ import { DrawingElementResponseMapper } from './drawing-element-response.mapper'
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { FileFolderElementResponseMapper } from './file-folder-element-response.mapper';
+import { H5PElementResponseMapper } from './h5p-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
 import { SubmissionContainerElementResponseMapper } from './submission-container-element-response.mapper';
@@ -31,9 +32,11 @@ export class ContentElementResponseFactory {
 		DeletedElementResponseMapper.getInstance(),
 		VideoConferenceElementResponseMapper.getInstance(),
 		FileFolderElementResponseMapper.getInstance(),
+		FileFolderElementResponseMapper.getInstance(),
+		H5PElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
+	public static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {
 		const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 
 		if (!elementMapper) {
@@ -45,7 +48,7 @@ export class ContentElementResponseFactory {
 		return result;
 	}
 
-	static mapSubmissionContentToResponse(
+	public static mapSubmissionContentToResponse(
 		element: RichTextElement | FileElement
 	): FileElementResponse | RichTextElementResponse {
 		const result = this.mapToResponse(element);

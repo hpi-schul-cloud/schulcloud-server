@@ -1,3 +1,4 @@
+import { H5pEditorApi } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
@@ -10,10 +11,12 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	H5PElement,
 	isCollaborativeTextEditorElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
+	isH5PElement,
 	isLinkElement,
 	isMediaExternalToolElement,
 	LinkElement,
@@ -26,13 +29,14 @@ export class BoardNodeDeleteHooksService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly drawingElementAdapterService: TldrawClientAdapter,
-		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
+		private readonly collaborativeTextEditorService: CollaborativeTextEditorService,
+		private readonly h5pEditorApi: H5pEditorApi
 	) {}
 
-	async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
+	public async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		const boardNodes = Utils.asArray(boardNode);
 
-		await Promise.all(boardNodes.map(async (bn) => this.singleAfterDelete(bn)));
+		await Promise.all(boardNodes.map(async (bn): Promise<void> => this.singleAfterDelete(bn)));
 	}
 
 	private async singleAfterDelete(boardNode: AnyBoardNode): Promise<void> {
@@ -49,26 +53,28 @@ export class BoardNodeDeleteHooksService {
 			await this.afterDeleteCollaborativeTextEditorElement(boardNode);
 		} else if (isMediaExternalToolElement(boardNode)) {
 			await this.afterDeleteMediaExternalToolElement(boardNode);
+		} else if (isH5PElement(boardNode)) {
+			await this.afterDeleteH5PElement(boardNode);
 		} else {
 			// noop
 		}
 		await Promise.allSettled(boardNode.children.map(async (child) => this.afterDelete(child)));
 	}
 
-	async afterDeleteFileElement(fileElement: FileElement): Promise<void> {
+	public async afterDeleteFileElement(fileElement: FileElement): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
 	}
 
-	async afterDeleteLinkElement(linkElement: LinkElement): Promise<void> {
+	public async afterDeleteLinkElement(linkElement: LinkElement): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(linkElement.id);
 	}
 
-	async afterDeleteDrawingElement(drawingElement: DrawingElement): Promise<void> {
+	public async afterDeleteDrawingElement(drawingElement: DrawingElement): Promise<void> {
 		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(drawingElement.id);
 	}
 
-	async afterDeleteExternalToolElement(externalToolElement: ExternalToolElement): Promise<void> {
+	public async afterDeleteExternalToolElement(externalToolElement: ExternalToolElement): Promise<void> {
 		if (externalToolElement.contextExternalToolId) {
 			const linkedTool = await this.contextExternalToolService.findById(externalToolElement.contextExternalToolId);
 
@@ -78,7 +84,7 @@ export class BoardNodeDeleteHooksService {
 		}
 	}
 
-	async afterDeleteCollaborativeTextEditorElement(
+	public async afterDeleteCollaborativeTextEditorElement(
 		collaborativeTextEditorElement: CollaborativeTextEditorElement
 	): Promise<void> {
 		await this.collaborativeTextEditorService.deleteCollaborativeTextEditorByParentId(
@@ -86,11 +92,17 @@ export class BoardNodeDeleteHooksService {
 		);
 	}
 
-	async afterDeleteMediaExternalToolElement(mediaElement: MediaExternalToolElement): Promise<void> {
+	public async afterDeleteMediaExternalToolElement(mediaElement: MediaExternalToolElement): Promise<void> {
 		const linkedTool = await this.contextExternalToolService.findById(mediaElement.contextExternalToolId);
 
 		if (linkedTool) {
 			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
+		}
+	}
+
+	public async afterDeleteH5PElement(element: H5PElement): Promise<void> {
+		if (element.contentId) {
+			await this.h5pEditorApi.h5PEditorControllerDeleteH5pContent(element.contentId);
 		}
 	}
 }

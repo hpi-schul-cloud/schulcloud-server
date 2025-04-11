@@ -13,6 +13,7 @@ export enum BoardNodeType {
 	COLLABORATIVE_TEXT_EDITOR = 'collaborative-text-editor',
 	DELETED_ELEMENT = 'deleted-element',
 	VIDEO_CONFERENCE_ELEMENT = 'video-conference-element',
+	H5P_ELEMENT = 'h5p-element',
 
 	MEDIA_BOARD = 'media-board',
 	MEDIA_LINE = 'media-line',
