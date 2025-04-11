@@ -4,7 +4,6 @@ import { REQUEST } from '@nestjs/core';
 import { faker } from '@faker-js/faker';
 import { Request } from 'express';
 import { AxiosResponse } from 'axios';
-import { jest } from '@jest/globals';
 import { CourseRoomsApi, SingleColumnBoardResponse } from './room-api-client';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
 import { RoomBoardDtoMapper } from './mapper/room-board-dto.mapper';

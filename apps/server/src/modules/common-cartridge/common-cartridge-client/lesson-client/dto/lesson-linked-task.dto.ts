@@ -47,4 +47,4 @@ export const LessonLinkedTaskDescriptionInputFormat = {
 } as const;
 
 export type LessonLinkedTaskDescriptionInputFormatType =
-	typeof LessonLinkedTaskDescriptionInputFormat[keyof typeof LessonLinkedTaskDescriptionInputFormat];
+	(typeof LessonLinkedTaskDescriptionInputFormat)[keyof typeof LessonLinkedTaskDescriptionInputFormat];

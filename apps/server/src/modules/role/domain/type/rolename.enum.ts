@@ -41,7 +41,7 @@ export const RoomRoleArray = [
 	RoleName.ROOMEDITOR,
 	RoleName.ROOMVIEWER,
 ] as const;
-export type RoomRole = typeof RoomRoleArray[number];
+export type RoomRole = (typeof RoomRoleArray)[number];
 
 export const GuestRoleArray = [RoleName.GUESTSTUDENT, RoleName.GUESTTEACHER] as const;
-export type GuestRole = typeof GuestRoleArray[number];
+export type GuestRole = (typeof GuestRoleArray)[number];
