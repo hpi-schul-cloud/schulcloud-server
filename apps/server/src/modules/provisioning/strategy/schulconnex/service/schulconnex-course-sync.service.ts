@@ -1,4 +1,4 @@
-import { Course, CourseDoService, CourseSyncService } from '@modules/course';
+import { Course, CourseSyncService } from '@modules/course';
 import {
 	CourseSynchronizationHistory,
 	CourseSynchronizationHistoryFactory,
@@ -14,7 +14,6 @@ import type { ProvisioningConfig } from '../../../provisioning.config';
 export class SchulconnexCourseSyncService {
 	constructor(
 		private readonly courseSyncService: CourseSyncService,
-		private readonly courseService: CourseDoService,
 		private readonly courseSynchronizationHistoryService: CourseSynchronizationHistoryService,
 		private readonly configService: ConfigService<ProvisioningConfig, true>
 	) {}
@@ -61,12 +60,9 @@ export class SchulconnexCourseSyncService {
 					excludeFromSync: course.excludeFromSync,
 				})
 			);
-
-			course.syncedWithGroup = undefined;
-			course.excludeFromSync = undefined;
 		});
 
+		await this.courseSyncService.stopSynchronizations(courses);
 		await this.courseSynchronizationHistoryService.saveAll(histories);
-		await this.courseService.saveAll(courses);
 	}
 }

@@ -1066,4 +1066,33 @@ describe(CourseSyncService.name, () => {
 			});
 		});
 	});
+
+	describe('stopSynchronizations', () => {
+		describe('when a list of synchronized courses is passed', () => {
+			const setup = () => {
+				const courses: Course[] = courseFactory.buildList(5, { syncedWithGroup: new ObjectId().toHexString() });
+
+				const expectedSavedCourses: Course[] = courses.map((course: Course) =>
+					courseFactory.build({
+						...course.getProps(),
+						syncedWithGroup: undefined,
+						excludeFromSync: undefined,
+					})
+				);
+
+				return {
+					courses,
+					expectedSavedCourses,
+				};
+			};
+
+			it('should stop the sync of the courses', async () => {
+				const { courses, expectedSavedCourses } = setup();
+
+				await service.stopSynchronizations(courses);
+
+				expect(courseDoService.saveAll).toHaveBeenCalledWith(expect.arrayContaining(expectedSavedCourses));
+			});
+		});
+	});
 });

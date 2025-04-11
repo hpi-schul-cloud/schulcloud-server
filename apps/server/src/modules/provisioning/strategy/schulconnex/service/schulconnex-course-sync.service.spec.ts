@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseDoService, CourseSyncService } from '@modules/course';
-import { CourseProps } from '@modules/course/domain';
+import { Course, CourseSyncService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
 import {
 	CourseSynchronizationHistory,
@@ -11,17 +10,16 @@ import {
 import { courseSynchronizationHistoryFactory } from '@modules/course-synchronization-history/testing';
 import { Group } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from '@modules/provisioning/loggable';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource } from '@shared/domain/domainobject';
+import { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from '../../../loggable';
 import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 describe(SchulconnexCourseSyncService.name, () => {
 	let module: TestingModule;
 	let service: SchulconnexCourseSyncService;
 	let courseSyncService: DeepMocked<CourseSyncService>;
-	let courseService: DeepMocked<CourseDoService>;
 	let courseSyncHistoryService: DeepMocked<CourseSynchronizationHistoryService>;
 	let configService: DeepMocked<ConfigService>;
 
@@ -32,10 +30,6 @@ describe(SchulconnexCourseSyncService.name, () => {
 				{
 					provide: CourseSyncService,
 					useValue: createMock<CourseSyncService>(),
-				},
-				{
-					provide: CourseDoService,
-					useValue: createMock<CourseDoService>(),
 				},
 				{
 					provide: CourseSynchronizationHistoryService,
@@ -50,7 +44,6 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 		service = module.get(SchulconnexCourseSyncService);
 		courseSyncService = module.get(CourseSyncService);
-		courseService = module.get(CourseDoService);
 		courseSyncHistoryService = module.get(CourseSynchronizationHistoryService);
 		configService = module.get(ConfigService);
 	});
@@ -250,22 +243,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 				await service.desyncCoursesAndCreateHistories(group, courses);
 
-				expect(courseService.saveAll).toBeCalled();
-
-				const savedCoursesArg = courseService.saveAll.mock.calls[0][0];
-
-				expect(savedCoursesArg.length).toEqual(courses.length);
-
-				savedCoursesArg.forEach((savedCourse: Course) => {
-					const course = courses.find((course: Course) => course.id === savedCourse.id);
-
-					expect(course).toBeDefined();
-					expect(savedCourse.getProps()).toEqual<CourseProps>({
-						...(course as Course).getProps(),
-						syncedWithGroup: undefined,
-						excludeFromSync: undefined,
-					});
-				});
+				expect(courseSyncService.stopSynchronizations).toBeCalledWith(courses);
 			});
 		});
 	});

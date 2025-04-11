@@ -70,6 +70,15 @@ export class CourseSyncService {
 		}
 	}
 
+	public async stopSynchronizations(courses: Course[]): Promise<void> {
+		for (const course of courses) {
+			course.syncedWithGroup = undefined;
+			course.excludeFromSync = undefined;
+		}
+
+		await this.courseService.saveAll(courses);
+	}
+
 	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
 		const [studentRole, teacherRole, substituteTeacherRole] = await Promise.all([
 			this.roleService.findByName(RoleName.STUDENT),
