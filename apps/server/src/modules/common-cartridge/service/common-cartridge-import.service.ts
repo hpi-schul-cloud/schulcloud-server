@@ -1,13 +1,40 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
+import {
+	CardClientAdapter,
+	CommonCartridgeImportMapper,
+	LinkElementContentBody,
+	RichTextElementContentBody,
+	UpdateElementContentBodyParamsData,
+} from '@infra/card-client';
+import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
-import { BoardsClientAdapter } from '@infra/boards-client';
+import { InputFormat } from '@shared/domain/types';
+import {
+	CommonCartridgeImportOrganizationProps,
+	CommonCartridgeImportResourceProps,
+	CommonCartridgeImportWebContentResourceProps,
+	CommonCartridgeResourceTypeV1P1,
+} from '..';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
+import {
+	CommonCartridgeOrganizationProps,
+	CommonCartridgeWebLinkResourceProps,
+	DEFAULT_FILE_PARSER_OPTIONS,
+} from '../import/common-cartridge-import.types';
 
+const DEPTH_CARD_ELEMENTS = 3;
+const DEPTH_CARD = 2;
+const DEPTH_COLUMN = 1;
+const DEPTH_BOARD = 0;
 @Injectable()
 export class CommonCartridgeImportService {
-	constructor(private readonly coursesClient: CoursesClientAdapter, private boardsClient: BoardsClientAdapter) {}
+	constructor(
+		private readonly coursesClient: CoursesClientAdapter,
+		private boardsClient: BoardsClientAdapter,
+		private columnClient: ColumnClientAdapter,
+		private cardClient: CardClientAdapter
+	) {}
 
 	public async importFile(file: Buffer): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
@@ -24,7 +51,7 @@ export class CommonCartridgeImportService {
 	}
 
 	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<void> {
-		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === 0);
+		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
@@ -47,14 +74,124 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const columns = parser
 			.getOrganizations()
-			.filter((organization) => organization.path.startsWith(board.identifier) && organization.pathDepth === 1);
+			.filter(
+				(organization) => organization.path.startsWith(board.identifier) && organization.pathDepth === DEPTH_COLUMN
+			);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for await (const column of columns) {
-			const response = await this.boardsClient.createBoardColumn(boardId);
+			const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 
-			await this.boardsClient.updateBoardColumnTitle(response.id, { title: column.title });
+			const cards = parser
+				.getOrganizations()
+				.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
+
+			const cardsWithResource = cards.filter((card) => card.isResource);
+			const cardsWithoutResource = cards.filter((card) => !card.isResource);
+
+			await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: column.title });
+
+			for await (const card of cardsWithResource) {
+				await this.createCardWithElement(parser, columnResponse, card);
+			}
+
+			for await (const card of cardsWithoutResource) {
+				await this.createCard(parser, columnResponse, card);
+			}
 		}
+	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: ColumnResponse,
+		cardProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const organizations = parser.getOrganizations();
+		const cardElements = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+		);
+
+		const card = await this.columnClient.createCard(column.id, {});
+
+		for await (const cardElement of cardElements) {
+			await this.createCardElement(parser, card.id, cardElement);
+		}
+	}
+
+	private async createCardWithElement(
+		parser: CommonCartridgeFileParser,
+		column: ColumnResponse,
+		cardProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const card = await this.columnClient.createCard(column.id, {});
+
+		await this.cardClient.updateCardTitle(card.id, {
+			title: cardProps.title,
+		});
+
+		await this.createCardElement(parser, card.id, cardProps);
+	}
+
+	private async createCardElement(
+		parser: CommonCartridgeFileParser,
+		cardId: string,
+		cardElementProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		if (cardElementProps.isResource) {
+			const resource = parser.getResource(cardElementProps);
+			const contentElementType = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(resource?.type);
+
+			if (resource && contentElementType) {
+				const resourceBody = this.mapToResourceBody(resource, cardElementProps);
+				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
+				if (resourceBody) {
+					await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
+				}
+			}
+		}
+	}
+
+	private mapToResourceBody(
+		resource: CommonCartridgeImportResourceProps,
+		cardElementProps: CommonCartridgeImportOrganizationProps
+	): UpdateElementContentBodyParamsData | undefined {
+		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
+			return this.createLinkFromResource(resource);
+		}
+
+		if (
+			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
+			cardElementProps.resourcePath.endsWith('.html')
+		) {
+			return this.createTextFromHtmlResource(resource);
+		}
+
+		return undefined;
+	}
+
+	private createTextFromHtmlResource(
+		resource: CommonCartridgeImportWebContentResourceProps
+	): RichTextElementContentBody {
+		return {
+			type: 'richText',
+			content: {
+				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
+				text: resource.html,
+			},
+		};
+	}
+
+	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
+		return {
+			content: {
+				title: resource.title ?? resource.url,
+				url: resource.url,
+				description: '',
+				imageUrl: '',
+				originalImageUrl: '',
+			},
+			type: 'link',
+		};
 	}
 }

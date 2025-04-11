@@ -1,17 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import {
-	BoardApi,
-	BoardColumnApi,
-	BoardResponse,
-	ColumnResponse,
-	CreateBoardBodyParams,
-	CreateBoardResponse,
-	RenameBodyParams,
-} from './generated';
+import { BoardApi, BoardResponse, ColumnResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
 
 @Injectable()
 export class BoardsClientAdapter {
-	constructor(private readonly boardApi: BoardApi, private readonly columnApi: BoardColumnApi) {}
+	constructor(private readonly boardApi: BoardApi) {}
 
 	public async createBoard(params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
 		const response = await this.boardApi.boardControllerCreateBoard(params);
@@ -29,9 +21,5 @@ export class BoardsClientAdapter {
 		const response = await this.boardApi.boardControllerGetBoardSkeleton(boardId);
 
 		return response.data;
-	}
-
-	public async updateBoardColumnTitle(columnId: string, params: RenameBodyParams): Promise<void> {
-		await this.columnApi.columnControllerUpdateColumnTitle(columnId, params);
 	}
 }

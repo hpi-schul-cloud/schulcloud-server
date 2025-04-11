@@ -1,16 +1,15 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
+import { createMock } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { BoardsClientAdapter } from './boards-client.adapter';
-import { BoardApi, BoardColumnApi, BoardResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
+import { BoardApi, BoardResponse, CreateBoardBodyParams, CreateBoardResponse } from './generated';
 
 describe(BoardsClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: BoardsClientAdapter;
 
 	const boardApiMock = createMock<BoardApi>();
-	const boardColumnApiMock = createMock<BoardColumnApi>();
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -19,10 +18,6 @@ describe(BoardsClientAdapter.name, () => {
 				{
 					provide: BoardApi,
 					useValue: boardApiMock,
-				},
-				{
-					provide: BoardColumnApi,
-					useValue: boardColumnApiMock,
 				},
 			],
 		}).compile();
@@ -134,28 +129,6 @@ describe(BoardsClientAdapter.name, () => {
 
 				expect(response).toEqual(responseData);
 				expect(boardApiMock.boardControllerCreateColumn).toHaveBeenCalledWith(boardId);
-			});
-		});
-	});
-
-	describe('updateBoardColumnTitle', () => {
-		describe('when updating a board column title', () => {
-			const setup = () => {
-				const columnId = faker.string.uuid();
-				const title = faker.lorem.words();
-
-				return {
-					columnId,
-					title,
-				};
-			};
-
-			it('should call boardColumnApi.columnControllerUpdateColumnTitle', async () => {
-				const { columnId, title } = setup();
-
-				await sut.updateBoardColumnTitle(columnId, { title });
-
-				expect(boardColumnApiMock.columnControllerUpdateColumnTitle).toHaveBeenCalledWith(columnId, { title });
 			});
 		});
 	});
