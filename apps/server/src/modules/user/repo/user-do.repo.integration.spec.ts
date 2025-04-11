@@ -15,7 +15,7 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { type IFindOptions, LanguageType, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { MultipleUsersFoundLoggableException, UserDiscoverableQuery, type UserDo, UserSourceOptions } from '../domain';
+import { MultipleUsersFoundLoggableException, UserDiscoverableQuery, type UserDo } from '../domain';
 import { userDoFactory, userFactory } from '../testing';
 import { UserDoMikroOrmRepo } from './user-do.repo';
 import { User } from './user.entity';
@@ -833,34 +833,6 @@ describe('UserRepo', () => {
 						name: role.name,
 					},
 				]);
-			});
-		});
-	});
-
-	describe('findByTspUids', () => {
-		describe('when users are found', () => {
-			const setup = async () => {
-				const tspUid = new ObjectId().toHexString();
-
-				const user = userFactory.buildWithId({
-					sourceOptions: new UserSourceOptions({
-						tspUid,
-					}),
-				});
-
-				await em.persistAndFlush([user]);
-				em.clear();
-
-				return { tspUid, user };
-			};
-
-			it('should return mapped users', async () => {
-				const { tspUid, user } = await setup();
-
-				const result = await repo.findByTspUids([tspUid]);
-
-				expect(result.length).toBe(1);
-				expect(result[0].id).toBe(user.id);
 			});
 		});
 	});

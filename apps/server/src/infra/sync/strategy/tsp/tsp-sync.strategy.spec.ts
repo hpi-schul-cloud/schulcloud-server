@@ -1,12 +1,7 @@
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	RobjExportKlasse,
-	RobjExportLehrer,
-	RobjExportSchueler,
-	RobjExportSchule,
-} from '@infra/tsp-client';
+import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler, RobjExportSchule } from '@infra/tsp-client';
 import {
 	robjExportKlasseFactory,
 	robjExportLehrerFactory,

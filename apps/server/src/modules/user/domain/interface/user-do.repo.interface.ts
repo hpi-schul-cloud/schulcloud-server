@@ -22,8 +22,6 @@ export interface UserDoRepo {
 
 	findByEmail(email: string): Promise<UserDo[]>;
 
-	findByTspUids(tspUids: string[]): Promise<UserDo[]>;
-
 	save(domainObject: UserDo): Promise<UserDo>;
 
 	saveAll(domainObjects: UserDo[]): Promise<UserDo[]>;

@@ -61,13 +61,7 @@ import { SyncUc } from './uc/sync.uc';
 		VidisSyncService,
 		VidisSyncStrategy,
 		...((Configuration.get('FEATURE_TSP_SYNC_ENABLED') as boolean)
-			? [
-					TspSyncStrategy,
-					TspSchoolService,
-					TspOauthDataMapper,
-					TspFetchService,
-					TspLegacyMigrationService,
-			  ]
+			? [TspSyncStrategy, TspSchoolService, TspOauthDataMapper, TspFetchService, TspLegacyMigrationService]
 			: []),
 		...((Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean) ? [MediaMetadataSyncStrategy] : []),
 	],

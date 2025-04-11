@@ -321,7 +321,6 @@ const config: ServerConfig = {
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
 	TSP_SYNC_DATA_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_DATA_DAYS_TO_FETCH') as number,
-	TSP_SYNC_MIGRATION_LIMIT: Configuration.get('TSP_SYNC_MIGRATION_LIMIT') as number,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
