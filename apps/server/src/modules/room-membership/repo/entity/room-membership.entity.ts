@@ -11,6 +11,7 @@ export class RoomMembershipEntity extends BaseEntityWithTimestamps implements Ro
 	@Property({ type: ObjectIdType, fieldName: 'room' })
 	roomId!: EntityId;
 
+	@Index()
 	@Property({ type: ObjectIdType, fieldName: 'userGroup' })
 	userGroupId!: EntityId;
 
