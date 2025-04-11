@@ -155,6 +155,22 @@
 					"withInterfaces": true,
 					"withSeparateModelsAndApi": true
 				}
+			},
+			"h5p-editor-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:4448/api/v3/docs-json",
+				"output": "./apps/server/src/infra/h5p-editor-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
 			}
 		}
 	}

@@ -1,16 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, CopyStatusEnum, type CopyStatus } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import {
-	CopyContextExternalToolRejectData,
 	type ContextExternalTool,
+	CopyContextExternalToolRejectData,
 } from '@modules/tool/context-external-tool/domain';
 import type { ToolConfig } from '@modules/tool/tool-config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { EntityId } from '@shared/domain/types';
 import {
+	type AnyBoardNode,
 	BoardNodeType,
 	Card,
 	CollaborativeTextEditorElement,
@@ -23,14 +24,14 @@ import {
 	FileElement,
 	FileFolderElement,
 	getBoardNodeType,
+	H5PElement,
 	handleNonExhaustiveSwitch,
 	LinkElement,
-	RichTextElement,
-	SubmissionContainerElement,
-	type AnyBoardNode,
 	type MediaBoard,
 	type MediaExternalToolElement,
 	type MediaLine,
+	RichTextElement,
+	SubmissionContainerElement,
 	type SubmissionItem,
 	type VideoConferenceElement,
 } from '../../domain';
@@ -104,6 +105,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.FILE_FOLDER_ELEMENT:
 				result = await this.copyFileFolderElement(boardNode as FileFolderElement, context);
+				break;
+			case BoardNodeType.H5P_ELEMENT:
+				result = await this.copyH5PElement(boardNode as H5PElement, context);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -496,6 +500,16 @@ export class BoardNodeCopyService {
 			type: CopyElementType.FILE_FOLDER_ELEMENT,
 			status: CopyStatusEnum.SUCCESS,
 			elements: [],
+		};
+
+		return Promise.resolve(result);
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public copyH5PElement(original: H5PElement, context: CopyContext): Promise<CopyStatus> {
+		const result: CopyStatus = {
+			type: CopyElementType.H5P_ELEMENT,
+			status: CopyStatusEnum.NOT_IMPLEMENTED,
 		};
 
 		return Promise.resolve(result);

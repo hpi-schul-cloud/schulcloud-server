@@ -390,6 +390,12 @@
 			],
 			"default": {},
 			"properties": {
+				"SERVICE_BASE_URL": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4448",
+					"description": "The URI of the h5p editor service"
+				},
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",
@@ -1239,6 +1245,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enable video conference elements in column board."
+		},
+		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables h5p on the column board"
 		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",

@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { H5pEditorApi } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
@@ -10,6 +12,7 @@ import {
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	h5pElementFactory,
 	linkElementFactory,
 } from '../../testing';
 import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
@@ -20,7 +23,8 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let collaborativeTextEditorService: CollaborativeTextEditorService;
+	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
+	let h5pEditorApi: DeepMocked<H5pEditorApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,6 +46,10 @@ describe(BoardNodeDeleteHooksService.name, () => {
 					provide: CollaborativeTextEditorService,
 					useValue: createMock<CollaborativeTextEditorService>(),
 				},
+				{
+					provide: H5pEditorApi,
+					useValue: createMock<H5pEditorApi>(),
+				},
 			],
 		}).compile();
 
@@ -50,6 +58,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
+		h5pEditorApi = module.get(H5pEditorApi);
 	});
 
 	afterEach(() => {
@@ -156,6 +165,24 @@ describe(BoardNodeDeleteHooksService.name, () => {
 				await service.afterDelete(boardNode);
 
 				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(tool);
+			});
+		});
+
+		describe('when called with h5p element', () => {
+			const setup = () => {
+				return {
+					boardNode: h5pElementFactory.build({
+						contentId: new ObjectId().toHexString(),
+					}),
+				};
+			};
+
+			it('should delete h5p content', async () => {
+				const { boardNode } = setup();
+
+				await service.afterDelete(boardNode);
+
+				expect(h5pEditorApi.h5PEditorControllerDeleteH5pContent).toHaveBeenCalledWith(boardNode.contentId);
 			});
 		});
 	});

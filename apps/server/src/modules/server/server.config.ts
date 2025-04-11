@@ -3,6 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { JwtAuthGuardConfig } from '@infra/auth-guard';
 import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
+import type { H5PEditorClientConfig } from '@infra/h5p-editor-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -80,7 +81,8 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
 		ManagementServerConfig,
-		RoomMembershipConfig {
+		RoomMembershipConfig,
+		H5PEditorClientConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -106,6 +108,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
@@ -169,6 +172,7 @@ const config: ServerConfig = {
 		'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'
 	) as boolean,
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
@@ -350,6 +354,7 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	H5P_EDITOR__SERVICE_BASE_URL: Configuration.get('H5P_EDITOR__SERVICE_BASE_URL') as string,
 };
 
 export const serverConfig = (): ServerConfig => config;

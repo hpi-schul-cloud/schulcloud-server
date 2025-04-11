@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import {
@@ -6,6 +7,7 @@ import {
 	ExternalToolContentBody,
 	FileContentBody,
 	FileFolderContentBody,
+	H5PContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
@@ -17,6 +19,7 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	fileFolderElementFactory,
+	h5pElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
@@ -147,6 +150,18 @@ describe('ContentElementUpdateService', () => {
 		await service.updateContent(element, content);
 
 		expect(element.title).toBe('vc title');
+		expect(repo.save).toHaveBeenCalledWith(element);
+	});
+
+	it('should update H5PElement', async () => {
+		const element = h5pElementFactory.build();
+		const content = new H5PContentBody();
+		const contentId = new ObjectId().toHexString();
+		content.contentId = contentId;
+
+		await service.updateContent(element, content);
+
+		expect(element.contentId).toBe(contentId);
 		expect(repo.save).toHaveBeenCalledWith(element);
 	});
 
