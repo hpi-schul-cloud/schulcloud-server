@@ -1,5 +1,3 @@
-import { LoggerModule } from '@core/logger';
-import { HttpModule } from '@nestjs/axios';
 import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
@@ -9,7 +7,6 @@ import { Configuration, H5pEditorApi } from './generated';
 import { H5PEditorClientConfig } from './hp5-editor-client.config';
 
 @Module({
-	imports: [LoggerModule, HttpModule],
 	providers: [
 		{
 			provide: H5pEditorApi,

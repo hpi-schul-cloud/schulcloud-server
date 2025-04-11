@@ -4,16 +4,19 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
-import { FilesStorageClientAdapter } from './files-storage-client.adapter';
+import { H5pEditorApi } from './generated';
 import { H5pEditorClientModule } from './h5p-editor-client.module';
+
+jest.mock('./generated/api');
 
 describe(H5pEditorClientModule.name, () => {
 	let module: TestingModule;
 
 	const configServiceMock = createMock<ConfigService>();
+	const accessTokenMock = faker.string.alphanumeric(42);
 	const requestMock = createMock<Request>({
 		headers: {
-			authorization: `Bearer ${faker.string.alphanumeric(42)}`,
+			authorization: `Bearer ${accessTokenMock}`,
 		},
 	});
 
@@ -40,18 +43,26 @@ describe(H5pEditorClientModule.name, () => {
 		expect(module).toBeDefined();
 	});
 
-	describe('resolve providers', () => {
-		describe('when resolving FilesStorageRestClientAdapter', () => {
-			const setup = () => {
-				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+	describe('when resolving providers', () => {
+		const setup = () => {
+			const url = faker.internet.url();
+
+			configServiceMock.getOrThrow.mockReturnValue(url);
+
+			return {
+				url,
 			};
+		};
 
-			it('should resolve FilesStorageRestClientAdapter', async () => {
-				setup();
+		it('should resolve the H5pEditorApi', async () => {
+			const { url } = setup();
 
-				const provider = await module.resolve(FilesStorageClientAdapter);
+			const provider = await module.resolve(H5pEditorApi);
 
-				expect(provider).toBeInstanceOf(FilesStorageClientAdapter);
+			expect(provider).toBeInstanceOf(H5pEditorApi);
+			expect(H5pEditorApi).toHaveBeenCalledWith({
+				accessToken: accessTokenMock,
+				basePath: `${url}/api/v3`,
 			});
 		});
 	});
