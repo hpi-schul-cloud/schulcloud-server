@@ -4,7 +4,7 @@ import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ImageMimeType } from '../../tool/common';
-import { MediumMetadataNotFoundLoggableException } from '../loggable';
+import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';
 import { VidisStrategy } from './vidis.strategy';
@@ -63,14 +63,12 @@ describe(VidisStrategy.name, () => {
 				};
 			};
 
-			it('should throw an MediumMetadataNotFoundLoggableException', async () => {
+			it('should throw an MediumNotFoundLoggableException', async () => {
 				const { mediumId, mediaSource } = setup();
 
 				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
 
-				await expect(promise).rejects.toThrow(
-					new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId)
-				);
+				await expect(promise).rejects.toThrow(new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId));
 			});
 		});
 
