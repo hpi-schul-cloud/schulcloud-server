@@ -1,10 +1,10 @@
+import { LoggerModule } from '@core/logger';
+import { HttpModule } from '@nestjs/axios';
 import { Module, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils/jwt';
-import { LoggerModule } from '@core/logger';
 import { Request } from 'express';
-import { HttpModule } from '@nestjs/axios';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FilesStorageClientConfig } from './files-storage-client.config';
 import { Configuration, FileApi } from './generated';
@@ -20,7 +20,7 @@ import { Configuration, FileApi } from './generated';
 				const basePath = configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
 
 				const config = new Configuration({
-					accessToken: JwtExtractor.extractJwtFromRequest(request),
+					accessToken: JwtExtractor.extractJwtFromRequestOrFail(request),
 					basePath: `${basePath}/api/v3`,
 				});
 
@@ -29,6 +29,6 @@ import { Configuration, FileApi } from './generated';
 			inject: [ConfigService, REQUEST],
 		},
 	],
-	exports: [FilesStorageClientAdapter],
+	exports: [FilesStorageClientAdapter, FileApi],
 })
 export class FilesStorageClientModule {}

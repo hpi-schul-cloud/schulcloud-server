@@ -1,5 +1,5 @@
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '../../../shared/domain/domain-object';
 import { ClassSourceOptions } from './class-source-options.do';
 
 export interface ClassProps extends AuthorizableObject {
@@ -59,6 +59,10 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.gradeLevel;
 	}
 
+	set gradeLevel(gradeLevel: number | undefined) {
+		this.props.gradeLevel = gradeLevel;
+	}
+
 	get ldapDN(): string | undefined {
 		return this.props.ldapDN;
 	}
@@ -91,7 +95,7 @@ export class Class extends DomainObject<ClassProps> {
 		return this.props.updatedAt;
 	}
 
-	public addTeacher(teacherId: EntityId) {
+	public addTeacher(teacherId: EntityId): void {
 		if (this.teacherIds.includes(teacherId)) {
 			return;
 		}
@@ -99,7 +103,7 @@ export class Class extends DomainObject<ClassProps> {
 		this.props.teacherIds.push(teacherId);
 	}
 
-	public addUser(userId: EntityId) {
+	public addUser(userId: EntityId): void {
 		if (this.userIds.includes(userId)) {
 			return;
 		}
@@ -107,8 +111,13 @@ export class Class extends DomainObject<ClassProps> {
 		this.props.userIds.push(userId);
 	}
 
-	public removeUser(userId: string) {
+	public removeUser(userId: string): void {
 		this.props.userIds = this.props.userIds?.filter((userId1) => userId1 !== userId);
+	}
+
+	public clearParticipants(): void {
+		this.props.teacherIds = [];
+		this.props.userIds = [];
 	}
 
 	public getClassFullName(): string {

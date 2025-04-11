@@ -1,9 +1,11 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { userFactory } from '@testing/factory/user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { RegistrationPinRepo } from '.';
+import { RegistrationPinEntity } from '../entity';
 import { registrationPinEntityFactory } from '../entity/testing';
 
 describe(RegistrationPinRepo.name, () => {
@@ -13,7 +15,7 @@ describe(RegistrationPinRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [RegistrationPinEntity, User] })],
 			providers: [RegistrationPinRepo],
 		}).compile();
 

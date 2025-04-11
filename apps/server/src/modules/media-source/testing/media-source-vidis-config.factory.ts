@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaSourceVidisConfig } from '../domain';
+import { MediaSourceVidisConfig } from '../do';
 
 export const mediaSourceVidisConfigFactory = BaseFactory.define<MediaSourceVidisConfig, MediaSourceVidisConfig>(
 	MediaSourceVidisConfig,
@@ -9,6 +9,7 @@ export const mediaSourceVidisConfigFactory = BaseFactory.define<MediaSourceVidis
 			password: `media-source-password-${sequence}`,
 			baseUrl: 'https://media-source-endpoint.com',
 			region: 'test-region',
+			schoolNumberPrefix: 'NI_',
 		};
 
 		return config;

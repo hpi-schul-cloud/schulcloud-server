@@ -1,8 +1,10 @@
+import { RoleName } from '@modules/role';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common';
-import { RoleName, SortOrder } from '@shared/domain/interface';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { SortOrder } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -21,7 +23,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[ImportUserMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User]);
 	});
 
 	describe('[mapSortingQueryToDomain] from query to domain', () => {

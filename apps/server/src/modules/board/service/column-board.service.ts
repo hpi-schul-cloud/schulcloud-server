@@ -40,15 +40,18 @@ export class ColumnBoardService {
 		await this.boardNodeService.updateVisibility(columnBoard, visibility);
 	}
 
-	// called from feathers
-	// TODO remove when not needed anymore
+	// @deprecated This is called from feathers. Should be removed when not needed anymore
 	public async deleteByCourseId(courseId: EntityId): Promise<void> {
-		const boardNodes = await this.findByExternalReference({
+		await this.deleteByExternalReference({
 			type: BoardExternalReferenceType.Course,
 			id: courseId,
 		});
+	}
 
-		await this.boardNodeRepo.delete(boardNodes);
+	public async deleteByExternalReference(reference: BoardExternalReference): Promise<void> {
+		const boardNodes = await this.findByExternalReference(reference);
+
+		await Promise.all(boardNodes.map((boardNode) => this.boardNodeService.delete(boardNode)));
 	}
 
 	public async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {

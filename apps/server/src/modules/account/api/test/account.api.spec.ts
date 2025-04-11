@@ -1,16 +1,17 @@
 import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { User } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { AccountEntity } from '../../domain/entity/account.entity';
+import { AccountEntity } from '../../repo';
 import { accountFactory } from '../../testing';
 import {
 	AccountByIdBodyParams,

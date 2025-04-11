@@ -1,14 +1,14 @@
 /* istanbul ignore file */
 /* eslint-disable promise/always-return */
+import { ManagementConsoleModule } from '@modules/management/management-console.app.module';
 import { BootstrapConsole } from 'nestjs-console';
-import { ServerConsoleModule } from '../modules/server-console/server-console.app.module';
 
 /**
  * The console is starting the application wrapped into commander.
  * This allows adding console commands to execute provider methods.
  */
 const bootstrap = new BootstrapConsole({
-	module: ServerConsoleModule,
+	module: ManagementConsoleModule,
 	useDecorators: true,
 });
 void bootstrap.init().then(async (app) => {

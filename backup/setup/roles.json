@@ -205,7 +205,8 @@
 			"USER_LOGIN_MIGRATION_FORCE",
 			"USER_LOGIN_MIGRATION_ROLLBACK",
 			"INSTANCE_VIEW",
-			"SCHOOL_EDIT_ALL"
+			"SCHOOL_EDIT_ALL",
+			"MEDIA_SOURCE_ADMIN"
 		],
 		"__v": 2
 	},
@@ -590,7 +591,8 @@
 		},
 		"name": "roomviewer",
 		"permissions": [
-			"ROOM_VIEW"
+			"ROOM_VIEW",
+			"ROOM_LEAVE"
 		]
 	},
 	{
@@ -600,7 +602,8 @@
 		"name": "roomeditor",
 		"permissions": [
 			"ROOM_VIEW",
-			"ROOM_EDIT"
+			"ROOM_CONTENT_EDIT",
+			"ROOM_LEAVE"
 		]
 	},
 	{
@@ -629,7 +632,8 @@
 			"ROOM_MEMBERS_ADD",
 			"ROOM_MEMBERS_REMOVE",
 			"ROOM_CHANGE_OWNER",
-			"ROOM_MEMBERS_CHANGE_ROLE"
+			"ROOM_MEMBERS_CHANGE_ROLE",
+			"ROOM_CONTENT_EDIT"
 		]
 	},
 	{
@@ -642,21 +646,23 @@
 			"ROOM_EDIT",
 			"ROOM_MEMBERS_ADD",
 			"ROOM_MEMBERS_REMOVE",
-			"ROOM_MEMBERS_CHANGE_ROLE"
+			"ROOM_MEMBERS_CHANGE_ROLE",
+			"ROOM_LEAVE",
+			"ROOM_CONTENT_EDIT"
 		]
 	},
-  {
-    "_id": {
-      "$oid": "67404edd76a89449722a7fb1"
-    },
-    "name": "groupSubstitutionTeacher",
-    "permissions": [],
-    "createdAt": {
-      "$date": "2024-11-22T09:29:01.346Z"
-    },
-    "updatedAt": {
-      "$date": "2024-11-22T09:29:01.346Z"
-    },
-    "__v": 0
-  }
+	{
+		"_id": {
+			"$oid": "67404edd76a89449722a7fb1"
+		},
+		"name": "groupSubstitutionTeacher",
+		"permissions": [],
+		"createdAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"updatedAt": {
+			"$date": "2024-11-22T09:29:01.346Z"
+		},
+		"__v": 0
+	}
 ]

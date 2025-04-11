@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -14,10 +15,10 @@ import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
+import { ClassEntity } from '../entity';
 import { classEntityFactory } from '../entity/testing';
 import { ClassesRepo } from '../repo';
 import { ClassMapper } from '../repo/mapper';
@@ -30,7 +31,7 @@ describe(ClassService.name, () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([ClassEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -155,7 +156,7 @@ describe(ClassService.name, () => {
 		});
 	});
 
-	describe('deleteUserDataFromClasses', () => {
+	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
 				const userId = undefined as unknown as EntityId;
@@ -190,21 +191,28 @@ describe(ClassService.name, () => {
 
 				return {
 					expectedResult,
-					userId1,
+					userId1: userId1.toHexString(),
 				};
 			};
 
 			it('should call classesRepo.findAllByUserId', async () => {
 				const { userId1 } = setup();
-				await service.deleteUserData(userId1.toHexString());
+				await service.deleteUserData(userId1);
 
-				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1.toHexString());
+				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1);
 			});
 
-			it('should update classes without updated user', async () => {
+			it('should call classesRepo.deleteUser', async () => {
+				const { userId1 } = setup();
+				await service.deleteUserData(userId1);
+
+				expect(classesRepo.removeUserReference).toBeCalledWith(userId1);
+			});
+
+			it('should return DomainDeletionReport', async () => {
 				const { expectedResult, userId1 } = setup();
 
-				const result = await service.deleteUserData(userId1.toHexString());
+				const result = await service.deleteUserData(userId1);
 
 				expect(result).toEqual(expectedResult);
 			});

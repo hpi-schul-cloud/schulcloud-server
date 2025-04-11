@@ -1,10 +1,10 @@
 import { SchulconnexGroupType, SchulconnexGruppenResponse, SchulconnexResponse } from '@infra/schulconnex-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
+import { RoleName } from '@modules/role';
+import { SchoolEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
-import { SystemEntity } from '@modules/system/entity';
-import { SchoolEntity } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
+import { SystemEntity } from '@modules/system/repo';
 import { ImportUser } from '../entity';
 
 export class SchulconnexImportUserMapper {
@@ -15,7 +15,7 @@ export class SchulconnexImportUserMapper {
 		em: EntityManager
 	): ImportUser[] {
 		const importUsers: ImportUser[] = response.map((externalUser: SchulconnexResponse): ImportUser => {
-			const role: RoleName | undefined = SchulconnexResponseMapper.mapSanisRoleToRoleName(externalUser);
+			const role: RoleName | undefined = SchulconnexResponseMapper.mapSchulconnexRoleToRoleName(externalUser);
 
 			const groups: SchulconnexGruppenResponse[] | undefined = externalUser.personenkontexte[0]?.gruppen?.filter(
 				(group) => group.gruppe.typ === SchulconnexGroupType.CLASS

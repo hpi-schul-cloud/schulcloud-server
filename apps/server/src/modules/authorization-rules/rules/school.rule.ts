@@ -1,7 +1,7 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { School } from '@modules/school';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
@@ -25,7 +25,10 @@ export class SchoolRule implements Rule<School> {
 		if (isUsersSchool) {
 			hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		} else {
-			hasPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.SCHOOL_EDIT_ALL]);
+			hasPermission = this.authorizationHelper.hasAllPermissions(user, [
+				Permission.SCHOOL_EDIT_ALL,
+				...context.requiredPermissions,
+			]);
 		}
 
 		return hasPermission;

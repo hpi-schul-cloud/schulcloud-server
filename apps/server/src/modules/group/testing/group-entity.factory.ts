@@ -1,13 +1,40 @@
-import { ExternalSourceEmbeddable } from '@modules/system/entity';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { ExternalSourceEmbeddable } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
-import { RoleName } from '@shared/domain/interface';
+import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { DeepPartial } from 'fishery';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '../entity';
 
-export const groupEntityFactory = BaseFactory.define<GroupEntity, GroupEntityProps>(GroupEntity, ({ sequence }) => {
+class GroupEntityFactory extends BaseFactory<GroupEntity, GroupEntityProps> {
+	public withTypeRoom(): this {
+		const params: DeepPartial<GroupEntityProps> = { type: GroupEntityTypes.ROOM };
+
+		return this.params(params);
+	}
+
+	public withTypeClass(): this {
+		const params: DeepPartial<GroupEntityProps> = { type: GroupEntityTypes.CLASS };
+
+		return this.params(params);
+	}
+
+	public withTypeCourse(): this {
+		const params: DeepPartial<GroupEntityProps> = { type: GroupEntityTypes.COURSE };
+
+		return this.params(params);
+	}
+
+	public withTypeOther(): this {
+		const params: DeepPartial<GroupEntityProps> = { type: GroupEntityTypes.OTHER };
+
+		return this.params(params);
+	}
+}
+
+export const groupEntityFactory = GroupEntityFactory.define(GroupEntity, ({ sequence }) => {
 	return {
 		name: `Group ${sequence}`,
 		type: GroupEntityTypes.CLASS,

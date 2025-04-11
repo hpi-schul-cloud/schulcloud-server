@@ -1,19 +1,18 @@
-import { createMock } from '@golevelup/ts-jest';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-
-import { Page, Pseudonym } from '@shared/domain/domainobject';
 import { LegacyLogger } from '@core/logger';
+import { createMock } from '@golevelup/ts-jest';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { pseudonymFactory } from '@testing/factory/domainobject';
-import { userFactory } from '@testing/factory/user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
-import { externalToolPseudonymEntityFactory, pseudonymEntityFactory } from '../testing';
+import { externalToolPseudonymEntityFactory, pseudonymFactory } from '../testing';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
+import { Pseudonym } from './pseudonym.do';
 
 describe('ExternalToolPseudonymRepo', () => {
 	let module: TestingModule;
@@ -22,7 +21,7 @@ describe('ExternalToolPseudonymRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User] })],
 			providers: [
 				ExternalToolPseudonymRepo,
 				{
@@ -64,24 +63,6 @@ describe('ExternalToolPseudonymRepo', () => {
 				);
 
 				expect(result.id).toEqual(entity.id);
-			});
-		});
-
-		describe('when pseudonym is existing', () => {
-			const setup = () => {
-				const entity: ExternalToolPseudonymEntity = pseudonymEntityFactory.buildWithId();
-
-				return {
-					entity,
-				};
-			};
-
-			it('should throw an error ', async () => {
-				const { entity } = setup();
-
-				await expect(
-					repo.findByUserIdAndToolIdOrFail(entity.userId.toHexString(), entity.toolId.toHexString())
-				).rejects.toThrow(NotFoundError);
 			});
 		});
 	});

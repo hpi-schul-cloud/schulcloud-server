@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types/entity-id';
-import { System } from '../system.do';
-import { SystemQuery } from './system-query';
+import { System } from '../do/system.do';
+import { SystemQuery } from '../query/system-query';
 
 export interface SystemRepo {
 	find(filter: SystemQuery): Promise<System[]>;

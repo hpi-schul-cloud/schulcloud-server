@@ -2,10 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
 import { cardFactory, columnBoardFactory } from '@modules/board/testing';
-import { CourseDoService } from '@modules/learnroom';
-import { courseFactory } from '@modules/learnroom/testing';
+import { CourseDoService } from '@modules/course';
+import { courseFactory } from '@modules/course/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/setup-entities';
 import { MetaData, MetaDataEntityType } from '../../types';
 import { BoardUrlHandler } from './board-url-handler';
 
@@ -34,7 +33,6 @@ describe(BoardUrlHandler.name, () => {
 		boardUrlHandler = module.get(BoardUrlHandler);
 		boardNodeService = module.get(BoardNodeService);
 		courseService = module.get(CourseDoService);
-		await setupEntities();
 	});
 
 	describe('getMetaData', () => {

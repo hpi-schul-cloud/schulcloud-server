@@ -1,8 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { SystemEntity } from '@modules/system/repo';
 import { ConfigModule } from '@nestjs/config';
-import { KeycloakConfigurationModule } from './keycloak-configuration.module';
+import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { KeycloakConsole } from './console/keycloak-configuration.console';
+import { KeycloakConfigurationModule } from './keycloak-configuration.module';
 import { KeycloakConfigurationService } from './service/keycloak-configuration.service';
 import { KeycloakSeedService } from './service/keycloak-seed.service';
 
@@ -12,7 +13,7 @@ describe('KeycloakManagementModule', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				KeycloakConfigurationModule,
-				MongoMemoryDatabaseModule.forRoot(),
+				MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] }),
 				ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
 			],
 		}).compile();

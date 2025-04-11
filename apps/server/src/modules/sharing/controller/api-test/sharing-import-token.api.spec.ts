@@ -10,18 +10,18 @@ import {
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
-import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
+import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType } from '../../domainobject/share-token.do';
@@ -72,7 +72,7 @@ describe(`Share Token Import (API)`, () => {
 
 		const school = schoolEntityFactory.buildWithId();
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-		const course = courseFactory.buildWithId({ teachers: [teacherUser], school: teacherUser.school });
+		const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school: teacherUser.school });
 
 		const shareToken = shareTokenFactory.withParentTypeCourse().build({
 			parentId: course.id,
@@ -149,7 +149,7 @@ describe(`Share Token Import (API)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: targetSchool });
 
 				const sourceSchool = schoolEntityFactory.buildWithId();
-				const course = courseFactory.buildWithId({ school: sourceSchool });
+				const course = courseEntityFactory.buildWithId({ school: sourceSchool });
 
 				const shareToken = shareTokenFactory.withParentTypeCourse().build({
 					parentId: course.id,
@@ -205,7 +205,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should save the course tools with the correct external school id', async () => {
@@ -216,7 +216,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse: CourseEntity = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
 							contextId: new ObjectId(copiedCourse.id),
@@ -256,7 +256,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should not save the course tools', async () => {
@@ -266,7 +266,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse: Course = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse: CourseEntity = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const copiedCourseTools: ContextExternalToolEntity[] = await em.find(ContextExternalToolEntity, {
 							contextType: ContextExternalToolType.COURSE,
 							contextId: new ObjectId(copiedCourse.id),
@@ -279,7 +279,7 @@ describe(`Share Token Import (API)`, () => {
 
 			describe('when the course has boards with tool elements', () => {
 				const setupBoardEntitiesWithTools = (
-					course: Course,
+					course: CourseEntity,
 					boardToolOne: ContextExternalToolEntity,
 					boardToolTwo: ContextExternalToolEntity
 				) => {
@@ -356,7 +356,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should save the copied board', async () => {
@@ -366,7 +366,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
 							type: BoardNodeType.COLUMN_BOARD,
 						});
@@ -442,7 +442,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						await em.findOneOrFail(Course, { school: targetSchool });
+						await em.findOneOrFail(CourseEntity, { school: targetSchool });
 					});
 
 					it('should save the copied board', async () => {
@@ -452,7 +452,7 @@ describe(`Share Token Import (API)`, () => {
 
 						expect(response.status).toEqual(201);
 
-						const copiedCourse = await em.findOneOrFail(Course, { school: targetSchool });
+						const copiedCourse = await em.findOneOrFail(CourseEntity, { school: targetSchool });
 						const columnBoardNodes: BoardNodeEntity[] = await em.find(BoardNodeEntity, {
 							type: BoardNodeType.COLUMN_BOARD,
 						});
@@ -491,13 +491,13 @@ describe(`Share Token Import (API)`, () => {
 					Permission.COURSE_EDIT,
 				]);
 
-				const targetCourse = courseFactory.buildWithId({
+				const targetCourse = courseEntityFactory.buildWithId({
 					school: targetSchool,
 					teachers: [teacherUser],
 				});
 
 				const sourceSchool = schoolEntityFactory.buildWithId();
-				const sourceCourse = courseFactory.buildWithId({ school: sourceSchool });
+				const sourceCourse = courseEntityFactory.buildWithId({ school: sourceSchool });
 
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: {
@@ -779,7 +779,7 @@ describe(`Share Token Import (API)`, () => {
 
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const course = courseFactory.buildWithId({ teachers: [teacherUser], school: teacherUser.school });
+				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser], school: teacherUser.school });
 
 				const otherSchool = schoolEntityFactory.buildWithId();
 

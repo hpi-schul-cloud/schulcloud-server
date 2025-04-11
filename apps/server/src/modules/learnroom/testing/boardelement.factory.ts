@@ -1,15 +1,10 @@
-import { columnBoardNodeFactory } from '@modules/board/testing';
-import {
-	ColumnboardBoardElement,
-	ColumnBoardNode,
-	LessonBoardElement,
-	LessonEntity,
-	Task,
-	TaskBoardElement,
-} from '@shared/domain/entity';
+import { LessonEntity } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
+import { ColumnBoardBoardElement, ColumnBoardNode, LessonBoardElement, TaskBoardElement } from '../repo';
+import { columnBoardNodeFactory } from './column-board-node.factory';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
 	return {
@@ -24,8 +19,8 @@ export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, 
 	}
 );
 
-export const columnboardBoardElementFactory = BaseFactory.define<ColumnboardBoardElement, { target: ColumnBoardNode }>(
-	ColumnboardBoardElement,
+export const columnboardBoardElementFactory = BaseFactory.define<ColumnBoardBoardElement, { target: ColumnBoardNode }>(
+	ColumnBoardBoardElement,
 	() => {
 		const target = columnBoardNodeFactory.build();
 		return { target };

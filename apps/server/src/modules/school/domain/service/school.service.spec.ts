@@ -7,13 +7,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
+import { SchoolFactory } from '../factory';
+import { SchoolRepo } from '../interface';
 import {
 	SchoolHasNoSystemLoggableException,
 	SystemCanNotBeDeletedLoggableException,
 	SystemNotFoundLoggableException,
-} from '../error';
-import { SchoolFactory } from '../factory';
-import { SchoolRepo } from '../interface';
+} from '../loggable';
 import { SchoolQuery } from '../query';
 import { SchoolService } from './school.service';
 

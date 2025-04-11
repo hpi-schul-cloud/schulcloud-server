@@ -1,10 +1,9 @@
 import { AuthorizationService } from '@modules/authorization';
 import { System, SystemService } from '@modules/system';
-import { UserLoginMigrationService } from '@modules/user-login-migration';
+import { UserLoginMigrationDO, UserLoginMigrationService } from '@modules/user-login-migration';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ImportUser } from '../entity';

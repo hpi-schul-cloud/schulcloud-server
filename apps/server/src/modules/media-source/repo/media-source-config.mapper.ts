@@ -1,4 +1,4 @@
-import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../domain';
+import { MediaSourceOauthConfig, MediaSourceVidisConfig } from '../do';
 import { MediaSourceOauthConfigEmbeddable, MediaSourceVidisConfigEmbeddable } from '../entity';
 
 export class MediaSourceConfigMapper {
@@ -8,6 +8,7 @@ export class MediaSourceConfigMapper {
 			clientSecret: config.clientSecret,
 			authEndpoint: config.authEndpoint,
 			method: config.method,
+			baseUrl: config.baseUrl,
 		});
 
 		return configEmbeddable;
@@ -19,6 +20,7 @@ export class MediaSourceConfigMapper {
 			password: config.password,
 			baseUrl: config.baseUrl,
 			region: config.region,
+			schoolNumberPrefix: config.schoolNumberPrefix,
 		});
 
 		return configEmbeddable;
@@ -30,6 +32,7 @@ export class MediaSourceConfigMapper {
 			clientSecret: embeddable.clientSecret,
 			method: embeddable.method,
 			authEndpoint: embeddable.authEndpoint,
+			baseUrl: embeddable.baseUrl,
 		});
 
 		return config;
@@ -41,6 +44,7 @@ export class MediaSourceConfigMapper {
 			password: embeddable.password,
 			baseUrl: embeddable.baseUrl,
 			region: embeddable.region,
+			schoolNumberPrefix: embeddable.schoolNumberPrefix,
 		});
 
 		return config;

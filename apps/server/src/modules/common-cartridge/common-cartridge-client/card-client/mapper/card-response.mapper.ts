@@ -2,19 +2,22 @@ import {
 	CardListResponse,
 	CardResponse,
 	CardResponseElementsInner,
-	VisibilitySettingsResponse,
-	TimestampsResponse,
 	DeletedElementContent,
-	SubmissionContainerElementContent,
 	DrawingElementContent,
 	ExternalToolElementContent,
 	FileElementContent,
+	FileFolderElementContent,
 	LinkElementContent,
 	RichTextElementContent,
+	SubmissionContainerElementContent,
+	TimestampsResponse,
 	VideoConferenceElementContent,
+	VisibilitySettingsResponse,
 } from '../cards-api-client';
+import { CardListResponseDto } from '../dto/card-list-response.dto';
 import { CardResponseDto } from '../dto/card-response.dto';
 import { CollaborativeTextEditorElementResponseDto } from '../dto/collaborative-text-editor-element-response.dto';
+import { DeletedElementContentDto } from '../dto/deleted-element-content.dto';
 import { DeletedElementResponseDto } from '../dto/deleted-element-response.dto';
 import { DrawingElementContentDto } from '../dto/drawing-element-content.dto';
 import { DrawingElementResponseDto } from '../dto/drawing-element-response.dto';
@@ -22,20 +25,20 @@ import { ExternalToolElementContentDto } from '../dto/external-tool-element-cont
 import { ExternalToolElementResponseDto } from '../dto/external-tool-element-response.dto';
 import { FileElementContentDto } from '../dto/file-element-content.dto';
 import { FileElementResponseDto } from '../dto/file-element-response.dto';
+import { FileFolderElementContentDto } from '../dto/file-folder-element-content.dto';
+import { FileFolderElementResponseDto } from '../dto/file-folder-element-response.dto';
 import { LinkElementContentDto } from '../dto/link-element-content.dto';
 import { LinkElementResponseDto } from '../dto/link-element-response.dto';
 import { RichTextElementContentDto } from '../dto/rich-text-element-content.dto';
 import { RichTextElementResponseDto } from '../dto/rich-text-element-response.dto';
-import { SubmissionContainerElementResponseDto } from '../dto/submission-container-element-response.dto';
-import { ContentElementType } from '../enums/content-element-type.enum';
 import { SubmissionContainerElementContentDto } from '../dto/submission-container-element-content.dto';
-import { DeletedElementContentDto } from '../dto/deleted-element-content.dto';
-import { VisibilitySettingsResponseDto } from '../dto/visibility-settings-response.dto';
+import { SubmissionContainerElementResponseDto } from '../dto/submission-container-element-response.dto';
 import { TimestampResponseDto } from '../dto/timestamp-response.dto';
-import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
-import { CardListResponseDto } from '../dto/card-list-response.dto';
-import { VideoConferenceElementResponseDto } from '../dto/video-conference-element-response.dto';
 import { VideoConferenceElementContentDto } from '../dto/video-conference-element-content.dto';
+import { VideoConferenceElementResponseDto } from '../dto/video-conference-element-response.dto';
+import { VisibilitySettingsResponseDto } from '../dto/visibility-settings-response.dto';
+import { ContentElementType } from '../enums/content-element-type.enum';
+import { CardResponseElementsInnerDto } from '../types/card-response-elements-inner.type';
 
 export class CardResponseMapper {
 	public static mapToCardListResponseDto(cardListResponse: CardListResponse): CardListResponseDto {
@@ -170,6 +173,18 @@ export class CardResponseMapper {
 							element.id,
 							ContentElementType.VIDEO_CONFERENCE,
 							new VideoConferenceElementContentDto(content.title),
+							this.mapToTimestampDto(element.timestamps)
+						)
+					);
+					break;
+				}
+				case ContentElementType.FILE_FOLDER: {
+					const content: FileFolderElementContent = element.content as FileFolderElementContent;
+					elements.push(
+						new FileFolderElementResponseDto(
+							element.id,
+							ContentElementType.FILE_FOLDER,
+							new FileFolderElementContentDto(content.title),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);

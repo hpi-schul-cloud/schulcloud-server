@@ -2,25 +2,28 @@ import { LoggerModule } from '@core/logger';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
+import { CourseModule } from '@modules/course';
 import { GroupModule } from '@modules/group';
-import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
+import { SchoolLicenseModule } from '@modules/school-license';
 import { SystemModule } from '@modules/system/system.module';
 import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
+import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
-	IservProvisioningStrategy,
 	OidcMockProvisioningStrategy,
-	SanisProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
 	SchulconnexResponseMapper,
+	SchulconnexSyncProvisioningStrategy,
+	TspProvisioningStrategy,
 } from './strategy';
 import {
 	SchulconnexCourseSyncService,
@@ -30,7 +33,6 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
-import { TspProvisioningStrategy } from './strategy/tsp';
 
 @Module({
 	imports: [
@@ -41,9 +43,10 @@ import { TspProvisioningStrategy } from './strategy/tsp';
 		SystemModule,
 		LoggerModule,
 		GroupModule,
-		LearnroomModule,
+		CourseModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
+		SchoolLicenseModule,
 		MediaSourceModule,
 		ExternalToolModule,
 		SchoolExternalToolModule,
@@ -59,11 +62,13 @@ import { TspProvisioningStrategy } from './strategy/tsp';
 		SchulconnexCourseSyncService,
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
-		SanisProvisioningStrategy,
-		IservProvisioningStrategy,
+		SchulconnexSyncProvisioningStrategy,
+		SchulconnexAsyncProvisioningStrategy,
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
+		SchulconnexGroupProvisioningProducer,
+		SchulconnexLicenseProvisioningProducer,
 	],
 	exports: [ProvisioningService, TspProvisioningService],
 })

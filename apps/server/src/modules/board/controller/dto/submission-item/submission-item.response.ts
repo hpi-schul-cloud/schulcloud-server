@@ -1,6 +1,7 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
-import { TimestampsResponse } from '../timestamps.response';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { FileElementResponse, RichTextElementResponse } from '../element';
+import { TimestampsResponse } from '../timestamps.response';
 
 @ApiExtraModels(FileElementResponse, RichTextElementResponse)
 export class SubmissionItemResponse {
@@ -12,7 +13,7 @@ export class SubmissionItemResponse {
 		this.elements = elements;
 	}
 
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({ pattern: bsonStringPattern })
 	id: string;
 
 	@ApiProperty()
@@ -21,7 +22,7 @@ export class SubmissionItemResponse {
 	@ApiProperty()
 	completed: boolean;
 
-	@ApiProperty({ pattern: '[a-f0-9]{24}' })
+	@ApiProperty({ pattern: bsonStringPattern })
 	userId: string;
 
 	@ApiProperty({

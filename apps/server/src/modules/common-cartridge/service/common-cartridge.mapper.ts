@@ -80,21 +80,20 @@ export class CommonCartridgeExportMapper {
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
-					title: `${(lessonContent.content as ComponentEtherpadPropsDto).title} - ${
-						(lessonContent.content as ComponentEtherpadPropsDto).description
-					}`,
+					title: (lessonContent.content as ComponentEtherpadPropsDto).description
+						? `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsDto).description}`
+						: lessonContent.title,
 					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
 				};
-			case LessonContentDtoComponentValues.LERNSTORE: {
+			case LessonContentDtoComponentValues.RESOURCES: {
 				const { resources } = lessonContent.content as ComponentLernstorePropsDto;
-				const extractedResources = this.extractResources(resources);
 				return (
-					extractedResources.map((resource) => {
+					resources.map((resource) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
 							identifier: createIdentifier(lessonContent.id),
 							title: resource.title,
-							url: resource.url,
+							url: resource.url || '',
 						};
 					}) || []
 				);
@@ -102,23 +101,6 @@ export class CommonCartridgeExportMapper {
 			default:
 				return [];
 		}
-	}
-
-	// should be removed after fixing the issue with the Lernstore component
-	private extractResources(resources: string[]): { title: string; url: string }[] {
-		return resources.map((resource) => {
-			const fields = resource.split(',').map((field) => field.trim());
-			let title = '';
-			let url = '';
-
-			fields.forEach((field) => {
-				const [key, value] = field.split('=').map((part) => part.trim());
-				if (key === 'title') title = value;
-				if (key === 'url') url = value;
-			});
-
-			return { title, url };
-		});
 	}
 
 	public mapContentToOrganization(content: LessonContentDto): CommonCartridgeOrganizationProps {
@@ -187,7 +169,7 @@ export class CommonCartridgeExportMapper {
 		return {
 			type: CommonCartridgeResourceType.WEB_LINK,
 			identifier: createIdentifier(element.id),
-			title: element.content.title,
+			title: element.content.title ? element.content.title : element.content.url,
 			url: element.content.url,
 		};
 	}

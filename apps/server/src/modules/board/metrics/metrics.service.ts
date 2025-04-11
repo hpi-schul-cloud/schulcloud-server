@@ -1,7 +1,6 @@
-import { UserService } from '@modules/user';
+import { RoleName } from '@modules/role';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { UserDO } from '@shared/domain/domainobject';
-import { RoleName } from '@shared/domain/interface';
 import { Counter, Gauge, Summary, register } from 'prom-client';
 
 type ClientId = string;
@@ -44,7 +43,7 @@ export class MetricsService {
 		register.registerMetric(this.numberOfBoardroomsOnServerCounter);
 	}
 
-	private mapRole(user: UserDO): 'editor' | 'viewer' | undefined {
+	private mapRole(user: UserDo): 'editor' | 'viewer' | undefined {
 		const EDITOR_ROLES = [RoleName.TEACHER, RoleName.COURSESUBSTITUTIONTEACHER, RoleName.COURSETEACHER];
 		if (user.roles.find((r) => EDITOR_ROLES.includes(r.name))) {
 			return 'editor';

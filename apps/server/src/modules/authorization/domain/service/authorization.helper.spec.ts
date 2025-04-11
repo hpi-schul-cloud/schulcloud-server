@@ -1,10 +1,14 @@
-import { courseFactory } from '@modules/learnroom/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
-import { courseFactory as courseEntityFactory } from '@testing/factory/course.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
+import { Permission } from '@shared/domain/interface';
+import { setupEntities } from '@testing/database';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {
@@ -15,7 +19,7 @@ describe('AuthorizationHelper', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Submission, Material]);
 	});
 
 	afterEach(() => {

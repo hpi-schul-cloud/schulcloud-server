@@ -34,6 +34,8 @@ import { RoomMemberListResponse } from './dto/response/room-member-list.response
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomUc } from './room.uc';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
+import { RoomRoleResponse } from './dto/response/room-role.response';
+import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -152,7 +154,7 @@ export class RoomController {
 
 	@Patch(':roomId/members/add')
 	@ApiOperation({ summary: 'Add members to a room' })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: String })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: RoomRoleResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -161,8 +163,10 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams,
 		@Body() bodyParams: AddRoomMembersBodyParams
-	): Promise<void> {
-		await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+	): Promise<RoomRoleResponse> {
+		const roomRole = await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+		const response = new RoomRoleResponse(roomRole);
+		return response;
 	}
 
 	@Patch(':roomId/members/roles')
@@ -183,6 +187,35 @@ export class RoomController {
 			bodyParams.userIds,
 			bodyParams.roleName
 		);
+	}
+
+	@Patch(':roomId/members/pass-ownership')
+	@ApiOperation({
+		summary:
+			'Passes the ownership of the room to another user. Can only be used if you are the owner, and you will loose the ownership and become a roomadmin instead.',
+	})
+	@ApiResponse({ status: HttpStatus.OK, description: 'Adding successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async changeRoomOwner(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: PassOwnershipBodyParams
+	): Promise<void> {
+		await this.roomUc.passOwnership(currentUser.userId, urlParams.roomId, bodyParams.userId);
+	}
+
+	@Patch(':roomId/leave')
+	@ApiOperation({ summary: 'Leaving a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async leaveRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
+		await this.roomUc.leaveRoom(currentUser.userId, urlParams.roomId);
 	}
 
 	@Patch(':roomId/members/remove')

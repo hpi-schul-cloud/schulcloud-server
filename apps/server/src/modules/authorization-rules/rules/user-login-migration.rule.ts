@@ -1,7 +1,7 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { UserLoginMigrationDO } from '@modules/user-login-migration';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { UserLoginMigrationDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 
 @Injectable()
 export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {

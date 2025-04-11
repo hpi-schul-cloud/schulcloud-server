@@ -1,11 +1,11 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { SystemEntity } from '@modules/system/entity';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchoolSystemOptionsEntity } from '../entity';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
@@ -19,7 +19,9 @@ describe(SchoolSystemOptionsRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolSystemOptionsEntity, SchoolEntity, SystemEntity] }),
+			],
 			providers: [SchoolSystemOptionsRepo],
 		}).compile();
 
@@ -121,7 +123,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 		describe('when a new object is provided', () => {
 			const setup = async () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 				});
 				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({ systems: [systemEntity] });
 
@@ -168,7 +170,7 @@ describe(SchoolSystemOptionsRepo.name, () => {
 		describe('when an entity exists', () => {
 			const setup = async () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId({
-					provisioningStrategy: SystemProvisioningStrategy.SANIS,
+					provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 				});
 				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId({ systems: [systemEntity] });
 				const schoolSystemOptionsEntity: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({

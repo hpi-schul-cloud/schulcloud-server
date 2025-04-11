@@ -78,6 +78,7 @@
 	"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": true,
 	"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": true,
+	"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": true,
 	"FEATURE_BOARD_LAYOUT_ENABLED": true,
 	"SCHULCONNEX_CLIENT": {
 		"API_URL": "http://localhost:8888/v1/",
@@ -91,6 +92,10 @@
 	"BOARD_COLLABORATION_URI": "ws://localhost:4450",
 	"ADMIN_API": {
 		"ALLOWED_API_KEYS": "thisisasupersecureapikeythatisabsolutelysave"
+	},
+	"ADMIN_API_CLIENT": {
+		"API_KEY": "thisisasupersecureapikeythatisabsolutelysave",
+		"BASE_URL": "http://localhost:4030"
 	},
 	"TRAINING_URL": "https://lernen.dbildungscloud.de",
 	"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": true

@@ -6,8 +6,6 @@ import { UserService } from '@modules/user';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
-import { UserRepo } from '@shared/repo/user';
-import { setupEntities } from '@testing/setup-entities';
 import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
@@ -62,10 +60,6 @@ describe('get H5P editor', () => {
 					useValue: createMock<H5PPlayer>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				{
 					provide: LibraryStorage,
 					useValue: createMock<LibraryStorage>(),
 				},
@@ -88,7 +82,6 @@ describe('get H5P editor', () => {
 		h5pEditor = module.get(H5PEditor);
 		h5pContentRepo = module.get(H5PContentRepo);
 		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
-		await setupEntities();
 	});
 
 	afterEach(() => {

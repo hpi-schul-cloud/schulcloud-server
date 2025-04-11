@@ -15,6 +15,9 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
+import type { BoardFeature } from './board-feature';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { ColumnResponse } from './column-response';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -62,5 +65,11 @@ export interface BoardResponse {
      * @memberof BoardResponse
      */
     'layout': string;
+    /**
+     * 
+     * @type {Array<BoardFeature>}
+     * @memberof BoardResponse
+     */
+    'features': Array<BoardFeature>;
 }
 

@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
@@ -10,7 +11,9 @@ import {
 	OperationType,
 	UserDeletedEvent,
 } from '@modules/deletion';
-import { Injectable } from '@nestjs/common';
+import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
@@ -19,15 +22,10 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo/user/user.repo';
-import { Logger } from '@core/logger';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
@@ -45,6 +43,7 @@ import {
 	UpdatingAccountUsernameLoggable,
 	UpdatingLastFailedLoginLoggable,
 } from '../error';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -63,8 +62,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly logger: Logger,
-		private readonly userRepo: UserRepo,
-		private readonly accountRepo: AccountRepo,
+		private readonly userService: UserService,
+		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
 		private readonly eventBus: EventBus,
 		private readonly orm: MikroORM
 	) {
@@ -93,9 +92,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save(user);
+				await this.userService.saveEntity(user);
 			} catch (err: unknown) {
-				throw new EntityNotFoundError(User.name);
+				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
@@ -105,7 +104,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 				if (err instanceof ValidationError) {
 					throw err;
 				}
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
 	}
@@ -184,16 +183,16 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		if (updateUser) {
 			try {
-				await this.userRepo.save(targetUser);
+				await this.userService.saveEntity(targetUser);
 			} catch (err) {
-				throw new EntityNotFoundError(User.name);
+				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
 			try {
 				return await this.save(targetAccount);
 			} catch (err) {
-				throw new EntityNotFoundError(AccountEntity.name);
+				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
 
@@ -207,9 +206,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 
 		let user: User;
 		try {
-			user = await this.userRepo.findById(userId);
+			user = await this.userService.getUserEntityWithRoles(userId);
 		} catch (err) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 
 		const userPreferences = <UserPreferences>user.preferences;
@@ -233,13 +232,13 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			account.password = password;
 			await this.save(account);
 		} catch (err) {
-			throw new EntityNotFoundError(AccountEntity.name);
+			throw new EntityNotFoundError('AccountEntity');
 		}
 		try {
 			user.forcePasswordChange = false;
-			await this.userRepo.save(user);
+			await this.userService.saveEntity(user);
 		} catch (err) {
-			throw new EntityNotFoundError(User.name);
+			throw new EntityNotFoundError('User');
 		}
 	}
 

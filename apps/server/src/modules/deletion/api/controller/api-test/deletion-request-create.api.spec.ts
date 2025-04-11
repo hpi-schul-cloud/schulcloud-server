@@ -1,11 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
-import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
+import { DeletionRequestBodyParams, DeletionRequestResponse } from '../dto';
 
 const baseRouteName = '/deletionRequests';
 
@@ -56,6 +57,9 @@ describe(`deletionRequest create (api)`, () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
+		const config = adminApiServerConfig();
+		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
+
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -73,29 +77,29 @@ describe(`deletionRequest create (api)`, () => {
 	describe('createDeletionRequests', () => {
 		describe('when called', () => {
 			const setup = () => {
-				const deletionRequestToCreate: DeletionRequestBodyProps = {
+				const deletionRequestToCreate: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',
 					},
 				};
 
-				const deletionRequestToImmediateRemoval: DeletionRequestBodyProps = {
+				const deletionRequestToImmediateRemoval: DeletionRequestBodyParams = {
 					targetRef: {
 						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',
 					},
-					deleteInMinutes: 0,
+					deleteAfterMinutes: 0,
 				};
 
-				const defaultDeleteInMinutes = 43200;
+				const defaultDeleteAfterMinutes = 43200;
 
 				const operationalTimeToleranceInSeconds = 30;
 
 				return {
 					deletionRequestToCreate,
 					deletionRequestToImmediateRemoval,
-					defaultDeleteInMinutes,
+					defaultDeleteAfterMinutes,
 					operationalTimeToleranceInSeconds,
 				};
 			};
@@ -117,34 +121,30 @@ describe(`deletionRequest create (api)`, () => {
 				expect(result.requestId).toBeDefined();
 			});
 
-			describe('when the "delete in minutes" param has not been provided', () => {
-				it(
-					'should set the "deletion planned at" date to the date after the default "delete in minutes" value ' +
-						'(43200 minutes which is 30 days), with some operational time tolerance',
-					async () => {
-						const { deletionRequestToCreate, defaultDeleteInMinutes, operationalTimeToleranceInSeconds } = setup();
+			describe('when the "delete after minutes" param has not been provided', () => {
+				it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
+					const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } = setup();
 
-						const response = await testApiClient.post('', deletionRequestToCreate);
+					const response = await testApiClient.post('', deletionRequestToCreate);
 
-						const result = response.body as DeletionRequestResponse;
-						const createdDeletionRequestId = result.requestId;
+					const result = response.body as DeletionRequestResponse;
+					const createdDeletionRequestId = result.requestId;
 
-						const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+					const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
 
-						const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
-							createdItem.createdAt,
-							createdItem.deleteAfter,
-							defaultDeleteInMinutes,
-							operationalTimeToleranceInSeconds
-						);
+					const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
+						createdItem.createdAt,
+						createdItem.deleteAfter,
+						defaultDeleteAfterMinutes,
+						operationalTimeToleranceInSeconds
+					);
 
-						expect(isDeletionPlannedAtDateCorrect).toEqual(true);
-					}
-				);
+					expect(isDeletionPlannedAtDateCorrect).toEqual(true);
+				});
 			});
 
-			describe('when the "delete in minutes" param has been set to 0', () => {
-				it('should set the "deletion planned at" date to now, with some operational time tolerance', async () => {
+			describe('when the "delete after minutes" param has been set to 0', () => {
+				it('should set the "deleteAfter" date to now', async () => {
 					const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = setup();
 
 					const response = await testApiClient.post('', deletionRequestToImmediateRemoval);
@@ -158,6 +158,32 @@ describe(`deletionRequest create (api)`, () => {
 						createdItem.createdAt,
 						createdItem.deleteAfter,
 						0,
+						operationalTimeToleranceInSeconds
+					);
+
+					expect(isDeletionPlannedAtDateCorrect).toEqual(true);
+				});
+			});
+
+			describe('when the "delete after minutes" param has been set to > 0', () => {
+				it('should set the "deleteAfter" date to now plus "delete after minutes" ', async () => {
+					const { deletionRequestToCreate, operationalTimeToleranceInSeconds } = setup();
+
+					const deleteAfterMinutes = 120;
+
+					deletionRequestToCreate.deleteAfterMinutes = deleteAfterMinutes;
+
+					const response = await testApiClient.post('', deletionRequestToCreate);
+
+					const result = response.body as DeletionRequestResponse;
+					const createdDeletionRequestId = result.requestId;
+
+					const createdItem = await em.findOneOrFail(DeletionRequestEntity, createdDeletionRequestId);
+
+					const isDeletionPlannedAtDateCorrect = isDeletionPlannedWithinAcceptableRange(
+						createdItem.createdAt,
+						createdItem.deleteAfter,
+						deleteAfterMinutes,
 						operationalTimeToleranceInSeconds
 					);
 

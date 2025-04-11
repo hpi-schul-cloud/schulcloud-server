@@ -1,15 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType } from '@modules/board/domain/types';
+import { BoardNodeEntity } from '@modules/board/repo';
+import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
@@ -94,14 +96,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
-				const roomOwnerRole = roleFactory.buildWithId({
-					name: RoleName.ROOMOWNER,
-					permissions: [Permission.ROOM_EDIT, Permission.ROOM_DELETE],
-				});
-				const roomEditorRole = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT],
-				});
+				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount: teacherOwnerAccount, teacherUser: teacherOwnerUser } =
 					UserAndAccountTestFactory.buildTeacher({ school });
@@ -119,6 +114,9 @@ describe('Room Controller (API)', () => {
 					userGroupId: userGroup.id,
 					schoolId: teacherOwnerUser.school.id,
 				});
+				const columnBoard = columnBoardEntityFactory.buildWithId({
+					context: { type: BoardExternalReferenceType.Room, id: room.id },
+				});
 				await em.persistAndFlush([
 					room,
 					roomMembership,
@@ -128,10 +126,11 @@ describe('Room Controller (API)', () => {
 					teacherEditorUser,
 					userGroup,
 					roomOwnerRole,
+					columnBoard,
 				]);
 				em.clear();
 
-				return { teacherOwnerAccount, teacherEditorAccount, room };
+				return { teacherOwnerAccount, teacherEditorAccount, room, columnBoard };
 			};
 
 			describe('when the room exists', () => {
@@ -153,6 +152,17 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 					await expect(em.findOneOrFail(RoomMembershipEntity, { roomId: room.id })).rejects.toThrow(NotFoundException);
+				});
+
+				it('should delete the associated boards', async () => {
+					const { teacherOwnerAccount, room, columnBoard } = await setup();
+					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+
+					await expect(em.findOneOrFail(BoardNodeEntity, { id: columnBoard.id })).resolves.not.toThrow();
+
+					const response = await loggedInClient.delete(room.id);
+					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+					await expect(em.findOneOrFail(BoardNodeEntity, { id: columnBoard.id })).rejects.toThrow(NotFoundException);
 				});
 
 				describe('when user is not the roomowner', () => {

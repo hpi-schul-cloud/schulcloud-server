@@ -1,8 +1,9 @@
-import { Page, UserDO } from '@shared/domain/domainobject';
-import { SchoolUserListResponse, SchoolUserResponse } from '../dto/response/school-user.response';
+import { UserDo } from '@modules/user';
+import { Page } from '@shared/domain/domainobject';
+import { SchoolUserListResponse, SchoolUserResponse } from '../dto';
 
 export class SchoolUserResponseMapper {
-	public static mapToResponse(user: UserDO): SchoolUserResponse {
+	public static mapToResponse(user: UserDo): SchoolUserResponse {
 		const res = new SchoolUserResponse({
 			id: user.id || '',
 			firstName: user.firstName,
@@ -13,7 +14,7 @@ export class SchoolUserResponseMapper {
 		return res;
 	}
 
-	public static mapToListResponse(users: Page<UserDO>): SchoolUserListResponse {
+	public static mapToListResponse(users: Page<UserDo>): SchoolUserListResponse {
 		const data: SchoolUserResponse[] = users.data.map((user) => this.mapToResponse(user));
 		const response = new SchoolUserListResponse(data);
 

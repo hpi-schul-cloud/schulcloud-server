@@ -53,6 +53,7 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 		columns: [columnFactory.build(), columnFactory.build()],
 		isVisible: faker.datatype.boolean(),
 		layout: faker.lorem.word(),
+		features: [],
 		timestamps: {
 			createdAt: faker.date.recent().toISOString(),
 			lastUpdatedAt: faker.date.recent().toISOString(),
@@ -103,10 +104,34 @@ export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskDto>(() =>
 export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
-		type: 'lernstore',
-		content: { resources: [faker.internet.url(), faker.internet.url(), faker.internet.url()] },
+		type: 'resources',
+		content: {
+			resources: [
+				{
+					url: faker.internet.url(),
+					client: faker.company.name(),
+					description: faker.lorem.sentence(),
+					merlinReference: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+				},
+				{
+					url: faker.internet.url(),
+					client: faker.company.name(),
+					description: faker.lorem.sentence(),
+					merlinReference: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+				},
+				{
+					url: faker.internet.url(),
+					client: faker.company.name(),
+					description: faker.lorem.sentence(),
+					merlinReference: faker.string.uuid(),
+					title: faker.lorem.sentence(),
+				},
+			],
+		},
 		title: faker.lorem.sentence(),
-		component: 'lernstore',
+		component: 'resources',
 		hidden: faker.datatype.boolean(),
 	};
 });
@@ -130,7 +155,7 @@ export const lessonFactory = Factory.define<LessonDto>(({ sequence }) => {
 		courseGroupId: faker.string.uuid(),
 		hidden: faker.datatype.boolean(),
 		position: faker.number.int(),
-		contents: [lessonContentFactory.build(), lernstoreContentFactory.build()],
+		contents: [lessonContentFactory.build()],
 		materials: [],
 		linkedTasks: [lessonLinkedTaskFactory.build(), lessonLinkedTaskFactory.build()],
 	};

@@ -10,18 +10,18 @@ describe(DeletionRequestBodyPropsBuilder.name, () => {
 		const setup = () => {
 			const domain = DomainName.PSEUDONYMS;
 			const refId = new ObjectId().toHexString();
-			const deleteInMinutes = 1000;
-			return { domain, refId, deleteInMinutes };
+			const deleteAfterMinutes = 1000;
+			return { domain, refId, deleteAfterMinutes };
 		};
 		it('should build deletionRequestBodyParams with all attributes', () => {
-			const { domain, refId, deleteInMinutes } = setup();
+			const { domain, refId, deleteAfterMinutes } = setup();
 
-			const result = DeletionRequestBodyPropsBuilder.build(domain, refId, deleteInMinutes);
+			const result = DeletionRequestBodyPropsBuilder.build(domain, refId, deleteAfterMinutes);
 
 			// Assert
 			expect(result.targetRef.domain).toEqual(domain);
 			expect(result.targetRef.id).toEqual(refId);
-			expect(result.deleteInMinutes).toEqual(deleteInMinutes);
+			expect(result.deleteAfterMinutes).toEqual(deleteAfterMinutes);
 		});
 	});
 });

@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SystemEntity } from '@modules/system/entity';
-import { SchoolEntity } from '@shared/domain/entity';
+import { SchoolEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchoolSystemOptionsProps } from '../domain';
 import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '../entity';
 

@@ -1,20 +1,19 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { CourseEntity } from '@modules/course/repo';
+import { LessonEntity } from '@modules/lesson/repo';
+import { TaskStatus } from '@modules/task';
+import { Task, TaskWithStatusVo } from '@modules/task/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 import {
-	ColumnboardBoardElement,
+	ColumnBoardBoardElement,
 	ColumnBoardNode,
-	Course,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
-	LessonEntity,
-	Task,
-	TaskWithStatusVo,
-	User,
-} from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
-import { TaskStatus } from '@shared/domain/types';
+} from '../repo';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
@@ -25,7 +24,7 @@ import {
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 
 class DtoCreator {
-	room: Course;
+	room: CourseEntity;
 
 	board: LegacyBoard;
 
@@ -42,7 +41,7 @@ class DtoCreator {
 		authorisationService,
 		roomsAuthorisationService,
 	}: {
-		room: Course;
+		room: CourseEntity;
 		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
@@ -75,7 +74,7 @@ class DtoCreator {
 				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
 			}
 
-			if (element instanceof ColumnboardBoardElement && this.isColumnBoardFeatureFlagActive()) {
+			if (element instanceof ColumnBoardBoardElement && this.isColumnBoardFeatureFlagActive()) {
 				result = this.authorisationService.hasPermission(this.user, this.room, {
 					action: Action.read,
 					requiredPermissions: [Permission.COURSE_VIEW],
@@ -191,7 +190,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: CourseRoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: Course; board: LegacyBoard; user: User }): RoomBoardDTO {
+	createDTO({ room, board, user }: { room: CourseEntity; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,

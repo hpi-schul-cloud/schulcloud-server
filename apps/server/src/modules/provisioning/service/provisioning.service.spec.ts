@@ -1,13 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { oauthDataDtoFactory, provisioningDtoFactory } from '@modules/provisioning/testing';
 import { System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
-import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from '../strategy';
+import {
+	OidcMockProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
+	SchulconnexSyncProvisioningStrategy,
+} from '../strategy';
 import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
-import { externalUserDtoFactory } from '../testing';
+import { provisioningSystemDtoFactory } from '../testing/provisioning-system-dto.factory';
 import { ProvisioningService } from './provisioning.service';
 
 describe('ProvisioningService', () => {
@@ -15,7 +20,7 @@ describe('ProvisioningService', () => {
 	let service: ProvisioningService;
 
 	let systemService: DeepMocked<SystemService>;
-	let provisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
+	let provisioningStrategy: DeepMocked<SchulconnexSyncProvisioningStrategy>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -26,18 +31,18 @@ describe('ProvisioningService', () => {
 					useValue: createMock<SystemService>(),
 				},
 				{
-					provide: SanisProvisioningStrategy,
-					useValue: createMock<SanisProvisioningStrategy>({
+					provide: SchulconnexSyncProvisioningStrategy,
+					useValue: createMock<SchulconnexSyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
-							return SystemProvisioningStrategy.SANIS;
+							return SystemProvisioningStrategy.SCHULCONNEX_LEGACY;
 						},
 					}),
 				},
 				{
-					provide: IservProvisioningStrategy,
-					useValue: createMock<IservProvisioningStrategy>({
+					provide: SchulconnexAsyncProvisioningStrategy,
+					useValue: createMock<SchulconnexAsyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
-							return SystemProvisioningStrategy.ISERV;
+							return SystemProvisioningStrategy.SCHULCONNEX_ASYNC;
 						},
 					}),
 				},
@@ -62,7 +67,7 @@ describe('ProvisioningService', () => {
 
 		service = module.get(ProvisioningService);
 		systemService = module.get(SystemService);
-		provisioningStrategy = module.get(SanisProvisioningStrategy);
+		provisioningStrategy = module.get(SchulconnexSyncProvisioningStrategy);
 	});
 
 	afterAll(async () => {
@@ -76,20 +81,18 @@ describe('ProvisioningService', () => {
 	const setupSystemData = () => {
 		const system: System = systemFactory.withOauthConfig().build({
 			provisioningUrl: 'https://api.moin.schule/',
-			provisioningStrategy: SystemProvisioningStrategy.SANIS,
+			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 		});
-		const provisioningSystemDto: ProvisioningSystemDto = new ProvisioningSystemDto({
+		const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 			systemId: system.id,
 			provisioningUrl: 'https://api.moin.schule/',
-			provisioningStrategy: SystemProvisioningStrategy.SANIS,
+			provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_LEGACY,
 		});
-		const externalUser = externalUserDtoFactory.build();
-		const oauthDataDto: OauthDataDto = new OauthDataDto({
+		const oauthDataDto: OauthDataDto = oauthDataDtoFactory.build({
 			system: provisioningSystemDto,
-			externalUser,
 		});
-		const provisioningDto: ProvisioningDto = new ProvisioningDto({
-			externalUserId: externalUser.externalId,
+		const provisioningDto: ProvisioningDto = provisioningDtoFactory.build({
+			externalUserId: 'externalUserId',
 		});
 
 		return {

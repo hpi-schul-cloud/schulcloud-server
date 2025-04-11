@@ -1,5 +1,7 @@
+const airbnbRules = require('./.eslint-rules-airbnb.js');
+
 module.exports = {
-	extends: ['airbnb-base', 'prettier', 'plugin:promise/recommended'],
+	extends: ['prettier', 'plugin:promise/recommended'],
 	rules: {
 		'prettier/prettier': ['error'],
 		'no-process-env': 'error',
@@ -18,12 +20,6 @@ module.exports = {
 			'error',
 			{
 				allow: ['_id', '_v', '__v'],
-			},
-		],
-		'no-shadow': [
-			'error',
-			{
-				allow: ['err', 'error'],
 			},
 		],
 		'prefer-destructuring': [
@@ -65,7 +61,7 @@ module.exports = {
 	},
 	overrides: [
 		{
-			files: ['apps/**/*.ts'],
+			files: ['apps/server/src/**/*.ts'],
 			env: {
 				node: true,
 				es6: true,
@@ -74,10 +70,14 @@ module.exports = {
 			parserOptions: {
 				project: 'apps/server/tsconfig.lint.json',
 				sourceType: 'module',
+				ecmaVersion: 2018,
+				ecmaFeatures: {
+					generators: false,
+					objectLiteralDuplicateProperties: false,
+				},
 			},
 			plugins: ['@typescript-eslint/eslint-plugin', 'import'],
 			extends: [
-				'airbnb-typescript/base',
 				'plugin:@typescript-eslint/recommended',
 				'plugin:@typescript-eslint/recommended-requiring-type-checking',
 				'prettier',
@@ -85,14 +85,12 @@ module.exports = {
 				'plugin:import/typescript',
 			],
 			rules: {
-				'import/no-unresolved': 'off', // better handled by ts resolver
-				'import/no-extraneous-dependencies': 'off', // better handles by ts resolver
+				...airbnbRules,
 				'import/prefer-default-export': 'off',
 				'no-void': ['error', { allowAsStatement: true }],
-				'class-methods-use-this': 'off',
 				'no-param-reassign': 'off',
 				'no-underscore-dangle': 'off',
-				'filename-rules/match': [1, 'kebabcase'],
+				'filename-rules/match': [1, /^([a-z0-9]+-)*[a-z]+(?:\..*)?$/],
 				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',
@@ -110,7 +108,6 @@ module.exports = {
 						},
 					},
 				],
-				'@typescript-eslint/no-unused-vars': 'error',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
 					{
@@ -262,6 +259,10 @@ module.exports = {
 									{
 										group: ['@modules/*', '!@modules/account'],
 										message: 'testing may NOT import from @modules',
+									},
+									{
+										group: ['@infra/*'],
+										message: 'testing may NOT import from @infra',
 									},
 								],
 							},

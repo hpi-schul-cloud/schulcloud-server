@@ -1,35 +1,33 @@
 import { LegacyLogger } from '@core/logger';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity } from '@modules/course/repo';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
+import { isLesson, LessonEntity } from '@modules/lesson/repo';
 import { TaskCopyService } from '@modules/task';
+import { isTask, Task } from '@modules/task/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { getResolvedValues } from '@shared/common/utils/promise';
+import { EntityId } from '@shared/domain/types';
+import { sortBy } from 'lodash';
 import {
-	ColumnboardBoardElement,
+	ColumnBoardBoardElement,
 	ColumnBoardNode,
-	Course,
-	isLesson,
-	isTask,
+	ColumnBoardNodeRepo,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
+	LegacyBoardRepo,
 	LessonBoardElement,
-	LessonEntity,
-	Task,
 	TaskBoardElement,
-	User,
-} from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
-import { sortBy } from 'lodash';
-import { ColumnBoardNodeRepo } from '../repo';
+} from '../repo';
 
 export type BoardCopyParams = {
 	originalBoard: LegacyBoard;
-	originalCourse: Course;
-	destinationCourse: Course;
+	originalCourse: CourseEntity;
+	destinationCourse: CourseEntity;
 	user: User;
 };
 
@@ -84,8 +82,8 @@ export class BoardCopyService {
 	private async copyBoardElements(
 		boardElements: LegacyBoardElement[],
 		user: User,
-		originalCourse: Course,
-		destinationCourse: Course
+		originalCourse: CourseEntity,
+		destinationCourse: CourseEntity
 	): Promise<CopyStatus[]> {
 		const promises: Promise<[number, CopyStatus]>[] = boardElements.map((element, pos) => {
 			if (element.target === undefined) {
@@ -122,7 +120,11 @@ export class BoardCopyService {
 		return statuses;
 	}
 
-	private async copyLesson(originalLesson: LessonEntity, user: User, destinationCourse: Course): Promise<CopyStatus> {
+	private async copyLesson(
+		originalLesson: LessonEntity,
+		user: User,
+		destinationCourse: CourseEntity
+	): Promise<CopyStatus> {
 		return this.lessonCopyService.copyLesson({
 			originalLessonId: originalLesson.id,
 			user,
@@ -130,7 +132,7 @@ export class BoardCopyService {
 		});
 	}
 
-	private async copyTask(originalTask: Task, user: User, destinationCourse: Course): Promise<CopyStatus> {
+	private async copyTask(originalTask: Task, user: User, destinationCourse: CourseEntity): Promise<CopyStatus> {
 		return this.taskCopyService.copyTask({
 			originalTaskId: originalTask.id,
 			user,
@@ -141,8 +143,8 @@ export class BoardCopyService {
 	private async copyColumnBoard(
 		columnBoard: ColumnBoardNode,
 		user: User,
-		originalCourse: Course,
-		destinationCourse: Course
+		originalCourse: CourseEntity,
+		destinationCourse: CourseEntity
 	): Promise<CopyStatus> {
 		return this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: columnBoard.id,
@@ -173,7 +175,7 @@ export class BoardCopyService {
 				// TODO comment this, legacy!
 				// eslint-disable-next-line no-await-in-loop
 				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copyEntity.id);
-				const columnBoardElement = new ColumnboardBoardElement({
+				const columnBoardElement = new ColumnBoardBoardElement({
 					target: columnBoardNode,
 				});
 				references.push(columnBoardElement);

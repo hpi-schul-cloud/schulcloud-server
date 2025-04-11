@@ -1,12 +1,13 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSchoolLicense } from '../../domain';
-import { MediaSchoolLicenseEntity } from '../../entity';
+import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '../../entity';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
 import { MediaSchoolLicenseMikroOrmRepo } from './media-school-license.repo';
 
@@ -17,7 +18,11 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [MediaSchoolLicenseEntity, MediaSourceEntity, SchoolLicenseEntity, SchoolEntity],
+				}),
+			],
 			providers: [MediaSchoolLicenseMikroOrmRepo],
 		}).compile();
 

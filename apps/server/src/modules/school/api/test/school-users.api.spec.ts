@@ -1,18 +1,20 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { userFactory } from '@testing/factory/user.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolUserListResponse } from '../dto/response/school-user.response';
+import { TestConfigHelper } from '@testing/test-config.helper';
+import { SchoolUserListResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let testConfigHelper: TestConfigHelper<ServerConfig>;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -23,6 +25,9 @@ describe('School Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'school');
+
+		const config = serverConfig();
+		testConfigHelper = new TestConfigHelper(config);
 	});
 
 	beforeEach(async () => {
@@ -33,6 +38,10 @@ describe('School Controller (API)', () => {
 
 	afterAll(async () => {
 		await app.close();
+	});
+
+	afterEach(() => {
+		testConfigHelper.reset();
 	});
 
 	describe('get Teachers', () => {
@@ -113,6 +122,7 @@ describe('School Controller (API)', () => {
 
 			it('should return only public teachers', async () => {
 				const { loggedInClient, school, publicTeachersOfSchool } = await setup();
+				testConfigHelper.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
 
 				const response = await loggedInClient.get(`${school.id}/teachers`);
 				const body = response.body as SchoolUserListResponse;

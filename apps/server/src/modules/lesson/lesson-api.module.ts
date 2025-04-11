@@ -1,12 +1,11 @@
-import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@modules/authorization';
-import { LessonController } from './controller';
+import { CourseModule } from '@modules/course';
+import { Module } from '@nestjs/common';
+import { LessonController, LessonUC } from './api';
 import { LessonModule } from './lesson.module';
-import { LessonUC } from './uc';
-import { LearnroomModule } from '../learnroom';
 
 @Module({
-	imports: [LessonModule, AuthorizationModule, LearnroomModule],
+	imports: [LessonModule, AuthorizationModule, CourseModule],
 	controllers: [LessonController],
 	providers: [LessonUC],
 })

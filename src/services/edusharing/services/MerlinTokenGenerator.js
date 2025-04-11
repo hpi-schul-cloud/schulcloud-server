@@ -1,10 +1,16 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const request = require('request-promise-native');
+const axios = require('axios');
 const { getCounty } = require('../helpers');
 
 class MerlinTokenGenerator {
 	setup(app) {
 		this.app = app;
+	}
+
+	async post(options) {
+		const res = await axios(options);
+
+		return res.data;
 	}
 
 	async getMerlinCredentials(county = null) {
@@ -25,12 +31,16 @@ class MerlinTokenGenerator {
 		};
 	}
 
-	async FIND(data) {
-		const { merlinReference } = data.query;
+	async FIND(params) {
+		const { merlinReference } = params.query;
 		if (!Configuration.get('FEATURE_ES_MERLIN_ENABLED')) {
 			return Configuration.get('ES_MERLIN_AUTH_URL');
 		}
-		const { schoolId } = data.authentication.payload;
+		if ((params.authentication || {}).payload === undefined) {
+			throw new Error('No authentication payload in data for MerlinTokenGenerator.find exists.');
+		}
+
+		const { schoolId } = params.authentication.payload;
 		const county = await getCounty(schoolId);
 
 		const url = await this.getMerlinUrl(merlinReference, county);
@@ -50,17 +60,17 @@ class MerlinTokenGenerator {
 			headers: {
 				'Content-Type': 'application/x-www-form-urlencoded',
 			},
-			form: {
+			data: {
 				username: credentials.username,
 				password: credentials.password,
 			},
 		};
 		try {
-			const merlinUrl = await request.post(options);
+			const merlinUrl = await this.post(options);
 			const checkedUrl = new URL(merlinUrl);
 			return checkedUrl.href;
-		} catch (e) {
-			throw Error(`Failed to obtain Merlin url.`);
+		} catch (err) {
+			throw Error(`Failed to obtain Merlin url.`, err);
 		}
 	}
 }

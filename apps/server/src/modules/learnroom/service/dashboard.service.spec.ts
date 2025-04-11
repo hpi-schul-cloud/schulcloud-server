@@ -1,6 +1,8 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import {
 	DataDeletedEvent,
 	DomainDeletionReportBuilder,
@@ -9,51 +11,31 @@ import {
 	OperationType,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, GridElement } from '@shared/domain/entity';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
-import { DashboardElementRepo, IDashboardRepo } from '@shared/repo/dashboard';
-import { UserRepo } from '@shared/repo/user';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
-
-const learnroomMock = (id: string, name: string) => {
-	return {
-		getMetadata(): LearnroomMetadata {
-			return {
-				id,
-				type: LearnroomTypes.Course,
-				title: name,
-				shortTitle: name.substr(0, 2),
-				displayColor: '#ACACAC',
-				isSynchronized: false,
-			};
-		},
-	};
-};
+import { Dashboard, GridElement } from '../domain/do/dashboard';
+import { DashboardElementRepo } from '../repo';
+import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 describe(DashboardService.name, () => {
 	let module: TestingModule;
-	let userRepo: DeepMocked<UserRepo>;
 	let dashboardRepo: IDashboardRepo;
 	let dashboardElementRepo: DeepMocked<DashboardElementRepo>;
 	let dashboardService: DeepMocked<DashboardService>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities();
+		const orm = await setupEntities([User]);
 		module = await Test.createTestingModule({
 			providers: [
 				DashboardService,
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				{
-					provide: 'DASHBOARD_REPO',
+					provide: DASHBOARD_REPO,
 					useValue: createMock<DashboardService>(),
 				},
 				{
@@ -77,10 +59,11 @@ describe(DashboardService.name, () => {
 			],
 		}).compile();
 		dashboardService = module.get(DashboardService);
-		userRepo = module.get(UserRepo);
-		dashboardRepo = module.get('DASHBOARD_REPO');
+		dashboardRepo = module.get(DASHBOARD_REPO);
 		dashboardElementRepo = module.get(DashboardElementRepo);
 		eventBus = module.get(EventBus);
+
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {
@@ -95,16 +78,18 @@ describe(DashboardService.name, () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const dashboardId = new ObjectId().toHexString();
-			const dashboard = new DashboardEntity(dashboardId, {
+			const dashboard = new Dashboard(dashboardId, {
 				grid: [
 					{
 						pos: { x: 1, y: 2 },
-						gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+						gridElement: GridElement.FromPersistedReference(
+							'elementId',
+							courseEntityFactory.buildWithId({ name: 'Mathe' })
+						),
 					},
 				],
 				userId: user.id,
 			});
-			userRepo.findById.mockResolvedValue(user);
 
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
 				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [dashboardId]),

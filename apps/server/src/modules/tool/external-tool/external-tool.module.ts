@@ -1,13 +1,15 @@
+import { LoggerModule } from '@core/logger';
 import { EncryptionModule } from '@infra/encryption';
+import { FilesStorageClientModule } from '@infra/files-storage-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
-import { Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
+import { forwardRef, Module } from '@nestjs/common';
 import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
-import { ExternalToolMetadataMapper } from './mapper';
+import { ExternalToolRule } from './authorization/external-tool.rule';
+import { ExternalToolUtilizationMapper } from './mapper';
 import {
 	DatasheetPdfService,
 	ExternalToolAuthorizableService,
@@ -22,13 +24,14 @@ import {
 
 @Module({
 	imports: [
-		CommonToolModule,
+		forwardRef(() => CommonToolModule),
 		LoggerModule,
 		OauthProviderServiceModule,
 		EncryptionModule,
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
+		FilesStorageClientModule,
 	],
 	providers: [
 		ExternalToolService,
@@ -37,11 +40,12 @@ import {
 		ExternalToolValidationService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
-		ExternalToolMetadataMapper,
+		ExternalToolUtilizationMapper,
 		ToolContextMapper,
 		DatasheetPdfService,
 		ExternalToolAuthorizableService,
 		ExternalToolImageService,
+		ExternalToolRule,
 	],
 	exports: [
 		ExternalToolService,

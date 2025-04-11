@@ -1,4 +1,4 @@
-const request = require('request-promise-native');
+const axios = require('axios');
 const sanitizeHtml = require('sanitize-html');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -44,10 +44,10 @@ class EduSharingConnector {
 
 		try {
 			if (secretOptions.method.toUpperCase() === 'GET') {
-				return await request.get(secretOptions);
+				return await axios.get(secretOptions.url, secretOptions);
 			}
 			if (secretOptions.method.toUpperCase() === 'POST') {
-				return await request.post(secretOptions);
+				return await axios.post(secretOptions.url, secretOptions.data, secretOptions);
 			}
 			return null;
 		} catch (err) {
@@ -55,10 +55,17 @@ class EduSharingConnector {
 				// more recent edusharing versions return empty 200 instead
 				return null;
 			}
-			logger.error(`Edu-Sharing failed request with error ${err.statusCode} ${err.message}`, options);
+			const { headers, ...filteredOptions } = options;
 			if (retried === true) {
-				throw new GeneralError('Edu-Sharing Request failed');
+				throw new GeneralError(
+					`Edu-Sharing finally failed request with error ${err.statusCode} ${err.message}. No more retries`,
+					filteredOptions
+				);
 			} else {
+				logger.error(
+					`Edu-Sharing failed request with error ${err.statusCode} ${err.message}, retrying...`,
+					filteredOptions
+				);
 				const response = await this.eduSharingRequest(options, user, true);
 				return response;
 			}
@@ -67,18 +74,18 @@ class EduSharingConnector {
 
 	async getImage(url, user) {
 		const options = {
-			uri: url,
+			url,
 			method: 'GET',
-			encoding: null, // necessary to get the image as binary value
-			resolveWithFullResponse: true,
+			// necessary to get the image as binary value
+			responseType: 'arraybuffer',
 			// edu-sharing returns 302 to an error page instead of 403,
 			// and the error page has wrong status codes
-			followRedirect: false,
+			maxRedirects: 0,
 		};
 
 		try {
-			const result = await this.eduSharingRequest(options, user);
-			const encodedData = `data:image;base64,${result.body.toString('base64')}`;
+			const response = await this.eduSharingRequest(options, user);
+			const encodedData = `data:image;base64,${response.data.toString('base64')}`;
 			return Promise.resolve(encodedData);
 		} catch (err) {
 			logger.error(`Edu-Sharing failed fetching image ${url}`, err, options);
@@ -103,17 +110,17 @@ class EduSharingConnector {
 			values: [uuid],
 		});
 
-		const response = await this.searchEduSharing(user, criteria, 0, 1);
+		const result = await this.searchEduSharing(user, criteria, 0, 1);
 
-		if (!response.data || response.data.length === 0) {
+		if (!result.data || result.data.length === 0) {
 			throw new NotFound(`Item not found, uuid ${uuid}`);
 		}
 
-		if (response.data.length !== 1) {
+		if (result.data.length !== 1) {
 			throw new NotFound(`more items than one found for uuid: ${uuid}`);
 		}
 
-		return response.data[0];
+		return result.data[0];
 	}
 
 	async FIND({ searchQuery = '', $skip, $limit, sortProperties = 'score', collection = '' }, schoolId) {
@@ -158,8 +165,8 @@ class EduSharingConnector {
 			criteria.push({ property: 'ngsearchword', values: [searchQuery.toLowerCase()] });
 		}
 
-		const response = await this.searchEduSharing(user, criteria, skipCount, maxItems, sortProperties);
-		return response;
+		const result = await this.searchEduSharing(user, criteria, skipCount, maxItems, sortProperties);
+		return result;
 	}
 
 	async searchEduSharing(user, criteria, skipCount, maxItems, sortProperties = 'score', sortAscending = 'false') {
@@ -175,25 +182,25 @@ class EduSharingConnector {
 
 		const facets = ['cclom:general_keyword'];
 
-		const body = JSON.stringify({
+		const data = {
 			criteria,
 			facets,
-		});
+		};
 
 		const options = {
-			method: 'POST',
 			url,
+			method: 'POST',
 			headers: {
 				Accept: 'application/json',
 				'Content-type': 'application/json',
 			},
-			body,
+			data,
 			timeout: Configuration.get('REQUEST_OPTION__TIMEOUT_MS'),
 		};
 
 		try {
 			const response = await this.eduSharingRequest(options, user);
-			const parsed = JSON.parse(response);
+			const parsed = response.data;
 			if (parsed && parsed.nodes) {
 				const promises = parsed.nodes.map(async (node) => {
 					if (node.preview && node.preview.url) {
@@ -239,7 +246,7 @@ class EduSharingConnector {
 		const user = Configuration.get('ES_USER');
 
 		const response = await this.eduSharingRequest(options, user);
-		const parsed = JSON.parse(response);
+		const parsed = response.data;
 		if (parsed && typeof parsed.detailsSnippet === 'string') {
 			return this.getH5Piframe(parsed.detailsSnippet);
 		}

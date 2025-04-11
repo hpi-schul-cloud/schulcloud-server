@@ -1,6 +1,8 @@
+import { EntityId } from '@shared/domain/types';
 import { Readable } from 'stream';
 import type { PreviewParams } from '../controller/dto';
 import type { FileRecord } from '../entity';
+import { StorageLocation } from './storage-location.enum';
 
 export interface GetFileResponse {
 	data: Readable;
@@ -19,4 +21,9 @@ export interface PreviewFileParams {
 	previewFilePath: string;
 	format: string;
 	bytesRange?: string;
+}
+
+export interface StorageLocationParams {
+	storageLocationId: EntityId;
+	storageLocation: StorageLocation;
 }

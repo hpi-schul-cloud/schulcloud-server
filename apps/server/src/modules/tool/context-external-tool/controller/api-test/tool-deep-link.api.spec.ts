@@ -1,15 +1,15 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { courseFactory } from '@testing/factory/course.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import crypto from 'crypto-js';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../entity';
+import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
 import {
 	contextExternalToolEntityFactory,
 	Lti11DeepLinkParamsFactory,
@@ -53,7 +53,7 @@ describe('ToolDeepLinkController (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 				const ltiDeepLinkToken = ltiDeepLinkTokenEntityFactory.build({ user: teacherUser });
-				const course = courseFactory.buildWithId({
+				const course = courseEntityFactory.buildWithId({
 					teachers: [teacherUser],
 				});
 

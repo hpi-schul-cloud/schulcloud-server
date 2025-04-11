@@ -3,24 +3,31 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
-import { columnBoardFactory, columnBoardNodeFactory } from '@modules/board/testing';
+import { columnBoardFactory } from '@modules/board/testing';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonCopyService } from '@modules/lesson';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
 import { TaskCopyService } from '@modules/task';
+import { Submission, Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LegacyBoardRepo } from '@shared/repo/legacy-board';
-import { boardFactory } from '@testing/factory/board.factory';
-import { courseFactory } from '@testing/factory/course.factory';
-import { lessonFactory } from '@testing/factory/lesson.factory';
-import { taskFactory } from '@testing/factory/task.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-import { ColumnBoardNodeRepo } from '../repo';
-import { columnboardBoardElementFactory, lessonBoardElementFactory, taskBoardElementFactory } from '../testing';
+import { setupEntities } from '@testing/database';
+import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
+import {
+	boardFactory,
+	columnboardBoardElementFactory,
+	columnBoardNodeFactory,
+	lessonBoardElementFactory,
+	taskBoardElementFactory,
+} from '../testing';
 import { BoardCopyService } from './board-copy.service';
 
 describe('board copy service', () => {
@@ -37,7 +44,18 @@ describe('board copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			LegacyBoard,
+			LegacyBoardElement,
+		]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				BoardCopyService,
@@ -88,7 +106,7 @@ describe('board copy service', () => {
 	describe('copyBoard', () => {
 		describe('when the board is empty', () => {
 			const setup = () => {
-				const destinationCourse = courseFactory.buildWithId();
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({ references: [], course: destinationCourse });
 				const user = userFactory.build();
 
@@ -162,7 +180,7 @@ describe('board copy service', () => {
 			const setup = () => {
 				const originalTask = taskFactory.build();
 				const taskElement = taskBoardElementFactory.build({ target: originalTask });
-				const destinationCourse = courseFactory.build();
+				const destinationCourse = courseEntityFactory.build();
 				const originalBoard = boardFactory.build({ references: [taskElement], course: destinationCourse });
 				const user = userFactory.build();
 				const taskCopy = taskFactory.build({ name: originalTask.name });
@@ -228,7 +246,7 @@ describe('board copy service', () => {
 			const setup = () => {
 				const originalLesson = lessonFactory.buildWithId();
 				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
-				const destinationCourse = courseFactory.buildWithId();
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
@@ -291,7 +309,7 @@ describe('board copy service', () => {
 					title: originalColumnBoard.title,
 				});
 				const columBoardElement = columnboardBoardElementFactory.build({ target: columnBoardTarget });
-				const destinationCourse = courseFactory.buildWithId();
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({ references: [columBoardElement], course: destinationCourse });
 				const user = userFactory.buildWithId();
 				const copyOfColumnBoard = columnBoardFactory.build();
@@ -397,8 +415,8 @@ describe('board copy service', () => {
 					.set(originalColumnBoard.id, columnBoardCopy);
 				copyHelperService.buildCopyEntityDict.mockReturnValue(copyDict);
 
-				const originalCourse = courseFactory.buildWithId();
-				const destinationCourse = courseFactory.buildWithId();
+				const originalCourse = courseEntityFactory.buildWithId();
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({
 					references: [lessonElement, taskElement, columnBoardElement],
 					course: originalCourse,
@@ -460,7 +478,7 @@ describe('board copy service', () => {
 				const lessonElement = lessonBoardElementFactory.build({ target: originalLesson });
 				const lessonCopy = lessonFactory.build({ name: originalLesson.name });
 
-				const destinationCourse = courseFactory.build();
+				const destinationCourse = courseEntityFactory.build();
 				const originalBoard = boardFactory.build({
 					references: [lessonElement, taskElement],
 					course: destinationCourse,
@@ -495,7 +513,7 @@ describe('board copy service', () => {
 			const setup = () => {
 				const originalLesson = lessonFactory.buildWithId();
 				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
-				const destinationCourse = courseFactory.buildWithId();
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });
@@ -534,7 +552,7 @@ describe('board copy service', () => {
 			const setup = () => {
 				const originalLesson = lessonFactory.buildWithId();
 				const lessonElement = lessonBoardElementFactory.buildWithId({ target: originalLesson });
-				const destinationCourse = courseFactory.buildWithId();
+				const destinationCourse = courseEntityFactory.buildWithId();
 				const originalBoard = boardFactory.buildWithId({ references: [lessonElement], course: destinationCourse });
 				const user = userFactory.buildWithId();
 				const lessonCopy = lessonFactory.buildWithId({ name: originalLesson.name });

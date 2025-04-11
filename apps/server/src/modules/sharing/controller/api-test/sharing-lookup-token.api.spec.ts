@@ -1,11 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory } from '@testing/factory/course.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
@@ -41,7 +41,7 @@ describe(`share token lookup (api)`, () => {
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 			await em.persistAndFlush([course, teacherAccount, teacherUser]);
 			em.clear();
@@ -79,7 +79,7 @@ describe(`share token lookup (api)`, () => {
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 			await em.persistAndFlush([course, teacherAccount, teacherUser]);
 			em.clear();
@@ -122,7 +122,7 @@ describe(`share token lookup (api)`, () => {
 			Configuration.set('FEATURE_COURSE_SHARE', true);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 			await em.persistAndFlush([course, teacherAccount, teacherUser]);
 			em.clear();
@@ -157,7 +157,7 @@ describe(`share token lookup (api)`, () => {
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const otherSchool = schoolEntityFactory.build();
-			const course = courseFactory.build({ teachers: [teacherUser] });
+			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
 			await em.persistAndFlush([course, teacherAccount, teacherUser, otherSchool]);
 			em.clear();

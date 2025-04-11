@@ -1,16 +1,16 @@
+import { LegacyLogger } from '@core/logger';
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { OauthProviderService } from '@modules/oauth-provider/domain/service/oauth-provider.service';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ExternalToolRepo } from '@shared/repo/externaltool';
-import { LegacyLogger } from '@core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
+import { ExternalToolRepo } from '../repo';
 
 @Injectable()
 export class ExternalToolService {
@@ -67,7 +67,7 @@ export class ExternalToolService {
 			})
 		);
 
-		tools.data = resolvedTools.filter((tool) => tool !== undefined);
+		tools.data = resolvedTools.filter((tool): tool is ExternalTool => tool !== undefined);
 
 		return tools;
 	}
@@ -102,8 +102,23 @@ export class ExternalToolService {
 		return externalTool;
 	}
 
+	public findExternalToolsByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
+		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByMediaSource(mediaSourceId);
+		return externalTools;
+	}
+
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
+	}
+
+	public async updateExternalTools(externalTools: ExternalTool[]): Promise<ExternalTool[]> {
+		await Promise.all(
+			externalTools.map((externalToolToUpdate: ExternalTool) => this.updateOauth2ToolConfig(externalToolToUpdate))
+		);
+
+		const updatedExternalTools = await this.externalToolRepo.saveAll(externalTools);
+
+		return updatedExternalTools;
 	}
 
 	private async updateOauth2ToolConfig(toUpdate: ExternalTool) {

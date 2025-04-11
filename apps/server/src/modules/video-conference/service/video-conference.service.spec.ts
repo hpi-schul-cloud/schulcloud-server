@@ -1,41 +1,41 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { CalendarService } from '@infra/calendar';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService, BoardRoles } from '@modules/board';
 import { VideoConferenceElement } from '@modules/board/domain';
 import { columnBoardFactory, videoConferenceElementFactory } from '@modules/board/testing';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { CourseService } from '@modules/learnroom/service';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { TeamRepo } from '@modules/team/repo';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
+import { User } from '@modules/user/repo';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
-import { Course, TeamUserEntity } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
-import { VideoConferenceRepo } from '@shared/repo/videoconference';
-import { courseFactory } from '@testing/factory/course.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { teamFactory } from '@testing/factory/team.factory';
-import { teamUserFactory } from '@testing/factory/teamuser.factory';
-import { userDoFactory } from '@testing/factory/user.do.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';
-import { setupEntities } from '@testing/setup-entities';
+import { setupEntities } from '@testing/database';
 import { BBBRole } from '../bbb';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
-import { VideoConferenceOptions } from '../interface';
-import { ScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceRepo } from '../repo';
+import { videoConferenceDOFactory } from '../testing';
+import { VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 import { VideoConferenceService } from './video-conference.service';
 
@@ -48,7 +48,7 @@ describe(VideoConferenceService.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let configService: DeepMocked<ConfigService<VideoConferenceConfig, true>>;
@@ -94,8 +94,8 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: UserService,
@@ -116,12 +116,12 @@ describe(VideoConferenceService.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		roomMembershipService = module.get(RoomMembershipService);
 		roomService = module.get(RoomService);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		configService = module.get(ConfigService);
 
-		await setupEntities();
+		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('canGuestJoin', () => {
@@ -171,7 +171,7 @@ describe(VideoConferenceService.name, () => {
 	describe('isExpert', () => {
 		describe('when user has EXPERT role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -207,7 +207,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has EXPERT role for a room', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -243,7 +243,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has EXPERT role for a video conference element', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
@@ -279,7 +279,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user does not have the EXPERT role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.buildWithId();
 				const userId = user.id as EntityId;
@@ -312,7 +312,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has the EXPERT role and an additional role for a course conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([
 						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
 						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
@@ -341,7 +341,7 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when conference scope is unknown', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 					.buildWithId();
 				const userId = user.id as EntityId;
@@ -366,18 +366,18 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when user has EXPERT role for a event conference', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory
+				const user = userDoFactory
 					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				const teamUser: TeamUserEntity = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
+				const teamUser = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
 				const team = teamFactory
 					.withTeamUser([teamUser])
 					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
 					.build();
-				teamsRepo.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 
 				userService.findById.mockResolvedValue(user);
 
@@ -397,22 +397,22 @@ describe(VideoConferenceService.name, () => {
 				expect(result).toBe(true);
 			});
 
-			it('should call teamsRepo.findById', async () => {
+			it('should call teamRepo.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
 				await service.hasExpertRole(userId, conferenceScope, scopeId);
 
-				expect(teamsRepo.findById).toHaveBeenCalledWith(scopeId);
+				expect(teamRepo.findById).toHaveBeenCalledWith(scopeId);
 			});
 		});
 
 		describe('when user does not exist in team', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.buildWithId();
+				const user = userDoFactory.buildWithId();
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 				const team = teamFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build({ teamUsers: [] });
-				teamsRepo.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 
 				return {
 					user,
@@ -435,7 +435,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has START_MEETING permission and is in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const entity = courseFactory.buildWithId();
+				const entity = courseEntityFactory.buildWithId();
 				const conferenceScope = VideoConferenceScope.COURSE;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -475,13 +475,10 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room editor role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleEditor = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT],
-				});
+				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
-					users: [{ userId: user.id, roleId: roleEditor.id }],
+					users: [{ userId: user.id, roleId: roomEditorRole.id }],
 				});
 				const room = roomFactory.build();
 				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -491,7 +488,7 @@ describe(VideoConferenceService.name, () => {
 				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: user.id, roles: [roleEditor] }],
+					members: [{ userId: user.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -575,7 +572,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
-				teamsRepo.findById.mockResolvedValueOnce(entity);
+				teamRepo.findById.mockResolvedValueOnce(entity);
 
 				return {
 					user,
@@ -610,7 +607,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has JOIN_MEETING permission and is in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const entity = courseFactory.buildWithId();
+				const entity = courseEntityFactory.buildWithId();
 				const conferenceScope = VideoConferenceScope.COURSE;
 
 				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(true);
@@ -657,10 +654,10 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room viewer role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
-					users: [{ userId: user.id, roleId: roleViewer.id }],
+					users: [{ userId: user.id, roleId: roomViewerRole.id }],
 				});
 				const room = roomFactory.build();
 				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -671,13 +668,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roleViewer] }],
+						members: [{ userId: user.id, roles: [roomViewerRole] }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roleViewer] }],
+						members: [{ userId: user.id, roles: [roomViewerRole] }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -757,7 +754,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has neither START_MEETING nor JOIN_MEETING permission in course scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const entity = courseFactory.buildWithId();
+				const entity = courseEntityFactory.buildWithId();
 				const conferenceScope = VideoConferenceScope.COURSE;
 
 				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(false);
@@ -977,12 +974,12 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope is VideoConferenceScope.COURSE', () => {
 			it('should return scope information for a course', async () => {
 				const { userId, scopeId } = setup();
-				const conferenceScope: VideoConferenceScope = VideoConferenceScope.COURSE;
-				const course: Course = courseFactory.buildWithId({ name: 'Course' });
+				const conferenceScope = VideoConferenceScope.COURSE;
+				const course = courseEntityFactory.buildWithId({ name: 'Course' });
 				course.id = scopeId;
 				courseService.findById.mockResolvedValue(course);
 
-				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, conferenceScope);
+				const result = await service.getScopeInfo(userId, scopeId, conferenceScope);
 
 				expect(result).toEqual({
 					scopeId,
@@ -997,11 +994,11 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope is VideoConferenceScope.ROOM', () => {
 			it('should return scope information for a room', async () => {
 				const { userId } = setup();
-				const conferenceScope: VideoConferenceScope = VideoConferenceScope.ROOM;
+				const conferenceScope = VideoConferenceScope.ROOM;
 				const room = roomFactory.build({ name: 'Room' });
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
-				const result: ScopeInfo = await service.getScopeInfo(userId, room.id, conferenceScope);
+				const result = await service.getScopeInfo(userId, room.id, conferenceScope);
 
 				expect(result).toEqual({
 					scopeId: room.id,
@@ -1016,11 +1013,11 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope is VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT', () => {
 			it('should return scope information for a video conference element', async () => {
 				const { userId } = setup();
-				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
 				const element = videoConferenceElementFactory.build({ title: 'Element' });
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
-				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
+				const result = await service.getScopeInfo(userId, element.id, conferenceScope);
 
 				expect(result).toEqual({
 					scopeId: element.id,
@@ -1036,10 +1033,10 @@ describe(VideoConferenceService.name, () => {
 			it('should return scope information for a event', async () => {
 				const { userId, scopeId } = setup();
 				const teamId = 'team-id';
-				const event: CalendarEventDto = { title: 'Event', teamId };
+				const event = { title: 'Event', teamId };
 				calendarService.findEvent.mockResolvedValue(event);
 
-				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
+				const result = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
 
 				expect(result).toEqual({
 					scopeId: teamId,
@@ -1054,11 +1051,11 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope title is empty', () => {
 			it('should return scope information with a title of two characters', async () => {
 				const { userId } = setup();
-				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
 				const element = videoConferenceElementFactory.build({ title: '' });
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
-				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
+				const result = await service.getScopeInfo(userId, element.id, conferenceScope);
 
 				expect(result.title).toHaveLength(2);
 			});
@@ -1067,11 +1064,11 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope title has only one character', () => {
 			it('should return scope information with a title of two characters', async () => {
 				const { userId } = setup();
-				const conferenceScope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
+				const conferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
 				const element = videoConferenceElementFactory.build({ title: 'E' });
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
 
-				const result: ScopeInfo = await service.getScopeInfo(userId, element.id, conferenceScope);
+				const result = await service.getScopeInfo(userId, element.id, conferenceScope);
 
 				expect(result.title).toHaveLength(2);
 			});
@@ -1090,17 +1087,17 @@ describe(VideoConferenceService.name, () => {
 
 	describe('getUserRoleAndGuestStatusByUserIdForBbb', () => {
 		const setup = (conferenceScope: VideoConferenceScope) => {
-			const user: UserDO = userDoFactory.buildWithId();
+			const user = userDoFactory.buildWithId();
 			const userId = user.id as EntityId;
 			const roomUser = userFactory.buildWithId();
 			const scopeId = new ObjectId().toHexString();
 			const team = teamFactory
 				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
 				.build();
-			const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupFactory.build({
 				type: GroupTypes.ROOM,
-				users: [{ userId: roomUser.id, roleId: roleEditor.id }],
+				users: [{ userId: roomUser.id, roleId: roomEditorRole.id }],
 			});
 			const room = roomFactory.build();
 			roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -1108,13 +1105,13 @@ describe(VideoConferenceService.name, () => {
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				})
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				});
 
@@ -1129,7 +1126,7 @@ describe(VideoConferenceService.name, () => {
 				.mockResolvedValueOnce(boardNodeAuthorizable)
 				.mockResolvedValueOnce(boardNodeAuthorizable);
 
-			const course = courseFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
 
 			configService.get.mockReturnValue('https://api.example.com');
@@ -1150,7 +1147,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call courseRepo.findById', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.COURSE);
 				userService.findById.mockResolvedValue(user);
-				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
+				courseService.findById.mockResolvedValue(courseEntityFactory.buildWithId({ name: 'Course' }));
 
 				await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
 
@@ -1168,7 +1165,7 @@ describe(VideoConferenceService.name, () => {
 
 			it('should return the user role and guest status for a course conference', async () => {
 				const { user, userId, conferenceScope, scopeId } = setup(VideoConferenceScope.COURSE);
-				courseService.findById.mockResolvedValue(courseFactory.buildWithId({ name: 'Course' }));
+				courseService.findById.mockResolvedValue(courseEntityFactory.buildWithId({ name: 'Course' }));
 				userService.findById.mockResolvedValue(user);
 
 				const result = await service.getUserRoleAndGuestStatusByUserIdForBbb(userId, scopeId, conferenceScope);
@@ -1252,7 +1249,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope is VideoConferenceScope.EVENT', () => {
 			const setupForEvent = () => {
 				const { userId, scopeId, team, conferenceScope } = setup(VideoConferenceScope.EVENT);
-				teamsRepo.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 				calendarService.findEvent.mockResolvedValue({ title: 'Event', teamId: team.id });
 
 				return { userId, conferenceScope, scopeId };
@@ -1270,7 +1267,7 @@ describe(VideoConferenceService.name, () => {
 
 	describe('findVideoConferenceByScopeAndScopeId', () => {
 		const setup = () => {
-			const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({
+			const videoConference = videoConferenceDOFactory.build({
 				id: 'video-conference-id',
 				target: 'scopeId',
 				targetModel: VideoConferenceScope.COURSE,
@@ -1310,13 +1307,13 @@ describe(VideoConferenceService.name, () => {
 	describe('createOrUpdateVideoConferenceWithOptions', () => {
 		describe('when video conference exists', () => {
 			const setup = () => {
-				const options: VideoConferenceOptions = {
+				const options = {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
 				};
 				const videoConference = videoConferenceDOFactory.build({ options });
-				const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+				const scope = { id: videoConference.target, scope: videoConference.targetModel };
 
 				return {
 					options,
@@ -1345,15 +1342,15 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when options are not provided', () => {
 			const setup = () => {
-				const options: VideoConferenceOptions = {
+				const options = {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
 				};
-				const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
-				const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+				const videoConference = videoConferenceDOFactory.build({ options });
+				const scope = { id: videoConference.target, scope: videoConference.targetModel };
 
-				const newOptions: VideoConferenceOptions = {
+				const newOptions = {
 					everyAttendeeJoinsMuted: false,
 					everybodyJoinsAsModerator: false,
 					moderatorMustApproveJoinRequests: false,
@@ -1372,7 +1369,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return the updated video conference with new options', async () => {
 				const { videoConference, scope, newOptions } = setup();
 
-				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
+				const result = await service.createOrUpdateVideoConferenceForScopeWithOptions(
 					scope.id,
 					scope.scope,
 					newOptions
@@ -1384,13 +1381,13 @@ describe(VideoConferenceService.name, () => {
 
 		describe('when video conference does not exist', () => {
 			const setup = () => {
-				const options: VideoConferenceOptions = {
+				const options = {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
 				};
-				const videoConference: VideoConferenceDO = videoConferenceDOFactory.build({ options });
-				const scope: ScopeRef = { id: videoConference.target, scope: videoConference.targetModel };
+				const videoConference = videoConferenceDOFactory.build({ options });
+				const scope = { id: videoConference.target, scope: videoConference.targetModel };
 
 				return {
 					videoConference,
@@ -1404,11 +1401,7 @@ describe(VideoConferenceService.name, () => {
 				videoConferenceRepo.findByScopeAndScopeId.mockRejectedValue(new NotFoundException());
 				videoConferenceRepo.save.mockResolvedValue(videoConference);
 
-				const result: VideoConferenceDO = await service.createOrUpdateVideoConferenceForScopeWithOptions(
-					scope.id,
-					scope.scope,
-					options
-				);
+				const result = await service.createOrUpdateVideoConferenceForScopeWithOptions(scope.id, scope.scope, options);
 
 				expect(result).toEqual(videoConference);
 			});

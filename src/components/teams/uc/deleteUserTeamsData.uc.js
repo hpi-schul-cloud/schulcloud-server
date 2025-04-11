@@ -32,6 +32,6 @@ const deleteUserDataFromTeams = async (userId) => {
 };
 
 // public
-const deleteUserData = [ deleteUserDataFromTeams ];
+const deleteUserData = [deleteUserDataFromTeams];
 
 module.exports = { deleteUserData };

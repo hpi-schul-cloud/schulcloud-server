@@ -8,16 +8,18 @@ import {
 	ForbiddenLoggableException,
 } from '@modules/authorization';
 import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
-import { CourseService } from '@modules/learnroom';
+import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
+import { CourseService } from '@modules/course';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { Submission, Task } from '@modules/task/repo';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-
 import { Permission } from '@shared/domain/interface';
-import { courseFactory } from '@testing/factory/course.factory';
-import { userFactory } from '@testing/factory/user.factory';
-import { setupEntities } from '@testing/setup-entities';
-
-import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
+import { setupEntities } from '@testing/database';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
@@ -34,7 +36,8 @@ describe('ToolPermissionHelper', () => {
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				ToolPermissionHelper,
@@ -76,7 +79,7 @@ describe('ToolPermissionHelper', () => {
 		describe('when a context external tool for context "course" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 					contextRef: new ContextRef({
 						id: course.id,
@@ -237,7 +240,7 @@ describe('ToolPermissionHelper', () => {
 		describe('when a school external tool for context "course" is given', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const course = courseFactory.buildWithId();
+				const course = courseEntityFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextRef = new ContextRef({
 					id: course.id,

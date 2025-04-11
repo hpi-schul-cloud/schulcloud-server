@@ -1,7 +1,7 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { StorageProviderEntity } from '@modules/school/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProviderEntity } from '@shared/domain/entity';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileEntity } from '../entity';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';

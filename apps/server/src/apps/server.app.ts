@@ -14,7 +14,7 @@ import { InternalServerModule } from '@modules/internal-server/internal-server.a
 import { RocketChatService } from '@modules/rocketchat';
 import { FeathersRosterService } from '@modules/roster';
 import { ServerModule } from '@modules/server/server.app.module';
-import { TeamService } from '@modules/teams/service/team.service';
+import { TeamService } from '@modules/team';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -116,7 +116,7 @@ async function bootstrap(): Promise<void> {
 
 	// logger middleware for deprecated paths
 	// TODO remove when all calls to the server are migrated
-	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+	const logDeprecatedPaths = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
 		legacyLogger.error(req.path, 'DEPRECATED-PATH');
 		next();
 	};

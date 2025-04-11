@@ -35,11 +35,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton"
+					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn|ColumnController_updateColumnTitle"
 				},
 				"globalProperty": {
-					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse",
-					
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse:RenameBodyParams",
 					"apis": "",
 					"supportingFiles": ""
 				},
@@ -60,10 +59,10 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:upload|download"
+					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile"
 				},
 				"globalProperty": {
-					"models": "FileRecordResponse:StreamableFile",
+					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse",
 					"apis": "",
 					"supportingFiles": ""
 				},
@@ -101,17 +100,23 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
-			"svs-lesson-api": {
+			"lessons-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
-				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/new-lesson-api-client",
+				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/lesson-client/lessons-api-client",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
 					"FILTER": "operationId:LessonController_getLesson|LessonController_getLessonTasks"
 				},
+				"additionalProperties": {
+					"withSeparateModelsAndApi": true,
+					"skipUnusedModels": true,
+					"apiPackage": "api",
+					"modelPackage": "models"
+				},
 				"globalProperty": {
-					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentNexboardPropsImpl",
+					"models": "LessonResponse:LessonLinkedTaskResponse:LessonContentResponse:ComponentTextPropsImpl:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:LernstoreResources:MaterialResponse",
 					"apis": "",
 					"supportingFiles": ""
 				}

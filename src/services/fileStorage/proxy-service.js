@@ -1,7 +1,6 @@
 const fs = require('fs');
 const url = require('url');
-const rp = require('request-promise-native');
-const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { filesRepo } = require('../../components/fileStorage/repo');
 
@@ -18,7 +17,6 @@ const {
 	returnFileType,
 	generateFileNameSuffix,
 	copyFile,
-	createCorrectStrategy,
 	createDefaultPermissions,
 	createPermission,
 } = require('./utils');
@@ -31,10 +29,8 @@ const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const {
-	FILE_SECURITY_CHECK_MAX_FILE_SIZE,
-	SECURITY_CHECK_SERVICE_PATH,
-} = require('../../../config/globals');
+const { FILE_SECURITY_CHECK_MAX_FILE_SIZE, SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
+const AWSS3Strategy = require('./strategies/awsS3');
 
 const sanitizeObj = (obj) => {
 	Object.keys(obj).forEach((key) => obj[key] === undefined && delete obj[key]);
@@ -111,20 +107,20 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 			.then((signedUrl) => {
 				const params = {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
+					method: 'POST',
 					auth: {
-						user: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
-						pass: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
+						username: Configuration.get('FILE_SECURITY_SERVICE_USERNAME'),
+						password: Configuration.get('FILE_SECURITY_SERVICE_PASSWORD'),
 					},
-					body: {
+					data: {
 						download_uri: signedUrl,
 						callback_uri: url.resolve(
 							Configuration.get('API_HOST'),
 							`${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`
 						),
 					},
-					json: true,
 				};
-				const send = rp.post(params);
+				const send = axios(params);
 				return send;
 			});
 	}
@@ -148,6 +144,11 @@ const getRefOwnerModel = async (owner) => {
 
 const fileStorageService = {
 	docs: swaggerDocs.fileStorageService,
+	Stategy: AWSS3Strategy,
+
+	getStrategy() {
+		return new this.Stategy();
+	},
 	/**
 	 * @param data, file data
 	 * @param params,
@@ -155,7 +156,7 @@ const fileStorageService = {
 	 */
 	async create(data, params) {
 		const {
-			payload: { userId: creatorId, fileStorageType },
+			payload: { userId: creatorId },
 		} = params;
 		const { owner, parent, studentCanEdit, permissions: sendPermissions = [], deletedAt } = data;
 
@@ -174,10 +175,9 @@ const fileStorageService = {
 			throw new GeneralError('Can not create default Permissions', err);
 		});
 
-		const strategy = createCorrectStrategy(fileStorageType);
-
 		const fileOwner = owner || creatorId;
 
+		const strategy = this.getStrategy();
 		const creator = await userModel.findById(creatorId).lean().exec();
 		const { schoolId } = creator;
 		const bucket = strategy.getBucket(schoolId);
@@ -330,6 +330,11 @@ const fileStorageService = {
 
 const signedUrlService = {
 	docs: swaggerDocs.signedUrlService,
+	Stategy: AWSS3Strategy,
+
+	getStrategy() {
+		return new this.Stategy();
+	},
 
 	fileRegexCheck(fileName) {
 		return [
@@ -372,7 +377,6 @@ const signedUrlService = {
 		const {
 			payload: { userId },
 		} = params;
-		const strategy = createCorrectStrategy(params.payload.fileStorageType);
 		const flatFileName = _flatFileName || generateFileNameSuffix(filename);
 
 		const parentPromise = parent ? FileModel.findOne({ parent, name: filename }).exec() : Promise.resolve({});
@@ -390,7 +394,7 @@ const signedUrlService = {
 					throw new BadRequest(`Die Datei '${filename}' ist nicht erlaubt!`);
 				}
 
-				return strategy.generateSignedUrl({
+				return this.getStrategy().generateSignedUrl({
 					userId,
 					flatFileName,
 					fileType,
@@ -415,7 +419,6 @@ const signedUrlService = {
 
 	async find({ query, payload: { userId, fileStorageType } }) {
 		const { file, download } = query;
-		const strategy = createCorrectStrategy(fileStorageType);
 		const fileObject = await FileModel.findOne({ _id: file }).lean().exec();
 
 		if (!fileObject) {
@@ -430,7 +433,7 @@ const signedUrlService = {
 
 		return canRead(userId, file)
 			.then(() =>
-				strategy.getSignedUrl({
+				this.getStrategy().getSignedUrl({
 					storageProviderId,
 					bucket,
 					flatFileName: fileObject.storageFileName,
@@ -447,7 +450,6 @@ const signedUrlService = {
 	async patch(id, data, params) {
 		const { payload } = params;
 		const { userId } = payload;
-		const strategy = createCorrectStrategy(payload.fileStorageType);
 		const fileObject = await FileModel.findOne({ _id: id }).lean().exec();
 
 		if (!fileObject) {
@@ -458,7 +460,7 @@ const signedUrlService = {
 
 		return canRead(userId, id)
 			.then(() =>
-				strategy.getSignedUrl({
+				this.getStrategy().getSignedUrl({
 					storageProviderId,
 					bucket,
 					flatFileName: fileObject.storageFileName,
@@ -708,6 +710,11 @@ const fileTotalSizeService = {
 
 const bucketService = {
 	docs: swaggerDocs.bucketService,
+	Stategy: AWSS3Strategy,
+
+	getStrategy() {
+		return new this.Stategy();
+	},
 
 	/**
 	 * @param data, contains schoolId
@@ -715,13 +722,10 @@ const bucketService = {
 	 * - Check if user in payload is administrator
 	 * @returns {Promise}
 	 */
-	create(data, params) {
+	create(data) {
 		const { schoolId } = data;
-		const {
-			payload: { fileStorageType },
-		} = params;
 
-		return createCorrectStrategy(fileStorageType).create(schoolId);
+		return this.getStrategy().create(schoolId);
 	},
 };
 
@@ -768,10 +772,10 @@ const newFileService = {
 				if (Configuration.get('REQUEST_OPTION__KEEP_ALIVE')) {
 					headers.Connection = 'Keep-Alive';
 				}
-				return rp({
+				return axios({
 					method: 'PUT',
-					uri: signedUrl.url,
-					body: buffer,
+					url: signedUrl.url,
+					data: buffer,
 					headers,
 				});
 			})

@@ -2,24 +2,31 @@ import { LegacyLogger } from '@core/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
+import { CourseService } from '@modules/course';
 import { StorageLocation } from '@modules/files-storage/interface';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo/course';
 import { CreateBoardBodyParams } from '../controller/dto';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardFeature,
 	BoardLayout,
+	BoardNodeAuthorizable,
 	BoardNodeFactory,
+	BoardRoles,
 	Column,
 	ColumnBoard,
 } from '../domain';
-import { BoardNodePermissionService, BoardNodeService, ColumnBoardService } from '../service';
+import {
+	BoardNodeAuthorizableService,
+	BoardNodePermissionService,
+	BoardNodeService,
+	ColumnBoardService,
+} from '../service';
 import { StorageLocationReference } from '../service/internal';
 
 @Injectable()
@@ -32,10 +39,11 @@ export class BoardUc {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly logger: LegacyLogger,
-		private readonly courseRepo: CourseRepo,
+		private readonly courseService: CourseService,
 		private readonly roomService: RoomService,
 		private readonly boardNodeFactory: BoardNodeFactory,
-		private readonly boardContextApiHelperService: BoardContextApiHelperService
+		private readonly boardContextApiHelperService: BoardContextApiHelperService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
@@ -59,15 +67,15 @@ export class BoardUc {
 	public async findBoard(
 		userId: EntityId,
 		boardId: EntityId
-	): Promise<{ board: ColumnBoard; features: BoardFeature[] }> {
+	): Promise<{ board: ColumnBoard; features: BoardFeature[]; permissions: Permission[] }> {
 		this.logger.debug({ action: 'findBoard', userId, boardId });
 
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		const boardNodeAuthorizable = await this.checkBoardAuthorization(userId, board, Action.read);
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
-
-		return { board, features };
+		const permissions = this.getPermissions(userId, boardNodeAuthorizable);
+		return { board, features, permissions };
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
@@ -174,7 +182,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(context.id);
+			const course = await this.courseService.findById(context.id);
 
 			this.authorizationService.checkPermission(user, course, {
 				action: Action.write,
@@ -185,7 +193,7 @@ export class BoardUc {
 
 			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
 				action: Action.write,
-				requiredPermissions: [],
+				requiredPermissions: [Permission.ROOM_CONTENT_EDIT],
 			});
 		} else {
 			throw new Error(`Unsupported context type ${context.type as string}`);
@@ -194,7 +202,7 @@ export class BoardUc {
 
 	private async getStorageLocationReference(context: BoardExternalReference): Promise<StorageLocationReference> {
 		if (context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(context.id);
+			const course = await this.courseService.findById(context.id);
 
 			return { id: course.school.id, type: StorageLocation.SCHOOL };
 		}
@@ -206,5 +214,31 @@ export class BoardUc {
 		}
 		/* istanbul ignore next */
 		throw new Error(`Unsupported board reference type ${context.type as string}`);
+	}
+
+	private async checkBoardAuthorization(
+		userId: EntityId,
+		columnBoard: ColumnBoard,
+		action: Action,
+		requiredPermissions: Permission[] = []
+	): Promise<BoardNodeAuthorizable> {
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columnBoard);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
+
+		return boardNodeAuthorizable;
+	}
+
+	private getPermissions(userId: EntityId, boardNodeAuthorizable: BoardNodeAuthorizable): Permission[] {
+		const user = boardNodeAuthorizable.users.find((user) => user.userId === userId);
+		if (user?.roles.includes(BoardRoles.EDITOR)) {
+			return [Permission.BOARD_EDIT, Permission.BOARD_VIEW];
+		}
+
+		if (user?.roles.includes(BoardRoles.READER)) {
+			return [Permission.BOARD_VIEW];
+		}
+
+		return [];
 	}
 }

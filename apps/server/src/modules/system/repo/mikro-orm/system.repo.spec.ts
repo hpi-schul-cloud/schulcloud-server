@@ -1,11 +1,9 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
-import { SystemEntity } from '../../entity';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType, SystemTypeEnum } from '../../domain';
 import {
 	systemEntityFactory,
 	systemFactory,
@@ -14,6 +12,7 @@ import {
 	systemOidcConfigFactory,
 } from '../../testing';
 import { SystemEntityMapper } from './mapper';
+import { SystemEntity } from './system.entity';
 import { SystemMikroOrmRepo } from './system.repo';
 
 describe(SystemMikroOrmRepo.name, () => {
@@ -23,7 +22,7 @@ describe(SystemMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] })],
 			providers: [{ provide: SYSTEM_REPO, useClass: SystemMikroOrmRepo }],
 		}).compile();
 

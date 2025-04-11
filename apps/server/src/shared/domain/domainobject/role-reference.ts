@@ -1,4 +1,4 @@
-import { RoleName } from '../interface';
+import { RoleName } from '@modules/role';
 import { EntityId } from '../types';
 
 export class RoleReference {

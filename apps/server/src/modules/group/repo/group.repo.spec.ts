@@ -1,17 +1,20 @@
-import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { type SystemEntity } from '@modules/system/entity';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { User } from '@modules/user/repo';
+import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
-import { SchoolEntity, User } from '@shared/domain/entity';
-import { RoleName, SortOrder } from '@shared/domain/interface';
+import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { courseFactory } from '@testing/factory/course.factory';
-import { roleFactory } from '@testing/factory/role.factory';
-import { schoolEntityFactory } from '@testing/factory/school-entity.factory';
-import { userFactory } from '@testing/factory/user.factory';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';
@@ -24,7 +27,11 @@ describe(GroupRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot()],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [GroupEntity, SchoolEntity, User, SystemEntity, CourseEntity, CourseGroupEntity],
+				}),
+			],
 			providers: [GroupRepo],
 		}).compile();
 
@@ -517,7 +524,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithCourseGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithCourseGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedCourseGroup,
 				});
 
@@ -531,7 +538,7 @@ describe(GroupRepo.name, () => {
 					],
 					organization: school,
 				});
-				const courseSynchronizedWithClassGroup = courseFactory.buildWithId({
+				const courseSynchronizedWithClassGroup = courseEntityFactory.buildWithId({
 					syncedWithGroup: synchronizedClassGroup,
 				});
 

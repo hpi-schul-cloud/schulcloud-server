@@ -33,6 +33,12 @@
 		},
 		"classIds": [],
 		"color": "#54616e",
+		"startDate": {
+			"$date": "2024-08-01T10:00:00Z"
+		},
+		"untilDate": {
+			"$date": "2054-07-31T22:00:00Z"
+		},
 		"__v": 0
 	},
 	{
@@ -97,11 +103,6 @@
 			}
 		],
 		"color": "#795548",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f39a2049554a93fed16"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -185,11 +186,6 @@
 			}
 		],
 		"color": "#0091EA",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f4ba2049554a93fed18"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -285,14 +281,6 @@
 			}
 		],
 		"color": "#D50000",
-		"ltiToolIds": [
-			{
-				"$oid": "59a403bfa2049554a93feca9"
-			},
-			{
-				"$oid": "59b6c0225c9ec20c6f08365b"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -366,11 +354,6 @@
 			}
 		],
 		"color": "#304FFE",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f6ca2049554a93fed1b"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -466,11 +449,6 @@
 			}
 		],
 		"color": "#009688",
-		"ltiToolIds": [
-			{
-				"$oid": "59a55f54a2049554a93fed19"
-			}
-		],
 		"substitutionIds": [],
 		"teacherIds": [
 			{
@@ -510,7 +488,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#54616e",
 		"isCopyFrom": null,
 		"features": [],
@@ -550,7 +527,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#304FFE",
 		"isCopyFrom": null,
 		"features": [],
@@ -586,7 +562,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#009688",
 		"isCopyFrom": null,
 		"features": [],
@@ -626,7 +601,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#0091EA",
 		"isCopyFrom": null,
 		"features": [],
@@ -669,7 +643,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#827717",
 		"isCopyFrom": null,
 		"features": [],
@@ -705,7 +678,6 @@
 			}
 		],
 		"substitutionIds": [],
-		"ltiToolIds": [],
 		"color": "#EF6C00",
 		"isCopyFrom": null,
 		"features": [],
