@@ -11,7 +11,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { H5PEditorController } from './controller/h5p-editor.controller';
+import { H5PEditorController } from './controller';
 import { authorizationClientConfig, config, s3ConfigContent, s3ConfigLibraries } from './h5p-editor.config';
 import { ENTITIES } from './h5p-editor.entity.exports';
 import { H5PAjaxEndpointProvider, H5PEditorProvider, H5PPlayerProvider } from './provider';
