@@ -121,6 +121,18 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				);
 			});
 
+			it('should synchronize the courses from any existing course sync histories', async () => {
+				const { systemId, externalSchool, externalGroup, provisionedGroup } = setup();
+
+				await consumer.provisionGroups({
+					systemId,
+					externalSchool,
+					externalGroup,
+				});
+
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).toHaveBeenCalledWith(provisionedGroup);
+			});
+
 			it('should log a success info', async () => {
 				const { systemId, externalSchool, externalGroup, provisionedGroup } = setup();
 
@@ -186,6 +198,18 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 					provisionedGroup,
 					existingGroup
 				);
+			});
+
+			it('should not synchronize the courses from any existing course sync histories', async () => {
+				const { systemId, externalSchool, externalGroup } = setup();
+
+				await consumer.provisionGroups({
+					systemId,
+					externalSchool,
+					externalGroup,
+				});
+
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
 			});
 
 			it('should log a success info', async () => {
@@ -274,6 +298,18 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				});
 
 				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).not.toHaveBeenCalled();
+			});
+
+			it('should not synchronize the courses from any existing course sync histories', async () => {
+				const { systemId, externalSchool, externalGroup } = setup();
+
+				await consumer.provisionGroups({
+					systemId,
+					externalSchool,
+					externalGroup,
+				});
+
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
 			});
 		});
 	});

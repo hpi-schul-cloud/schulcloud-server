@@ -2,6 +2,7 @@ import type { CoreModuleConfig } from '@core/core.config';
 import type { LoggerConfig } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import type { RabbitMqConfig } from '@infra/rabbitmq';
+import type { CourseSynchronizationHistoryConfig } from '@modules/course-synchronization-history';
 import type { GroupConfig } from '@modules/group';
 import type { LearnroomConfig } from '@modules/learnroom';
 import type { LegacySchoolConfig } from '@modules/legacy-school';
@@ -27,7 +28,8 @@ export interface SchulconnexProvisioningConfig
 		CoreModuleConfig,
 		UserLicenseConfig,
 		MediaSourceConfig,
-		ToolConfig {}
+		ToolConfig,
+		CourseSynchronizationHistoryConfig {}
 
 const config: SchulconnexProvisioningConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
@@ -76,6 +78,9 @@ const config: SchulconnexProvisioningConfig = {
 	PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL: Configuration.get('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL') as string,
 	RABBITMQ_URI: Configuration.get('RABBITMQ_URI') as string,
 	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
+	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
+		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
+	) as number,
 };
 
 export const schulconnexProvisioningConfig = () => config;

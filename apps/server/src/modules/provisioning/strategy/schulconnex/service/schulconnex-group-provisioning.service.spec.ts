@@ -20,6 +20,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, Page } from '@shared/domain/domainobject';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
 describe(SchulconnexGroupProvisioningService.name, () => {
@@ -32,7 +33,9 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 	let groupService: DeepMocked<GroupService>;
 	let courseService: DeepMocked<CourseDoService>;
 	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
+	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
 	let logger: DeepMocked<Logger>;
+
 	const mockDate = new Date(2024, 1, 1);
 
 	beforeAll(async () => {
@@ -64,6 +67,10 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					useValue: createMock<SchoolSystemOptionsService>(),
 				},
 				{
+					provide: SchulconnexCourseSyncService,
+					useValue: createMock<SchulconnexCourseSyncService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -77,6 +84,8 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 		groupService = module.get(GroupService);
 		courseService = module.get(CourseDoService);
 		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
+		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
+
 		logger = module.get(Logger);
 
 		jest.useFakeTimers();
@@ -761,62 +770,57 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 			describe('when group is empty after removal of the User but synced with a course', () => {
 				const setup = () => {
-					const systemId = 'systemId';
+					const systemId = new ObjectId().toHexString();
 					const externalUserId = 'externalUserId';
 					const role = roleFactory.buildWithId();
 					const user = userDoFactory.buildWithId({ roles: [role], externalId: externalUserId });
 					const course = courseFactory.build();
 
-					const firstExistingGroup = groupFactory.build({
-						users: [{ userId: user.id as string, roleId: role.id }],
-						externalSource: new ExternalSource({
-							externalId: 'externalId-1',
-							systemId,
-							lastSyncedAt: mockDate,
-						}),
-					});
-					const secondExistingGroup = groupFactory.build({
-						users: [{ userId: user.id as string, roleId: role.id }],
-						externalSource: new ExternalSource({
-							externalId: 'externalId-2',
-							systemId,
-							lastSyncedAt: mockDate,
-						}),
-					});
-					const existingGroups = [firstExistingGroup, secondExistingGroup];
+					const externalGroupId = 'external-group-id';
 
-					const firstExternalGroup = externalGroupDtoFactory.build({
-						externalId: existingGroups[0].externalSource?.externalId,
+					const group = groupFactory.build({
+						users: [{ userId: user.id as string, roleId: role.id }],
+						externalSource: new ExternalSource({
+							systemId,
+							externalId: externalGroupId,
+							lastSyncedAt: new Date(),
+						}),
+					});
+
+					const externalGroup = externalGroupDtoFactory.build({
 						user: { externalUserId, roleName: role.name },
+						externalId: `other-${externalUserId}`,
 					});
-					const externalGroups = [firstExternalGroup];
 
-					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findGroups.mockResolvedValue(new Page<Group>(existingGroups, 2));
-					courseService.findBySyncedGroup.mockResolvedValue([course]);
+					userService.findByExternalId.mockResolvedValueOnce(user);
+					groupService.findGroups.mockResolvedValueOnce(new Page<Group>([group], 1));
+					courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
 
 					return {
-						externalGroups,
-						systemId,
 						externalUserId,
-						existingGroups,
+						externalGroup,
+						systemId,
+						group,
+						course,
 					};
 				};
 
-				it('should not delete the group', async () => {
-					const { externalGroups, systemId, externalUserId } = setup();
+				it('should desync the course and create a history of the sync', async () => {
+					const { externalUserId, externalGroup, systemId, group, course } = setup();
 
-					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+					await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
 
-					expect(groupService.delete).not.toHaveBeenCalled();
+					expect(schulconnexCourseSyncService.desyncCoursesAndCreateHistories).toBeCalledTimes(1);
+					expect(schulconnexCourseSyncService.desyncCoursesAndCreateHistories).toBeCalledWith(group, [course]);
 				});
 
-				it('should save the group', async () => {
-					const { externalGroups, systemId, externalUserId, existingGroups } = setup();
+				it('should delete the empty group', async () => {
+					const { externalUserId, externalGroup, systemId, group } = setup();
 
-					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+					await service.removeExternalGroupsAndAffiliation(externalUserId, [externalGroup], systemId);
 
-					expect(groupService.save).toHaveBeenCalledWith(existingGroups[1]);
+					expect(groupService.delete).toBeCalledTimes(1);
+					expect(groupService.delete).toBeCalledWith(group);
 				});
 			});
 
@@ -922,7 +926,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			it('should throw NotFoundLoggableException', async () => {
 				const { externalGroups, systemId, externalUserId } = setup();
 
-				const func = async () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
+				const func = () => service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 				await expect(func).rejects.toThrow(new NotFoundLoggableException('User', { externalId: externalUserId }));
 			});
@@ -970,7 +974,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			});
 		});
 
-		describe('when group is empty after removing the user, but a synchronized course is attached', () => {
+		describe('when group is empty after removing the user, but synchronized courses are attached', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const role = roleFactory.buildWithId();
@@ -978,46 +982,33 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				const group = groupFactory.build({
 					users: [{ userId, roleId: role.id }],
 				});
-				const course = courseFactory.build({ syncedWithGroup: group.id });
+				const courses = courseFactory.buildList(3, { syncedWithGroup: group.id });
 
 				groupService.findById.mockResolvedValueOnce(group);
-				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce(courses);
 				groupService.save.mockResolvedValueOnce(group);
 
 				return {
 					group,
-					course,
+					courses,
 					userId,
 				};
 			};
 
-			it('should not delete the group', async () => {
+			it('should desync the courses and create a history for each course', async () => {
+				const { group, courses, userId } = setup();
+
+				await service.removeUserFromGroup(userId, group.id);
+
+				expect(schulconnexCourseSyncService.desyncCoursesAndCreateHistories).toBeCalledWith(group, courses);
+			});
+
+			it('should delete the empty group', async () => {
 				const { group, userId } = setup();
 
 				await service.removeUserFromGroup(userId, group.id);
 
-				expect(groupService.delete).not.toHaveBeenCalled();
-			});
-
-			it('should save the group without users', async () => {
-				const { group, userId } = setup();
-
-				await service.removeUserFromGroup(userId, group.id);
-
-				expect(groupService.save).toHaveBeenCalledWith(
-					new Group({
-						...group.getProps(),
-						users: [],
-					})
-				);
-			});
-
-			it('should return the group', async () => {
-				const { group, userId } = setup();
-
-				const result = await service.removeUserFromGroup(userId, group.id);
-
-				expect(result).toEqual(group);
+				expect(groupService.delete).toBeCalledWith(group);
 			});
 		});
 

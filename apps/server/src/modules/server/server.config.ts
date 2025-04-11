@@ -350,6 +350,9 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
+		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
+	) as number,
 };
 
 export const serverConfig = (): ServerConfig => config;
