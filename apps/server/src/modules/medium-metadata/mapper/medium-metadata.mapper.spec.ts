@@ -16,7 +16,7 @@ describe(MediumMetadataMapper.name, () => {
 					mediumId,
 					name: title,
 					description: metadata.offerDescription,
-					logoUrl: metadata.offerLogo,
+					logo: metadata.offerLogo,
 				});
 			});
 		});
@@ -33,7 +33,7 @@ describe(MediumMetadataMapper.name, () => {
 					mediumId,
 					name: longTitle,
 					description: metadata.offerDescription,
-					logoUrl: metadata.offerLogo,
+					logo: metadata.offerLogo,
 				});
 			});
 		});
@@ -49,7 +49,7 @@ describe(MediumMetadataMapper.name, () => {
 					mediumId,
 					name: '',
 					description: metadata.offerDescription,
-					logoUrl: metadata.offerLogo,
+					logo: metadata.offerLogo,
 				});
 			});
 		});

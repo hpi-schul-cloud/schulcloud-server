@@ -25,7 +25,7 @@ export class MediumMetadataMapper {
 			mediumId,
 			name: metadataItem.offerTitle ?? metadataItem.offerLongTitle ?? '',
 			description: metadataItem.offerDescription,
-			logoUrl: metadataItem.offerLogo,
+			logo: metadataItem.offerLogo,
 		});
 
 		return mediumMetadata;

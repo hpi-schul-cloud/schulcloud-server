@@ -30,17 +30,17 @@ export class VidisStrategy implements MediumMetadataStrategy {
 			throw new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId);
 		}
 
-		if (requestedMetadataItem.offerLogo) {
+		const mediumMetadataDto = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, requestedMetadataItem);
+
+		if (mediumMetadataDto.logo) {
 			const contentType: ImageMimeType | undefined = this.mediumMetadataLogoService.detectAndValidateLogoImageType(
-				requestedMetadataItem.offerLogo
+				mediumMetadataDto.logo
 			);
 
-			requestedMetadataItem.offerLogo = contentType
-				? `data:${contentType.valueOf()};base64,${requestedMetadataItem.offerLogo}`
+			mediumMetadataDto.logoUrl = contentType
+				? `data:${contentType.valueOf()};base64,${mediumMetadataDto.logo}`
 				: undefined;
 		}
-
-		const mediumMetadataDto = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, requestedMetadataItem);
 
 		return mediumMetadataDto;
 	}

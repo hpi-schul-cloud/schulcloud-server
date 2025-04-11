@@ -82,16 +82,17 @@ describe(VidisStrategy.name, () => {
 				const allOfferItems = vidisOfferItemFactory.buildList(5);
 				allOfferItems.push(requestedOfferItem);
 
+				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, {
+					...requestedOfferItem,
+				});
+
 				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(allOfferItems);
 				const mimetype: ImageMimeType = ImageMimeType.PNG;
 
 				mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValue(mimetype);
 
 				const expectedLogoUrl = `data:${mimetype};base64,${requestedOfferItem.offerLogo ?? ''}`;
-				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, {
-					...requestedOfferItem,
-					offerLogo: expectedLogoUrl,
-				});
+				expectedMetadata.logoUrl = expectedLogoUrl;
 
 				return {
 					mediumId,
