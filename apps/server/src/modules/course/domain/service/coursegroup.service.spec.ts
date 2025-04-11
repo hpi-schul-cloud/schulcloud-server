@@ -174,4 +174,47 @@ describe('CourseGroupService', () => {
 			});
 		});
 	});
+
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const courseGroup1 = courseGroupEntityFactory.buildWithId({ students: [user] });
+			const courseGroup2 = courseGroupEntityFactory.buildWithId({ students: [user] });
+
+			courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);
+
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [courseGroup1.id, courseGroup2.id]),
+			]);
+
+			return {
+				expectedResult,
+				user,
+			};
+		};
+
+		it('should call courseGroupRepo.findByUserId', async () => {
+			const { user } = setup();
+
+			await courseGroupService.deleteUserData(user.id);
+
+			expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
+		});
+
+		it('should call repo.removeUserReference', async () => {
+			const { user } = setup();
+
+			await courseGroupService.deleteUserData(user.id);
+
+			expect(courseGroupRepo.removeUserReference).toBeCalledWith(user.id);
+		});
+
+		it('should return DomainDeletionReport ', async () => {
+			const { expectedResult, user } = setup();
+
+			const result = await courseGroupService.deleteUserData(user.id);
+
+			expect(result).toEqual(expectedResult);
+		});
+	});
 });
