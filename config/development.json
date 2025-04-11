@@ -98,5 +98,6 @@
 		"BASE_URL": "http://localhost:4030"
 	},
 	"TRAINING_URL": "https://lernen.dbildungscloud.de",
-	"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": true
+	"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": true,
+	"FEATURE_ROOMMEMBERS_TABS_ENABLED": true
 }
