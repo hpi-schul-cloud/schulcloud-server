@@ -13,7 +13,7 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordParams, SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -22,13 +22,9 @@ const buildFileRecordsWithParams = () => {
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-		fileRecordEntityFactory
-			.markedForDelete()
-			.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordEntityFactory
-			.markedForDelete()
-			.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
@@ -45,7 +41,7 @@ const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordEntityFactory
+	const fileRecord = fileRecordFactory
 		.markedForDelete()
 		.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
 

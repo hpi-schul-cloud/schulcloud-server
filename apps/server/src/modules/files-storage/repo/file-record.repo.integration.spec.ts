@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileRecordParentType, StorageLocation } from '../domain';
-import { fileRecordEntityFactory } from '../testing';
+import { fileRecordEntityFactory, fileRecordFactory } from '../testing';
 import { FileRecordEntity } from './file-record.entity';
 import { FileRecordMikroOrmRepo } from './file-record.repo';
 
@@ -112,7 +112,7 @@ describe('FileRecordRepo', () => {
 				parentId: parentId2,
 			});
 
-			const markedForDeleteFileRecords = fileRecordEntityFactory.markedForDelete().buildList(3, {
+			const markedForDeleteFileRecords = fileRecordFactory.markedForDelete().buildList(3, {
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -210,7 +210,7 @@ describe('FileRecordRepo', () => {
 
 				await repo.markForDeleteByStorageLocation(StorageLocation.SCHOOL, storageLocationId1);
 
-				const fileRecords = await em.find(FileRecordEntity, { _storageLocationId: new ObjectId(storageLocationId1) });
+				const fileRecords = await em.find(FileRecordEntity, { storageLocationId: storageLocationId1 });
 
 				fileRecords.forEach((fileRecord) => {
 					expect(fileRecord).toMatchObject({
@@ -416,7 +416,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
-			const fileRecordsExpired = fileRecordEntityFactory.buildList(3, {
+			const fileRecordsExpired = fileRecordFactory.buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,

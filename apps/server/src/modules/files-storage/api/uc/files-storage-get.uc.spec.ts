@@ -11,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -20,9 +20,9 @@ const buildFileRecordsWithParams = () => {
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {

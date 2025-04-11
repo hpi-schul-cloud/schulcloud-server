@@ -17,11 +17,11 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
-import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
+import { FileRecord, FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { ErrorType } from '../../domain/error';
 import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -44,9 +44,9 @@ const buildFileRecordsWithParams = (storageLocation: StorageLocation = StorageLo
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
@@ -307,8 +307,8 @@ describe('FilesStorageUC upload methods', () => {
 					mimeType: fileRecord.mimeType,
 				};
 
-				let resolveUploadFile: (value: FileRecordEntity | PromiseLike<FileRecordEntity>) => void;
-				const fileRecordPromise = new Promise<FileRecordEntity>((resolve) => {
+				let resolveUploadFile: (value: FileRecord | PromiseLike<FileRecord>) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve) => {
 					resolveUploadFile = resolve;
 				});
 				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
@@ -378,7 +378,7 @@ describe('FilesStorageUC upload methods', () => {
 				const size = request.headers['content-length'];
 
 				let rejectUploadFile: (value: Error) => void;
-				const fileRecordPromise = new Promise<FileRecordEntity>((resolve, reject) => {
+				const fileRecordPromise = new Promise<FileRecord>((resolve, reject) => {
 					rejectUploadFile = reject;
 				});
 				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);

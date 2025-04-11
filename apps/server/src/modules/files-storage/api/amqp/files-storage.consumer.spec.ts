@@ -7,7 +7,7 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FileRecordEntity } from '../../repo'; // TODO: invalid import
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from '../dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
 
@@ -141,7 +141,7 @@ describe('FilesStorageConsumer', () => {
 			it('should return array instances of FileRecordResponse', async () => {
 				const parentId = new ObjectId().toHexString();
 
-				const fileRecords = fileRecordEntityFactory.buildList(3, {
+				const fileRecords = fileRecordFactory.buildList(3, {
 					parentId,
 				});
 
@@ -167,7 +167,7 @@ describe('FilesStorageConsumer', () => {
 			const setup = () => {
 				const parentId = new ObjectId().toHexString();
 
-				const fileRecords = fileRecordEntityFactory.buildList(3);
+				const fileRecords = fileRecordFactory.buildList(3);
 				filesStorageService.getFileRecordsOfParent.mockResolvedValue([fileRecords, fileRecords.length]);
 
 				return { parentId, fileRecords };
@@ -222,7 +222,7 @@ describe('FilesStorageConsumer', () => {
 			const setup = () => {
 				const recordId = new ObjectId().toHexString();
 
-				const fileRecord = fileRecordEntityFactory.build();
+				const fileRecord = fileRecordFactory.build();
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
 
 				return { recordId, fileRecord };
@@ -269,7 +269,7 @@ describe('FilesStorageConsumer', () => {
 			const setup = () => {
 				const creatorId = new ObjectId().toHexString();
 
-				const fileRecords = fileRecordEntityFactory.buildList(3, { creatorId });
+				const fileRecords = fileRecordFactory.buildList(3, { creatorId });
 				filesStorageService.getFileRecordsByCreatorId.mockResolvedValue([fileRecords, fileRecords.length]);
 
 				return { creatorId, fileRecords };

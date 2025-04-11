@@ -4,7 +4,7 @@ import { setupEntities } from '@testing/database';
 import { getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecordParams } from '../../api/dto';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory, fileRecordFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { FileRecordFactory } from '../file-record.factory';
 import { PreviewOutputMimeTypes } from '../interface';
 
@@ -113,7 +113,7 @@ describe('File Record Helper', () => {
 
 	describe('getPreviewName is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordEntityFactory.buildWithId();
+			const fileRecord = fileRecordFactory.buildWithId();
 			const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
 
 			return { fileRecord, outputFormat };

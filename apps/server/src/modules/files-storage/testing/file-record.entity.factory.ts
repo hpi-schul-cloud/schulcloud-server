@@ -16,7 +16,7 @@ class FileRecordEntityFactory extends BaseFactory<FileRecordEntity, FileRecordPr
 }
 
 export const fileRecordEntityFactory = FileRecordEntityFactory.define(FileRecordEntity, ({ sequence }) => {
-	return {
+	const props = {
 		id: new ObjectId().toHexString(),
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,
@@ -27,5 +27,10 @@ export const fileRecordEntityFactory = FileRecordEntityFactory.define(FileRecord
 		creatorId: new ObjectId().toHexString(),
 		storageLocationId: new ObjectId().toHexString(),
 		storageLocation: StorageLocation.SCHOOL,
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	};
+	console.log('props', JSON.stringify(props));
+
+	return props;
 });

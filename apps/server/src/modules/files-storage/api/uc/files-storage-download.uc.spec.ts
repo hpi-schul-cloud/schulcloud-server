@@ -13,7 +13,7 @@ import { setupEntities } from '@testing/database';
 import { FilesStorageService, GetFileResponse, PreviewService } from '../../domain';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -21,7 +21,7 @@ const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
+	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,

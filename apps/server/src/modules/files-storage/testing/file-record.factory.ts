@@ -15,7 +15,7 @@ class FileRecordFactory extends BaseFactory<FileRecord, FileRecordProps> {
 }
 
 export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequence }) => {
-	return {
+	const props = {
 		id: new ObjectId().toHexString(),
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,
@@ -26,5 +26,9 @@ export const fileRecordFactory = FileRecordFactory.define(FileRecord, ({ sequenc
 		creatorId: new ObjectId().toHexString(),
 		storageLocationId: new ObjectId().toHexString(),
 		storageLocation: StorageLocation.SCHOOL,
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	};
+
+	return props;
 });
