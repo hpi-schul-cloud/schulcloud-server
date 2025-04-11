@@ -4,17 +4,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	RobjExportKlasse,
 	RobjExportLehrer,
-	RobjExportLehrerMigration,
 	RobjExportSchueler,
-	RobjExportSchuelerMigration,
 	RobjExportSchule,
 } from '@infra/tsp-client';
 import {
 	robjExportKlasseFactory,
 	robjExportLehrerFactory,
-	robjExportLehrerMigrationFactory,
 	robjExportSchuelerFactory,
-	robjExportSchuelerMigrationFactory,
 	robjExportSchuleFactory,
 } from '@infra/tsp-client/testing';
 import { Account } from '@modules/account';
@@ -39,10 +35,8 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { TspFetchService } from './tsp-fetch.service';
-import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
-import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncStrategy } from './tsp-sync.strategy';
 
@@ -53,8 +47,6 @@ describe(TspSyncStrategy.name, () => {
 	let tspFetchService: DeepMocked<TspFetchService>;
 	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
-	let tspLegacyMigrationService: DeepMocked<TspLegacyMigrationService>;
-	let tspSyncMigrationService: DeepMocked<TspSyncMigrationService>;
 	let configService: DeepMocked<ConfigService<TspSyncConfig, true>>;
 	let systemService: DeepMocked<SystemService>;
 
@@ -87,14 +79,6 @@ describe(TspSyncStrategy.name, () => {
 					useValue: createMock<TspOauthDataMapper>(),
 				},
 				{
-					provide: TspLegacyMigrationService,
-					useValue: createMock<TspLegacyMigrationService>(),
-				},
-				{
-					provide: TspSyncMigrationService,
-					useValue: createMock<TspSyncMigrationService>(),
-				},
-				{
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
@@ -106,8 +90,6 @@ describe(TspSyncStrategy.name, () => {
 		tspFetchService = module.get(TspFetchService);
 		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
-		tspLegacyMigrationService = module.get(TspLegacyMigrationService);
-		tspSyncMigrationService = module.get(TspSyncMigrationService);
 		configService = module.get(ConfigService);
 		systemService = module.get(SystemService);
 	});
@@ -139,8 +121,6 @@ describe(TspSyncStrategy.name, () => {
 		fetchedClasses?: RobjExportKlasse[];
 		fetchedTeachers?: RobjExportLehrer[];
 		fetchedStudents?: RobjExportSchueler[];
-		fetchedTeacherMigrations?: RobjExportLehrerMigration[];
-		fetchedStudentMigrations?: RobjExportSchuelerMigration[];
 		foundSchool?: School;
 		foundSystemSchools?: School[];
 		foundTspUidUser?: UserDo | null;
@@ -150,11 +130,6 @@ describe(TspSyncStrategy.name, () => {
 		updatedAccount?: Account;
 		updatedUser?: UserDo;
 		configValues?: unknown[];
-		migrationResult?: {
-			totalAmount: number;
-			totalUsers: number;
-			totalAccounts: number;
-		};
 		processBatchSize?: number;
 		classBatchResult?: { classCreationCount: number; classUpdateCount: number };
 	}) => {
@@ -162,8 +137,6 @@ describe(TspSyncStrategy.name, () => {
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
 		tspFetchService.fetchTspStudents.mockResolvedValueOnce(params.fetchedStudents ?? []);
 		tspFetchService.fetchTspTeachers.mockResolvedValueOnce(params.fetchedTeachers ?? []);
-		tspFetchService.fetchTspTeacherMigrations.mockResolvedValueOnce(params.fetchedTeacherMigrations ?? []);
-		tspFetchService.fetchTspStudentMigrations.mockResolvedValueOnce(params.fetchedStudentMigrations ?? []);
 
 		tspSyncService.findSchool.mockResolvedValueOnce(params.foundSchool ?? undefined);
 		tspSyncService.findAllSchoolsForSystem.mockResolvedValueOnce(params.foundSystemSchools ?? []);
@@ -177,14 +150,6 @@ describe(TspSyncStrategy.name, () => {
 		);
 
 		params.configValues?.forEach((value) => configService.getOrThrow.mockReturnValueOnce(value));
-
-		tspSyncMigrationService.migrateTspUsers.mockResolvedValueOnce(
-			params.migrationResult ?? {
-				totalAccounts: faker.number.int(),
-				totalAmount: faker.number.int(),
-				totalUsers: faker.number.int(),
-			}
-		);
 
 		provisioningService.provisionUserBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
 		provisioningService.provisionClassBatch.mockResolvedValueOnce(
@@ -215,10 +180,6 @@ describe(TspSyncStrategy.name, () => {
 
 				const oauthDataDto = oauthDataDtoFactory.build({ system: systemDto, externalUser, externalSchool });
 
-				const tspTeacherMigration = robjExportLehrerMigrationFactory.build();
-
-				const tspStudentMigration = robjExportSchuelerMigrationFactory.build();
-
 				const tspSchool = robjExportSchuleFactory.build({
 					schuleNummer: externalSchool.externalId,
 				});
@@ -238,8 +199,6 @@ describe(TspSyncStrategy.name, () => {
 					fetchedClasses: [tspClasses],
 					fetchedTeachers: [tspTeachers],
 					fetchedStudents: [tspStudents],
-					fetchedStudentMigrations: [tspStudentMigration],
-					fetchedTeacherMigrations: [tspTeacherMigration],
 					mappedOauthDto: {
 						oauthDataDtos: [oauthDataDto],
 						usersOfClasses: new Map(),
@@ -256,8 +215,6 @@ describe(TspSyncStrategy.name, () => {
 					tspTeachers,
 					tspStudents,
 					tspClasses,
-					tspStudentMigration,
-					tspTeacherMigration,
 				};
 			};
 
@@ -267,17 +224,6 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(systemService.find).toHaveBeenCalledTimes(1);
-			});
-
-			it('should migrate the legacy data', async () => {
-				const { oauthDataDto } = setup();
-
-				await sut.sync();
-
-				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalledTimes(1);
-				expect(tspLegacyMigrationService.prepareLegacySyncDataForNewSync).toHaveBeenCalledWith(
-					oauthDataDto.system.systemId
-				);
 			});
 
 			it('should fetch the schools', async () => {
@@ -345,41 +291,6 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(provisioningService.provisionClassBatch).toHaveBeenCalledTimes(1);
-			});
-
-			describe('when feature tsp migration is enabled', () => {
-				it('should fetch teacher migrations', async () => {
-					const { system } = setup();
-
-					await sut.sync();
-
-					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalledTimes(1);
-					expect(tspFetchService.fetchTspTeacherMigrations).toHaveBeenCalledWith(system);
-				});
-
-				it('should fetch student migrations', async () => {
-					const { system } = setup();
-
-					await sut.sync();
-
-					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalledTimes(1);
-					expect(tspFetchService.fetchTspStudentMigrations).toHaveBeenCalledWith(system);
-				});
-
-				it('should call tspSyncMigrationService', async () => {
-					const { system, tspStudentMigration, tspTeacherMigration } = setup();
-
-					await sut.sync();
-
-					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalledTimes(1);
-					expect(tspSyncMigrationService.migrateTspUsers).toHaveBeenCalledWith(
-						system,
-						new Map([
-							[tspStudentMigration.schuelerUidAlt, tspStudentMigration.schuelerUidNeu],
-							[tspTeacherMigration.lehrerUidAlt, tspTeacherMigration.lehrerUidNeu],
-						])
-					);
-				});
 			});
 		});
 

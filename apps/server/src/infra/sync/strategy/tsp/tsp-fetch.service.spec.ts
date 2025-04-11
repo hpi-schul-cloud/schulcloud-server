@@ -305,39 +305,6 @@ describe(TspFetchService.name, () => {
 		});
 	});
 
-	describe('fetchTspStudentMigrations', () => {
-		describe('when tsp student migrations are fetched', () => {
-			it('should create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
-
-				await sut.fetchTspStudentMigrations(system);
-
-				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
-					clientId,
-					clientSecret,
-					tokenEndpoint,
-				});
-			});
-
-			it('should call exportSchuelerListMigration', async () => {
-				const { system, exportApiMock } = setupTspClient();
-
-				await sut.fetchTspStudentMigrations(system);
-
-				expect(exportApiMock.exportSchuelerListMigration).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return an array of student migrations', async () => {
-				const { system } = setupTspClient();
-
-				const result = await sut.fetchTspStudentMigrations(system);
-
-				expect(result).toBeDefined();
-				expect(result).toBeInstanceOf(Array);
-			});
-		});
-	});
-
 	describe('fetchTsp', () => {
 		describe('when AxiosError is thrown', () => {
 			const setup = () => {

@@ -25,12 +25,10 @@ import { TspSchoolsSyncedLoggable } from './loggable/tsp-schools-synced.loggable
 import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missing.loggable';
 import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
-import { TspUsersMigratedLoggable } from './loggable/tsp-users-migrated.loggable';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
-import { TspSyncMigrationService } from './tsp-sync-migration.service';
 import { TspSyncConfig } from './tsp-sync.config';
 
 type TspSchoolData = {
@@ -49,8 +47,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
 		private readonly systemService: SystemService,
-		private readonly provisioningService: TspProvisioningService,
-		private readonly tspSyncMigrationService: TspSyncMigrationService
+		private readonly provisioningService: TspProvisioningService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
@@ -69,10 +66,6 @@ export class TspSyncStrategy extends SyncStrategy {
 		await this.syncTspSchools(system);
 
 		const schools = await this.tspSyncService.findAllSchoolsForSystem(system);
-
-		if (this.configService.getOrThrow('FEATURE_TSP_MIGRATION_ENABLED', { infer: true })) {
-			await this.runMigrationOfExistingUsers(system);
-		}
 
 		await this.syncDataOfSyncedTspSchools(system, schools);
 	}
@@ -250,34 +243,6 @@ export class TspSyncStrategy extends SyncStrategy {
 		);
 
 		return { tspTeachers, tspStudents, tspClasses };
-	}
-
-	private async runMigrationOfExistingUsers(system: System): Promise<void> {
-		const oldToNewMappings = new Map<string, string>();
-		const [teacherMigrations, studentsMigrations] = await Promise.all([
-			this.tspFetchService.fetchTspTeacherMigrations(system),
-			this.tspFetchService.fetchTspStudentMigrations(system),
-		]);
-
-		teacherMigrations.forEach(({ lehrerUidAlt, lehrerUidNeu }) => {
-			if (lehrerUidAlt && lehrerUidNeu) {
-				oldToNewMappings.set(lehrerUidAlt, lehrerUidNeu);
-			}
-		});
-		studentsMigrations.forEach(({ schuelerUidAlt, schuelerUidNeu }) => {
-			if (schuelerUidAlt && schuelerUidNeu) {
-				oldToNewMappings.set(schuelerUidAlt, schuelerUidNeu);
-			}
-		});
-
-		const migrationResult = await this.tspSyncMigrationService.migrateTspUsers(system, oldToNewMappings);
-		this.logger.info(
-			new TspUsersMigratedLoggable(
-				migrationResult.totalAmount,
-				migrationResult.totalUsers,
-				migrationResult.totalAccounts
-			)
-		);
 	}
 
 	private async findTspSystemOrFail(): Promise<System> {

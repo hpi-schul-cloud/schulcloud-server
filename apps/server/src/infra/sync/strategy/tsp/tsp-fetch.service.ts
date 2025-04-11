@@ -51,18 +51,6 @@ export class TspFetchService {
 		return classes;
 	}
 
-	public fetchTspTeacherMigrations(system: System): Promise<RobjExportLehrerMigration[]> {
-		const migrations = this.fetchTsp(system, (client) => client.exportLehrerListMigration(), []);
-
-		return migrations;
-	}
-
-	public fetchTspStudentMigrations(system: System): Promise<RobjExportSchuelerMigration[]> {
-		const migrations = this.fetchTsp(system, (client) => client.exportSchuelerListMigration(), []);
-
-		return migrations;
-	}
-
 	private async fetchTsp<T>(
 		system: System,
 		fetchFunction: (client: ExportApiInterface) => Promise<AxiosResponse<T>>,
