@@ -8,6 +8,7 @@ import {
 	ManyToMany,
 	ManyToOne,
 	Property,
+	Unique,
 	wrap,
 } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
@@ -74,6 +75,11 @@ export class UserSchoolEmbeddable {
 @Entity({ tableName: 'users' })
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
+@Unique({
+	properties: ['externalId', 'source'],
+	options: { partialFilterExpression: { source: { $exists: true } } },
+	// TODO: LDAP, Moin.Schule and BRB-IDM have to set source as well.
+})
 @Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
