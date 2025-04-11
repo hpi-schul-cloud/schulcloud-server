@@ -1,18 +1,15 @@
 import { LegacyLogger } from '@core/logger';
 import { FileDO } from '@infra/rabbitmq';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
@@ -20,25 +17,14 @@ import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class FilesStorageClientAdapterService implements DeletionService {
 	constructor(
 		private logger: LegacyLogger,
 		private readonly fileStorageMQProducer: FilesStorageProducer,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		try {
-			const dataDeleted = await this.deleteUserData(targetRefId);
-			await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
-		} catch (error) {
-			this.logger.error('error during deletionRequest proccess', error);
-		}
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {

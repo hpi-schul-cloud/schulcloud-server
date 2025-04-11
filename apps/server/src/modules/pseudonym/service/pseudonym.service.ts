@@ -1,9 +1,7 @@
 import { Logger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -12,12 +10,11 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserDo } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
@@ -25,22 +22,14 @@ import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class PseudonymService implements DeletionService {
 	constructor(
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(PseudonymService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDo, tool: ExternalTool): Promise<Pseudonym> {

@@ -1,24 +1,20 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
 import { Submission, Task, TaskRepo } from '../../repo';
 import { submissionFactory, taskFactory } from '../../testing';
 import { SubmissionService } from './submission.service';
@@ -30,10 +26,9 @@ describe('TaskService', () => {
 	let taskService: TaskService;
 	let submissionService: DeepMocked<SubmissionService>;
 	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -55,14 +50,10 @@ describe('TaskService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
@@ -71,7 +62,6 @@ describe('TaskService', () => {
 		taskService = module.get(TaskService);
 		submissionService = module.get(SubmissionService);
 		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -320,50 +310,6 @@ describe('TaskService', () => {
 			const result = await taskService.deleteUserData(creator.id);
 
 			expect(result).toEqual(expectedResult);
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.FILERECORDS;
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-				]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		describe('when UserDeletedEventis received', () => {
-			it('should call deleteUserData in classService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(taskService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await taskService.handle({ deletionRequestId, targetRefId });
-
-				expect(taskService.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(taskService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await taskService.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
-			});
 		});
 	});
 });

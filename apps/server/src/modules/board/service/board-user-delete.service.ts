@@ -1,6 +1,4 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -9,34 +7,25 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
-} from '@modules/deletion';
+	UserDeletionInjectionService,
+} from '../../deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
-import { BoardExternalReferenceType, MediaBoard } from '../../domain';
-import { BoardNodeService } from '../board-node.service';
-import { MediaBoardService } from '../media-board/media-board.service';
+import { BoardExternalReferenceType, MediaBoard } from '../domain';
+import { BoardNodeService } from './board-node.service';
+import { MediaBoardService } from './media-board/media-board.service';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class UserDeletedEventHandlerService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class BoardUserDeleteService implements DeletionService {
 	constructor(
 		private readonly boardNodeService: BoardNodeService,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
-		this.logger.setContext(UserDeletedEventHandlerService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted: DomainDeletionReport = await this.deleteUserData(targetRefId);
-
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		this.logger.setContext(BoardUserDeleteService.name);
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {

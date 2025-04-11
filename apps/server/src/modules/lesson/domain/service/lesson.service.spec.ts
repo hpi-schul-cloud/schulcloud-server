@@ -1,20 +1,17 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Submission, Task } from '@modules/task/repo';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ComponentProperties, ComponentType, LessonEntity, LessonRepo, Material } from '../../repo';
@@ -28,10 +25,9 @@ describe('LessonService', () => {
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
+		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -50,14 +46,10 @@ describe('LessonService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
@@ -66,7 +58,6 @@ describe('LessonService', () => {
 		lessonRepo = module.get(LessonRepo);
 		injectionService = module.get(AuthorizationInjectionService);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -216,50 +207,6 @@ describe('LessonService', () => {
 				const result = await lessonService.deleteUserData(userId.toHexString());
 
 				expect(result).toEqual(expectedResult);
-			});
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.FILERECORDS;
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-				]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in lessonService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(lessonService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await lessonService.handle({ deletionRequestId, targetRefId });
-
-				expect(lessonService.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(lessonService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await lessonService.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

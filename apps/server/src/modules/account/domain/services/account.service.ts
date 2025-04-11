@@ -1,21 +1,18 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DeletionService,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -53,8 +50,7 @@ type UserPreferences = {
 };
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class AccountService extends AbstractAccountService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class AccountService extends AbstractAccountService implements DeletionService {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -64,8 +60,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly logger: Logger,
 		private readonly userService: UserService,
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -74,6 +69,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		} else {
 			this.accountImpl = accountDb;
 		}
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount): Promise<void> {
@@ -240,12 +236,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		} catch (err) {
 			throw new EntityNotFoundError('User');
 		}
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public findById(id: string): Promise<Account> {

@@ -9,7 +9,6 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
@@ -22,7 +21,7 @@ import {
 	ColumnBoardService,
 	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
-	UserDeletedEventHandlerService,
+	BoardUserDeleteService,
 } from './service';
 import {
 	BoardContextService,
@@ -34,6 +33,7 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
 	imports: [
@@ -44,7 +44,6 @@ import {
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
-		CqrsModule,
 		TldrawClientModule.register({
 			TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
 			TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
@@ -52,6 +51,7 @@ import {
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,
+		DeletionModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -70,7 +70,7 @@ import {
 		ColumnBoardLinkService,
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
-		UserDeletedEventHandlerService,
+		BoardUserDeleteService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,

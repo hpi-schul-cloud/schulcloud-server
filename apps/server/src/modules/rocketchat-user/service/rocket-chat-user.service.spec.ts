@@ -1,19 +1,16 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DeletionErrorLoggableException,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RocketChatError, RocketChatService } from '@modules/rocketchat/rocket-chat.service';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { RocketChatUser } from '../domain';
@@ -27,10 +24,9 @@ describe(RocketChatUserService.name, () => {
 	let service: RocketChatUserService;
 	let rocketChatUserRepo: DeepMocked<RocketChatUserRepo>;
 	let rocketChatService: DeepMocked<RocketChatService>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([RocketChatUserEntity]);
+		await setupEntities([RocketChatUserEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -48,14 +44,10 @@ describe(RocketChatUserService.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
@@ -63,7 +55,6 @@ describe(RocketChatUserService.name, () => {
 		service = module.get(RocketChatUserService);
 		rocketChatUserRepo = module.get(RocketChatUserRepo);
 		rocketChatService = module.get(RocketChatService);
-		eventBus = module.get(EventBus);
 	});
 
 	beforeEach(() => {
@@ -304,50 +295,6 @@ describe(RocketChatUserService.name, () => {
 				await expect(service.deleteUserData(userId)).rejects.toThrowError(
 					new DeletionErrorLoggableException(expectedError)
 				);
-			});
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.FILERECORDS;
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-				]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in classService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await service.handle({ deletionRequestId, targetRefId });
-
-				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await service.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

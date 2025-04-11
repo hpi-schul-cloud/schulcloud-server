@@ -1,6 +1,4 @@
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
 	DeletionService,
@@ -10,33 +8,25 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { RocketChatService } from '@modules/rocketchat';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@core/logger';
 import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class RocketChatUserService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class RocketChatUserService implements DeletionService {
 	constructor(
 		private readonly rocketChatUserRepo: RocketChatUserRepo,
 		private readonly rocketChatService: RocketChatService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(RocketChatUserService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async findByUserId(userId: EntityId): Promise<RocketChatUser | null> {

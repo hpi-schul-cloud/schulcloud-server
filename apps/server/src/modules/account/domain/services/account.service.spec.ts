@@ -1,23 +1,20 @@
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	AuthorizationError,
@@ -46,8 +43,7 @@ describe('AccountService', () => {
 	let logger: DeepMocked<Logger>;
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
-	let eventBus: DeepMocked<EventBus>;
-	let orm: MikroORM;
+	let userDeletionInjectionService: DeepMocked<UserDeletionInjectionService>;
 
 	const newAccountService = () =>
 		new AccountService(
@@ -57,8 +53,7 @@ describe('AccountService', () => {
 			logger,
 			userService,
 			accountRepo,
-			eventBus,
-			orm
+			userDeletionInjectionService
 		);
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -70,7 +65,7 @@ describe('AccountService', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities([User]);
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -100,14 +95,10 @@ describe('AccountService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
@@ -118,7 +109,7 @@ describe('AccountService', () => {
 		logger = module.get(Logger);
 		userService = module.get(UserService);
 		accountRepo = module.get(ACCOUNT_REPO);
-		eventBus = module.get(EventBus);
+		userDeletionInjectionService = module.get(UserDeletionInjectionService);
 	});
 
 	beforeEach(() => {
@@ -2161,48 +2152,6 @@ describe('AccountService', () => {
 				const result = await accountService.deleteUserData(userId);
 
 				expect(result).toEqual(expectedData);
-			});
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.ACCOUNT;
-			const accountId = new ObjectId().toHexString();
-			const deletionRequest = deletionRequestFactory.buildWithId({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in accountService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await accountService.handle({ deletionRequestId, targetRefId });
-
-				expect(accountService.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await accountService.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

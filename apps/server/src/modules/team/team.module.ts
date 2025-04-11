@@ -2,11 +2,11 @@ import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { TeamRepo } from '@modules/team/repo';
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { TeamAuthorisableService, TeamService } from './domain';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [CqrsModule, LoggerModule, AuthorizationModule],
+	imports: [LoggerModule, AuthorizationModule, DeletionModule],
 	providers: [TeamService, TeamRepo, TeamAuthorisableService],
 	exports: [TeamService, TeamAuthorisableService],
 })

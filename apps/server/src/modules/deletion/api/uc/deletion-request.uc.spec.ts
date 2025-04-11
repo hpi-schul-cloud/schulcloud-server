@@ -1,19 +1,16 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { ConfigService } from '@nestjs/config';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
 import { DeletionConfig } from '../../deletion.config';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../../domain/builder';
-import { UserDeletedEvent } from '../../domain/event';
+import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DomainDeletionReport } from '../../domain/interface';
-import { DeletionLogService, DeletionRequestService } from '../../domain/service';
+import { DeletionExecutionService, DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { deletionLogFactory, deletionRequestFactory, deletionTestConfig } from '../../domain/testing';
-import { DomainName, OperationType, StatusModel } from '../../domain/types';
+import { DomainName, StatusModel } from '../../domain/types';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
@@ -24,11 +21,11 @@ describe(DeletionRequestUc.name, () => {
 	let uc: DeletionRequestUc;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
-	let eventBus: DeepMocked<EventBus>;
 	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
+	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
 
 	beforeAll(async () => {
-		const orm = await setupEntities([DeletionRequestEntity]);
+		await setupEntities([DeletionRequestEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -46,18 +43,12 @@ describe(DeletionRequestUc.name, () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
-				},
-				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: DeletionExecutionService,
+					useValue: createMock<DeletionExecutionService>(),
 				},
 			],
 		}).compile();
@@ -65,8 +56,8 @@ describe(DeletionRequestUc.name, () => {
 		uc = module.get(DeletionRequestUc);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
-		eventBus = module.get(EventBus);
 		configService = module.get(ConfigService);
+		deletionExecutionService = module.get(DeletionExecutionService);
 	});
 
 	afterEach(() => {
@@ -129,40 +120,9 @@ describe(DeletionRequestUc.name, () => {
 		});
 	});
 
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.ACCOUNT;
-			const accountId = new ObjectId().toHexString();
-			const deletionRequest = deletionRequestFactory.buildWithId({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const domainDeletionReport = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
-			]);
-
-			return {
-				deletionRequestId,
-				domainDeletionReport,
-			};
-		};
-
-		describe('when DataDeletedEvent is received', () => {
-			it('should call logDeletion', async () => {
-				const { deletionRequestId, domainDeletionReport } = setup();
-
-				await uc.handle({ deletionRequestId, domainDeletionReport });
-
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledWith(deletionRequestId, domainDeletionReport);
-			});
-		});
-	});
-
 	describe('executeDeletionRequests', () => {
 		describe('when deletionRequests to execute exists', () => {
-			const setup = (noDelay = false) => {
-				deletionRequestService.findInProgressCount.mockResolvedValue(1);
-
+			const setup = () => {
 				configService.get.mockImplementation((key) => {
 					if (key === 'ADMIN_API__DELETION_DELETE_AFTER_MINUTES') {
 						return 1;
@@ -176,112 +136,51 @@ describe(DeletionRequestUc.name, () => {
 					if (key === 'ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS') {
 						return 2;
 					}
-					if (key === 'ADMIN_API__DELETION_DELAY_MILLISECONDS') {
-						return noDelay ? 0 : 100;
-					}
 					return deletionTestConfig()[key];
 				});
 
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
-				deletionRequestService.markDeletionRequestAsPending.mockResolvedValueOnce(true);
 
 				return { deletionRequest };
 			};
-			it('should call deletionRequestService.findInProgressCount', async () => {
+
+			it('should call deletionRequestService.findAllItemsToExecute with default limit', async () => {
 				setup();
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionRequestService.findInProgressCount).toHaveBeenCalled();
+				expect(deletionRequestService.findAllItemsToExecute.mock.calls).toEqual([
+					[2, undefined],
+					[2, undefined],
+				]);
 			});
 
-			it('should call deletionRequestService.findAllItemsToExecute with correct limit', async () => {
+			it('should call deletionRequestService.findAllItemsToExecute with given limit', async () => {
 				setup();
 
-				await uc.executeDeletionRequests();
+				await uc.executeDeletionRequests(10);
 
-				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(1, undefined);
+				expect(deletionRequestService.findAllItemsToExecute.mock.calls).toEqual([
+					[10, undefined],
+					[10, undefined],
+				]);
 			});
 
-			describe('when limit is given', () => {
-				it('should call deletionRequestService.findAllItemsToExecute with correct limit', async () => {
-					setup();
+			it('should call deletionRequestService.findAllItemsToExecute with getFailed true', async () => {
+				setup();
 
-					await uc.executeDeletionRequests(10);
+				await uc.executeDeletionRequests(undefined, true);
 
-					expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(9, undefined);
-				});
+				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(2, true);
 			});
 
-			describe('when limit is not given', () => {
-				it('should call deletionRequestService.findAllItemsToExecute with correct limit', async () => {
-					setup();
-
-					await uc.executeDeletionRequests();
-
-					expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(1, undefined);
-				});
-			});
-
-			describe('when getFailed is true', () => {
-				it('should call deletionRequestService.findAllItemsToExecute with getFailed true', async () => {
-					setup();
-
-					await uc.executeDeletionRequests(undefined, true);
-
-					expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(1, true);
-				});
-			});
-
-			it('should call deletionRequestService.markDeletionRequestAsPending to update status of deletionRequests', async () => {
+			it('should call deletionExecutionService.executeDeletionRequest with the deletionRequest', async () => {
 				const { deletionRequest } = setup();
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionRequestService.markDeletionRequestAsPending).toHaveBeenCalledWith(deletionRequest.id);
-			});
-
-			it('should call eventBus.publish', async () => {
-				const { deletionRequest } = setup();
-
-				await uc.executeDeletionRequests();
-
-				expect(eventBus.publish).toHaveBeenCalledWith(
-					new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId)
-				);
-			});
-
-			it('should work with a delay of 0', async () => {
-				setup(true);
-
-				await uc.executeDeletionRequests();
-
-				expect(deletionRequestService.markDeletionRequestAsFailed).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when an error occurred', () => {
-			const setup = () => {
-				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
-
-				configService.get.mockImplementation((key) => deletionTestConfig()[key]);
-
-				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				deletionRequestService.findInProgressCount.mockResolvedValueOnce(1);
-				eventBus.publish.mockRejectedValueOnce(new Error());
-
-				return {
-					deletionRequestToExecute,
-				};
-			};
-
-			it('should throw an arror', async () => {
-				const { deletionRequestToExecute } = setup();
-
-				await uc.executeDeletionRequests();
-
-				expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestToExecute.id);
+				expect(deletionExecutionService.executeDeletionRequest).toHaveBeenCalledWith(deletionRequest);
 			});
 		});
 	});

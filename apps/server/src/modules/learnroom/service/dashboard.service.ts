@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
+
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -10,31 +9,23 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { Inject, Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { DashboardElementRepo } from '../repo';
 import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class DashboardService implements DeletionService {
 	constructor(
 		@Inject(DASHBOARD_REPO) private readonly dashboardRepo: IDashboardRepo,
 		private readonly dashboardElementRepo: DashboardElementRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(DashboardService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {

@@ -1,11 +1,11 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { ExternalToolPseudonymRepo } from './repo';
 import { PseudonymService } from './service';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [LoggerModule, CqrsModule],
+	imports: [LoggerModule, DeletionModule],
 	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger],
 	exports: [PseudonymService],
 })
