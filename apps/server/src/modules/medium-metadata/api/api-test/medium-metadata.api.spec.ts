@@ -1,5 +1,6 @@
 import { ErrorResponse } from '@core/error/dto';
 import { BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
+import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
@@ -13,6 +14,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
+import { OfferDTO } from '@infra/vidis-client/generated';
 
 describe('MediumMetadataController (API)', () => {
 	let app: INestApplication;
@@ -106,6 +108,34 @@ describe('MediumMetadataController (API)', () => {
 				const response: Response = await loggedInClient.get(`medium/%ZZ/media-source/${mediaSourceEntity.sourceId}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when medium does not exist', () => {
+			const setup = async () => {
+				const mediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
+
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				em.clear();
+
+				const responses: OfferDTO[] = vidisOfferItemFactory.buildList(1);
+
+				axiosMock.onGet(/^.*by-region\/.*$/).replyOnce(HttpStatus.OK, responses);
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return { loggedInClient, mediaSourceEntity, vidisMediaMetaData: responses[0] };
+			};
+
+			it('should return not found', async () => {
+				const { loggedInClient, mediaSourceEntity } = await setup();
+
+				const response: Response = await loggedInClient.get(`medium/ZZ/media-source/${mediaSourceEntity.sourceId}`);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 
