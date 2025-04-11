@@ -1,4 +1,4 @@
-import { PreviewOutputMimeTypes } from '../interface';
+import { PreviewOutputMimeTypes } from '../domain/interface';
 import { fileRecordFactory } from '../testing';
 import { PreviewBuilder } from './preview.builder';
 

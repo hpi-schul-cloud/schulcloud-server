@@ -1,12 +1,13 @@
 import { setupEntities } from '@testing/database';
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
+import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../api/dto';
+import { ScanStatus } from '../domain';
+import { FileRecordEntity } from '../repo';
 import { fileRecordFactory } from '../testing';
 import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	describe('mapToFileRecordResponse()', () => {

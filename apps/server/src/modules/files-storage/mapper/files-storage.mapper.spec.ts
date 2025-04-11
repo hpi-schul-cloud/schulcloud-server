@@ -7,15 +7,16 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord, PreviewStatus } from '../entity';
-import { FileRecordParentType } from '../interface';
+} from '../api/dto';
+import { PreviewStatus } from '../domain';
+import { FileRecordParentType } from '../domain/interface';
+import { FileRecordEntity } from '../repo';
 import { fileRecordFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([FileRecord]);
+		await setupEntities([FileRecordEntity]);
 	});
 
 	describe('mapToAllowedAuthorizationEntityType()', () => {

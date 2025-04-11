@@ -8,7 +8,7 @@ type ReadableStreamWithFileTypeProps = {
 };
 
 class ReadableStreamWithFileTypeImp extends Readable implements ReadableStreamWithFileType {
-	fileType?: FileTypeResult;
+	public fileType?: FileTypeResult;
 
 	constructor(props: ReadableStreamWithFileTypeProps) {
 		super();

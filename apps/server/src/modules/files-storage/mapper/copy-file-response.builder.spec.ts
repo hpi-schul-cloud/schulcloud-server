@@ -1,4 +1,4 @@
-import { CopyFileResponse } from '../controller/dto';
+import { CopyFileResponse } from '../api/dto';
 import { CopyFileResponseBuilder } from './copy-file-response.builder';
 
 describe('Copy File Response Builder', () => {
