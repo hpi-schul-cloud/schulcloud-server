@@ -3,7 +3,7 @@ import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { ImageMimeType } from '../../tool/common';
 import { MediumMetadataDto } from '../dto';
-import { MediumMetadataNotFoundLoggableException } from '../loggable';
+import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';
 import { MediumMetadataStrategy } from './interface';
@@ -27,7 +27,7 @@ export class VidisStrategy implements MediumMetadataStrategy {
 		);
 
 		if (!requestedMetadataItem) {
-			throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
+			throw new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId);
 		}
 
 		if (requestedMetadataItem.offerLogo) {
