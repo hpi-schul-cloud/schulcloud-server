@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 import { Readable } from 'stream';
 import type { PreviewParams } from '../../api/dto';
-import type { FileRecordEntity } from '../../repo';
+import { FileRecord } from '../file-record.do';
 import { StorageLocation } from './storage-location.enum';
 
 export interface GetFileResponse {
@@ -14,7 +14,7 @@ export interface GetFileResponse {
 }
 
 export interface PreviewFileParams {
-	fileRecord: FileRecordEntity;
+	fileRecord: FileRecord;
 	previewParams: PreviewParams;
 	hash: string;
 	originFilePath: string;

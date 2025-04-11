@@ -5,18 +5,18 @@ import {
 	ScanResultDto,
 	ScanResultParams,
 } from '../api/dto';
+import { FileRecord, ScanStatus } from '../domain';
 import { StorageLocationParams } from '../domain/interface';
-import { FileRecordEntity, ScanStatus } from '../repo';
 
 export class FileRecordMapper {
-	public static mapToFileRecordResponse(fileRecord: FileRecordEntity): FileRecordResponse {
+	public static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
 		const fileRecordResponse = new FileRecordResponse(fileRecord);
 
 		return fileRecordResponse;
 	}
 
 	public static mapToFileRecordListResponse(
-		fileRecords: FileRecordEntity[],
+		fileRecords: FileRecord[],
 		total: number,
 		skip?: number,
 		limit?: number

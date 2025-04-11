@@ -9,7 +9,7 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { getPaths, unmarkForDelete } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -19,13 +19,11 @@ const buildFileRecordsWithParams = () => {
 	const parentSchoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory
-			.markedForDelete()
-			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text.txt' }),
-		fileRecordEntityFactory
+		fileRecordFactory.markedForDelete().buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text.txt' }),
+		fileRecordFactory
 			.markedForDelete()
 			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordEntityFactory
+		fileRecordFactory
 			.markedForDelete()
 			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-tree.txt' }),
 	];

@@ -1,55 +1,38 @@
-import { EntityData } from '@mikro-orm/core';
-import { FileRecord } from '../../domain/';
-import { FileRecordFactory } from '../../domain/file-record.factory';
+import { FileRecord } from '../../domain';
 import { FileRecordEntity } from '../file-record.entity';
-import { FileRecordSecurityCheckEmbeddableMapper } from './file-record-security-check.embeddable.mapper';
 
 export class FileRecordEntityMapper {
-	public static mapToDo(entity: FileRecordEntity): FileRecord {
-		const securityCheck = FileRecordSecurityCheckEmbeddableMapper.mapToDo(entity.securityCheck);
+	public static mapEntityToDo(fileRecordEntity: FileRecordEntity): FileRecord {
+		// check identity map reference
+		if (fileRecordEntity.domainObject) {
+			return fileRecordEntity.domainObject;
+		}
 
-		const FileRecord = FileRecordFactory.buildFromFileRecordProps({
-			id: entity.id,
-			size: entity.size,
-			name: entity.name,
-			mimeType: entity.mimeType,
-			parentType: entity.parentType,
-			parentId: entity.parentId,
-			creatorId: entity.creatorId,
-			storageLocationId: entity.storageLocationId,
-			storageLocation: entity.storageLocation,
-			isUploading: entity.isUploading,
-			securityCheck: securityCheck,
-		});
+		const room = new FileRecord(fileRecordEntity);
 
-		return FileRecord;
+		// attach to identity map
+		fileRecordEntity.domainObject = room;
+
+		return room;
 	}
 
-	public static mapToDos(FileRecordEntities: FileRecordEntity[]): FileRecord[] {
-		const FileRecords = FileRecordEntities.map((entity) => FileRecordEntityMapper.mapToDo(entity));
+	public static mapDoToEntity(fileRecord: FileRecord): FileRecordEntity {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { props } = fileRecord;
+		// TODO: add proper handling of security check
 
-		return FileRecords;
-	}
+		if (!(props instanceof FileRecordEntity)) {
+			const entity = new FileRecordEntity();
+			Object.assign(entity, props);
 
-	public static mapToEntityProperties(domainObject: FileRecord): EntityData<FileRecordEntity> {
-		const props = domainObject.getProps();
-		const securityCheck = props.securityCheck
-			? FileRecordSecurityCheckEmbeddableMapper.mapToEntity(props.securityCheck)
-			: undefined;
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			fileRecord.props = entity;
 
-		const fileRecordEntityProps = {
-			name: props.name,
-			size: props.size,
-			mimeType: props.mimeType,
-			parentType: props.parentType,
-			parentId: props.parentId,
-			creatorId: props.creatorId,
-			storageLocationId: props.storageLocationId,
-			storageLocation: props.storageLocation,
-			isUploading: props.isUploading,
-			securityCheck,
-		};
+			return entity;
+		}
 
-		return fileRecordEntityProps;
+		return props;
 	}
 }

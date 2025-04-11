@@ -23,16 +23,15 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../../api/dto'; // TODO: invalid import
+import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
-import { ScanStatus } from '../../repo';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord } from '../file-record.do';
-import { StoreLocationMetadata } from '../file-record.factory';
+import { FileRecordFactory, StoreLocationMetadata } from '../file-record.factory';
 import {
 	createCopyFiles,
-	createFileRecord,
 	createPath,
 	getPaths,
 	markForDelete,
@@ -106,7 +105,7 @@ export class FilesStorageService {
 		const { mimeType, stream } = await this.detectMimeType(file);
 
 		// Create fileRecord with 0 as initial file size, because it is overwritten later anyway.
-		const fileRecord = createFileRecord(fileName, 0, mimeType, params, userId);
+		const fileRecord = FileRecordFactory.buildFromExternalInput(fileName, 0, mimeType, params, userId);
 
 		return { fileRecord, stream };
 	}
@@ -419,7 +418,7 @@ export class FilesStorageService {
 		targetParams: FileRecordParams,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const fileRecord = sourceFile.copy(userId, targetParams); // TODO: FileRecordFactory.copy(sourceFile, userId, targetParams)
+		const fileRecord = FileRecordFactory.copy(sourceFile, userId, targetParams);
 		await this.fileRecordRepo.save(fileRecord);
 
 		return fileRecord;

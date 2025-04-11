@@ -8,10 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
+import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
-import { FileRecordEntity, ScanStatus } from '../../repo'; // TODO: invalid import
-import { fileRecordEntityFactory } from '../../testing';
+import { FileRecordEntity } from '../../repo'; // TODO: invalid import
+import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
@@ -22,9 +23,9 @@ const buildFileRecordsWithParams = () => {
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {

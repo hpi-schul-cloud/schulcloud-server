@@ -2,15 +2,17 @@ import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { ErrorType, FileRecordParentType, StorageLocation } from '../domain';
-import { fileRecordEntityFactory } from '../testing';
 import {
-	FileRecordEntity,
-	FileRecordProperties,
-	FileRecordSecurityCheckEmbeddable,
+	ErrorType,
+	FileRecordParentType,
+	FileRecordProps,
+	FileRecordSecurityCheck,
 	PreviewStatus,
 	ScanStatus,
-} from './file-record.entity';
+	StorageLocation,
+} from '../domain';
+import { fileRecordEntityFactory } from '../testing';
+import { FileRecordEntity, FileRecordSecurityCheckEmbeddable } from './file-record.entity';
 
 describe('FileRecord Entity', () => {
 	beforeAll(async () => {
@@ -18,10 +20,11 @@ describe('FileRecord Entity', () => {
 	});
 
 	describe('when creating a new instance using the constructor', () => {
-		let props: FileRecordProperties;
+		let props: FileRecordProps;
 
 		beforeEach(() => {
 			props = {
+				id: new ObjectId().toHexString(),
 				size: Math.round(Math.random() * 100000),
 				name: `file-record #1`,
 				mimeType: 'application/octet-stream',
@@ -30,6 +33,7 @@ describe('FileRecord Entity', () => {
 				creatorId: new ObjectId().toHexString(),
 				storageLocationId: new ObjectId().toHexString(),
 				storageLocation: StorageLocation.SCHOOL,
+				securityCheck: FileRecordSecurityCheck.createWithDefaultProps(),
 			};
 		});
 

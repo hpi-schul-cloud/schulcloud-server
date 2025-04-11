@@ -1,7 +1,8 @@
 import { setupEntities } from '@testing/database';
 import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../api/dto';
-import { FileRecordEntity, ScanStatus } from '../repo';
-import { fileRecordEntityFactory } from '../testing';
+import { ScanStatus } from '../domain';
+import { FileRecordEntity } from '../repo';
+import { fileRecordFactory } from '../testing';
 import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -11,7 +12,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordResponse()', () => {
 		it('should return FileRecordResponse DO', () => {
-			const fileRecord = fileRecordEntityFactory.buildWithId();
+			const fileRecord = fileRecordFactory.buildWithId();
 			const result = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -31,12 +32,12 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordListResponse()', () => {
 		it('should return instance of FileRecordListResponse', () => {
-			const fileRecords = fileRecordEntityFactory.buildList(3);
+			const fileRecords = fileRecordFactory.buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 			expect(result).toBeInstanceOf(FileRecordListResponse);
 		});
 		it('should contains props [data, total, skip, limit]', () => {
-			const fileRecords = fileRecordEntityFactory.buildList(3);
+			const fileRecords = fileRecordFactory.buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -48,7 +49,7 @@ describe('FilesStorageMapper', () => {
 			);
 		});
 		it('should contains instances of FileRecordResponse', () => {
-			const fileRecords = fileRecordEntityFactory.buildList(3);
+			const fileRecords = fileRecordFactory.buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
 			expect(result.data).toBeInstanceOf(Array);

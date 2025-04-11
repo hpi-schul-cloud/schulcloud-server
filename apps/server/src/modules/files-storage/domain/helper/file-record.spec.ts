@@ -1,10 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { createFileRecord, getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
+import { getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
 import { FileRecordParams } from '../../api/dto';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordEntityFactory, fileRecordFactory } from '../../testing';
+import { FileRecordFactory } from '../file-record.factory';
 import { PreviewOutputMimeTypes } from '../interface';
 
 describe('File Record Helper', () => {
@@ -13,9 +14,9 @@ describe('File Record Helper', () => {
 		const storageLocationId: EntityId = new ObjectId().toHexString();
 
 		const fileRecords = [
-			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-			fileRecordEntityFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
+			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
 		];
 
 		return { fileRecords, userId };
@@ -76,7 +77,7 @@ describe('File Record Helper', () => {
 		it('should return new fileRecord', () => {
 			const { name, size, mimeType, fileRecord, fileRecordParams, userId } = setup();
 
-			const newFileRecord = createFileRecord(name, size, mimeType, fileRecordParams, userId);
+			const newFileRecord = FileRecordFactory.buildFromExternalInput(name, size, mimeType, fileRecordParams, userId);
 
 			const expectedObject = {
 				size,

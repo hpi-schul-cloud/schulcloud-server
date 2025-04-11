@@ -9,7 +9,7 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -19,9 +19,9 @@ const buildFileRecordsWithParams = () => {
 	const creatorId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt', creatorId }),
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt', creatorId }),
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt', creatorId }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt', creatorId }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt', creatorId }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt', creatorId }),
 	];
 
 	const params: FileRecordParams = {

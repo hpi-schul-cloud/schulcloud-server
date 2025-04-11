@@ -1,7 +1,7 @@
 import { CopyFiles } from '@infra/s3-client';
 import { EntityId } from '@shared/domain/types';
-import { FileRecordEntity } from '../../repo';
 import { ErrorType } from '../error';
+import { FileRecord } from '../file-record.do';
 
 export function createPath(storageLocationId: EntityId, fileRecordId: EntityId): string {
 	if (!storageLocationId || !fileRecordId) {
@@ -26,13 +26,13 @@ export function createPreviewFilePath(storageLocationId: EntityId, hash: string,
 	return filePath;
 }
 
-export function getPaths(fileRecords: FileRecordEntity[]): string[] {
+export function getPaths(fileRecords: FileRecord[]): string[] {
 	const paths = fileRecords.map((fileRecord) => createPath(fileRecord.storageLocationId, fileRecord.id));
 
 	return paths;
 }
 
-export function createCopyFiles(sourceFile: FileRecordEntity, targetFile: FileRecordEntity): CopyFiles {
+export function createCopyFiles(sourceFile: FileRecord, targetFile: FileRecord): CopyFiles {
 	const copyFiles = {
 		sourcePath: createPath(sourceFile.storageLocationId, sourceFile.id),
 		targetPath: createPath(targetFile.storageLocationId, targetFile.id),

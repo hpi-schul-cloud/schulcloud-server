@@ -12,10 +12,12 @@ import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordEntityFactory, readableStreamWithFileTypeFactory } from '../../testing';
+import { readableStreamWithFileTypeFactory } from '../../testing';
+import { fileRecordFactory } from '../../testing/file-record.factory';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
-import { createFileRecord, resolveFileNameDuplicates } from '../helper';
+import { FileRecordFactory } from '../file-record.factory';
+import { resolveFileNameDuplicates } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -30,9 +32,9 @@ const buildFileRecordsWithParams = () => {
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordEntityFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
+		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
 	];
 
 	const params: FileRecordParams = {
@@ -114,8 +116,8 @@ describe('FilesStorageService upload methods', () => {
 
 			const fileSize = 3;
 
-			const fileRecord = createFileRecord(file.name, 0, file.mimeType, params, userId);
-			const { securityCheck, ...expectedFileRecord } = fileRecord;
+			const fileRecord = FileRecordFactory.buildFromExternalInput(file.name, 0, file.mimeType, params, userId);
+			const expectedFileRecord = fileRecord.getProps();
 			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
 			const detectedMimeType = 'image/tiff';
 			expectedFileRecord.mimeType = detectedMimeType;

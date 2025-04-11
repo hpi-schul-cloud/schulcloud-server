@@ -1,9 +1,8 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { FileRecordParams } from '../../api/dto';
-import { FileRecordEntity } from '../../repo';
+import { FileRecord } from '../file-record.do';
 import { PreviewOutputMimeTypes } from '../interface';
 
-export function markForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity[] {
+export function markForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	const markedFileRecords = fileRecords.map((fileRecord) => {
 		fileRecord.markForDelete();
 		return fileRecord;
@@ -12,36 +11,13 @@ export function markForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity
 	return markedFileRecords;
 }
 
-export function unmarkForDelete(fileRecords: FileRecordEntity[]): FileRecordEntity[] {
+export function unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
 	const unmarkedFileRecords = fileRecords.map((fileRecord) => {
 		fileRecord.unmarkForDelete();
 		return fileRecord;
 	});
 
 	return unmarkedFileRecords;
-}
-
-// TODO: Move/create Factory
-export function createFileRecord(
-	name: string,
-	size: number,
-	mimeType: string,
-	params: FileRecordParams,
-	userId: string
-): FileRecordEntity {
-	const entity = new FileRecordEntity({
-		size,
-		name,
-		mimeType,
-		parentType: params.parentType,
-		parentId: params.parentId,
-		creatorId: userId,
-		storageLocationId: params.storageLocationId,
-		storageLocation: params.storageLocation,
-		isUploading: true,
-	});
-
-	return entity;
 }
 
 export function getFormat(mimeType: string): string {
@@ -54,7 +30,7 @@ export function getFormat(mimeType: string): string {
 	return format;
 }
 
-export function getPreviewName(fileRecord: FileRecordEntity, outputFormat?: PreviewOutputMimeTypes): string {
+export function getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
 	const { fileNameWithoutExtension, name } = fileRecord;
 
 	if (!outputFormat) {

@@ -119,9 +119,128 @@ export interface FileRecordProps extends AuthorizableObject {
 	isCopyFrom?: EntityId;
 	isUploading?: boolean;
 	securityCheck: FileRecordSecurityCheck;
+	createdAt: Date;
+	updatedAt: Date;
 }
 
 export class FileRecord extends DomainObject<FileRecordProps> {
+	constructor(props: FileRecordProps) {
+		super(props);
+	}
+
+	public getProps(): FileRecordProps {
+		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
+		const { domainObject, ...copyProps } = this.props;
+
+		return copyProps;
+	}
+
+	get size(): number {
+		return this.props.size;
+	}
+
+	set size(value: number) {
+		this.props.size = value;
+	}
+
+	get name(): string {
+		return this.props.name;
+	}
+
+	set name(value: string) {
+		this.props.name = value;
+	}
+
+	get mimeType(): string {
+		return this.props.mimeType;
+	}
+	set mimeType(value: string) {
+		this.props.mimeType = value;
+	}
+
+	get parentType(): FileRecordParentType {
+		return this.props.parentType;
+	}
+
+	set parentType(value: FileRecordParentType) {
+		this.props.parentType = value;
+	}
+
+	get parentId(): EntityId {
+		return this.props.parentId;
+	}
+
+	set parentId(value: EntityId) {
+		this.props.parentId = value;
+	}
+
+	get creatorId(): EntityId | undefined {
+		return this.props.creatorId;
+	}
+
+	set createorId(value: EntityId | undefined) {
+		this.props.creatorId = value;
+	}
+
+	get storageLocation(): StorageLocation {
+		return this.props.storageLocation;
+	}
+
+	set storageLocation(value: StorageLocation) {
+		this.props.storageLocation = value;
+	}
+
+	get storageLocationId(): EntityId {
+		return this.props.storageLocationId;
+	}
+
+	set storageLocationId(value: EntityId) {
+		this.props.storageLocationId = value;
+	}
+
+	get deletedSince(): Date | undefined {
+		return this.props.deletedSince;
+	}
+
+	set deletedSince(value: Date | undefined) {
+		this.props.deletedSince = value;
+	}
+
+	get isCopyFrom(): EntityId | undefined {
+		return this.props.isCopyFrom;
+	}
+
+	set isCopyFrom(value: EntityId | undefined) {
+		this.props.isCopyFrom = value;
+	}
+
+	get isUploading(): boolean | undefined {
+		return this.props.isUploading;
+	}
+
+	set isUploading(value: boolean | undefined) {
+		this.props.isUploading = value;
+	}
+
+	get securityCheck(): FileRecordSecurityCheck {
+		return this.props.securityCheck;
+	}
+
+	set securityCheck(value: FileRecordSecurityCheck) {
+		this.props.securityCheck = value;
+	}
+
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
+
+	get updatedAt(): Date {
+		return this.props.updatedAt;
+	}
+
 	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
 		this.props.securityCheck.scanned(status, reason);
 	}

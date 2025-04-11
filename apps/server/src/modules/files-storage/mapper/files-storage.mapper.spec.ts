@@ -8,9 +8,10 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../api/dto';
+import { PreviewStatus } from '../domain';
 import { FileRecordParentType } from '../domain/interface';
-import { FileRecordEntity, PreviewStatus } from '../repo';
-import { fileRecordEntityFactory } from '../testing';
+import { FileRecordEntity } from '../repo';
+import { fileRecordFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -59,7 +60,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToSingleFileParams is called', () => {
 		const setup = () => {
-			const { id: fileRecordId, name: fileName } = fileRecordEntityFactory.buildWithId();
+			const { id: fileRecordId, name: fileName } = fileRecordFactory.buildWithId();
 			const downloadFileParams: DownloadFileParams = { fileRecordId, fileName };
 
 			return { downloadFileParams, fileRecordId };
@@ -77,7 +78,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapFileRecordToFileRecordParams is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordEntityFactory.buildWithId();
+			const fileRecord = fileRecordFactory.buildWithId();
 
 			return {
 				fileRecord,
@@ -108,7 +109,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordResponse is called', () => {
 		it('should return FileRecordResponse DO', () => {
-			const fileRecord = fileRecordEntityFactory.buildWithId();
+			const fileRecord = fileRecordFactory.buildWithId();
 
 			const result = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
@@ -134,7 +135,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordListResponse is called', () => {
 		it('should return instance of FileRecordListResponse', () => {
-			const fileRecords = fileRecordEntityFactory.buildList(3);
+			const fileRecords = fileRecordFactory.buildList(3);
 
 			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
@@ -142,7 +143,7 @@ describe('FilesStorageMapper', () => {
 		});
 
 		it('should contains props [data, total, skip, limit]', () => {
-			const fileRecords = fileRecordEntityFactory.buildList(3);
+			const fileRecords = fileRecordFactory.buildList(3);
 
 			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
 
@@ -157,7 +158,7 @@ describe('FilesStorageMapper', () => {
 		});
 
 		it('should contains instances of FileRecordResponse', () => {
-			const fileRecords = fileRecordEntityFactory.buildList(3);
+			const fileRecords = fileRecordFactory.buildList(3);
 
 			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 

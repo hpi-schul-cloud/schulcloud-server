@@ -1,5 +1,5 @@
-import { ObjectId } from 'bson';
 import { EntityId } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import { FileRecord, FileRecordProps, FileRecordSecurityCheck, ParentInfo } from './file-record.do';
 import { FileRecordParentType, StorageLocation } from './interface'; // TODO: should be part of the do
 
@@ -38,6 +38,8 @@ export class FileRecordFactory {
 			storageLocation: params.storageLocation,
 			isUploading: true,
 			securityCheck: defaultSecurityCheck,
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		};
 
 		const fileRecord = FileRecordFactory.build(props);
@@ -71,6 +73,8 @@ export class FileRecordFactory {
 			// isUploading: true, -> false?
 			securityCheck: copySecurityCheck,
 			isCopyFrom: id,
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		};
 
 		const fileRecordCopy = FileRecordFactory.build(props);

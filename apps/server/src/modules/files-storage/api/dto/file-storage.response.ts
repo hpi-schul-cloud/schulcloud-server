@@ -2,11 +2,11 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller/dto';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
+import { FileRecord, PreviewStatus, ScanStatus } from '../../domain';
 import { FileRecordParentType, StorageLocation } from '../../domain/interface';
-import { FileRecordEntity, PreviewStatus, ScanStatus } from '../../repo'; // TODO: invalid import
 
 export class FileRecordResponse {
-	constructor(fileRecord: FileRecordEntity) {
+	constructor(fileRecord: FileRecord) {
 		this.id = fileRecord.id;
 		this.name = fileRecord.name;
 		this.url = `/api/v3/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;

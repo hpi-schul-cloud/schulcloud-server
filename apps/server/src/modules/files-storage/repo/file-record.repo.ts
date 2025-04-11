@@ -1,4 +1,4 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityManager, EntityName, Utils } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -11,6 +11,8 @@ import { FileRecordScope } from './scope/file-record-scope';
 
 @Injectable()
 export class FileRecordMikroOrmRepo implements FileRecordRepo {
+	constructor(private readonly em: EntityManager) {}
+
 	get entityName(): EntityName<FileRecordEntity> {
 		return FileRecordEntity;
 	}
@@ -100,10 +102,26 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 		return result;
 	}
 
-	protected mapDOToEntityProperties(domainObject: FileRecord): EntityData<FileRecordEntity> {
-		const entityProps = FileRecordEntityMapper.mapToEntityProperties(domainObject);
+	public async save(fileRecord: FileRecord | FileRecord[]): Promise<void> {
+		const fileRecords = Utils.asArray(fileRecord);
 
-		return entityProps;
+		fileRecords.forEach((f) => {
+			const entity = FileRecordEntityMapper.mapDoToEntity(f);
+			this.em.persist(entity);
+		});
+
+		await this.flush();
+	}
+
+	public async delete(fileRecord: FileRecord | FileRecord[]): Promise<void> {
+		const fileRecords = Utils.asArray(fileRecord);
+
+		fileRecords.forEach((f) => {
+			const entity = FileRecordEntityMapper.mapDoToEntity(f);
+			this.em.remove(entity);
+		});
+
+		await this.em.flush();
 	}
 
 	private async findAndCount(
@@ -119,7 +137,7 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 			orderBy: order,
 		});
 
-		const fileRecords = FileRecordEntityMapper.mapToDos(entities);
+		const fileRecords = entities.map((entity) => FileRecordEntityMapper.mapEntityToDo(entity));
 
 		return [fileRecords, count];
 	}
@@ -127,8 +145,12 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 	private async findOneOrFail(scope: FileRecordScope): Promise<FileRecord> {
 		const entity = await this.em.findOneOrFail(FileRecordEntity, scope.query);
 
-		const fileRecord = FileRecordEntityMapper.mapToDo(entity);
+		const fileRecord = FileRecordEntityMapper.mapEntityToDo(entity);
 
 		return fileRecord;
+	}
+
+	private async flush(): Promise<void> {
+		return this.em.flush();
 	}
 }

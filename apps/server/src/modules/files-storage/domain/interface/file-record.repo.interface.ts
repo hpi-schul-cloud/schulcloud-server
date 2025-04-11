@@ -30,9 +30,9 @@ export interface FileRecordRepo {
 
 	findByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>>;
 
-	save(domainObject: FileRecord): Promise<FileRecord>;
+	save(fileRecord: FileRecord | FileRecord[]): Promise<void>;
 
-	delete(domainObjects: FileRecord[] | FileRecord): Promise<void>;
+	delete(fileRecord: FileRecord | FileRecord[]): Promise<void>;
 }
 
 export const FILE_RECORD_REPO = 'FILE_RECORD_REPO';

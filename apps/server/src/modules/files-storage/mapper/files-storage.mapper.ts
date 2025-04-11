@@ -10,7 +10,6 @@ import {
 } from '../api/dto';
 import { FileRecord } from '../domain';
 import { FileRecordParentType, GetFileResponse, StorageLocation } from '../domain/interface';
-import { FileRecordEntity } from '../repo';
 
 export class FilesStorageMapper {
 	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizationBodyParamsReferenceType> = new Map([
@@ -66,12 +65,12 @@ export class FilesStorageMapper {
 		return fileRecordParams;
 	}
 
-	public static mapToFileRecordResponse(fileRecord: FileRecordEntity): FileRecordResponse {
+	public static mapToFileRecordResponse(fileRecord: FileRecord): FileRecordResponse {
 		return new FileRecordResponse(fileRecord);
 	}
 
 	public static mapToFileRecordListResponse(
-		fileRecords: FileRecordEntity[],
+		fileRecords: FileRecord[],
 		total: number,
 		skip?: number,
 		limit?: number
