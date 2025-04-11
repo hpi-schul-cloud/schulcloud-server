@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
@@ -5,6 +6,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { CourseEntity } from './course.entity';
 import { CourseScope } from './course.scope';
+import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class CourseRepo extends BaseRepo<CourseEntity> {
@@ -92,5 +94,25 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		const course = await this._em.findOneOrFail(CourseEntity, scope.query);
 
 		return course;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+
+		const teachersFiledName = getFieldName(this._em, 'teachers', CourseEntity.name);
+		const substitutionTeachersFieldName = getFieldName(this._em, 'substitutionTeachers', CourseEntity.name);
+		const studentsFieldName = getFieldName(this._em, 'students', CourseEntity.name);
+
+		const count = await this._em.nativeUpdate(
+			CourseEntity,
+			{
+				$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
+			},
+			{
+				$pull: { [teachersFiledName]: id, [substitutionTeachersFieldName]: id, [studentsFieldName]: id },
+			} as Partial<CourseEntity>
+		);
+
+		return count;
 	}
 }

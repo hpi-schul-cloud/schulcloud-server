@@ -144,4 +144,76 @@ describe('submission repo', () => {
 			expect(result[0]?.courseGroup?.students[0]?.id).toEqual(student1.id);
 		});
 	});
+
+	describe('deleteUserFromTeam', () => {
+		const setup = async () => {
+			const student1 = userFactory.build();
+			const student2 = userFactory.build();
+			const submission1 = submissionFactory.build({ teamMembers: [student1, student2] });
+			const submission2 = submissionFactory.build({ teamMembers: [student1] });
+			await em.persistAndFlush([student1, student2, submission1, submission2]);
+			em.clear();
+
+			return { student1, student2, submission1, submission2 };
+		};
+
+		it('should return the number of updated submissions', async () => {
+			const { student1 } = await setup();
+
+			const count = await repo.deleteUserFromGroupSubmissions(student1.id);
+
+			expect(count).toEqual(2);
+		});
+
+		it('should remove the user from the team members of the submissions', async () => {
+			const { student1, student2, submission1, submission2 } = await setup();
+
+			await repo.deleteUserFromGroupSubmissions(student1.id);
+
+			const result1 = await repo.findById(submission1.id);
+			expect(result1.teamMembers.getItems().map((user) => user.id)).toEqual([student2.id]);
+
+			const result2 = await repo.findById(submission2.id);
+			expect(result2.teamMembers.getItems().map((user) => user.id)).toEqual([]);
+		});
+	});
+
+	describe('removeUserReference', () => {
+		const setup = async () => {
+			const student1 = userFactory.build();
+			const student2 = userFactory.build();
+			const submission1 = submissionFactory.build({ student: student1 });
+			const submission2 = submissionFactory.build({ student: student2 });
+			await em.persistAndFlush([student1, student2, submission1, submission2]);
+			em.clear();
+
+			return { student1, student2, submission1, submission2 };
+		};
+
+		it('should return the number of updated submissions', async () => {
+			const { submission1, submission2 } = await setup();
+
+			const count = await repo.removeUserReference([submission1.id, submission2.id]);
+
+			expect(count).toEqual(2);
+		});
+
+		it('should remove the user reference from the submissions', async () => {
+			const { submission1 } = await setup();
+
+			await repo.removeUserReference([submission1.id]);
+
+			const result1 = await repo.findById(submission1.id);
+			expect(result1.student).toBeUndefined();
+		});
+
+		it('should not affect other submissions', async () => {
+			const { submission1, submission2 } = await setup();
+
+			await repo.removeUserReference([submission1.id]);
+
+			const result2 = await repo.findById(submission2.id);
+			expect(result2.student?.id).toEqual(submission2.student?.id);
+		});
+	});
 });

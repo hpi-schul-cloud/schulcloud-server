@@ -277,51 +277,49 @@ describe('TaskService', () => {
 			};
 		};
 
-		describe('when deleteUserData', () => {
-			it('should call deleteTasksByOnlyCreator with userId', async () => {
-				const { creator, expectedResultByOnlyCreator } = setup();
-				jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
+		it('should call deleteTasksByOnlyCreator with userId', async () => {
+			const { creator, expectedResultByOnlyCreator } = setup();
+			jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
 
-				await taskService.deleteUserData(creator.id);
+			await taskService.deleteUserData(creator.id);
 
-				expect(taskService.deleteTasksByOnlyCreator).toHaveBeenCalledWith(creator.id);
-			});
+			expect(taskService.deleteTasksByOnlyCreator).toHaveBeenCalledWith(creator.id);
+		});
 
-			it('should call removeCreatorIdFromTasks with userId', async () => {
-				const { creator, expectedResultWithCreatorInTask } = setup();
-				jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
+		it('should call removeCreatorIdFromTasks with userId', async () => {
+			const { creator, expectedResultWithCreatorInTask } = setup();
+			jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
 
-				await taskService.deleteUserData(creator.id);
+			await taskService.deleteUserData(creator.id);
 
-				expect(taskService.removeCreatorIdFromTasks).toHaveBeenCalledWith(creator.id);
-			});
+			expect(taskService.removeCreatorIdFromTasks).toHaveBeenCalledWith(creator.id);
+		});
 
-			it('should call removeUserFromFinished with userId', async () => {
-				const { creator, expectedResultForFinishedTask } = setup();
-				jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
+		it('should call removeUserFromFinished with userId', async () => {
+			const { creator, expectedResultForFinishedTask } = setup();
+			jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
 
-				await taskService.deleteUserData(creator.id);
+			await taskService.deleteUserData(creator.id);
 
-				expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(creator.id);
-			});
+			expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(creator.id);
+		});
 
-			it('should return domainOperation object with information about deleted user data', async () => {
-				const {
-					creator,
-					expectedResult,
-					expectedResultForFinishedTask,
-					expectedResultWithCreatorInTask,
-					expectedResultByOnlyCreator,
-				} = setup();
+		it('should return domainOperation object with information about deleted user data', async () => {
+			const {
+				creator,
+				expectedResult,
+				expectedResultForFinishedTask,
+				expectedResultWithCreatorInTask,
+				expectedResultByOnlyCreator,
+			} = setup();
 
-				jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
-				jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
-				jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
+			jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
+			jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
+			jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
 
-				const result = await taskService.deleteUserData(creator.id);
+			const result = await taskService.deleteUserData(creator.id);
 
-				expect(result).toEqual(expectedResult);
-			});
+			expect(result).toEqual(expectedResult);
 		});
 	});
 

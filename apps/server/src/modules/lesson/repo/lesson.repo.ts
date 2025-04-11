@@ -1,4 +1,4 @@
-import { EntityDictionary, EntityName } from '@mikro-orm/core';
+import { EntityDictionary, EntityName, FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
@@ -64,5 +64,17 @@ export class LessonRepo extends BaseRepo<LessonEntity> {
 		);
 
 		return lessons;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		// replace all user references with undefined
+		const count = await this._em.nativeUpdate(
+			this.entityName,
+			{ contents: { $elemMatch: { user: id } } } as FilterQuery<LessonEntity>,
+			{ $unset: { 'contents.$.user': '' } } as Partial<LessonEntity>
+		);
+
+		return count;
 	}
 }

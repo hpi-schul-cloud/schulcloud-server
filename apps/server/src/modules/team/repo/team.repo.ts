@@ -49,4 +49,13 @@ export class TeamRepo extends BaseRepo<TeamEntity> {
 			})
 		);
 	}
+
+	public async removeUserReferences(userId: EntityId): Promise<number> {
+		const id = new ObjectId(userId);
+		const count = await this._em.nativeUpdate(TeamEntity, { userIds: { userId: id } }, {
+			$pull: { userIds: { userId: id } },
+		} as Partial<TeamEntity>);
+
+		return count;
+	}
 }

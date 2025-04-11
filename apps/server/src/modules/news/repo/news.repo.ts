@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
@@ -6,10 +7,11 @@ import { BaseRepo } from '@shared/repo/base.repo';
 import { NewsTargetFilter } from './news-target-filter';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsScope } from './scope/news-scope';
+import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class NewsRepo extends BaseRepo<News> {
-	propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
+	private readonly propertiesToPopulate = ['school', 'target', 'creator', 'updater'];
 
 	get entityName() {
 		return News;
@@ -20,7 +22,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param targets
 	 * @param options
 	 */
-	async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions<News>): Promise<Counted<News[]>> {
+	public async findAllPublished(targets: NewsTargetFilter[], options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		const scope = new NewsScope();
 		scope.byTargets(targets);
 		scope.byPublished();
@@ -35,7 +37,7 @@ export class NewsRepo extends BaseRepo<News> {
 	 * @param creatorId - creatorId
 	 * @param options
 	 */
-	async findAllUnpublishedByUser(
+	public async findAllUnpublishedByUser(
 		targets: NewsTargetFilter[],
 		creatorId: EntityId,
 		options?: IFindOptions<News>
@@ -50,10 +52,36 @@ export class NewsRepo extends BaseRepo<News> {
 	}
 
 	/** resolves a news document with some elements (school, target, and updator/creator) populated already */
-	async findOneById(id: EntityId): Promise<News> {
+	public async findOneById(id: EntityId): Promise<News> {
 		const newsEntity = await this._em.findOneOrFail(News, id);
 		await this._em.populate(newsEntity, this.propertiesToPopulate as never[]);
 		return newsEntity;
+	}
+
+	public async findByCreatorOrUpdaterId(userId: EntityId): Promise<Counted<News[]>> {
+		const scope = new NewsScope('$or');
+		scope.byCreator(userId);
+		scope.byUpdater(userId);
+
+		const countedNewsList = await this.findNewsAndCount(scope.query);
+		return countedNewsList;
+	}
+
+	public async removeUserReference(userId: EntityId): Promise<[number, number]> {
+		const id = new ObjectId(userId);
+
+		const creatorFieldName = getFieldName(this._em, 'creator', News.name);
+		const updaterFieldName = getFieldName(this._em, 'updater', News.name);
+
+		const countCreator = await this._em.nativeUpdate(News, { creator: id }, {
+			$unset: { [creatorFieldName]: '' },
+		} as Partial<News>);
+
+		const countUpdater = await this._em.nativeUpdate(News, { updater: id }, {
+			$unset: { [updaterFieldName]: '' },
+		} as Partial<News>);
+
+		return [countCreator, countUpdater];
 	}
 
 	/** resolves a news documents list with some elements (school, target, and updator/creator) populated already */
@@ -73,14 +101,5 @@ export class NewsRepo extends BaseRepo<News> {
 		const courseNews = newsEntities.filter((news) => news instanceof CourseNews);
 		await this._em.populate(courseNews, [discriminatorColumn]);
 		return [newsEntities, count];
-	}
-
-	async findByCreatorOrUpdaterId(userId: EntityId): Promise<Counted<News[]>> {
-		const scope = new NewsScope('$or');
-		scope.byCreator(userId);
-		scope.byUpdater(userId);
-
-		const countedNewsList = await this.findNewsAndCount(scope.query);
-		return countedNewsList;
 	}
 }

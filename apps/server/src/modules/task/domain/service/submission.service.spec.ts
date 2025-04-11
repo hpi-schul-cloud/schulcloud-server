@@ -323,23 +323,33 @@ describe('Submission Service', () => {
 				});
 
 				submissionRepo.findAllByUserId.mockResolvedValueOnce([[submission], 1]);
-				submissionRepo.delete.mockResolvedValueOnce();
 
 				return { submission, user1, user2 };
 			};
 
 			it('should return updated submission number of 1', async () => {
-				const { submission, user1, user2 } = setup();
+				const { user1 } = setup();
 
 				const result = await service.removeUserReferencesFromSubmissions(user1.id);
 
 				expect(result.count).toEqual(1);
 				expect(result.refs.length).toEqual(1);
-				expect(submission.student).toBeUndefined();
-				expect(submission.teamMembers.length).toEqual(1);
-				expect(submission.teamMembers[0]).toEqual(user2);
-				expect(submissionRepo.save).toBeCalledTimes(1);
-				expect(submissionRepo.save).toHaveBeenCalledWith([submission]);
+			});
+
+			it('should call repo removeUserReference', async () => {
+				const { submission, user1 } = setup();
+
+				await service.removeUserReferencesFromSubmissions(user1.id);
+
+				expect(submissionRepo.removeUserReference).toHaveBeenCalledWith([submission.id]);
+			});
+
+			it('should call repo deleteUserFromTeam', async () => {
+				const { user1 } = setup();
+
+				await service.removeUserReferencesFromSubmissions(user1.id);
+
+				expect(submissionRepo.deleteUserFromGroupSubmissions).toHaveBeenCalledWith(user1.id);
 			});
 		});
 	});
@@ -375,39 +385,37 @@ describe('Submission Service', () => {
 			};
 		};
 
-		describe('when deleteUserData', () => {
-			it('should call deleteSingleSubmissionsOwnedByUser with userId', async () => {
-				const { user1, expectedResultForOwner } = setup();
-				jest.spyOn(service, 'deleteSingleSubmissionsOwnedByUser').mockResolvedValueOnce(expectedResultForOwner);
+		it('should call deleteSingleSubmissionsOwnedByUser with userId', async () => {
+			const { user1, expectedResultForOwner } = setup();
+			jest.spyOn(service, 'deleteSingleSubmissionsOwnedByUser').mockResolvedValueOnce(expectedResultForOwner);
 
-				await service.deleteUserData(user1.id);
+			await service.deleteUserData(user1.id);
 
-				expect(service.deleteSingleSubmissionsOwnedByUser).toHaveBeenCalledWith(user1.id);
-			});
+			expect(service.deleteSingleSubmissionsOwnedByUser).toHaveBeenCalledWith(user1.id);
+		});
 
-			it('should call removeUserReferencesFromSubmissions with userId', async () => {
-				const { user1, expectedResultForUsersPermission } = setup();
-				jest
-					.spyOn(service, 'removeUserReferencesFromSubmissions')
-					.mockResolvedValueOnce(expectedResultForUsersPermission);
+		it('should call removeUserReferencesFromSubmissions with userId', async () => {
+			const { user1, expectedResultForUsersPermission } = setup();
+			jest
+				.spyOn(service, 'removeUserReferencesFromSubmissions')
+				.mockResolvedValueOnce(expectedResultForUsersPermission);
 
-				await service.deleteUserData(user1.id);
+			await service.deleteUserData(user1.id);
 
-				expect(service.removeUserReferencesFromSubmissions).toHaveBeenCalledWith(user1.id);
-			});
+			expect(service.removeUserReferencesFromSubmissions).toHaveBeenCalledWith(user1.id);
+		});
 
-			it('should return domainOperation object with information about deleted user data', async () => {
-				const { user1, expectedResultForOwner, expectedResultForUsersPermission, expectedResult } = setup();
+		it('should return domainOperation object with information about deleted user data', async () => {
+			const { user1, expectedResultForOwner, expectedResultForUsersPermission, expectedResult } = setup();
 
-				jest.spyOn(service, 'deleteSingleSubmissionsOwnedByUser').mockResolvedValueOnce(expectedResultForOwner);
-				jest
-					.spyOn(service, 'removeUserReferencesFromSubmissions')
-					.mockResolvedValueOnce(expectedResultForUsersPermission);
+			jest.spyOn(service, 'deleteSingleSubmissionsOwnedByUser').mockResolvedValueOnce(expectedResultForOwner);
+			jest
+				.spyOn(service, 'removeUserReferencesFromSubmissions')
+				.mockResolvedValueOnce(expectedResultForUsersPermission);
 
-				const result = await service.deleteUserData(user1.id);
+			const result = await service.deleteUserData(user1.id);
 
-				expect(result).toEqual(expectedResult);
-			});
+			expect(result).toEqual(expectedResult);
 		});
 	});
 
