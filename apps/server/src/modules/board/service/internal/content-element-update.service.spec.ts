@@ -55,125 +55,226 @@ describe('ContentElementUpdateService', () => {
 		jest.clearAllMocks();
 	});
 
-	it('should update FileElement', async () => {
-		const element = fileElementFactory.build();
-		const content = new FileContentBody();
-		content.caption = 'caption';
-		content.alternativeText = 'alternativeText';
+	describe('when the element is a FileElement', () => {
+		const setup = () => {
+			const element = fileElementFactory.build();
+			const content = new FileContentBody();
+			content.caption = 'caption';
+			content.alternativeText = 'alternativeText';
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.caption).toBe('caption');
-		expect(element.alternativeText).toBe('alternativeText');
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update FileElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.caption).toBe('caption');
+			expect(element.alternativeText).toBe('alternativeText');
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update FileFolderElement', async () => {
-		const element = fileFolderElementFactory.build();
-		const content = new FileFolderContentBody();
-		content.title = 'title';
+	describe('when the element is a FileFolderElement', () => {
+		const setup = () => {
+			const element = fileFolderElementFactory.build();
+			const content = new FileFolderContentBody();
+			content.title = 'title';
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.title).toBe('title');
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update FileFolderElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.title).toBe('title');
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update LinkElement', async () => {
-		const element = linkElementFactory.build();
-		const content = new LinkContentBody();
-		content.url = 'http://example.com/';
-		content.title = 'title';
-		content.description = 'description';
-		content.imageUrl = 'relative-image.jpg';
+	describe('when the element is a LinkElement', () => {
+		const setup = () => {
+			const element = linkElementFactory.build();
+			const content = new LinkContentBody();
+			content.url = 'http://example.com/';
+			content.title = 'title';
+			content.description = 'description';
+			content.imageUrl = 'relative-image.jpg';
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.url).toBe('http://example.com/');
-		expect(element.title).toBe('title');
-		expect(element.description).toBe('description');
-		expect(element.imageUrl).toBe('relative-image.jpg');
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update LinkElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.url).toBe('http://example.com/');
+			expect(element.title).toBe('title');
+			expect(element.description).toBe('description');
+			expect(element.imageUrl).toBe('relative-image.jpg');
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update RichTextElement', async () => {
-		const element = richTextElementFactory.build();
-		const content = new RichTextContentBody();
-		content.text = 'text';
-		content.inputFormat = InputFormat.PLAIN_TEXT;
+	describe('when the element is a RichTextElement', () => {
+		const setup = () => {
+			const element = richTextElementFactory.build();
+			const content = new RichTextContentBody();
+			content.text = 'text';
+			content.inputFormat = InputFormat.PLAIN_TEXT;
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.text).toBe('text');
-		expect(element.inputFormat).toBe(InputFormat.PLAIN_TEXT);
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update RichTextElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.text).toBe('text');
+			expect(element.inputFormat).toBe(InputFormat.PLAIN_TEXT);
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update DrawingElement', async () => {
-		const element = drawingElementFactory.build();
-		const content = new DrawingContentBody();
-		content.description = 'description';
+	describe('when the element is a DrawingElement', () => {
+		const setup = () => {
+			const element = drawingElementFactory.build();
+			const content = new DrawingContentBody();
+			content.description = 'description';
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.description).toBe('description');
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update DrawingElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.description).toBe('description');
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update SubmissionContainerElement', async () => {
-		const element = submissionContainerElementFactory.build();
-		const content = new SubmissionContainerContentBody();
-		content.dueDate = new Date();
+	describe('when the element is a SubmissionContainerElement', () => {
+		const setup = () => {
+			const element = submissionContainerElementFactory.build();
+			const content = new SubmissionContainerContentBody();
+			content.dueDate = new Date();
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.dueDate).toEqual(content.dueDate);
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update SubmissionContainerElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.dueDate).toEqual(content.dueDate);
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update ExternalToolElement', async () => {
-		const element = externalToolElementFactory.build();
-		const content = new ExternalToolContentBody();
-		content.contextExternalToolId = 'contextExternalToolId';
+	describe('when the element is a ExternalToolElement', () => {
+		const setup = () => {
+			const element = externalToolElementFactory.build({
+				contextExternalToolId: undefined,
+			});
+			const content = new ExternalToolContentBody();
+			const contextExternalToolId = new ObjectId().toHexString();
+			content.contextExternalToolId = contextExternalToolId;
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+				contextExternalToolId,
+			};
+		};
 
-		expect(element.contextExternalToolId).toBe('contextExternalToolId');
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update ExternalToolElement', async () => {
+			const { element, content, contextExternalToolId } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.contextExternalToolId).toBe(contextExternalToolId);
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update VideoConferenceElement', async () => {
-		const element = videoConferenceElementFactory.build();
-		const content = new VideoConferenceContentBody();
-		content.title = 'vc title';
+	describe('when the element is a VideoConferenceElement', () => {
+		const setup = () => {
+			const element = videoConferenceElementFactory.build();
+			const content = new VideoConferenceContentBody();
+			content.title = 'vc title';
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+			};
+		};
 
-		expect(element.title).toBe('vc title');
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update VideoConferenceElement', async () => {
+			const { element, content } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.title).toBe('vc title');
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should update H5PElement', async () => {
-		const element = h5pElementFactory.build();
-		const content = new H5PContentBody();
-		const contentId = new ObjectId().toHexString();
-		content.contentId = contentId;
+	describe('when the element is a H5PElement', () => {
+		const setup = () => {
+			const element = h5pElementFactory.build();
+			const content = new H5PContentBody();
+			const contentId = new ObjectId().toHexString();
+			content.contentId = contentId;
 
-		await service.updateContent(element, content);
+			return {
+				element,
+				content,
+				contentId,
+			};
+		};
 
-		expect(element.contentId).toBe(contentId);
-		expect(repo.save).toHaveBeenCalledWith(element);
+		it('should update H5PElement', async () => {
+			const { element, content, contentId } = setup();
+
+			await service.updateContent(element, content);
+
+			expect(element.contentId).toBe(contentId);
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
 	});
 
-	it('should throw error for unknown element type', async () => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const element = {} as any;
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const content = {} as any;
-
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		await expect(service.updateContent(element, content)).rejects.toThrowError(
-			"Cannot update element of type: 'Object'"
-		);
+	describe('when the element is unkown', () => {
+		it('should throw error for unknown element type', async () => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument
+			await expect(service.updateContent({} as any, {} as any)).rejects.toThrowError(
+				"Cannot update element of type: 'Object'"
+			);
+		});
 	});
 });

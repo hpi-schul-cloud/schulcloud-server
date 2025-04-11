@@ -110,7 +110,7 @@ export class ContentElementUpdateService {
 	}
 
 	public updateExternalToolElement(element: ExternalToolElement, content: ExternalToolContentBody): void {
-		if (content.contextExternalToolId !== undefined) {
+		if (content.contextExternalToolId !== undefined && element.contextExternalToolId === undefined) {
 			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
 			element.contextExternalToolId = content.contextExternalToolId;
 		}
@@ -125,6 +125,8 @@ export class ContentElementUpdateService {
 	}
 
 	public updateH5PElement(element: H5PElement, content: H5PContentBody): void {
-		element.contentId = content.contentId;
+		if (content.contentId !== undefined && element.contentId === undefined) {
+			element.contentId = content.contentId;
+		}
 	}
 }
