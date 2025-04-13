@@ -6,9 +6,7 @@ import {
 	ExportApiInterface,
 	RobjExportKlasse,
 	RobjExportLehrer,
-	RobjExportLehrerMigration,
 	RobjExportSchueler,
-	RobjExportSchuelerMigration,
 	RobjExportSchule,
 	TspClientFactory,
 } from '@infra/tsp-client';
