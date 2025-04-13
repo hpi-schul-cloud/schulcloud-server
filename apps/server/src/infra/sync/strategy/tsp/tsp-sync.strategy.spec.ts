@@ -200,7 +200,7 @@ describe(TspSyncStrategy.name, () => {
 					},
 					foundSystemSchools: [school],
 					foundSystem: system,
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 
 				return {
@@ -236,13 +236,13 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, 10);
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, 15);
 
 				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, 10);
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, 15);
 
 				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, 10);
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, 15);
 			});
 
 			it('should load all schools', async () => {
@@ -315,7 +315,7 @@ describe(TspSyncStrategy.name, () => {
 				setupMockServices({
 					fetchedSchools: tspSchools,
 					foundSystem: system,
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 
 				return { system, tspSchool };
@@ -345,7 +345,7 @@ describe(TspSyncStrategy.name, () => {
 					}),
 					fetchedSchools: tspSchools,
 					foundSchool: school,
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 
 				return { school, tspSchool };
@@ -374,7 +374,7 @@ describe(TspSyncStrategy.name, () => {
 						oauthConfig: systemOauthConfigFactory.build(),
 					}),
 					fetchedSchools: tspSchools,
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 			};
 
@@ -398,7 +398,7 @@ describe(TspSyncStrategy.name, () => {
 						oauthConfig: systemOauthConfigFactory.build(),
 					}),
 					foundSystemSchools: schoolFactory.buildList(2),
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 			};
 
@@ -428,7 +428,7 @@ describe(TspSyncStrategy.name, () => {
 						}),
 						usersOfClasses: new Map(),
 					},
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 			};
 
@@ -458,7 +458,7 @@ describe(TspSyncStrategy.name, () => {
 							[faker.string.uuid(), [{ externalId: faker.string.uuid(), role: RoleName.TEACHER }]],
 						]),
 					},
-					configValues: [1, 10, true, 10, 1, 50],
+					configValues: [1, 10, 15, 50],
 				});
 			};
 			it('should throw NotFoundLoggableException', async () => {

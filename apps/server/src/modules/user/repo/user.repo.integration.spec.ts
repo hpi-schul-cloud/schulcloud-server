@@ -69,7 +69,6 @@ describe('user repo', () => {
 					'school',
 					'secondarySchools',
 					'source',
-					'sourceOptions',
 					'_id',
 					'ldapDn',
 					'externalId',
@@ -220,7 +219,6 @@ describe('user repo', () => {
 					'birthday',
 					'consent',
 					'source',
-					'sourceOptions',
 					'discoverable',
 				].sort()
 			);

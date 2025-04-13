@@ -26,7 +26,6 @@ import { TspSchulnummerMissingLoggable } from './loggable/tsp-schulnummer-missin
 import { TspSyncedUsersLoggable } from './loggable/tsp-synced-users.loggable';
 import { TspSyncingUsersLoggable } from './loggable/tsp-syncing-users.loggable';
 import { TspFetchService } from './tsp-fetch.service';
-import { TspLegacyMigrationService } from './tsp-legacy-migration.service';
 import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
 import { TspSyncConfig } from './tsp-sync.config';
@@ -44,7 +43,6 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspSyncService: TspSchoolService,
 		private readonly tspFetchService: TspFetchService,
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
-		private readonly tspLegacyMigrationService: TspLegacyMigrationService,
 		private readonly configService: ConfigService<TspSyncConfig, true>,
 		private readonly systemService: SystemService,
 		private readonly provisioningService: TspProvisioningService
@@ -60,8 +58,6 @@ export class TspSyncStrategy extends SyncStrategy {
 	public async sync(): Promise<void> {
 		// Please keep the order of this steps/methods as each relies on the data processed in the ones before.
 		const system = await this.findTspSystemOrFail();
-
-		await this.tspLegacyMigrationService.prepareLegacySyncDataForNewSync(system.id);
 
 		await this.syncTspSchools(system);
 

@@ -1,7 +1,4 @@
 export { TspDataFetchedLoggable } from './tsp-data-fetched.loggable';
-export { TspLegacyMigrationStartLoggable } from './tsp-legacy-migration-start.loggable';
-export { TspLegacySchoolMigrationCountLoggable } from './tsp-legacy-school-migration-count.loggable';
-export { TspLegacySchoolMigrationSuccessLoggable } from './tsp-legacy-school-migration-success.loggable';
 export { TspMissingExternalIdLoggable } from './tsp-missing-external-id.loggable';
 export { TspSchoolsFetchedLoggable } from './tsp-schools-fetched.loggable';
 export { TspSchoolsSyncedLoggable } from './tsp-schools-synced.loggable';

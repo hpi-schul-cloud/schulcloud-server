@@ -15,9 +15,7 @@ import {
 import {
 	robjExportKlasseFactory,
 	robjExportLehrerFactory,
-	robjExportLehrerMigrationFactory,
 	robjExportSchuelerFactory,
-	robjExportSchuelerMigrationFactory,
 	robjExportSchuleFactory,
 } from '@infra/tsp-client/testing';
 import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
@@ -103,25 +101,11 @@ describe(TspFetchService.name, () => {
 			data: classes,
 		});
 
-		const tspTeacherMigration = robjExportLehrerMigrationFactory.build();
-		const teacherMigrations = [tspTeacherMigration];
-		const responseTeacherMigrations = createMock<AxiosResponse<Array<RobjExportLehrerMigration>>>({
-			data: teacherMigrations,
-		});
-
-		const tspStudentMigration = robjExportSchuelerMigrationFactory.build();
-		const studentMigrations = [tspStudentMigration];
-		const responseStudentMigrations = createMock<AxiosResponse<Array<RobjExportSchuelerMigration>>>({
-			data: studentMigrations,
-		});
-
 		const exportApiMock = createMock<ExportApiInterface>();
 		exportApiMock.exportSchuleList.mockResolvedValueOnce(responseSchools);
 		exportApiMock.exportLehrerList.mockResolvedValueOnce(responseTeachers);
 		exportApiMock.exportSchuelerList.mockResolvedValueOnce(responseStudents);
 		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
-		exportApiMock.exportLehrerListMigration.mockResolvedValueOnce(responseTeacherMigrations);
-		exportApiMock.exportSchuelerListMigration.mockResolvedValueOnce(responseStudentMigrations);
 
 		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
 
@@ -135,8 +119,6 @@ describe(TspFetchService.name, () => {
 			teachers,
 			students,
 			classes,
-			teacherMigrations,
-			studentMigrations,
 		};
 	};
 
@@ -268,39 +250,6 @@ describe(TspFetchService.name, () => {
 
 				expect(classes).toBeDefined();
 				expect(classes).toBeInstanceOf(Array);
-			});
-		});
-	});
-
-	describe('fetchTspTeacherMigrations', () => {
-		describe('when tsp teacher migrations are fetched', () => {
-			it('should create the client', async () => {
-				const { clientId, clientSecret, tokenEndpoint, system } = setupTspClient();
-
-				await sut.fetchTspTeacherMigrations(system);
-
-				expect(tspClientFactory.createExportClient).toHaveBeenCalledWith({
-					clientId,
-					clientSecret,
-					tokenEndpoint,
-				});
-			});
-
-			it('should call exportLehrerListMigration', async () => {
-				const { system, exportApiMock } = setupTspClient();
-
-				await sut.fetchTspTeacherMigrations(system);
-
-				expect(exportApiMock.exportLehrerListMigration).toHaveBeenCalledTimes(1);
-			});
-
-			it('should return an array of teacher migrations', async () => {
-				const { system } = setupTspClient();
-
-				const result = await sut.fetchTspTeacherMigrations(system);
-
-				expect(result).toBeDefined();
-				expect(result).toBeInstanceOf(Array);
 			});
 		});
 	});
