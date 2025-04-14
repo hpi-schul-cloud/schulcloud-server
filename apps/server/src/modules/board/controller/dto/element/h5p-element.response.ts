@@ -3,8 +3,8 @@ import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
-export class H5PElementContent {
-	constructor(props: H5PElementContent) {
+export class H5pElementContent {
+	constructor(props: H5pElementContent) {
 		this.contentId = props.contentId;
 	}
 
@@ -12,8 +12,8 @@ export class H5PElementContent {
 	public contentId: string | null;
 }
 
-export class H5PElementResponse {
-	constructor(props: H5PElementResponse) {
+export class H5pElementResponse {
+	constructor(props: H5pElementResponse) {
 		this.id = props.id;
 		this.type = props.type;
 		this.content = props.content;
@@ -27,7 +27,7 @@ export class H5PElementResponse {
 	public type: ContentElementType.H5P;
 
 	@ApiProperty()
-	public content: H5PElementContent;
+	public content: H5pElementContent;
 
 	@ApiProperty()
 	public timestamps: TimestampsResponse;

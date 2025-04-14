@@ -144,7 +144,7 @@
 		"pregenerate-client:boards-api": "rimraf ./apps/server/src/infra/boards-client/generated",
 		"generate-client:boards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key boards-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
-		"generate-client:cards-api": "node ./scripts/generate-client.js -u 'http://localhost:3030/api/v3/docs-json/' -p 'apps/server/src/modules/common-cartridge/common-cartridge-client/card-client/cards-api-client' -c 'openapitools-config.json' -f 'operationId:CardController_getCards'"
+		"generate-client:cards-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key cc-cards-api"
 	},
 	"overrides": {
 		"gm": {

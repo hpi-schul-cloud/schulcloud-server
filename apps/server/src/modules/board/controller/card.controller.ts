@@ -26,7 +26,7 @@ import {
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
-	H5PElementResponse,
+	H5pElementResponse,
 	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
@@ -128,7 +128,7 @@ export class CardController {
 		DrawingElementResponse,
 		DeletedElementResponse,
 		VideoConferenceElementResponse,
-		H5PElementResponse
+		H5pElementResponse
 	)
 	@ApiResponse({
 		status: 201,
@@ -142,7 +142,7 @@ export class CardController {
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
-				{ $ref: getSchemaPath(H5PElementResponse) },
+				{ $ref: getSchemaPath(H5pElementResponse) },
 			],
 		},
 	})

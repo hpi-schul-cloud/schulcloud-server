@@ -1,7 +1,7 @@
 import { BoardNode } from './board-node.do';
-import type { H5PElementProps } from './types';
+import type { H5pElementProps } from './types';
 
-export class H5PElement extends BoardNode<H5PElementProps> {
+export class H5pElement extends BoardNode<H5pElementProps> {
 	get contentId(): string | undefined {
 		return this.props.contentId;
 	}
@@ -15,4 +15,4 @@ export class H5PElement extends BoardNode<H5PElementProps> {
 	}
 }
 
-export const isH5PElement = (reference: unknown): reference is H5PElement => reference instanceof H5PElement;
+export const isH5pElement = (reference: unknown): reference is H5pElement => reference instanceof H5pElement;

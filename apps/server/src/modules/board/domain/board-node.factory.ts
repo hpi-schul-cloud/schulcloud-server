@@ -9,7 +9,7 @@ import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { FileFolderElement } from './file-folder-element.do';
-import { H5PElement } from './h5p-element.do';
+import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
@@ -103,7 +103,7 @@ export class BoardNodeFactory {
 				});
 				break;
 			case ContentElementType.H5P:
-				element = new H5PElement({
+				element = new H5pElement({
 					...this.getBaseProps(),
 				});
 				break;

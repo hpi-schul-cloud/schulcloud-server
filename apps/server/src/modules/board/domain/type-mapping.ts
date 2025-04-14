@@ -8,7 +8,7 @@ import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { FileFolderElement } from './file-folder-element.do';
-import { H5PElement } from './h5p-element.do';
+import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
 import { MediaBoard, MediaExternalToolElement, MediaLine } from './media-board';
 import { RichTextElement } from './rich-text-element.do';
@@ -36,7 +36,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
 	[BoardNodeType.VIDEO_CONFERENCE_ELEMENT]: VideoConferenceElement,
 	[BoardNodeType.DELETED_ELEMENT]: DeletedElement,
-	[BoardNodeType.H5P_ELEMENT]: H5PElement,
+	[BoardNodeType.H5P_ELEMENT]: H5pElement,
 } as const;
 
 export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>

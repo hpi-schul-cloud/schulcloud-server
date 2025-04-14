@@ -14,7 +14,7 @@ import { DrawingElementResponseMapper } from './drawing-element-response.mapper'
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { FileFolderElementResponseMapper } from './file-folder-element-response.mapper';
-import { H5PElementResponseMapper } from './h5p-element-response.mapper';
+import { H5pElementResponseMapper } from './h5p-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
 import { SubmissionContainerElementResponseMapper } from './submission-container-element-response.mapper';
@@ -33,7 +33,7 @@ export class ContentElementResponseFactory {
 		VideoConferenceElementResponseMapper.getInstance(),
 		FileFolderElementResponseMapper.getInstance(),
 		FileFolderElementResponseMapper.getInstance(),
-		H5PElementResponseMapper.getInstance(),
+		H5pElementResponseMapper.getInstance(),
 	];
 
 	public static mapToResponse(element: AnyBoardNode): AnyContentElementResponse {

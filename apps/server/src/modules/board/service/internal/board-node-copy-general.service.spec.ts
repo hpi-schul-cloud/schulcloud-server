@@ -102,7 +102,7 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyMediaExternalToolElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyDeletedElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyVideoConferenceElement').mockResolvedValue(mockStatus);
-		jest.spyOn(service, 'copyH5PElement').mockResolvedValue(mockStatus);
+		jest.spyOn(service, 'copyH5pElement').mockResolvedValue(mockStatus);
 
 		return { copyContext, mockStatus };
 	};
@@ -321,7 +321,7 @@ describe(BoardNodeCopyService.name, () => {
 
 				const result = await service.copy(node, copyContext);
 
-				expect(service.copyH5PElement).toHaveBeenCalledWith(node, copyContext);
+				expect(service.copyH5pElement).toHaveBeenCalledWith(node, copyContext);
 				expect(result).toEqual(mockStatus);
 			});
 		});

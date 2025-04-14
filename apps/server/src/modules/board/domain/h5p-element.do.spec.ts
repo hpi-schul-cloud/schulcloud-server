@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { h5pElementFactory } from '../testing';
-import { H5PElement, isH5PElement } from './h5p-element.do';
+import { H5pElement, isH5pElement } from './h5p-element.do';
 
-describe('H5PElement', () => {
-	let h5pElement: H5PElement;
+describe('H5pElement', () => {
+	let h5pElement: H5pElement;
 
 	beforeEach(() => {
 		h5pElement = h5pElementFactory.build({
@@ -11,12 +11,12 @@ describe('H5PElement', () => {
 		});
 	});
 
-	it('should be instance of H5PElement', () => {
-		expect(isH5PElement(h5pElement)).toBe(true);
+	it('should be instance of H5pElement', () => {
+		expect(isH5pElement(h5pElement)).toBe(true);
 	});
 
-	it('should not be instance of H5PElement', () => {
-		expect(isH5PElement({})).toBe(false);
+	it('should not be instance of H5pElement', () => {
+		expect(isH5pElement({})).toBe(false);
 	});
 
 	it('should return contextExternalToolId', () => {

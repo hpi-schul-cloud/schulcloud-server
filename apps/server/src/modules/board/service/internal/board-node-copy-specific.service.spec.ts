@@ -769,7 +769,7 @@ describe(BoardNodeCopyService.name, () => {
 		it('should copy the node', async () => {
 			const { copyContext, h5pElement } = setup();
 
-			const result = await service.copyH5PElement(h5pElement, copyContext);
+			const result = await service.copyH5pElement(h5pElement, copyContext);
 
 			const expectedStatus: CopyStatus = {
 				type: CopyElementType.H5P_ELEMENT,

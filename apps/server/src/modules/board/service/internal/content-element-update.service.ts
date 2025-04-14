@@ -7,7 +7,7 @@ import {
 	ExternalToolContentBody,
 	FileContentBody,
 	FileFolderContentBody,
-	H5PContentBody,
+	H5pContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
@@ -25,12 +25,12 @@ import type {
 	VideoConferenceElement,
 } from '../../domain';
 import {
-	H5PElement,
+	H5pElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
 	isFileFolderElement,
-	isH5PElement,
+	isH5pElement,
 	isLinkElement,
 	isRichTextElement,
 	isSubmissionContainerElement,
@@ -60,8 +60,8 @@ export class ContentElementUpdateService {
 			this.updateVideoConferenceElement(element, content);
 		} else if (isFileFolderElement(element) && content instanceof FileFolderContentBody) {
 			this.updateFileFolderElement(element, content);
-		} else if (isH5PElement(element) && content instanceof H5PContentBody) {
-			this.updateH5PElement(element, content);
+		} else if (isH5pElement(element) && content instanceof H5pContentBody) {
+			this.updateH5pElement(element, content);
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
@@ -124,7 +124,7 @@ export class ContentElementUpdateService {
 		element.title = content.title;
 	}
 
-	public updateH5PElement(element: H5PElement, content: H5PContentBody): void {
+	public updateH5pElement(element: H5pElement, content: H5pContentBody): void {
 		if (content.contentId !== undefined && element.contentId === undefined) {
 			element.contentId = content.contentId;
 		}

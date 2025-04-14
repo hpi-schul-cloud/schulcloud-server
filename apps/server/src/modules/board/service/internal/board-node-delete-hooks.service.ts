@@ -11,12 +11,12 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
-	H5PElement,
+	H5pElement,
 	isCollaborativeTextEditorElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
-	isH5PElement,
+	isH5pElement,
 	isLinkElement,
 	isMediaExternalToolElement,
 	LinkElement,
@@ -52,8 +52,8 @@ export class BoardNodeDeleteHooksService {
 			await this.afterDeleteCollaborativeTextEditorElement(boardNode);
 		} else if (isMediaExternalToolElement(boardNode)) {
 			await this.afterDeleteMediaExternalToolElement(boardNode);
-		} else if (isH5PElement(boardNode)) {
-			await this.afterDeleteH5PElement(boardNode);
+		} else if (isH5pElement(boardNode)) {
+			await this.afterDeleteH5pElement(boardNode);
 		} else {
 			// noop
 		}
@@ -103,7 +103,7 @@ export class BoardNodeDeleteHooksService {
 		}
 	}
 
-	public async afterDeleteH5PElement(element: H5PElement): Promise<void> {
+	public async afterDeleteH5pElement(element: H5pElement): Promise<void> {
 		if (element.contentId) {
 			await Promise.reject(new NotImplementedException());
 		}

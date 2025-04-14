@@ -24,7 +24,7 @@ import {
 	FileElement,
 	FileFolderElement,
 	getBoardNodeType,
-	H5PElement,
+	H5pElement,
 	handleNonExhaustiveSwitch,
 	LinkElement,
 	type MediaBoard,
@@ -107,7 +107,7 @@ export class BoardNodeCopyService {
 				result = await this.copyFileFolderElement(boardNode as FileFolderElement, context);
 				break;
 			case BoardNodeType.H5P_ELEMENT:
-				result = await this.copyH5PElement(boardNode as H5PElement, context);
+				result = await this.copyH5pElement(boardNode as H5pElement, context);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -506,7 +506,7 @@ export class BoardNodeCopyService {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public copyH5PElement(original: H5PElement, context: CopyContext): Promise<CopyStatus> {
+	public copyH5pElement(original: H5pElement, context: CopyContext): Promise<CopyStatus> {
 		const result: CopyStatus = {
 			type: CopyElementType.H5P_ELEMENT,
 			status: CopyStatusEnum.NOT_IMPLEMENTED,

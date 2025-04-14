@@ -7,7 +7,7 @@ import {
 	ExternalToolContentBody,
 	FileContentBody,
 	FileFolderContentBody,
-	H5PContentBody,
+	H5pContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
@@ -245,10 +245,10 @@ describe('ContentElementUpdateService', () => {
 		});
 	});
 
-	describe('when the element is a H5PElement', () => {
+	describe('when the element is a H5pElement', () => {
 		const setup = () => {
 			const element = h5pElementFactory.build();
-			const content = new H5PContentBody();
+			const content = new H5pContentBody();
 			const contentId = new ObjectId().toHexString();
 			content.contentId = contentId;
 
@@ -259,7 +259,7 @@ describe('ContentElementUpdateService', () => {
 			};
 		};
 
-		it('should update H5PElement', async () => {
+		it('should update H5pElement', async () => {
 			const { element, content, contentId } = setup();
 
 			await service.updateContent(element, content);
