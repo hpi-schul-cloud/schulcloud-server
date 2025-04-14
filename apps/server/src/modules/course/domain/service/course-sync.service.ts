@@ -4,9 +4,9 @@ import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { SyncAttribute } from '../../repo';
 import { Course } from '../course.do';
 import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
+import { CourseSyncAttribute } from '../interface';
 import { CourseDoService } from './course-do.service';
 
 @Injectable()
@@ -27,7 +27,7 @@ export class CourseSyncService {
 		const shouldSyncTeachers: boolean = isTeacherInBoth || keepsAllTeachers;
 
 		if (!shouldSyncTeachers) {
-			course.excludeFromSync = [SyncAttribute.TEACHERS];
+			course.excludeFromSync = [CourseSyncAttribute.TEACHERS];
 		}
 
 		await this.synchronize([course], group);
@@ -107,9 +107,9 @@ export class CourseSyncService {
 				course.name = group.name;
 			}
 
-			const excludedFromSync: Set<SyncAttribute> = new Set(course.excludeFromSync || []);
+			const excludedFromSync: Set<CourseSyncAttribute> = new Set(course.excludeFromSync || []);
 
-			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
+			if (excludedFromSync.has(CourseSyncAttribute.TEACHERS)) {
 				course.students = studentIds;
 			} else {
 				course.teachers = teacherIds.length > 0 ? teacherIds : course.teachers;

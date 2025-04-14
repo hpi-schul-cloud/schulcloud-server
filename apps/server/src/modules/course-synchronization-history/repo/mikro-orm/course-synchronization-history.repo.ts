@@ -16,7 +16,7 @@ export class CourseSynchronizationHistoryMirkoOrmRepo
 	protected mapDOToEntityProperties(
 		entityDO: CourseSynchronizationHistory
 	): EntityData<CourseSynchronizationHistoryEntity> {
-		const entityProps = CourseSynchronizationHistoryMapper.mapDOToEntityProperties(entityDO, this.em);
+		const entityProps = CourseSynchronizationHistoryMapper.mapDOToEntityProperties(entityDO);
 
 		return entityProps;
 	}

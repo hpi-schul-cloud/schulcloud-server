@@ -11,10 +11,11 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { setupEntities } from '@testing/database';
-import { CourseGroupEntity, SyncAttribute } from '../../repo';
+import { CourseGroupEntity } from '../../repo';
 import { courseFactory } from '../../testing';
 import { Course } from '../course.do';
 import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
+import { CourseSyncAttribute } from '../interface';
 import { CourseDoService } from './course-do.service';
 import { CourseSyncService } from './course-sync.service';
 
@@ -255,7 +256,7 @@ describe(CourseSyncService.name, () => {
 						teacherIds: [teacher.userId, missingTeacherId],
 						classIds: [],
 						groupIds: [],
-						excludeFromSync: [SyncAttribute.TEACHERS],
+						excludeFromSync: [CourseSyncAttribute.TEACHERS],
 					}),
 				]);
 			});
@@ -308,7 +309,7 @@ describe(CourseSyncService.name, () => {
 						teacherIds: [syncingUser.id, teacher2Id],
 						classIds: [],
 						groupIds: [],
-						excludeFromSync: [SyncAttribute.TEACHERS],
+						excludeFromSync: [CourseSyncAttribute.TEACHERS],
 					}),
 				]);
 			});
@@ -654,7 +655,7 @@ describe(CourseSyncService.name, () => {
 					teacherIds: [teacherUserId],
 					syncedWithGroup: newGroup.id,
 					substitutionTeacherIds: [substituteTeacherId],
-					excludeFromSync: [SyncAttribute.TEACHERS],
+					excludeFromSync: [CourseSyncAttribute.TEACHERS],
 				});
 				courseDoService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
@@ -684,7 +685,7 @@ describe(CourseSyncService.name, () => {
 						syncedWithGroup: course.syncedWithGroup,
 						classIds: [],
 						groupIds: [],
-						excludeFromSync: [SyncAttribute.TEACHERS],
+						excludeFromSync: [CourseSyncAttribute.TEACHERS],
 						substitutionTeacherIds: [],
 					}),
 				]);
@@ -1015,7 +1016,7 @@ describe(CourseSyncService.name, () => {
 
 					const courseSyncHistories = courseSynchronizationHistoryFactory.buildList(3, {
 						externalGroupId,
-						excludeFromSync: [SyncAttribute.TEACHERS],
+						excludeFromSync: [CourseSyncAttribute.TEACHERS],
 					});
 
 					const courses: Course[] = courseSyncHistories.map((history: CourseSynchronizationHistory) => {
@@ -1045,7 +1046,7 @@ describe(CourseSyncService.name, () => {
 							syncedWithGroup: group.id,
 							classIds: [],
 							groupIds: [],
-							excludeFromSync: [SyncAttribute.TEACHERS],
+							excludeFromSync: [CourseSyncAttribute.TEACHERS],
 							substitutionTeacherIds: [],
 						})
 					);

@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { CourseEntity } from '@modules/course/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -17,7 +16,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseSynchronizationHistoryEntity, CourseEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseSynchronizationHistoryEntity] })],
 			providers: [{ provide: COURSE_SYNCHRONIZATION_HISTORY_REPO, useClass: CourseSynchronizationHistoryMirkoOrmRepo }],
 		}).compile();
 
@@ -35,21 +34,14 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 
 	describe('saveAll', () => {
 		describe('when a list of course sync history DOs is passed', () => {
-			const setup = async () => {
+			const setup = () => {
 				const expectedSavedEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
-
-				const syncedCourseEntities = expectedSavedEntities.map(
-					(entity: CourseSynchronizationHistoryEntity) => entity.synchronizedCourse
-				);
-
-				await em.persistAndFlush(syncedCourseEntities);
-				em.clear();
 
 				const historyDOs = expectedSavedEntities.map((entity: CourseSynchronizationHistoryEntity) =>
 					courseSynchronizationHistoryFactory.build({
 						id: entity.id,
 						externalGroupId: entity.externalGroupId,
-						synchronizedCourse: entity.synchronizedCourse.id,
+						synchronizedCourse: entity.synchronizedCourse.toHexString(),
 						expiresAt: entity.expiresAt,
 						excludeFromSync: entity.excludeFromSync,
 					})
@@ -59,7 +51,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 			};
 
 			it('should save all the course sync histories', async () => {
-				const { historyDOs, expectedSavedEntities } = await setup();
+				const { historyDOs, expectedSavedEntities } = setup();
 
 				await repo.saveAll(historyDOs);
 
@@ -70,14 +62,13 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 						...expectedEntity,
 						createdAt: expect.any(Date) as unknown as Date,
 						updatedAt: expect.any(Date) as unknown as Date,
-						synchronizedCourse: expect.any(CourseEntity),
 					});
 					expect(savedEntity.synchronizedCourse.id).toEqual(expectedEntity.synchronizedCourse.id);
 				}
 			});
 
 			it('should return a list of the saved course sync histories', async () => {
-				const { historyDOs } = await setup();
+				const { historyDOs } = setup();
 
 				const result = await repo.saveAll(historyDOs);
 
@@ -150,7 +141,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 					courseSynchronizationHistoryFactory.build({
 						id: entity.id,
 						externalGroupId: entity.externalGroupId,
-						synchronizedCourse: entity.synchronizedCourse.id,
+						synchronizedCourse: entity.synchronizedCourse.toHexString(),
 						expiresAt: entity.expiresAt,
 						excludeFromSync: entity.excludeFromSync,
 					})
@@ -185,7 +176,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				const syncHistoryDO = courseSynchronizationHistoryFactory.build({
 					id: syncHistoryEntity.id,
 					externalGroupId: syncHistoryEntity.externalGroupId,
-					synchronizedCourse: syncHistoryEntity.synchronizedCourse.id,
+					synchronizedCourse: syncHistoryEntity.synchronizedCourse.toHexString(),
 					expiresAt: syncHistoryEntity.expiresAt,
 					excludeFromSync: syncHistoryEntity.excludeFromSync,
 				});

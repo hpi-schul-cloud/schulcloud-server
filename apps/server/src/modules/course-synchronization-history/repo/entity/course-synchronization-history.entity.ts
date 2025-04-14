@@ -1,5 +1,6 @@
-import { Entity, Enum, Index, OneToOne, Property } from '@mikro-orm/core';
-import { CourseEntity, SyncAttribute } from '@modules/course/repo';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { CourseSyncAttribute } from '@modules/course';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 
@@ -8,11 +9,11 @@ export interface CourseSynchronizationHistoryEntityProps {
 
 	externalGroupId: string;
 
-	synchronizedCourse: CourseEntity;
+	synchronizedCourse: ObjectId;
 
 	expiresAt: Date;
 
-	excludeFromSync?: SyncAttribute[];
+	excludeFromSync?: CourseSyncAttribute[];
 }
 
 @Entity({ tableName: 'course-synchronization-history' })
@@ -20,15 +21,14 @@ export class CourseSynchronizationHistoryEntity extends BaseEntityWithTimestamps
 	@Property()
 	externalGroupId: string;
 
-	@OneToOne(() => CourseEntity)
-	synchronizedCourse: CourseEntity;
+	synchronizedCourse: ObjectId;
 
 	@Index({ options: { expireAfterSeconds: 0 } })
 	@Property()
 	expiresAt: Date;
 
 	@Enum({ nullable: true, array: true })
-	excludeFromSync?: SyncAttribute[];
+	excludeFromSync?: CourseSyncAttribute[];
 
 	constructor(props: CourseSynchronizationHistoryEntityProps) {
 		super();
