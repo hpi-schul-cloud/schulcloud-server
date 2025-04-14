@@ -1,0 +1,54 @@
+import { ObjectId } from 'bson';
+import { DeepPartial } from 'fishery';
+import { FileRecord, FileRecordParentType, FileRecordProps, FileRecordSecurityCheck, StorageLocation } from '../domain';
+import { FileRecordFactory } from '../domain/file-record.factory';
+
+export class FileRecordTestFactory {
+	private sequence = 0;
+
+	public props: FileRecordProps = {
+		id: new ObjectId().toHexString(),
+		size: 100,
+		name: `file-record-name #${this.sequence}`,
+		mimeType: 'application/octet-stream',
+		securityCheck: FileRecordSecurityCheck.createWithDefaultProps(),
+		parentType: FileRecordParentType.Course,
+		parentId: new ObjectId().toHexString(),
+		creatorId: new ObjectId().toHexString(),
+		storageLocationId: new ObjectId().toHexString(),
+		storageLocation: StorageLocation.SCHOOL,
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		deletedSince: undefined,
+	};
+
+	public build(params: DeepPartial<FileRecordProps> = {}): FileRecord {
+		this.props.id = new ObjectId().toHexString();
+		this.props = Object.assign(this.props, params);
+
+		const fileRecord = FileRecordFactory.buildFromFileRecordProps(this.props);
+
+		this.sequence += 1;
+
+		return fileRecord;
+	}
+
+	public buildList(number: number, params: DeepPartial<FileRecordProps> = {}): FileRecord[] {
+		const fileRecords: FileRecord[] = [];
+		for (let i = 0; i < number; i += 1) {
+			const fileRecord = this.build(params);
+			fileRecords.push(fileRecord);
+		}
+
+		return fileRecords;
+	}
+
+	public withDeletedSince(date?: Date): this {
+		const dateNow = new Date(Date.now() - 1000);
+		this.props.deletedSince = date || dateNow;
+
+		return this;
+	}
+}
+
+export const fileRecordTestFactory = (): FileRecordTestFactory => new FileRecordTestFactory();
