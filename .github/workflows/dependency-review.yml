@@ -33,5 +33,5 @@ jobs:
           # https://github.com/actions/dependency-review-action/issues/868
           allow-dependencies-licenses: >
             pkg:npm/%40apidevtools/json-schema-ref-parser@11.7.3
-            pkg:npm/fishery@2.2.3
-            pkg:npm/nest-winston@1.10.2
+            pkg:npm/thoughtbot/fishery@2.2.3
+            pkg:npm/gremo/nest-winston@1.10.2
