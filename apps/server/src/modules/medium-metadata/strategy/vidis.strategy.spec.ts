@@ -3,7 +3,7 @@ import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ImageMimeType } from '../../tool/common';
+import { ImageMimeType } from '@shared/domain/types';
 import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';

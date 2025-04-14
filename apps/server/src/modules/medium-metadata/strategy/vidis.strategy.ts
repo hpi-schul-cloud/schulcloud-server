@@ -1,7 +1,7 @@
 import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
-import { ImageMimeType } from '../../tool/common';
+import { ImageMimeType } from '@shared/domain/types';
 import { MediumMetadataDto } from '../dto';
 import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';

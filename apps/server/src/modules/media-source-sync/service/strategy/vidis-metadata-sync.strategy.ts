@@ -2,14 +2,14 @@ import { Logger } from '@core/logger';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { ExternalToolService } from '@modules/tool';
-import { ImageMimeType } from '@modules/tool/common';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolLogoSizeExceededLoggableException } from '@modules/tool/external-tool/loggable';
 import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool/service';
 import { Injectable } from '@nestjs/common';
+import { ImageMimeType } from '@shared/domain/types';
 import {
-	MediaSourceSyncReportFactory as ReportFactory,
 	MediaSourceSyncOperationReportFactory as OperationReportFactory,
+	MediaSourceSyncReportFactory as ReportFactory,
 } from '../../factory';
 import { MediaSourceSyncReport } from '../../interface';
 import { MediaMetadataSyncFailedLoggable } from '../../loggable';

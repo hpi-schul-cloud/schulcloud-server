@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ImageMimeType } from '../../tool/common';
+import { ImageMimeType } from '@shared/domain/types';
 
 const base64ImageTypeSignatures: Record<string, ImageMimeType> = {
 	'/9j/': ImageMimeType.JPEG,
