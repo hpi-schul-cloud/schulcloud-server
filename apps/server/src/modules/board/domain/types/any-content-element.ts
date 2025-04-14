@@ -10,6 +10,7 @@ import { isRichTextElement, type RichTextElement } from '../rich-text-element.do
 import { isSubmissionContainerElement, type SubmissionContainerElement } from '../submission-container-element.do';
 import { isVideoConferenceElement, type VideoConferenceElement } from '../video-conference-element.do';
 import { type AnyBoardNode } from './any-board-node';
+import { BoardExternalReferenceType } from './board-external-reference';
 
 export type AnyContentElement =
 	| CollaborativeTextEditorElement
@@ -40,20 +41,20 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 };
 
 // @TODO check namings
-export enum ReferenceNodeType {
-	COURSE = 'course',
-	ROOM = 'room',
+export enum ElementReferenceType {
 	BOARD = 'board',
 }
 
-export interface ReferenceNodeInfo {
+export type ParentNodeType = BoardExternalReferenceType | ElementReferenceType;
+
+export interface ParentNodeInfo {
 	readonly id: EntityId;
-	readonly type: ReferenceNodeType;
+	readonly type: ParentNodeType;
 	readonly name: string;
-	readonly child?: ReferenceNodeInfo;
+	readonly child?: ParentNodeInfo;
 }
 
-export interface ContentElementWithReferenceNode {
+export interface ContentElementWithParentHierarchy {
 	readonly element: AnyContentElement;
-	readonly path: ReferenceNodeInfo[];
+	readonly parentHierarchy: ParentNodeInfo[];
 }

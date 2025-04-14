@@ -7,10 +7,10 @@ import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyContentElement,
 	BoardNodeFactory,
-	ContentElementWithReferenceNode,
+	ContentElementWithParentHierarchy,
 	isSubmissionItem,
 	SubmissionContainerElement,
-	SubmissionItem
+	SubmissionItem,
 } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodePermissionService, BoardNodeService } from '../service';
 
@@ -27,13 +27,16 @@ export class ElementUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	public async getElementMetadata(userId: EntityId, elementId: EntityId): Promise<ContentElementWithReferenceNode> {
+	public async getElementWithParentHierarchy(
+		userId: EntityId,
+		elementId: EntityId
+	): Promise<ContentElementWithParentHierarchy> {
 		const element = await this.boardNodeService.findContentElementById(elementId);
 		await this.boardPermissionService.checkPermission(userId, element, Action.read);
 
-		const breadCrumps = await this.boardContextApiHelperService.getReferenceForContentElement(element.rootId);
+		const parentHierarchy = await this.boardContextApiHelperService.getParentsOfElement(element.rootId);
 
-		return { element, path: breadCrumps };
+		return { element, parentHierarchy };
 	}
 
 	public async updateElement(

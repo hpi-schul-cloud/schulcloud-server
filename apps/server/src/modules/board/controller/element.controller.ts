@@ -22,6 +22,7 @@ import {
 	CreateSubmissionItemBodyParams,
 	DrawingElementContentBody,
 	DrawingElementResponse,
+	ElementWithParentHierarchyResponse,
 	ExternalToolElementContentBody,
 	ExternalToolElementResponse,
 	FileElementContentBody,
@@ -53,15 +54,18 @@ export class ElementController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@Get(':contentElementId/metadata')
-	public async getElementMetadata(
+	@Get(':contentElementId')
+	public async getElementWithParentHierarchy(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<Record<string, any>> {
-		const metadata = await this.elementUc.getElementMetadata(currentUser.userId, urlParams.contentElementId);
-		const response = ContentElementResponseFactory.mapToResponse(metadata.element);
+	): Promise<ElementWithParentHierarchyResponse> {
+		const { element, parentHierarchy } = await this.elementUc.getElementWithParentHierarchy(
+			currentUser.userId,
+			urlParams.contentElementId
+		);
+		const elementReponse = ContentElementResponseFactory.mapToResponse(element);
 
-		return { element: response, path: metadata.path };
+		return { element: elementReponse, parentHierarchy };
 	}
 
 	@ApiOperation({ summary: 'Move a single content element.' })
