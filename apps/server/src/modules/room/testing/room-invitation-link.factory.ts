@@ -6,15 +6,18 @@ import { BaseFactory } from '@testing/factory/base.factory';
 class RoomInvitationLinkFactory extends BaseFactory<RoomInvitationLink, RoomInvitationLinkProps> {}
 
 export const roomInvitationLinkFactory = RoomInvitationLinkFactory.define(RoomInvitationLink, ({ sequence }) => {
+	const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 	const props: RoomInvitationLinkProps = {
 		id: new ObjectId().toHexString(),
-		title: `room #${sequence}`,
+		title: `room invitation link #${sequence}`,
 		restrictedToSchoolId: new ObjectId().toHexString(),
 		isOnlyForTeachers: true,
-		activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+		activeUntil: inOneWeek,
 		startingRole: RoleName.ROOMVIEWER,
 		roomId: new ObjectId().toHexString(),
 		createdById: new ObjectId().toHexString(),
+		createdAt: new Date(),
+		updatedAt: new Date(),
 	};
 
 	return props;

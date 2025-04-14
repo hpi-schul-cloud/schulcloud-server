@@ -2,21 +2,23 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { RoomInvitationLinkEntity } from '../repo/entity/room-invitation-link.entity';
 import { RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
 import { RoleName } from '@modules/role';
-import { BaseFactory } from '@testing/factory/base.factory';
+import { EntityFactory } from '@testing/factory/entity.factory';
 
-class RoomInvitationLinkEntityFactory extends BaseFactory<RoomInvitationLinkEntity, RoomInvitationLinkProps> {}
-
-export const roomInvitationLinkEntityFactory = RoomInvitationLinkEntityFactory.define(
+const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+export const roomInvitationLinkEntityFactory = EntityFactory.define<RoomInvitationLinkEntity, RoomInvitationLinkProps>(
 	RoomInvitationLinkEntity,
 	({ sequence }) =>
-		new RoomInvitationLinkEntity({
+		{ return {
 			id: new ObjectId().toHexString(),
-			title: `room #${sequence}`,
+			title: `room invitation link #${sequence}`,
 			restrictedToSchoolId: new ObjectId().toHexString(),
 			isOnlyForTeachers: true,
-			activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+			activeUntil: inOneWeek,
 			startingRole: RoleName.ROOMVIEWER,
 			roomId: new ObjectId().toHexString(),
 			createdById: new ObjectId().toHexString(),
-		})
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		}
+	}
 );

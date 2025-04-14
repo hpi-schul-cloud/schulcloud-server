@@ -7,38 +7,26 @@ import { RoomInvitationLink, RoomInvitationLinkProps } from '../../domain/do/roo
 @Entity({ tableName: 'room-invition-links' })
 export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implements RoomInvitationLinkProps {
 	@Property({ nullable: false })
-	title: string;
+	title!: string;
 
 	@Property({ nullable: true })
 	restrictedToSchoolId?: EntityId;
 
 	@Property()
-	isOnlyForTeachers: boolean;
+	isOnlyForTeachers!: boolean;
 
 	@Property()
 	activeUntil?: Date;
 
 	@Property()
-	startingRole: RoomRole;
+	startingRole!: RoomRole;
 
 	@Property()
-	createdById: EntityId;
+	createdById!: EntityId;
 
 	@Property()
-	roomId: EntityId;
+	roomId!: EntityId;
 
 	@Property({ persist: false })
 	domainObject: RoomInvitationLink | undefined;
-
-	constructor(props: RoomInvitationLinkProps) {
-		super();
-		this.id = props.id;
-		this.title = props.title;
-		this.restrictedToSchoolId = props.restrictedToSchoolId;
-		this.isOnlyForTeachers = props.isOnlyForTeachers;
-		this.activeUntil = props.activeUntil;
-		this.startingRole = props.startingRole;
-		this.createdById = props.createdById;
-		this.roomId = props.roomId;
-	}
 }
