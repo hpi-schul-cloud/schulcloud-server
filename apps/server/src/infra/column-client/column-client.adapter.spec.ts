@@ -3,6 +3,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnClientAdapter } from './column-client.adapter';
 import { BoardColumnApi, CreateCardBodyParamsRequiredEmptyElements } from './generated';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 
 describe(ColumnClientAdapter.name, () => {
 	let module: TestingModule;
@@ -43,6 +44,8 @@ describe(ColumnClientAdapter.name, () => {
 					requiredEmptyElements: [CreateCardBodyParamsRequiredEmptyElements.RICH_TEXT],
 				};
 
+				columnApiMock.columnControllerCreateCard.mockResolvedValue(axiosResponseFactory.build({ data: columnId }));
+
 				return {
 					columnId,
 					cardParams,
@@ -52,8 +55,9 @@ describe(ColumnClientAdapter.name, () => {
 			it('should call boardColumnApi.ColumnControllerCreateCard', async () => {
 				const { columnId, cardParams } = setup();
 
-				await sut.createCard(columnId, cardParams);
+				const response = await sut.createCard(columnId, cardParams);
 
+				expect(response).toEqual(columnId);
 				expect(columnApiMock.columnControllerCreateCard).toHaveBeenCalledWith(columnId, cardParams);
 			});
 		});

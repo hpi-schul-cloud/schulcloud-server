@@ -10,7 +10,7 @@ export class ColumnClientAdapter {
 	}
 
 	public async createCard(columnId: string, cardParams: CreateCardBodyParams): Promise<CardResponse> {
-		const cardResponse = (await this.columnApi.columnControllerCreateCard(columnId, cardParams)).data;
+		const { data: cardResponse } = await this.columnApi.columnControllerCreateCard(columnId, cardParams);
 		return cardResponse;
 	}
 }

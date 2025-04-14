@@ -4,7 +4,9 @@ import { ConfigModule } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
-import { ColumnClientAdapter, ColumnClientConfig, ColumnClientModule } from '.';
+import { ColumnClientModule } from './column-client.module';
+import { ColumnClientConfig } from './column-client.config';
+import { ColumnClientAdapter } from './column-client.adapter';
 
 describe('ColumnClientModule', () => {
 	let module: TestingModule;
