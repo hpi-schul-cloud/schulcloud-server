@@ -466,10 +466,9 @@ export class FilesStorageService {
 			} catch (error) {
 				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
 
-				return {
-					sourceId: sourceFile.id,
-					name: sourceFile.getName(),
-				};
+				const fileResponse = CopyFileResponseBuilder.buildError(sourceFile.id, sourceFile.getName());
+
+				return fileResponse;
 			}
 		});
 
