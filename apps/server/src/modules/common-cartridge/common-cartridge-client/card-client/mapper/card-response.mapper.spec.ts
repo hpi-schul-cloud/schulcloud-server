@@ -1,21 +1,22 @@
 import { faker } from '@faker-js/faker';
-import { CardResponseMapper } from './card-response.mapper';
 import {
 	CardListResponse,
+	CardResponseElementsInner,
+	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
-	SubmissionContainerElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
-	CollaborativeTextEditorElementResponse,
-	CardResponseElementsInner,
+	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from '../cards-api-client';
+import { CardResponseDto } from '../dto/card-response.dto';
 import { ContentElementType } from '../enums/content-element-type.enum';
 import { CardContentElementInner } from '../types/card-content-elements-inner.type';
-import { CardResponseDto } from '../dto/card-response.dto';
+import { CardResponseMapper } from './card-response.mapper';
 
 describe('CardResponseMapper', () => {
 	const createMockElement = (
@@ -88,6 +89,10 @@ describe('CardResponseMapper', () => {
 					alternativeText: faker.lorem.word(),
 				}) as FileElementResponse,
 
+				createMockElement(faker.string.uuid(), ContentElementType.FILE_FOLDER, {
+					title: faker.lorem.sentence(),
+				}) as FileFolderElementResponse,
+
 				createMockElement(faker.string.uuid(), ContentElementType.LINK, {
 					url: faker.internet.url(),
 					title: faker.lorem.word(),
@@ -118,16 +123,17 @@ describe('CardResponseMapper', () => {
 				expect(cardResponseDto.height).toBe(100);
 				expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
 				expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
-				expect(cardResponseDto.elements).toHaveLength(9);
+				expect(cardResponseDto.elements).toHaveLength(10);
 				expect(cardResponseDto.elements[0].type).toBe(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
 				expect(cardResponseDto.elements[1].type).toBe(ContentElementType.DELETED);
 				expect(cardResponseDto.elements[2].type).toBe(ContentElementType.SUBMISSION_CONTAINER);
 				expect(cardResponseDto.elements[3].type).toBe(ContentElementType.DRAWING);
 				expect(cardResponseDto.elements[4].type).toBe(ContentElementType.EXTERNAL_TOOL);
 				expect(cardResponseDto.elements[5].type).toBe(ContentElementType.FILE);
-				expect(cardResponseDto.elements[6].type).toBe(ContentElementType.LINK);
-				expect(cardResponseDto.elements[7].type).toBe(ContentElementType.RICH_TEXT);
-				expect(cardResponseDto.elements[8].type).toBe(ContentElementType.VIDEO_CONFERENCE);
+				expect(cardResponseDto.elements[6].type).toBe(ContentElementType.FILE_FOLDER);
+				expect(cardResponseDto.elements[7].type).toBe(ContentElementType.LINK);
+				expect(cardResponseDto.elements[8].type).toBe(ContentElementType.RICH_TEXT);
+				expect(cardResponseDto.elements[9].type).toBe(ContentElementType.VIDEO_CONFERENCE);
 			});
 		});
 

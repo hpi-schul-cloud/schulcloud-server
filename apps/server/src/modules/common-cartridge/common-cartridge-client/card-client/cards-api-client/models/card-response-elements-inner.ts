@@ -21,9 +21,6 @@ import type { CollaborativeTextEditorElementResponse } from './collaborative-tex
 import type { ContentElementType } from './content-element-type';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { DeletedElementContent } from './deleted-element-content';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { DeletedElementResponse } from './deleted-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -36,6 +33,12 @@ import type { ExternalToolElementResponse } from './external-tool-element-respon
 import type { FileElementResponse } from './file-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
+import type { FileFolderElementContent } from './file-folder-element-content';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { FileFolderElementResponse } from './file-folder-element-response';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { LinkElementResponse } from './link-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -46,11 +49,14 @@ import type { SubmissionContainerElementResponse } from './submission-container-
 // May contain unused imports in some cases
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { VideoConferenceElementResponse } from './video-conference-element-response';
 
 /**
  * @type CardResponseElementsInner
  * @export
  */
-export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse;
+export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
 
 

@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { PaginationResponse } from '@shared/controller/dto';
 import { EntityId } from '@shared/domain/types';
 import { ComponentProperties, LessonEntity } from '../../repo';
@@ -13,7 +14,7 @@ export class LessonMetadataResponse {
 
 	@ApiProperty({
 		description: 'The id of the Lesson entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	_id: EntityId;
 
@@ -51,14 +52,14 @@ export class LessonResponse {
 
 	@ApiProperty({
 		description: 'The id of the Lesson entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		deprecated: true,
 	})
 	_id: EntityId;
 
 	@ApiProperty({
 		description: 'The id of the Lesson entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: EntityId;
 
@@ -69,13 +70,13 @@ export class LessonResponse {
 
 	@ApiPropertyOptional({
 		description: 'The id of the Course entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	courseId?: EntityId;
 
 	@ApiPropertyOptional({
 		description: 'The id of the Course-group entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	courseGroupId?: EntityId;
 

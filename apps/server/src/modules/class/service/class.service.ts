@@ -73,25 +73,11 @@ export class ClassService implements DeletionService, IEventHandler<UserDeletedE
 			throw new InternalServerErrorException('User id is missing');
 		}
 
-		const domainObjects = await this.classesRepo.findAllByUserId(userId);
-
-		const updatedClasses: Class[] = domainObjects.map((domainObject) => {
-			if (domainObject.userIds !== undefined) {
-				domainObject.removeUser(userId);
-			}
-			return domainObject;
-		});
-
-		const numberOfUpdatedClasses = updatedClasses.length;
-
-		await this.classesRepo.updateMany(updatedClasses);
+		const classes = await this.classesRepo.findAllByUserId(userId);
+		const numberOfUpdatedClasses = await this.classesRepo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.CLASS, [
-			DomainOperationReportBuilder.build(
-				OperationType.UPDATE,
-				numberOfUpdatedClasses,
-				this.getClassesId(updatedClasses)
-			),
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedClasses, this.getClassesId(classes)),
 		]);
 
 		this.logger.info(

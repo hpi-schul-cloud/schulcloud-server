@@ -3,6 +3,7 @@ import {
 	deletedElementFactory,
 	drawingElementFactory,
 	fileElementFactory,
+	fileFolderElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
@@ -12,6 +13,7 @@ import {
 	DeletedElementResponse,
 	DrawingElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
@@ -26,6 +28,14 @@ describe(ContentElementResponseFactory.name, () => {
 		const result = ContentElementResponseFactory.mapToResponse(fileElement);
 
 		expect(result).toBeInstanceOf(FileElementResponse);
+	});
+
+	it('should return instance of FileFolderElementResponse', () => {
+		const fileFolderElement = fileFolderElementFactory.build();
+
+		const result = ContentElementResponseFactory.mapToResponse(fileFolderElement);
+
+		expect(result).toBeInstanceOf(FileFolderElementResponse);
 	});
 
 	it('should return instance of LinkElementResponse', () => {

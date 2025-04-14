@@ -1,4 +1,5 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import {
 	AnyContentElementResponse,
@@ -7,6 +8,7 @@ import {
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
@@ -24,7 +26,8 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	SubmissionContainerElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
-	VideoConferenceElementResponse
+	VideoConferenceElementResponse,
+	FileFolderElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -37,7 +40,7 @@ export class CardResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 
@@ -61,6 +64,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
+				{ $ref: getSchemaPath(FileFolderElementResponse) },
 			],
 		},
 	})

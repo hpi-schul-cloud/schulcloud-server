@@ -43,6 +43,12 @@ export interface LinkElementContent {
      * @type {string}
      * @memberof LinkElementContent
      */
+    'originalImageUrl'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkElementContent
+     */
     'imageUrl'?: string;
 }
 

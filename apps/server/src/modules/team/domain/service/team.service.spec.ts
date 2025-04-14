@@ -104,6 +104,7 @@ describe('TeamService', () => {
 				const team2 = teamFactory.withTeamUser([teamUser]).build();
 
 				teamRepo.findByUserId.mockResolvedValue([team1, team2]);
+				teamRepo.removeUserReferences.mockResolvedValue(2);
 
 				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
 					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [team1.id, team2.id]),
@@ -123,7 +124,15 @@ describe('TeamService', () => {
 				expect(teamRepo.findByUserId).toBeCalledWith(teamUser.user.id);
 			});
 
-			it('should update teams without deleted user', async () => {
+			it('should call teamRepo.removeUserReferences', async () => {
+				const { teamUser } = setup();
+
+				await service.deleteUserData(teamUser.user.id);
+
+				expect(teamRepo.removeUserReferences).toBeCalledWith(teamUser.user.id);
+			});
+
+			it('should return DomainDeletionReport', async () => {
 				const { expectedResult, teamUser } = setup();
 
 				const result = await service.deleteUserData(teamUser.user.id);

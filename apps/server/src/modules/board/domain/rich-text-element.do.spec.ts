@@ -1,23 +1,12 @@
 import { InputFormat } from '@shared/domain/types';
+import { richTextElementFactory } from '../testing';
 import { RichTextElement, isRichTextElement } from './rich-text-element.do';
-import { BoardNodeProps } from './types';
 
 describe('RichTextElement', () => {
 	let richTextElement: RichTextElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		richTextElement = new RichTextElement({
-			...boardNodeProps,
+		richTextElement = richTextElementFactory.build({
 			text: 'Test text',
 			inputFormat: InputFormat.RICH_TEXT_CK5,
 		});

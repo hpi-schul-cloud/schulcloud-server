@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, InputFormat } from '@shared/domain/types';
+import { InputFormat, type EntityId } from '@shared/domain/types';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -8,13 +8,15 @@ import { Column } from './column.do';
 import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
+import { FileFolderElement } from './file-folder-element.do';
 import { LinkElement } from './link-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
 import { SubmissionContainerElement } from './submission-container-element.do';
 import { SubmissionItem } from './submission-item.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
-import { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps, ContentElementType } from './types';
+import type { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps } from './types';
+import { ContentElementType } from './types';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()
@@ -47,6 +49,12 @@ export class BoardNodeFactory {
 					...this.getBaseProps(),
 					caption: '',
 					alternativeText: '',
+				});
+				break;
+			case ContentElementType.FILE_FOLDER:
+				element = new FileFolderElement({
+					...this.getBaseProps(),
+					title: '',
 				});
 				break;
 			case ContentElementType.LINK:

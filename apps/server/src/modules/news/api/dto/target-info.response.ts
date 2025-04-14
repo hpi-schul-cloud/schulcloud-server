@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 
 export class TargetInfoResponse {
 	constructor({ id, name }: TargetInfoResponse) {
@@ -7,7 +8,7 @@ export class TargetInfoResponse {
 	}
 
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'The id of the Target entity',
 	})
 	id: string;

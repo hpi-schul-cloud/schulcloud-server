@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { BoardElementResponse } from './board-element.response';
 
@@ -6,7 +7,7 @@ import { BoardElementResponse } from './board-element.response';
 export class SingleColumnBoardResponse {
 	@ApiProperty({
 		description: 'The id of the room this board belongs to',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	roomId: string;
 
