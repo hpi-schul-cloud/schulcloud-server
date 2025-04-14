@@ -11,7 +11,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
+import { FileRecord, FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
@@ -131,7 +131,7 @@ describe('FilesStorageUC delete methods', () => {
 				const { params, fileRecords } = buildFileRecordsWithParams();
 				const { requestParams } = createParams();
 				const fileRecord = fileRecords[0];
-				const mockedResult = [[fileRecord], 0] as Counted<FileRecordEntity[]>;
+				const mockedResult = [[fileRecord], 0] as Counted<FileRecord[]>;
 
 				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 				filesStorageService.getFileRecordsOfParent.mockResolvedValueOnce(mockedResult);
