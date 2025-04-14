@@ -6,4 +6,10 @@ export class CopyFileResponseBuilder {
 
 		return copyFileResponse;
 	}
+
+	public static buildError(sourceId: string, name: string): CopyFileResponse {
+		const copyFileResponse = new CopyFileResponse({ id: undefined, sourceId, name });
+
+		return copyFileResponse;
+	}
 }
