@@ -10,7 +10,7 @@ import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { CopyFileResponseBuilder } from '../../mapper';
 import { FileRecordEntity } from '../../repo'; // TODO: invalid import
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
 import { createCopyFiles } from '../helper';
@@ -21,11 +21,7 @@ const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -80,7 +76,7 @@ describe('FilesStorageService copy methods', () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -298,10 +294,15 @@ describe('FilesStorageService copy methods', () => {
 			it('should return failed file record (=without new id)', async () => {
 				const { fileRecord, params, userId } = setup();
 
-				const result = await service.copy(userId, [fileRecord], params);
-				const expected = { sourceId: fileRecord.id, name: fileRecord.name };
+				const results = await service.copy(userId, [fileRecord], params);
+				const result = results[0];
 
-				expect(result[0]).toEqual(expected);
+				expect(result.id).toBeDefined();
+
+				const expected = CopyFileResponseBuilder.build(result.id as string, fileRecord.id, fileRecord.name);
+
+				expect(result.id).not.toEqual(fileRecord.id);
+				expect(result).toEqual(expected);
 			});
 		});
 
@@ -309,25 +310,26 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile1 = fileRecords[0];
-				const targetFile1 = FileRecordFactory.copy(sourceFile1, userId, params);
 				const sourceFile2 = fileRecords[2];
 				const error = new Error('test');
 
-				fileRecordRepo.save.mockResolvedValueOnce();
-				jest.spyOn(FileRecordFactory, 'copy').mockImplementationOnce(() => targetFile1);
-				fileRecordRepo.save.mockRejectedValueOnce(error);
+				fileRecordRepo.save.mockResolvedValueOnce().mockRejectedValueOnce(error);
 
-				const fileResponse1 = CopyFileResponseBuilder.build(targetFile1.id, sourceFile1.id, sourceFile1.name);
-				const fileResponse2 = { sourceId: sourceFile2.id, name: sourceFile2.name };
+				const fileResponse2 = CopyFileResponseBuilder.buildError(sourceFile2.id, sourceFile2.name);
 
-				return { sourceFile1, targetFile1, sourceFile2, userId, params, fileResponse1, fileResponse2 };
+				return { sourceFile1, sourceFile2, userId, params, fileResponse2 };
 			};
 
 			it('should return one file response and one failed file response', async () => {
-				const { sourceFile1, sourceFile2, params, userId, fileResponse1, fileResponse2 } = setup();
+				const { sourceFile1, sourceFile2, params, userId, fileResponse2 } = setup();
 
 				const [result1, result2] = await service.copy(userId, [sourceFile1, sourceFile2], params);
 
+				expect(result1.id).toBeDefined();
+
+				const fileResponse1 = CopyFileResponseBuilder.build(result1.id as string, sourceFile2.id, sourceFile2.name);
+
+				expect(result1.id).not.toEqual(sourceFile1.id);
 				expect(result1).toEqual(fileResponse1);
 				expect(result2).toEqual(fileResponse2);
 			});
