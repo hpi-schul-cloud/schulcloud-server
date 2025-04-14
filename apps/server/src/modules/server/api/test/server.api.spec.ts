@@ -105,6 +105,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED',
 				'FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED',
 				'LICENSE_SUMMARY_URL',
+				'FEATURE_COLUMN_BOARD_H5P_ENABLED',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);
