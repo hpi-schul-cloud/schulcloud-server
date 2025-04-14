@@ -115,15 +115,18 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 	public async findByExternalId(externalId: string, systemId: string): Promise<UserDo | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 
-		if (userEntitys.length > 1) {
-			throw new MultipleUsersFoundLoggableException(externalId);
-		}
-		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
+		const users: User[] = userEntitys.filter((user: User): boolean => {
 			const { systems } = user.school;
 			return systems && !!systems.getItems().find((system): boolean => system.id === systemId);
 		});
+		if (users.length > 1) {
+			throw new MultipleUsersFoundLoggableException(externalId);
+		}
+		if (users.length === 0) {
+			return null;
+		}
 
-		const userDo: UserDo | null = userEntity ? this.mapEntityToDO(userEntity) : null;
+		const userDo = this.mapEntityToDO(users[0]);
 		return userDo;
 	}
 
