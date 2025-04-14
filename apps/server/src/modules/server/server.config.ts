@@ -3,7 +3,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import type { JwtAuthGuardConfig } from '@infra/auth-guard';
 import type { EncryptionConfig } from '@infra/encryption/encryption.config';
 import type { FilesStorageClientConfig } from '@infra/files-storage-client';
-import type { H5PEditorClientConfig } from '@infra/h5p-editor-client';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { MailConfig } from '@infra/mail/interfaces/mail-config';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
@@ -81,8 +80,7 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		ManagementMediaSourcesConfig,
 		ManagementServerConfig,
-		RoomMembershipConfig,
-		H5PEditorClientConfig {
+		RoomMembershipConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	HOST: string;
@@ -354,7 +352,6 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
-	H5P_EDITOR__SERVICE_BASE_URL: Configuration.get('H5P_EDITOR__SERVICE_BASE_URL') as string,
 };
 
 export const serverConfig = (): ServerConfig => config;

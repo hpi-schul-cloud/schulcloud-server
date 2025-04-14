@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { H5pEditorApi } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	collaborativeTextEditorFactory,
@@ -24,7 +24,6 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
-	let h5pEditorApi: DeepMocked<H5pEditorApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -46,10 +45,6 @@ describe(BoardNodeDeleteHooksService.name, () => {
 					provide: CollaborativeTextEditorService,
 					useValue: createMock<CollaborativeTextEditorService>(),
 				},
-				{
-					provide: H5pEditorApi,
-					useValue: createMock<H5pEditorApi>(),
-				},
 			],
 		}).compile();
 
@@ -58,7 +53,6 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		drawingElementAdapterService = module.get(TldrawClientAdapter);
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
-		h5pEditorApi = module.get(H5pEditorApi);
 	});
 
 	afterEach(() => {
@@ -177,12 +171,10 @@ describe(BoardNodeDeleteHooksService.name, () => {
 				};
 			};
 
-			it('should delete h5p content', async () => {
+			it('should throw not implemented', async () => {
 				const { boardNode } = setup();
 
-				await service.afterDelete(boardNode);
-
-				expect(h5pEditorApi.h5PEditorControllerDeleteH5pContent).toHaveBeenCalledWith(boardNode.contentId);
+				await expect(service.afterDelete(boardNode)).rejects.toThrow(NotImplementedException);
 			});
 		});
 	});

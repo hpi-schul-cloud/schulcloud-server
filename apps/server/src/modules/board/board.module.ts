@@ -1,6 +1,5 @@
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { H5pEditorClientModule } from '@infra/h5p-editor-client';
 import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
@@ -41,7 +40,6 @@ import {
 		CourseModule,
 		CopyHelperModule,
 		FilesStorageClientModule,
-		H5pEditorClientModule,
 		LoggerModule,
 		UserModule,
 		ContextExternalToolModule,

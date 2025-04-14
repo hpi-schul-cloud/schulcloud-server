@@ -390,12 +390,6 @@
 			],
 			"default": {},
 			"properties": {
-				"SERVICE_BASE_URL": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4448",
-					"description": "The URI of the h5p editor service"
-				},
 				"S3_ENDPOINT": {
 					"type": "string",
 					"format": "uri",

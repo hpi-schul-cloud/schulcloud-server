@@ -1,10 +1,10 @@
-import { H5pEditorApi } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import {
 	AnyBoardNode,
 	CollaborativeTextEditorElement,
@@ -29,8 +29,7 @@ export class BoardNodeDeleteHooksService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly drawingElementAdapterService: TldrawClientAdapter,
-		private readonly collaborativeTextEditorService: CollaborativeTextEditorService,
-		private readonly h5pEditorApi: H5pEditorApi
+		private readonly collaborativeTextEditorService: CollaborativeTextEditorService
 	) {}
 
 	public async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
@@ -76,7 +75,9 @@ export class BoardNodeDeleteHooksService {
 
 	public async afterDeleteExternalToolElement(externalToolElement: ExternalToolElement): Promise<void> {
 		if (externalToolElement.contextExternalToolId) {
-			const linkedTool = await this.contextExternalToolService.findById(externalToolElement.contextExternalToolId);
+			const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
+				externalToolElement.contextExternalToolId
+			);
 
 			if (linkedTool) {
 				await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
@@ -93,7 +94,9 @@ export class BoardNodeDeleteHooksService {
 	}
 
 	public async afterDeleteMediaExternalToolElement(mediaElement: MediaExternalToolElement): Promise<void> {
-		const linkedTool = await this.contextExternalToolService.findById(mediaElement.contextExternalToolId);
+		const linkedTool: ContextExternalTool | null = await this.contextExternalToolService.findById(
+			mediaElement.contextExternalToolId
+		);
 
 		if (linkedTool) {
 			await this.contextExternalToolService.deleteContextExternalTool(linkedTool);
@@ -102,7 +105,7 @@ export class BoardNodeDeleteHooksService {
 
 	public async afterDeleteH5PElement(element: H5PElement): Promise<void> {
 		if (element.contentId) {
-			await this.h5pEditorApi.h5PEditorControllerDeleteH5pContent(element.contentId);
+			await Promise.reject(new NotImplementedException());
 		}
 	}
 }
