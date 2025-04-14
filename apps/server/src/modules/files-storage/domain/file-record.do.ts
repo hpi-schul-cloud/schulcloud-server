@@ -181,7 +181,7 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		return this.props.creatorId;
 	}
 
-	set createorId(value: EntityId | undefined) {
+	set creatorId(value: EntityId | undefined) {
 		this.props.creatorId = value;
 	}
 
