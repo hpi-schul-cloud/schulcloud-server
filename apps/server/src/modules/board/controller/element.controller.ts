@@ -50,7 +50,7 @@ export class ElementController {
 	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}
 
 	@ApiOperation({ summary: 'Get metadata for a single content element.' })
-	@ApiResponse({ status: 200, schema: { type: 'object', additionalProperties: true } })
+	@ApiResponse({ status: 200, type: ElementWithParentHierarchyResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
