@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 
 describe('Path Helper', () => {
@@ -15,11 +15,7 @@ describe('Path Helper', () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const storageLocationId: EntityId = new ObjectId().toHexString();
 
-		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
-		];
+		const fileRecords = fileRecordTestFactory().buildList(3, { parentId: userId, storageLocationId });
 
 		return fileRecords;
 	};
