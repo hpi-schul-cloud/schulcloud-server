@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardCardApi, BoardElementApi, ContentElementType } from './generated';
 import { CardClientAdapter } from '.';
 import { faker } from '@faker-js/faker/.';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 
 describe(CardClientAdapter.name, () => {
 	let module: TestingModule;
@@ -40,10 +41,6 @@ describe(CardClientAdapter.name, () => {
 		expect(sut).toBeDefined();
 	});
 
-	it('should have a cardApi', () => {
-		expect(sut['cardApi']).toStrictEqual(cardApiMock);
-	});
-
 	describe('createCardElement', () => {
 		describe('when creating a card element', () => {
 			const setup = () => {
@@ -52,6 +49,10 @@ describe(CardClientAdapter.name, () => {
 					type: ContentElementType.RICH_TEXT,
 					toPosition: 1,
 				};
+
+				cardApiMock.cardControllerCreateElement.mockResolvedValue(
+					axiosResponseFactory.build({ data: { id: cardId, type: ContentElementType.RICH_TEXT } })
+				);
 
 				return {
 					cardId,
@@ -62,8 +63,10 @@ describe(CardClientAdapter.name, () => {
 			it('should call cardApi.cardControllerCreateElement', async () => {
 				const { cardId, createContentElementBodyParams } = setup();
 
-				await sut.createCardElement(cardId, createContentElementBodyParams);
+				const response = await sut.createCardElement(cardId, createContentElementBodyParams);
 
+				expect(response.id).toEqual(cardId);
+				expect(response.type).toEqual(ContentElementType.RICH_TEXT);
 				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(cardId, createContentElementBodyParams);
 			});
 		});
@@ -107,6 +110,10 @@ describe(CardClientAdapter.name, () => {
 					},
 				};
 
+				boardElementApiMock.elementControllerUpdateElement.mockResolvedValue(
+					axiosResponseFactory.build({ data: updateElementContentBodyParams })
+				);
+
 				return {
 					elementId,
 					updateElementContentBodyParams,
@@ -116,8 +123,9 @@ describe(CardClientAdapter.name, () => {
 			it('should call elementAPI.elementControllerUpdateElement', async () => {
 				const { elementId, updateElementContentBodyParams } = setup();
 
-				await sut.updateCardElement(elementId, updateElementContentBodyParams);
+				const response = await sut.updateCardElement(elementId, updateElementContentBodyParams);
 
+				expect(response).toEqual(updateElementContentBodyParams);
 				expect(boardElementApiMock.elementControllerUpdateElement).toHaveBeenCalledWith(
 					elementId,
 					updateElementContentBodyParams
