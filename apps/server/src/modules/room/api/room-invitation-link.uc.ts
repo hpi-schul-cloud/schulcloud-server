@@ -1,7 +1,7 @@
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-// import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink } from '../domain/do/room-invitation-link.do';
@@ -18,19 +18,16 @@ export class RoomInvitationLinkUc {
 
 	public async getRoomInvitationLinkById(userId: EntityId, linkId: EntityId): Promise<RoomInvitationLink> {
 		this.checkFeatureEnabled();
+		const roomInvitationLink = this.roomInvitationLinkRepo.findById(linkId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.ROOM_CREATE]);
 
-		return this.roomInvitationLinkRepo.findById(linkId);
+		return roomInvitationLink;
 	}
 
-	// public async getRoomInvitationLinksByRoomId(roomId: EntityId): Promise<RoomInvitationLink[]> {
-	// 	// return this.roomInvitationLinkRepo.findByRoomId(roomId);
-	// }
-
 	private checkFeatureEnabled(): void {
-		// if (!this.configService.get('FEATURE_ROOM_LINKS_ENABLED', { infer: true })) {
-		// 	throw new FeatureDisabledLoggableException('FEATURE_ROOM_LINKS_ENABLED');
-		// }
+		if (!this.configService.get('FEATURE_ROOM_INVITATION_LINKS_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_INVITATION_LINKS_ENABLED');
+		}
 	}
 }
