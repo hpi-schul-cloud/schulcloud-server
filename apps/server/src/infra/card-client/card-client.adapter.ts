@@ -3,6 +3,7 @@ import { CreateContentElementBodyParams, RenameBodyParams } from '.';
 import {
 	BoardCardApi,
 	BoardElementApi,
+	CardControllerCreateElement201Response,
 	ElementControllerUpdateElement200Response,
 	UpdateElementContentBodyParams,
 } from './generated';
@@ -14,9 +15,10 @@ export class CardClientAdapter {
 	public async createCardElement(
 		cardId: string,
 		createContentElementBodyParams: CreateContentElementBodyParams
-	): Promise<{ id: string; type: string }> {
-		const element = (await this.cardApi.cardControllerCreateElement(cardId, createContentElementBodyParams)).data;
-		return { id: element.id, type: element.type };
+	): Promise<CardControllerCreateElement201Response> {
+		const element = await this.cardApi.cardControllerCreateElement(cardId, createContentElementBodyParams);
+
+		return element.data;
 	}
 
 	public async updateCardTitle(cardId: string, renameBodyParams: RenameBodyParams): Promise<void> {
@@ -31,6 +33,7 @@ export class CardClientAdapter {
 			elementId,
 			updateElementContentBodyParams
 		);
+
 		return anyElementResponse.data;
 	}
 }
