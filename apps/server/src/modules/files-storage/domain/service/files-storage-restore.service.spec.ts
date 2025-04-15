@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { getPaths, unmarkForDelete } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -16,15 +16,10 @@ const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.markedForDelete().buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory
-			.markedForDelete()
-			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory
-			.markedForDelete()
-			.buildWithId({ parentId, storageLocationId: parentSchoolId, name: 'text-tree.txt' }),
-	];
+	const yesterday = new Date(Date.now() - 86400000);
+	const fileRecords = fileRecordTestFactory()
+		.withDeletedSince(yesterday)
+		.buildList(3, { parentId, storageLocationId: parentSchoolId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
