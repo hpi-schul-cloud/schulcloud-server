@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardsClientAdapter } from '@infra/boards-client';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import type { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
@@ -43,7 +44,7 @@ describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeImportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
-	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
+	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -54,15 +55,15 @@ describe(CommonCartridgeImportService.name, () => {
 					useValue: createMock<CoursesClientAdapter>(),
 				},
 				{
-					provide: BoardsClientAdapter,
-					useValue: createMock<BoardsClientAdapter>(),
+					provide: FilesStorageClientAdapter,
+					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeImportService);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
-		boardsClientAdapterMock = module.get(BoardsClientAdapter);
+		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 	});
 
 	afterEach(async () => {
@@ -77,37 +78,21 @@ describe(CommonCartridgeImportService.name, () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('importFile', () => {
+	describe('importManifestFile', () => {
 		describe('when importing a file', () => {
 			const setup = () => {
 				const file = Buffer.from('');
+				const currentUser = currentUserFactory.build();
 
-				return { file };
+				return { file, currentUser };
 			};
 
 			it('should create a course', async () => {
-				const { file } = setup();
-
-				await sut.importFile(file);
+				const { currentUser } = setup();
+				await sut.importManifestFile(Buffer.from(''), currentUser);
 
 				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: expect.any(String) });
-			});
-
-			it('should create boards', async () => {
-				const { file } = setup();
-
-				await sut.importFile(file);
-
-				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledTimes(1);
-			});
-
-			it('should create columns', async () => {
-				const { file } = setup();
-
-				await sut.importFile(file);
-
-				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(1);
-				expect(boardsClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(1);
+				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledTimes(2);
 			});
 		});
 	});
