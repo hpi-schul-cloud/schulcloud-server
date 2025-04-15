@@ -323,7 +323,7 @@ describe('FilesStorageService copy methods', () => {
 
 				expect(result1.id).toBeDefined();
 
-				const fileResponse1 = CopyFileResponseBuilder.build(result1.id as string, sourceFile2.id, sourceFile2.name);
+				const fileResponse1 = CopyFileResponseBuilder.build(result1.id as string, sourceFile1.id, sourceFile1.name);
 
 				expect(result1.id).not.toEqual(sourceFile1.id);
 				expect(result1).toEqual(fileResponse1);
