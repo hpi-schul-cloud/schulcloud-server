@@ -10,7 +10,7 @@ import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordMapper, FilesStorageMapper } from '../../mapper';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -19,11 +19,7 @@ const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -39,7 +35,7 @@ const buildFileRecordWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' });
+	const fileRecord = fileRecordTestFactory().build({ parentId, storageLocationId, name: 'text.txt' });
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,
 	};
