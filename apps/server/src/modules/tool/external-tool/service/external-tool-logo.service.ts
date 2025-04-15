@@ -1,11 +1,10 @@
+import { Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
+import { EntityId, ImageMimeType } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
-import { ImageMimeType } from '../../common/enum';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
