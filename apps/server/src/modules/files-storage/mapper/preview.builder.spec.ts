@@ -1,11 +1,11 @@
 import { PreviewOutputMimeTypes } from '../domain/interface';
-import { fileRecordFactory } from '../testing';
+import { fileRecordTestFactory } from '../testing';
 import { PreviewBuilder } from './preview.builder';
 
 describe('PreviewBuilder', () => {
 	describe('buildParams is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordTestFactory().build();
 			const previewParams = { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
 			const bytesRange = 'bytes=0-100';
 
@@ -33,7 +33,7 @@ describe('PreviewBuilder', () => {
 
 	describe('buildPayload is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordTestFactory().build();
 			const previewParams = { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
 			const bytesRange = 'bytes=0-100';
 			const previewFileParams = PreviewBuilder.buildParams(fileRecord, previewParams, bytesRange);
