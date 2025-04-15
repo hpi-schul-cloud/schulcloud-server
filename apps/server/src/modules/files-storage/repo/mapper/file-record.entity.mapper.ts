@@ -1,4 +1,4 @@
-import { FileRecord } from '../../domain';
+import { FileRecord, FileRecordSecurityCheck } from '../../domain';
 import { FileRecordEntity } from '../file-record.entity';
 
 export class FileRecordEntityMapper {
@@ -7,6 +7,8 @@ export class FileRecordEntityMapper {
 		if (fileRecordEntity.domainObject) {
 			return fileRecordEntity.domainObject;
 		}
+
+		fileRecordEntity.securityCheck = new FileRecordSecurityCheck(fileRecordEntity.securityCheck);
 
 		const room = new FileRecord(fileRecordEntity);
 
