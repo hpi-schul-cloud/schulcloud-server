@@ -1,6 +1,13 @@
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
-import { FileRecord, FileRecordParentType, FileRecordProps, FileRecordSecurityCheck, StorageLocation } from '../domain';
+import {
+	FileRecord,
+	FileRecordParentType,
+	FileRecordProps,
+	FileRecordSecurityCheck,
+	ScanStatus,
+	StorageLocation,
+} from '../domain';
 import { FileRecordFactory } from '../domain/file-record.factory';
 
 export class FileRecordTestFactory {
@@ -46,6 +53,12 @@ export class FileRecordTestFactory {
 	public withDeletedSince(date?: Date): this {
 		const dateNow = new Date(Date.now() - 1000);
 		this.props.deletedSince = date || dateNow;
+
+		return this;
+	}
+
+	public withScanStatus(scanStatus?: ScanStatus): this {
+		this.props.securityCheck.status = scanStatus ?? ScanStatus.VERIFIED;
 
 		return this;
 	}

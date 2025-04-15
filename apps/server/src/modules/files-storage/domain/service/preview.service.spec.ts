@@ -10,7 +10,7 @@ import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { ScanStatus } from '../file-record.do';
 import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
@@ -23,13 +23,13 @@ import { PreviewService } from './preview.service';
 const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) => {
 	const parentId = new ObjectId().toHexString();
 	const parentStorageLocationId = new ObjectId().toHexString();
-	const fileRecord = fileRecordFactory.buildWithId({
+
+	const fileRecord = fileRecordTestFactory().withScanStatus(scanStatus).build({
 		parentId,
 		storageLocationId: parentStorageLocationId,
 		name: 'text.png',
 		mimeType,
 	});
-	fileRecord.securityCheck.status = scanStatus ?? ScanStatus.VERIFIED;
 
 	const params: FileRecordParams = {
 		storageLocationId: parentStorageLocationId,
