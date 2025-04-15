@@ -30,10 +30,10 @@ export class FileRecordTestFactory {
 	};
 
 	public build(params: DeepPartial<FileRecordProps> = {}): FileRecord {
-		this.props.id = new ObjectId().toHexString();
-		this.props = Object.assign(this.props, params);
+		const props = Object.assign({ ...this.props }, params);
+		props.id = new ObjectId().toHexString();
 
-		const fileRecord = FileRecordFactory.buildFromFileRecordProps(this.props);
+		const fileRecord = FileRecordFactory.buildFromFileRecordProps(props);
 
 		this.sequence += 1;
 
