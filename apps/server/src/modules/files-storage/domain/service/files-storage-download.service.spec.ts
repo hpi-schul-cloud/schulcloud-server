@@ -10,7 +10,7 @@ import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
@@ -20,11 +20,7 @@ const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -101,7 +97,7 @@ describe('FilesStorageService download methods', () => {
 				};
 
 				const fileResponse = createMock<GetFile>();
-				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
+				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.name);
 
 				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
 
@@ -206,7 +202,7 @@ describe('FilesStorageService download methods', () => {
 				const fileResponse = createMock<GetFile>();
 
 				storageClient.get.mockResolvedValueOnce(fileResponse);
-				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
+				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.name);
 
 				return { fileRecord, expectedResponse };
 			};
