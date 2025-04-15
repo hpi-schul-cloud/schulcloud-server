@@ -1,5 +1,5 @@
-import { ContentElementType } from '../generated';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
+import { ContentElementType } from '@infra/card-client';
+import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 
 export class CommonCartridgeImportMapper {
 	public static mapResourceTypeToContentElementType(
@@ -7,9 +7,9 @@ export class CommonCartridgeImportMapper {
 	): ContentElementType | undefined {
 		switch (resourceType) {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
-				return ContentElementType.LINK;
+				return 'link';
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return ContentElementType.RICH_TEXT;
+				return 'richText';
 			default:
 				return undefined;
 		}

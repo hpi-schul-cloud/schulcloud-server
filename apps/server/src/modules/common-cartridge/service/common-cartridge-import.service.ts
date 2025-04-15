@@ -1,7 +1,6 @@
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import {
 	CardClientAdapter,
-	CommonCartridgeImportMapper,
 	LinkElementContentBody,
 	RichTextElementContentBody,
 	UpdateElementContentBodyParamsData,
@@ -22,6 +21,7 @@ import {
 	CommonCartridgeWebLinkResourceProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
+import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 const DEPTH_CARD_ELEMENTS = 3;
 const DEPTH_CARD = 2;
@@ -138,18 +138,26 @@ export class CommonCartridgeImportService {
 		cardId: string,
 		cardElementProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
-		if (cardElementProps.isResource) {
-			const resource = parser.getResource(cardElementProps);
-			const contentElementType = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(resource?.type);
+		if (!cardElementProps.isResource) return;
 
-			if (resource && contentElementType) {
-				const resourceBody = this.mapToResourceBody(resource, cardElementProps);
-				const contentElement = await this.cardClient.createCardElement(cardId, { type: contentElementType });
-				if (resourceBody) {
-					await this.cardClient.updateCardElement(contentElement.id, { data: resourceBody });
-				}
-			}
-		}
+		const resource = parser.getResource(cardElementProps);
+		if (!resource) return;
+
+		const contentElementType = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
+
+		if (!contentElementType) return;
+		if (!contentElementType) return;
+
+		const resourceBody = this.mapToResourceBody(resource, cardElementProps);
+		if (!resourceBody) return;
+
+		const contentElement = await this.cardClient.createCardElement(cardId, {
+			type: contentElementType,
+		});
+
+		await this.cardClient.updateCardElement(contentElement.id, {
+			data: resourceBody,
+		});
 	}
 
 	private mapToResourceBody(
@@ -173,17 +181,19 @@ export class CommonCartridgeImportService {
 	private createTextFromHtmlResource(
 		resource: CommonCartridgeImportWebContentResourceProps
 	): RichTextElementContentBody {
-		return {
+		const richTextBody: RichTextElementContentBody = {
 			type: 'richText',
 			content: {
 				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
 				text: resource.html,
 			},
 		};
+
+		return richTextBody;
 	}
 
 	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
-		return {
+		const linkBody: LinkElementContentBody = {
 			content: {
 				title: resource.title ?? resource.url,
 				url: resource.url,
@@ -193,5 +203,7 @@ export class CommonCartridgeImportService {
 			},
 			type: 'link',
 		};
+
+		return linkBody;
 	}
 }

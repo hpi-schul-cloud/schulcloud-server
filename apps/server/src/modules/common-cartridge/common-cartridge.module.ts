@@ -10,7 +10,7 @@ import { CardClientModule as OldCardClientModule } from './common-cartridge-clie
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
-import { CommonCartridgeExportMapper } from './service/common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { ColumnClientModule } from '@infra/column-client';
 import { CardClientModule } from '@infra/card-client';
