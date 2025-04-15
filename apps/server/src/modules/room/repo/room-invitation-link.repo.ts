@@ -7,22 +7,25 @@ import { RoomInvitationLinkDomainMapper } from './room-invitation-link-domain.ma
 
 @Injectable()
 export class RoomInvitationLinkRepo {
-	constructor(private readonly em: EntityManager) {}
+	constructor(
+		private readonly em: EntityManager,
+		private readonly roomInvitationLinkDomainMapper: RoomInvitationLinkDomainMapper
+	) {}
 
 	public async findById(id: EntityId): Promise<RoomInvitationLink> {
 		const entity = await this.em.findOneOrFail(RoomInvitationLinkEntity, id);
-		const domainobject = RoomInvitationLinkDomainMapper.mapEntityToDo(entity);
+		const domainobject = this.roomInvitationLinkDomainMapper.mapEntityToDo(entity);
 		return domainobject;
 	}
 
 	public async findByRoomId(roomId: EntityId): Promise<RoomInvitationLink[]> {
 		const entities = await this.em.find(RoomInvitationLinkEntity, { roomId });
-		const domainObjects = entities.map((entity) => RoomInvitationLinkDomainMapper.mapEntityToDo(entity));
+		const domainObjects = entities.map((entity) => this.roomInvitationLinkDomainMapper.mapEntityToDo(entity));
 		return domainObjects;
 	}
 
 	public async save(roomInvitationLink: RoomInvitationLink): Promise<void> {
-		const entity = RoomInvitationLinkDomainMapper.mapDoToEntity(roomInvitationLink);
+		const entity = await this.roomInvitationLinkDomainMapper.mapDoToEntity(roomInvitationLink);
 		await this.em.persistAndFlush(entity);
 	}
 

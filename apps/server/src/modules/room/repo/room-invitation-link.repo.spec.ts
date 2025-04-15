@@ -6,6 +6,7 @@ import { RoomInvitationLinkEntity } from './entity/room-invitation-link.entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roomInvitationLinkEntityFactory } from '../testing/room-invitation-link-entity.factory';
 import { roomInvitationLinkFactory } from '../testing/room-invitation-link.factory';
+import { RoomInvitationLinkDomainMapper } from './room-invitation-link-domain.mapper';
 
 describe('RoomInvitationLinkRepo', () => {
 	let module: TestingModule;
@@ -15,7 +16,7 @@ describe('RoomInvitationLinkRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [RoomInvitationLinkEntity] })],
-			providers: [RoomInvitationLinkRepo],
+			providers: [RoomInvitationLinkRepo, RoomInvitationLinkDomainMapper],
 		}).compile();
 
 		repo = module.get(RoomInvitationLinkRepo);

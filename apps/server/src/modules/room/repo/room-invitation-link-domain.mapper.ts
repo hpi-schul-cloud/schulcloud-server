@@ -1,37 +1,40 @@
+import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomInvitationLink } from '../domain/do/room-invitation-link.do';
 import { RoomInvitationLinkEntity } from './entity/room-invitation-link.entity';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class RoomInvitationLinkDomainMapper {
-    static mapEntityToDo(roomInvitationLinkEntity: RoomInvitationLinkEntity): RoomInvitationLink {
-        // check identity map reference
-        if (roomInvitationLinkEntity.domainObject) {
-            return roomInvitationLinkEntity.domainObject;
-        }
+	constructor(private readonly em: EntityManager) {}
 
-        const roomInvitationLink = new RoomInvitationLink(roomInvitationLinkEntity);
+	public mapEntityToDo(entity: RoomInvitationLinkEntity): RoomInvitationLink {
+		if (entity.domainObject) {
+			return entity.domainObject;
+		}
 
-        // attach to identity map
-        roomInvitationLinkEntity.domainObject = roomInvitationLink;
+		const roomInvitationLink = new RoomInvitationLink({
+			id: entity.id,
+			title: entity.title,
+			restrictedToSchoolId: entity.restrictedToSchoolId,
+			isOnlyForTeachers: entity.isOnlyForTeachers,
+			activeUntil: entity.activeUntil,
+			startingRole: entity.startingRole,
+			roomId: entity.roomId,
+			createdById: entity.createdById,
+		});
+		entity.domainObject = roomInvitationLink;
+		return roomInvitationLink;
+	}
 
-        return roomInvitationLink;
-    }
-
-    static mapDoToEntity(roomInvitationLink: RoomInvitationLink): RoomInvitationLinkEntity {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        const { props } = roomInvitationLink;
-
-        if (!(props instanceof RoomInvitationLinkEntity)) {
-            const entity = new RoomInvitationLinkEntity();
-            Object.assign(entity, props);
-
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            roomInvitationLink.props = entity;
-
-            return entity;
-        }
-
-        return props;
-    }
+	public async mapDoToEntity(roomInvitationLink: RoomInvitationLink): Promise<RoomInvitationLinkEntity> {
+		let entity = await this.em.findOne(RoomInvitationLinkEntity, roomInvitationLink.id);
+		if (entity) {
+			Object.assign(entity, roomInvitationLink.getProps());
+		} else {
+			entity = new RoomInvitationLinkEntity();
+			Object.assign(entity, roomInvitationLink.getProps());
+		}
+		entity.domainObject = roomInvitationLink;
+		return entity;
+	}
 }
