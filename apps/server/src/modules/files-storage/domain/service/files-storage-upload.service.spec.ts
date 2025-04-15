@@ -6,16 +6,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordEntity } from '../../repo';
-import { readableStreamWithFileTypeFactory } from '../../testing';
-import { fileRecordFactory } from '../../testing/file-record.factory';
+import { fileRecordTestFactory, readableStreamWithFileTypeFactory } from '../../testing';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
+import { FileRecord, FileRecordSecurityCheck, ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
 import { resolveFileNameDuplicates } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
@@ -31,11 +29,7 @@ const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -56,8 +50,6 @@ describe('FilesStorageService upload methods', () => {
 	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
@@ -122,6 +114,13 @@ describe('FilesStorageService upload methods', () => {
 			const detectedMimeType = 'image/tiff';
 			expectedFileRecord.mimeType = detectedMimeType;
 
+			const expectedSecurityCheck = new FileRecordSecurityCheck({
+				reason: 'No scan result',
+				requestToken: undefined,
+				status: ScanStatus.ERROR,
+				updatedAt: new Date(),
+			});
+
 			const readableStreamWithFileType = readableStreamWithFileTypeFactory.build();
 
 			antivirusService.checkStream.mockResolvedValueOnce({
@@ -137,6 +136,7 @@ describe('FilesStorageService upload methods', () => {
 				userId,
 				fileRecord,
 				expectedFileRecord,
+				expectedSecurityCheck,
 				fileRecords,
 				readableStreamWithFileType,
 			};
@@ -144,8 +144,16 @@ describe('FilesStorageService upload methods', () => {
 
 		describe('WHEN file records of parent, file record repo save and get mime type are successfull', () => {
 			const setup = () => {
-				const { params, file, fileSize, userId, fileRecord, expectedFileRecord, readableStreamWithFileType } =
-					createUploadFileParams();
+				const {
+					params,
+					file,
+					fileSize,
+					userId,
+					fileRecord,
+					expectedFileRecord,
+					expectedSecurityCheck,
+					readableStreamWithFileType,
+				} = createUploadFileParams();
 
 				const getFileRecordsOfParentSpy = jest
 					.spyOn(service, 'getFileRecordsOfParent')
@@ -154,11 +162,13 @@ describe('FilesStorageService upload methods', () => {
 				// @ts-expect-error - fileTypeStream is mocked
 				const getMimeTypeSpy = jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -173,6 +183,7 @@ describe('FilesStorageService upload methods', () => {
 					fileSize,
 					readableStreamWithFileType,
 					expectedFileRecord,
+					expectedSecurityCheck,
 				};
 			};
 
@@ -197,22 +208,26 @@ describe('FilesStorageService upload methods', () => {
 
 				// haveBeenCalledWith can't be use here because fileRecord is a reference and
 				// it will always compare the final state of the object
-				let param: FileRecordEntity | undefined;
+				let param: FileRecord | undefined;
 
 				fileRecordRepo.save.mockReset();
 				fileRecordRepo.save.mockImplementationOnce((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
-					param = JSON.parse(JSON.stringify(fr)) as FileRecordEntity;
+					param = JSON.parse(JSON.stringify(fr)) as FileRecord;
 
 					return Promise.resolve();
 				});
 
 				fileRecordRepo.save.mockImplementationOnce((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -220,24 +235,39 @@ describe('FilesStorageService upload methods', () => {
 
 				await service.uploadFile(userId, params, file);
 
-				expect(param).toMatchObject({ isUploading: true });
+				expect(param).toMatchObject({ props: { isUploading: true } });
 			});
 
 			it('should call fileRecordRepo.save twice with correct params', async () => {
-				const { params, file, fileSize, userId, readableStreamWithFileType, expectedFileRecord } = setup();
+				const {
+					params,
+					file,
+					fileSize,
+					userId,
+					readableStreamWithFileType,
+					expectedFileRecord,
+					expectedSecurityCheck,
+				} = setup();
 
-				await service.uploadFile(userId, params, file);
+				const result = await service.uploadFile(userId, params, file);
+				expectedFileRecord.id = result.id;
 
 				expect(fileRecordRepo.save).toHaveBeenCalledTimes(2);
 
 				expect(fileRecordRepo.save).toHaveBeenLastCalledWith(
 					expect.objectContaining({
-						...expectedFileRecord,
-						mimeType: readableStreamWithFileType.fileType?.mime,
-						size: fileSize,
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-						isUploading: undefined,
+						props: {
+							...expectedFileRecord,
+							mimeType: readableStreamWithFileType.fileType?.mime,
+							size: fileSize,
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+							isUploading: undefined,
+							securityCheck: {
+								...expectedSecurityCheck,
+								updatedAt: expect.any(Date),
+							},
+						},
 					})
 				);
 			});
@@ -256,7 +286,7 @@ describe('FilesStorageService upload methods', () => {
 
 				const result = await service.uploadFile(userId, params, file);
 
-				expect(result).toBeInstanceOf(FileRecordEntity);
+				expect(result).toBeInstanceOf(FileRecord);
 			});
 
 			describe('Antivirus handling by upload ', () => {
@@ -316,11 +346,13 @@ describe('FilesStorageService upload methods', () => {
 				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -349,11 +381,13 @@ describe('FilesStorageService upload methods', () => {
 				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -390,11 +424,13 @@ describe('FilesStorageService upload methods', () => {
 				// Mock for max security check file size
 				configService.get.mockReturnValueOnce(2);
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -439,11 +475,13 @@ describe('FilesStorageService upload methods', () => {
 
 				configService.get.mockReturnValueOnce(false);
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -473,11 +511,13 @@ describe('FilesStorageService upload methods', () => {
 				// @ts-expect-error - fileTypeStream is mocked
 				jest.spyOn(FileType, 'fileTypeStream').mockResolvedValueOnce(readableStreamWithFileType);
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
@@ -504,11 +544,13 @@ describe('FilesStorageService upload methods', () => {
 
 				const getMimeTypeSpy = jest.spyOn(FileType, 'fileTypeStream');
 
-				// The fileRecord._id must be set by fileRecordRepo.save. Otherwise createPath fails.
+				// The fileRecord.id must be set by fileRecordRepo.save. Otherwise createPath fails.
 				// eslint-disable-next-line @typescript-eslint/require-await
 				fileRecordRepo.save.mockImplementation((fr) => {
-					if (fr instanceof FileRecordEntity && !fr._id) {
-						fr._id = new ObjectId();
+					if (fr instanceof FileRecord && !fr.id) {
+						const props = fr.getProps();
+						props.id = new ObjectId().toHexString();
+						fr = fileRecordTestFactory().build(props);
 					}
 
 					return Promise.resolve();
