@@ -1,10 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/database';
 import crypto from 'crypto';
 import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
-import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 
 describe('File Name Helper', () => {
@@ -12,18 +10,10 @@ describe('File Name Helper', () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const storageLocationId: EntityId = new ObjectId().toHexString();
 
-		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
-		];
+		const fileRecords = fileRecordTestFactory().buildList(3, { parentId: userId, storageLocationId });
 
 		return fileRecords;
 	};
-
-	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-	});
 
 	describe('hasDuplicateName is called', () => {
 		describe('WHEN all fileRecords have different names', () => {
@@ -196,8 +186,20 @@ describe('File Name Helper', () => {
 			const setup = () => {
 				const fileRecords = setupFileRecords();
 				const newFileName = 'renamed.jpeg';
+				console.log(
+					'fileRecords',
+					fileRecords.map((f) => f.name)
+				);
 				fileRecords[0].name = newFileName;
+				console.log(
+					'fileRecords',
+					fileRecords.map((f) => f.name)
+				);
 				fileRecords[1].name = `renamed (1).jpeg`;
+				console.log(
+					'fileRecords',
+					fileRecords.map((f) => f.name)
+				);
 
 				return {
 					newFileName,

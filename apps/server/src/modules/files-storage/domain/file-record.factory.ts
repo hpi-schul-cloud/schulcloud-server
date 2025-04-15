@@ -12,7 +12,9 @@ export interface StoreLocationMetadata {
 
 export class FileRecordFactory {
 	private static build(fileRecordProps: FileRecordProps): FileRecord {
-		const fileRecord = new FileRecord(fileRecordProps);
+		// We need to destructure the props here to make sure that a
+		// copy of the object is created and not a reference to the original.
+		const fileRecord = new FileRecord({ ...fileRecordProps });
 
 		return fileRecord;
 	}
