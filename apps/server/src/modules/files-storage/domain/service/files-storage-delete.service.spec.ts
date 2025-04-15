@@ -71,7 +71,7 @@ describe('FilesStorageService delete methods', () => {
 	});
 
 	beforeEach(() => {
-		jest.restoreAllMocks();
+		jest.resetAllMocks();
 	});
 
 	afterAll(async () => {
