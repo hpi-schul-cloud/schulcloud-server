@@ -9,7 +9,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import { FileRecordParentType } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
-import { fileRecordFactory } from '../../../testing';
+import { fileRecordEntityTestFactory } from '../../../testing';
 import { FileRecordResponse } from '../../dto';
 
 const baseRouteName = '/file/rename';
@@ -51,8 +51,12 @@ describe(`${baseRouteName} (api)`, () => {
 			parentId: validId,
 			parentType: FileRecordParentType.School,
 		};
-		const fileRecords = fileRecordFactory.buildList(3, fileParams);
-		const fileRecord = fileRecordFactory.build({ ...fileParams, name: 'test.txt', creatorId: studentUser.id });
+		const fileRecords = fileRecordEntityTestFactory().buildList(3, fileParams);
+		const fileRecord = fileRecordEntityTestFactory().build({
+			...fileParams,
+			name: 'test.txt',
+			creatorId: studentUser.id,
+		});
 		fileRecords.push(fileRecord);
 
 		await em.persistAndFlush(fileRecords);

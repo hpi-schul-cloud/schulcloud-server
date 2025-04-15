@@ -11,7 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FilesStorageService, PreviewService } from '../../domain';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { RenameFileParams, ScanResultParams, SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -19,7 +19,7 @@ const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
+	const fileRecord = fileRecordTestFactory().build({ parentId: userId, storageLocationId });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,

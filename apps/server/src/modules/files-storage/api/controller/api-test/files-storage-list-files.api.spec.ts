@@ -10,7 +10,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import { FileRecordParentType, PreviewStatus, StorageLocation } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
-import { fileRecordFactory } from '../../../testing';
+import { fileRecordEntityTestFactory } from '../../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../../dto';
 import { availableParentTypes } from './mocks';
 
@@ -148,7 +148,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return right type of data', async () => {
 			const { loggedInClient, validId } = setup();
-			const fileRecords = fileRecordFactory.buildList(1, {
+			const fileRecords = fileRecordEntityTestFactory().buildList(1, {
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
 				parentId: validId,
@@ -181,13 +181,13 @@ describe(`${baseRouteName} (api)`, () => {
 
 		it('should return elements of requested scope', async () => {
 			const { loggedInClient, validId } = setup();
-			const fileRecords = fileRecordFactory.buildList(3, {
+			const fileRecords = fileRecordEntityTestFactory().buildList(3, {
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
 				parentId: validId,
 				parentType: FileRecordParentType.School,
 			});
-			const otherFileRecords = fileRecordFactory.buildList(3, {
+			const otherFileRecords = fileRecordEntityTestFactory().buildList(3, {
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
 				parentType: FileRecordParentType.School,

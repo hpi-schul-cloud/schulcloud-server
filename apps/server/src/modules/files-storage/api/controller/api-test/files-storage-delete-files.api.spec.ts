@@ -15,7 +15,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FileRecordParentType, PreviewStatus } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { fileRecordFactory } from '../../../testing';
+import { fileRecordEntityTestFactory } from '../../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../../dto';
 import { availableParentTypes } from './mocks';
 
@@ -290,7 +290,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			it('should return elements of requested scope', async () => {
 				const { loggedInClient, fileRecordId } = await setup();
-				const otherFileRecords = fileRecordFactory.buildList(3, {
+				const otherFileRecords = fileRecordEntityTestFactory().buildList(3, {
 					parentType: FileRecordParentType.School,
 				});
 

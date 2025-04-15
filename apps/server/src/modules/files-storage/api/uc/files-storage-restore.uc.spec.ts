@@ -13,7 +13,7 @@ import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { FileRecordParams, SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -21,11 +21,7 @@ const buildFileRecordsWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.markedForDelete().buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId: userId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -41,9 +37,9 @@ const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory
-		.markedForDelete()
-		.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
+	const fileRecord = fileRecordTestFactory()
+		.withDeletedSince()
+		.build({ parentId: userId, storageLocationId, name: 'text.txt' });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,

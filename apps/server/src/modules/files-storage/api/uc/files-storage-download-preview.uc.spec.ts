@@ -14,7 +14,7 @@ import { FilesStorageService, PreviewOutputMimeTypes, PreviewService } from '../
 import { TestHelper } from '../../domain/helper/test-helper';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -22,7 +22,7 @@ const buildFileRecordWithParams = () => {
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecord = fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' });
+	const fileRecord = fileRecordTestFactory().build({ parentId: userId, storageLocationId });
 
 	const params: SingleFileParams = {
 		fileRecordId: fileRecord.id,

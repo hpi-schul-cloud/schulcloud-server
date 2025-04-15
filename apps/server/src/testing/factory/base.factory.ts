@@ -61,11 +61,7 @@ export class BaseFactory<T, U, I = any, C = U> {
 	buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
 		const entity = this.build(params, options) as { _id: ObjectId; id: EntityId };
 		const generatedId = new ObjectId(id);
-		const entityWithId = {
-			...entity,
-			_id: generatedId,
-			id: generatedId.toHexString(),
-		};
+		const entityWithId = Object.assign(entity, { _id: generatedId, id: generatedId.toHexString() });
 
 		return entityWithId as T;
 	}

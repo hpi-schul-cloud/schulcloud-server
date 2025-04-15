@@ -2,13 +2,13 @@ import { createMock } from '@golevelup/ts-jest';
 import { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
 import { FileDto } from '../domain/dto';
-import { fileRecordFactory } from '../testing';
+import { fileRecordTestFactory } from '../testing';
 import { FileDtoBuilder } from './file-dto.builder';
 
 describe('File Builder', () => {
 	describe('buildFromRequest is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordTestFactory().build();
 
 			const readable = Readable.from('abc');
 
@@ -38,7 +38,7 @@ describe('File Builder', () => {
 
 	describe('buildFromAxiosResponse is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.build();
+			const fileRecord = fileRecordTestFactory().build();
 			const readable = Readable.from('abc');
 
 			const response = createMock<AxiosResponse<Readable>>({

@@ -21,7 +21,7 @@ import { FileRecord, FileRecordParentType, FilesStorageService, PreviewService, 
 import { ErrorType } from '../../domain/error';
 import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { FileRecordParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -43,11 +43,7 @@ const buildFileRecordsWithParams = (storageLocation: StorageLocation = StorageLo
 	const userId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId: userId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation,

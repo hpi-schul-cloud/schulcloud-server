@@ -3,7 +3,6 @@ import { AntivirusService } from '@infra/antivirus';
 import { AuthorizationClientAdapter } from '@infra/authorization-client';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { fileRecordFactory } from '@modules/files-storage/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
@@ -14,6 +13,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
 import { FileRecordEntity } from '../../../repo'; // TODO: invalid import
+import { fileRecordEntityTestFactory } from '../../../testing';
 import { FileRecordResponse } from '../../dto';
 import { availableStorageLocations } from './mocks';
 
@@ -129,16 +129,16 @@ describe(`${baseRouteName} (api)`, () => {
 				const loggedInClient = testApiClient.loginByUser(superheroAccount, superheroUser);
 
 				const storageLocationId1 = new ObjectId().toHexString();
-				const fileRecords1 = fileRecordFactory.buildList(3, {
+				const fileRecords1 = fileRecordEntityTestFactory().buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 
 				const storageLocationId2 = new ObjectId().toHexString();
-				const fileRecords2 = fileRecordFactory.buildList(3, {
+				const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
 					storageLocationId: storageLocationId2,
 				});
 
-				const markedForDeleteFileRecords = fileRecordFactory.markedForDelete().buildList(3, {
+				const markedForDeleteFileRecords = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 
