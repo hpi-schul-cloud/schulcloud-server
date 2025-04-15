@@ -7,8 +7,8 @@ import { EntityFactory } from '@testing/factory/entity.factory';
 const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 export const roomInvitationLinkEntityFactory = EntityFactory.define<RoomInvitationLinkEntity, RoomInvitationLinkProps>(
 	RoomInvitationLinkEntity,
-	({ sequence }) =>
-		{ return {
+	({ sequence }) => {
+		return {
 			id: new ObjectId().toHexString(),
 			title: `room invitation link #${sequence}`,
 			restrictedToSchoolId: new ObjectId().toHexString(),
@@ -17,8 +17,6 @@ export const roomInvitationLinkEntityFactory = EntityFactory.define<RoomInvitati
 			startingRole: RoleName.ROOMVIEWER,
 			roomId: new ObjectId().toHexString(),
 			createdById: new ObjectId().toHexString(),
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		}
+		};
 	}
 );

@@ -11,8 +11,6 @@ export interface RoomInvitationLinkProps extends AuthorizableObject {
 	startingRole: RoomRole;
 	roomId: EntityId;
 	createdById: EntityId;
-	createdAt: Date;
-	updatedAt: Date;
 }
 
 export type RoomInvitationLinkFlags = {
@@ -91,13 +89,5 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 
 	set createdById(value: EntityId) {
 		this.props.createdById = value;
-	}
-
-	get createdAt(): Date {
-		return this.props.createdAt;
-	}
-
-	get updatedAt(): Date {
-		return this.props.updatedAt;
 	}
 }

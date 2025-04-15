@@ -16,8 +16,6 @@ export const roomInvitationLinkFactory = RoomInvitationLinkFactory.define(RoomIn
 		startingRole: RoleName.ROOMVIEWER,
 		roomId: new ObjectId().toHexString(),
 		createdById: new ObjectId().toHexString(),
-		createdAt: new Date(),
-		updatedAt: new Date(),
 	};
 
 	return props;
