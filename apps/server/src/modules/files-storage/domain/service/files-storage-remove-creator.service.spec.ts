@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -16,11 +16,7 @@ const buildFileRecordsWithParams = () => {
 	const storageLocationId = new ObjectId().toHexString();
 	const creatorId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt', creatorId }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt', creatorId }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt', creatorId }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -101,9 +97,9 @@ describe('FilesStorageService delete methods', () => {
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecords[0], _creatorId: undefined }),
-						expect.objectContaining({ ...fileRecords[1], _creatorId: undefined }),
-						expect.objectContaining({ ...fileRecords[2], _creatorId: undefined }),
+						expect.objectContaining({ ...fileRecords[0], creatorId: undefined }),
+						expect.objectContaining({ ...fileRecords[1], creatorId: undefined }),
+						expect.objectContaining({ ...fileRecords[2], creatorId: undefined }),
 					])
 				);
 			});
