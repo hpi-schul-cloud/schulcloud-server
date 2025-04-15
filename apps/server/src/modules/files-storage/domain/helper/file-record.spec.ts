@@ -2,10 +2,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
-import { FileRecordParams } from '../../api/dto';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordFactory } from '../../testing';
-import { FileRecordFactory } from '../file-record.factory';
+import { fileRecordTestFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface';
 
 describe('File Record Helper', () => {
@@ -13,11 +11,7 @@ describe('File Record Helper', () => {
 		const userId: EntityId = new ObjectId().toHexString();
 		const storageLocationId: EntityId = new ObjectId().toHexString();
 
-		const fileRecords = [
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-two.txt' }),
-			fileRecordFactory.buildWithId({ parentId: userId, storageLocationId, name: 'text-tree.txt' }),
-		];
+		const fileRecords = fileRecordTestFactory().buildList(3, { parentId: userId, storageLocationId });
 
 		return { fileRecords, userId };
 	};
@@ -58,43 +52,6 @@ describe('File Record Helper', () => {
 		});
 	});
 
-	describe('getNewFileRecord is called', () => {
-		const setup = () => {
-			const { fileRecords, userId } = setupFileRecords();
-			const name = 'testName';
-			const size = 256;
-			const mimeType = 'image/jpeg';
-			const fileRecord = fileRecords[0];
-			const fileRecordParams: FileRecordParams = {
-				storageLocation: fileRecord.storageLocation,
-				storageLocationId: fileRecord.storageLocationId,
-				parentId: fileRecord.parentId,
-				parentType: fileRecord.parentType,
-			};
-
-			return { name, size, mimeType, fileRecord, fileRecordParams, userId };
-		};
-		it('should return new fileRecord', () => {
-			const { name, size, mimeType, fileRecord, fileRecordParams, userId } = setup();
-
-			const newFileRecord = FileRecordFactory.buildFromExternalInput(name, size, mimeType, fileRecordParams, userId);
-
-			const expectedObject = {
-				size,
-				name,
-				mimeType,
-				parentType: fileRecord.parentType,
-				parentId: fileRecord.parentId,
-				creatorId: userId,
-				storageLocation: fileRecord.storageLocation,
-				storageLocationId: fileRecord.storageLocationId,
-			};
-
-			expect(newFileRecord).toEqual(expect.objectContaining({ ...expectedObject }));
-			expect(newFileRecord).toEqual(expect.any(FileRecordEntity));
-		});
-	});
-
 	describe('getFormat is called', () => {
 		it('should return format', () => {
 			const mimeType = 'image/jpeg';
@@ -113,7 +70,7 @@ describe('File Record Helper', () => {
 
 	describe('getPreviewName is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordTestFactory().build();
 			const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
 
 			return { fileRecord, outputFormat };
