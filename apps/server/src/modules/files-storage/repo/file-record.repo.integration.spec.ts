@@ -6,6 +6,7 @@ import { FileRecordParentType, StorageLocation } from '../domain';
 import { fileRecordEntityFactory, fileRecordFactory } from '../testing';
 import { FileRecordEntity } from './file-record.entity';
 import { FileRecordMikroOrmRepo } from './file-record.repo';
+import { FileRecordEntityMapper } from './mapper';
 
 const sortFunction = (a: string, b: string) => a.localeCompare(b);
 
@@ -82,19 +83,21 @@ describe('FileRecordRepo', () => {
 
 	describe('save', () => {
 		it('should update the updatedAt property', async () => {
-			const fileRecord = fileRecordEntityFactory.build();
-			await em.persistAndFlush(fileRecord);
-			const origUpdatedAt = fileRecord.updatedAt;
+			const entity = fileRecordEntityFactory.build();
+
+			await em.persistAndFlush(entity);
+			const origUpdatedAt = entity.updatedAt;
 
 			await new Promise((resolve) => {
 				setTimeout(resolve, 20);
 			});
+			const fileRecord = FileRecordEntityMapper.mapEntityToDo(entity);
 			fileRecord.name = `updated-${fileRecord.name}`;
 
 			await repo.save(fileRecord);
 			// load also from DB and test if value is set
 
-			expect(fileRecord.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
+			expect(entity.updatedAt.getTime()).toBeGreaterThan(origUpdatedAt.getTime());
 		});
 	});
 

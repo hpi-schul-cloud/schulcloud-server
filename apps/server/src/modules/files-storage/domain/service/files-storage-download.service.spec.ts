@@ -6,12 +6,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
-import { FileRecordEntity } from '../../repo'; // TODO: invalid import
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { createPath } from '../helper';
@@ -44,8 +42,6 @@ describe('FilesStorageService download methods', () => {
 	let storageClient: DeepMocked<S3ClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,

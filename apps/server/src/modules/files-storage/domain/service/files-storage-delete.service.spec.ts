@@ -7,11 +7,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordEntity } from '../../repo'; // TODO: invalid import
-import { fileRecordFactory } from '../../testing';
+import { fileRecordTestFactory } from '../../testing';
 import { getPaths } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -20,11 +18,7 @@ const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
-	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, storageLocationId, name: 'text-tree.txt' }),
-	];
+	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
 	const params: FileRecordParams = {
 		storageLocation: StorageLocation.SCHOOL,
@@ -44,8 +38,6 @@ describe('FilesStorageService delete methods', () => {
 	let legacyLogger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
@@ -79,7 +71,7 @@ describe('FilesStorageService delete methods', () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {

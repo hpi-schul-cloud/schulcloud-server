@@ -6,12 +6,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import _ from 'lodash';
 import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordMapper, FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
@@ -55,8 +53,6 @@ describe('FilesStorageService update methods', () => {
 	let fileRecordRepo: DeepMocked<FileRecordRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,

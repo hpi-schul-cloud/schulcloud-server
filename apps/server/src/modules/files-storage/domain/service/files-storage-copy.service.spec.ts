@@ -5,11 +5,9 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { CopyFileResponseBuilder } from '../../mapper';
-import { FileRecordEntity } from '../../repo'; // TODO: invalid import
 import { fileRecordTestFactory } from '../../testing';
 import { ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
@@ -41,8 +39,6 @@ describe('FilesStorageService copy methods', () => {
 	let antivirusService: DeepMocked<AntivirusService>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageService,
