@@ -41,7 +41,7 @@ import {
 	VideoConferenceElementContentBody,
 	VideoConferenceElementResponse,
 } from './dto';
-import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
+import { ContentElementResponseFactory, ParentNodeInfoResponseMapper, SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
 @JwtAuthentication()
@@ -63,9 +63,16 @@ export class ElementController {
 			currentUser.userId,
 			urlParams.contentElementId
 		);
-		const elementReponse = ContentElementResponseFactory.mapToResponse(element);
 
-		return { element: elementReponse, parentHierarchy };
+		const elementReponse = ContentElementResponseFactory.mapToResponse(element);
+		const parentHierarchyResponse = ParentNodeInfoResponseMapper.mapToResponse(parentHierarchy);
+
+		const response = new ElementWithParentHierarchyResponse({
+			element: elementReponse,
+			parentHierarchy: parentHierarchyResponse,
+		});
+
+		return response;
 	}
 
 	@ApiOperation({ summary: 'Move a single content element.' })

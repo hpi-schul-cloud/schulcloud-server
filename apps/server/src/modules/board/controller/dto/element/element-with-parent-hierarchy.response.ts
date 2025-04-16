@@ -13,8 +13,8 @@ import { RichTextElementResponse } from './rich-text-element.response';
 import { SubmissionContainerElementResponse } from './submission-container-element.response';
 import { VideoConferenceElementResponse } from './video-conference-element.response';
 
-export class ParentNodeInfo {
-	constructor(props: ParentNodeInfo) {
+export class ParentNodeInfoResponse {
+	constructor(props: ParentNodeInfoResponse) {
 		this.id = props.id;
 		this.type = props.type;
 		this.name = props.name;
@@ -45,7 +45,7 @@ export class ParentNodeInfo {
 	DeletedElementResponse,
 	VideoConferenceElementResponse,
 	FileFolderElementResponse,
-	ParentNodeInfo
+	ParentNodeInfoResponse
 )
 export class ElementWithParentHierarchyResponse {
 	constructor(props: ElementWithParentHierarchyResponse) {
@@ -74,8 +74,8 @@ export class ElementWithParentHierarchyResponse {
 		description: 'The hierarchical path of parent elements',
 		type: 'array',
 		items: {
-			$ref: getSchemaPath(ParentNodeInfo),
+			$ref: getSchemaPath(ParentNodeInfoResponse),
 		},
 	})
-	parentHierarchy: ParentNodeInfo[];
+	parentHierarchy: ParentNodeInfoResponse[];
 }
