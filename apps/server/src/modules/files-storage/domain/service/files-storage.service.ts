@@ -30,14 +30,7 @@ import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord } from '../file-record.do';
 import { FileRecordFactory, StoreLocationMetadata } from '../file-record.factory';
-import {
-	createCopyFiles,
-	createPath,
-	getPaths,
-	markForDelete,
-	resolveFileNameDuplicates,
-	unmarkForDelete,
-} from '../helper';
+import { createCopyFiles, getPaths, markForDelete, resolveFileNameDuplicates, unmarkForDelete } from '../helper';
 import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
 
 @Injectable()
@@ -91,7 +84,7 @@ export class FilesStorageService {
 		file.mimeType = fileRecord.mimeType;
 		await this.fileRecordRepo.save(fileRecord);
 
-		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
+		await this.createFileInStorageAndRollbackOnError(fileRecord, file);
 
 		return fileRecord;
 	}
@@ -154,12 +147,8 @@ export class FilesStorageService {
 		return fileName;
 	}
 
-	private async createFileInStorageAndRollbackOnError(
-		fileRecord: FileRecord,
-		params: FileRecordParams,
-		file: FileDto
-	): Promise<void> {
-		const filePath = createPath(params.storageLocationId, fileRecord.id);
+	private async createFileInStorageAndRollbackOnError(fileRecord: FileRecord, file: FileDto): Promise<void> {
+		const filePath = fileRecord.createPath();
 		const useStreamToAntivirus = this.configService.get<boolean>('USE_STREAM_TO_ANTIVIRUS');
 
 		try {
@@ -179,10 +168,9 @@ export class FilesStorageService {
 			}
 
 			// The actual file size is set here because it is known only after the whole file is streamed.
-			fileRecord.size = await fileSizePromise;
-			this.throwErrorIfFileIsTooBig(fileRecord.size);
+			const fileRecordSize = await fileSizePromise;
 
-			fileRecord.markAsUploaded();
+			fileRecord.markAsUploaded(fileRecordSize, this.getMaxFileSize());
 
 			await this.fileRecordRepo.save(fileRecord);
 
@@ -211,9 +199,9 @@ export class FilesStorageService {
 	}
 
 	private async sendToAntivirus(fileRecord: FileRecord): Promise<void> {
-		const maxSecurityCheckFileSize = this.configService.get<number>('MAX_SECURITY_CHECK_FILE_SIZE');
+		const maxSecurityCheckFileSize = this.configService.get('MAX_SECURITY_CHECK_FILE_SIZE', { infer: true });
 
-		if (fileRecord.size > maxSecurityCheckFileSize) {
+		if (fileRecord.sizeInByte > maxSecurityCheckFileSize) {
 			fileRecord.updateSecurityCheckStatus(ScanStatus.WONT_CHECK, 'File is too big');
 			await this.fileRecordRepo.save(fileRecord);
 		} else {
@@ -222,7 +210,7 @@ export class FilesStorageService {
 	}
 
 	public getMaxFileSize(): number {
-		const maxFileSize = this.configService.get<number>('MAX_FILE_SIZE');
+		const maxFileSize = this.configService.get('MAX_FILE_SIZE', { infer: true });
 
 		return maxFileSize;
 	}
@@ -276,7 +264,7 @@ export class FilesStorageService {
 	}
 
 	public async downloadFile(fileRecord: FileRecord, bytesRange?: string): Promise<GetFileResponse> {
-		const pathToFile = createPath(fileRecord.storageLocationId, fileRecord.id);
+		const pathToFile = fileRecord.createPath();
 		const file = await this.storageClient.get(pathToFile, bytesRange);
 		const response = FileResponseBuilder.build(file, fileRecord.getName());
 

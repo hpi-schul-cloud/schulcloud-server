@@ -79,6 +79,23 @@ export class FileRecordSecurityCheck implements FileRecordSecurityCheckProps {
 
 		return isVerified;
 	}
+
+	public copy(): FileRecordSecurityCheck {
+		const copy = new FileRecordSecurityCheck({
+			status: this.status,
+			reason: this.reason,
+			updatedAt: this.updatedAt,
+			requestToken: this.requestToken,
+		});
+
+		return copy;
+	}
+
+	public getProps(): FileRecordSecurityCheckProps {
+		const copyProps = { ...this };
+
+		return copyProps;
+	}
 }
 
 export interface ParentInfo {
@@ -118,155 +135,52 @@ export interface FileRecordProps extends AuthorizableObject {
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
 	isUploading?: boolean;
-	securityCheck: FileRecordSecurityCheck;
-	createdAt: Date;
-	updatedAt: Date;
 }
 
 export class FileRecord extends DomainObject<FileRecordProps> {
-	constructor(props: FileRecordProps) {
+	private securityCheck: FileRecordSecurityCheck;
+
+	constructor(props: FileRecordProps, securityCheck: FileRecordSecurityCheck) {
 		super(props);
+		this.securityCheck = securityCheck;
 	}
 
-	public getProps(): FileRecordProps {
-		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const { domainObject, ...copyProps } = this.props;
+	public getSecurityCheckProps(): FileRecordSecurityCheckProps {
+		const securityCheckProps = this.securityCheck.getProps();
 
-		return copyProps;
+		return securityCheckProps;
 	}
 
-	get size(): number {
+	public createSecurityScanBasedOnStatus(): FileRecordSecurityCheck {
+		const securityCheck = this.securityCheck.isVerified()
+			? this.securityCheck.copy()
+			: FileRecordSecurityCheck.createWithDefaultProps();
+
+		return securityCheck;
+	}
+
+	get sizeInByte(): number {
 		return this.props.size;
-	}
-
-	set size(value: number) {
-		this.props.size = value;
-	}
-
-	get name(): string {
-		return this.props.name;
-	}
-
-	set name(value: string) {
-		this.props.name = value;
 	}
 
 	get mimeType(): string {
 		return this.props.mimeType;
 	}
-	set mimeType(value: string) {
-		this.props.mimeType = value;
-	}
-
-	get parentType(): FileRecordParentType {
-		return this.props.parentType;
-	}
-
-	set parentType(value: FileRecordParentType) {
-		this.props.parentType = value;
-	}
-
-	get parentId(): EntityId {
-		return this.props.parentId;
-	}
-
-	set parentId(value: EntityId) {
-		this.props.parentId = value;
-	}
-
-	get creatorId(): EntityId | undefined {
-		return this.props.creatorId;
-	}
-
-	set creatorId(value: EntityId | undefined) {
-		this.props.creatorId = value;
-	}
-
-	get storageLocation(): StorageLocation {
-		return this.props.storageLocation;
-	}
-
-	set storageLocation(value: StorageLocation) {
-		this.props.storageLocation = value;
-	}
-
-	get storageLocationId(): EntityId {
-		return this.props.storageLocationId;
-	}
-
-	set storageLocationId(value: EntityId) {
-		this.props.storageLocationId = value;
-	}
-
-	get deletedSince(): Date | undefined {
-		return this.props.deletedSince;
-	}
-
-	set deletedSince(value: Date | undefined) {
-		this.props.deletedSince = value;
-	}
-
-	get isCopyFrom(): EntityId | undefined {
-		return this.props.isCopyFrom;
-	}
-
-	set isCopyFrom(value: EntityId | undefined) {
-		this.props.isCopyFrom = value;
-	}
-
-	get isUploading(): boolean | undefined {
-		return this.props.isUploading;
-	}
-
-	set isUploading(value: boolean | undefined) {
-		this.props.isUploading = value;
-	}
-
-	get securityCheck(): FileRecordSecurityCheck {
-		return this.props.securityCheck;
-	}
-
-	set securityCheck(value: FileRecordSecurityCheck) {
-		this.props.securityCheck = value;
-	}
-
-	get createdAt(): Date {
-		return this.props.createdAt;
-	}
-
-	get updatedAt(): Date {
-		return this.props.updatedAt;
-	}
 
 	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
-		this.props.securityCheck.scanned(status, reason);
+		this.securityCheck.scanned(status, reason);
 	}
 
 	public getSecurityToken(): string | undefined {
-		return this.props.securityCheck.requestToken;
+		return this.securityCheck.requestToken;
 	}
 
 	public isBlocked(): boolean {
-		return this.props.securityCheck.isBlocked();
-	}
-
-	public hasScanStatusError(): boolean {
-		return this.props.securityCheck.hasScanStatusError();
-	}
-
-	public hasScanStatusWontCheck(): boolean {
-		return this.props.securityCheck.hasScanStatusWontCheck();
+		return this.securityCheck.isBlocked();
 	}
 
 	public isPending(): boolean {
-		return this.props.securityCheck.isPending();
-	}
-
-	public isVerified(): boolean {
-		return this.props.securityCheck.isVerified();
+		return this.securityCheck.isPending();
 	}
 
 	public markForDelete(): void {
@@ -308,7 +222,7 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 	}
 
 	public getPreviewStatus(): PreviewStatus {
-		if (this.isBlocked()) {
+		if (this.securityCheck.isBlocked()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
 		}
 
@@ -316,19 +230,23 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
 		}
 
-		if (this.isVerified()) {
+		if (this.securityCheck.isVerified()) {
 			return PreviewStatus.PREVIEW_POSSIBLE;
 		}
 
-		if (this.isPending()) {
+		if (this.securityCheck.isPending()) {
 			return PreviewStatus.AWAITING_SCAN_STATUS;
 		}
 
-		if (this.hasScanStatusWontCheck()) {
+		if (this.securityCheck.hasScanStatusWontCheck()) {
 			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK;
 		}
 
 		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+	}
+
+	get scanStatus(): ScanStatus {
+		return this.securityCheck.status;
 	}
 
 	get fileNameWithoutExtension(): string {
@@ -341,7 +259,25 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		this.props.creatorId = undefined;
 	}
 
-	public markAsUploaded(): void {
+	private setSizeInByte(sizeInByte: number, maxSizeInByte: number): void {
+		if (sizeInByte <= 0 && sizeInByte > maxSizeInByte) {
+			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
+		}
+		this.props.size = sizeInByte;
+	}
+
+	public markAsUploaded(sizeInByte: number, maxSizeInByte: number): void {
+		this.setSizeInByte(sizeInByte, maxSizeInByte);
 		this.props.isUploading = undefined;
+	}
+
+	public createPath(): string {
+		if (!this.props.storageLocationId || !this.id) {
+			throw new Error(ErrorType.COULD_NOT_CREATE_PATH);
+		}
+
+		const path = [this.props.storageLocationId, this.id].join('/');
+
+		return path;
 	}
 }

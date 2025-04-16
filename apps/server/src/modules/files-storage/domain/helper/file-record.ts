@@ -31,10 +31,11 @@ export function getFormat(mimeType: string): string {
 }
 
 export function getPreviewName(fileRecord: FileRecord, outputFormat?: PreviewOutputMimeTypes): string {
-	const { fileNameWithoutExtension, name } = fileRecord;
+	const props = fileRecord.getProps();
+	const fileNameWithoutExtension = fileRecord.fileNameWithoutExtension;
 
 	if (!outputFormat) {
-		return name;
+		return props.name;
 	}
 
 	const format = getFormat(outputFormat);

@@ -7,20 +7,20 @@ import { FileRecordParentType, StorageLocation } from '../../domain/interface';
 
 export class FileRecordResponse {
 	constructor(fileRecord: FileRecord) {
-		this.id = fileRecord.id;
-		this.name = fileRecord.name;
-		this.url = `/api/v3/file/download/${fileRecord.id}/${encodeURIComponent(fileRecord.name)}`;
-		this.size = fileRecord.size;
-		this.securityCheckStatus = fileRecord.securityCheck.status;
-		this.parentId = fileRecord.parentId;
-		this.creatorId = fileRecord.creatorId;
-		this.mimeType = fileRecord.mimeType;
-		this.parentType = fileRecord.parentType;
-		this.isUploading = fileRecord.isUploading;
-		this.deletedSince = fileRecord.deletedSince;
+		const props = fileRecord.getProps();
+
+		this.id = props.id;
+		this.name = props.name;
+		this.url = `/api/v3/file/download/${props.id}/${encodeURIComponent(props.name)}`;
+		this.size = props.size;
+		this.securityCheckStatus = fileRecord.scanStatus;
+		this.parentId = props.parentId;
+		this.creatorId = props.creatorId;
+		this.mimeType = props.mimeType;
+		this.parentType = props.parentType;
+		this.isUploading = props.isUploading;
+		this.deletedSince = props.deletedSince;
 		this.previewStatus = fileRecord.getPreviewStatus();
-		this.createdAt = fileRecord.createdAt;
-		this.updatedAt = fileRecord.updatedAt;
 	}
 
 	@ApiProperty()
@@ -59,12 +59,6 @@ export class FileRecordResponse {
 
 	@ApiPropertyOptional()
 	public deletedSince?: Date;
-
-	@ApiPropertyOptional()
-	public createdAt?: Date;
-
-	@ApiPropertyOptional()
-	public updatedAt?: Date;
 }
 
 export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {

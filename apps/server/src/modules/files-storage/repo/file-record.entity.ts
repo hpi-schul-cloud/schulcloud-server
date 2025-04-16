@@ -2,38 +2,25 @@ import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
-import { v4 as uuid } from 'uuid';
 import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps, ScanStatus } from '../domain';
 import { FileRecordParentType, StorageLocation } from '../domain/interface';
 
 @Embeddable()
 export class FileRecordSecurityCheckEmbeddable implements FileRecordSecurityCheckProps {
 	@Enum()
-	status: ScanStatus = ScanStatus.PENDING;
+	status!: ScanStatus;
 
 	@Property()
-	reason = 'not yet scanned';
+	reason!: string;
 
-	@Property()
-	requestToken?: string = uuid();
+	@Property({ nullable: true })
+	requestToken?: string;
 
 	@Property()
 	createdAt = new Date();
 
 	@Property()
-	updatedAt = new Date();
-
-	constructor(props: FileRecordSecurityCheckProps) {
-		if (props.status !== undefined) {
-			this.status = props.status;
-		}
-		if (props.reason !== undefined) {
-			this.reason = props.reason;
-		}
-		if (props.requestToken !== undefined) {
-			this.requestToken = props.requestToken;
-		}
-	}
+	updatedAt!: Date;
 }
 
 /**
@@ -60,7 +47,7 @@ export class FileRecordEntity extends BaseEntityWithTimestamps implements FileRe
 	mimeType!: string; // TODO mime-type enum?
 
 	@Embedded(() => FileRecordSecurityCheckEmbeddable, { object: true, nullable: false })
-	securityCheck!: FileRecordProps['securityCheck'];
+	securityCheck!: FileRecordSecurityCheckEmbeddable;
 
 	@Index()
 	@Enum()

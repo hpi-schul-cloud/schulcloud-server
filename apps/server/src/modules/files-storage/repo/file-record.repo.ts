@@ -1,4 +1,5 @@
-import { EntityManager, EntityName, Utils } from '@mikro-orm/core';
+import { EntityName, Utils } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -106,7 +107,7 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 		const fileRecords = Utils.asArray(fileRecord);
 
 		fileRecords.forEach((f) => {
-			const entity = FileRecordEntityMapper.mapDoToEntity(f);
+			const entity = FileRecordEntityMapper.mapDoToEntity(this.em, f);
 			this.em.persist(entity);
 		});
 
@@ -117,7 +118,7 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 		const fileRecords = Utils.asArray(fileRecord);
 
 		fileRecords.forEach((f) => {
-			const entity = FileRecordEntityMapper.mapDoToEntity(f);
+			const entity = FileRecordEntityMapper.mapDoToEntity(this.em, f);
 			this.em.remove(entity);
 		});
 

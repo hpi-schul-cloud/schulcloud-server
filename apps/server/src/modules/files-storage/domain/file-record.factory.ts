@@ -11,10 +11,8 @@ export interface StoreLocationMetadata {
 }
 
 export class FileRecordFactory {
-	private static build(fileRecordProps: FileRecordProps): FileRecord {
-		// We need to destructure the props here to make sure that a
-		// copy of the object is created and not a reference to the original.
-		const fileRecord = new FileRecord(fileRecordProps);
+	private static build(fileRecordProps: FileRecordProps, securityCheck: FileRecordSecurityCheck): FileRecord {
+		const fileRecord = new FileRecord(fileRecordProps, securityCheck);
 
 		return fileRecord;
 	}
@@ -39,28 +37,23 @@ export class FileRecordFactory {
 			storageLocationId: params.storageLocationId,
 			storageLocation: params.storageLocation,
 			isUploading: true,
-			securityCheck: defaultSecurityCheck,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		};
 
-		const fileRecord = FileRecordFactory.build(props);
+		const fileRecord = FileRecordFactory.build(props, defaultSecurityCheck);
 
 		return fileRecord;
 	}
 
-	public static buildFromFileRecordProps(props: FileRecordProps): FileRecord {
-		const fileRecord = FileRecordFactory.build(props);
+	public static buildFromFileRecordProps(props: FileRecordProps, securityCheck: FileRecordSecurityCheck): FileRecord {
+		const fileRecord = FileRecordFactory.build(props, securityCheck);
 
 		return fileRecord;
 	}
 
 	public static copy(fileRecord: FileRecord, userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
-		const { size, name, mimeType, id, securityCheck } = fileRecord.getProps();
+		const { size, name, mimeType, id } = fileRecord.getProps();
 		const { parentType, parentId, storageLocation, storageLocationId } = targetParentInfo;
-		const copySecurityCheck = fileRecord.isVerified()
-			? securityCheck
-			: FileRecordSecurityCheck.createWithDefaultProps();
+		const newSecurityCheck = fileRecord.createSecurityScanBasedOnStatus();
 
 		const props: FileRecordProps = {
 			id: new ObjectId().toHexString(),
@@ -72,14 +65,12 @@ export class FileRecordFactory {
 			creatorId: userId,
 			storageLocationId,
 			storageLocation,
-			// isUploading: true, -> false?
-			securityCheck: copySecurityCheck,
+			// TODO: sollte hier der Status vom kopierten File übernommen werden? Oder undefined?
+			// isUploading: true
 			isCopyFrom: id,
-			createdAt: new Date(),
-			updatedAt: new Date(),
 		};
 
-		const fileRecordCopy = FileRecordFactory.build(props);
+		const fileRecordCopy = FileRecordFactory.build(props, newSecurityCheck);
 
 		return fileRecordCopy;
 	}

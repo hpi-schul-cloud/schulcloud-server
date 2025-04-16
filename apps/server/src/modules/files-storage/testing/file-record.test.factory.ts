@@ -18,22 +18,21 @@ export class FileRecordTestFactory {
 		size: 100,
 		name: `file-record-name #${this.sequence}`,
 		mimeType: 'application/octet-stream',
-		securityCheck: FileRecordSecurityCheck.createWithDefaultProps(),
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),
 		storageLocationId: new ObjectId().toHexString(),
 		storageLocation: StorageLocation.SCHOOL,
-		createdAt: new Date(),
-		updatedAt: new Date(),
 		deletedSince: undefined,
 	};
+
+	private securityCheck = FileRecordSecurityCheck.createWithDefaultProps();
 
 	public build(params: DeepPartial<FileRecordProps> = {}): FileRecord {
 		const props = Object.assign({ ...this.props }, params);
 		props.id = new ObjectId().toHexString();
 
-		const fileRecord = FileRecordFactory.buildFromFileRecordProps(props);
+		const fileRecord = FileRecordFactory.buildFromFileRecordProps(props, this.securityCheck);
 
 		this.sequence += 1;
 
@@ -58,7 +57,12 @@ export class FileRecordTestFactory {
 	}
 
 	public withScanStatus(scanStatus?: ScanStatus): this {
-		this.props.securityCheck.status = scanStatus ?? ScanStatus.VERIFIED;
+		this.securityCheck = new FileRecordSecurityCheck({
+			status: scanStatus ?? ScanStatus.VERIFIED,
+			reason: 'scan-reason',
+			requestToken: 'scan-request-token',
+			updatedAt: new Date(Date.now() - 1000),
+		});
 
 		return this;
 	}
