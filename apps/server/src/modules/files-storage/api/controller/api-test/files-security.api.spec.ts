@@ -9,7 +9,7 @@ import type { Server } from 'node:net';
 import { FileRecordParentType, StorageLocation } from '../../../domain';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FileRecordEntity } from '../../../repo';
-import { fileRecordEntityTestFactory } from '../../../testing';
+import { fileRecordEntityFactory } from '../../../testing';
 import { ScanResultParams } from '../../dto';
 
 const baseRouteName = '/file-security';
@@ -47,7 +47,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe('with bad request data', () => {
 		it('should return status 400 for invalid token', async () => {
-			const fileRecord = fileRecordEntityTestFactory().build({
+			const fileRecord = fileRecordEntityFactory.build({
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
 				parentId: validId,
@@ -64,7 +64,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 	describe(`with valid request data`, () => {
 		it('should return right type of data', async () => {
-			const fileRecord = fileRecordEntityTestFactory().build({
+			const fileRecord = fileRecordEntityFactory.build({
 				storageLocation: StorageLocation.SCHOOL,
 				storageLocationId: validId,
 				parentId: validId,

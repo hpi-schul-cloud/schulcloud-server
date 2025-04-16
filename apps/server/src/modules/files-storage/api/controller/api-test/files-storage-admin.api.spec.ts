@@ -13,7 +13,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
 import { FileRecordEntity } from '../../../repo'; // TODO: invalid import
-import { fileRecordEntityTestFactory } from '../../../testing';
+import { fileRecordEntityFactory } from '../../../testing';
 import { FileRecordResponse } from '../../dto';
 import { availableStorageLocations } from './mocks';
 
@@ -129,16 +129,16 @@ describe(`${baseRouteName} (api)`, () => {
 				const loggedInClient = testApiClient.loginByUser(superheroAccount, superheroUser);
 
 				const storageLocationId1 = new ObjectId().toHexString();
-				const fileRecords1 = fileRecordEntityTestFactory().buildList(3, {
+				const fileRecords1 = fileRecordEntityFactory.buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 
 				const storageLocationId2 = new ObjectId().toHexString();
-				const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
+				const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 					storageLocationId: storageLocationId2,
 				});
 
-				const markedForDeleteFileRecords = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+				const markedForDeleteFileRecords = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 

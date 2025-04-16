@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { FileRecord, FileRecordParentType, StorageLocation } from '../domain';
-import { fileRecordEntityTestFactory } from '../testing';
+import { fileRecordEntityFactory } from '../testing';
 import { FileRecordEntity } from './file-record.entity';
 import { FileRecordMikroOrmRepo } from './file-record.repo';
 import { FileRecordEntityMapper } from './mapper';
@@ -38,7 +38,7 @@ describe('FileRecordRepo', () => {
 
 	describe('findOneById', () => {
 		it('should find an entity by its id and deletedSince is NOT defined', async () => {
-			const fileRecord = fileRecordEntityTestFactory().build();
+			const fileRecord = fileRecordEntityFactory.build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -52,7 +52,7 @@ describe('FileRecordRepo', () => {
 
 	describe('findOneByIdMarkedForDelete', () => {
 		it('should find an entity by its id and deletedSince is defined', async () => {
-			const fileRecord = fileRecordEntityTestFactory().withDeletedSince().build();
+			const fileRecord = fileRecordEntityFactory.withDeletedSince().build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -70,7 +70,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
-			const fileRecord = fileRecordEntityTestFactory().build();
+			const fileRecord = fileRecordEntityFactory.build();
 
 			await em.persistAndFlush(fileRecord);
 			em.clear();
@@ -83,7 +83,7 @@ describe('FileRecordRepo', () => {
 
 	describe('save', () => {
 		it('should update the updatedAt property', async () => {
-			const entity = fileRecordEntityTestFactory().build();
+			const entity = fileRecordEntityFactory.build();
 
 			await em.persistAndFlush(entity);
 			const origUpdatedAt = entity.updatedAt;
@@ -104,18 +104,18 @@ describe('FileRecordRepo', () => {
 	describe('findByParentId', () => {
 		const setup = () => {
 			const parentId1 = new ObjectId().toHexString();
-			const fileRecords1 = fileRecordEntityTestFactory().buildList(3, {
+			const fileRecords1 = fileRecordEntityFactory.buildList(3, {
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
 
 			const parentId2 = new ObjectId().toHexString();
-			const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
 			});
 
-			const markedForDeleteFileRecords = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+			const markedForDeleteFileRecords = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
 			});
@@ -181,16 +181,16 @@ describe('FileRecordRepo', () => {
 		describe('when there are many data records with different storageLocationId', () => {
 			const setup = async () => {
 				const storageLocationId1 = new ObjectId().toHexString();
-				const fileRecords1 = fileRecordEntityTestFactory().buildList(3, {
+				const fileRecords1 = fileRecordEntityFactory.buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 
 				const storageLocationId2 = new ObjectId().toHexString();
-				const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
+				const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 					storageLocationId: storageLocationId2,
 				});
 
-				const markedForDeleteFileRecords = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+				const markedForDeleteFileRecords = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 					storageLocationId: storageLocationId1,
 				});
 
@@ -239,7 +239,7 @@ describe('FileRecordRepo', () => {
 		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
-			fileRecords1 = fileRecordEntityTestFactory().buildList(3, {
+			fileRecords1 = fileRecordEntityFactory.buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -285,7 +285,7 @@ describe('FileRecordRepo', () => {
 
 		it('should only find searched parent', async () => {
 			const parentId2 = new ObjectId().toHexString();
-			const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
@@ -307,7 +307,7 @@ describe('FileRecordRepo', () => {
 
 		it('should only find searched school', async () => {
 			const storageLocationId2 = new ObjectId().toHexString();
-			const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 				storageLocationId: storageLocationId2,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -332,7 +332,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ignore deletedSince', async () => {
-			const fileRecordsExpired = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+			const fileRecordsExpired = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -361,7 +361,7 @@ describe('FileRecordRepo', () => {
 		let fileRecords1: FileRecordEntity[];
 
 		beforeEach(() => {
-			fileRecords1 = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+			fileRecords1 = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -371,7 +371,7 @@ describe('FileRecordRepo', () => {
 		it('should only find searched parent', async () => {
 			const parentId2 = new ObjectId().toHexString();
 
-			const fileRecords2 = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId2,
@@ -394,7 +394,7 @@ describe('FileRecordRepo', () => {
 		it('should only find searched school', async () => {
 			const storageLocationId2 = new ObjectId().toHexString();
 
-			const fileRecords2 = fileRecordEntityTestFactory().withDeletedSince().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.withDeletedSince().buildList(3, {
 				storageLocationId: storageLocationId2,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -419,7 +419,7 @@ describe('FileRecordRepo', () => {
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
-			const fileRecordsExpired = fileRecordEntityTestFactory().buildList(3, {
+			const fileRecordsExpired = fileRecordEntityFactory.buildList(3, {
 				storageLocationId: storageLocationId1,
 				parentType: FileRecordParentType.Task,
 				parentId: parentId1,
@@ -449,7 +449,7 @@ describe('FileRecordRepo', () => {
 			const storageLocationId = new ObjectId().toHexString();
 			const parentId = new ObjectId().toHexString();
 
-			fileRecord = fileRecordEntityTestFactory().build({
+			fileRecord = fileRecordEntityFactory.build({
 				storageLocationId,
 				parentType: FileRecordParentType.Task,
 				parentId,
@@ -482,10 +482,10 @@ describe('FileRecordRepo', () => {
 		const setup = () => {
 			const creator1 = new ObjectId().toHexString();
 			const creator2 = new ObjectId().toHexString();
-			const fileRecords1 = fileRecordEntityTestFactory().buildList(4, {
+			const fileRecords1 = fileRecordEntityFactory.buildList(4, {
 				creatorId: creator1,
 			});
-			const fileRecords2 = fileRecordEntityTestFactory().buildList(3, {
+			const fileRecords2 = fileRecordEntityFactory.buildList(3, {
 				creatorId: creator2,
 			});
 
