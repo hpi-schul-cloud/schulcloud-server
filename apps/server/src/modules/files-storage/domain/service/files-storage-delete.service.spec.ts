@@ -10,9 +10,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
-import { getPaths } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
+import { FileRecord } from '../file-record.do';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
@@ -108,7 +108,7 @@ describe('FilesStorageService delete methods', () => {
 
 			it('should call storageClient.moveToTrash', async () => {
 				const { fileRecords } = setup();
-				const paths = getPaths(fileRecords);
+				const paths = FileRecord.getPaths(fileRecords);
 
 				await service.delete(fileRecords);
 

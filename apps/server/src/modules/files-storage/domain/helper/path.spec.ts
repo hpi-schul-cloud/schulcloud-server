@@ -1,15 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/database';
-import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
-import { FileRecordEntity } from '../../repo';
+import { createCopyFiles, createPreviewDirectoryPath, createPreviewFilePath } from '.';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
+import { FileRecord } from '../file-record.do';
 
 describe('Path Helper', () => {
-	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-	});
 
 	const setupFileRecords = () => {
 		const userId: EntityId = new ObjectId().toHexString();
@@ -20,27 +16,28 @@ describe('Path Helper', () => {
 		return fileRecords;
 	};
 
+	// TODO: Move to file-record do
 	describe('createPath', () => {
 		it('should create path', () => {
-			const path = createPath('schoolId', 'fileRecordId');
+			const path = fileRecord.createPath('schoolId', 'fileRecordId');
 			expect(path).toBe('schoolId/fileRecordId');
 		});
 
 		it('should throw error on empty schoolId', () => {
 			expect(() => {
-				createPath('', 'fileRecordId');
+				fileRecord.createPath('', 'fileRecordId');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId', () => {
 			expect(() => {
-				createPath('schoolId', '');
+				fileRecord.createPath('schoolId', '');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 
 		it('should throw error on empty fileRecordId and schoolId', () => {
 			expect(() => {
-				createPath('', '');
+				fileRecord.createPath('', '');
 			}).toThrowError(ErrorType.COULD_NOT_CREATE_PATH);
 		});
 	});
@@ -59,6 +56,7 @@ describe('Path Helper', () => {
 		});
 	});
 
+	// TODO: Move to file-record do
 	describe('getPaths', () => {
 		const setup = () => {
 			return { fileRecords: setupFileRecords() };
@@ -66,7 +64,7 @@ describe('Path Helper', () => {
 
 		it('should return paths', () => {
 			const { fileRecords } = setup();
-			const paths = getPaths(fileRecords);
+			const paths = FileRecord.getPaths(fileRecords);
 
 			const fileRecordId1 = fileRecords[0].id;
 			const fileRecordId2 = fileRecords[1].id;
@@ -79,7 +77,7 @@ describe('Path Helper', () => {
 		});
 
 		it('should return empty array on empty fileRecordsArray', () => {
-			const paths = getPaths([]);
+			const paths = FileRecord.getPaths([]);
 
 			expect(paths).toEqual([]);
 		});
@@ -96,8 +94,8 @@ describe('Path Helper', () => {
 			const targetFile = fileRecords[1];
 
 			const expectedICopyFiles = {
-				sourcePath: createPath(sourceFile.storageLocationId, sourceFile.id),
-				targetPath: createPath(targetFile.storageLocationId, targetFile.id),
+				sourcePath: sourceFile.createPath(),
+				targetPath: targetFile.createPath(),
 			};
 
 			const result = createCopyFiles(sourceFile, targetFile);

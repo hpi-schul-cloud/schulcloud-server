@@ -1,7 +1,7 @@
 import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
 import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import {
 	BadRequestException,
 	ConflictException,
@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
-import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import {
 	CopyFileResponse,
@@ -30,8 +29,8 @@ import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord } from '../file-record.do';
 import { FileRecordFactory, StoreLocationMetadata } from '../file-record.factory';
-import { createCopyFiles, getPaths, markForDelete, resolveFileNameDuplicates, unmarkForDelete } from '../helper';
 import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
+import FileType from 'esbuild/content/file-type-cjs-index'; // TODO: check import
 
 @Injectable()
 export class FilesStorageService {
@@ -141,7 +140,7 @@ export class FilesStorageService {
 
 		const [fileRecordsOfParent, count] = await this.getFileRecordsOfParent(params.parentId);
 		if (count > 0) {
-			fileName = resolveFileNameDuplicates(file.name, fileRecordsOfParent);
+			fileName = FileRecord.resolveFileNameDuplicates(fileRecordsOfParent, file.name);
 		}
 
 		return fileName;
@@ -286,7 +285,7 @@ export class FilesStorageService {
 
 	// delete
 	private async deleteFilesInFilesStorageClient(fileRecords: FileRecord[]): Promise<void> {
-		const paths = getPaths(fileRecords);
+		const paths = FileRecord.getPaths(fileRecords);
 
 		await this.storageClient.moveToTrash(paths);
 	}
@@ -303,7 +302,7 @@ export class FilesStorageService {
 	public async delete(fileRecords: FileRecord[]): Promise<void> {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		const markedFileRecords = markForDelete(fileRecords);
+		const markedFileRecords = FileRecord.markForDelete(fileRecords);
 		await this.fileRecordRepo.save(markedFileRecords);
 
 		await this.deleteWithRollbackByError(fileRecords);
@@ -343,7 +342,7 @@ export class FilesStorageService {
 
 	// restore
 	private async restoreFilesInFileStorageClient(fileRecords: FileRecord[]): Promise<void> {
-		const paths = getPaths(fileRecords);
+		const paths = FileRecord.getPaths(fileRecords);
 
 		await this.storageClient.restore(paths);
 	}
@@ -352,7 +351,7 @@ export class FilesStorageService {
 		try {
 			await this.restoreFilesInFileStorageClient(fileRecords);
 		} catch (err) {
-			markForDelete(fileRecords);
+			FileRecord.markForDelete(fileRecords);
 			await this.fileRecordRepo.save(fileRecords);
 			throw err;
 		}
@@ -374,7 +373,7 @@ export class FilesStorageService {
 	public async restore(fileRecords: FileRecord[]): Promise<void> {
 		this.logger.debug({ action: 'restore', fileRecords });
 
-		const unmarkFileRecords = unmarkForDelete(fileRecords);
+		const unmarkFileRecords = FileRecord.unmarkForDelete(fileRecords);
 		await this.fileRecordRepo.save(unmarkFileRecords);
 
 		await this.restoreWithRollbackByError(fileRecords);
@@ -423,9 +422,12 @@ export class FilesStorageService {
 		targetFile: FileRecord
 	): Promise<CopyFileResponse> {
 		try {
-			const paths = createCopyFiles(sourceFile, targetFile);
+			const copyFiles: CopyFiles = {
+				sourcePath: sourceFile.createPath(),
+				targetPath: targetFile.createPath(),
+			};
 
-			await this.storageClient.copy([paths]);
+			await this.storageClient.copy([copyFiles]);
 			await this.sendToAntiVirusService(targetFile);
 			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 

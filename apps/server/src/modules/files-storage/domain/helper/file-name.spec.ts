@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import crypto from 'crypto';
-import { createPreviewNameHash, hasDuplicateName, resolveFileNameDuplicates } from '.';
 import { fileRecordTestFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 
@@ -15,6 +14,7 @@ describe('File Name Helper', () => {
 		return fileRecords;
 	};
 
+	// TODO: Move to file record do
 	describe('hasDuplicateName is called', () => {
 		describe('WHEN all fileRecords have different names', () => {
 			const setup = () => {
@@ -58,6 +58,7 @@ describe('File Name Helper', () => {
 		});
 	});
 
+	// TODO: Move to file record do
 	describe('resolveFileNameDuplicates is called', () => {
 		describe('WHEN no duplicate without file type suffix exists', () => {
 			const setup = () => {
@@ -239,6 +240,7 @@ describe('File Name Helper', () => {
 		});
 	});
 
+	// TODO: Move to preview builder
 	describe('createPreviewNameHash is called', () => {
 		describe('when preview params are set', () => {
 			it('should return hash', () => {

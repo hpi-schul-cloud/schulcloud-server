@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { getFormat, getPreviewName, markForDelete, unmarkForDelete } from '.';
+import { markForDelete, unmarkForDelete } from '.';
 import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { PreviewOutputMimeTypes } from '../interface';
@@ -20,6 +20,7 @@ describe('File Record Helper', () => {
 		await setupEntities([FileRecordEntity]);
 	});
 
+	// TODO: Move to fileRecord do that get this method now.
 	describe('markForDelete()', () => {
 		it('should mark files for delete', () => {
 			const { fileRecords } = setupFileRecords();
@@ -36,6 +37,7 @@ describe('File Record Helper', () => {
 		});
 	});
 
+	// TODO: Move to fileRecord do that get this method now.
 	describe('unmarkForDelete()', () => {
 		it('should reset deletedSince params', () => {
 			const { fileRecords } = setupFileRecords();
@@ -52,6 +54,7 @@ describe('File Record Helper', () => {
 		});
 	});
 
+	// TODO: Move to fileRecord do that get this method now.
 	describe('getFormat is called', () => {
 		it('should return format', () => {
 			const mimeType = 'image/jpeg';
@@ -68,6 +71,7 @@ describe('File Record Helper', () => {
 		});
 	});
 
+	// TODO: Move to fileRecord do that get this method now.
 	describe('getPreviewName is called', () => {
 		const setup = () => {
 			const fileRecord = fileRecordTestFactory().build();

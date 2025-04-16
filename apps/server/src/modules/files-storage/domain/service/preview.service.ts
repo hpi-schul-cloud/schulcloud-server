@@ -7,7 +7,6 @@ import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
 import { ErrorType } from '../error';
 import { FileRecord, PreviewStatus } from '../file-record.do';
-import { getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
 
 @Injectable()
@@ -72,7 +71,7 @@ export class PreviewService {
 
 	private async getPreviewFile(params: PreviewFileParams): Promise<GetFileResponse> {
 		const { fileRecord, previewFilePath, bytesRange, previewParams } = params;
-		const name = getPreviewName(fileRecord, previewParams.outputFormat);
+		const name = fileRecord.getPreviewName(previewParams.outputFormat);
 		const file = await this.storageClient.get(previewFilePath, bytesRange);
 
 		const response = FileResponseBuilder.build(file, name);

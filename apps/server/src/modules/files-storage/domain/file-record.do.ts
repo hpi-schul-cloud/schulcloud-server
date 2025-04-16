@@ -7,6 +7,10 @@ import { v4 as uuid } from 'uuid';
 import { ErrorType } from './error';
 import { FileRecordParentType, StorageLocation } from './interface';
 
+export enum PreviewOutputMimeTypes {
+	IMAGE_WEBP = 'image/webp',
+}
+
 export interface FileRecordSecurityCheckProps {
 	status: ScanStatus;
 	reason: string;
@@ -145,6 +149,59 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		this.securityCheck = securityCheck;
 	}
 
+	public static hasDuplicateName(fileRecords: FileRecord[], fileName: string): FileRecord | undefined {
+		const foundFileRecord = fileRecords.find((item: FileRecord) => item.hasName(fileName));
+
+		return foundFileRecord;
+	}
+
+	public static resolveFileNameDuplicates(fileRecords: FileRecord[], fileName: string): string {
+		let counter = 0;
+		const filenameObj = path.parse(fileName);
+		let newFilename = fileName;
+
+		while (FileRecord.hasDuplicateName(fileRecords, newFilename)) {
+			counter += 1;
+			newFilename = `${filenameObj.name} (${counter})${filenameObj.ext}`;
+		}
+
+		return newFilename;
+	}
+
+	public static getFormat(mimeType: string): string {
+		const format = mimeType.split('/')[1];
+
+		if (!format) {
+			throw new Error(`could not get format from mime type: ${mimeType}`);
+		}
+
+		return format;
+	}
+
+	public static markForDelete(fileRecords: FileRecord[]): FileRecord[] {
+		const markedFileRecords = fileRecords.map((fileRecord) => {
+			fileRecord.markForDelete();
+			return fileRecord;
+		});
+
+		return markedFileRecords;
+	}
+
+	public static unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
+		const unmarkedFileRecords = fileRecords.map((fileRecord) => {
+			fileRecord.unmarkForDelete();
+			return fileRecord;
+		});
+
+		return unmarkedFileRecords;
+	}
+
+	public static getPaths(fileRecords: FileRecord[]): string[] {
+		const paths = fileRecords.map((fileRecord) => fileRecord.createPath());
+
+		return paths;
+	}
+
 	public getSecurityCheckProps(): FileRecordSecurityCheckProps {
 		const securityCheckProps = this.securityCheck.getProps();
 
@@ -253,6 +310,17 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		const filenameObj = path.parse(this.getName());
 
 		return filenameObj.name;
+	}
+
+	public getPreviewName(outputFormat?: PreviewOutputMimeTypes): string {
+		if (!outputFormat) {
+			return this.props.name;
+		}
+
+		const format = FileRecord.getFormat(outputFormat);
+		const previewFileName = `${this.fileNameWithoutExtension}.${format}`;
+
+		return previewFileName;
 	}
 
 	public removeCreatorId(): void {

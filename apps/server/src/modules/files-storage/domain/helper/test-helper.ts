@@ -2,6 +2,7 @@ import { GetFile } from '@infra/s3-client';
 import { Readable } from 'stream';
 import { GetFileResponse } from '../interface';
 
+// TODO: Move to testing folder
 export class TestHelper {
 	public static createFile = (props?: { contentRange?: string; mimeType?: string }): GetFile => {
 		const text = 'testText';
