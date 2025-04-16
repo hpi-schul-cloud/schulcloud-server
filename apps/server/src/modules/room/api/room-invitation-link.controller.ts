@@ -7,8 +7,10 @@ import {
 	ForbiddenException,
 	Get,
 	HttpStatus,
+	NotFoundException,
 	Param,
 	Post,
+	Put,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
@@ -18,6 +20,7 @@ import { ErrorResponse } from '@core/error/dto';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
+import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
 
 @ApiTags('Room-Invitation-Links')
 @JwtAuthentication()
@@ -41,6 +44,33 @@ export class RoomInvitationLinkController {
 		@Body() createRoomParams: CreateRoomInvitationLinkBodyParams
 	): Promise<RoomInvitationLinkResponse> {
 		const roomInvitationLink = await this.roomInvitationLinkUc.createLink(currentUser.userId, createRoomParams);
+
+		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinkResponse(roomInvitationLink);
+
+		return response;
+	}
+
+	@Put(':roomInvitationLinkId')
+	@ApiOperation({ summary: 'Update an existing room invitation link' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns the updated room invitation link',
+		type: RoomInvitationLinkResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async updateLink(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomInvitationLinkUrlParams,
+		@Body() updateRoomParams: UpdateRoomInvitationLinkBodyParams
+	): Promise<RoomInvitationLinkResponse> {
+		const roomInvitationLink = await this.roomInvitationLinkUc.updateLink(currentUser.userId, {
+			id: urlParams.roomInvitationLinkId,
+			...updateRoomParams,
+		});
 
 		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinkResponse(roomInvitationLink);
 

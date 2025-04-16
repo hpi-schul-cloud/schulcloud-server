@@ -40,7 +40,7 @@ export class RoomInvitationLinkUc {
 		return roomInvitationLink;
 	}
 
-	public async updateLink(props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
+	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
 		this.checkFeatureEnabled();
 
 		// TODO: check permissions
