@@ -280,4 +280,17 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 
 		return path;
 	}
+
+	public createPreviewDirectoryPath(): string {
+		const path = ['previews', this.props.storageLocationId, this.id].join('/');
+
+		return path;
+	}
+
+	public createPreviewFilePath(hash: string): string {
+		const folderPath = this.createPreviewDirectoryPath();
+		const filePath = [folderPath, hash].join('/');
+
+		return filePath;
+	}
 }

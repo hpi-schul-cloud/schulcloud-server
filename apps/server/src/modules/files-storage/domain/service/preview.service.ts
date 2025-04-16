@@ -7,7 +7,7 @@ import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
 import { ErrorType } from '../error';
 import { FileRecord, PreviewStatus } from '../file-record.do';
-import { createPreviewDirectoryPath, getPreviewName } from '../helper';
+import { getPreviewName } from '../helper';
 import { GetFileResponse, PreviewFileParams } from '../interface';
 
 @Injectable()
@@ -35,9 +35,7 @@ export class PreviewService {
 	}
 
 	public async deletePreviews(fileRecords: FileRecord[]): Promise<void> {
-		const paths = fileRecords.map((fileRecord) =>
-			createPreviewDirectoryPath(fileRecord.storageLocationId, fileRecord.id)
-		);
+		const paths = fileRecords.map((fileRecord) => fileRecord.createPreviewDirectoryPath());
 
 		const promises = paths.map((path) => this.storageClient.deleteDirectory(path));
 

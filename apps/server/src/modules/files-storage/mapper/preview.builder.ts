@@ -1,7 +1,7 @@
 import { PreviewFileOptions } from '@infra/preview-generator';
 import { PreviewParams } from '../api/dto';
 import { FileRecord } from '../domain';
-import { createPath, createPreviewFilePath, createPreviewNameHash, getFormat } from '../domain/helper';
+import { createPreviewNameHash, getFormat } from '../domain/helper';
 import { PreviewFileParams } from '../domain/interface';
 
 export class PreviewBuilder {
@@ -10,12 +10,12 @@ export class PreviewBuilder {
 		previewParams: PreviewParams,
 		bytesRange: string | undefined
 	): PreviewFileParams {
-		const { storageLocationId, id, mimeType } = fileRecord;
-		const originFilePath = createPath(storageLocationId, id);
+		const { id, mimeType } = fileRecord;
+		const originFilePath = fileRecord.createPath();
 		const format = getFormat(previewParams.outputFormat ?? mimeType);
 
 		const hash = createPreviewNameHash(id, previewParams);
-		const previewFilePath = createPreviewFilePath(storageLocationId, hash, id);
+		const previewFilePath = fileRecord.createPreviewFilePath(hash);
 
 		const previewFileParams = {
 			fileRecord,
