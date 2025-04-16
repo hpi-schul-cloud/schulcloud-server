@@ -2,7 +2,7 @@ import { ContentElementType } from '@infra/card-client';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 
 export class CommonCartridgeImportMapper {
-	public static mapResourceTypeToContentElementType(
+	public mapResourceTypeToContentElementType(
 		resourceType: CommonCartridgeResourceTypeV1P1 | undefined
 	): ContentElementType | undefined {
 		switch (resourceType) {

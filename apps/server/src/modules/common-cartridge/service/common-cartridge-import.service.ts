@@ -33,7 +33,8 @@ export class CommonCartridgeImportService {
 		private readonly coursesClient: CoursesClientAdapter,
 		private boardsClient: BoardsClientAdapter,
 		private columnClient: ColumnClientAdapter,
-		private cardClient: CardClientAdapter
+		private cardClient: CardClientAdapter,
+		private commonCartridgeImportMapper: CommonCartridgeImportMapper
 	) {}
 
 	public async importFile(file: Buffer): Promise<void> {
@@ -143,7 +144,7 @@ export class CommonCartridgeImportService {
 		const resource = parser.getResource(cardElementProps);
 		if (!resource) return;
 
-		const contentElementType = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
+		const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
 
 		if (!contentElementType) return;
 		if (!contentElementType) return;

@@ -1,22 +1,21 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
-import { ContentElementType } from '../generated';
+import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 
 describe('CommonCartridgeImportMapper', () => {
-	let moduleRef: TestingModule;
+	let module: TestingModule;
 	let sut: CommonCartridgeImportMapper;
 
 	beforeAll(async () => {
-		moduleRef = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [CommonCartridgeImportMapper],
 		}).compile();
 
-		sut = moduleRef.get(CommonCartridgeImportMapper);
+		sut = module.get(CommonCartridgeImportMapper);
 	});
 
 	afterAll(async () => {
-		await moduleRef.close();
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -26,25 +25,21 @@ describe('CommonCartridgeImportMapper', () => {
 	describe('mapResourceTypeToContentElementType', () => {
 		describe('when resourceType is provided', () => {
 			it('should return undefined', () => {
-				const result = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(undefined);
+				const result = sut.mapResourceTypeToContentElementType(undefined);
 
 				expect(result).toBeUndefined();
 			});
 
 			it('should return link', () => {
-				const result = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(
-					CommonCartridgeResourceTypeV1P1.WEB_LINK
-				);
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_LINK);
 
-				expect(result).toEqual(ContentElementType.LINK);
+				expect(result).toEqual('link');
 			});
 
 			it('should return rich text', () => {
-				const result = CommonCartridgeImportMapper.mapResourceTypeToContentElementType(
-					CommonCartridgeResourceTypeV1P1.WEB_CONTENT
-				);
+				const result = sut.mapResourceTypeToContentElementType(CommonCartridgeResourceTypeV1P1.WEB_CONTENT);
 
-				expect(result).toEqual(ContentElementType.RICH_TEXT);
+				expect(result).toEqual('richText');
 			});
 		});
 	});
