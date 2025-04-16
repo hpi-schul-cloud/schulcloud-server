@@ -15,13 +15,7 @@
 
 // May contain unused imports in some cases
 // @ts-ignore
-import type { CollaborativeTextEditorElementResponse } from './collaborative-text-editor-element-response';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { ContentElementType } from './content-element-type';
-// May contain unused imports in some cases
-// @ts-ignore
-import type { DeletedElementResponse } from './deleted-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import type { DrawingElementResponse } from './drawing-element-response';
@@ -31,6 +25,12 @@ import type { ExternalToolElementResponse } from './external-tool-element-respon
 // May contain unused imports in some cases
 // @ts-ignore
 import type { FileElementResponse } from './file-element-response';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { FileFolderElementContent } from './file-folder-element-content';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { FileFolderElementResponse } from './file-folder-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import type { LinkElementResponse } from './link-element-response';
@@ -45,15 +45,12 @@ import type { SubmissionContainerElementResponse } from './submission-container-
 import type { TimestampsResponse } from './timestamps-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { VideoConferenceElementContent } from './video-conference-element-content';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { VideoConferenceElementResponse } from './video-conference-element-response';
 
 /**
- * @type CardResponseElementsInner
+ * @type ElementControllerUpdateElement200Response
  * @export
  */
-export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
+export type ElementControllerUpdateElement200Response = DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
 
 

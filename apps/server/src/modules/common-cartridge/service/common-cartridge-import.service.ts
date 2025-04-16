@@ -4,7 +4,7 @@ import {
 	LinkElementContentBody,
 	RichTextElementContentBody,
 	UpdateElementContentBodyParamsData,
-} from '@infra/card-client';
+} from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
@@ -147,9 +147,9 @@ export class CommonCartridgeImportService {
 		const contentElementType = this.commonCartridgeImportMapper.mapResourceTypeToContentElementType(resource.type);
 
 		if (!contentElementType) return;
-		if (!contentElementType) return;
 
 		const resourceBody = this.mapToResourceBody(resource, cardElementProps);
+
 		if (!resourceBody) return;
 
 		const contentElement = await this.cardClient.createCardElement(cardId, {

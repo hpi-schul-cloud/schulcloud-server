@@ -27,6 +27,12 @@ import type { ExternalToolElementContentBody } from './external-tool-element-con
 import type { FileElementContentBody } from './file-element-content-body';
 // May contain unused imports in some cases
 // @ts-ignore
+import type { FileFolderContentBody } from './file-folder-content-body';
+// May contain unused imports in some cases
+// @ts-ignore
+import type { FileFolderElementContentBody } from './file-folder-element-content-body';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { LinkElementContentBody } from './link-element-content-body';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -36,15 +42,12 @@ import type { RichTextElementContentBody } from './rich-text-element-content-bod
 import type { SubmissionContainerElementContentBody } from './submission-container-element-content-body';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { VideoConferenceContentBody } from './video-conference-content-body';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { VideoConferenceElementContentBody } from './video-conference-element-content-body';
 
 /**
  * @type UpdateElementContentBodyParamsData
  * @export
  */
-export type UpdateElementContentBodyParamsData = DrawingElementContentBody | ExternalToolElementContentBody | FileElementContentBody | LinkElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody | VideoConferenceElementContentBody;
+export type UpdateElementContentBodyParamsData = DrawingElementContentBody | ExternalToolElementContentBody | FileElementContentBody | FileFolderElementContentBody | LinkElementContentBody | RichTextElementContentBody | SubmissionContainerElementContentBody | VideoConferenceElementContentBody;
 
 

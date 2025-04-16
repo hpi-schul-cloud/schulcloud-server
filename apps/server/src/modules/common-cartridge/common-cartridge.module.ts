@@ -13,7 +13,8 @@ import { CommonCartridgeExportService, CommonCartridgeImportService } from './se
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { ColumnClientModule } from '@infra/column-client';
-import { CardClientModule } from '@infra/card-client';
+import { CardClientModule } from '@infra/cards-client';
+import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 
 @Module({
 	imports: [
@@ -37,6 +38,7 @@ import { CardClientModule } from '@infra/card-client';
 	],
 	providers: [
 		CommonCartridgeExportMapper,
+		CommonCartridgeImportMapper,
 		CommonCartridgeUc,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,

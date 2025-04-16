@@ -36,6 +36,7 @@ models/file-content-body.ts
 models/file-element-content-body.ts
 models/file-element-content.ts
 models/file-element-response.ts
+models/file-folder-element-response.ts
 models/index.ts
 models/lesson-content-response-content.ts
 models/link-content-body.ts
@@ -44,14 +45,11 @@ models/link-element-content.ts
 models/link-element-response.ts
 models/media-line-response-elements-inner.ts
 models/move-card-body-params.ts
-models/public-system-response-oauth-config.ts
 models/rename-body-params.ts
 models/rich-text-content-body.ts
 models/rich-text-element-content-body.ts
 models/rich-text-element-content.ts
 models/rich-text-element-response.ts
-models/school-controller-get-provisioning-options200-response.ts
-models/set-height-body-params.ts
 models/submission-container-content-body.ts
 models/submission-container-element-content-body.ts
 models/submission-container-element-content.ts

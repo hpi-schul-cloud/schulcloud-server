@@ -1,4 +1,4 @@
-import { ContentElementType } from '@infra/card-client';
+import { ContentElementType } from '@infra/cards-client';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 
 export class CommonCartridgeImportMapper {

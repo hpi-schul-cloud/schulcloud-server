@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BoardsClientAdapter } from '@infra/boards-client';
-import { CardClientAdapter } from '@infra/card-client';
+import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
