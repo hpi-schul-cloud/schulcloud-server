@@ -202,35 +202,79 @@ describe('LessonRepo', () => {
 		});
 	});
 
-	describe('updateLessons', () => {
-		it('should update Lessons without deleted user', async () => {
-			// Arrange
-			const userId = new ObjectId();
-			const contentExample: ComponentProperties = {
-				title: 'title',
+	describe('removeUserReference', () => {
+		const setup = async () => {
+			const userId1 = new ObjectId();
+			const userId2 = new ObjectId();
+			const contentExample1: ComponentProperties = {
+				title: 'title1',
 				hidden: false,
-				user: userId,
+				user: userId1,
 				component: ComponentType.TEXT,
-				content: { text: 'test of content' },
+				content: { text: 'test of content1' },
 			};
-			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample, contentExample] });
-			await em.persistAndFlush([lesson1]);
+			const contentExample2: ComponentProperties = {
+				title: 'title2',
+				hidden: false,
+				user: userId2,
+				component: ComponentType.TEXT,
+				content: { text: 'test of content2' },
+			};
+			const lesson1 = lessonFactory.buildWithId({ contents: [contentExample1, contentExample2] });
+			const lesson2 = lessonFactory.buildWithId({ contents: [contentExample1] });
+			const lesson3 = lessonFactory.buildWithId({ contents: [contentExample2] });
+			await em.persistAndFlush([lesson1, lesson2, lesson3]);
 			em.clear();
 
-			// Arrange expected Array after User deletion
-			lesson1.contents[0].user = undefined;
+			return {
+				lesson1,
+				lesson2,
+				lesson3,
+				userId1,
+				userId2,
+				contentExample1,
+				contentExample2,
+			};
+		};
 
-			// Act
-			await repo.save([lesson1]);
+		it('should actually remove the user reference from the lessons', async () => {
+			const { userId1, lesson1 } = await setup();
 
-			const result1 = await repo.findByUserId(userId.toHexString());
+			await repo.removeUserReference(userId1.toHexString());
+
+			const result1 = await repo.findByUserId(userId1.toHexString());
 			expect(result1).toHaveLength(0);
 
 			const result2 = await repo.findById(lesson1.id);
 			const receivedContents = result2.contents;
-			receivedContents.forEach((content) => {
-				expect(content.user).toBe(null);
-			});
+			expect(receivedContents[0].user).toBeUndefined();
+		});
+
+		it('should return count of 2 lessons updated', async () => {
+			const { userId1 } = await setup();
+
+			const numberOfUpdatedLessons = await repo.removeUserReference(userId1.toHexString());
+
+			expect(numberOfUpdatedLessons).toEqual(2);
+		});
+
+		it('should not affect other users having content in same lessons', async () => {
+			const { userId1, contentExample2, lesson1 } = await setup();
+
+			await repo.removeUserReference(userId1.toHexString());
+
+			const lessons = await repo.findById(lesson1.id);
+
+			expect(lessons.contents[1]).toEqual(contentExample2);
+		});
+
+		it('should not affect other lessons', async () => {
+			const { userId1, userId2, lesson3 } = await setup();
+
+			await repo.removeUserReference(userId1.toHexString());
+
+			const result = await repo.findById(lesson3.id);
+			expect(result.contents[0].user).toEqual(userId2);
 		});
 	});
 });

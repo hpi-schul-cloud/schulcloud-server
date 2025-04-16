@@ -3,14 +3,17 @@ import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediumMetadataNotFoundLoggableException } from '../loggable';
+import { ImageMimeType } from '@shared/domain/types';
+import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
+import { MediumMetadataLogoService } from '../service/medium-metadata-logo.service';
 import { VidisStrategy } from './vidis.strategy';
 
 describe(VidisStrategy.name, () => {
 	let module: TestingModule;
 	let strategy: VidisStrategy;
 	let vidisClientAdapter: DeepMocked<VidisClientAdapter>;
+	let mediumMetadataLogoService: DeepMocked<MediumMetadataLogoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,11 +23,16 @@ describe(VidisStrategy.name, () => {
 					provide: VidisClientAdapter,
 					useValue: createMock<VidisClientAdapter>(),
 				},
+				{
+					provide: MediumMetadataLogoService,
+					useValue: createMock<MediumMetadataLogoService>(),
+				},
 			],
 		}).compile();
 
 		strategy = module.get(VidisStrategy);
 		vidisClientAdapter = module.get(VidisClientAdapter);
+		mediumMetadataLogoService = module.get(MediumMetadataLogoService);
 	});
 
 	afterAll(async () => {
@@ -55,14 +63,12 @@ describe(VidisStrategy.name, () => {
 				};
 			};
 
-			it('should throw an MediumMetadataNotFoundLoggableException', async () => {
+			it('should throw an MediumNotFoundLoggableException', async () => {
 				const { mediumId, mediaSource } = setup();
 
 				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
 
-				await expect(promise).rejects.toThrow(
-					new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId)
-				);
+				await expect(promise).rejects.toThrow(new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId));
 			});
 		});
 
@@ -76,9 +82,17 @@ describe(VidisStrategy.name, () => {
 				const allOfferItems = vidisOfferItemFactory.buildList(5);
 				allOfferItems.push(requestedOfferItem);
 
-				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(allOfferItems);
+				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, {
+					...requestedOfferItem,
+				});
 
-				const expectedMetadata = MediumMetadataMapper.mapVidisMetadataToMediumMetadata(mediumId, requestedOfferItem);
+				vidisClientAdapter.getOfferItemsByRegion.mockResolvedValueOnce(allOfferItems);
+				const mimetype: ImageMimeType = ImageMimeType.PNG;
+
+				mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValue(mimetype);
+
+				const expectedLogoUrl = `data:${mimetype};base64,${requestedOfferItem.offerLogo ?? ''}`;
+				expectedMetadata.logoUrl = expectedLogoUrl;
 
 				return {
 					mediumId,
