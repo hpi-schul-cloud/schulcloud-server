@@ -1,4 +1,5 @@
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@imports-from-feathers';
+import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
@@ -9,6 +10,7 @@ import { ManagementModule } from './management.module';
 @Module({
 	imports: [
 		ManagementModule,
+		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			// TODO repeats server module definitions
@@ -25,6 +27,7 @@ export class ManagementServerModule {}
 @Module({
 	imports: [
 		ManagementModule,
+		RabbitMQWrapperTestModule,
 		MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
 	],
 })

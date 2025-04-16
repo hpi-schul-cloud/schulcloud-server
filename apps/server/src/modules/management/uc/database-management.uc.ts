@@ -11,7 +11,7 @@ import { ConfigService } from '@nestjs/config';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
-import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
 
 export interface CollectionFilePath {
@@ -41,7 +41,8 @@ export class DatabaseManagementUc {
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
 		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
-		private readonly systemsSeedDataService: SystemsSeedDataService
+		private readonly systemsSeedDataService: SystemsSeedDataService,
+		private readonly externalToolsSeedDataService: ExternalToolsSeedDataService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -250,6 +251,14 @@ export class DatabaseManagementUc {
 		if (collections === undefined || collections.includes('systems')) {
 			const systemsCount: number = await this.systemsSeedDataService.import();
 			seededCollectionsWithAmount.set('systems', systemsCount + (seededCollectionsWithAmount.get('systems') ?? 0));
+		}
+
+		if (collections === undefined || collections.includes('external-tools')) {
+			const systemsCount: number = await this.externalToolsSeedDataService.import();
+			seededCollectionsWithAmount.set(
+				'external-tools',
+				systemsCount + (seededCollectionsWithAmount.get('external-tools') ?? 0)
+			);
 		}
 
 		const seededCollectionsWithAmountFormatted: string[] = Array.from(seededCollectionsWithAmount).map(
