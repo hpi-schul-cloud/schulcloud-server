@@ -5,7 +5,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomInvitationLinkEntity } from './entity/room-invitation-link.entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { roomInvitationLinkEntityFactory } from '../testing/room-invitation-link-entity.factory';
-import { roomInvitationLinkFactory } from '../testing/room-invitation-link.factory';
+import { roomInvitationLinkTestFactory } from '../testing/room-invitation-link.test.factory';
 import { RoomInvitationLinkDomainMapper } from './room-invitation-link-domain.mapper';
 
 describe('RoomInvitationLinkRepo', () => {
@@ -81,7 +81,7 @@ describe('RoomInvitationLinkRepo', () => {
 	describe('save', () => {
 		describe('when saving a room invitation link', () => {
 			it('should find the persisted room invitation link', async () => {
-				const roomInvitationLink = roomInvitationLinkFactory.build();
+				const roomInvitationLink = roomInvitationLinkTestFactory.build();
 
 				await repo.save(roomInvitationLink);
 				const result = await repo.findById(roomInvitationLink.id);
@@ -92,7 +92,7 @@ describe('RoomInvitationLinkRepo', () => {
 
 		describe('when saving a room invitation link after changing its properties', () => {
 			it('should persist the newet value', async () => {
-				const roomInvitationLink = roomInvitationLinkFactory.build();
+				const roomInvitationLink = roomInvitationLinkTestFactory.build();
 
 				await repo.save(roomInvitationLink);
 				roomInvitationLink.title = 'new title';

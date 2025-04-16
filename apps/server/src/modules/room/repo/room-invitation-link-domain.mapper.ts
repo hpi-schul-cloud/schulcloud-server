@@ -15,12 +15,13 @@ export class RoomInvitationLinkDomainMapper {
 		const roomInvitationLink = new RoomInvitationLink({
 			id: entity.id,
 			title: entity.title,
-			restrictedToSchoolId: entity.restrictedToSchoolId,
+			restrictedToCreatorSchool: entity.restrictedToCreatorSchool,
 			isOnlyForTeachers: entity.isOnlyForTeachers,
 			activeUntil: entity.activeUntil,
-			startingRole: entity.startingRole,
+			requiresConfirmation: entity.requiresConfirmation,
 			roomId: entity.roomId,
-			createdById: entity.createdById,
+			creatorUserId: entity.creatorUserId,
+			creatorSchoolId: entity.creatorSchoolId,
 		});
 		entity.domainObject = roomInvitationLink;
 		return roomInvitationLink;

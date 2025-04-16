@@ -1,24 +1,25 @@
-import { RoomRole } from '@modules/role';
+import { RoleName, RoomRole } from '@modules/role';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
 export interface RoomInvitationLinkProps extends AuthorizableObject {
 	id: EntityId;
 	title: string;
-	restrictedToSchoolId?: EntityId;
+	restrictedToCreatorSchool: boolean;
 	isOnlyForTeachers: boolean;
 	activeUntil?: Date;
-	startingRole: RoomRole;
+	requiresConfirmation: boolean;
 	roomId: EntityId;
-	createdById: EntityId;
+	creatorUserId: EntityId;
+	creatorSchoolId: EntityId;
 }
 
-export type RoomInvitationLinkFlags = {
-	restrictedToSchool: boolean;
-	isOnlyForTeachers: boolean;
-	activeUntil: Date | undefined;
-	requiresConfirmation: boolean;
-};
+export type RoomInvitationLinkUpdateProps = Omit<
+	RoomInvitationLinkProps,
+	'roomId' | 'creatorUserId' | 'creatorSchoolId'
+>;
+
+export type RoomInvitationLinkDto = Omit<RoomInvitationLinkProps, 'id'>;
 
 export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 	constructor(props: RoomInvitationLinkProps) {
@@ -35,6 +36,18 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 		return copyProps;
 	}
 
+	set requiresConfirmation(value: boolean) {
+		this.props.requiresConfirmation = value;
+	}
+
+	get requiresConfirmation(): boolean {
+		return this.props.requiresConfirmation;
+	}
+
+	get startingRole(): RoomRole {
+		return this.props.requiresConfirmation === true ? RoleName.ROOMAPPLICANT : RoleName.ROOMVIEWER;
+	}
+
 	get title(): string {
 		return this.props.title;
 	}
@@ -43,12 +56,12 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 		this.props.title = value;
 	}
 
-	get restrictedToSchoolId(): EntityId | undefined {
-		return this.props.restrictedToSchoolId;
+	get restrictedToCreatorSchool(): boolean {
+		return this.props.restrictedToCreatorSchool;
 	}
 
-	set restrictedToSchoolId(value: EntityId | undefined) {
-		this.props.restrictedToSchoolId = value;
+	set restrictedToCreatorSchool(value: boolean) {
+		this.props.restrictedToCreatorSchool = value;
 	}
 
 	get isOnlyForTeachers(): boolean {
@@ -67,27 +80,15 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 		this.props.activeUntil = value;
 	}
 
-	get startingRole(): RoomRole {
-		return this.props.startingRole;
-	}
-
-	set startingRole(value: RoomRole) {
-		this.props.startingRole = value;
-	}
-
 	get roomId(): EntityId {
 		return this.props.roomId;
 	}
 
-	set roomId(value: EntityId) {
-		this.props.roomId = value;
+	get creatorUserId(): EntityId {
+		return this.props.creatorUserId;
 	}
 
-	get createdById(): EntityId {
-		return this.props.createdById;
-	}
-
-	set createdById(value: EntityId) {
-		this.props.createdById = value;
+	get creatorSchoolId(): EntityId {
+		return this.props.creatorSchoolId;
 	}
 }

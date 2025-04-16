@@ -1,16 +1,12 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { RoomRole } from '@modules/role';
 import { RoomInvitationLink, RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
 
 @Entity({ tableName: 'room-invition-links' })
 export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implements RoomInvitationLinkProps {
 	@Property({ nullable: false })
 	title!: string;
-
-	@Property({ nullable: true })
-	restrictedToSchoolId?: EntityId;
 
 	@Property()
 	isOnlyForTeachers!: boolean;
@@ -19,10 +15,16 @@ export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implement
 	activeUntil?: Date;
 
 	@Property()
-	startingRole!: RoomRole;
+	requiresConfirmation!: boolean;
 
 	@Property()
-	createdById!: EntityId;
+	restrictedToCreatorSchool!: boolean;
+
+	@Property()
+	creatorUserId!: EntityId;
+
+	@Property()
+	creatorSchoolId!: EntityId;
 
 	@Property()
 	roomId!: EntityId;
