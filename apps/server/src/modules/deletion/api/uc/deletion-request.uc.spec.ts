@@ -148,7 +148,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call deletionRequestService.findAllItemsToExecute with default limit', async () => {
 				setup();
 
-				await uc.executeDeletionRequests();
+				await uc.executeAllDeletionRequests();
 
 				expect(deletionRequestService.findAllItemsToExecute.mock.calls).toEqual([
 					[2, undefined],
@@ -159,7 +159,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call deletionRequestService.findAllItemsToExecute with given limit', async () => {
 				setup();
 
-				await uc.executeDeletionRequests(10);
+				await uc.executeAllDeletionRequests(10);
 
 				expect(deletionRequestService.findAllItemsToExecute.mock.calls).toEqual([
 					[10, undefined],
@@ -170,7 +170,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call deletionRequestService.findAllItemsToExecute with getFailed true', async () => {
 				setup();
 
-				await uc.executeDeletionRequests(undefined, true);
+				await uc.executeAllDeletionRequests(undefined, true);
 
 				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(2, true);
 			});
@@ -178,7 +178,7 @@ describe(DeletionRequestUc.name, () => {
 			it('should call deletionExecutionService.executeDeletionRequest with the deletionRequest', async () => {
 				const { deletionRequest } = setup();
 
-				await uc.executeDeletionRequests();
+				await uc.executeAllDeletionRequests();
 
 				expect(deletionExecutionService.executeDeletionRequest).toHaveBeenCalledWith(deletionRequest);
 			});

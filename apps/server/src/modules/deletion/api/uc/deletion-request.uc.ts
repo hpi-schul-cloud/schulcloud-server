@@ -38,24 +38,28 @@ export class DeletionRequestUc {
 		return result;
 	}
 
-	public async executeDeletionRequests(limit?: number, getFailed?: boolean): Promise<void> {
-		this.logger.debug({ action: 'executeDeletionRequests', limit });
+	public async executeDeletionRequests(deletionRequestIds: EntityId[]): Promise<void> {
+		this.logger.debug({ action: 'executeDeletionRequests', deletionRequestIds });
+
+		const deletionRequests = await this.deletionRequestService.findByIds(deletionRequestIds);
+		for (const req of deletionRequests) {
+			if (req !== null) {
+				await this.deletionExecutionService.executeDeletionRequest(req);
+			}
+		}
+
+		this.logger.debug({ action: 'deletion requests executed' });
+	}
+
+	public async findAllItemsToExecute(limit?: number, getFailed?: boolean): Promise<EntityId[]> {
+		this.logger.debug({ action: 'findAllItemsToExecute', limit });
 
 		const configLimit = this.configService.get<number>('ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS');
 		const max = limit ?? configLimit;
-		let deletionRequests: DeletionRequest[] = await this.deletionRequestService.findAllItemsToExecute(max, getFailed);
+		const deletionRequests = await this.deletionRequestService.findAllItemsToExecute(max, getFailed);
+		const deletionRequestIds = deletionRequests.map((deletionRequest) => deletionRequest.id);
 
-		while (deletionRequests.length > 0) {
-			this.logger.debug({ action: 'processing deletion request', deletionRequests });
-
-			for (const req of deletionRequests) {
-				await this.deletionExecutionService.executeDeletionRequest(req);
-			}
-
-			deletionRequests = await this.deletionRequestService.findAllItemsToExecute(max, getFailed);
-		}
-
-		this.logger.debug({ action: 'deletion process completed' });
+		return deletionRequestIds;
 	}
 
 	public async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {

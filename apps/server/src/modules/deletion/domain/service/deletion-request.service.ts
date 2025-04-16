@@ -40,6 +40,12 @@ export class DeletionRequestService {
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
+	public async findByIds(deletionRequestIds: EntityId[]): Promise<(DeletionRequest | null)[]> {
+		const deletionRequests = await this.deletionRequestRepo.findByIds(deletionRequestIds);
+
+		return deletionRequests;
+	}
+
 	public async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestRepo.findById(deletionRequestId);
 

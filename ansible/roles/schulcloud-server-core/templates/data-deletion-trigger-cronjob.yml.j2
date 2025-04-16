@@ -47,7 +47,7 @@ spec:
             - secretRef:
                 name: api-files-secret
             command: ['/bin/sh', '-c']
-            args: ['npm run nest:start:deletion-console:prod -- execution trigger']
+            args: ['npm run nest:start:deletion-console:prod -- execution trigger -l 20']
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
