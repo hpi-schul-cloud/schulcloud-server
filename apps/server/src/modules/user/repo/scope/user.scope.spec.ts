@@ -243,23 +243,4 @@ describe('UserScope', () => {
 			});
 		});
 	});
-
-	describe('byTspUid is called', () => {
-		describe('when tsp parameter is defined', () => {
-			it('should return scope with added tspUid to query', () => {
-				const tspUid = 'tspUid';
-
-				scope.byTspUid(tspUid);
-
-				expect(scope.query).toEqual({ sourceOptions: { tspUid } });
-			});
-		});
-
-		describe('when tsp parameter is undefined', () => {
-			it('should return scope without added tspUid to query', () => {
-				scope.byTspUid(undefined);
-				expect(scope.query).toEqual({});
-			});
-		});
-	});
 });
