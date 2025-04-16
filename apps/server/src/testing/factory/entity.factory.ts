@@ -38,7 +38,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @returns
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static define<T extends U, U extends object, I = any, C = U, F = EntityFactory<T, U, I, C>>(
+	public static define<T extends U, U extends object, I = any, C = U, F = EntityFactory<T, U, I, C>>(
 		this: new (EntityClass: { new (): T }, propsFactory: Factory<U, I, C>) => F,
 		EntityClass: { new (): T },
 		generator: GeneratorFn<U, I, C>
@@ -53,7 +53,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param params
 	 * @returns an entity
 	 */
-	build(params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T {
+	public build(params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T {
 		const props = this.propsFactory.build(params, options);
 		const entity = new this.EntityClass();
 		Object.assign(entity, props);
@@ -67,7 +67,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param id
 	 * @returns an entity
 	 */
-	buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
+	public buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
 		const entity = this.build(params, options) as { _id: ObjectId; id: EntityId };
 		const generatedId = new ObjectId(id);
 		const entityWithId = Object.assign(entity, { _id: generatedId, id: generatedId.toHexString() });
@@ -81,7 +81,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param params
 	 * @returns a list of entities
 	 */
-	buildList(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
+	public buildList(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
 		const list: T[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.build(params, options));
@@ -90,7 +90,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 		return list;
 	}
 
-	buildListWithId(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
+	public buildListWithId(number: number, params?: DeepPartial<U>, options: BuildOptions<U, I> = {}): T[] {
 		const list: T[] = [];
 		for (let i = 0; i < number; i += 1) {
 			list.push(this.buildWithId(params, undefined, options));
@@ -104,7 +104,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param afterBuildFn - the function to call. It accepts your object of type T. The value this function returns gets returned from "build"
 	 * @returns a new factory
 	 */
-	afterBuild(afterBuildFn: HookFn<U>): this {
+	public afterBuild(afterBuildFn: HookFn<U>): this {
 		const newPropsFactory = this.propsFactory.afterBuild(afterBuildFn);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -116,7 +116,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param associations
 	 * @returns a new factory
 	 */
-	associations(associations: Partial<U>): this {
+	public associations(associations: Partial<U>): this {
 		const newPropsFactory = this.propsFactory.associations(associations);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -128,7 +128,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param params
 	 * @returns a new factory
 	 */
-	params(params: DeepPartial<U>): this {
+	public params(params: DeepPartial<U>): this {
 		const newPropsFactory = this.propsFactory.params(params);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -140,7 +140,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	 * @param transient - transient params
 	 * @returns a new factory
 	 */
-	transient(transient: Partial<I>): this {
+	public transient(transient: Partial<I>): this {
 		const newPropsFactory = this.propsFactory.transient(transient);
 		const newFactory = this.clone(newPropsFactory);
 
@@ -150,14 +150,14 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U> {
 	/**
 	 * Set sequence back to its default value
 	 */
-	rewindSequence(): void {
+	public rewindSequence(): void {
 		this.propsFactory.rewindSequence();
 	}
 
 	protected clone<F extends EntityFactory<T, U, I, C>>(this: F, propsFactory: Factory<U, I, C>): F {
 		const copy = new (this.constructor as {
-			new (propsOfFactory: Factory<U, I, C>): F;
-		})(propsFactory);
+			new (EntityClass: { new (): T }, propsFactory: Factory<U, I, C>): F;
+		})(this.EntityClass, propsFactory);
 
 		return copy;
 	}
