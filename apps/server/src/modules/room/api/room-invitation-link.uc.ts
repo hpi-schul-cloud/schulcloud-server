@@ -6,11 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import {
-	RoomInvitationLink,
-	RoomInvitationLinkDto,
-	RoomInvitationLinkUpdateProps,
-} from '../domain/do/room-invitation-link.do';
+import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/room-invitation-link.do';
 import { RoomConfig } from '../room.config';
 import { RoomInvitationLinkValidationResult } from './type/room-invitation-link-validation-result.enum';
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
@@ -61,7 +57,7 @@ export class RoomInvitationLinkUc {
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
 
-		const validationResult = this.checkValidity(roomInvitationLink, isTeacher, user);
+		const validationResult = await this.checkValidity(roomInvitationLink, isTeacher, user);
 		if (validationResult !== RoomInvitationLinkValidationResult.VALID) {
 			return { validationResult };
 		}
@@ -89,7 +85,7 @@ export class RoomInvitationLinkUc {
 		roomInvitationLink: RoomInvitationLink,
 		isTeacher: boolean,
 		user: User
-	): RoomInvitationLinkValidationResult {
+	): Promise<RoomInvitationLinkValidationResult> {
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
 			return RoomInvitationLinkValidationResult.EXPIRED;
 		}
