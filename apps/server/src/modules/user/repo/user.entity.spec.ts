@@ -40,7 +40,6 @@ describe('User Entity', () => {
 				school,
 				roles: [],
 				source: 'ldap',
-				sourceOptions: { tspUid: '123' },
 			});
 
 			expect(user).toBeInstanceOf(User);
