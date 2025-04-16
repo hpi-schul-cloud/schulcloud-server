@@ -6,7 +6,7 @@ export class DeletionExecutionParams {
 	@Min(1)
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'Page limit, defaults to 100.', minimum: 1 })
-	limit?: number = 100;
+	limit?: number;
 
 	@IsBoolean()
 	@IsOptional()
