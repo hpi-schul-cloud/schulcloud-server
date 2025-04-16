@@ -4,9 +4,7 @@ import {
 	ExportApiInterface,
 	RobjExportKlasse,
 	RobjExportLehrer,
-	RobjExportLehrerMigration,
 	RobjExportSchueler,
-	RobjExportSchuelerMigration,
 	RobjExportSchule,
 	TspClientFactory,
 } from '@infra/tsp-client';
@@ -49,18 +47,6 @@ export class TspFetchService {
 		const classes = this.fetchTsp(system, (client) => client.exportKlasseList(lastChangeDate), []);
 
 		return classes;
-	}
-
-	public fetchTspTeacherMigrations(system: System): Promise<RobjExportLehrerMigration[]> {
-		const migrations = this.fetchTsp(system, (client) => client.exportLehrerListMigration(), []);
-
-		return migrations;
-	}
-
-	public fetchTspStudentMigrations(system: System): Promise<RobjExportSchuelerMigration[]> {
-		const migrations = this.fetchTsp(system, (client) => client.exportSchuelerListMigration(), []);
-
-		return migrations;
 	}
 
 	private async fetchTsp<T>(
