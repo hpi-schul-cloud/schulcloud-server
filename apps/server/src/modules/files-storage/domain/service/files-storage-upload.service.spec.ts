@@ -15,7 +15,6 @@ import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord, FileRecordSecurityCheck, ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
-import { resolveFileNameDuplicates } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -103,14 +102,14 @@ describe('FilesStorageService upload methods', () => {
 			const file = createMock<FileDto>();
 			const readable = Readable.from('abc');
 			file.data = readable;
-			file.name = fileRecords[0].name;
+			file.name = fileRecords[0].getName();
 			file.mimeType = props.mimeType;
 
 			const fileSize = 3;
 
 			const fileRecord = FileRecordFactory.buildFromExternalInput(file.name, 0, file.mimeType, params, userId);
 			const expectedFileRecord = fileRecord.getProps();
-			expectedFileRecord.name = resolveFileNameDuplicates(fileRecord.name, fileRecords);
+			expectedFileRecord.name = FileRecord.resolveFileNameDuplicates(fileRecords, fileRecord.getName());
 			const detectedMimeType = 'image/tiff';
 			expectedFileRecord.mimeType = detectedMimeType;
 
@@ -276,8 +275,9 @@ describe('FilesStorageService upload methods', () => {
 				const { params, file, userId } = setup();
 
 				const fileRecord = await service.uploadFile(userId, params, file);
+				const parentInfo = fileRecord.getParentInfo();
 
-				const filePath = [fileRecord.storageLocationId, fileRecord.id].join('/');
+				const filePath = [parentInfo.storageLocationId, fileRecord.id].join('/');
 				expect(storageClient.create).toHaveBeenCalledWith(filePath, file);
 			});
 
@@ -307,7 +307,7 @@ describe('FilesStorageService upload methods', () => {
 
 						const fileRecord = await service.uploadFile(userId, params, file);
 
-						expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.securityCheck.requestToken);
+						expect(antivirusService.send).toHaveBeenCalledWith(fileRecord.getSecurityToken());
 					});
 				});
 			});

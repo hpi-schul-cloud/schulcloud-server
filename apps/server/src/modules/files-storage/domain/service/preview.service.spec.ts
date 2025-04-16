@@ -8,15 +8,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileResponseBuilder } from '../../mapper';
+import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
-import { ScanStatus } from '../file-record.do';
-import { createPath, createPreviewDirectoryPath, createPreviewFilePath, createPreviewNameHash } from '../helper';
+import { PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
 import { TestHelper } from '../helper/test-helper'; // TODO: Move to testing
 import { FileRecordParentType, PreviewWidth, StorageLocation } from '../interface';
-import { PreviewOutputMimeTypes } from '../interface/preview-output-mime-types.enum';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
 
@@ -109,13 +107,13 @@ describe('PreviewService', () => {
 						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
-						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
+						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = fileRecord.createPreviewFilePath(hash);
+						const originPath = fileRecord.createPath();
 
 						return {
 							bytesRange,
@@ -172,13 +170,13 @@ describe('PreviewService', () => {
 						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
-						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
-						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
+						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = fileRecord.createPreviewFilePath(hash);
+						const originPath = fileRecord.createPath();
 
 						return {
 							bytesRange,
@@ -243,13 +241,13 @@ describe('PreviewService', () => {
 						const notFoundException = new NotFoundException();
 						s3ClientAdapter.get.mockRejectedValueOnce(notFoundException).mockRejectedValueOnce(notFoundException);
 
-						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
-						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
+						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = fileRecord.createPreviewFilePath(hash);
+						const originPath = fileRecord.createPath();
 
 						return {
 							bytesRange,
@@ -285,13 +283,13 @@ describe('PreviewService', () => {
 						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
-						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
-						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
+						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = fileRecord.createPreviewFilePath(hash);
+						const originPath = fileRecord.createPath();
 
 						return {
 							bytesRange,
@@ -344,13 +342,13 @@ describe('PreviewService', () => {
 						const previewFile = TestHelper.createFile();
 						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
-						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
-						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
+						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = fileRecord.createPreviewFilePath(hash);
+						const originPath = fileRecord.createPath();
 
 						return {
 							bytesRange,
@@ -415,13 +413,13 @@ describe('PreviewService', () => {
 						const notFoundException = new NotFoundException();
 						s3ClientAdapter.get.mockRejectedValueOnce(notFoundException).mockRejectedValueOnce(notFoundException);
 
-						const fileNameWithoutExtension = fileRecord.name.split('.')[0];
+						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = createPreviewNameHash(fileRecord.id, previewParams);
-						const previewPath = createPreviewFilePath(fileRecord.storageLocationId, hash, fileRecord.id);
-						const originPath = createPath(fileRecord.storageLocationId, fileRecord.id);
+						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const previewPath = fileRecord.createPreviewFilePath(hash);
+						const originPath = fileRecord.createPath();
 
 						return {
 							bytesRange,
@@ -559,7 +557,7 @@ describe('PreviewService', () => {
 					...defaultPreviewParams,
 				};
 				const format = previewParams.outputFormat.split('/')[1];
-				const directoryPath = createPreviewDirectoryPath(fileRecord.storageLocationId, fileRecord.id);
+				const directoryPath = fileRecord.createPreviewDirectoryPath();
 
 				return {
 					fileRecord,

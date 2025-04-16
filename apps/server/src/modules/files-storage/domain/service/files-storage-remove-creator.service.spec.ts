@@ -110,7 +110,8 @@ describe('FilesStorageService delete methods', () => {
 				const result = await service.removeCreatorIdFromFileRecords(fileRecords);
 
 				result.forEach((entity) => {
-					expect(entity.creatorId).toBe(undefined);
+					const props = entity.getProps();
+					expect(props.creatorId).toBe(undefined);
 				});
 			});
 		});

@@ -12,7 +12,6 @@ import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileResponseBuilder } from '../../mapper';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
-import { createPath } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -93,11 +92,11 @@ describe('FilesStorageService download methods', () => {
 				const fileRecord = fileRecords[0];
 				const params = {
 					fileRecordId: fileRecord.id,
-					fileName: fileRecord.name,
+					fileName: fileRecord.getName(),
 				};
 
 				const fileResponse = createMock<GetFile>();
-				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.name);
+				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
 
 				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
 
@@ -150,10 +149,10 @@ describe('FilesStorageService download methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+				fileRecord.updateSecurityCheckStatus(ScanStatus.BLOCKED, 'blocked');
 				const params = {
 					fileRecordId: fileRecord.id,
-					fileName: fileRecord.name,
+					fileName: fileRecord.getName(),
 				};
 
 				jest.spyOn(service, 'downloadFile');
@@ -177,7 +176,7 @@ describe('FilesStorageService download methods', () => {
 				const fileRecord = fileRecords[0];
 				const params = {
 					fileRecordId: fileRecord.id,
-					fileName: fileRecord.name,
+					fileName: fileRecord.getName(),
 				};
 				const error = new Error('test');
 
@@ -202,7 +201,7 @@ describe('FilesStorageService download methods', () => {
 				const fileResponse = createMock<GetFile>();
 
 				storageClient.get.mockResolvedValueOnce(fileResponse);
-				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.name);
+				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
 
 				return { fileRecord, expectedResponse };
 			};
@@ -210,7 +209,7 @@ describe('FilesStorageService download methods', () => {
 			it('calls get with correct params', async () => {
 				const { fileRecord } = setup();
 
-				const path = createPath(fileRecord.storageLocationId, fileRecord.id);
+				const path = fileRecord.createPath();
 
 				await service.downloadFile(fileRecord);
 

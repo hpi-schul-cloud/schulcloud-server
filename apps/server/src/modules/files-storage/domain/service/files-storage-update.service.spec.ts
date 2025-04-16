@@ -126,7 +126,7 @@ describe('FilesStorageService update methods', () => {
 			it('should call fileRecordRepo.save with right paramaters', async () => {
 				const { fileRecord, data } = setup();
 				const expectedFileRecord = _.cloneDeep(fileRecord);
-				expectedFileRecord.name = data.fileName;
+				expectedFileRecord.setName(data.fileName);
 
 				await service.patchFilename(fileRecord, data);
 
@@ -138,7 +138,7 @@ describe('FilesStorageService update methods', () => {
 
 				const result = await service.patchFilename(fileRecord, data);
 
-				expect(result.name).toEqual(data.fileName);
+				expect(result.getName()).toEqual(data.fileName);
 			});
 		});
 
@@ -177,7 +177,7 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const data: RenameFileParams = { fileName: fileRecords[0].name };
+				const data: RenameFileParams = { fileName: fileRecords[0].getName() };
 
 				spy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 
@@ -210,7 +210,7 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
 				fileRecordRepo.save.mockResolvedValue();
@@ -255,7 +255,7 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
 				fileRecordRepo.save.mockResolvedValue();
@@ -292,7 +292,7 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false, error: 'file to large' };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
 				fileRecordRepo.save.mockResolvedValue();
@@ -323,7 +323,7 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 				const error = new NotFoundException();
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockRejectedValueOnce(error);
@@ -342,7 +342,7 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 				const error = new Error('bla');
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);

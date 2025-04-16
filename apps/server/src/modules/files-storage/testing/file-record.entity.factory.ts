@@ -1,7 +1,7 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
-import { FileRecordProps, FileRecordSecurityCheck, ScanStatus } from '../domain';
+import { FileRecordProps, FileRecordSecurityCheck } from '../domain';
 import { StorageLocation } from '../domain/interface';
 import { FileRecordEntity } from '../repo/file-record.entity';
 
@@ -12,9 +12,9 @@ class FileRecordEntityFactory extends EntityFactory<FileRecordEntity, FileRecord
 		return this.params({ deletedSince: date ?? yesterday });
 	}
 
-	public withScanStatus(scanStatus?: ScanStatus): this {
-		return this.params({ securityCheck: { status: scanStatus ?? ScanStatus.VERIFIED } });
-	}
+	// public withScanStatus(scanStatus?: ScanStatus): this {
+	// 	return this.params({ securityCheck: { status: scanStatus ?? ScanStatus.VERIFIED } });
+	// }
 }
 
 export const fileRecordEntityFactory = FileRecordEntityFactory.define(FileRecordEntity, ({ sequence }) => {

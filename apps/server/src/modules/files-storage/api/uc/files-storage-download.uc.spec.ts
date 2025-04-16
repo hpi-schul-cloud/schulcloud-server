@@ -102,7 +102,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN file is found, user is authorized and file is successfully downloaded', () => {
 			const setup = () => {
 				const { fileRecord, params } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 
 				const fileResponse = createMock<GetFileResponse>();
 
@@ -125,13 +125,14 @@ describe('FilesStorageUC', () => {
 
 			it('should call checkPermissionByReferences with correct params', async () => {
 				const { fileDownloadParams, fileRecord } = setup();
+				const parentInfo = fileRecord.getParentInfo();
 
 				await filesStorageUC.download(fileDownloadParams);
 
-				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentInfo.parentType);
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					allowedType,
-					fileRecord.parentId,
+					parentInfo.parentId,
 					FileStorageAuthorizationContext.read
 				);
 			});
@@ -156,7 +157,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN getFile throws error', () => {
 			const setup = () => {
 				const { fileRecord, params } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
@@ -174,7 +175,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { fileRecord, params } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 				const error = new ForbiddenException();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
@@ -193,7 +194,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN service throws error', () => {
 			const setup = () => {
 				const { fileRecord, params } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 				const error = new Error('test');
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);

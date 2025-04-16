@@ -92,7 +92,7 @@ describe('FileRecordRepo', () => {
 				setTimeout(resolve, 20);
 			});
 			const fileRecord = FileRecordEntityMapper.mapEntityToDo(entity);
-			fileRecord.name = `updated-${fileRecord.name}`;
+			fileRecord.setName(`updated-${fileRecord.getName()}`);
 
 			await repo.save(fileRecord);
 			// load also from DB and test if value is set
@@ -158,7 +158,12 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+			expect(
+				results.map((o) => {
+					const props = o.getProps();
+					return props.parentId;
+				})
+			).toEqual([parentId1, parentId1, parentId1]);
 		});
 
 		it('should ignore deletedSince', async () => {
@@ -302,7 +307,12 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+			expect(
+				results.map((o) => {
+					const props = o.getProps();
+					return props.parentId;
+				})
+			).toEqual([parentId1, parentId1, parentId1]);
 		});
 
 		it('should only find searched school', async () => {
@@ -324,11 +334,12 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.storageLocationId)).toEqual([
-				storageLocationId1,
-				storageLocationId1,
-				storageLocationId1,
-			]);
+			expect(
+				results.map((o) => {
+					const parentInfo = o.getParentInfo();
+					return parentInfo.storageLocationId;
+				})
+			).toEqual([storageLocationId1, storageLocationId1, storageLocationId1]);
 		});
 
 		it('should ignore deletedSince', async () => {
@@ -388,7 +399,12 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.parentId)).toEqual([parentId1, parentId1, parentId1]);
+			expect(
+				results.map((o) => {
+					const props = o.getProps();
+					return props.creatorId;
+				})
+			).toEqual([parentId1, parentId1, parentId1]);
 		});
 
 		it('should only find searched school', async () => {
@@ -411,11 +427,12 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(3);
 			expect(results).toHaveLength(3);
-			expect(results.map((o) => o.storageLocationId)).toEqual([
-				storageLocationId1,
-				storageLocationId1,
-				storageLocationId1,
-			]);
+			expect(
+				results.map((o) => {
+					const parentInfo = o.getParentInfo();
+					return parentInfo.storageLocationId;
+				})
+			).toEqual([storageLocationId1, storageLocationId1, storageLocationId1]);
 		});
 
 		it('should ingnore if deletedSince is undefined', async () => {
@@ -465,7 +482,7 @@ describe('FileRecordRepo', () => {
 			const result = await repo.findBySecurityCheckRequestToken(token);
 
 			expect(result).toBeInstanceOf(FileRecord);
-			expect(result.securityCheck.requestToken).toEqual(token);
+			expect(result.getSecurityToken()).toEqual(token);
 		});
 
 		it('should throw error by wrong requestToken', async () => {
@@ -502,7 +519,12 @@ describe('FileRecordRepo', () => {
 
 			expect(count).toEqual(4);
 			expect(results).toHaveLength(4);
-			expect(results.map((o) => o.creatorId)).toEqual([creator1, creator1, creator1, creator1]);
+			expect(
+				results.map((o) => {
+					const props = o.getProps();
+					return props.creatorId;
+				})
+			).toEqual([creator1, creator1, creator1, creator1]);
 		});
 	});
 });

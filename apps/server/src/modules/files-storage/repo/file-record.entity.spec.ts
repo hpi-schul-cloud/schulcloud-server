@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecordProps, FileRecordSecurityCheck, ScanStatus } from '../domain';
+import { FileRecordProps, ScanStatus } from '../domain';
 import { FileRecordParentType, StorageLocation } from '../domain/interface';
 import { fileRecordEntityFactory } from '../testing';
 import { FileRecordSecurityCheckEmbeddable } from './file-record.entity';
@@ -19,9 +19,6 @@ describe('FileRecord Entity', () => {
 				creatorId: new ObjectId().toHexString(),
 				storageLocationId: new ObjectId().toHexString(),
 				storageLocation: StorageLocation.SCHOOL,
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				securityCheck: FileRecordSecurityCheck.createWithDefaultProps(),
 			};
 		});
 
@@ -73,41 +70,41 @@ describe('FileRecord Entity', () => {
 });
 
 describe('FileRecordSecurityCheckEmbeddable', () => {
-    it('should initialize with default values when no props are provided', () => {
-      const securityCheck = new FileRecordSecurityCheckEmbeddable({});
-      expect(securityCheck.status).toBe(ScanStatus.PENDING);
-      expect(securityCheck.reason).toBe('not yet scanned');
-      expect(securityCheck.requestToken).toBeDefined();
-      expect(securityCheck.createdAt).toBeInstanceOf(Date);
-      expect(securityCheck.updatedAt).toBeInstanceOf(Date);
-    });
-  
-    it('should override the provided properties', () => {
-        const updatedAt = new Date();
-      const securityCheck = new FileRecordSecurityCheckEmbeddable({
-        status: ScanStatus.ERROR,
-        reason: 'scan failed',
-        requestToken: 'custom-token',
-        updatedAt,
-      });
-      expect(securityCheck.status).toBe(ScanStatus.ERROR);
-      expect(securityCheck.reason).toBe('scan failed');
-      expect(securityCheck.requestToken).toEqual('custom-token');
-      expect(securityCheck.updatedAt).toEqual(updatedAt);
-    });
-  
-    it('should initialize with all provided properties', () => {
-      const updatedAt =  new Date();
-      const securityCheck = new FileRecordSecurityCheckEmbeddable({
-        status: undefined,
-        reason: undefined,
-        requestToken: undefined,
-        updatedAt: undefined,
-      });
-      expect(securityCheck.status).toBe(ScanStatus.PENDING);
-      expect(securityCheck.reason).toBe('not yet scanned');
-      expect(securityCheck.requestToken).toBe(expect.any(String));
-      expect(securityCheck.updatedAt).toEqual(expect.any(Date));
-    });
-  });
+	it('should initialize with default values when no props are provided', () => {
+		const securityCheck = new FileRecordSecurityCheckEmbeddable();
+		expect(securityCheck.status).toBe(ScanStatus.PENDING);
+		expect(securityCheck.reason).toBe('not yet scanned');
+		expect(securityCheck.requestToken).toBeDefined();
+		expect(securityCheck.createdAt).toBeInstanceOf(Date);
+		expect(securityCheck.updatedAt).toBeInstanceOf(Date);
+	});
+
+	it('should override the provided properties', () => {
+		const updatedAt = new Date();
+		const securityCheck = new FileRecordSecurityCheckEmbeddable();
+		Object.assign(securityCheck, {
+			status: ScanStatus.ERROR,
+			reason: 'scan failed',
+			requestToken: 'custom-token',
+			updatedAt,
+		});
+		expect(securityCheck.status).toBe(ScanStatus.ERROR);
+		expect(securityCheck.reason).toBe('scan failed');
+		expect(securityCheck.requestToken).toEqual('custom-token');
+		expect(securityCheck.updatedAt).toEqual(updatedAt);
+	});
+
+	it('should initialize with all provided properties', () => {
+		const securityCheck = new FileRecordSecurityCheckEmbeddable();
+		Object.assign(securityCheck, {
+			status: undefined,
+			reason: undefined,
+			requestToken: undefined,
+			updatedAt: undefined,
+		});
+		expect(securityCheck.status).toBe(ScanStatus.PENDING);
+		expect(securityCheck.reason).toBe('not yet scanned');
+		expect(securityCheck.requestToken).toBe(expect.any(String));
+		expect(securityCheck.updatedAt).toEqual(expect.any(Date));
+	});
 });

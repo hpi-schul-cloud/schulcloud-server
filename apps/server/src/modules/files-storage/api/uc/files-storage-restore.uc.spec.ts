@@ -212,13 +212,14 @@ describe('FilesStorageUC', () => {
 
 			it('should call authorisation with right parameters', async () => {
 				const { params, fileRecord } = setup();
-				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
+				const parentInfo = fileRecord.getParentInfo();
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentInfo.parentType);
 
 				await filesStorageUC.restoreOneFile(params);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					allowedType,
-					fileRecord.parentId,
+					parentInfo.parentId,
 					FileStorageAuthorizationContext.create
 				);
 			});

@@ -298,7 +298,7 @@ describe('FilesStorageUC upload methods', () => {
 				const request = createRequest();
 				const readable = Readable.from('abc');
 				const fileInfo = {
-					filename: fileRecord.name,
+					filename: fileRecord.getName(),
 					encoding: '7-bit',
 					mimeType: fileRecord.mimeType,
 				};
@@ -382,7 +382,7 @@ describe('FilesStorageUC upload methods', () => {
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('file', 'file', readable, {
-						filename: fileRecord.name,
+						filename: fileRecord.getName(),
 						encoding: '7-bit',
 						mimeType: fileRecord.mimeType,
 					});

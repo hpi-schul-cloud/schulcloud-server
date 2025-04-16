@@ -54,10 +54,10 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToSingleFileParams is called', () => {
 		const setup = () => {
-			const { id: fileRecordId, name: fileName } = fileRecordTestFactory().build();
-			const downloadFileParams: DownloadFileParams = { fileRecordId, fileName };
+			const fileRecord = fileRecordTestFactory().build();
+			const downloadFileParams: DownloadFileParams = { fileRecordId: fileRecord.id, fileName: fileRecord.getName() };
 
-			return { downloadFileParams, fileRecordId };
+			return { downloadFileParams, fileRecordId: fileRecord.id };
 		};
 
 		it('should return single file params', () => {
@@ -89,14 +89,15 @@ describe('FilesStorageMapper', () => {
 
 		it('should return correct mapped values', () => {
 			const { fileRecord } = setup();
+			const parentInfo = fileRecord.getParentInfo();
 
 			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 
 			expect(result).toEqual({
-				storageLocationId: fileRecord.storageLocationId,
-				storageLocation: fileRecord.storageLocation,
-				parentId: fileRecord.parentId,
-				parentType: fileRecord.parentType,
+				storageLocationId: parentInfo.storageLocationId,
+				storageLocation: parentInfo.storageLocation,
+				parentId: parentInfo.parentId,
+				parentType: parentInfo.parentType,
 			});
 		});
 	});
@@ -104,23 +105,23 @@ describe('FilesStorageMapper', () => {
 	describe('mapToFileRecordResponse is called', () => {
 		it('should return FileRecordResponse DO', () => {
 			const fileRecord = fileRecordTestFactory().build();
+			const props = fileRecord.getProps();
+			const securityCheckProps = fileRecord.getSecurityCheckProps();
 
 			const result = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 			const expectedFileRecordResponse: FileRecordResponse = {
-				id: fileRecord.id,
-				name: fileRecord.name,
+				id: props.id,
+				name: props.name,
 				url: expect.any(String),
-				size: fileRecord.size,
-				securityCheckStatus: fileRecord.securityCheck.status,
-				parentId: fileRecord.parentId,
-				creatorId: fileRecord.creatorId,
-				mimeType: fileRecord.mimeType,
-				parentType: fileRecord.parentType,
-				deletedSince: fileRecord.deletedSince,
+				size: props.size,
+				securityCheckStatus: securityCheckProps.status,
+				parentId: props.parentId,
+				creatorId: props.creatorId,
+				mimeType: props.mimeType,
+				parentType: props.parentType,
+				deletedSince: props.deletedSince,
 				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
-				createdAt: fileRecord.createdAt,
-				updatedAt: fileRecord.updatedAt,
 			};
 
 			expect(result).toEqual(expectedFileRecordResponse);

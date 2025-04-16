@@ -13,13 +13,13 @@ describe('File Builder', () => {
 			const readable = Readable.from('abc');
 
 			const expectedFile = new FileDto({
-				name: fileRecord.name,
+				name: fileRecord.getName(),
 				data: readable,
 				mimeType: fileRecord.mimeType,
 			});
 
 			const fileInfo = {
-				filename: fileRecord.name,
+				filename: fileRecord.getName(),
 				encoding: '7-bit',
 				mimeType: fileRecord.mimeType,
 			};
@@ -47,7 +47,7 @@ describe('File Builder', () => {
 			});
 
 			const expectedFile = new FileDto({
-				name: fileRecord.name,
+				name: fileRecord.getName(),
 				data: readable,
 				mimeType: fileRecord.mimeType,
 			});
@@ -58,7 +58,7 @@ describe('File Builder', () => {
 		it('should return file from request', () => {
 			const { response, expectedFile, fileRecord } = setup();
 
-			const result = FileDtoBuilder.buildFromAxiosResponse(fileRecord.name, response);
+			const result = FileDtoBuilder.buildFromAxiosResponse(fileRecord.getName(), response);
 
 			expect(result).toEqual(expectedFile);
 		});

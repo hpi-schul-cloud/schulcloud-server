@@ -141,7 +141,7 @@ describe('FilesStorageUC', () => {
 				const sourceFile = fileRecords[0];
 				const targetFile = fileRecords[1];
 
-				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
+				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce().mockResolvedValueOnce();
 				filesStorageService.copyFilesOfParent.mockResolvedValueOnce([[fileResponse], 1]);
@@ -294,7 +294,7 @@ describe('FilesStorageUC', () => {
 				const fileResponse = CopyFileResponseBuilder.build(
 					fileRecord.id,
 					singleFileParams.fileRecordId,
-					fileRecord.name
+					fileRecord.getName()
 				);
 
 				filesStorageService.getFileRecord.mockResolvedValue(fileRecord);
@@ -314,13 +314,14 @@ describe('FilesStorageUC', () => {
 
 			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {
 				const { copyFileParams, singleFileParams, userId, fileRecord } = setup();
+				const parentInfo = fileRecord.getParentInfo();
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenNthCalledWith(
 					1,
-					fileRecord.parentType,
-					fileRecord.parentId,
+					parentInfo.parentType,
+					parentInfo.parentId,
 					FileStorageAuthorizationContext.create
 				);
 			});

@@ -101,7 +101,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 
 				filesStorageService.updateSecurityStatus.mockResolvedValueOnce();
 
@@ -121,7 +121,7 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
 				const scanResult: ScanResultParams = { virus_detected: false };
-				const token = fileRecord.securityCheck.requestToken || '';
+				const token = fileRecord.getSecurityToken() || '';
 
 				filesStorageService.updateSecurityStatus.mockRejectedValueOnce(new Error('bla'));
 
@@ -162,10 +162,11 @@ describe('FilesStorageUC', () => {
 				const { params, data, fileRecord } = setup();
 
 				await filesStorageUC.patchFilename(params, data);
+				const props = fileRecord.getProps();
 
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
-					fileRecord.parentType,
-					fileRecord.parentId,
+					props.parentType,
+					props.parentId,
 					FileStorageAuthorizationContext.update
 				);
 			});

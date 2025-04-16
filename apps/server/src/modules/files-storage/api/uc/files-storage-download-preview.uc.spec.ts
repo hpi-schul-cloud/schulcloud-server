@@ -112,7 +112,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN preview is returned and user is authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 				const singleFileParams = FilesStorageMapper.mapToSingleFileParams(fileDownloadParams);
 
 				const previewParams = getPreviewParams();
@@ -142,13 +142,14 @@ describe('FilesStorageUC', () => {
 
 			it('should call checkPermission with correct params', async () => {
 				const { fileDownloadParams, previewParams, userId, fileRecord } = setup();
+				const parentInfo = fileRecord.getParentInfo();
 
 				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
 
-				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(fileRecord.parentType);
+				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentInfo.parentType);
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
 					allowedType,
-					fileRecord.parentId,
+					parentInfo.parentId,
 					FileStorageAuthorizationContext.read
 				);
 			});
@@ -165,7 +166,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN getFileRecord throws error', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 
 				const previewParams = getPreviewParams();
 
@@ -185,7 +186,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 
 				const previewParams = getPreviewParams();
 
@@ -207,7 +208,7 @@ describe('FilesStorageUC', () => {
 		describe('WHEN getPreview throws error', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.name };
+				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
 
 				const previewParams = getPreviewParams();
 

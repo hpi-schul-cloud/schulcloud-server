@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,7 +11,6 @@ import { CopyFileResponseBuilder } from '../../mapper';
 import { fileRecordTestFactory } from '../../testing';
 import { ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
-import { createCopyFiles } from '../helper';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -193,10 +192,10 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+				sourceFile.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'verified');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, params);
 
-				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.name);
+				const fileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
 				jest.spyOn(FileRecordFactory, 'copy').mockImplementationOnce(() => targetFile);
 
@@ -216,7 +215,10 @@ describe('FilesStorageService copy methods', () => {
 
 				await service.copy(userId, [sourceFile], params);
 
-				const expectedParams = createCopyFiles(sourceFile, targetFile);
+				const expectedParams: CopyFiles = {
+					sourcePath: sourceFile.createPath(),
+					targetPath: targetFile.createPath(),
+				};
 
 				expect(storageClient.copy).toBeCalledWith([expectedParams]);
 			});
@@ -242,7 +244,7 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
+				sourceFile.updateSecurityCheckStatus(ScanStatus.PENDING, 'not yet scanned');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, params);
 
 				jest.spyOn(FileRecordFactory, 'copy').mockImplementationOnce(() => targetFile);
@@ -263,7 +265,7 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				fileRecord.securityCheck.status = ScanStatus.BLOCKED;
+				fileRecord.updateSecurityCheckStatus(ScanStatus.BLOCKED, 'blocked');
 
 				return { fileRecord, userId, params };
 			};
@@ -272,7 +274,7 @@ describe('FilesStorageService copy methods', () => {
 				const { fileRecord, params, userId } = setup();
 
 				const result = await service.copy(userId, [fileRecord], params);
-				const expected = { sourceId: fileRecord.id, name: fileRecord.name };
+				const expected = { sourceId: fileRecord.id, name: fileRecord.getName() };
 
 				expect(result[0]).toEqual(expected);
 			});
@@ -280,9 +282,17 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source file is marked for delete', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
-				const fileRecord = fileRecords[0];
-				fileRecord.deletedSince = new Date();
+				const userId = new ObjectId().toHexString();
+				const storageLocationId = new ObjectId().toHexString();
+
+				const fileRecord = fileRecordTestFactory().withDeletedSince().build({ parentId: userId, storageLocationId });
+
+				const params: FileRecordParams = {
+					storageLocation: StorageLocation.SCHOOL,
+					storageLocationId,
+					parentId: userId,
+					parentType: FileRecordParentType.User,
+				};
 
 				return { fileRecord, userId, params };
 			};
@@ -295,7 +305,7 @@ describe('FilesStorageService copy methods', () => {
 
 				expect(result.id).toBeDefined();
 
-				const expected = CopyFileResponseBuilder.build(result.id as string, fileRecord.id, fileRecord.name);
+				const expected = CopyFileResponseBuilder.build(result.id as string, fileRecord.id, fileRecord.getName());
 
 				expect(result.id).not.toEqual(fileRecord.id);
 				expect(result).toEqual(expected);
@@ -311,7 +321,7 @@ describe('FilesStorageService copy methods', () => {
 
 				fileRecordRepo.save.mockResolvedValueOnce().mockRejectedValueOnce(error);
 
-				const fileResponse2 = CopyFileResponseBuilder.buildError(sourceFile2.id, sourceFile2.name);
+				const fileResponse2 = CopyFileResponseBuilder.buildError(sourceFile2.id, sourceFile2.getName());
 
 				return { sourceFile1, sourceFile2, userId, params, fileResponse2 };
 			};
@@ -323,7 +333,11 @@ describe('FilesStorageService copy methods', () => {
 
 				expect(result1.id).toBeDefined();
 
-				const fileResponse1 = CopyFileResponseBuilder.build(result1.id as string, sourceFile1.id, sourceFile1.name);
+				const fileResponse1 = CopyFileResponseBuilder.build(
+					result1.id as string,
+					sourceFile1.id,
+					sourceFile1.getName()
+				);
 
 				expect(result1.id).not.toEqual(sourceFile1.id);
 				expect(result1).toEqual(fileResponse1);
@@ -335,12 +349,12 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.VERIFIED;
+				sourceFile.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'verified');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, params);
 
 				jest.spyOn(FileRecordFactory, 'copy').mockImplementationOnce(() => targetFile);
 
-				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.name }];
+				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.getName() }];
 				const error = new Error('test');
 
 				storageClient.copy.mockRejectedValueOnce(error);
@@ -362,12 +376,12 @@ describe('FilesStorageService copy methods', () => {
 			const setup = () => {
 				const { fileRecords, parentId: userId, params } = buildFileRecordsWithParams();
 				const sourceFile = fileRecords[0];
-				sourceFile.securityCheck.status = ScanStatus.PENDING;
+				sourceFile.updateSecurityCheckStatus(ScanStatus.PENDING, 'not yet scanned');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, params);
 
 				jest.spyOn(FileRecordFactory, 'copy').mockImplementationOnce(() => targetFile);
 
-				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.name }];
+				const expectedResponse = [{ sourceId: sourceFile.id, name: sourceFile.getName() }];
 				const error = new Error('test');
 
 				antivirusService.send.mockRejectedValueOnce(error);
