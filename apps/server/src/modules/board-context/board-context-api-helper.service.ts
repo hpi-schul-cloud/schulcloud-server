@@ -38,20 +38,17 @@ export class BoardContextApiHelperService {
 	public async getParentsOfElement(boardId: EntityId): Promise<ParentNodeInfo[]> {
 		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 0);
 		const { type, id } = columnBoard.context;
-		const isCourse = this.isCourse(type);
-		const isRoom = this.isRoom(type);
-		const isUser = this.isUser(type);
 
 		const items: ParentNodeInfo[] = [];
 		let name: string | undefined;
 
-		if (isCourse) {
+		if (this.isCourse(type)) {
 			const course = await this.courseService.findById(id);
 			name = course.name;
-		} else if (isRoom) {
+		} else if (this.isRoom(type)) {
 			const room = await this.roomService.getSingleRoom(id);
 			name = room.name;
-		} else if (isUser) {
+		} else if (this.isUser(type)) {
 			const user = await this.userService.getUserEntityWithRoles(id);
 			name = `${user.firstName} ${user.lastName}`;
 		} else {
