@@ -13,7 +13,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType, ElementReferenceType } from '../../domain';
-import { columnBoardEntityFactory, fileFolderElementFactory } from '../../testing';
+import { columnBoardEntityFactory, fileFolderElementEntityFactory } from '../../testing';
 import { ElementWithParentHierarchyResponse } from '../dto';
 
 describe(`getElementWithParentHierarchy (api)`, () => {
@@ -51,7 +51,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const fileFolderElement = fileFolderElementFactory.withParent(columnBoardNode).build();
+				const fileFolderElement = fileFolderElementEntityFactory.withParent(columnBoardNode).build();
 
 				await em.persistAndFlush([columnBoardNode, fileFolderElement]);
 				em.clear();
@@ -127,7 +127,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: room.id, type: BoardExternalReferenceType.Room },
 				});
-				const fileFolderElement = fileFolderElementFactory.withParent(columnBoardNode).build();
+				const fileFolderElement = fileFolderElementEntityFactory.withParent(columnBoardNode).build();
 
 				await em.persistAndFlush([
 					columnBoardNode,
@@ -200,7 +200,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: teacherUser.id, type: BoardExternalReferenceType.User },
 				});
-				const fileFolderElement = fileFolderElementFactory.withParent(columnBoardNode).build();
+				const fileFolderElement = fileFolderElementEntityFactory.withParent(columnBoardNode).build();
 
 				await em.persistAndFlush([columnBoardNode, fileFolderElement, teacherUser, teacherAccount]);
 				em.clear();
@@ -282,7 +282,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
 				});
-				const fileFolderElement = fileFolderElementFactory.withParent(columnBoardNode).build();
+				const fileFolderElement = fileFolderElementEntityFactory.withParent(columnBoardNode).build();
 
 				const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 					UserAndAccountTestFactory.buildTeacher();
@@ -328,7 +328,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: room.id, type: BoardExternalReferenceType.Room },
 				});
-				const fileFolderElement = fileFolderElementFactory.withParent(columnBoardNode).build();
+				const fileFolderElement = fileFolderElementEntityFactory.withParent(columnBoardNode).build();
 
 				const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 					UserAndAccountTestFactory.buildTeacher({ school });

@@ -1,10 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeType, FileFolderElementProps, ROOT_PATH } from '../domain';
-import { BoardNodeEntityFactory, PropsWithType } from './entity/board-node-entity.factory';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { FileFolderElement, FileFolderElementProps, ROOT_PATH } from '../domain';
 
-export const fileFolderElementFactory = BoardNodeEntityFactory.define<PropsWithType<FileFolderElementProps>>(
+export const fileFolderElementFactory = BaseFactory.define<FileFolderElement, FileFolderElementProps>(
+	FileFolderElement,
 	({ sequence }) => {
-		const props: PropsWithType<FileFolderElementProps> = {
+		return {
 			id: new ObjectId().toHexString(),
 			path: ROOT_PATH,
 			level: 0,
@@ -13,9 +14,6 @@ export const fileFolderElementFactory = BoardNodeEntityFactory.define<PropsWithT
 			title: `title #${sequence}`,
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			type: BoardNodeType.FILE_FOLDER_ELEMENT,
 		};
-
-		return props;
 	}
 );
