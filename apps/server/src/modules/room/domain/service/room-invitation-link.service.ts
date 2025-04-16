@@ -12,6 +12,7 @@ export class RoomInvitationLinkService {
 	constructor(private readonly roomInvitationLinkRepo: RoomInvitationLinkRepo) {}
 
 	public async createLink(props: RoomInvitationLinkDto): Promise<RoomInvitationLink> {
+		console.log('Creating room invitation link', props);
 		const roomInvitationLink = new RoomInvitationLink({ id: new ObjectId().toHexString(), ...props });
 		await this.roomInvitationLinkRepo.save(roomInvitationLink);
 		return roomInvitationLink;

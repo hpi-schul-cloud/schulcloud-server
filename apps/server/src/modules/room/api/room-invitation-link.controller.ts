@@ -1,7 +1,16 @@
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpStatus, Param, Post, UnauthorizedException } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	Get,
+	HttpStatus,
+	Param,
+	Post,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
 import { RoomInvitationLinkUseLinkResponse } from './dto/response/room-invitation-link-use-link.response';
 import { ApiValidationError } from '@shared/common/error';
@@ -13,19 +22,19 @@ import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 @ApiTags('Room-Invitation-Links')
 @JwtAuthentication()
 @Controller('room-invitation-links')
-export class RoomController {
+export class RoomInvitationLinkController {
 	constructor(private readonly roomInvitationLinkUc: RoomInvitationLinkUc) {}
 
 	@Post()
-	@ApiOperation({ summary: 'Create a new room' })
+	@ApiOperation({ summary: 'Create a new room invitation link' })
 	@ApiResponse({
 		status: HttpStatus.OK,
-		description: 'Returns the details of a room',
+		description: 'Returns a new room invitation link',
 		type: RoomInvitationLinkResponse,
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
-	// @ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async createRoomInvitationLink(
 		@CurrentUser() currentUser: ICurrentUser,
@@ -47,8 +56,8 @@ export class RoomController {
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
-	// @ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })  // TODO: should we throw it somewhere?
-	@ApiResponse({ status: '5XX', type: ErrorResponse }) // TODO: needed?
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomInvitationLinkUrlParams
