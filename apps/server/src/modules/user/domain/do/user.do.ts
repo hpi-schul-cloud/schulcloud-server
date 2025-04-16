@@ -2,7 +2,6 @@ import { BaseDO, RoleReference } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Consent } from './consent';
-import { UserSourceOptions } from './user-source-options';
 
 export class SecondarySchoolReference {
 	public schoolId: EntityId;
@@ -70,8 +69,6 @@ export class UserDo extends BaseDO {
 
 	public source?: string;
 
-	public sourceOptions?: UserSourceOptions;
-
 	public lastSyncedAt?: Date;
 
 	constructor(domainObject: UserDo) {
@@ -104,7 +101,6 @@ export class UserDo extends BaseDO {
 		this.birthday = domainObject.birthday;
 		this.consent = domainObject.consent;
 		this.source = domainObject.source;
-		this.sourceOptions = domainObject.sourceOptions;
 		this.lastSyncedAt = domainObject.lastSyncedAt;
 	}
 }

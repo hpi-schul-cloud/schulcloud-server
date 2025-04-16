@@ -7,7 +7,6 @@ import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { MediumMetadataMapper } from '@modules/medium-metadata/mapper';
 import { ExternalTool, ExternalToolService } from '@modules/tool';
-import { ImageMimeType } from '@modules/tool/common';
 import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool';
 import {
 	ExternalToolLogoSizeExceededLoggableException,
@@ -16,6 +15,7 @@ import {
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
+import { ImageMimeType } from '@shared/domain/types';
 import { MediaSourceSyncReport } from '../../interface';
 import { MediaMetadataSyncFailedLoggable } from '../../loggable';
 import { mediaSourceSyncOperationReportFactory, mediaSourceSyncReportFactory } from '../../testing';

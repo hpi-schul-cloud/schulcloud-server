@@ -11,9 +11,9 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { MediumMetadataDto } from '../dto';
 import { MediumMetadataMapper } from '../mapper';
-import { MediumMetadataUc } from '../uc/medium-metadata.uc';
+import { MediumMetadataUc } from '../uc';
 import { MediumMetadataParams } from './request/medium-metadata.params';
-import { MediumMetadataResponse } from './response/medium-metadata.response';
+import { MediumMetadataResponse } from './response';
 
 @ApiTags('Medium Metadata')
 @JwtAuthentication()
