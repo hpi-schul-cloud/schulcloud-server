@@ -29,8 +29,8 @@ export class RoomInvitationLinkUc {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-
 		// TODO: check permissions
+
 		const roomInvitationLink = await this.roomInvitationLinkService.createLink({
 			...props,
 			creatorUserId: userId,
@@ -43,15 +43,28 @@ export class RoomInvitationLinkUc {
 	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
 		this.checkFeatureEnabled();
 
+		// const user = await this.authorizationService.getUserWithPermissions(userId);
 		// TODO: check permissions
+
 		const roomInvitationLink = await this.roomInvitationLinkService.updateLink(props);
 
 		return roomInvitationLink;
 	}
 
+	public async deleteLink(userId: EntityId, linkId: EntityId): Promise<void> {
+		this.checkFeatureEnabled();
+
+		// const user = await this.authorizationService.getUserWithPermissions(userId);
+		// TODO: check permissions
+
+		await this.roomInvitationLinkService.deleteLink(linkId);
+	}
+
 	public async useLink(userId: EntityId, linkId: string): Promise<UseLinkResponse> {
 		// TODO: is it sure at this point that the user is logged in?
 		this.checkFeatureEnabled();
+
+		// TODO: is any additional permission check required?
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
@@ -61,7 +74,6 @@ export class RoomInvitationLinkUc {
 		if (validationResult !== RoomInvitationLinkValidationResult.VALID) {
 			return { validationResult };
 		}
-		// TODO: is any additional permission check required?
 
 		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
 		await this.roomMembershipService.changeRoleOfRoomMembers(

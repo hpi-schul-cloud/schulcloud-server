@@ -4,8 +4,10 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import {
 	Body,
 	Controller,
+	Delete,
 	ForbiddenException,
 	Get,
+	HttpCode,
 	HttpStatus,
 	NotFoundException,
 	Param,
@@ -75,6 +77,22 @@ export class RoomInvitationLinkController {
 		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinkResponse(roomInvitationLink);
 
 		return response;
+	}
+
+	@Delete(':roomInvitationLinkId')
+	@ApiOperation({ summary: 'Delete a room invitation link' })
+	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Deletion successful' })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@HttpCode(204)
+	public async deleteLink(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomInvitationLinkUrlParams
+	): Promise<void> {
+		await this.roomInvitationLinkUc.deleteLink(currentUser.userId, urlParams.roomInvitationLinkId);
 	}
 
 	@Get(':roomInvitationLinkId')
