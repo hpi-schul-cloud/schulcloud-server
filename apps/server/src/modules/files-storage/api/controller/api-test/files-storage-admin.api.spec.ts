@@ -12,7 +12,7 @@ import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
-import { FileRecordEntity } from '../../../repo'; // TODO: invalid import
+import { FileRecordEntity } from '../../../repo';
 import { fileRecordEntityFactory } from '../../../testing';
 import { FileRecordResponse } from '../../dto';
 import { availableStorageLocations } from './mocks';

@@ -6,7 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
-import { FileRecordEntity } from '../../repo'; // TODO: invalid import
+import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from '../dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
