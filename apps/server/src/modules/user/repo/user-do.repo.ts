@@ -10,14 +10,12 @@ import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
 import { ObjectId } from 'bson';
 import { Consent, MultipleUsersFoundLoggableException, ParentConsent, UserConsent, type UserDoRepo } from '../domain';
-import { UserSourceOptions } from '../domain/do/user-source-options';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';
 import { ConsentEntity } from './consent.entity';
 import { ParentConsentEntity } from './parent-consent.entity';
 import { UserScope } from './scope/user.scope';
 import { UserConsentEntity } from './user-consent.entity';
-import { UserSourceOptionsEntity } from './user-source-options-entity';
 import { User, UserSchoolEmbeddable } from './user.entity';
 
 @Injectable()
@@ -31,7 +29,6 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
-			.byTspUid(query.tspUid)
 			.byRoleId(query.roleId)
 			.withDiscoverableTrue(query.discoverable)
 			.isOutdated(query.isOutdated)
@@ -118,15 +115,18 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 	public async findByExternalId(externalId: string, systemId: string): Promise<UserDo | null> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 
-		if (userEntitys.length > 1) {
-			throw new MultipleUsersFoundLoggableException(externalId);
-		}
-		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
+		const users: User[] = userEntitys.filter((user: User): boolean => {
 			const { systems } = user.school;
 			return systems && !!systems.getItems().find((system): boolean => system.id === systemId);
 		});
+		if (users.length > 1) {
+			throw new MultipleUsersFoundLoggableException(externalId);
+		}
+		if (users.length === 0) {
+			return null;
+		}
 
-		const userDo: UserDo | null = userEntity ? this.mapEntityToDO(userEntity) : null;
+		const userDo = this.mapEntityToDO(users[0]);
 		return userDo;
 	}
 
@@ -170,7 +170,6 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
 			birthday: entity.birthday,
-			sourceOptions: entity.sourceOptions ? new UserSourceOptions({ tspUid: entity.sourceOptions.tspUid }) : undefined,
 			lastSyncedAt: entity.lastSyncedAt,
 			consent: entity.consent ? this.mapConsentEntityToDo(entity.consent) : undefined,
 			source: entity.source,
@@ -219,29 +218,10 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
 			birthday: entityDO.birthday,
-			sourceOptions: entityDO.sourceOptions
-				? new UserSourceOptionsEntity({ tspUid: entityDO.sourceOptions.tspUid })
-				: undefined,
 			lastSyncedAt: entityDO.lastSyncedAt,
 			consent: entityDO.consent ? this.mapConsentToEntity(entityDO.consent) : undefined,
 			source: entityDO.source,
 		};
-	}
-
-	public async findByTspUids(tspUids: string[]): Promise<UserDo[]> {
-		const users = await this._em.find(
-			User,
-			{
-				sourceOptions: { tspUid: { $in: tspUids } },
-			},
-			{
-				populate: ['roles', 'school.systems', 'school.currentYear', 'school.name', 'secondarySchools.role'],
-			}
-		);
-
-		const userDOs = users.map((user) => this.mapEntityToDO(user));
-
-		return userDOs;
 	}
 
 	private mapConsentEntityToDo(consentEntity: ConsentEntity): Consent {

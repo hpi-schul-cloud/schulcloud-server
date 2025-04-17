@@ -1,3 +1,3 @@
-export { Consent, ParentConsent, UserConsent, UserDo, UserService, UserSourceOptions } from './domain';
+export { Consent, ParentConsent, UserConsent, UserDo, UserService } from './domain';
 export { UserConfig } from './user.config';
 export { UserModule } from './user.module';
