@@ -26,7 +26,7 @@ import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
-import { RoomEntity } from '@modules/room/repo/entity';
+import { RoomEntity, RoomInvitationLinkEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import {
 	CountyEmbeddable,
@@ -79,6 +79,7 @@ export const ENTITIES = [
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
+	RoomInvitationLinkEntity,
 	RoomMembershipEntity,
 	SchoolEntity,
 	SchoolExternalToolEntity,
