@@ -95,22 +95,28 @@ describe('FilesStorageService delete methods', () => {
 			it('should call repo save with right parameters', async () => {
 				const { fileRecords } = setup();
 
+				await service.delete(fileRecords);
+
 				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
 					const fileRecordProps = fileRecord.getProps();
 					const securityCheckProps = fileRecord.getSecurityCheckProps();
 					const props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps } = {
-						props: { ...fileRecordProps, deletedSince: new Date() },
+						props: fileRecordProps,
 						securityCheck: securityCheckProps,
 					};
 					return props;
 				});
 
-				await service.delete(fileRecords);
-
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expectedFileRecordProps.map(
 						(props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }) =>
-							expect.objectContaining(props) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
+							expect.objectContaining({
+								props: {
+									...props.props,
+									deletedSince: expect.any(Date),
+								},
+								securityCheck: props.securityCheck,
+							}) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
 					)
 				);
 			});

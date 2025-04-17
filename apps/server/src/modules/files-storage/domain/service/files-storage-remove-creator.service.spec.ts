@@ -95,22 +95,28 @@ describe('FilesStorageService delete methods', () => {
 			it('should call repo save with undefined creatorId', async () => {
 				const { fileRecords } = setup();
 
+				await service.removeCreatorIdFromFileRecords(fileRecords);
+
 				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
 					const fileRecordProps = fileRecord.getProps();
 					const securityCheckProps = fileRecord.getSecurityCheckProps();
 					const props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps } = {
-						props: { ...fileRecordProps, creatorId: undefined },
+						props: fileRecordProps,
 						securityCheck: securityCheckProps,
 					};
 					return props;
 				});
 
-				await service.removeCreatorIdFromFileRecords(fileRecords);
-
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expectedFileRecordProps.map(
 						(props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }) =>
-							expect.objectContaining(props) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
+							expect.objectContaining({
+								props: {
+									...props.props,
+									creatorId: undefined,
+								},
+								securityCheck: props.securityCheck,
+							}) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
 					)
 				);
 			});

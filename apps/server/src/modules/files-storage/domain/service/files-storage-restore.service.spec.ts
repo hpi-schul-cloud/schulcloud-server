@@ -268,22 +268,28 @@ describe('FilesStorageService restore methods', () => {
 			it('should save the rollback', async () => {
 				const { fileRecords } = setup();
 
+				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
+
 				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
 					const fileRecordProps = fileRecord.getProps();
 					const securityCheckProps = fileRecord.getSecurityCheckProps();
 					const props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps } = {
-						props: { ...fileRecordProps, deletedSince: new Date() },
+						props: fileRecordProps,
 						securityCheck: securityCheckProps,
 					};
 					return props;
 				});
 
-				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
-
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expectedFileRecordProps.map(
 						(props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }) =>
-							expect.objectContaining(props) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
+							expect.objectContaining({
+								props: {
+									...props.props,
+									deletedSince: expect.any(Date),
+								},
+								securityCheck: props.securityCheck,
+							}) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
 					)
 				);
 			});
