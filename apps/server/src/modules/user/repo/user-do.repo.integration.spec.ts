@@ -15,7 +15,7 @@ import { RoleReference } from '@shared/domain/domainobject';
 import { type IFindOptions, LanguageType, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { MultipleUsersFoundLoggableException, UserDiscoverableQuery, type UserDo, UserSourceOptions } from '../domain';
+import { MultipleUsersFoundLoggableException, UserDiscoverableQuery, type UserDo } from '../domain';
 import { userDoFactory, userFactory } from '../testing';
 import { UserDoMikroOrmRepo } from './user-do.repo';
 import { User } from './user.entity';
@@ -159,7 +159,7 @@ describe('UserRepo', () => {
 			});
 		});
 
-		describe('when multiple users were found', () => {
+		describe('when multiple users were found with the same system', () => {
 			const externalId = 'externalId';
 			let system: SystemEntity;
 			let school: SchoolEntity;
@@ -177,6 +177,31 @@ describe('UserRepo', () => {
 			it('should throw error', async () => {
 				await expect(repo.findByExternalId(users[0].externalId as string, system.id)).rejects.toThrow(
 					new MultipleUsersFoundLoggableException(externalId)
+				);
+			});
+		});
+
+		describe('when two users have the same external id but different systems', () => {
+			it('should return the user of the requested system', async () => {
+				const system1 = systemEntityFactory.buildWithId();
+				const system2 = systemEntityFactory.buildWithId();
+				const school1 = schoolEntityFactory.buildWithId();
+				const school2 = schoolEntityFactory.buildWithId();
+				school1.systems.add(system1);
+				school2.systems.add(system2);
+				const user1 = userFactory.buildWithId({ externalId: 'externalId', school: school1 });
+				const user2 = userFactory.buildWithId({ externalId: 'externalId', school: school2 });
+
+				await em.persistAndFlush([system1, system2, school1, school2, user1, user2]);
+
+				const result = await repo.findByExternalId(user2.externalId as string, system2.id);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						id: user2.id,
+						externalId: user2.externalId,
+						schoolId: school2.id,
+					})
 				);
 			});
 		});
@@ -833,34 +858,6 @@ describe('UserRepo', () => {
 						name: role.name,
 					},
 				]);
-			});
-		});
-	});
-
-	describe('findByTspUids', () => {
-		describe('when users are found', () => {
-			const setup = async () => {
-				const tspUid = new ObjectId().toHexString();
-
-				const user = userFactory.buildWithId({
-					sourceOptions: new UserSourceOptions({
-						tspUid,
-					}),
-				});
-
-				await em.persistAndFlush([user]);
-				em.clear();
-
-				return { tspUid, user };
-			};
-
-			it('should return mapped users', async () => {
-				const { tspUid, user } = await setup();
-
-				const result = await repo.findByTspUids([tspUid]);
-
-				expect(result.length).toBe(1);
-				expect(result[0].id).toBe(user.id);
 			});
 		});
 	});

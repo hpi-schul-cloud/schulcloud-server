@@ -3,10 +3,11 @@ import { CourseService } from '@modules/course';
 import { CourseFeatures } from '@modules/course/repo';
 import { RoomService } from '@modules/room';
 import { SchoolFeature } from '@modules/school/domain';
+import { UserService } from '@modules/user';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { BoardFeature } from '../board/domain';
+import { BoardFeature, ElementReferenceType, ParentNodeInfo } from '../board/domain';
 import { LegacySchoolService } from '../legacy-school';
 import { ServerConfig } from '../server';
 import { VideoConferenceConfig } from '../video-conference';
@@ -20,8 +21,49 @@ export class BoardContextApiHelperService {
 		private readonly roomService: RoomService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly legacySchoolService: LegacySchoolService,
+		private readonly userService: UserService,
 		private readonly configService: ConfigService<ServiceConfig, true>
 	) {}
+
+	private isCourse(type: BoardExternalReferenceType): boolean {
+		return type === BoardExternalReferenceType.Course;
+	}
+	private isRoom(type: BoardExternalReferenceType): boolean {
+		return type === BoardExternalReferenceType.Room;
+	}
+	private isUser(type: BoardExternalReferenceType): boolean {
+		return type === BoardExternalReferenceType.User;
+	}
+
+	public async getParentsOfElement(boardId: EntityId): Promise<ParentNodeInfo[]> {
+		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 0);
+		const { type, id } = columnBoard.context;
+
+		const items: ParentNodeInfo[] = [];
+		let name: string | undefined;
+
+		if (this.isCourse(type)) {
+			const course = await this.courseService.findById(id);
+			name = course.name;
+		} else if (this.isRoom(type)) {
+			const room = await this.roomService.getSingleRoom(id);
+			name = room.name;
+		} else if (this.isUser(type)) {
+			const user = await this.userService.getUserEntityWithRoles(id);
+			name = `${user.firstName} ${user.lastName}`;
+		} else {
+			throw new BadRequestException(`Unsupported board reference type ${type as string}`);
+		}
+
+		items.push({
+			id,
+			name,
+			type,
+		});
+		items.push({ id: columnBoard.id, name: columnBoard.title, type: ElementReferenceType.BOARD });
+
+		return items;
+	}
 
 	public async getSchoolIdForBoardNode(nodeId: EntityId): Promise<EntityId> {
 		const boardContext = await this.getBoardContext(nodeId);

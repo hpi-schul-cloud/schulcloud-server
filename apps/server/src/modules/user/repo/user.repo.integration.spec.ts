@@ -20,7 +20,7 @@ describe('user repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User], ensureIndexes: true })],
 			providers: [UserMikroOrmRepo],
 		}).compile();
 		repo = module.get(UserMikroOrmRepo);
@@ -69,7 +69,6 @@ describe('user repo', () => {
 					'school',
 					'secondarySchools',
 					'source',
-					'sourceOptions',
 					'_id',
 					'ldapDn',
 					'externalId',
@@ -220,7 +219,6 @@ describe('user repo', () => {
 					'birthday',
 					'consent',
 					'source',
-					'sourceOptions',
 					'discoverable',
 				].sort()
 			);
@@ -722,6 +720,36 @@ describe('user repo', () => {
 				expect(result).toContain(userIds[0]);
 				expect(result).toContain(userIds[1]);
 			});
+		});
+	});
+
+	describe('externalId uniqueness', () => {
+		it('should fail to safe the same externalId with the same source', async () => {
+			const externalId = '123';
+			const first = userFactory.build({ externalId, source: 'same' });
+			const second = userFactory.build({ externalId, source: 'same' });
+
+			await expect(() => em.persistAndFlush([first, second])).rejects.toThrow();
+		});
+
+		it('should successfully save the same externalId with a different source', async () => {
+			const externalId = '456';
+			const first = userFactory.build({ externalId, source: 'same' });
+			const second = userFactory.build({ externalId, source: 'different' });
+
+			await em.persistAndFlush([first, second]);
+
+			expect('we made it here').toBeTruthy();
+		});
+
+		it('should successfully save the same externalId twice without a source', async () => {
+			const externalId = '789';
+			const first = userFactory.build({ externalId });
+			const second = userFactory.build({ externalId });
+
+			await em.persistAndFlush([first, second]);
+
+			expect('we made it here').toBeTruthy();
 		});
 	});
 });

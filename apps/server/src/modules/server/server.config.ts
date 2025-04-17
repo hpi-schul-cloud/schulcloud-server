@@ -135,6 +135,7 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
+	ROOM_MEMBER_INFO_URL: string | null;
 }
 
 const config: ServerConfig = {
@@ -321,8 +322,6 @@ const config: ServerConfig = {
 	TSP_SYNC_SCHOOL_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_SCHOOL_DAYS_TO_FETCH') as number,
 	TSP_SYNC_DATA_LIMIT: Configuration.get('TSP_SYNC_DATA_LIMIT') as number,
 	TSP_SYNC_DATA_DAYS_TO_FETCH: Configuration.get('TSP_SYNC_DATA_DAYS_TO_FETCH') as number,
-	TSP_SYNC_MIGRATION_LIMIT: Configuration.get('TSP_SYNC_MIGRATION_LIMIT') as number,
-	FEATURE_TSP_MIGRATION_ENABLED: Configuration.get('FEATURE_TSP_MIGRATION_ENABLED') as boolean,
 	ROCKET_CHAT_URI: Configuration.get('ROCKET_CHAT_URI') as string,
 	ROCKET_CHAT_ADMIN_ID: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
 	ROCKET_CHAT_ADMIN_TOKEN: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
@@ -350,6 +349,10 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	ROOM_MEMBER_INFO_URL:
+		Configuration.get('ROOM_MEMBER_INFO_URL') === null
+			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
+			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
 };
 
 export const serverConfig = (): ServerConfig => config;
