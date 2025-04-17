@@ -344,10 +344,6 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 	}
 
 	public createPath(): string {
-		if (!this.props.storageLocationId || !this.id) {
-			throw new Error(ErrorType.COULD_NOT_CREATE_PATH);
-		}
-
 		const path = [this.props.storageLocationId, this.id].join('/');
 
 		return path;

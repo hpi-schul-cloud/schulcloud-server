@@ -1,3 +1,5 @@
+import crypto from 'crypto';
+import { ObjectId } from 'bson';
 import { PreviewOutputMimeTypes } from '../domain';
 import { fileRecordTestFactory } from '../testing';
 import { PreviewBuilder } from './preview.builder';
@@ -56,6 +58,40 @@ describe('PreviewBuilder', () => {
 			const result = PreviewBuilder.buildPayload(previewFileParams);
 
 			expect(result).toEqual(expectedResponse);
+		});
+	});
+
+	describe('createPreviewNameHash is called', () => {
+		describe('when preview params are set', () => {
+			it('should return hash', () => {
+				const fileRecordId = new ObjectId().toHexString();
+				const width = 100;
+				const outputFormat = PreviewOutputMimeTypes.IMAGE_WEBP;
+				const previewParams = {
+					width,
+					outputFormat,
+				};
+				const fileParamsString = `${fileRecordId}${width}${outputFormat}`;
+				const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
+
+				const result = PreviewBuilder.createPreviewNameHash(fileRecordId, previewParams);
+
+				expect(result).toBe(hash);
+			});
+		});
+
+		describe('when preview params are not set', () => {
+			it('should return hash', () => {
+				const fileRecordId = new ObjectId().toHexString();
+				const fileParamsString = `${fileRecordId}${PreviewOutputMimeTypes.IMAGE_WEBP}`;
+				const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
+
+				const result = PreviewBuilder.createPreviewNameHash(fileRecordId, {
+					outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+				});
+
+				expect(result).toBe(hash);
+			});
 		});
 	});
 });

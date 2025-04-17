@@ -2,7 +2,7 @@ import { GetFile } from '@infra/s3-client';
 import { Readable } from 'stream';
 import { GetFileResponse } from '../domain/interface';
 
-// TODO: Should name testFactory
+// TODO: Should named testFactory
 export class TestHelper {
 	public static createFile = (props?: { contentRange?: string; mimeType?: string }): GetFile => {
 		const text = 'testText';
