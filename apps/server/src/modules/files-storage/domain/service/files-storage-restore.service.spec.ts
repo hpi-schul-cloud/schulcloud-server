@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
-import { FileRecord } from '../file-record.do';
+import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps } from '../file-record.do';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -268,11 +268,24 @@ describe('FilesStorageService restore methods', () => {
 			it('should save the rollback', async () => {
 				const { fileRecords } = setup();
 
+				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
+					const fileRecordProps = fileRecord.getProps();
+					const securityCheckProps = fileRecord.getSecurityCheckProps();
+					const props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps } = {
+						props: { ...fileRecordProps, deletedSince: new Date() },
+						securityCheck: securityCheckProps,
+					};
+					return props;
+				});
+
 				await expect(service.restore(fileRecords)).rejects.toThrow(new Error('bla'));
 
-				expect(fileRecords[0].isMarkedForDelete()).toBe(true);
-				expect(fileRecords[1].isMarkedForDelete()).toBe(true);
-				expect(fileRecords[2].isMarkedForDelete()).toBe(true);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(
+					expectedFileRecordProps.map(
+						(props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }) =>
+							expect.objectContaining(props) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
+					)
+				);
 			});
 		});
 	});

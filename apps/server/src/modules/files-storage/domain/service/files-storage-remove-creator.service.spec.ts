@@ -95,8 +95,6 @@ describe('FilesStorageService delete methods', () => {
 			it('should call repo save with undefined creatorId', async () => {
 				const { fileRecords } = setup();
 
-				await service.removeCreatorIdFromFileRecords(fileRecords);
-
 				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
 					const fileRecordProps = fileRecord.getProps();
 					const securityCheckProps = fileRecord.getSecurityCheckProps();
@@ -106,6 +104,8 @@ describe('FilesStorageService delete methods', () => {
 					};
 					return props;
 				});
+
+				await service.removeCreatorIdFromFileRecords(fileRecords);
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
 					expectedFileRecordProps.map(

@@ -204,10 +204,6 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		return paths;
 	}
 
-	public getSecurityCheck(): FileRecordSecurityCheck {
-		return this.securityCheck;
-	}
-
 	public getSecurityCheckProps(): FileRecordSecurityCheckProps {
 		const securityCheckProps = this.securityCheck.getProps();
 
@@ -252,10 +248,6 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 
 	public unmarkForDelete(): void {
 		this.props.deletedSince = undefined;
-	}
-
-	public isMarkedForDelete(): boolean {
-		return !!this.props.deletedSince;
 	}
 
 	public setName(name: string): void {
