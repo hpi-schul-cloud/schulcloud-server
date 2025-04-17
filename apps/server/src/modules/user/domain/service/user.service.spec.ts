@@ -1214,24 +1214,4 @@ describe('UserService', () => {
 			});
 		});
 	});
-
-	describe('findByTspUids', () => {
-		describe('when looking for users with tspUids', () => {
-			const setup = () => {
-				const user = userDoFactory.build();
-				userDoRepo.findByTspUids.mockResolvedValueOnce([user]);
-
-				return { user };
-			};
-
-			it('should delegate to the userRepo', async () => {
-				const { user } = setup();
-
-				const result = await service.findByTspUids(['tspUid']);
-
-				expect(result).toStrictEqual([user]);
-				expect(userDoRepo.findByTspUids).toHaveBeenCalledTimes(1);
-			});
-		});
-	});
 });
