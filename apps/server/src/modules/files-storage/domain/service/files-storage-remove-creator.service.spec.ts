@@ -8,6 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
+import { FileRecordProps, FileRecordSecurityCheckProps } from '../file-record.do';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -90,17 +91,27 @@ describe('FilesStorageService delete methods', () => {
 				return { fileRecords, creatorId };
 			};
 
+			// TODO: replace test with correct unit step test
 			it('should call repo save with undefined creatorId', async () => {
 				const { fileRecords } = setup();
 
 				await service.removeCreatorIdFromFileRecords(fileRecords);
 
+				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
+					const fileRecordProps = fileRecord.getProps();
+					const securityCheckProps = fileRecord.getSecurityCheckProps();
+					const props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps } = {
+						props: { ...fileRecordProps, creatorId: undefined },
+						securityCheck: securityCheckProps,
+					};
+					return props;
+				});
+
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(
-					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecords[0], creatorId: undefined }),
-						expect.objectContaining({ ...fileRecords[1], creatorId: undefined }),
-						expect.objectContaining({ ...fileRecords[2], creatorId: undefined }),
-					])
+					expectedFileRecordProps.map(
+						(props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }) =>
+							expect.objectContaining(props) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
+					)
 				);
 			});
 

@@ -248,6 +248,10 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		this.props.deletedSince = undefined;
 	}
 
+	public isMarkedForDelete(): boolean {
+		return !!this.props.deletedSince;
+	}
+
 	public setName(name: string): void {
 		if (name.length === 0) {
 			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
@@ -328,7 +332,7 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 	}
 
 	private setSizeInByte(sizeInByte: number, maxSizeInByte: number): void {
-		if (sizeInByte <= 0 && sizeInByte > maxSizeInByte) {
+		if (sizeInByte <= 0 || sizeInByte > maxSizeInByte) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 		this.props.size = sizeInByte;

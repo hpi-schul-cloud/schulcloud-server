@@ -1,20 +1,19 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
-import { FileRecordProps, FileRecordSecurityCheck } from '../domain';
+import { FileRecordProps, ScanStatus } from '../domain';
 import { StorageLocation } from '../domain/interface';
 import { FileRecordEntity } from '../repo/file-record.entity';
+import { fileRecordSecurityCheckEmbeddableFactory } from './file-record-security-check.embeddable.factory';
 
 const yesterday = new Date(Date.now() - 86400000);
 
 class FileRecordEntityFactory extends EntityFactory<FileRecordEntity, FileRecordProps> {
+	public scanStatus: ScanStatus | undefined = undefined;
+
 	public withDeletedSince(date?: Date): this {
 		return this.params({ deletedSince: date ?? yesterday });
 	}
-
-	// public withScanStatus(scanStatus?: ScanStatus): this {
-	// 	return this.params({ securityCheck: { status: scanStatus ?? ScanStatus.VERIFIED } });
-	// }
 }
 
 export const fileRecordEntityFactory = FileRecordEntityFactory.define(FileRecordEntity, ({ sequence }) => {
@@ -23,7 +22,7 @@ export const fileRecordEntityFactory = FileRecordEntityFactory.define(FileRecord
 		size: Math.round(Math.random() * 100000),
 		name: `file-record #${sequence}`,
 		mimeType: 'application/octet-stream',
-		securityCheck: FileRecordSecurityCheck.createWithDefaultProps(),
+		securityCheck: fileRecordSecurityCheckEmbeddableFactory.build(),
 		parentType: FileRecordParentType.Course,
 		parentId: new ObjectId().toHexString(),
 		creatorId: new ObjectId().toHexString(),

@@ -30,7 +30,7 @@ import { ErrorType } from '../error';
 import { FileRecord } from '../file-record.do';
 import { FileRecordFactory, StoreLocationMetadata } from '../file-record.factory';
 import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
-import FileType from 'esbuild/content/file-type-cjs-index'; // TODO: check import
+import FileType from 'file-type-cjs/file-type-cjs-index';
 
 @Injectable()
 export class FilesStorageService {

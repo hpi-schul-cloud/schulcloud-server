@@ -3,7 +3,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { PreviewOutputMimeTypes } from '../../domain';
+import { PreviewOutputMimeTypes } from '../../domain/file-record.do';
 import { StoreLocationMetadata } from '../../domain/file-record.factory';
 import { FileRecordParentType, PreviewWidth, StorageLocation, StorageLocationParams } from '../../domain/interface';
 

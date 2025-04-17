@@ -259,13 +259,11 @@ describe('FilesStorageService upload methods', () => {
 							...expectedFileRecord,
 							mimeType: readableStreamWithFileType.fileType?.mime,
 							size: fileSize,
-							createdAt: expect.any(Date),
-							updatedAt: expect.any(Date),
 							isUploading: undefined,
-							securityCheck: {
-								...expectedSecurityCheck,
-								updatedAt: expect.any(Date),
-							},
+						},
+						securityCheck: {
+							...expectedSecurityCheck,
+							updatedAt: expect.any(Date),
 						},
 					})
 				);
