@@ -35,10 +35,58 @@
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
-					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn|ColumnController_updateColumnTitle"
+					"FILTER": "operationId:BoardController_createBoard|BoardController_getBoardSkeleton|BoardController_createColumn"
 				},
 				"globalProperty": {
-					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse:RenameBodyParams",
+					"models": "CreateBoardBodyParams:CreateBoardResponse:BoardParentType:BoardLayout:BoardResponse:ColumnResponse:CardSkeletonResponse:TimestampsResponse",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"columns-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/columns-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:ColumnController_createCard|ColumnController_updateColumnTitle"
+				},
+				"globalProperty": {
+					"models": "CreateCardBodyParams:CardResponse:RenameBodyParams",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"cards-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json",
+				"output": "./apps/server/src/infra/cards-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CardController_updateCardTitle|CardController_createElement|ElementController_updateElement|CardController_getCards"
+				},
+				"globalProperty": {
+					"models": "ApiValidationError:CardController_createElement_201_response:ElementController_updateElement_200_response:BoardSubmissionController_createElement_201_response:LessonContentResponse_content:BoardElementResponse_content:ExternalToolResponse_config:ExternalToolUpdateParams_config:CardResponse_elements_inner:UpdateElementContentBodyParams_data:SubmissionItemResponse_elements_inner:MediaLineResponse_elements_inner:CardListResponse:CardResponseElementsInner:CardResponse:CollaborativeTextEditorElementResponse:ContentElementType:AnyContentElementResponse:CreateContentElementBodyParams:DeletedElementContent:DeletedElementResponse:DrawingElementContent:DrawingElementResponse:ExternalToolElementContent:ExternalToolElementResponse:FileElementContent:FileElementResponse:LinkElementContent:LinkElementResponse:MoveCardBodyParams:RenameBodyParams:RichTextElementContent:InputFormat:RichTextElementResponse:SubmissionContainerElementContent:SubmissionContainerElementResponse:TimestampsResponse:VideoConferenceElementContent:FileFolderElementResponse:VideoConferenceElementResponse:VisibilitySettingsResponse:ElementController_updateElement_200_response:UpdateElementContentBodyParams:UpdateElementContentBodyParamsData:DrawingElementContentBody:ExternalToolElementContentBody:FileElementContentBody:LinkElementContentBody:RichTextElementContentBody:SubmissionContainerElementContentBody:VideoConferenceElementContentBody:LinkContentBody:RichTextContentBody:AnyElementContentBody:DrawingContentBody:ExternalToolContentBody:FileContentBody:SubmissionContainerContentBody:VideoConferenceContentBody",
 					"apis": "",
 					"supportingFiles": ""
 				},
