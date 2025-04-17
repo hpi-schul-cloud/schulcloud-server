@@ -1,3 +1,5 @@
+import { ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
 import { ExternalTool, ExternalToolService, Oauth2ToolConfig } from '@modules/tool';
@@ -13,6 +15,7 @@ describe(ExternalToolsSeedDataService.name, () => {
 	let configService: DeepMocked<ConfigService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,6 +33,10 @@ describe(ExternalToolsSeedDataService.name, () => {
 					provide: OauthProviderService,
 					useValue: createMock<OauthProviderService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -37,6 +44,7 @@ describe(ExternalToolsSeedDataService.name, () => {
 		configService = module.get(ConfigService);
 		externalToolService = module.get(ExternalToolService);
 		oauthProviderService = module.get(OauthProviderService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -57,10 +65,12 @@ describe(ExternalToolsSeedDataService.name, () => {
 				configService.get.mockReturnValueOnce('Nextcloud_secret'); // NEXTCLOUD_CLIENT_SECRET
 				configService.get.mockReturnValueOnce('openid'); // NEXTCLOUD_SCOPES
 
-				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(new Error('Client not found'));
+				const error = new Error('Client not found');
+				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(error);
 
 				return {
 					clientId,
+					error,
 				};
 			};
 
@@ -70,6 +80,14 @@ describe(ExternalToolsSeedDataService.name, () => {
 				await service.import();
 
 				expect(oauthProviderService.deleteOAuth2Client).toHaveBeenCalledWith(clientId);
+			});
+
+			it('should should log an error if no client had to be deleted', async () => {
+				const { error } = setup();
+
+				await service.import();
+
+				expect(logger.debug).toHaveBeenCalledWith(new ErrorLoggable(error));
 			});
 
 			it('should import nextcloud', async () => {

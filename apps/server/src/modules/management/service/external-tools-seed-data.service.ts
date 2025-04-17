@@ -1,3 +1,5 @@
+import { ErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
 import { ExternalTool, ExternalToolService, Oauth2ToolConfig } from '@modules/tool';
 import { TokenEndpointAuthMethod } from '@modules/tool/common/enum';
@@ -9,7 +11,8 @@ export class ExternalToolsSeedDataService {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly oauthProviderService: OauthProviderService
+		private readonly oauthProviderService: OauthProviderService,
+		private readonly logger: Logger
 	) {}
 
 	public async import(): Promise<number> {
@@ -53,7 +56,7 @@ export class ExternalToolsSeedDataService {
 						try {
 							await this.oauthProviderService.deleteOAuth2Client(externalTool.config.clientId);
 						} catch (e) {
-							// Ignore error if client does not exist
+							this.logger.debug(new ErrorLoggable(e));
 						}
 					}
 
