@@ -2,17 +2,17 @@ import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../c
 import { ExternalToolConfig } from './external-tool-config.do';
 
 export class Lti11ToolConfig extends ExternalToolConfig {
-	key: string;
+	public key: string;
 
-	secret: string;
+	public secret: string;
 
-	lti_message_type: LtiMessageType;
+	public lti_message_type: LtiMessageType;
 
-	privacy_permission: LtiPrivacyPermission;
+	public privacy_permission: LtiPrivacyPermission;
 
-	launch_presentation_locale: string;
+	public launch_presentation_locale: string;
 
-	constructor(props: Lti11ToolConfig) {
+	constructor(props: Omit<Lti11ToolConfig, 'type'>) {
 		super({
 			type: ToolConfigType.LTI11,
 			baseUrl: props.baseUrl,

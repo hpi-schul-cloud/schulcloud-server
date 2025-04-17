@@ -78,14 +78,12 @@ export class ExternalToolRepoMapper {
 
 	public static mapBasicToolConfigToDO(lti11Config: BasicToolConfigEntity): BasicToolConfig {
 		return new BasicToolConfig({
-			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 		});
 	}
 
 	public static mapOauth2ConfigToDO(oauth2Config: Oauth2ToolConfigEntity): Oauth2ToolConfig {
 		return new Oauth2ToolConfig({
-			type: oauth2Config.type,
 			baseUrl: oauth2Config.baseUrl,
 			clientId: oauth2Config.clientId,
 			skipConsent: oauth2Config.skipConsent,
@@ -94,7 +92,6 @@ export class ExternalToolRepoMapper {
 
 	public static mapLti11ToolConfigToDO(lti11Config: Lti11ToolConfigEntity): Lti11ToolConfig {
 		return new Lti11ToolConfig({
-			type: lti11Config.type,
 			baseUrl: lti11Config.baseUrl,
 			key: lti11Config.key,
 			secret: lti11Config.secret,

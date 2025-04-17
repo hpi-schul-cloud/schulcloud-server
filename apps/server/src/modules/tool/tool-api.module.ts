@@ -23,6 +23,8 @@ import { ToolSchoolController } from './school-external-tool/controller';
 import { SchoolExternalToolUc } from './school-external-tool/uc';
 import { ToolLaunchController } from './tool-launch/controller/tool-launch.controller';
 import { ToolLaunchUc } from './tool-launch/uc';
+import { ExternalToolUtilizationUc, SchoolExternalToolUtilizationUc } from './tool-utilization';
+import { ExternalToolUtilizationModule } from './tool-utilization/tool-utilization.module';
 import { ToolModule } from './tool.module';
 
 @Module({
@@ -40,6 +42,7 @@ import { ToolModule } from './tool.module';
 		UserLicenseModule,
 		SchoolLicenseModule,
 		EncryptionModule,
+		ExternalToolUtilizationModule,
 	],
 	controllers: [
 		ToolLaunchController,
@@ -52,11 +55,13 @@ import { ToolModule } from './tool.module';
 	],
 	providers: [
 		ExternalToolUc,
+		ExternalToolUtilizationUc,
 		ExternalToolConfigurationUc,
 		ExternalToolConfigurationService,
 		ExternalToolRequestMapper,
 		ExternalToolResponseMapper,
 		SchoolExternalToolUc,
+		SchoolExternalToolUtilizationUc,
 		ContextExternalToolUc,
 		ToolLaunchUc,
 		ToolReferenceUc,

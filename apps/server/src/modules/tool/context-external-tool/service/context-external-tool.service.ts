@@ -14,8 +14,8 @@ import {
 	CopyContextExternalToolRejectData,
 	RestrictedContextMismatchLoggableException,
 } from '../domain';
+import { ContextExternalToolRepo, ContextExternalToolType } from '../repo/mikro-orm';
 import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { ContextExternalToolRepo } from '../repo/mikro-orm';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -64,6 +64,16 @@ export class ContextExternalToolService {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			context: contextRef,
 		});
+
+		return contextExternalTools;
+	}
+
+	public async findBySchoolToolIdsAndContextType(
+		schoolExternalToolIds: string[],
+		contextType: ContextExternalToolType
+	): Promise<ContextExternalTool[]> {
+		const contextExternalTools: ContextExternalTool[] =
+			await this.contextExternalToolRepo.findBySchoolToolIdsAndContextType(schoolExternalToolIds, contextType);
 
 		return contextExternalTools;
 	}

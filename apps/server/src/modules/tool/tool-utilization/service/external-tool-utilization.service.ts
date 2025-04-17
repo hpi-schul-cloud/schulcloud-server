@@ -1,25 +1,27 @@
 import { BoardCommonToolService } from '@modules/board';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { ToolContextType } from '../../common/enum';
+import { ToolContextMapper } from '../../common/mapper/tool-context.mapper';
+import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolRepo, ContextExternalToolType } from '../../context-external-tool/repo';
-import { ExternalToolUtilization } from '../../external-tool/domain';
-import { SchoolExternalTool, SchoolExternalToolUtilization } from '../../school-external-tool/domain';
-import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
-import { ToolContextType } from '../enum';
-import { ToolContextMapper } from '../mapper/tool-context.mapper';
+import { ContextExternalToolType } from '../../context-external-tool/repo';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalToolUtilization, SchoolExternalToolUtilization } from '../domain';
 
 @Injectable()
-export class CommonToolUtilizationService {
+export class ExternalToolUtilizationService {
 	constructor(
-		private readonly schoolToolRepo: SchoolExternalToolRepo,
-		private readonly contextToolRepo: ContextExternalToolRepo,
-		@Inject(forwardRef(() => BoardCommonToolService))
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly boardCommonToolService: BoardCommonToolService
 	) {}
 
 	public async getUtilizationForExternalTool(toolId: EntityId): Promise<ExternalToolUtilization> {
-		const schoolExternalTools: SchoolExternalTool[] = await this.schoolToolRepo.findByExternalToolId(toolId);
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
+			toolId,
+		});
 
 		const schoolExternalToolIds: string[] = schoolExternalTools.map(
 			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
@@ -58,7 +60,7 @@ export class CommonToolUtilizationService {
 					const type: ContextExternalToolType = ToolContextMapper.contextMapping[contextType];
 
 					const contextExternalTools: ContextExternalTool[] =
-						await this.contextToolRepo.findBySchoolToolIdsAndContextType(schoolExternalToolIds, type);
+						await this.contextExternalToolService.findBySchoolToolIdsAndContextType(schoolExternalToolIds, type);
 
 					const count: number = await this.countUsageForType(contextExternalTools, type);
 

@@ -32,10 +32,12 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, ExternalToolUtilization } from '../domain';
+import { ExternalToolUtilizationUc } from '../../tool-utilization';
+import { ExternalToolUtilization } from '../../tool-utilization/domain';
+import { ExternalTool } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 
-import { ExternalToolUtilizationMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
+import { ExternalToolRequestMapper, ExternalToolResponseMapper, ExternalToolUtilizationMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
@@ -43,11 +45,11 @@ import {
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
 	ExternalToolImportResultListResponse,
-	ExternalToolUtilizationResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
+	ExternalToolUtilizationResponse,
 	SortExternalToolParams,
 } from './dto';
 
@@ -57,6 +59,7 @@ import {
 export class ToolController {
 	constructor(
 		private readonly externalToolUc: ExternalToolUc,
+		private readonly externalToolUtilizationUc: ExternalToolUtilizationUc,
 		private readonly externalToolDOMapper: ExternalToolRequestMapper,
 		private readonly logger: LegacyLogger,
 		private readonly externalToolLogoService: ExternalToolLogoService
@@ -221,10 +224,8 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<ExternalToolUtilizationResponse> {
-		const externalToolUtilization: ExternalToolUtilization = await this.externalToolUc.getUtilizationForExternalTool(
-			currentUser.userId,
-			params.externalToolId
-		);
+		const externalToolUtilization: ExternalToolUtilization =
+			await this.externalToolUtilizationUc.getUtilizationForExternalTool(currentUser.userId, params.externalToolId);
 
 		const mapped: ExternalToolUtilizationResponse =
 			ExternalToolUtilizationMapper.mapToExternalToolUtilizationResponse(externalToolUtilization);

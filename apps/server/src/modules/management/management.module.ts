@@ -6,15 +6,17 @@ import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
 import { KeycloakConfigurationModule } from '@infra/identity-management/keycloak-configuration/keycloak-configuration.module';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
+import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { serverConfig } from '@modules/server';
 import { SystemModule } from '@modules/system';
+import { ExternalToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { DatabaseManagementConsole } from './console/database-management.console';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { BsonConverter } from './converter/bson.converter';
-import { MediaSourcesSeedDataService, SystemsSeedDataService } from './service';
+import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from './service';
 import { DatabaseManagementService } from './service/database-management.service';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
@@ -26,6 +28,8 @@ const baseImports = [
 	FeathersModule,
 	MediaSourceModule,
 	SystemModule,
+	ExternalToolModule,
+	OauthProviderServiceModule,
 ];
 
 const imports = (Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean)
@@ -43,6 +47,7 @@ const providers = [
 	// seed data services
 	MediaSourcesSeedDataService,
 	SystemsSeedDataService,
+	ExternalToolsSeedDataService,
 ];
 
 const controllers = [DatabaseManagementController];

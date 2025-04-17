@@ -10,13 +10,11 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	ExternalToolConfig,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolUtilization,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
@@ -39,7 +37,6 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolUtilizationService: CommonToolUtilizationService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
@@ -208,23 +205,6 @@ export class ExternalToolUc {
 		await this.externalToolImageService.deleteAllFiles(externalToolId);
 
 		await this.externalToolService.deleteExternalTool(externalTool);
-	}
-
-	public async getUtilizationForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolUtilization> {
-		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
-
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(
-			user,
-			externalTool,
-			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
-		);
-
-		const metadata: ExternalToolUtilization = await this.commonToolUtilizationService.getUtilizationForExternalTool(
-			toolId
-		);
-
-		return metadata;
 	}
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {

@@ -172,7 +172,6 @@ describe(ExternalToolRepo.name, () => {
 
 		it('should save an basic tool correctly', async () => {
 			const config: BasicToolConfig = new BasicToolConfig({
-				type: ToolConfigType.BASIC,
 				baseUrl: 'baseUrl',
 			});
 			const { domainObject } = setupDO(config);
@@ -184,7 +183,6 @@ describe(ExternalToolRepo.name, () => {
 
 		it('should save an oauth2 tool correctly', async () => {
 			const config: Oauth2ToolConfig = new Oauth2ToolConfig({
-				type: ToolConfigType.BASIC,
 				baseUrl: 'baseUrl',
 				clientId: 'clientId',
 				skipConsent: true,
@@ -198,7 +196,6 @@ describe(ExternalToolRepo.name, () => {
 
 		it('should save an lti11 tool correctly', async () => {
 			const config: Lti11ToolConfig = new Lti11ToolConfig({
-				type: ToolConfigType.BASIC,
 				baseUrl: 'baseUrl',
 				secret: 'secret',
 				key: 'key',

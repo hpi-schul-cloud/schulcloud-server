@@ -10,10 +10,10 @@ import { providerOauthClientFactory } from '../../../oauth-provider/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalToolRepo } from '../repo';
 import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '../testing';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolRepo } from '../repo';
 
 describe(ExternalToolService.name, () => {
 	let module: TestingModule;
@@ -346,10 +346,16 @@ describe(ExternalToolService.name, () => {
 
 	describe('deleteExternalTool', () => {
 		const setup = () => {
-			const externalTool = externalToolFactory.build();
+			const clientId = 'clientId';
+			const externalTool = externalToolFactory
+				.withOauth2Config({
+					clientId,
+				})
+				.build();
 
 			return {
 				externalTool,
+				clientId,
 			};
 		};
 
@@ -360,6 +366,16 @@ describe(ExternalToolService.name, () => {
 				await service.deleteExternalTool(externalTool);
 
 				expect(commonToolDeleteService.deleteExternalTool).toHaveBeenCalledWith(externalTool);
+			});
+		});
+
+		describe('when deleting an oauth2 external tool', () => {
+			it('should delete the oauth2 client', async () => {
+				const { externalTool, clientId } = setup();
+
+				await service.deleteExternalTool(externalTool);
+
+				expect(oauthProviderService.deleteOAuth2Client).toHaveBeenCalledWith(clientId);
 			});
 		});
 	});

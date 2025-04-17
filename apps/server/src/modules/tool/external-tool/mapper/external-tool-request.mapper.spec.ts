@@ -180,7 +180,6 @@ describe('ExternalToolRequestMapper', () => {
 					secret: 'mockSecret',
 					key: 'mockKey',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
 					launch_presentation_locale: 'de-DE',
 				});

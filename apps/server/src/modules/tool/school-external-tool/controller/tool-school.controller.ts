@@ -15,7 +15,9 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common/error';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalTool, SchoolExternalToolUtilization, SchoolExternalToolProps } from '../domain';
+import { SchoolExternalToolUtilization } from '../../tool-utilization/domain';
+import { SchoolExternalToolUtilizationUc } from '../../tool-utilization/uc/school-external-tool-utilization.uc';
+import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
 import {
 	SchoolExternalToolMetadataMapper,
 	SchoolExternalToolRequestMapper,
@@ -35,7 +37,11 @@ import {
 @JwtAuthentication()
 @Controller('tools/school-external-tools')
 export class ToolSchoolController {
-	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc, private readonly logger: LegacyLogger) {}
+	constructor(
+		private readonly schoolExternalToolUc: SchoolExternalToolUc,
+		private readonly schoolExternalToolUtilizationUc: SchoolExternalToolUtilizationUc,
+		private readonly logger: LegacyLogger
+	) {}
 
 	@Get()
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
@@ -157,7 +163,7 @@ export class ToolSchoolController {
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolMetadataResponse> {
 		const schoolExternalToolUtilization: SchoolExternalToolUtilization =
-			await this.schoolExternalToolUc.getUtilizationForSchoolExternalTool(
+			await this.schoolExternalToolUtilizationUc.getUtilizationForSchoolExternalTool(
 				currentUser.userId,
 				params.schoolExternalToolId
 			);

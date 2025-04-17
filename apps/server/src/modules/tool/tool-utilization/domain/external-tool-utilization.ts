@@ -1,4 +1,4 @@
-import { ContextExternalToolType } from '../../context-external-tool/repo/mikro-orm/context-external-tool-type.enum';
+import { ContextExternalToolType } from '../../context-external-tool/repo';
 
 export class ExternalToolUtilization {
 	public schoolExternalToolCount: number;

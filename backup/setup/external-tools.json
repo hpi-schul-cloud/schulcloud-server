@@ -253,30 +253,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "65f958bdd8b35469f14032b1"
-		},
-		"config_type": "oauth2",
-		"name": "nextcloud",
-		"config_baseUrl": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"config_clientId": "yourLocalFancyId",
-		"config_skipConsent": true,
-		"createdAt": {
-			"$date": "2024-03-19T09:19:57.984Z"
-		},
-		"isHidden": true,
-		"logoUrl": "",
-		"openNewTab": true,
-		"parameters": [],
-		"updatedAt": {
-			"$date": "2024-03-19T09:19:57.984Z"
-		},
-		"url": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"isDeactivated": false,
-		"isPreferred": false,
-		"restrictToContexts": []
-	},
-	{
-		"_id": {
 			"$oid": "65fad93bbe8ce15df1279d9b"
 		},
 		"createdAt": {
