@@ -2,16 +2,10 @@ import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
 import { AntivirusService } from '@infra/antivirus';
 import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
-import {
-	BadRequestException,
-	ConflictException,
-	Inject,
-	Injectable,
-	NotAcceptableException,
-	NotFoundException,
-} from '@nestjs/common';
+import { ConflictException, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import {
 	CopyFileResponse,
@@ -30,7 +24,6 @@ import { ErrorType } from '../error';
 import { FileRecord } from '../file-record.do';
 import { FileRecordFactory, StoreLocationMetadata } from '../file-record.factory';
 import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
-import FileType from 'file-type-cjs/file-type-cjs-index';
 
 @Injectable()
 export class FilesStorageService {
@@ -212,12 +205,6 @@ export class FilesStorageService {
 		const maxFileSize = this.configService.get('MAX_FILE_SIZE', { infer: true });
 
 		return maxFileSize;
-	}
-
-	private throwErrorIfFileIsTooBig(fileSize: number): void {
-		if (fileSize > this.getMaxFileSize()) {
-			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
-		}
 	}
 
 	// update
