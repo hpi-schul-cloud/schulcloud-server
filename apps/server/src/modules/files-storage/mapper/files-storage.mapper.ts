@@ -7,9 +7,9 @@ import {
 	FileRecordParams,
 	FileRecordResponse,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord } from '../entity';
-import { FileRecordParentType, GetFileResponse, StorageLocation } from '../interface';
+} from '../api/dto';
+import { FileRecord } from '../domain';
+import { FileRecordParentType, GetFileResponse, StorageLocation } from '../domain/interface';
 
 export class FilesStorageMapper {
 	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizationBodyParamsReferenceType> = new Map([
@@ -55,11 +55,12 @@ export class FilesStorageMapper {
 	}
 
 	public static mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {
+		const props = fileRecord.getProps();
 		const fileRecordParams = plainToClass(FileRecordParams, {
-			storageLocationId: fileRecord.storageLocationId,
-			storageLocation: fileRecord.storageLocation,
-			parentId: fileRecord.parentId,
-			parentType: fileRecord.parentType,
+			storageLocationId: props.storageLocationId,
+			storageLocation: props.storageLocation,
+			parentId: props.parentId,
+			parentType: props.parentType,
 		});
 
 		return fileRecordParams;

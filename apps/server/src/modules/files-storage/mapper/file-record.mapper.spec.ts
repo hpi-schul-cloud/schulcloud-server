@@ -1,24 +1,19 @@
-import { setupEntities } from '@testing/database';
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../controller/dto';
-import { FileRecord, ScanStatus } from '../entity';
-import { fileRecordFactory } from '../testing';
+import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../api/dto';
+import { ScanStatus } from '../domain';
+import { fileRecordTestFactory } from '../testing';
 import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
-	beforeAll(async () => {
-		await setupEntities([FileRecord]);
-	});
-
 	describe('mapToFileRecordResponse()', () => {
 		it('should return FileRecordResponse DO', () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordTestFactory().build();
 			const result = FileRecordMapper.mapToFileRecordResponse(fileRecord);
 			expect(result).toEqual(
 				expect.objectContaining({
 					creatorId: expect.any(String),
 					deletedSince: undefined,
 					id: expect.any(String),
-					name: 'file-record #1',
+					name: 'file-record-name #0',
 					parentId: expect.any(String),
 					parentType: 'courses',
 					securityCheckStatus: 'pending',
@@ -31,12 +26,12 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordListResponse()', () => {
 		it('should return instance of FileRecordListResponse', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = fileRecordTestFactory().buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 			expect(result).toBeInstanceOf(FileRecordListResponse);
 		});
 		it('should contains props [data, total, skip, limit]', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = fileRecordTestFactory().buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -48,7 +43,7 @@ describe('FilesStorageMapper', () => {
 			);
 		});
 		it('should contains instances of FileRecordResponse', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = fileRecordTestFactory().buildList(3);
 			const result = FileRecordMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
 			expect(result.data).toBeInstanceOf(Array);

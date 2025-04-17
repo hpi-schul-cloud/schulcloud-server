@@ -5,9 +5,9 @@ import { PreviewGeneratorProducerModule } from '@infra/preview-generator';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { Module } from '@nestjs/common';
+import { FILE_RECORD_REPO, FilesStorageService, PreviewService } from './domain';
 import { s3Config } from './files-storage.config';
-import { FileRecordRepo } from './repo';
-import { FilesStorageService, PreviewService } from './service';
+import { FileRecordMikroOrmRepo } from './repo';
 
 const imports = [
 	LoggerModule,
@@ -22,7 +22,11 @@ const imports = [
 	S3ClientModule.register([s3Config]),
 	PreviewGeneratorProducerModule,
 ];
-const providers = [FilesStorageService, PreviewService, FileRecordRepo];
+const providers = [
+	FilesStorageService,
+	PreviewService,
+	{ provide: FILE_RECORD_REPO, useClass: FileRecordMikroOrmRepo },
+];
 
 @Module({
 	imports: [...imports, RabbitMQWrapperModule],

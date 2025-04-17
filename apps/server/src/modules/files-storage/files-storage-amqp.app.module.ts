@@ -6,7 +6,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { FilesStorageConsumer } from './controller';
+import { FilesStorageConsumer } from './api';
 import { config } from './files-storage.config';
 import { ENTITIES } from './files-storage.entity.imports';
 import { FilesStorageModule } from './files-storage.module';

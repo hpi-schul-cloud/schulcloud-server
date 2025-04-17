@@ -1,23 +1,18 @@
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
-import { setupEntities } from '@testing/database';
 import {
 	DownloadFileParams,
 	FileRecordListResponse,
 	FileRecordParams,
 	FileRecordResponse,
 	SingleFileParams,
-} from '../controller/dto';
-import { FileRecord, PreviewStatus } from '../entity';
-import { FileRecordParentType } from '../interface';
-import { fileRecordFactory } from '../testing';
+} from '../api/dto';
+import { PreviewStatus } from '../domain';
+import { FileRecordParentType } from '../domain/interface';
+import { fileRecordTestFactory } from '../testing';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
-	beforeAll(async () => {
-		await setupEntities([FileRecord]);
-	});
-
 	describe('mapToAllowedAuthorizationEntityType()', () => {
 		it('should return allowed type equal Course', () => {
 			const result = FilesStorageMapper.mapToAllowedAuthorizationEntityType(FileRecordParentType.Course);
@@ -59,10 +54,10 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToSingleFileParams is called', () => {
 		const setup = () => {
-			const { id: fileRecordId, name: fileName } = fileRecordFactory.buildWithId();
-			const downloadFileParams: DownloadFileParams = { fileRecordId, fileName };
+			const fileRecord = fileRecordTestFactory().build();
+			const downloadFileParams: DownloadFileParams = { fileRecordId: fileRecord.id, fileName: fileRecord.getName() };
 
-			return { downloadFileParams, fileRecordId };
+			return { downloadFileParams, fileRecordId: fileRecord.id };
 		};
 
 		it('should return single file params', () => {
@@ -77,7 +72,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapFileRecordToFileRecordParams is called', () => {
 		const setup = () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordTestFactory().build();
 
 			return {
 				fileRecord,
@@ -94,38 +89,41 @@ describe('FilesStorageMapper', () => {
 
 		it('should return correct mapped values', () => {
 			const { fileRecord } = setup();
+			const parentInfo = fileRecord.getParentInfo();
 
 			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 
 			expect(result).toEqual({
-				storageLocationId: fileRecord.storageLocationId,
-				storageLocation: fileRecord.storageLocation,
-				parentId: fileRecord.parentId,
-				parentType: fileRecord.parentType,
+				storageLocationId: parentInfo.storageLocationId,
+				storageLocation: parentInfo.storageLocation,
+				parentId: parentInfo.parentId,
+				parentType: parentInfo.parentType,
 			});
 		});
 	});
 
 	describe('mapToFileRecordResponse is called', () => {
 		it('should return FileRecordResponse DO', () => {
-			const fileRecord = fileRecordFactory.buildWithId();
+			const fileRecord = fileRecordTestFactory().build();
+			const props = fileRecord.getProps();
+			const securityCheckProps = fileRecord.getSecurityCheckProps();
 
 			const result = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
 
 			const expectedFileRecordResponse: FileRecordResponse = {
-				id: fileRecord.id,
-				name: fileRecord.name,
+				id: props.id,
+				name: props.name,
 				url: expect.any(String),
-				size: fileRecord.size,
-				securityCheckStatus: fileRecord.securityCheck.status,
-				parentId: fileRecord.parentId,
-				creatorId: fileRecord.creatorId,
-				mimeType: fileRecord.mimeType,
-				parentType: fileRecord.parentType,
-				deletedSince: fileRecord.deletedSince,
+				size: props.size,
+				securityCheckStatus: securityCheckProps.status,
+				parentId: props.parentId,
+				creatorId: props.creatorId,
+				mimeType: props.mimeType,
+				parentType: props.parentType,
+				deletedSince: props.deletedSince,
 				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
-				createdAt: fileRecord.createdAt,
-				updatedAt: fileRecord.updatedAt,
+				createdAt: props.createdAt,
+				updatedAt: props.updatedAt,
 			};
 
 			expect(result).toEqual(expectedFileRecordResponse);
@@ -134,7 +132,7 @@ describe('FilesStorageMapper', () => {
 
 	describe('mapToFileRecordListResponse is called', () => {
 		it('should return instance of FileRecordListResponse', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = fileRecordTestFactory().buildList(3);
 
 			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
@@ -142,7 +140,7 @@ describe('FilesStorageMapper', () => {
 		});
 
 		it('should contains props [data, total, skip, limit]', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = fileRecordTestFactory().buildList(3);
 
 			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length, 0, 5);
 
@@ -157,7 +155,7 @@ describe('FilesStorageMapper', () => {
 		});
 
 		it('should contains instances of FileRecordResponse', () => {
-			const fileRecords = fileRecordFactory.buildList(3);
+			const fileRecords = fileRecordTestFactory().buildList(3);
 
 			const result = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 

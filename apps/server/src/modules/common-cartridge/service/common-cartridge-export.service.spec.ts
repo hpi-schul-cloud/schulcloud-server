@@ -6,7 +6,7 @@ import { BoardsClientAdapter, BoardResponse } from '@infra/boards-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { faker } from '@faker-js/faker';
-import { FileRecordParentType } from '@modules/files-storage/interface';
+import { FileRecordParentType } from '@modules/files-storage/domain/interface';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';

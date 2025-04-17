@@ -1,8 +1,9 @@
+import crypto from 'crypto';
 import { PreviewFileOptions } from '@infra/preview-generator';
-import { PreviewParams } from '../controller/dto';
-import { FileRecord } from '../entity';
-import { createPath, createPreviewFilePath, createPreviewNameHash, getFormat } from '../helper';
-import { PreviewFileParams } from '../interface';
+import { PreviewParams } from '../api/dto';
+import { FileRecord } from '../domain';
+import { PreviewFileParams } from '../domain/interface';
+import { EntityId } from '@shared/domain/types';
 
 export class PreviewBuilder {
 	public static buildParams(
@@ -10,12 +11,12 @@ export class PreviewBuilder {
 		previewParams: PreviewParams,
 		bytesRange: string | undefined
 	): PreviewFileParams {
-		const { storageLocationId, id, mimeType } = fileRecord;
-		const originFilePath = createPath(storageLocationId, id);
-		const format = getFormat(previewParams.outputFormat ?? mimeType);
+		const { id, mimeType } = fileRecord;
+		const originFilePath = fileRecord.createPath();
+		const format = FileRecord.getFormat(previewParams.outputFormat ?? mimeType);
 
-		const hash = createPreviewNameHash(id, previewParams);
-		const previewFilePath = createPreviewFilePath(storageLocationId, hash, id);
+		const hash = PreviewBuilder.createPreviewNameHash(id, previewParams);
+		const previewFilePath = fileRecord.createPreviewFilePath(hash);
 
 		const previewFileParams = {
 			fileRecord,
@@ -43,5 +44,14 @@ export class PreviewBuilder {
 		};
 
 		return payload;
+	}
+
+	public static createPreviewNameHash(fileRecordId: EntityId, previewParams: PreviewParams): string {
+		const width = previewParams.width ?? '';
+		const format = previewParams.outputFormat ?? '';
+		const fileParamsString = `${fileRecordId}${width}${format}`;
+		const hash = crypto.createHash('md5').update(fileParamsString).digest('hex');
+
+		return hash;
 	}
 }
