@@ -140,47 +140,88 @@ describe(DeletionRequestUc.name, () => {
 				});
 
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
-				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
+				deletionRequestService.findByIds.mockResolvedValueOnce([deletionRequest]);
 
 				return { deletionRequest };
 			};
 
-			it('should call deletionRequestService.findAllItemsToExecute with default limit', async () => {
-				setup();
+			it('should call deletionRequestService.findAllItemsToExecute', async () => {
+				const { deletionRequest } = setup();
 
-				await uc.executeAllDeletionRequests();
+				await uc.executeDeletionRequests([deletionRequest.id]);
 
-				expect(deletionRequestService.findAllItemsToExecute.mock.calls).toEqual([
-					[2, undefined],
-					[2, undefined],
-				]);
-			});
-
-			it('should call deletionRequestService.findAllItemsToExecute with given limit', async () => {
-				setup();
-
-				await uc.executeAllDeletionRequests(10);
-
-				expect(deletionRequestService.findAllItemsToExecute.mock.calls).toEqual([
-					[10, undefined],
-					[10, undefined],
-				]);
-			});
-
-			it('should call deletionRequestService.findAllItemsToExecute with getFailed true', async () => {
-				setup();
-
-				await uc.executeAllDeletionRequests(undefined, true);
-
-				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(2, true);
+				expect(deletionRequestService.findByIds).toHaveBeenCalledWith([deletionRequest.id]);
 			});
 
 			it('should call deletionExecutionService.executeDeletionRequest with the deletionRequest', async () => {
 				const { deletionRequest } = setup();
 
-				await uc.executeAllDeletionRequests();
+				await uc.executeDeletionRequests([deletionRequest.id]);
 
 				expect(deletionExecutionService.executeDeletionRequest).toHaveBeenCalledWith(deletionRequest);
+			});
+		});
+
+		describe('when deletionRequests to execute do not exist', () => {
+			it('should not call deletionRequestService.findAllItemsToExecute', async () => {
+				deletionRequestService.findByIds.mockResolvedValueOnce([]);
+
+				await uc.executeDeletionRequests([new ObjectId().toHexString()]);
+
+				expect(deletionExecutionService.executeDeletionRequest).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('findAllItemsToExecute', () => {
+		describe('when deletionRequests to execute exists', () => {
+			const setup = () => {
+				const deletionRequest = deletionRequestFactory.build();
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequest]);
+
+				return { deletionRequest };
+			};
+
+			describe('with params', () => {
+				it('should call deletionRequestService.findAllItemsToExecute with default limit', async () => {
+					setup();
+
+					await uc.findAllItemsToExecute();
+
+					expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(2, undefined);
+				});
+
+				it('should call deletionRequestService.findAllItemsToExecute with given limit', async () => {
+					setup();
+
+					await uc.findAllItemsToExecute(10);
+
+					expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(10, undefined);
+				});
+
+				it('should call deletionRequestService.findAllItemsToExecute with getFailed true', async () => {
+					setup();
+
+					await uc.findAllItemsToExecute(undefined, true);
+
+					expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(2, true);
+				});
+			});
+
+			it('should call deletionRequestService.findAllItemsToExecute', async () => {
+				setup();
+
+				await uc.findAllItemsToExecute();
+
+				expect(deletionRequestService.findAllItemsToExecute).toHaveBeenCalledWith(2, undefined);
+			});
+
+			it('should return the deletionRequestIds', async () => {
+				const { deletionRequest } = setup();
+
+				const result = await uc.findAllItemsToExecute();
+
+				expect(result).toEqual([deletionRequest.id]);
 			});
 		});
 	});

@@ -30,7 +30,8 @@ export class DeletionClient {
 		try {
 			let deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
 			while (deletionRequestIds.length > 0) {
-				await this.postDeletionExecutionRequest(deletionRequestIds);
+				const response = await this.postDeletionExecutionRequest(deletionRequestIds);
+				this.checkResponseStatusCode(response, HttpStatusCode.NoContent);
 				deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
 			}
 		} catch (err) {

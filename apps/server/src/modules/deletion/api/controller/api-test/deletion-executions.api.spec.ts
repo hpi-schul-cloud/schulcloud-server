@@ -3,11 +3,16 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { DeletionRequestEntity } from '../../../repo/entity';
 
 const baseRouteName = '/deletionExecutions';
 
 describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
+	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
@@ -21,19 +26,49 @@ describe(`deletionExecution (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
+		em = module.get(EntityManager);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
+	afterEach(async () => {
+		await cleanupCollections(em);
+	});
+
 	describe('executeDeletions', () => {
 		describe('when execute deletionRequests with default limit', () => {
-			it('should return status 204', async () => {
+			const setup = async () => {
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
-				const response = await testApiClient.post('');
+				const deletionRequest = deletionRequestEntityFactory.build();
+
+				await em.persistAndFlush(deletionRequest);
+				em.clear();
+
+				return { deletionRequest };
+			};
+
+			it('should return status 204', async () => {
+				const { deletionRequest } = await setup();
+
+				const response = await testApiClient.post('', {
+					ids: [deletionRequest.id],
+				});
 
 				expect(response.status).toEqual(204);
+			}, 20000);
+
+			it('should actually execute deletionRequests', async () => {
+				const { deletionRequest } = await setup();
+
+				await testApiClient.post('', {
+					ids: [deletionRequest.id],
+				});
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				const entity = await em.findOneOrFail(DeletionRequestEntity, deletionRequest.id);
+				expect(entity.status).toEqual('success');
 			}, 20000);
 		});
 
@@ -53,6 +88,35 @@ describe(`deletionExecution (api)`, () => {
 
 				expect(response.status).toEqual(401);
 			});
+		});
+	});
+
+	describe('findAllItemsToExecute', () => {
+		const setup = async () => {
+			testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+
+			const deletionRequest = deletionRequestEntityFactory.build();
+
+			await em.persistAndFlush(deletionRequest);
+			em.clear();
+
+			return { deletionRequest, testApiClient };
+		};
+
+		it('should return status 200', async () => {
+			const { testApiClient } = await setup();
+
+			const response = await testApiClient.get();
+
+			expect(response.status).toEqual(200);
+		});
+
+		it('should return deletionRequests ids', async () => {
+			const { deletionRequest, testApiClient } = await setup();
+
+			const response = await testApiClient.get();
+
+			expect(response.body).toEqual([deletionRequest.id]);
 		});
 	});
 });
