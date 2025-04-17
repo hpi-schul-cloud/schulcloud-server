@@ -10,8 +10,9 @@ import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
+import { DeletionModule } from '@modules/deletion';
+
 import { forwardRef, Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import {
@@ -43,12 +44,12 @@ import {
 		LessonModule,
 		LoggerModule,
 		TaskModule,
-		CqrsModule,
 		UserModule,
 		ClassModule,
 		SchoolModule,
 		GroupModule,
 		RoleModule,
+		DeletionModule,
 	],
 	providers: [
 		{
