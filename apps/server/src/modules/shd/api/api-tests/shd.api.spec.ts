@@ -1,7 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { LoginDto } from '@modules/authentication';
-import { InstanceEntity } from '@modules/instance';
-import { instanceEntityFactory } from '@modules/instance/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -43,24 +41,19 @@ describe('Shd API', () => {
 		await app.close();
 	});
 
-	afterEach(async () => {
-		await em.nativeDelete(InstanceEntity, {});
-	});
-
 	describe('supportJwt', () => {
 		const prepareData = () => {
 			const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const instance = instanceEntityFactory.build();
 
-			return { superheroAccount, superheroUser, studentAccount, studentUser, instance };
+			return { superheroAccount, superheroUser, studentAccount, studentUser };
 		};
 
 		describe('given unprivileged user want to access', () => {
 			const setup = async () => {
-				const { superheroAccount, superheroUser, studentAccount, studentUser, instance } = prepareData();
+				const { superheroAccount, superheroUser, studentAccount, studentUser } = prepareData();
 
-				await em.persistAndFlush([superheroAccount, superheroUser, studentAccount, studentUser, instance]);
+				await em.persistAndFlush([superheroAccount, superheroUser, studentAccount, studentUser]);
 				em.clear();
 
 				const data: TargetUserIdParams = {
@@ -97,9 +90,9 @@ describe('Shd API', () => {
 
 		describe('given privileged user want to access', () => {
 			const setup = async (userId?: string) => {
-				const { superheroAccount, superheroUser, studentAccount, studentUser, instance } = prepareData();
+				const { superheroAccount, superheroUser, studentAccount, studentUser } = prepareData();
 
-				await em.persistAndFlush([superheroAccount, superheroUser, studentAccount, studentUser, instance]);
+				await em.persistAndFlush([superheroAccount, superheroUser, studentAccount, studentUser]);
 				em.clear();
 
 				const data: TargetUserIdParams = {
