@@ -216,11 +216,15 @@ describe(DeletionClient.name, () => {
 				setupConfig();
 				const limit = true;
 
-				const response: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+				const getResponse: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
+					status: 200,
+				});
+				httpService.get.mockReturnValueOnce(of(getResponse));
+
+				const postResponse: AxiosResponse<DeletionRequestOutput> = axiosResponseFactory.build({
 					status: 204,
 				});
-
-				httpService.post.mockReturnValueOnce(of(response));
+				httpService.post.mockReturnValueOnce(of(postResponse));
 
 				return { limit };
 			};

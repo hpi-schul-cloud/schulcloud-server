@@ -26,7 +26,19 @@ export class DeletionClient {
 		}
 	}
 
-	public async getDeletionRequestIds(limit?: number, runFailed?: boolean): Promise<string[]> {
+	public async executeDeletions(limit?: number, runFailed?: boolean): Promise<void> {
+		try {
+			let deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
+			while (deletionRequestIds.length > 0) {
+				await this.postDeletionExecutionRequest(deletionRequestIds);
+				deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
+			}
+		} catch (err) {
+			throw this.createError(err, 'executeDeletions');
+		}
+	}
+
+	private async getDeletionRequestIds(limit?: number, runFailed?: boolean): Promise<string[]> {
 		try {
 			const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
 			const endpoint = '/admin/api/v1/deletionExecutions';
@@ -48,18 +60,6 @@ export class DeletionClient {
 			return response.data;
 		} catch (err) {
 			throw this.createError(err, 'getDeletionRequestIds');
-		}
-	}
-
-	public async executeDeletions(limit?: number, runFailed?: boolean): Promise<void> {
-		try {
-			let deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
-			while (deletionRequestIds.length > 0) {
-				await this.postDeletionExecutionRequest(deletionRequestIds);
-				deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
-			}
-		} catch (err) {
-			throw this.createError(err, 'executeDeletions');
 		}
 	}
 

@@ -133,7 +133,7 @@ describe(DeletionRequestUc.name, () => {
 					if (key === 'ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') {
 						return 1000;
 					}
-					if (key === 'ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS') {
+					if (key === 'ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER') {
 						return 2;
 					}
 					return deletionTestConfig()[key];

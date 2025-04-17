@@ -54,7 +54,7 @@ export class DeletionRequestUc {
 	public async findAllItemsToExecute(limit?: number, getFailed?: boolean): Promise<EntityId[]> {
 		this.logger.debug({ action: 'findAllItemsToExecute', limit });
 
-		const configLimit = this.configService.get<number>('ADMIN_API__DELETION_MAX_CONCURRENT_DELETION_REQUESTS');
+		const configLimit = this.configService.get<number>('ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER');
 		const max = limit ?? configLimit;
 		const deletionRequests = await this.deletionRequestService.findAllItemsToExecute(max, getFailed);
 		const deletionRequestIds = deletionRequests.map((deletionRequest) => deletionRequest.id);
