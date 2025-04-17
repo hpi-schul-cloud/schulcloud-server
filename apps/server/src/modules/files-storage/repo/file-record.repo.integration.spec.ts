@@ -1,3 +1,4 @@
+import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -101,6 +102,32 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
+	describe('delete', () => {
+		it('should remove a single FileRecord', async () => {
+			const entity = fileRecordEntityFactory.build();
+
+			await em.persistAndFlush(entity);
+
+			const fileRecord = FileRecordEntityMapper.mapEntityToDo(entity);
+
+			await repo.delete(fileRecord);
+
+			await expect(em.findOneOrFail(FileRecordEntity, fileRecord.id)).rejects.toThrow(NotFoundError);
+		});
+
+		it('should remove multiple FileRecords', async () => {
+			const entities = fileRecordEntityFactory.buildList(2, {});
+
+			await em.persistAndFlush(entities);
+
+			const fileRecords = entities.map((entity) => FileRecordEntityMapper.mapEntityToDo(entity));
+
+			await repo.delete(fileRecords);
+
+			const remainingCount = await em.count(FileRecordEntity);
+			expect(remainingCount).toBe(0);
+		});
+	});
 	describe('findByParentId', () => {
 		const setup = () => {
 			const parentId1 = new ObjectId().toHexString();
