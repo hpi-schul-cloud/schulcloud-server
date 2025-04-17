@@ -1,6 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Action } from '@modules/authorization';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
@@ -31,6 +32,10 @@ describe(ElementUc.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				ElementUc,
+				{
+					provide: BoardContextApiHelperService,
+					useValue: createMock<BoardContextApiHelperService>(),
+				},
 				{
 					provide: BoardNodeAuthorizableService,
 					useValue: createMock<BoardNodeAuthorizableService>(),
