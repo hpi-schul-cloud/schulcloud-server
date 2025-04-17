@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -11,34 +9,26 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Task, TaskRepo } from '../../repo';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class TaskService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class TaskService implements DeletionService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(TaskService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	async findBySingleParent(

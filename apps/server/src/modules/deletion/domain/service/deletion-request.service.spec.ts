@@ -110,6 +110,37 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
+	describe('findByIds', () => {
+		describe('when finding by deletionRequestIds', () => {
+			const setup = () => {
+				const deletionRequestIds = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const deletionRequest1 = deletionRequestFactory.build({ id: deletionRequestIds[0] });
+				const deletionRequest2 = deletionRequestFactory.build({ id: deletionRequestIds[1] });
+
+				deletionRequestRepo.findByIds.mockResolvedValue([deletionRequest1, deletionRequest2]);
+
+				return { deletionRequestIds, deletionRequest1, deletionRequest2 };
+			};
+
+			it('should call deletionRequestRepo.findByIds', async () => {
+				const { deletionRequestIds } = setup();
+
+				await service.findByIds(deletionRequestIds);
+
+				expect(deletionRequestRepo.findByIds).toBeCalledWith(deletionRequestIds);
+			});
+
+			it('should return array of two deletionRequests', async () => {
+				const { deletionRequest1, deletionRequest2 } = setup();
+
+				const result = await service.findByIds([deletionRequest1.id, deletionRequest2.id]);
+
+				expect(result).toHaveLength(2);
+				expect(result).toEqual([deletionRequest1, deletionRequest2]);
+			});
+		});
+	});
+
 	describe('findAllItemsToExecute', () => {
 		describe('when finding all deletionRequests for execution', () => {
 			const setup = () => {
@@ -148,36 +179,6 @@ describe(DeletionRequestService.name, () => {
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(deletionRequests);
-			});
-		});
-	});
-
-	describe('findInProgressCount', () => {
-		describe('when finding in progress deletionRequests', () => {
-			const setup = () => {
-				const thresholdNewerMs = configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') ?? 1000;
-				const newerThan = new Date(Date.now() - thresholdNewerMs);
-
-				const count = 2;
-
-				deletionRequestRepo.findInProgressCount.mockResolvedValue(count);
-
-				return { count, newerThan };
-			};
-
-			it('should call deletionRequestRepo.findInProgressCount', async () => {
-				const { newerThan } = setup();
-
-				await service.findInProgressCount();
-
-				expect(deletionRequestRepo.findInProgressCount).toBeCalledWith(newerThan);
-			});
-
-			it('should return count of in progress deletionRequests', async () => {
-				const { count } = setup();
-				const result = await service.findInProgressCount();
-
-				expect(result).toEqual(count);
 			});
 		});
 	});
