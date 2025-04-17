@@ -124,13 +124,9 @@ describe('FileRecord', () => {
 
 			const markedFileRecords = FileRecord.markForDelete(fileRecords);
 
-			expect(markedFileRecords).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({ ...fileRecords[0], deletedSince: expect.any(Date) }),
-					expect.objectContaining({ ...fileRecords[1], deletedSince: expect.any(Date) }),
-					expect.objectContaining({ ...fileRecords[2], deletedSince: expect.any(Date) }),
-				])
-			);
+			expect(markedFileRecords[0].getProps().deletedSince).toEqual(expect.any(Date));
+			expect(markedFileRecords[1].getProps().deletedSince).toEqual(expect.any(Date));
+			expect(markedFileRecords[2].getProps().deletedSince).toEqual(expect.any(Date));
 		});
 	});
 
@@ -146,13 +142,9 @@ describe('FileRecord', () => {
 
 			const markedFileRecords = FileRecord.unmarkForDelete(fileRecords);
 
-			expect(markedFileRecords).toEqual(
-				expect.arrayContaining([
-					expect.objectContaining({ ...fileRecords[0], deletedSince: undefined }),
-					expect.objectContaining({ ...fileRecords[1], deletedSince: undefined }),
-					expect.objectContaining({ ...fileRecords[2], deletedSince: undefined }),
-				])
-			);
+			expect(markedFileRecords[0].getProps().deletedSince).toEqual(undefined);
+			expect(markedFileRecords[1].getProps().deletedSince).toEqual(undefined);
+			expect(markedFileRecords[2].getProps().deletedSince).toEqual(undefined);
 		});
 	});
 
