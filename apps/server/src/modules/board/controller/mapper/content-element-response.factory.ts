@@ -32,7 +32,6 @@ export class ContentElementResponseFactory {
 		DeletedElementResponseMapper.getInstance(),
 		VideoConferenceElementResponseMapper.getInstance(),
 		FileFolderElementResponseMapper.getInstance(),
-		FileFolderElementResponseMapper.getInstance(),
 		H5pElementResponseMapper.getInstance(),
 	];
 

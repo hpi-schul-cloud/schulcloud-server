@@ -8,6 +8,7 @@ import {
 	ExternalToolElementResponse,
 	FileElementResponse,
 	FileFolderElementResponse,
+	H5pElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
@@ -111,7 +112,7 @@ describe('CardResponseMapper', () => {
 
 				createMockElement(faker.string.uuid(), ContentElementType.H5P, {
 					contentId: faker.string.uuid(),
-				}) as ExternalToolElementResponse,
+				}) as H5pElementResponse,
 
 				createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
 			]);

@@ -312,8 +312,8 @@ describe(BoardNodeCopyService.name, () => {
 			});
 		});
 
-		describe('when called with external tool element', () => {
-			it('should copy external tool element', async () => {
+		describe('when called with h5p element', () => {
+			it('should copy h5p element', async () => {
 				const { copyContext, mockStatus } = setup();
 				const node = h5pElementFactory.build({
 					contentId: new ObjectId().toHexString(),
