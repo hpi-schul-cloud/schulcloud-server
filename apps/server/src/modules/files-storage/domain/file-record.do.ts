@@ -60,12 +60,6 @@ export class FileRecordSecurityCheck implements FileRecordSecurityCheckProps {
 		return isBlocked;
 	}
 
-	public hasScanStatusError(): boolean {
-		const hasError = this.status === ScanStatus.ERROR;
-
-		return hasError;
-	}
-
 	public hasScanStatusWontCheck(): boolean {
 		const hasWontCheckStatus = this.status === ScanStatus.WONT_CHECK;
 
