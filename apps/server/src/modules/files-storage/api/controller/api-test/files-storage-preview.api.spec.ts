@@ -15,7 +15,7 @@ import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PreviewOutputMimeTypes, PreviewWidth, ScanStatus } from '../../../domain';
 import { ErrorType } from '../../../domain/error';
-import { TestHelper } from '../../../domain/helper/test-helper';
+import { TestHelper } from '../../../testing';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
 import { FileRecordEntity } from '../../../repo';

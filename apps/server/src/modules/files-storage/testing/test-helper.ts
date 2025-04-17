@@ -1,8 +1,8 @@
 import { GetFile } from '@infra/s3-client';
 import { Readable } from 'stream';
-import { GetFileResponse } from '../interface';
+import { GetFileResponse } from '../domain/interface';
 
-// TODO: Move to testing folder
+// TODO: Should name testFactory
 export class TestHelper {
 	public static createFile = (props?: { contentRange?: string; mimeType?: string }): GetFile => {
 		const text = 'testText';

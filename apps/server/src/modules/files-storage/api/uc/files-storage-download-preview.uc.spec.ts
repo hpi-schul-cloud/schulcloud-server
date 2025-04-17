@@ -11,7 +11,7 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FilesStorageService, PreviewOutputMimeTypes, PreviewService } from '../../domain';
-import { TestHelper } from '../../domain/helper/test-helper';
+import { TestHelper } from '../../testing';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';

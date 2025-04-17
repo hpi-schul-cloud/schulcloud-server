@@ -13,7 +13,7 @@ import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
-import { TestHelper } from '../helper/test-helper'; // TODO: Move to testing
+import { TestHelper } from '../../testing';
 import { FileRecordParentType, PreviewWidth, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
