@@ -199,7 +199,7 @@ export class SchulconnexGroupProvisioningService {
 			if (group.isEmpty()) {
 				const courses = await this.courseService.findBySyncedGroup(group);
 
-				if (courses.length) {
+				if (courses.length > 0) {
 					await this.schulconnexCourseSyncService.desyncCoursesAndCreateHistories(group, courses);
 				}
 
@@ -228,7 +228,7 @@ export class SchulconnexGroupProvisioningService {
 		if (group.isEmpty()) {
 			const courses = await this.courseService.findBySyncedGroup(group);
 
-			if (courses.length) {
+			if (courses.length > 0) {
 				await this.schulconnexCourseSyncService.desyncCoursesAndCreateHistories(group, courses);
 			}
 
