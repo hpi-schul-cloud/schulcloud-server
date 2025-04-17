@@ -28,4 +28,4 @@ export const LessonContentDtoComponentValues = {
 } as const;
 
 export type LessonContentDtoComponent =
-	typeof LessonContentDtoComponentValues[keyof typeof LessonContentDtoComponentValues];
+	(typeof LessonContentDtoComponentValues)[keyof typeof LessonContentDtoComponentValues];
