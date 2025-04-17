@@ -6,7 +6,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { DeletionRequestEntity } from '../../../repo/entity';
 
 const baseRouteName = '/deletionExecutions';
 
