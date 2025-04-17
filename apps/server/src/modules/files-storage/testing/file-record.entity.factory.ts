@@ -1,7 +1,7 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
-import { FileRecordProps, ScanStatus } from '../domain';
+import { FileRecordProps } from '../domain';
 import { StorageLocation } from '../domain/interface';
 import { FileRecordEntity } from '../repo/file-record.entity';
 import { fileRecordSecurityCheckEmbeddableFactory } from './file-record-security-check.embeddable.factory';
@@ -9,8 +9,6 @@ import { fileRecordSecurityCheckEmbeddableFactory } from './file-record-security
 const yesterday = new Date(Date.now() - 86400000);
 
 class FileRecordEntityFactory extends EntityFactory<FileRecordEntity, FileRecordProps> {
-	public scanStatus: ScanStatus | undefined = undefined;
-
 	public withDeletedSince(date?: Date): this {
 		return this.params({ deletedSince: date ?? yesterday });
 	}
