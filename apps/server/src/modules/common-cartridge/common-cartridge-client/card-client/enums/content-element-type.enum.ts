@@ -9,4 +9,5 @@ export enum ContentElementType {
 	DELETED = 'deleted',
 	VIDEO_CONFERENCE = 'videoConference',
 	FILE_FOLDER = 'fileFolder',
+	H5P = 'h5p',
 }

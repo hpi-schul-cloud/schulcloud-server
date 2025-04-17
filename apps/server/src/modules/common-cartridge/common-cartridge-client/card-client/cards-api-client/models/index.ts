@@ -23,4 +23,6 @@ export * from './submission-container-element-response';
 export * from './timestamps-response';
 export * from './video-conference-element-content';
 export * from './video-conference-element-response';
+export * from './h5p-element-content';
+export * from './h5p-element-response';
 export * from './visibility-settings-response';

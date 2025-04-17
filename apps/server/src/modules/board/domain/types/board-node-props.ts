@@ -81,6 +81,10 @@ export interface DeletedElementProps extends BoardNodeProps {
 	description?: string;
 }
 
+export interface H5pElementProps extends BoardNodeProps {
+	contentId?: string;
+}
+
 export interface MediaBoardProps extends BoardNodeProps {
 	context: BoardExternalReference;
 	backgroundColor: MediaBoardColors;
@@ -115,4 +119,6 @@ export type AnyBoardNodeProps =
 	| SubmissionContainerElementProps
 	| SubmissionItemProps
 	| VideoConferenceElementProps
+	| DeletedElementProps
+	| H5pElementProps
 	| MediaBoardNodeProps;

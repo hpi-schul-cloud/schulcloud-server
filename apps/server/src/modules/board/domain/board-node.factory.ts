@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { InputFormat, type EntityId } from '@shared/domain/types';
+import { type EntityId, InputFormat } from '@shared/domain/types';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -9,6 +9,7 @@ import { DrawingElement } from './drawing-element.do';
 import { ExternalToolElement } from './external-tool-element.do';
 import { FileElement } from './file-element.do';
 import { FileFolderElement } from './file-folder-element.do';
+import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
@@ -99,6 +100,11 @@ export class BoardNodeFactory {
 				element = new VideoConferenceElement({
 					...this.getBaseProps(),
 					title: '',
+				});
+				break;
+			case ContentElementType.H5P:
+				element = new H5pElement({
+					...this.getBaseProps(),
 				});
 				break;
 			default:

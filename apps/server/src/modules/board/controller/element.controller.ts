@@ -14,8 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { CardUc } from '../uc';
-import { ElementUc } from '../uc/element.uc';
+import { CardUc, ElementUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
@@ -29,6 +28,8 @@ import {
 	FileElementResponse,
 	FileFolderElementContentBody,
 	FileFolderElementResponse,
+	H5pElementContentBody,
+	H5pElementResponse,
 	LinkElementContentBody,
 	LinkElementResponse,
 	MoveContentElementBody,
@@ -104,7 +105,8 @@ export class ElementController {
 		LinkElementContentBody,
 		DrawingElementContentBody,
 		VideoConferenceElementContentBody,
-		FileFolderElementContentBody
+		FileFolderElementContentBody,
+		H5pElementContentBody
 	)
 	@ApiResponse({
 		status: 200,
@@ -118,6 +120,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 				{ $ref: getSchemaPath(FileFolderElementResponse) },
+				{ $ref: getSchemaPath(H5pElementResponse) },
 			],
 		},
 	})

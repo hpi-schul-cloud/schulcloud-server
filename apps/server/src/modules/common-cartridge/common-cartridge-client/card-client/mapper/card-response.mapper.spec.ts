@@ -8,6 +8,7 @@ import {
 	ExternalToolElementResponse,
 	FileElementResponse,
 	FileFolderElementResponse,
+	H5pElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
@@ -109,6 +110,10 @@ describe('CardResponseMapper', () => {
 					title: faker.lorem.word(),
 				}) as VideoConferenceElementResponse,
 
+				createMockElement(faker.string.uuid(), ContentElementType.H5P, {
+					contentId: faker.string.uuid(),
+				}) as H5pElementResponse,
+
 				createMockElement(faker.string.uuid(), 'UNKNOWN_TYPE' as ContentElementType, {}) as CardResponseElementsInner,
 			]);
 
@@ -123,7 +128,7 @@ describe('CardResponseMapper', () => {
 				expect(cardResponseDto.height).toBe(100);
 				expect(cardResponseDto.visibilitySettings.publishedAt).toBe('2024-10-03T12:00:00Z');
 				expect(cardResponseDto.timeStamps.lastUpdatedAt).toBe('2024-10-03T11:00:00Z');
-				expect(cardResponseDto.elements).toHaveLength(10);
+				expect(cardResponseDto.elements).toHaveLength(11);
 				expect(cardResponseDto.elements[0].type).toBe(ContentElementType.COLLABORATIVE_TEXT_EDITOR);
 				expect(cardResponseDto.elements[1].type).toBe(ContentElementType.DELETED);
 				expect(cardResponseDto.elements[2].type).toBe(ContentElementType.SUBMISSION_CONTAINER);
@@ -134,6 +139,7 @@ describe('CardResponseMapper', () => {
 				expect(cardResponseDto.elements[7].type).toBe(ContentElementType.LINK);
 				expect(cardResponseDto.elements[8].type).toBe(ContentElementType.RICH_TEXT);
 				expect(cardResponseDto.elements[9].type).toBe(ContentElementType.VIDEO_CONFERENCE);
+				expect(cardResponseDto.elements[10].type).toBe(ContentElementType.H5P);
 			});
 		});
 

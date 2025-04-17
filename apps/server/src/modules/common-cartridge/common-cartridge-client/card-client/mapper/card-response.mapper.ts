@@ -7,6 +7,7 @@ import {
 	ExternalToolElementContent,
 	FileElementContent,
 	FileFolderElementContent,
+	H5pElementContent,
 	LinkElementContent,
 	RichTextElementContent,
 	SubmissionContainerElementContent,
@@ -27,6 +28,8 @@ import { FileElementContentDto } from '../dto/file-element-content.dto';
 import { FileElementResponseDto } from '../dto/file-element-response.dto';
 import { FileFolderElementContentDto } from '../dto/file-folder-element-content.dto';
 import { FileFolderElementResponseDto } from '../dto/file-folder-element-response.dto';
+import { H5pElementContentDto } from '../dto/h5p-element-content.dto';
+import { H5pElementResponseDto } from '../dto/h5p-element-response.dto';
 import { LinkElementContentDto } from '../dto/link-element-content.dto';
 import { LinkElementResponseDto } from '../dto/link-element-response.dto';
 import { RichTextElementContentDto } from '../dto/rich-text-element-content.dto';
@@ -185,6 +188,18 @@ export class CardResponseMapper {
 							element.id,
 							ContentElementType.FILE_FOLDER,
 							new FileFolderElementContentDto(content.title),
+							this.mapToTimestampDto(element.timestamps)
+						)
+					);
+					break;
+				}
+				case ContentElementType.H5P: {
+					const content: H5pElementContent = element.content as H5pElementContent;
+					elements.push(
+						new H5pElementResponseDto(
+							element.id,
+							ContentElementType.H5P,
+							new H5pElementContentDto(content.contentId),
 							this.mapToTimestampDto(element.timestamps)
 						)
 					);

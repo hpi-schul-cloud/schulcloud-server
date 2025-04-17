@@ -38,6 +38,7 @@ import {
 	externalToolElementFactory,
 	fileElementFactory,
 	fileFolderElementFactory,
+	h5pElementFactory,
 	linkElementFactory,
 	mediaBoardFactory,
 	mediaExternalToolElementFactory,
@@ -746,6 +747,33 @@ describe(BoardNodeCopyService.name, () => {
 			const expectedStatus: CopyStatus = {
 				type: CopyElementType.VIDEO_CONFERENCE_ELEMENT,
 				status: CopyStatusEnum.NOT_DOING,
+			};
+
+			expect(result).toEqual(expectedStatus);
+		});
+	});
+
+	describe('copy h5p element', () => {
+		const setup = () => {
+			const { copyContext } = setupContext();
+			const h5pElement = h5pElementFactory.build({
+				contentId: new ObjectId().toHexString(),
+			});
+
+			return {
+				copyContext,
+				h5pElement,
+			};
+		};
+
+		it('should copy the node', async () => {
+			const { copyContext, h5pElement } = setup();
+
+			const result = await service.copyH5pElement(h5pElement, copyContext);
+
+			const expectedStatus: CopyStatus = {
+				type: CopyElementType.H5P_ELEMENT,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
 			};
 
 			expect(result).toEqual(expectedStatus);

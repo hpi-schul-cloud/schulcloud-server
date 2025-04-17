@@ -67,4 +67,18 @@ describe('entity', () => {
 			expect(result.contextExternalToolId).toBe(entity.contextExternalToolId);
 		});
 	});
+
+	describe('contentId', () => {
+		it('should persist the property', async () => {
+			const entity = new BoardNodeEntity();
+			entity.type = BoardNodeType.H5P_ELEMENT;
+			entity.contentId = new ObjectId().toHexString();
+
+			await orm.em.persistAndFlush(entity);
+			orm.em.clear();
+
+			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			expect(result.contentId).toBe(entity.contentId);
+		});
+	});
 });
