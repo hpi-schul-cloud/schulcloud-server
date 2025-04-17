@@ -6,7 +6,6 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
-import { ExternalToolUtilizationService } from '../../tool-utilization';
 import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
@@ -16,7 +15,6 @@ export class SchoolExternalToolUc {
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolUtilizationService: ExternalToolUtilizationService,
 		private readonly commonToolValidationService: CommonToolValidationService,
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService
