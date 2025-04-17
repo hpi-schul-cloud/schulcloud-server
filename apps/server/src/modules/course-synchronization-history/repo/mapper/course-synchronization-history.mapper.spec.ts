@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseSynchronizationHistoryEntityFactory, courseSynchronizationHistoryFactory } from '../../testing';
-import { CourseSynchronizationHistory, CourseSynchronizationHistoryProps } from '../../do';
+import { CourseSynchronizationHistory, CourseSynchronizationHistoryProps } from '../../domain';
 import { CourseSynchronizationHistoryEntity } from '../entity';
 import { CourseSynchronizationHistoryMapper } from './course-synchronization-history.mapper';
 

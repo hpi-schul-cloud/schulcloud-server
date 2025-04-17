@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { CourseSynchronizationHistory } from '../../do';
+import { CourseSynchronizationHistory } from '../../domain';
 import { courseSynchronizationHistoryEntityFactory, courseSynchronizationHistoryFactory } from '../../testing';
 import { COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../course-synchronization-history.repo.interface';
 import { CourseSynchronizationHistoryEntity } from '../entity';

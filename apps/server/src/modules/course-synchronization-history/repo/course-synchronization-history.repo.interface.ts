@@ -1,4 +1,4 @@
-import { CourseSynchronizationHistory } from '../do';
+import { CourseSynchronizationHistory } from '../domain';
 
 export interface CourseSynchronizationHistoryRepo {
 	saveAll(domainObjects: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]>;

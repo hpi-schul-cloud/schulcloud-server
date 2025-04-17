@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObjectFactory } from '@testing/factory/domainobject';
-import { CourseSynchronizationHistory, CourseSynchronizationHistoryProps } from '../do';
+import { CourseSynchronizationHistory, CourseSynchronizationHistoryProps } from '../domain';
 
 export const courseSynchronizationHistoryFactory = DomainObjectFactory.define<
 	CourseSynchronizationHistory,

@@ -1,4 +1,3 @@
-export * from './do';
-export { CourseSynchronizationHistoryService } from './service';
+export * from './domain';
 export { CourseSynchronizationHistoryModule } from './course-synchronization-history.module';
 export { CourseSynchronizationHistoryConfig } from './course-synchronization-history.config';

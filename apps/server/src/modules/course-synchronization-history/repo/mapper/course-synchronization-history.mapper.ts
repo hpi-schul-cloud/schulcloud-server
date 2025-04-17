@@ -1,6 +1,6 @@
 import { EntityData } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseSynchronizationHistory } from '../../do';
+import { CourseSynchronizationHistory } from '../../domain';
 import { CourseSynchronizationHistoryEntity } from '../entity';
 
 export class CourseSynchronizationHistoryMapper {
