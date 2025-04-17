@@ -1,11 +1,13 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import type { User } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalTool, ExternalToolService } from '../../external-tool';
 import { ExternalToolUtilization } from '../domain';
 import { ExternalToolUtilizationService } from '../service';
 
+@Injectable()
 export class ExternalToolUtilizationUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
