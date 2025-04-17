@@ -1,7 +1,7 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { CourseSynchronizationHistory } from '../../domain';
-import { CourseSynchronizationHistoryRepo } from '../course-synchronization-history.repo.interface';
+import { CourseSynchronizationHistoryRepo } from '../../domain';
 import { CourseSynchronizationHistoryEntity } from '../entity';
 import { CourseSynchronizationHistoryMapper } from '../mapper';
 

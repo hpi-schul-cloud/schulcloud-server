@@ -1,6 +1,6 @@
 import { Inject } from '@nestjs/common';
 import { CourseSynchronizationHistory } from '../do';
-import { CourseSynchronizationHistoryRepo, COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../../repo';
+import { CourseSynchronizationHistoryRepo, COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../interface';
 
 export class CourseSynchronizationHistoryService {
 	constructor(

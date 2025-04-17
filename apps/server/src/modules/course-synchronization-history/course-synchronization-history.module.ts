@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { CourseSynchronizationHistoryMirkoOrmRepo } from './repo/mikro-orm';
-import { COURSE_SYNCHRONIZATION_HISTORY_REPO } from './repo';
-import { CourseSynchronizationHistoryService } from './domain';
+import { CourseSynchronizationHistoryService, COURSE_SYNCHRONIZATION_HISTORY_REPO } from './domain';
 
 @Module({
 	providers: [

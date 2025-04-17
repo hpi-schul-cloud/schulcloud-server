@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { COURSE_SYNCHRONIZATION_HISTORY_REPO, CourseSynchronizationHistoryRepo } from '../../repo';
+import { COURSE_SYNCHRONIZATION_HISTORY_REPO, CourseSynchronizationHistoryRepo } from '../../domain';
 import { courseSynchronizationHistoryFactory } from '../../testing';
 import { CourseSynchronizationHistoryService } from './course-synchronization-history.service';
 

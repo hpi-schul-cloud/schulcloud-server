@@ -4,7 +4,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { CourseSynchronizationHistory } from '../../domain';
 import { courseSynchronizationHistoryEntityFactory, courseSynchronizationHistoryFactory } from '../../testing';
-import { COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../course-synchronization-history.repo.interface';
+import { COURSE_SYNCHRONIZATION_HISTORY_REPO } from '../../domain';
 import { CourseSynchronizationHistoryEntity } from '../entity';
 import { CourseSynchronizationHistoryMapper } from '../mapper';
 import { CourseSynchronizationHistoryMirkoOrmRepo } from './course-synchronization-history.repo';
