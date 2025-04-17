@@ -78,12 +78,7 @@ describe('FileRecord', () => {
 
 	describe('getPreviewStatus', () => {
 		it('should return PREVIEW_POSSIBLE if security check is verified and MIME type is valid', () => {
-			jest.spyOn(fileRecord, 'isPreviewPossible').mockReturnValue(true);
-			jest.spyOn(fileRecord, 'isBlocked').mockReturnValue(false);
-			jest.spyOn(fileRecord, 'isPending').mockReturnValue(false);
-			jest
-				.spyOn(fileRecord, 'getSecurityCheckProps')
-				.mockReturnValue({ status: ScanStatus.VERIFIED, reason: 'verified', updatedAt: new Date() });
+			const fileRecord = fileRecordTestFactory().withScanStatus(ScanStatus.VERIFIED).build({ mimeType: 'image/png' });
 
 			const status = fileRecord.getPreviewStatus();
 			expect(status).toBe(PreviewStatus.PREVIEW_POSSIBLE);

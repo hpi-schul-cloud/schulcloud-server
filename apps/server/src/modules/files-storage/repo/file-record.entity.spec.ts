@@ -18,6 +18,8 @@ describe('FileRecord Entity', () => {
 				creatorId: new ObjectId().toHexString(),
 				storageLocationId: new ObjectId().toHexString(),
 				storageLocation: StorageLocation.SCHOOL,
+				createdAt: new Date(),
+				updatedAt: new Date(),
 			};
 		});
 

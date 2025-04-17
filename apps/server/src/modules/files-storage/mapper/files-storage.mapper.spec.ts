@@ -122,6 +122,8 @@ describe('FilesStorageMapper', () => {
 				parentType: props.parentType,
 				deletedSince: props.deletedSince,
 				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
+				createdAt: props.createdAt,
+				updatedAt: props.updatedAt,
 			};
 
 			expect(result).toEqual(expectedFileRecordResponse);

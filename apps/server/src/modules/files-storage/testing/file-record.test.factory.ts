@@ -24,13 +24,15 @@ export class FileRecordTestFactory {
 		storageLocationId: new ObjectId().toHexString(),
 		storageLocation: StorageLocation.SCHOOL,
 		deletedSince: undefined,
+		createdAt: new Date(Date.now() - 1000),
+		updatedAt: new Date(Date.now() - 1000),
 	};
 
 	private securityCheck = FileRecordSecurityCheck.createWithDefaultProps();
 
 	public build(params: DeepPartial<FileRecordProps> = {}): FileRecord {
 		const props = Object.assign({ ...this.props }, params);
-		props.id = new ObjectId().toHexString();
+		props.id = params.id ?? new ObjectId().toHexString();
 
 		const fileRecord = FileRecordFactory.buildFromFileRecordProps(props, this.securityCheck);
 

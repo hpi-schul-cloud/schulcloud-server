@@ -21,6 +21,8 @@ export class FileRecordResponse {
 		this.isUploading = props.isUploading;
 		this.deletedSince = props.deletedSince;
 		this.previewStatus = fileRecord.getPreviewStatus();
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
 	}
 
 	@ApiProperty()
@@ -59,6 +61,12 @@ export class FileRecordResponse {
 
 	@ApiPropertyOptional()
 	public deletedSince?: Date;
+
+	@ApiPropertyOptional()
+	public createdAt?: Date;
+
+	@ApiPropertyOptional()
+	public updatedAt?: Date;
 }
 
 export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {

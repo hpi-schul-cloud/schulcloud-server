@@ -139,8 +139,9 @@ export interface FileRecordProps extends AuthorizableObject {
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
 	isUploading?: boolean;
-	// TODO: add createdAt und updatedAt
-} 
+	createdAt: Date;
+	updatedAt: Date;
+}
 
 export class FileRecord extends DomainObject<FileRecordProps> {
 	private securityCheck: FileRecordSecurityCheck;
@@ -201,6 +202,10 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		const paths = fileRecords.map((fileRecord) => fileRecord.createPath());
 
 		return paths;
+	}
+
+	public getSecurityCheck(): FileRecordSecurityCheck {
+		return this.securityCheck;
 	}
 
 	public getSecurityCheckProps(): FileRecordSecurityCheckProps {
