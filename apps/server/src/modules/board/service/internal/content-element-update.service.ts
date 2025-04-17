@@ -3,6 +3,7 @@ import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
+	AudioRecordContentBody,
 	DrawingContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
@@ -28,6 +29,7 @@ import {
 	SubmissionContainerElement,
 	VideoConferenceElement,
 } from '../../domain';
+import { isAudioRecordElement } from '../../domain/audio-record-element.do';
 import { BoardNodeRepo } from '../../repo';
 
 @Injectable()
@@ -50,6 +52,8 @@ export class ContentElementUpdateService {
 			this.updateExternalToolElement(element, content);
 		} else if (isVideoConferenceElement(element) && content instanceof VideoConferenceContentBody) {
 			this.updateVideoConferenceElement(element, content);
+		} else if (isAudioRecordElement(element) && content instanceof AudioRecordContentBody) {
+			this.updateFileElement(element, content);
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
