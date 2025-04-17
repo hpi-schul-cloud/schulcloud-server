@@ -1,15 +1,15 @@
-import { BaseFactory } from '@testing/factory/base.factory';
+import { EntityFactory } from '@testing/factory/entity.factory';
 import { v4 as uuid } from 'uuid';
-import { ScanStatus } from '../domain';
+import { FileRecordSecurityCheckProps, ScanStatus } from '../domain';
 import { FileRecordSecurityCheckEmbeddable } from '../repo/file-record.entity';
 
-export const fileRecordSecurityCheckEmbeddableFactory = BaseFactory.define<
+export const fileRecordSecurityCheckEmbeddableFactory = EntityFactory.define<
 	FileRecordSecurityCheckEmbeddable,
-	FileRecordSecurityCheckEmbeddable
->(FileRecordSecurityCheckEmbeddable, ({ sequence }) => {
+	FileRecordSecurityCheckProps
+>(FileRecordSecurityCheckEmbeddable, () => {
 	const embeddable: FileRecordSecurityCheckEmbeddable = {
 		status: ScanStatus.PENDING,
-		reason: `reason #${sequence}`,
+		reason: `not yet scanned`,
 		requestToken: uuid(),
 		createdAt: new Date(),
 		updatedAt: new Date(),

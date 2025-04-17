@@ -402,7 +402,7 @@ describe('FileRecordRepo', () => {
 			expect(
 				results.map((o) => {
 					const props = o.getProps();
-					return props.creatorId;
+					return props.parentId;
 				})
 			).toEqual([parentId1, parentId1, parentId1]);
 		});
