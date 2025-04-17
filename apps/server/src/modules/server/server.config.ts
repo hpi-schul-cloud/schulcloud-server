@@ -135,6 +135,7 @@ export interface ServerConfig
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
+	ROOM_MEMBER_INFO_URL: string | null;
 }
 
 const config: ServerConfig = {
@@ -348,6 +349,10 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	ROOM_MEMBER_INFO_URL:
+		Configuration.get('ROOM_MEMBER_INFO_URL') === null
+			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
+			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
 	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
 		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
 	) as number,
