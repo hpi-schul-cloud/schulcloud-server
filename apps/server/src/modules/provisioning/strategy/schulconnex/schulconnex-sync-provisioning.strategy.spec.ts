@@ -422,48 +422,116 @@ describe(SchulconnexSyncProvisioningStrategy.name, () => {
 					existingGroup
 				);
 			});
-		});
 
-		describe('when a new group is provisioned', () => {
-			const setup = () => {
-				config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
-				config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
-
-				const externalUserId = 'externalUserId';
-				const externalGroups = externalGroupDtoFactory.buildList(2);
-				const oauthData = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: new ObjectId().toHexString(),
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalSchool: externalSchoolDtoFactory.build(),
-					externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
-					externalGroups,
-				});
-
-				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
-					externalId: externalUserId,
-				});
-				const updatedGroup = groupFactory.build();
-
-				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([]);
-				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
-				groupService.findByExternalSource.mockResolvedValueOnce(null);
-				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(updatedGroup);
-
-				return {
-					oauthData,
-					updatedGroup,
-				};
-			};
-
-			it('should synchronize all linked courses with the group', async () => {
-				const { oauthData, updatedGroup } = setup();
+			it('should not synchronize the courses from any existing course sync histories', async () => {
+				const { oauthData } = setup();
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup, undefined);
+				expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when a new group is provisioned', () => {
+			describe('when the "FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED" flag is true', () => {
+				const setup = () => {
+					config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
+					config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
+
+					const externalUserId = 'externalUserId';
+					const externalGroups = externalGroupDtoFactory.buildList(2);
+					const oauthData = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: new ObjectId().toHexString(),
+							provisioningStrategy: SystemProvisioningStrategy.OIDC,
+						}),
+						externalSchool: externalSchoolDtoFactory.build(),
+						externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
+						externalGroups,
+					});
+
+					const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+						externalId: externalUserId,
+					});
+					const updatedGroup = groupFactory.build();
+
+					schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+					schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([]);
+					schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
+					groupService.findByExternalSource.mockResolvedValueOnce(null);
+					schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(updatedGroup);
+
+					return {
+						oauthData,
+						updatedGroup,
+					};
+				};
+
+				it('should synchronize all linked courses with the group', async () => {
+					const { oauthData, updatedGroup } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup, undefined);
+				});
+
+				it('should synchronize the courses from any existing course sync histories', async () => {
+					const { oauthData, updatedGroup } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).toHaveBeenCalledWith(updatedGroup);
+				});
+			});
+
+			describe('when the "FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED" flag is false', () => {
+				const setup = () => {
+					config.FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED = true;
+					config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = false;
+
+					const externalUserId = 'externalUserId';
+					const externalGroups = externalGroupDtoFactory.buildList(2);
+					const oauthData = new OauthDataDto({
+						system: new ProvisioningSystemDto({
+							systemId: new ObjectId().toHexString(),
+							provisioningStrategy: SystemProvisioningStrategy.OIDC,
+						}),
+						externalSchool: externalSchoolDtoFactory.build(),
+						externalUser: externalUserDtoFactory.build({ externalId: externalUserId }),
+						externalGroups,
+					});
+
+					const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+						externalId: externalUserId,
+					});
+					const updatedGroup = groupFactory.build();
+
+					schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+					schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation.mockResolvedValueOnce([]);
+					schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
+					groupService.findByExternalSource.mockResolvedValueOnce(null);
+					schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(updatedGroup);
+
+					return {
+						oauthData,
+					};
+				};
+
+				it('should not synchronize all linked courses with the group', async () => {
+					const { oauthData } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).not.toHaveBeenCalled();
+				});
+
+				it('should not synchronize the courses from any existing course sync histories', async () => {
+					const { oauthData } = setup();
+
+					await strategy.apply(oauthData);
+
+					expect(schulconnexCourseSyncService.synchronizeCoursesFromHistory).not.toHaveBeenCalled();
+				});
 			});
 		});
 

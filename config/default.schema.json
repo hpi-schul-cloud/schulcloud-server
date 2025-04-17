@@ -1638,6 +1638,11 @@
 			"type": "string",
 			"default": null,
 			"description": "The url for further information in room member administration."
+		},
+		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
+			"type": "number",
+			"default": 864000,
+			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
 		}
 	},
 	"required": []
