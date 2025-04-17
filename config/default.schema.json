@@ -1614,10 +1614,10 @@
 			"default": "false",
 			"description": "Enables the ability to change permissions of room members"
 		},
-		"FEATURE_ROOMMEMBERS_TABS_ENABLED": {
+		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
 			"type": "boolean",
 			"default": "false",
-			"description": "Enables the tabnavigation for room members page"
+			"description": "Enables the tab navigation for room members page"
 		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
