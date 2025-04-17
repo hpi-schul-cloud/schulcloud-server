@@ -39,7 +39,7 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.H5P_ELEMENT]: H5pElement,
 } as const;
 
-export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): typeof BoardNodeTypeToConstructor[T] =>
+export const getBoardNodeConstructor = <T extends BoardNodeType>(type: T): (typeof BoardNodeTypeToConstructor)[T] =>
 	BoardNodeTypeToConstructor[type];
 
 export const getBoardNodeType = <T extends AnyBoardNode>(boardNode: T): BoardNodeType => {

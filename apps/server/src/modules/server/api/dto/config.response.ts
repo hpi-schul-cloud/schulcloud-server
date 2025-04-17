@@ -236,6 +236,9 @@ export class ConfigResponse {
 	@ApiPropertyOptional()
 	public LICENSE_SUMMARY_URL?: string;
 
+	@ApiProperty({ type: String, nullable: true })
+	ROOM_MEMBER_INFO_URL: string | null;
+
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
@@ -312,6 +315,7 @@ export class ConfigResponse {
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
+		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
 	}
 }

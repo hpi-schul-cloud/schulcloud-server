@@ -106,6 +106,7 @@ describe('Server Controller (API)', () => {
 				'FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED',
 				'LICENSE_SUMMARY_URL',
 				'FEATURE_COLUMN_BOARD_H5P_ENABLED',
+				'ROOM_MEMBER_INFO_URL',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);
