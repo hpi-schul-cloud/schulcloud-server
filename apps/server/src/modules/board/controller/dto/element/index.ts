@@ -3,6 +3,7 @@ export * from './collaborative-text-editor-element.response';
 export * from './create-content-element.body.params';
 export * from './deleted-element.response';
 export * from './drawing-element.response';
+export * from './element-with-parent-hierarchy.response';
 export * from './external-tool-element.response';
 export * from './file-element.response';
 export * from './file-folder-element.response';

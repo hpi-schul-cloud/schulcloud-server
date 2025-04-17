@@ -1638,6 +1638,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Feature toggle for media metadata sync."
+		},
+		"ROOM_MEMBER_INFO_URL": {
+			"type": "string",
+			"default": null,
+			"description": "The url for further information in room member administration."
 		}
 	},
 	"required": []
