@@ -33,7 +33,7 @@ describe(`deletionExecution (api)`, () => {
 		await app.close();
 	});
 
-	afterEach(async () => {
+	beforeEach(async () => {
 		await cleanupCollections(em);
 	});
 
@@ -59,7 +59,7 @@ describe(`deletionExecution (api)`, () => {
 				expect(response.status).toEqual(204);
 			}, 20000);
 
-			it('should actually execute deletionRequests', async () => {
+			it('should actually successful execute the deletionRequests', async () => {
 				const { deletionRequest } = await setup();
 
 				await testApiClient.post('', {
