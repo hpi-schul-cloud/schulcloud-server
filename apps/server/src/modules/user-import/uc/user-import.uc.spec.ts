@@ -897,7 +897,7 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				systemRepoSpy = systemService.findById.mockReturnValueOnce(Promise.resolve(systemDo));
 				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
-				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
+				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate);
 			});
 
 			afterEach(() => {
