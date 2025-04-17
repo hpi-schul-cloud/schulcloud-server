@@ -22,6 +22,7 @@ import {
 	CreateSubmissionItemBodyParams,
 	DrawingElementContentBody,
 	DrawingElementResponse,
+	ElementWithParentHierarchyResponse,
 	ExternalToolElementContentBody,
 	ExternalToolElementResponse,
 	FileElementContentBody,
@@ -40,13 +41,39 @@ import {
 	VideoConferenceElementContentBody,
 	VideoConferenceElementResponse,
 } from './dto';
-import { ContentElementResponseFactory, SubmissionItemResponseMapper } from './mapper';
+import { ContentElementResponseFactory, ParentNodeInfoResponseMapper, SubmissionItemResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
 @JwtAuthentication()
 @Controller('elements')
 export class ElementController {
 	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}
+
+	@ApiOperation({ summary: 'Get metadata for a single content element.' })
+	@ApiResponse({ status: 200, type: ElementWithParentHierarchyResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':contentElementId')
+	public async getElementWithParentHierarchy(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<ElementWithParentHierarchyResponse> {
+		const { element, parentHierarchy } = await this.elementUc.getElementWithParentHierarchy(
+			currentUser.userId,
+			urlParams.contentElementId
+		);
+
+		const elementReponse = ContentElementResponseFactory.mapToResponse(element);
+		const parentHierarchyResponse = ParentNodeInfoResponseMapper.mapToResponse(parentHierarchy);
+
+		const response = new ElementWithParentHierarchyResponse({
+			element: elementReponse,
+			parentHierarchy: parentHierarchyResponse,
+		});
+
+		return response;
+	}
 
 	@ApiOperation({ summary: 'Move a single content element.' })
 	@ApiResponse({ status: 204 })
@@ -55,7 +82,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Put(':contentElementId/position')
-	async moveElement(
+	public async moveElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: MoveContentElementBody,
 		@CurrentUser() currentUser: ICurrentUser
@@ -99,7 +126,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(200)
 	@Patch(':contentElementId/content')
-	async updateElement(
+	public async updateElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -120,7 +147,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':contentElementId')
-	async deleteElement(
+	public async deleteElement(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
@@ -135,7 +162,7 @@ export class ElementController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
 	@Post(':contentElementId/submissions')
-	async createSubmissionItem(
+	public async createSubmissionItem(
 		@Param() urlParams: ContentElementUrlParams,
 		@Body() bodyParams: CreateSubmissionItemBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -157,7 +184,7 @@ export class ElementController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get(':contentElementId/permission')
-	async readPermission(
+	public async readPermission(
 		@Param() urlParams: ContentElementUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
