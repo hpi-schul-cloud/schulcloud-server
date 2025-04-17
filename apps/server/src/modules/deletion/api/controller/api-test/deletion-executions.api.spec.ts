@@ -66,7 +66,6 @@ describe(`deletionExecution (api)`, () => {
 					ids: [deletionRequest.id],
 				});
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				const entity = await em.findOneOrFail(DeletionRequestEntity, deletionRequest.id);
 				expect(entity.status).toEqual('success');
 			}, 20000);
