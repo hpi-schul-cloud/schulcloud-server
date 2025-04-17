@@ -1609,7 +1609,7 @@
 			"default": "true",
 			"description": "Enables the rooms feature"
 		},
-		"FEATURE_ROOMS_DUPLICATE_ROOMS_ENABLED": {
+		"FEATURE_ROOMS_DUPLICATE_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the rooms feature to duplicate rooms"
