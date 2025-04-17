@@ -353,6 +353,9 @@ const config: ServerConfig = {
 		Configuration.get('ROOM_MEMBER_INFO_URL') === null
 			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
 			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
+	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
+		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
+	) as number,
 };
 
 export const serverConfig = (): ServerConfig => config;
