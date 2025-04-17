@@ -1,4 +1,4 @@
-import { Course, CourseSyncService } from '@modules/course';
+import { Course, CourseDoService, CourseSyncService } from '@modules/course';
 import {
 	CourseSynchronizationHistory,
 	CourseSynchronizationHistoryFactory,
@@ -13,6 +13,7 @@ import type { ProvisioningConfig } from '../../../provisioning.config';
 @Injectable()
 export class SchulconnexCourseSyncService {
 	constructor(
+		private readonly courseDoService: CourseDoService,
 		private readonly courseSyncService: CourseSyncService,
 		private readonly courseSynchronizationHistoryService: CourseSynchronizationHistoryService,
 		private readonly configService: ConfigService<ProvisioningConfig, true>
@@ -28,15 +29,28 @@ export class SchulconnexCourseSyncService {
 			return;
 		}
 
-		const syncHistories: CourseSynchronizationHistory[] =
+		const courseSyncHistories: CourseSynchronizationHistory[] =
 			await this.courseSynchronizationHistoryService.findByExternalGroupId(externalGroupId);
-		if (!syncHistories.length) {
+		if (!courseSyncHistories.length) {
 			return;
 		}
 
-		await this.courseSyncService.synchronizeCoursesFromHistory(group, syncHistories);
+		const courses: Course[] = await Promise.all(
+			courseSyncHistories.map(async (history: CourseSynchronizationHistory): Promise<Course> => {
+				const courseFromHistory = await this.courseDoService.findById(history.synchronizedCourse);
+				courseFromHistory.excludeFromSync = history.excludeFromSync;
 
-		await this.courseSynchronizationHistoryService.delete(syncHistories);
+				return courseFromHistory;
+			})
+		);
+
+		const coursesWithoutSync: Course[] = courses.filter((course: Course) => !course.syncedWithGroup);
+
+		if (coursesWithoutSync.length) {
+			await this.courseSyncService.synchronize(coursesWithoutSync, group);
+		}
+
+		await this.courseSynchronizationHistoryService.delete(courseSyncHistories);
 	}
 
 	public async desyncCoursesAndCreateHistories(group: Group, courses: Course[]): Promise<void> {
