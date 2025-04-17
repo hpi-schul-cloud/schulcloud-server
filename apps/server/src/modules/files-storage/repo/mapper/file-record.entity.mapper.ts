@@ -17,6 +17,9 @@ export class FileRecordEntityMapper {
 			domainObject,
 			...fileRecordProps
 		} = fileRecordEntity;
+		// we need to convert "fill" the "id" property manually
+		fileRecordProps.id = fileRecordEntity._id.toHexString();
+
 		const securityCheck = new FileRecordSecurityCheck(securityCheckEmbeddable);
 		// It is very important to hand over "fileRecordProps" CLEAN (meaning no additional properties)!!!
 		const fileRecord = FileRecordFactory.buildFromFileRecordProps(fileRecordProps, securityCheck);

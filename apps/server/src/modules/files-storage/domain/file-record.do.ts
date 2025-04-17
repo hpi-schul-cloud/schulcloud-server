@@ -139,7 +139,8 @@ export interface FileRecordProps extends AuthorizableObject {
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
 	isUploading?: boolean;
-}
+	// TODO: add createdAt und updatedAt
+} 
 
 export class FileRecord extends DomainObject<FileRecordProps> {
 	private securityCheck: FileRecordSecurityCheck;
@@ -332,7 +333,10 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 	}
 
 	private setSizeInByte(sizeInByte: number, maxSizeInByte: number): void {
-		if (sizeInByte <= 0 || sizeInByte > maxSizeInByte) {
+		if (sizeInByte <= 0) {
+			throw new BadRequestException(ErrorType.FILE_IS_EMPTY);
+		}
+		if (sizeInByte > maxSizeInByte) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 		this.props.size = sizeInByte;

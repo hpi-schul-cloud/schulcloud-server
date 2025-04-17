@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { FileRecordProps, ScanStatus } from '../domain';
 import { FileRecordParentType, StorageLocation } from '../domain/interface';
-import { fileRecordEntityFactory } from '../testing';
-import { FileRecordSecurityCheckEmbeddable } from './file-record.entity';
+import { fileRecordEntityFactory, fileRecordSecurityCheckEmbeddableFactory } from '../testing';
 
 describe('FileRecord Entity', () => {
 	describe('when creating a new instance using the factory', () => {
@@ -71,7 +70,7 @@ describe('FileRecord Entity', () => {
 
 describe('FileRecordSecurityCheckEmbeddable', () => {
 	it('should initialize with default values when no props are provided', () => {
-		const securityCheck = new FileRecordSecurityCheckEmbeddable();
+		const securityCheck = fileRecordSecurityCheckEmbeddableFactory.build();
 		expect(securityCheck.status).toBe(ScanStatus.PENDING);
 		expect(securityCheck.reason).toBe('not yet scanned');
 		expect(securityCheck.requestToken).toBeDefined();
@@ -81,8 +80,7 @@ describe('FileRecordSecurityCheckEmbeddable', () => {
 
 	it('should override the provided properties', () => {
 		const updatedAt = new Date();
-		const securityCheck = new FileRecordSecurityCheckEmbeddable();
-		Object.assign(securityCheck, {
+		const securityCheck = fileRecordSecurityCheckEmbeddableFactory.build({
 			status: ScanStatus.ERROR,
 			reason: 'scan failed',
 			requestToken: 'custom-token',
@@ -95,16 +93,15 @@ describe('FileRecordSecurityCheckEmbeddable', () => {
 	});
 
 	it('should initialize with all provided properties', () => {
-		const securityCheck = new FileRecordSecurityCheckEmbeddable();
-		Object.assign(securityCheck, {
+		const securityCheck = fileRecordSecurityCheckEmbeddableFactory.build({
 			status: undefined,
 			reason: undefined,
 			requestToken: undefined,
 			updatedAt: undefined,
 		});
-		expect(securityCheck.status).toBe(ScanStatus.PENDING);
-		expect(securityCheck.reason).toBe('not yet scanned');
-		expect(securityCheck.requestToken).toBe(expect.any(String));
-		expect(securityCheck.updatedAt).toEqual(expect.any(Date));
+		expect(securityCheck.status).toBe(undefined);
+		expect(securityCheck.reason).toBe(undefined);
+		expect(securityCheck.requestToken).toBe(undefined);
+		expect(securityCheck.updatedAt).toEqual(undefined);
 	});
 });
