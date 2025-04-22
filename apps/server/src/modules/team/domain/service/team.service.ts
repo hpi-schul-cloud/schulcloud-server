@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -10,29 +8,21 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { TeamEntity, TeamRepo } from '../../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class TeamService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class TeamService implements DeletionService {
 	constructor(
 		private readonly teamRepo: TeamRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(TeamService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async findUserDataFromTeams(userId: EntityId): Promise<TeamEntity[]> {

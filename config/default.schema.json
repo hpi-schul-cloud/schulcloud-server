@@ -1351,15 +1351,10 @@
 					"default": 360000000,
 					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
 				},
-				"DELETION_MAX_CONCURRENT_DELETION_REQUESTS": {
+				"DELETION_EXECUTION_BATCH_NUMBER": {
 					"type": "number",
 					"default": 20,
-					"description": "max amount of deletion requests to be processed simultaneously"
-				},
-				"DELETION_DELAY_MILLISECONDS": {
-					"type": "number",
-					"default": 5000,
-					"description": "delay in milliseconds to sleep before processing another batch of deletion requests"
+					"description": "max amount of deletion requests to be executed in one batch"
 				}
 			},
 			"default": {}
