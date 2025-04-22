@@ -46,7 +46,7 @@ export class RoomInvitationLinkController {
 	): Promise<RoomInvitationLinkResponse> {
 		const roomInvitationLink = await this.roomInvitationLinkUc.createLink(currentUser.userId, createRoomParams);
 
-		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinkResponse(roomInvitationLink);
+		const response = RoomInvitationLinkMapper.mapToRoomInvitationLinkResponse(roomInvitationLink);
 
 		return response;
 	}
@@ -73,7 +73,7 @@ export class RoomInvitationLinkController {
 			...updateRoomParams,
 		});
 
-		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinkResponse(roomInvitationLink);
+		const response = RoomInvitationLinkMapper.mapToRoomInvitationLinkResponse(roomInvitationLink);
 
 		return response;
 	}
@@ -96,11 +96,7 @@ export class RoomInvitationLinkController {
 
 	@Post(':roomInvitationLinkId')
 	@ApiOperation({ summary: 'Use a room invitation link to join a room' })
-	@ApiResponse({
-		status: HttpStatus.OK,
-		description: 'Returns the redirect URL or an error cause.',
-		type: RoomInvitationLinkUseLinkResponse,
-	})
+	@ApiResponse({ status: HttpStatus.OK })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })

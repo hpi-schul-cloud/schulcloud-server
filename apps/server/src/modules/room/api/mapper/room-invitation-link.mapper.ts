@@ -2,7 +2,7 @@ import { RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do
 import { RoomInvitationLinkResponse } from '../dto/response/room-invitation-link.response';
 
 export class RoomInvitationLinkMapper {
-	public static mapToRoomInvitionLinkResponse(link: RoomInvitationLinkProps): RoomInvitationLinkResponse {
+	public static mapToRoomInvitationLinkResponse(link: RoomInvitationLinkProps): RoomInvitationLinkResponse {
 		const response = new RoomInvitationLinkResponse({
 			id: link.id,
 			title: link.title,
@@ -20,7 +20,7 @@ export class RoomInvitationLinkMapper {
 
 	public static mapToRoomInvitionLinksResponse(links: RoomInvitationLinkResponse[]): RoomInvitationLinkResponse[] {
 		const response: RoomInvitationLinkResponse[] = links.map(
-			(link): RoomInvitationLinkResponse => this.mapToRoomInvitionLinkResponse(link)
+			(link): RoomInvitationLinkResponse => this.mapToRoomInvitationLinkResponse(link)
 		);
 
 		return response;
