@@ -7,13 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import {
-	CopyFileResponse,
-	CopyFilesOfParentParams,
-	DownloadFileParams,
-	FileRecordParams,
-	ScanResultParams,
-} from '../../api/dto'; // TODO: invalid import
+import { CopyFileResponse, CopyFilesOfParentParams, FileRecordParams, ScanResultParams } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
@@ -233,8 +227,8 @@ export class FilesStorageService {
 	}
 
 	// download
-	public checkFileName(fileRecord: FileRecord, params: DownloadFileParams): void | NotFoundException {
-		if (!fileRecord.hasName(params.fileName)) {
+	public checkFileName(fileRecord: FileRecord, fileName: string): void | NotFoundException {
+		if (!fileRecord.hasName(fileName)) {
 			this.logger.debug(`could not find file with id: ${fileRecord.id} by filename`);
 			throw new NotFoundException(ErrorType.FILE_NOT_FOUND);
 		}
@@ -255,12 +249,8 @@ export class FilesStorageService {
 		return response;
 	}
 
-	public async download(
-		fileRecord: FileRecord,
-		params: DownloadFileParams,
-		bytesRange?: string
-	): Promise<GetFileResponse> {
-		this.checkFileName(fileRecord, params);
+	public async download(fileRecord: FileRecord, fileName: string, bytesRange?: string): Promise<GetFileResponse> {
+		this.checkFileName(fileRecord, fileName);
 		this.checkScanStatus(fileRecord);
 
 		const response = await this.downloadFile(fileRecord, bytesRange);
