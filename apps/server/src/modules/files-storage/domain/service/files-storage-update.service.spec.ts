@@ -7,9 +7,9 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import _ from 'lodash';
-import { FileRecordParams, RenameFileParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
+import { FileRecordParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordMapper, FilesStorageMapper } from '../../mapper';
+import { FileRecordMapper } from '../../mapper';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
@@ -102,12 +102,12 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const data: RenameFileParams = { fileName: 'renamed' };
+				const fileName = 'renamed';
 
 				spy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 
 				return {
-					data,
+					fileName,
 					fileRecord,
 					fileRecords,
 					params,
@@ -115,37 +115,37 @@ describe('FilesStorageService update methods', () => {
 			};
 
 			it('should call getFilesOfParent with right paramaters', async () => {
-				const { fileRecord, data } = setup();
-				const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
+				const { fileRecord, fileName } = setup();
+				const parentInfo = fileRecord.getParentInfo();
 
-				await service.patchFilename(fileRecord, data);
+				await service.patchFilename(fileRecord, fileName);
 
-				expect(spy).toHaveBeenCalledWith(fileRecordParams.parentId);
+				expect(spy).toHaveBeenCalledWith(parentInfo.parentId);
 			});
 
 			it('should call fileRecordRepo.save with right paramaters', async () => {
-				const { fileRecord, data } = setup();
+				const { fileRecord, fileName } = setup();
 				const expectedFileRecord = _.cloneDeep(fileRecord);
-				expectedFileRecord.setName(data.fileName);
+				expectedFileRecord.setName(fileName);
 
-				await service.patchFilename(fileRecord, data);
+				await service.patchFilename(fileRecord, fileName);
 
 				expect(fileRecordRepo.save).toHaveBeenCalledWith(expectedFileRecord);
 			});
 
 			it('should return modified fileRecord', async () => {
-				const { fileRecord, data } = setup();
+				const { fileRecord, fileName } = setup();
 
-				const result = await service.patchFilename(fileRecord, data);
+				const result = await service.patchFilename(fileRecord, fileName);
 
-				expect(result.getName()).toEqual(data.fileName);
+				expect(result.getName()).toEqual(fileName);
 			});
 		});
 
 		describe('WHEN repository is throwing an error', () => {
 			const setup = () => {
 				const { fileRecord, params } = buildFileRecordWithParams();
-				const data: RenameFileParams = { fileName: 'renamed' };
+				const fileName = 'renamed';
 
 				const spyGetFilesOfParent = jest
 					.spyOn(service, 'getFileRecordsOfParent')
@@ -153,7 +153,7 @@ describe('FilesStorageService update methods', () => {
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
 				return {
-					data,
+					fileName,
 					fileRecord,
 					params,
 					spyGetFilesOfParent,
@@ -161,9 +161,9 @@ describe('FilesStorageService update methods', () => {
 			};
 
 			it('should pass the error', async () => {
-				const { fileRecord, data } = setup();
+				const { fileRecord, fileName } = setup();
 
-				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(new Error('bla'));
+				await expect(service.patchFilename(fileRecord, fileName)).rejects.toThrowError(new Error('bla'));
 			});
 		});
 
@@ -177,12 +177,12 @@ describe('FilesStorageService update methods', () => {
 			const setup = () => {
 				const { fileRecords, params } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const data: RenameFileParams = { fileName: fileRecords[0].getName() };
+				const fileName = fileRecords[0].getName();
 
 				spy = jest.spyOn(service, 'getFileRecordsOfParent').mockResolvedValueOnce([fileRecords, 1]);
 
 				return {
-					data,
+					fileName,
 					fileRecord,
 					fileRecords,
 					params,
@@ -190,10 +190,10 @@ describe('FilesStorageService update methods', () => {
 			};
 
 			it('should pass the error', async () => {
-				const { fileRecord, data } = setup();
+				const { fileRecord, fileName } = setup();
 				const expectedError = new ConflictException(ErrorType.FILE_NAME_EXISTS);
 
-				await expect(service.patchFilename(fileRecord, data)).rejects.toThrowError(expectedError);
+				await expect(service.patchFilename(fileRecord, fileName)).rejects.toThrowError(expectedError);
 				expect(fileRecordRepo.save).toHaveBeenCalledTimes(0);
 			});
 		});

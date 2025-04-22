@@ -9,7 +9,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
-import { CopyFileResponseBuilder, FileRecordMapper, FilesStorageMapper } from '../../mapper';
+import { CopyFileResponseBuilder, FileRecordMapper } from '../../mapper';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord, ParentInfo } from '../file-record.do';
@@ -207,8 +207,8 @@ export class FilesStorageService {
 	}
 
 	public async patchFilename(fileRecord: FileRecord, fileName: string): Promise<FileRecord> {
-		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
-		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams.parentId);
+		const parentInfo = fileRecord.getParentInfo();
+		const [fileRecords] = await this.getFileRecordsOfParent(parentInfo.parentId);
 
 		this.checkDuplicatedNames(fileRecords, fileName);
 		fileRecord.setName(fileName);

@@ -1,6 +1,6 @@
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
-import { FileRecordListResponse, FileRecordParams, FileRecordResponse } from '../api/dto';
+import { FileRecordListResponse, FileRecordResponse } from '../api/dto';
 import { PreviewStatus } from '../domain';
 import { FileRecordParentType } from '../domain/interface';
 import { fileRecordTestFactory } from '../testing';
@@ -43,38 +43,6 @@ describe('FilesStorageMapper', () => {
 				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParentType);
 			};
 			expect(exec).toThrowError(NotImplementedException);
-		});
-	});
-
-	describe('mapFileRecordToFileRecordParams is called', () => {
-		const setup = () => {
-			const fileRecord = fileRecordTestFactory().build();
-
-			return {
-				fileRecord,
-			};
-		};
-
-		it('should return expected instance of params', () => {
-			const { fileRecord } = setup();
-
-			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
-
-			expect(result).toBeInstanceOf(FileRecordParams);
-		});
-
-		it('should return correct mapped values', () => {
-			const { fileRecord } = setup();
-			const parentInfo = fileRecord.getParentInfo();
-
-			const result = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
-
-			expect(result).toEqual({
-				storageLocationId: parentInfo.storageLocationId,
-				storageLocation: parentInfo.storageLocation,
-				parentId: parentInfo.parentId,
-				parentType: parentInfo.parentType,
-			});
 		});
 	});
 
