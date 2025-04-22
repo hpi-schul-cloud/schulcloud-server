@@ -80,15 +80,13 @@ describe('CommonCartridgeImportMapper', () => {
 				it('should return link body', () => {
 					const result = setup();
 					expect(result).toEqual({
-						data: {
-							type: 'link',
-							content: {
-								url: 'https://example.com',
-								title: '',
-								description: '',
-								imageUrl: '',
-								originalImageUrl: '',
-							},
+						type: 'link',
+						content: {
+							url: 'https://example.com',
+							title: '',
+							description: '',
+							imageUrl: '',
+							originalImageUrl: '',
 						},
 					});
 				});
@@ -121,12 +119,10 @@ describe('CommonCartridgeImportMapper', () => {
 					const result = setup();
 
 					expect(result).toEqual({
-						data: {
-							type: 'richText',
-							content: {
-								inputFormat: 'richTextCk4',
-								text: '<p>Test</p>',
-							},
+						type: 'richText',
+						content: {
+							inputFormat: 'richTextCk4',
+							text: '<p>Test</p>',
 						},
 					});
 				});
