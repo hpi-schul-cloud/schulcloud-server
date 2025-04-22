@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import { CopyFileResponse, CopyFilesOfParentParams, ScanResultParams } from '../../api/dto'; // TODO: invalid import
+import { CopyFileResponse, ScanResultParams } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
@@ -357,20 +357,20 @@ export class FilesStorageService {
 	// copy
 	public async copyFilesOfParent(
 		userId: string,
-		parentInfo: ParentInfo,
-		copyFilesParams: CopyFilesOfParentParams
+		sourceParentInfo: ParentInfo,
+		targetParentInfo: ParentInfo
 	): Promise<Counted<CopyFileResponse[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentId(
-			parentInfo.storageLocation,
-			parentInfo.storageLocationId,
-			parentInfo.parentId
+			sourceParentInfo.storageLocation,
+			sourceParentInfo.storageLocationId,
+			sourceParentInfo.parentId
 		);
 
 		if (count === 0) {
 			return [[], 0];
 		}
 
-		const response = await this.copy(userId, fileRecords, copyFilesParams.target);
+		const response = await this.copy(userId, fileRecords, targetParentInfo);
 
 		return [response, count];
 	}
