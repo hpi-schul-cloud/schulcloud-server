@@ -1163,6 +1163,11 @@
 			"default": false,
 			"description": "Enable video conference elements in column board."
 		},
+		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables h5p on the column board"
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1608,6 +1613,11 @@
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the ability to change permissions of room members"
+		},
+		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the tab navigation for room members page"
 		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",

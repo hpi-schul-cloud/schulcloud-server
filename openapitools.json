@@ -203,6 +203,25 @@
 					"withInterfaces": true,
 					"withSeparateModelsAndApi": true
 				}
+			},
+			"cc-cards-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:3030/api/v3/docs-json/",
+				"output": "./apps/server/src/modules/common-cartridge/common-cartridge-client/card-client/cards-api-client",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:CardController_getCards"
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
 			}
 		}
 	}
