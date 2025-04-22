@@ -1,6 +1,8 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
@@ -118,6 +120,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					schoolId: school.id,
 				});
 				const { roomApplicantRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+				const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 				await em.persistAndFlush([
 					adminAccount,
 					adminUser,
@@ -130,6 +134,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					roomMembership,
 					roomViewerRole,
 					roomApplicantRole,
+					teacherGuestRole,
+					studentGuestRole,
 					userGroupEntity,
 				]);
 				em.clear();
@@ -142,12 +148,12 @@ describe('Room Invitation Link Controller (API)', () => {
 			// each ({RoleName.Teacher, { isOnlyForTeachers: true }, HttpStatus.OK})
 			describe('when the user is a teacher', () => {
 				describe('when user needs to be a teacher', () => {
-					it.only('should return http status okay', async () => {
+					it('should return http status okay', async () => {
 						const { loggedInClient, roomInvitationLink } = await setup({ isOnlyForTeachers: false });
 
 						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 
-						expect(response.status).toBe(HttpStatus.OK);
+						expect(response.status).toBe(HttpStatus.CREATED);
 					});
 				});
 			});
