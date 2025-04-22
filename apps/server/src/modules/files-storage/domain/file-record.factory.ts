@@ -1,14 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { FileRecord, FileRecordProps, FileRecordSecurityCheck, ParentInfo } from './file-record.do';
-import { FileRecordParentType, StorageLocation } from './interface'; // TODO: should be part of the do
-
-export interface StoreLocationMetadata {
-	storageLocationId: EntityId;
-	storageLocation: StorageLocation;
-	parentId: EntityId;
-	parentType: FileRecordParentType;
-}
 
 export class FileRecordFactory {
 	private static build(fileRecordProps: FileRecordProps, securityCheck: FileRecordSecurityCheck): FileRecord {
@@ -21,7 +13,7 @@ export class FileRecordFactory {
 		name: string,
 		size: number,
 		mimeType: string,
-		params: StoreLocationMetadata,
+		params: ParentInfo,
 		userId: string
 	): FileRecord {
 		const defaultSecurityCheck = FileRecordSecurityCheck.createWithDefaultProps();

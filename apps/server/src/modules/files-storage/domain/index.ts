@@ -1,6 +1,5 @@
-export { PreviewService, FilesStorageService } from './service';
-export { FilesStorageConfigResponse, FileDto } from './dto';
-export * from './interface';
+export { FileDto, FilesStorageConfigResponse } from './dto';
 export { ErrorType } from './error';
 export * from './file-record.do';
-export { StoreLocationMetadata } from './file-record.factory';
+export * from './interface';
+export { FilesStorageService, PreviewService } from './service';

@@ -21,8 +21,8 @@ import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-stor
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
-import { FileRecord } from '../file-record.do';
-import { FileRecordFactory, StoreLocationMetadata } from '../file-record.factory';
+import { FileRecord, ParentInfo } from '../file-record.do';
+import { FileRecordFactory } from '../file-record.factory';
 import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
 
 @Injectable()
@@ -69,7 +69,7 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async uploadFile(userId: EntityId, params: StoreLocationMetadata, file: FileDto): Promise<FileRecord> {
+	public async uploadFile(userId: EntityId, params: ParentInfo, file: FileDto): Promise<FileRecord> {
 		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
 		// MimeType Detection consumes part of the stream, so the restored stream is passed on
 		file.data = stream;
@@ -83,7 +83,7 @@ export class FilesStorageService {
 
 	private async createFileRecord(
 		file: FileDto,
-		params: StoreLocationMetadata,
+		params: ParentInfo,
 		userId: EntityId
 	): Promise<{ fileRecord: FileRecord; stream: Readable }> {
 		const fileName = await this.resolveFileName(file, params);
