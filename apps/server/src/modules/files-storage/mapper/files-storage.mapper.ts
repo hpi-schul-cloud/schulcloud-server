@@ -1,13 +1,7 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import {
-	DownloadFileParams,
-	FileRecordListResponse,
-	FileRecordParams,
-	FileRecordResponse,
-	SingleFileParams,
-} from '../api/dto';
+import { FileRecordListResponse, FileRecordParams, FileRecordResponse } from '../api/dto';
 import { FileRecord } from '../domain';
 import { FileRecordParentType, GetFileResponse, StorageLocation } from '../domain/interface';
 
@@ -46,12 +40,6 @@ export class FilesStorageMapper {
 		}
 
 		return res;
-	}
-
-	public static mapToSingleFileParams(params: DownloadFileParams): SingleFileParams {
-		const singleFileParams = { fileRecordId: params.fileRecordId };
-
-		return singleFileParams;
 	}
 
 	public static mapFileRecordToFileRecordParams(fileRecord: FileRecord): FileRecordParams {

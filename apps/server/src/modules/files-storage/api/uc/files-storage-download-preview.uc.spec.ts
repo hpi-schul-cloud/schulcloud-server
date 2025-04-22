@@ -11,10 +11,9 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FilesStorageService, PreviewOutputMimeTypes, PreviewService } from '../../domain';
-import { TestHelper } from '../../testing';
 import { FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordTestFactory } from '../../testing';
+import { fileRecordTestFactory, TestHelper } from '../../testing';
 import { SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
@@ -113,7 +112,6 @@ describe('FilesStorageUC', () => {
 			const setup = () => {
 				const { fileRecord, params, userId } = buildFileRecordWithParams();
 				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
-				const singleFileParams = FilesStorageMapper.mapToSingleFileParams(fileDownloadParams);
 
 				const previewParams = getPreviewParams();
 				const previewFileResponse = TestHelper.createFileResponse();
@@ -121,15 +119,15 @@ describe('FilesStorageUC', () => {
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				previewService.download.mockResolvedValueOnce(previewFileResponse);
 
-				return { fileDownloadParams, previewParams, userId, fileRecord, singleFileParams, previewFileResponse };
+				return { fileDownloadParams, previewParams, userId, fileRecord, previewFileResponse };
 			};
 
 			it('should call getFileRecord with correct params', async () => {
-				const { fileDownloadParams, userId, previewParams, singleFileParams } = setup();
+				const { fileDownloadParams, userId, previewParams } = setup();
 
 				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
 
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(fileDownloadParams.fileRecordId);
 			});
 
 			it('should call getPreview with correct params', async () => {
