@@ -5,7 +5,6 @@ import {
 	Controller,
 	Delete,
 	ForbiddenException,
-	Get,
 	HttpCode,
 	HttpStatus,
 	NotFoundException,
