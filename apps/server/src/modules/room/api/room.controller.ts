@@ -123,7 +123,7 @@ export class RoomController {
 		return response;
 	}
 
-	@Get('/:roomId/room-invitation-links')
+	@Get(':roomId/room-invitation-links')
 	@ApiOperation({ summary: 'Get a list of room invitation links of a room.' })
 	@ApiResponse({
 		status: HttpStatus.OK,

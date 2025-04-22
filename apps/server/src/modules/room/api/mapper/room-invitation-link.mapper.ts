@@ -1,4 +1,3 @@
-import { Page } from '@shared/domain/domainobject';
 import { RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
 import { RoomInvitationLinkResponse } from '../dto/response/room-invitation-link.response';
 
