@@ -14,7 +14,6 @@ import {
 	FileRecordParams,
 	RenameFileParams,
 	ScanResultParams,
-	SingleFileParams,
 } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
@@ -38,8 +37,8 @@ export class FilesStorageService {
 	}
 
 	// find
-	public async getFileRecord(params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneById(params.fileRecordId);
+	public async getFileRecord(fileRecordId: EntityId): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneById(fileRecordId);
 
 		return fileRecord;
 	}
@@ -50,8 +49,8 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async getFileRecordMarkedForDelete(params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(params.fileRecordId);
+	public async getFileRecordMarkedForDelete(fileRecordId: EntityId): Promise<FileRecord> {
+		const fileRecord = await this.fileRecordRepo.findOneByIdMarkedForDelete(fileRecordId);
 
 		return fileRecord;
 	}
