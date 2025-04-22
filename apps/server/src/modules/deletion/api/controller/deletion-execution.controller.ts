@@ -1,8 +1,9 @@
 import { XApiKeyAuthentication } from '@infra/auth-guard';
-import { Controller, HttpCode, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { DeletionRequestUc } from '../uc';
-import { DeletionExecutionParams } from './dto';
+import { DeletionExecutionParams, DeletionItemsParams } from './dto';
+import { EntityId } from '@shared/domain/types';
 
 @ApiTags('DeletionExecution')
 @XApiKeyAuthentication()
@@ -18,10 +19,22 @@ export class DeletionExecutionController {
 	@ApiResponse({
 		status: 204,
 	})
-	public executeDeletions(@Query() deletionExecutionQuery: DeletionExecutionParams): Promise<void> {
-		return this.deletionRequestUc.executeDeletionRequests(
-			deletionExecutionQuery.limit,
-			deletionExecutionQuery.runFailed
-		);
+	public executeDeletions(@Body() deletionExecutionQuery: DeletionExecutionParams): Promise<void> {
+		return this.deletionRequestUc.executeDeletionRequests(deletionExecutionQuery.ids);
+	}
+
+	@Get()
+	@HttpCode(200)
+	@ApiOperation({
+		summary: 'Get deletion requests that are pending execution',
+	})
+	@ApiResponse({
+		status: 200,
+		type: Array<string>,
+		isArray: true,
+		description: 'Returns deletion requests ids that are waiting execution',
+	})
+	public findAllItemsToExecute(@Query() deletionItemsQuery: DeletionItemsParams): Promise<EntityId[]> {
+		return this.deletionRequestUc.findAllItemsToExecute(deletionItemsQuery.limit, deletionItemsQuery.runFailed);
 	}
 }
