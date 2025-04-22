@@ -1,11 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Group } from '@modules/group';
 import { GroupEntity, GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { RoomMembership, RoomMembershipEntity } from '@modules/room-membership';
+import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
@@ -58,6 +57,8 @@ describe('Room Invitation Link Controller (API)', () => {
 		em.clear();
 		config.FEATURE_ROOM_INVITATION_LINKS_ENABLED = true;
 		config.FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED = true;
+		await em.clearCache('roles-cache-byname-roomviewer');
+		await em.clearCache('roles-cache-byname-roomapplicant');
 	});
 
 	afterAll(async () => {
@@ -158,13 +159,54 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
-		describe('when the user is at the same school as the user', () => {
-			// each ({RoleName.Teacher,
+		describe('when the user is student', () => {
+			describe.each([
+				[RoleName.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[RoleName.STUDENT, {}, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+				const config = JSON.stringify(roomInvitationLinkConfig);
+				describe(`when room config is '${config}'`, () => {
+					it(`should return http status ${httpStatus}`, async () => {
+						const { loggedInClient, roomInvitationLink } = await setup(
+							roomInvitationLinkConfig,
+							roleName,
+							fromSameSchool
+						);
+
+						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+						expect(response.status).toBe(httpStatus);
+					});
+				});
+			});
+		});
+
+		describe('when the link is only for teachers', () => {
 			describe.each([
 				[RoleName.TEACHER, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
 				[RoleName.STUDENT, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.FORBIDDEN],
 				[RoleName.TEACHER, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
 				[RoleName.STUDENT, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+				const config = JSON.stringify(roomInvitationLinkConfig);
+				describe(`when room config is '${config}'`, () => {
+					it(`should return http status ${httpStatus}`, async () => {
+						const { loggedInClient, roomInvitationLink } = await setup(
+							roomInvitationLinkConfig,
+							roleName,
+							fromSameSchool
+						);
+
+						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+						expect(response.status).toBe(httpStatus);
+					});
+				});
+			});
+		});
+
+		describe("when the link is restricted to creator's school", () => {
+			describe.each([
 				[RoleName.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 				[RoleName.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 				[RoleName.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
@@ -203,18 +245,42 @@ describe('Room Invitation Link Controller (API)', () => {
 							fromSameSchool
 						);
 
-						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+						await loggedInClient.post(`/${roomInvitationLink.id}`);
 
 						const roomMembership = await em.findOneOrFail(RoomMembershipEntity, {
 							roomId: roomInvitationLink.roomId,
 						});
 						const group = await em.findOneOrFail(GroupEntity, { id: roomMembership.userGroupId });
 						const role = await em.findOneOrFail(Role, { name: newRole });
-						const roles = await em.find(Role, {});
-						console.log('roles', roles);
 
 						expect(group.users[0].user.id).toEqual(user.id);
 						expect(group.users[0].role.id).toEqual(role.id);
+					});
+				});
+			});
+		});
+
+		describe('when link activeUntil is set', () => {
+			const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+			const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
+			describe.each([
+				[RoleName.TEACHER, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[RoleName.STUDENT, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[RoleName.TEACHER, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[RoleName.STUDENT, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+				const config = JSON.stringify(roomInvitationLinkConfig);
+				describe(`when room config is '${config}'`, () => {
+					it(`should return http status ${httpStatus}`, async () => {
+						const { loggedInClient, roomInvitationLink } = await setup(
+							roomInvitationLinkConfig,
+							roleName,
+							fromSameSchool
+						);
+
+						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+						expect(response.status).toBe(httpStatus);
 					});
 				});
 			});
