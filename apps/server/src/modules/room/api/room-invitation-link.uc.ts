@@ -2,16 +2,16 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/room-invitation-link.do';
-import { RoomConfig } from '../room.config';
-import { RoomInvitationLinkValidationResult } from './type/room-invitation-link-validation-result.enum';
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
+import { RoomConfig } from '../room.config';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
-import { Permission } from '@shared/domain/interface';
+import { RoomInvitationLinkValidationResult } from './type/room-invitation-link-validation-result.enum';
 
 type UseLinkResponse = {
 	validationResult: RoomInvitationLinkValidationResult;
@@ -120,22 +120,26 @@ export class RoomInvitationLinkUc {
 		user: User
 	): Promise<RoomInvitationLinkValidationResult> {
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
+		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
-			return RoomInvitationLinkValidationResult.EXPIRED;
+			throw new BadRequestException(RoomInvitationLinkValidationResult.EXPIRED);
 		}
 		if (roomInvitationLink.isOnlyForTeachers && isTeacher === false) {
-			return RoomInvitationLinkValidationResult.ONLY_FOR_TEACHERS;
+			throw new ForbiddenException(RoomInvitationLinkValidationResult.ONLY_FOR_TEACHERS);
 		}
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
-			return RoomInvitationLinkValidationResult.RESTRICTED_TO_CREATOR_SCHOOL;
+			throw new ForbiddenException(RoomInvitationLinkValidationResult.RESTRICTED_TO_CREATOR_SCHOOL);
+		}
+		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
+			throw new ForbiddenException(RoomInvitationLinkValidationResult.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL);
 		}
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
 			roomInvitationLink.roomId
 		);
 		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
 		if (isAlreadyMember) {
-			return RoomInvitationLinkValidationResult.ALREADY_MEMBER;
+			throw new ForbiddenException(RoomInvitationLinkValidationResult.ALREADY_MEMBER);
 		}
 		return RoomInvitationLinkValidationResult.VALID;
 	}

@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing/account.factory';
+import { RoleName } from '@modules/role';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { SchoolEntity } from '@modules/school/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
@@ -88,5 +89,36 @@ export class UserAndAccountTestFactory {
 		const account = UserAndAccountTestFactory.buildAccount(user, params);
 
 		return { superheroAccount: account, superheroUser: user };
+	}
+
+	public static buildByRole(
+		roleName: RoleName,
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { account: AccountEntity; user: User } {
+		const user = UserAndAccountTestFactory.buildUser(roleName, params, additionalPermissions);
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+		return { account, user };
+	}
+
+	private static buildUser(
+		roleName: RoleName,
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): User {
+		switch (roleName) {
+			case RoleName.ADMINISTRATOR:
+				return userFactory.asAdmin(additionalPermissions).buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case RoleName.TEACHER:
+				return userFactory
+					.asTeacher(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case RoleName.STUDENT:
+				return userFactory
+					.asStudent(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			default:
+				throw new Error(`Role ${roleName} is not supported`);
+		}
 	}
 }
