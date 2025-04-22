@@ -55,39 +55,14 @@ describe('RoomInvitationLinkService', () => {
 		});
 	});
 
-	describe('updateLink', () => {
-		describe('when link exists and is updated', () => {
-			it('should call repo to update the link', async () => {
-				const roomInvitationLink = roomInvitationLinkTestFactory.build();
-				repo.findById.mockResolvedValue(roomInvitationLink);
+	describe('saveLink', () => {
+		it('should call repo to save the link', async () => {
+			const roomInvitationLink = roomInvitationLinkTestFactory.build();
 
-				const activeUnitil = new Date(Date.now() + 2000 * 60 * 60 * 24 * 14);
+			const result = await service.saveLink(roomInvitationLink);
 
-				roomInvitationLink.title = 'Updated Link';
-				roomInvitationLink.restrictedToCreatorSchool = true;
-				roomInvitationLink.isOnlyForTeachers = false;
-				roomInvitationLink.activeUntil = activeUnitil;
-				roomInvitationLink.requiresConfirmation = false;
-
-				const result = await service.updateLink(roomInvitationLink);
-
-				expect(result.id).toBe(roomInvitationLink.id);
-				expect(repo.save).toHaveBeenCalledWith(roomInvitationLink);
-
-				expect(result.title).toBe('Updated Link');
-				expect(result.restrictedToCreatorSchool).toBe(true);
-				expect(result.isOnlyForTeachers).toBe(false);
-				expect(result.activeUntil).toEqual(activeUnitil);
-				expect(result.requiresConfirmation).toBe(false);
-			});
-		});
-
-		describe('when link does not exist', () => {
-			it('should fail', async () => {
-				repo.findById.mockRejectedValue(new Error('Link not found'));
-
-				await expect(service.updateLink({ id: 'non-existing-id' } as RoomInvitationLinkProps)).rejects.toThrowError();
-			});
+			expect(result).toBe(roomInvitationLink);
+			expect(repo.save).toHaveBeenCalledWith(roomInvitationLink);
 		});
 	});
 

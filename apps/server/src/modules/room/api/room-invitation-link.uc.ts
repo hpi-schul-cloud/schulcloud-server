@@ -1,6 +1,6 @@
-import { AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomMembershipService } from '@modules/room-membership';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,6 +11,7 @@ import { RoomConfig } from '../room.config';
 import { RoomInvitationLinkValidationResult } from './type/room-invitation-link-validation-result.enum';
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
+import { Permission } from '@shared/domain/interface';
 
 type UseLinkResponse = {
 	validationResult: RoomInvitationLinkValidationResult;
@@ -29,7 +30,11 @@ export class RoomInvitationLinkUc {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		// TODO: check permissions
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(props.roomId);
+		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
+			action: Action.write,
+			requiredPermissions: [Permission.ROOM_MEMBERS_ADD],
+		});
 
 		const roomInvitationLink = await this.roomInvitationLinkService.createLink({
 			...props,
@@ -43,10 +48,20 @@ export class RoomInvitationLinkUc {
 	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
 		this.checkFeatureEnabled();
 
-		// const user = await this.authorizationService.getUserWithPermissions(userId);
-		// TODO: check permissions
+		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
 
-		const roomInvitationLink = await this.roomInvitationLinkService.updateLink(props);
+		await this.checkRoomAuthorizationByIds(userId, roomInvitationLink.roomId, Action.write, [
+			Permission.ROOM_MEMBERS_ADD,
+		]);
+
+		roomInvitationLink.title = props.title ?? roomInvitationLink.title;
+		roomInvitationLink.isOnlyForTeachers = props.isOnlyForTeachers ?? roomInvitationLink.isOnlyForTeachers;
+		roomInvitationLink.activeUntil = props.activeUntil ?? roomInvitationLink.activeUntil;
+		roomInvitationLink.requiresConfirmation = props.requiresConfirmation ?? roomInvitationLink.requiresConfirmation;
+		roomInvitationLink.restrictedToCreatorSchool =
+			props.restrictedToCreatorSchool ?? roomInvitationLink.restrictedToCreatorSchool;
+
+		await this.roomInvitationLinkService.saveLink(roomInvitationLink);
 
 		return roomInvitationLink;
 	}
@@ -54,17 +69,19 @@ export class RoomInvitationLinkUc {
 	public async deleteLink(userId: EntityId, linkId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 
-		// const user = await this.authorizationService.getUserWithPermissions(userId);
-		// TODO: check permissions
+		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
 
-		await this.roomInvitationLinkService.deleteLink(linkId);
+		await this.checkRoomAuthorizationByIds(userId, roomInvitationLink.roomId, Action.write, [
+			Permission.ROOM_MEMBERS_ADD,
+		]);
+
+		await this.roomInvitationLinkService.deleteLink(roomInvitationLink.id);
 	}
 
 	public async listLinksByRoomId(userId: EntityId, roomId: EntityId): Promise<RoomInvitationLink[]> {
 		this.checkFeatureEnabled();
 
-		// const user = await this.authorizationService.getUserWithPermissions(userId);
-		// TODO: check permissions
+		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
 
 		const links = await this.roomInvitationLinkService.findLinkByRoomId(roomId);
 
@@ -121,5 +138,18 @@ export class RoomInvitationLinkUc {
 			return RoomInvitationLinkValidationResult.ALREADY_MEMBER;
 		}
 		return RoomInvitationLinkValidationResult.VALID;
+	}
+
+	private async checkRoomAuthorizationByIds(
+		userId: EntityId,
+		roomId: EntityId,
+		action: Action,
+		requiredPermissions: Permission[] = []
+	): Promise<RoomMembershipAuthorizable> {
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, roomMembershipAuthorizable, { action, requiredPermissions });
+
+		return roomMembershipAuthorizable;
 	}
 }

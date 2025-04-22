@@ -17,17 +17,9 @@ export class RoomInvitationLinkService {
 		return roomInvitationLink;
 	}
 
-	public async updateLink(props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
-		const roomInvitationLink = await this.roomInvitationLinkRepo.findById(props.id);
-		roomInvitationLink.title = props.title ?? roomInvitationLink.title;
-		roomInvitationLink.isOnlyForTeachers = props.isOnlyForTeachers ?? roomInvitationLink.isOnlyForTeachers;
-		roomInvitationLink.activeUntil = props.activeUntil ?? roomInvitationLink.activeUntil;
-		roomInvitationLink.requiresConfirmation = props.requiresConfirmation ?? roomInvitationLink.requiresConfirmation;
-		roomInvitationLink.restrictedToCreatorSchool =
-			props.restrictedToCreatorSchool ?? roomInvitationLink.restrictedToCreatorSchool;
-
-		await this.roomInvitationLinkRepo.save(roomInvitationLink);
-		return roomInvitationLink;
+	public async saveLink(link: RoomInvitationLink): Promise<RoomInvitationLink> {
+		await this.roomInvitationLinkRepo.save(link);
+		return link;
 	}
 
 	public async findLinkByRoomId(roomId: string): Promise<RoomInvitationLink[]> {
