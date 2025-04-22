@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import { CopyFileResponse, CopyFilesOfParentParams, FileRecordParams, ScanResultParams } from '../../api/dto'; // TODO: invalid import
+import { CopyFileResponse, CopyFilesOfParentParams, ScanResultParams } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
@@ -61,8 +61,8 @@ export class FilesStorageService {
 	}
 
 	// upload
-	public async uploadFile(userId: EntityId, params: ParentInfo, file: FileDto): Promise<FileRecord> {
-		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
+	public async uploadFile(userId: EntityId, parentInfo: ParentInfo, file: FileDto): Promise<FileRecord> {
+		const { fileRecord, stream } = await this.createFileRecord(file, parentInfo, userId);
 		// MimeType Detection consumes part of the stream, so the restored stream is passed on
 		file.data = stream;
 		file.mimeType = fileRecord.mimeType;
@@ -75,14 +75,14 @@ export class FilesStorageService {
 
 	private async createFileRecord(
 		file: FileDto,
-		params: ParentInfo,
+		parentInfo: ParentInfo,
 		userId: EntityId
 	): Promise<{ fileRecord: FileRecord; stream: Readable }> {
-		const fileName = await this.resolveFileName(file, params);
+		const fileName = await this.resolveFileName(file, parentInfo);
 		const { mimeType, stream } = await this.detectMimeType(file);
 
 		// Create fileRecord with 0 as initial file size, because it is overwritten later anyway.
-		const fileRecord = FileRecordFactory.buildFromExternalInput(fileName, 0, mimeType, params, userId);
+		const fileRecord = FileRecordFactory.buildFromExternalInput(fileName, 0, mimeType, parentInfo, userId);
 
 		return { fileRecord, stream };
 	}
@@ -120,10 +120,10 @@ export class FilesStorageService {
 		return { mime: stream.fileType?.mime, stream };
 	}
 
-	private async resolveFileName(file: FileDto, params: FileRecordParams): Promise<string> {
+	private async resolveFileName(file: FileDto, parentInfo: ParentInfo): Promise<string> {
 		let fileName = file.name;
 
-		const [fileRecordsOfParent, count] = await this.getFileRecordsOfParent(params.parentId);
+		const [fileRecordsOfParent, count] = await this.getFileRecordsOfParent(parentInfo.parentId);
 		if (count > 0) {
 			fileName = FileRecord.resolveFileNameDuplicates(fileRecordsOfParent, file.name);
 		}
@@ -332,11 +332,11 @@ export class FilesStorageService {
 		}
 	}
 
-	public async restoreFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
+	public async restoreFilesOfParent(parentInfo: ParentInfo): Promise<Counted<FileRecord[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentIdAndMarkedForDelete(
-			params.storageLocation,
-			params.storageLocationId,
-			params.parentId
+			parentInfo.storageLocation,
+			parentInfo.storageLocationId,
+			parentInfo.parentId
 		);
 
 		if (count > 0) {
@@ -357,13 +357,13 @@ export class FilesStorageService {
 	// copy
 	public async copyFilesOfParent(
 		userId: string,
-		params: FileRecordParams,
+		parentInfo: ParentInfo,
 		copyFilesParams: CopyFilesOfParentParams
 	): Promise<Counted<CopyFileResponse[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentId(
-			params.storageLocation,
-			params.storageLocationId,
-			params.parentId
+			parentInfo.storageLocation,
+			parentInfo.storageLocationId,
+			parentInfo.parentId
 		);
 
 		if (count === 0) {
@@ -377,10 +377,10 @@ export class FilesStorageService {
 
 	private async copyFileRecord(
 		sourceFile: FileRecord,
-		targetParams: FileRecordParams,
+		targetParentInfo: ParentInfo,
 		userId: EntityId
 	): Promise<FileRecord> {
-		const fileRecord = FileRecordFactory.copy(sourceFile, userId, targetParams);
+		const fileRecord = FileRecordFactory.copy(sourceFile, userId, targetParentInfo);
 		await this.fileRecordRepo.save(fileRecord);
 
 		return fileRecord;
@@ -416,15 +416,15 @@ export class FilesStorageService {
 	public async copy(
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
-		targetParams: FileRecordParams
+		targetParentInfo: ParentInfo
 	): Promise<CopyFileResponse[]> {
-		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams });
+		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams: targetParentInfo });
 
 		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
 			try {
 				this.checkScanStatus(sourceFile);
 
-				const targetFile = await this.copyFileRecord(sourceFile, targetParams, userId);
+				const targetFile = await this.copyFileRecord(sourceFile, targetParentInfo, userId);
 				const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
 				return fileResponse;
