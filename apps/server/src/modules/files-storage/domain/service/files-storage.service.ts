@@ -7,7 +7,6 @@ import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import { CopyFileResponse } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
@@ -15,7 +14,7 @@ import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord, ParentInfo } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
-import { FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
+import { CopyFileResult, FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
 
 @Injectable()
 export class FilesStorageService {
@@ -359,7 +358,7 @@ export class FilesStorageService {
 		userId: string,
 		sourceParentInfo: ParentInfo,
 		targetParentInfo: ParentInfo
-	): Promise<Counted<CopyFileResponse[]>> {
+	): Promise<Counted<CopyFileResult[]>> {
 		const [fileRecords, count] = await this.fileRecordRepo.findByStorageLocationIdAndParentId(
 			sourceParentInfo.storageLocation,
 			sourceParentInfo.storageLocationId,
@@ -392,10 +391,7 @@ export class FilesStorageService {
 		}
 	}
 
-	private async copyFilesWithRollbackOnError(
-		sourceFile: FileRecord,
-		targetFile: FileRecord
-	): Promise<CopyFileResponse> {
+	private async copyFilesWithRollbackOnError(sourceFile: FileRecord, targetFile: FileRecord): Promise<CopyFileResult> {
 		try {
 			const copyFiles: CopyFiles = {
 				sourcePath: sourceFile.createPath(),
@@ -417,10 +413,10 @@ export class FilesStorageService {
 		userId: EntityId,
 		sourceFileRecords: FileRecord[],
 		targetParentInfo: ParentInfo
-	): Promise<CopyFileResponse[]> {
+	): Promise<CopyFileResult[]> {
 		this.logger.debug({ action: 'copy', sourceFileRecords, targetParams: targetParentInfo });
 
-		const promises: Promise<CopyFileResponse>[] = sourceFileRecords.map(async (sourceFile) => {
+		const promises: Promise<CopyFileResult>[] = sourceFileRecords.map(async (sourceFile) => {
 			try {
 				this.checkScanStatus(sourceFile);
 

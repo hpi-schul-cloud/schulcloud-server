@@ -27,3 +27,9 @@ export interface StorageLocationParams {
 	storageLocationId: EntityId;
 	storageLocation: StorageLocation;
 }
+
+export interface CopyFileResult {
+	id?: string;
+	sourceId: string;
+	name: string;
+}
