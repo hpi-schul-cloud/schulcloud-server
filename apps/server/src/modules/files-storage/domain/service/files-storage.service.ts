@@ -1,13 +1,13 @@
 import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
-import { AntivirusService } from '@infra/antivirus';
+import { AntivirusService, ScanResult } from '@infra/antivirus';
 import { CopyFiles, S3ClientAdapter } from '@infra/s3-client';
 import { ConflictException, Inject, Injectable, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Counted, EntityId } from '@shared/domain/types';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import { CopyFileResponse, ScanResultParams } from '../../api/dto'; // TODO: invalid import
+import { CopyFileResponse } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
 import { CopyFileResponseBuilder, FileRecordMapper, FileResponseBuilder, FilesStorageMapper } from '../../mapper';
@@ -217,10 +217,10 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
-	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams): Promise<void> {
+	public async updateSecurityStatus(token: string, scanResult: ScanResult): Promise<void> {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResultParams);
+		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
 		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);
