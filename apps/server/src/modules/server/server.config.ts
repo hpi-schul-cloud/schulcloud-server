@@ -106,6 +106,7 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SOCKET_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 	FEATURE_CONSENT_NECESSARY: boolean;
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
@@ -132,10 +133,12 @@ export interface ServerConfig
 	FEATURE_ROOMS_ENABLED: boolean;
 	FEATURE_ROOM_INVITATION_LINKS_ENABLED: boolean;
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
+	FEATURE_ROOM_MEMBERS_TABS_ENABLED: boolean;
 	FEATURE_TSP_SYNC_ENABLED: boolean;
 	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 	LICENSE_SUMMARY_URL: string | undefined;
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: boolean;
+	ROOM_MEMBER_INFO_URL: string | null;
 }
 
 const config: ServerConfig = {
@@ -170,6 +173,7 @@ const config: ServerConfig = {
 		'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'
 	) as boolean,
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_H5P_ENABLED') as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
@@ -317,6 +321,7 @@ const config: ServerConfig = {
 	FEATURE_ROOMS_ENABLED: Configuration.get('FEATURE_ROOMS_ENABLED') as boolean,
 	FEATURE_ROOM_INVITATION_LINKS_ENABLED: Configuration.get('FEATURE_ROOM_INVITATION_LINKS_ENABLED') as boolean,
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: Configuration.get('FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED') as boolean,
+	FEATURE_ROOM_MEMBERS_TABS_ENABLED: Configuration.get('FEATURE_ROOM_MEMBERS_TABS_ENABLED') as boolean,
 	TSP_API_CLIENT_BASE_URL: Configuration.get('TSP_API_CLIENT_BASE_URL') as string,
 	TSP_API_CLIENT_TOKEN_LIFETIME_MS: Configuration.get('TSP_API_CLIENT_TOKEN_LIFETIME_MS') as number,
 	TSP_SYNC_SCHOOL_LIMIT: Configuration.get('TSP_SYNC_SCHOOL_LIMIT') as number,
@@ -350,6 +355,13 @@ const config: ServerConfig = {
 		? (Configuration.get('LICENSE_SUMMARY_URL') as string)
 		: undefined,
 	FEATURE_MEDIA_METADATA_SYNC_ENABLED: Configuration.get('FEATURE_MEDIA_METADATA_SYNC_ENABLED') as boolean,
+	ROOM_MEMBER_INFO_URL:
+		Configuration.get('ROOM_MEMBER_INFO_URL') === null
+			? (Configuration.get('ROOM_MEMBER_INFO_URL') as null)
+			: (Configuration.get('ROOM_MEMBER_INFO_URL') as string),
+	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
+		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
+	) as number,
 };
 
 export const serverConfig = (): ServerConfig => config;

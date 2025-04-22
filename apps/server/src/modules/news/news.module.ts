@@ -1,14 +1,14 @@
 import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { forwardRef, Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
+import { DeletionModule } from '@modules/deletion';
 import { NewsController, NewsUc, TeamNewsController } from './api';
-import { NewsService } from './domain';
 import { NewsRepo } from './repo/news.repo';
+import { NewsService } from './domain';
 
 // imports from deletion module?
 @Module({
-	imports: [CqrsModule, LoggerModule, forwardRef(() => AuthorizationModule)],
+	imports: [LoggerModule, forwardRef(() => AuthorizationModule), DeletionModule],
 	controllers: [NewsController, TeamNewsController],
 	providers: [NewsUc, NewsRepo, NewsService],
 	exports: [NewsUc, NewsService],
