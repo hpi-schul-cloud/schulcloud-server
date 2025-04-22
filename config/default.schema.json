@@ -1163,6 +1163,11 @@
 			"default": false,
 			"description": "Enable video conference elements in column board."
 		},
+		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables h5p on the column board"
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1351,15 +1356,10 @@
 					"default": 360000000,
 					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
 				},
-				"DELETION_MAX_CONCURRENT_DELETION_REQUESTS": {
+				"DELETION_EXECUTION_BATCH_NUMBER": {
 					"type": "number",
 					"default": 20,
-					"description": "max amount of deletion requests to be processed simultaneously"
-				},
-				"DELETION_DELAY_MILLISECONDS": {
-					"type": "number",
-					"default": 5000,
-					"description": "delay in milliseconds to sleep before processing another batch of deletion requests"
+					"description": "max amount of deletion requests to be executed in one batch"
 				}
 			},
 			"default": {}
@@ -1619,6 +1619,11 @@
 			"default": "false",
 			"description": "Enables the ability to change permissions of room members"
 		},
+		"FEATURE_ROOM_MEMBERS_TABS_ENABLED": {
+			"type": "boolean",
+			"default": "false",
+			"description": "Enables the tab navigation for room members page"
+		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
 			"default": "false",
@@ -1648,6 +1653,11 @@
 			"type": "string",
 			"default": null,
 			"description": "The url for further information in room member administration."
+		},
+		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
+			"type": "number",
+			"default": 864000,
+			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
 		}
 	},
 	"required": []
