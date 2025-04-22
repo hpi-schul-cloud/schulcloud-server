@@ -60,6 +60,17 @@ export class RoomInvitationLinkUc {
 		await this.roomInvitationLinkService.deleteLink(linkId);
 	}
 
+	public async listLinksByRoomId(userId: EntityId, roomId: EntityId): Promise<RoomInvitationLink[]> {
+		this.checkFeatureEnabled();
+
+		// const user = await this.authorizationService.getUserWithPermissions(userId);
+		// TODO: check permissions
+
+		const links = await this.roomInvitationLinkService.findLinkByRoomId(roomId);
+
+		return links;
+	}
+
 	public async useLink(userId: EntityId, linkId: string): Promise<UseLinkResponse> {
 		// TODO: is it sure at this point that the user is logged in?
 		this.checkFeatureEnabled();

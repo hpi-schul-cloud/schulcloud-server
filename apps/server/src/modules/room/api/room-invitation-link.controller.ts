@@ -1,5 +1,4 @@
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { RoomInvitationLinkUc } from './room-invitation-link.uc';
+import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
@@ -15,14 +14,15 @@ import {
 	Put,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
-import { RoomInvitationLinkUseLinkResponse } from './dto/response/room-invitation-link-use-link.response';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { ErrorResponse } from '@core/error/dto';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
+import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
+import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
+import { RoomInvitationLinkUseLinkResponse } from './dto/response/room-invitation-link-use-link.response';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
-import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
+import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 
 @ApiTags('Room-Invitation-Links')
 @JwtAuthentication()
@@ -95,7 +95,7 @@ export class RoomInvitationLinkController {
 		await this.roomInvitationLinkUc.deleteLink(currentUser.userId, urlParams.roomInvitationLinkId);
 	}
 
-	@Get(':roomInvitationLinkId')
+	@Post(':roomInvitationLinkId')
 	@ApiOperation({ summary: 'Use a room invitation link to join a room' })
 	@ApiResponse({
 		status: HttpStatus.OK,

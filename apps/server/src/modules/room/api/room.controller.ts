@@ -36,12 +36,16 @@ import { RoomUc } from './room.uc';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { RoomRoleResponse } from './dto/response/room-role.response';
 import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
+import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-link-list.response';
+import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
+import { RoomInvitationLinkUc } from './room-invitation-link.uc';
+import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 
 @ApiTags('Room')
 @JwtAuthentication()
 @Controller('rooms')
 export class RoomController {
-	constructor(private readonly roomUc: RoomUc) {}
+	constructor(private readonly roomUc: RoomUc, private readonly roomInvitationLinkUc: RoomInvitationLinkUc) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of rooms.' })
@@ -115,6 +119,28 @@ export class RoomController {
 		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
 
 		const response = RoomMapper.mapToRoomBoardListResponse(boards);
+
+		return response;
+	}
+
+	@Get('/:roomId/room-invitation-links')
+	@ApiOperation({ summary: 'Get a list of room invitation links of a room.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of room invitation links.',
+		type: RoomInvitationLinkListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getInvitationLinks(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomInvitationLinkResponse[]> {
+		const roomInvitationLinks = await this.roomInvitationLinkUc.listLinksByRoomId(currentUser.userId, urlParams.roomId);
+
+		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinksResponse(roomInvitationLinks);
 
 		return response;
 	}
