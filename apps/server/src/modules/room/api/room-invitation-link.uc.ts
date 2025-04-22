@@ -72,16 +72,12 @@ export class RoomInvitationLinkUc {
 	}
 
 	public async useLink(userId: EntityId, linkId: string): Promise<UseLinkResponse> {
-		// TODO: is it sure at this point that the user is logged in?
 		this.checkFeatureEnabled();
 
-		// TODO: is any additional permission check required?
-
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
 
-		const validationResult = await this.checkValidity(roomInvitationLink, isTeacher, user);
+		const validationResult = await this.checkValidity(roomInvitationLink, user);
 		if (validationResult !== RoomInvitationLinkValidationResult.VALID) {
 			return { validationResult };
 		}
@@ -93,9 +89,7 @@ export class RoomInvitationLinkUc {
 			roomInvitationLink.startingRole
 		);
 
-		const redirectUrl = `rooms/${roomInvitationLink.roomId}`;
-
-		return { validationResult, redirectUrl };
+		return { validationResult };
 	}
 
 	private checkFeatureEnabled(): void {
@@ -106,9 +100,10 @@ export class RoomInvitationLinkUc {
 
 	private async checkValidity(
 		roomInvitationLink: RoomInvitationLink,
-		isTeacher: boolean,
 		user: User
 	): Promise<RoomInvitationLinkValidationResult> {
+		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
+
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
 			return RoomInvitationLinkValidationResult.EXPIRED;
 		}
