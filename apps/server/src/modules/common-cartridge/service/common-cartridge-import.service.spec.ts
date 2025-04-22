@@ -5,9 +5,9 @@ import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CommonCartridgeImportOrganizationProps, CommonCartridgeImportResourceProps } from '..';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
 jest.mock('../import/common-cartridge-file-parser');
@@ -40,6 +40,10 @@ describe(CommonCartridgeImportService.name, () => {
 				{
 					provide: CardClientAdapter,
 					useValue: createMock<CardClientAdapter>(),
+				},
+				{
+					provide: CommonCartridgeImportMapper,
+					useValue: createMock<CommonCartridgeImportMapper>(),
 				},
 			],
 		}).compile();
@@ -235,7 +239,7 @@ describe(CommonCartridgeImportService.name, () => {
 				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
 			});
 
-			it('should not create an element if the resource type is not supported', async () => {
+			it('should create an element if the resource type is not supported', async () => {
 				const { file } = setup();
 
 				commonCartridgeFileParser.getResource.mockReturnValue({
@@ -244,22 +248,8 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importFile(file);
 
-				expect(cardClientAdapterMock.createCardElement).not.toHaveBeenCalled();
-				expect(cardClientAdapterMock.updateCardElement).not.toHaveBeenCalled();
-			});
-
-			it('should return undefined if resource type is not WEB_CONTENT with .html', () => {
-				const resource: CommonCartridgeImportResourceProps = {
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-				} as CommonCartridgeImportResourceProps;
-
-				const cardElementProps: CommonCartridgeImportOrganizationProps = {
-					resourcePath: 'some-path.txt',
-				} as CommonCartridgeImportOrganizationProps;
-
-				const result = sut['mapToResourceBody'](resource, cardElementProps);
-
-				expect(result).toBeUndefined();
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(1);
+				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

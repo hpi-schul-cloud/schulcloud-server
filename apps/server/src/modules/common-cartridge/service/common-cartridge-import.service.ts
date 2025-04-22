@@ -1,26 +1,11 @@
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
-import {
-	CardClientAdapter,
-	LinkElementContentBody,
-	RichTextElementContentBody,
-	UpdateElementContentBodyParamsData,
-} from '@infra/cards-client';
+import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
-import { InputFormat } from '@shared/domain/types';
-import {
-	CommonCartridgeImportOrganizationProps,
-	CommonCartridgeImportResourceProps,
-	CommonCartridgeImportWebContentResourceProps,
-	CommonCartridgeResourceTypeV1P1,
-} from '..';
+import { CommonCartridgeImportOrganizationProps } from '..';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import {
-	CommonCartridgeOrganizationProps,
-	CommonCartridgeWebLinkResourceProps,
-	DEFAULT_FILE_PARSER_OPTIONS,
-} from '../import/common-cartridge-import.types';
+import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 const DEPTH_CARD_ELEMENTS = 3;
@@ -148,7 +133,8 @@ export class CommonCartridgeImportService {
 
 		if (!contentElementType) return;
 
-		const resourceBody = this.mapToResourceBody(resource, cardElementProps);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const resourceBody = this.commonCartridgeImportMapper.mapToResourceBody(resource, cardElementProps);
 
 		if (!resourceBody) return;
 
@@ -157,54 +143,8 @@ export class CommonCartridgeImportService {
 		});
 
 		await this.cardClient.updateCardElement(contentElement.id, {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			data: resourceBody,
 		});
-	}
-
-	private mapToResourceBody(
-		resource: CommonCartridgeImportResourceProps,
-		cardElementProps: CommonCartridgeImportOrganizationProps
-	): UpdateElementContentBodyParamsData | undefined {
-		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
-			return this.createLinkFromResource(resource);
-		}
-
-		if (
-			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
-			cardElementProps.resourcePath.endsWith('.html')
-		) {
-			return this.createTextFromHtmlResource(resource);
-		}
-
-		return undefined;
-	}
-
-	private createTextFromHtmlResource(
-		resource: CommonCartridgeImportWebContentResourceProps
-	): RichTextElementContentBody {
-		const richTextBody: RichTextElementContentBody = {
-			type: 'richText',
-			content: {
-				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
-				text: resource.html,
-			},
-		};
-
-		return richTextBody;
-	}
-
-	private createLinkFromResource(resource: CommonCartridgeWebLinkResourceProps): LinkElementContentBody {
-		const linkBody: LinkElementContentBody = {
-			content: {
-				title: resource.title ?? resource.url,
-				url: resource.url,
-				description: '',
-				imageUrl: '',
-				originalImageUrl: '',
-			},
-			type: 'link',
-		};
-
-		return linkBody;
 	}
 }
