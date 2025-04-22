@@ -185,13 +185,12 @@ export class FilesStorageUC {
 
 	// download
 	public async download(params: DownloadFileParams, bytesRange?: string): Promise<GetFileResponse> {
-		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
-		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
+		const fileRecord = await this.filesStorageService.getFileRecord(params.fileRecordId);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.read);
 
-		return this.filesStorageService.download(fileRecord, params, bytesRange);
+		return this.filesStorageService.download(fileRecord, params.fileRecordId, bytesRange);
 	}
 
 	public async downloadBySecurityToken(token: string): Promise<GetFileResponse> {
@@ -207,13 +206,12 @@ export class FilesStorageUC {
 		previewParams: PreviewParams,
 		bytesRange?: string
 	): Promise<GetFileResponse> {
-		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
-		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
+		const fileRecord = await this.filesStorageService.getFileRecord(params.fileRecordId);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.read);
 
-		this.filesStorageService.checkFileName(fileRecord, params);
+		this.filesStorageService.checkFileName(fileRecord, params.fileRecordId);
 
 		const result = this.previewService.download(fileRecord, previewParams, bytesRange);
 
@@ -231,7 +229,7 @@ export class FilesStorageUC {
 	}
 
 	public async deleteOneFile(params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.filesStorageService.getFileRecord(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(params.fileRecordId);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.delete);
@@ -250,7 +248,7 @@ export class FilesStorageUC {
 	}
 
 	public async restoreOneFile(params: SingleFileParams): Promise<FileRecord> {
-		const fileRecord = await this.filesStorageService.getFileRecordMarkedForDelete(params);
+		const fileRecord = await this.filesStorageService.getFileRecordMarkedForDelete(params.fileRecordId);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.create);
@@ -274,7 +272,7 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const response = await this.filesStorageService.copyFilesOfParent(userId, params, copyFilesParams);
+		const response = await this.filesStorageService.copyFilesOfParent(userId, params, copyFilesParams.target);
 
 		return response;
 	}
@@ -284,7 +282,7 @@ export class FilesStorageUC {
 		params: SingleFileParams,
 		copyFileParams: CopyFileParams
 	): Promise<CopyFileResponse> {
-		const fileRecord = await this.filesStorageService.getFileRecord(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(params.fileRecordId);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await Promise.all([
@@ -303,12 +301,12 @@ export class FilesStorageUC {
 
 	// update
 	public async patchFilename(params: SingleFileParams, data: RenameFileParams): Promise<FileRecord> {
-		const fileRecord = await this.filesStorageService.getFileRecord(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(params.fileRecordId);
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.update);
 
-		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data);
+		const modifiedFileRecord = await this.filesStorageService.patchFilename(fileRecord, data.fileName);
 
 		return modifiedFileRecord;
 	}
