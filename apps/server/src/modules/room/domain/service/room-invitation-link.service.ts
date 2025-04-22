@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
+import { RoomInvitationLinkRepo } from '../../repo';
 import {
 	RoomInvitationLink,
 	RoomInvitationLinkDto,
 	RoomInvitationLinkUpdateProps,
 } from '../do/room-invitation-link.do';
-import { RoomInvitationLinkRepo } from '../../repo';
-import { ObjectId } from 'bson';
+import { RoomInvitationLinkFactory } from '../factory/room-invitation-link.factory';
 
 @Injectable()
 export class RoomInvitationLinkService {
 	constructor(private readonly roomInvitationLinkRepo: RoomInvitationLinkRepo) {}
 
 	public async createLink(props: RoomInvitationLinkDto): Promise<RoomInvitationLink> {
-		console.log('Creating room invitation link', props);
-		const roomInvitationLink = new RoomInvitationLink({ id: new ObjectId().toHexString(), ...props });
+		const roomInvitationLink = RoomInvitationLinkFactory.createInvitationLink(props);
 		await this.roomInvitationLinkRepo.save(roomInvitationLink);
 		return roomInvitationLink;
 	}

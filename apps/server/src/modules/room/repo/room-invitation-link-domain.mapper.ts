@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomInvitationLink } from '../domain/do/room-invitation-link.do';
 import { RoomInvitationLinkEntity } from './entity/room-invitation-link.entity';
 import { Injectable } from '@nestjs/common';
+import { RoomInvitationLinkFactory } from '../domain/factory/room-invitation-link.factory';
 
 @Injectable()
 export class RoomInvitationLinkDomainMapper {
@@ -12,17 +13,8 @@ export class RoomInvitationLinkDomainMapper {
 			return entity.domainObject;
 		}
 
-		const roomInvitationLink = new RoomInvitationLink({
-			id: entity.id,
-			title: entity.title,
-			restrictedToCreatorSchool: entity.restrictedToCreatorSchool,
-			isOnlyForTeachers: entity.isOnlyForTeachers,
-			activeUntil: entity.activeUntil,
-			requiresConfirmation: entity.requiresConfirmation,
-			roomId: entity.roomId,
-			creatorUserId: entity.creatorUserId,
-			creatorSchoolId: entity.creatorSchoolId,
-		});
+		const roomInvitationLink = RoomInvitationLinkFactory.buildFromProps(entity);
+
 		entity.domainObject = roomInvitationLink;
 		return roomInvitationLink;
 	}
