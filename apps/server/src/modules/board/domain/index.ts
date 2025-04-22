@@ -19,3 +19,4 @@ export * from './submission-item.do';
 export * from './type-mapping';
 export * from './types';
 export * from './video-conference-element.do';
+export * from './h5p-element.do';
