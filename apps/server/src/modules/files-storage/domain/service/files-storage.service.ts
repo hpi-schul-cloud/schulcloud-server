@@ -12,7 +12,6 @@ import {
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
-	RenameFileParams,
 	ScanResultParams,
 } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
@@ -213,12 +212,12 @@ export class FilesStorageService {
 		}
 	}
 
-	public async patchFilename(fileRecord: FileRecord, data: RenameFileParams): Promise<FileRecord> {
+	public async patchFilename(fileRecord: FileRecord, fileName: string): Promise<FileRecord> {
 		const fileRecordParams = FilesStorageMapper.mapFileRecordToFileRecordParams(fileRecord);
 		const [fileRecords] = await this.getFileRecordsOfParent(fileRecordParams.parentId);
 
-		this.checkDuplicatedNames(fileRecords, data.fileName);
-		fileRecord.setName(data.fileName);
+		this.checkDuplicatedNames(fileRecords, fileName);
+		fileRecord.setName(fileName);
 		await this.fileRecordRepo.save(fileRecord);
 
 		return fileRecord;
