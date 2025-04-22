@@ -28,10 +28,39 @@ export class DeletionClient {
 
 	public async executeDeletions(limit?: number, runFailed?: boolean): Promise<void> {
 		try {
-			const response = await this.postDeletionExecutionRequest(limit, runFailed);
-			this.checkResponseStatusCode(response, HttpStatusCode.NoContent);
+			let deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
+			while (deletionRequestIds.length > 0) {
+				const response = await this.postDeletionExecutionRequest(deletionRequestIds);
+				this.checkResponseStatusCode(response, HttpStatusCode.NoContent);
+				deletionRequestIds = await this.getDeletionRequestIds(limit, runFailed);
+			}
 		} catch (err) {
 			throw this.createError(err, 'executeDeletions');
+		}
+	}
+
+	private async getDeletionRequestIds(limit?: number, runFailed?: boolean): Promise<string[]> {
+		try {
+			const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
+			const endpoint = '/admin/api/v1/deletionExecutions';
+			const getDeletionRequestsEndpoint = new URL(endpoint, baseUrl);
+
+			const params = new URLSearchParams(getDeletionRequestsEndpoint.search);
+			if (limit && this.isLimitGreaterZero(limit)) {
+				params.append('limit', limit.toString());
+			}
+			if (runFailed) {
+				params.append('runFailed', runFailed.toString());
+			}
+
+			const fullUrl = `${getDeletionRequestsEndpoint.toString()}?${params.toString()}`;
+
+			const request = this.httpService.get<string[]>(fullUrl, this.createDefaultHeaders());
+			const response = await firstValueFrom(request);
+
+			return response.data;
+		} catch (err) {
+			throw this.createError(err, 'getDeletionRequestIds');
 		}
 	}
 
@@ -46,7 +75,7 @@ export class DeletionClient {
 		return response;
 	}
 
-	private async postDeletionExecutionRequest(limit?: number, runFailed?: boolean): Promise<AxiosResponse<any, any>> {
+	private async postDeletionExecutionRequest(ids: string[]): Promise<AxiosResponse<any, any>> {
 		const defaultHeaders = this.createDefaultHeaders();
 
 		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
@@ -55,16 +84,10 @@ export class DeletionClient {
 		const postDeletionExecutionsEndpoint = new URL(endpoint, baseUrl);
 
 		const params = new URLSearchParams(postDeletionExecutionsEndpoint.search);
-		if (limit && this.isLimitGreaterZero(limit)) {
-			params.append('limit', limit.toString());
-		}
-		if (runFailed) {
-			params.append('runFailed', runFailed.toString());
-		}
 
 		const fullUrl = `${postDeletionExecutionsEndpoint.toString()}?${params.toString()}`;
 
-		const request = this.httpService.post(fullUrl, null, defaultHeaders);
+		const request = this.httpService.post(fullUrl, { ids }, defaultHeaders);
 		const response = await firstValueFrom(request);
 
 		return response;
