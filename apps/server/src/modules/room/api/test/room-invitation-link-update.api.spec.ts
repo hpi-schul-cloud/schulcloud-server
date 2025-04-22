@@ -102,11 +102,14 @@ describe('Room Invitation Link Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
-				const roomInvitationLink = roomInvitationLinkEntityFactory.build({ roomId: room.id });
-				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+				const roomInvitationLink = roomInvitationLinkEntityFactory.build({
+					roomId: room.id,
+					creatorSchoolId: school.id,
+				});
+				const { roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
-					users: [{ role: roomEditorRole, user: teacherUser }],
+					users: [{ role: roomAdminRole, user: teacherUser }],
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
 					roomId: room.id,
@@ -120,7 +123,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					teacherAccount,
 					teacherUser,
 					userGroup,
-					roomEditorRole,
+					roomAdminRole,
 				]);
 				em.clear();
 

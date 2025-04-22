@@ -97,10 +97,10 @@ describe('Room Invitation Link Controller (API)', () => {
 					roomId: room.id,
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const { roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomViewerRole, user: studentUser }],
+					users: [{ role: roomAdminRole, user: studentUser }],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -114,7 +114,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					...roomInvitationLinks,
 					studentAccount,
 					studentUser,
-					roomViewerRole,
+					roomAdminRole,
 					userGroupEntity,
 					roomMembership,
 				]);
