@@ -1,5 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import type { ServerConfig } from '@modules/server';
 import { ServerTestModule, serverConfig } from '@modules/server';
@@ -38,6 +43,7 @@ describe('Room Invitation Link Controller (API)', () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		config.FEATURE_ROOM_INVITATION_LINKS_ENABLED = true;
+		config.FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -83,11 +89,16 @@ describe('Room Invitation Link Controller (API)', () => {
 		describe('when the user is at the same school as the user', () => {
 			const setup = async (roomInvitationLinkConfig: RoomInvitationLinkConfig) => {
 				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.buildWithId({
+					schoolId: school.id,
+				});
+				jest.setTimeout(60000);
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+
 				const roomInvitationLink = roomInvitationLinkEntityFactory.buildWithId({
-					roomId: new ObjectId().toHexString(),
+					roomId: room.id,
 					requiresConfirmation: roomInvitationLinkConfig.requiresConfirmation ?? true,
 					isOnlyForTeachers: roomInvitationLinkConfig.isOnlyForTeachers ?? true,
 					restrictedToCreatorSchool: roomInvitationLinkConfig.restrictedToCreatorSchool ?? true,
@@ -95,6 +106,18 @@ describe('Room Invitation Link Controller (API)', () => {
 					creatorUserId: teacherUser.id,
 					creatorSchoolId: school.id,
 				});
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [],
+					organization: teacherUser.school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				const { roomApplicantRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				await em.persistAndFlush([
 					adminAccount,
 					adminUser,
@@ -102,7 +125,12 @@ describe('Room Invitation Link Controller (API)', () => {
 					teacherUser,
 					studentAccount,
 					studentUser,
+					room,
 					roomInvitationLink,
+					roomMembership,
+					roomViewerRole,
+					roomApplicantRole,
+					userGroupEntity,
 				]);
 				em.clear();
 
