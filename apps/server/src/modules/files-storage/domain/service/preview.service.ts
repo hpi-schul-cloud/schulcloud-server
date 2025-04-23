@@ -2,13 +2,11 @@ import { LegacyLogger } from '@core/logger';
 import { PreviewProducer } from '@infra/preview-generator';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { PreviewParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { PreviewBuilder } from '../../mapper';
 import { ErrorType } from '../error';
 import { FileRecord, PreviewStatus } from '../file-record.do';
 import { GetFileResponse, PreviewFileParams } from '../interface';
-import { FileResponseBuilder } from '../mapper';
+import { FileResponseBuilder, PreviewFileParamsMapper } from '../mapper';
 
 @Injectable()
 export class PreviewService {
@@ -20,14 +18,8 @@ export class PreviewService {
 		this.logger.setContext(PreviewService.name);
 	}
 
-	public async download(
-		fileRecord: FileRecord,
-		previewParams: PreviewParams,
-		bytesRange?: string
-	): Promise<GetFileResponse> {
+	public async download(fileRecord: FileRecord, previewFileParams: PreviewFileParams): Promise<GetFileResponse> {
 		this.checkIfPreviewPossible(fileRecord);
-
-		const previewFileParams = PreviewBuilder.buildParams(fileRecord, previewParams, bytesRange);
 
 		const response = await this.tryGetPreviewOrGenerate(previewFileParams);
 
@@ -81,7 +73,7 @@ export class PreviewService {
 	}
 
 	private async generatePreview(params: PreviewFileParams): Promise<void> {
-		const payload = PreviewBuilder.buildPayload(params);
+		const payload = PreviewFileParamsMapper.buildPayload(params);
 
 		await this.previewProducer.generate(payload);
 	}

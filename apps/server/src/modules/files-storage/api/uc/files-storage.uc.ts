@@ -38,7 +38,13 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../dto';
-import { ConfigResponseMapper, CopyFileResponseBuilder, FileDtoBuilder, FilesStorageMapper } from '../mapper';
+import {
+	ConfigResponseMapper,
+	CopyFileResponseBuilder,
+	FileDtoBuilder,
+	FilesStorageMapper,
+	PreviewBuilder,
+} from '../mapper';
 
 // TODO: Delete files-storage uc spec tests and remove export?
 export const FileStorageAuthorizationContext = {
@@ -213,7 +219,9 @@ export class FilesStorageUC {
 
 		this.filesStorageService.checkFileName(fileRecord, params.fileRecordId);
 
-		const result = this.previewService.download(fileRecord, previewParams, bytesRange);
+		const previewFileParams = PreviewBuilder.buildParams(fileRecord, previewParams, bytesRange);
+
+		const result = this.previewService.download(fileRecord, previewFileParams);
 
 		return result;
 	}

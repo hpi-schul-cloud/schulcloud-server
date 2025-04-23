@@ -1,7 +1,7 @@
-import crypto from 'crypto';
 import { ObjectId } from 'bson';
-import { PreviewOutputMimeTypes } from '../domain';
-import { fileRecordTestFactory } from '../testing';
+import crypto from 'crypto';
+import { PreviewOutputMimeTypes } from '../../domain';
+import { fileRecordTestFactory } from '../../testing';
 import { PreviewBuilder } from './preview.builder';
 
 describe('PreviewBuilder', () => {

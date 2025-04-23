@@ -1,9 +1,8 @@
-import crypto from 'crypto';
-import { PreviewFileOptions } from '@infra/preview-generator';
-import { PreviewParams } from '../api/dto';
-import { FileRecord } from '../domain';
-import { PreviewFileParams } from '../domain/interface';
 import { EntityId } from '@shared/domain/types';
+import crypto from 'crypto';
+import { FileRecord } from '../../domain';
+import { PreviewFileParams } from '../../domain/interface';
+import { PreviewParams } from '../dto';
 
 export class PreviewBuilder {
 	public static buildParams(
@@ -29,21 +28,6 @@ export class PreviewBuilder {
 		};
 
 		return previewFileParams;
-	}
-
-	public static buildPayload(params: PreviewFileParams): PreviewFileOptions {
-		const { originFilePath, previewFilePath, previewParams, format } = params;
-
-		const payload = {
-			originFilePath,
-			previewFilePath,
-			previewOptions: {
-				format,
-				width: previewParams.width,
-			},
-		};
-
-		return payload;
 	}
 
 	public static createPreviewNameHash(fileRecordId: EntityId, previewParams: PreviewParams): string {
