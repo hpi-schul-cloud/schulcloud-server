@@ -2,7 +2,6 @@ import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
-import { CqrsModule } from '@nestjs/cqrs';
 import {
 	COURSE_REPO,
 	CourseAuthorizableService,
@@ -15,9 +14,10 @@ import {
 } from './domain';
 import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [RoleModule, LoggerModule, CqrsModule, AuthorizationModule],
+	imports: [RoleModule, LoggerModule, AuthorizationModule, DeletionModule],
 	providers: [
 		CourseAuthorizableService,
 		CourseGroupAuthorizableService,

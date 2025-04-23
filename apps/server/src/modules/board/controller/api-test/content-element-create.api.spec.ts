@@ -100,6 +100,16 @@ describe(`content element create (api)`, () => {
 				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.EXTERNAL_TOOL);
 			});
 
+			it('should return the created content element of type H5P', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+					type: ContentElementType.H5P,
+				});
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.H5P);
+			});
+
 			it('should return the created content element of type SUBMISSION_CONTAINER with dueDate set to null', async () => {
 				const { loggedInClient, cardNode } = await setup();
 

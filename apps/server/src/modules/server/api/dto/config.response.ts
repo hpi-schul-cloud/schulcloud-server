@@ -114,6 +114,9 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
 
 	@ApiProperty()
+	public FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
 
 	@ApiProperty()
@@ -225,6 +228,9 @@ export class ConfigResponse {
 	FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_ROOM_MEMBERS_TABS_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -232,6 +238,9 @@ export class ConfigResponse {
 
 	@ApiPropertyOptional()
 	public LICENSE_SUMMARY_URL?: string;
+
+	@ApiProperty({ type: String, nullable: true })
+	ROOM_MEMBER_INFO_URL: string | null;
 
 	constructor(config: ServerConfig) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
@@ -306,8 +315,11 @@ export class ConfigResponse {
 		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
 		this.FEATURE_ROOMS_ENABLED = config.FEATURE_ROOMS_ENABLED;
 		this.FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED = config.FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED;
+		this.FEATURE_ROOM_MEMBERS_TABS_ENABLED = config.FEATURE_ROOM_MEMBERS_TABS_ENABLED;
 		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED;
 		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
 		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
+		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
+		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
 	}
 }

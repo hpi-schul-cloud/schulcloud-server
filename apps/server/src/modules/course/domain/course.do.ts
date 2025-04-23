@@ -1,6 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { CourseFeatures, SyncAttribute } from '../repo';
+import { CourseFeatures } from '../repo';
+import { CourseSyncAttribute } from './interface';
 
 export interface CourseProps extends AuthorizableObject {
 	name: string;
@@ -35,7 +36,7 @@ export interface CourseProps extends AuthorizableObject {
 
 	syncedWithGroup?: EntityId;
 
-	excludeFromSync?: SyncAttribute[];
+	excludeFromSync?: CourseSyncAttribute[];
 }
 
 export class Course extends DomainObject<CourseProps> {
@@ -103,11 +104,11 @@ export class Course extends DomainObject<CourseProps> {
 		return this.props.syncedWithGroup;
 	}
 
-	set excludeFromSync(values: SyncAttribute[] | undefined) {
+	set excludeFromSync(values: CourseSyncAttribute[] | undefined) {
 		this.props.excludeFromSync = values ? [...new Set(values)] : undefined;
 	}
 
-	get excludeFromSync(): SyncAttribute[] | undefined {
+	get excludeFromSync(): CourseSyncAttribute[] | undefined {
 		return this.props.excludeFromSync;
 	}
 

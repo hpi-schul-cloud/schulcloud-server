@@ -9,10 +9,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { COURSE_REPO, Course, CourseStatus } from '../domain';
+import { COURSE_REPO, Course, CourseStatus, CourseSyncAttribute } from '../domain';
 import { courseEntityFactory, courseFactory, courseGroupEntityFactory } from '../testing';
 import { CourseMikroOrmRepo } from './course-mikro-orm.repo';
-import { CourseEntity, CourseFeatures, SyncAttribute } from './course.entity';
+import { CourseEntity, CourseFeatures } from './course.entity';
 import { CourseGroupEntity } from './coursegroup.entity';
 import { CourseEntityMapper } from './mapper/course.entity.mapper';
 
@@ -148,7 +148,7 @@ describe(CourseMikroOrmRepo.name, () => {
 					color: '#ACACAC',
 					copyingSince: new Date(),
 					syncedWithGroup: groupEntity.id,
-					excludeFromSync: [SyncAttribute.TEACHERS],
+					excludeFromSync: [CourseSyncAttribute.TEACHERS],
 					shareToken: 'shareToken',
 					untilDate: new Date(),
 					startDate: new Date(),

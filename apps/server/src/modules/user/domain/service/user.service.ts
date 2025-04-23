@@ -1,8 +1,6 @@
 import { Logger } from '@core/logger';
 import { CalendarService } from '@infra/calendar';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
 	type DeletionService,
@@ -14,14 +12,13 @@ import {
 	OperationReportHelper,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import type { SchoolEntity } from '@modules/school/repo';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EventBus, EventsHandler, type IEventHandler } from '@nestjs/cqrs';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import type { IFindOptions, LanguageType } from '@shared/domain/interface';
 import type { Counted, EntityId } from '@shared/domain/types';
@@ -36,8 +33,7 @@ import type { UserName } from '../type';
 import { UserMapper } from '../mapper';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class UserService implements DeletionService {
 	constructor(
 		@Inject(USER_DO_REPO) private readonly userDoRepo: UserDoRepo,
 		private readonly userRepo: UserMikroOrmRepo,
@@ -46,16 +42,10 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly calendarService: CalendarService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(UserService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async getUserEntityWithRoles(userId: EntityId): Promise<User> {
@@ -357,12 +347,6 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		extractedOperationReport = OperationReportHelper.extractOperationReports([results]);
 
 		return DomainDeletionReportBuilder.build(DomainName.CALENDAR, extractedOperationReport);
-	}
-
-	public findByTspUids(tspUids: string[]): Promise<UserDo[]> {
-		const userDOs = this.userDoRepo.findByTspUids(tspUids);
-
-		return userDOs;
 	}
 
 	public findForImportUser(
