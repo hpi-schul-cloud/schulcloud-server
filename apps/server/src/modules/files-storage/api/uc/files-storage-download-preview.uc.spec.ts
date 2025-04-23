@@ -9,12 +9,16 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
-import { FilesStorageService, PreviewOutputMimeTypes, PreviewService } from '../../domain';
-import { FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity } from '../../repo';
+import {
+	FilesStorageService,
+	PreviewFileParams,
+	PreviewOutputMimeTypes,
+	PreviewService,
+	PreviewWidth,
+} from '../../domain';
 import { fileRecordTestFactory, TestHelper } from '../../testing';
-import { SingleFileParams } from '../dto';
+import { DownloadFileParams, SingleFileParams } from '../dto';
+import { FilesStorageMapper, PreviewBuilder } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
@@ -23,18 +27,21 @@ const buildFileRecordWithParams = () => {
 
 	const fileRecord = fileRecordTestFactory().build({ parentId: userId, storageLocationId });
 
-	const params: SingleFileParams = {
+	const singleFileParams: SingleFileParams = {
 		fileRecordId: fileRecord.id,
 	};
 
-	return { params, fileRecord, userId };
+	return { singleFileParams, fileRecord, userId };
 };
 
-const getPreviewParams = () => {
-	return {
-		outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
-		forceUpdate: true,
-	};
+const defaultPreviewParams = {
+	outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP,
+	forceUpdate: false,
+};
+
+const defaultPreviewParamsWithWidth = {
+	...defaultPreviewParams,
+	width: PreviewWidth.WIDTH_500,
 };
 
 describe('FilesStorageUC', () => {
@@ -45,8 +52,6 @@ describe('FilesStorageUC', () => {
 	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -110,39 +115,55 @@ describe('FilesStorageUC', () => {
 	describe('downloadPreview is called', () => {
 		describe('WHEN preview is returned and user is authorized', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
+				const bytesRange = undefined;
+				const { fileRecord, singleFileParams, userId } = buildFileRecordWithParams();
+				const downloadFileParams: DownloadFileParams = { ...singleFileParams, fileName: fileRecord.getName() };
+				const previewParams = { ...defaultPreviewParamsWithWidth };
+				const format = previewParams.outputFormat.split('/')[1];
 
-				const previewParams = getPreviewParams();
 				const previewFileResponse = TestHelper.createFileResponse();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				previewService.download.mockResolvedValueOnce(previewFileResponse);
 
-				return { fileDownloadParams, previewParams, userId, fileRecord, previewFileResponse };
+				const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+				const previewPath = fileRecord.createPreviewFilePath(hash);
+				const originPath = fileRecord.createPath();
+
+				const previewFileParams: PreviewFileParams = {
+					fileRecord,
+					previewParams,
+					hash,
+					originFilePath: originPath,
+					previewFilePath: previewPath,
+					format,
+					bytesRange,
+				};
+
+				return { downloadFileParams, previewParams, previewFileParams, userId, fileRecord, previewFileResponse };
 			};
 
 			it('should call getFileRecord with correct params', async () => {
-				const { fileDownloadParams, userId, previewParams } = setup();
+				const { downloadFileParams, userId, previewParams } = setup();
 
-				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
+				await filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams);
 
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(fileDownloadParams.fileRecordId);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(downloadFileParams.fileRecordId);
 			});
 
 			it('should call getPreview with correct params', async () => {
-				const { fileDownloadParams, userId, previewParams, fileRecord } = setup();
+				const { downloadFileParams, userId, previewParams, previewFileParams, fileRecord } = setup();
 
-				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
+				await filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams);
 
-				expect(previewService.download).toHaveBeenCalledWith(fileRecord, previewParams, undefined);
+				expect(previewService.download).toHaveBeenCalledWith(fileRecord, previewFileParams);
 			});
 
 			it('should call checkPermission with correct params', async () => {
-				const { fileDownloadParams, previewParams, userId, fileRecord } = setup();
+				const { downloadFileParams, previewParams, userId, fileRecord } = setup();
 				const parentInfo = fileRecord.getParentInfo();
 
-				await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
+				await filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentInfo.parentType);
 				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
@@ -153,9 +174,9 @@ describe('FilesStorageUC', () => {
 			});
 
 			it('should return correct result', async () => {
-				const { fileDownloadParams, previewParams, userId, previewFileResponse } = setup();
+				const { downloadFileParams, previewParams, userId, previewFileResponse } = setup();
 
-				const result = await filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams);
+				const result = await filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams);
 
 				expect(result).toEqual(previewFileResponse);
 			});
@@ -163,64 +184,64 @@ describe('FilesStorageUC', () => {
 
 		describe('WHEN getFileRecord throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
+				const { fileRecord, singleFileParams, userId } = buildFileRecordWithParams();
+				const downloadFileParams = { ...singleFileParams, fileName: fileRecord.getName() };
 
-				const previewParams = getPreviewParams();
+				const previewParams = { ...defaultPreviewParamsWithWidth };
 
 				const error = new Error('test');
 				filesStorageService.getFileRecord.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, previewParams, userId, error };
+				return { downloadFileParams, previewParams, userId, error };
 			};
 
 			it('should pass error', async () => {
-				const { fileDownloadParams, userId, error, previewParams } = setup();
+				const { downloadFileParams, userId, error, previewParams } = setup();
 
-				await expect(filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams)).rejects.toThrow(error);
+				await expect(filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams)).rejects.toThrow(error);
 			});
 		});
 
 		describe('WHEN user is not authorized', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
+				const { fileRecord, singleFileParams, userId } = buildFileRecordWithParams();
+				const downloadFileParams = { ...singleFileParams, fileName: fileRecord.getName() };
 
-				const previewParams = getPreviewParams();
+				const previewParams = { ...defaultPreviewParamsWithWidth };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 
 				const error = new ForbiddenException();
 				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, userId, fileRecord, previewParams, error };
+				return { downloadFileParams, userId, fileRecord, previewParams, error };
 			};
 
 			it('should throw Error', async () => {
-				const { fileDownloadParams, userId, previewParams, error } = setup();
+				const { downloadFileParams, userId, previewParams, error } = setup();
 
-				await expect(filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams)).rejects.toThrow(error);
+				await expect(filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams)).rejects.toThrow(error);
 			});
 		});
 
 		describe('WHEN getPreview throws error', () => {
 			const setup = () => {
-				const { fileRecord, params, userId } = buildFileRecordWithParams();
-				const fileDownloadParams = { ...params, fileName: fileRecord.getName() };
+				const { fileRecord, singleFileParams, userId } = buildFileRecordWithParams();
+				const downloadFileParams = { ...singleFileParams, fileName: fileRecord.getName() };
 
-				const previewParams = getPreviewParams();
+				const previewParams = { ...defaultPreviewParamsWithWidth };
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				const error = new Error('test');
 				previewService.download.mockRejectedValueOnce(error);
 
-				return { fileDownloadParams, previewParams, userId, error };
+				return { downloadFileParams, previewParams, userId, error };
 			};
 
 			it('should pass error', async () => {
-				const { fileDownloadParams, previewParams, userId, error } = setup();
+				const { downloadFileParams, previewParams, userId, error } = setup();
 
-				await expect(filesStorageUC.downloadPreview(userId, fileDownloadParams, previewParams)).rejects.toThrow(error);
+				await expect(filesStorageUC.downloadPreview(userId, downloadFileParams, previewParams)).rejects.toThrow(error);
 			});
 		});
 	});

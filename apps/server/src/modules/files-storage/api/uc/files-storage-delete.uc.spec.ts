@@ -10,12 +10,10 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/database';
 import { FileRecord, FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
-import { FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { FileRecordParams } from '../dto';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -59,8 +57,6 @@ describe('FilesStorageUC delete methods', () => {
 	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -257,7 +253,7 @@ describe('FilesStorageUC delete methods', () => {
 
 				await filesStorageUC.deleteOneFile(requestParams);
 
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(requestParams);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(requestParams.fileRecordId);
 			});
 
 			it('should call delete with correct params', async () => {

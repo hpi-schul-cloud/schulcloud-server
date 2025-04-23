@@ -33,34 +33,6 @@ describe('PreviewBuilder', () => {
 		});
 	});
 
-	describe('buildPayload is called', () => {
-		const setup = () => {
-			const fileRecord = fileRecordTestFactory().build();
-			const previewParams = { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
-			const bytesRange = 'bytes=0-100';
-			const previewFileParams = PreviewBuilder.buildParams(fileRecord, previewParams, bytesRange);
-
-			const expectedResponse = {
-				originFilePath: previewFileParams.originFilePath,
-				previewFilePath: previewFileParams.previewFilePath,
-				previewOptions: {
-					format: previewFileParams.format,
-					width: previewFileParams.previewParams.width,
-				},
-			};
-
-			return { previewFileParams, expectedResponse };
-		};
-
-		it('should return preview payload', () => {
-			const { previewFileParams, expectedResponse } = setup();
-
-			const result = PreviewBuilder.buildPayload(previewFileParams);
-
-			expect(result).toEqual(expectedResponse);
-		});
-	});
-
 	describe('createPreviewNameHash is called', () => {
 		describe('when preview params are set', () => {
 			it('should return hash', () => {

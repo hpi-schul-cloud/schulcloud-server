@@ -8,9 +8,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FilesStorageService, PreviewService } from '../../domain';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { RenameFileParams, ScanResultParams, SingleFileParams } from '../dto';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
@@ -35,8 +33,6 @@ describe('FilesStorageUC', () => {
 	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -155,7 +151,7 @@ describe('FilesStorageUC', () => {
 				const { params, data } = setup();
 				await filesStorageUC.patchFilename(params, data);
 
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(params);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(params.fileRecordId);
 			});
 
 			it('should call authorisation with right parameters', async () => {
@@ -176,7 +172,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.patchFilename(params, data);
 
-				expect(filesStorageService.patchFilename).toHaveBeenCalledWith(fileRecord, data);
+				expect(filesStorageService.patchFilename).toHaveBeenCalledWith(fileRecord, data.fileName);
 			});
 
 			it('should return modified fileRecord', async () => {

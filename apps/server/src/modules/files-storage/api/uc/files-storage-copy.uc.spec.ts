@@ -10,12 +10,10 @@ import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
-import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
-import { CopyFileResponseBuilder } from '../../mapper';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { CopyFilesOfParentParams, FileRecordParams } from '../dto';
+import { CopyFileResponseBuilder } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -76,8 +74,6 @@ describe('FilesStorageUC', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -180,7 +176,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyFilesOfParent(userId, sourceParams, targetParams);
 
-				expect(filesStorageService.copyFilesOfParent).toHaveBeenCalledWith(userId, sourceParams, targetParams);
+				expect(filesStorageService.copyFilesOfParent).toHaveBeenCalledWith(userId, sourceParams, targetParams.target);
 			});
 
 			it('should return copied files responses', async () => {
@@ -309,7 +305,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.copyOneFile(userId, singleFileParams, copyFileParams);
 
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams);
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(singleFileParams.fileRecordId);
 			});
 
 			it('should call authorizationService.checkPermissionByReferences with file record params', async () => {

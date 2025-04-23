@@ -9,12 +9,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
-import { FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { FileRecordParams, SingleFileParams } from '../dto';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const buildFileRecordsWithParams = () => {
@@ -55,8 +53,6 @@ describe('FilesStorageUC', () => {
 	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -207,7 +203,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.restoreOneFile(params);
 
-				expect(filesStorageService.getFileRecordMarkedForDelete).toHaveBeenCalledWith(params);
+				expect(filesStorageService.getFileRecordMarkedForDelete).toHaveBeenCalledWith(params.fileRecordId);
 			});
 
 			it('should call authorisation with right parameters', async () => {

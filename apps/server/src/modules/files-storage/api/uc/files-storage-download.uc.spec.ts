@@ -9,12 +9,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FilesStorageService, GetFileResponse, PreviewService } from '../../domain';
-import { FilesStorageMapper } from '../../mapper';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { SingleFileParams } from '../dto';
+import { FilesStorageMapper } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const buildFileRecordWithParams = () => {
@@ -37,8 +35,6 @@ describe('FilesStorageUC', () => {
 	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageUC,
@@ -118,9 +114,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.download(fileDownloadParams);
 
-				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith({
-					fileRecordId: fileDownloadParams.fileRecordId,
-				});
+				expect(filesStorageService.getFileRecord).toHaveBeenCalledWith(fileDownloadParams.fileRecordId);
 			});
 
 			it('should call checkPermissionByReferences with correct params', async () => {
@@ -142,7 +136,11 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.download(fileDownloadParams);
 
-				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams, undefined);
+				expect(filesStorageService.download).toHaveBeenCalledWith(
+					fileRecord,
+					fileDownloadParams.fileRecordId,
+					undefined
+				);
 			});
 
 			it('should return correct result', async () => {
