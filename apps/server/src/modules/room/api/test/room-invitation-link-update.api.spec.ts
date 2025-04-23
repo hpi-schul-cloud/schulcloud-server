@@ -13,6 +13,9 @@ import { RoomInvitationLinkEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing';
 import { UpdateRoomInvitationLinkBodyParams } from '../dto/request/update-room-invitation-link.body.params';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
+import { GroupEntityTypes } from '@modules/group/entity';
+
+const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
@@ -172,6 +175,67 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
-		describe('when the user has not the required permissions', () => {});
+		describe('when the user has not the required permissions', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [
+						{
+							role: roomViewerRole,
+							user: teacherUser,
+						},
+					],
+					organization: teacherUser.school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				const roomInvitationLink = roomInvitationLinkEntityFactory.build({
+					roomId: room.id,
+					requiresConfirmation: false,
+					isOnlyForTeachers: false,
+					restrictedToCreatorSchool: false,
+					activeUntil: inOneWeek,
+					creatorUserId: teacherUser.id,
+					creatorSchoolId: school.id,
+				});
+				await em.persistAndFlush([
+					room,
+					roomInvitationLink,
+					teacherAccount,
+					teacherUser,
+					userGroupEntity,
+					roomMembership,
+					roomViewerRole,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, roomInvitationLink };
+			};
+
+			it('should return a 403 error', async () => {
+				const { loggedInClient, roomInvitationLink } = await setup();
+				const params: UpdateRoomInvitationLinkBodyParams = {
+					title: 'Room Inivitation renamed',
+					activeUntil: inOneWeek,
+					requiresConfirmation: true,
+					isOnlyForTeachers: true,
+					restrictedToCreatorSchool: true,
+				};
+
+				const response = await loggedInClient.put(roomInvitationLink.id, params);
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
 	});
 });
