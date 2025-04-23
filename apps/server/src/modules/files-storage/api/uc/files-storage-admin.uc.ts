@@ -7,9 +7,9 @@ import {
 } from '@infra/authorization-client';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { StorageLocationParamsDto } from '../dto';
-import { FilesStorageMapper } from '../../mapper';
 import { FilesStorageService, StorageLocation } from '../../domain';
+import { StorageLocationParamsDto } from '../dto';
+import { FilesStorageMapper } from '../mapper';
 
 @Injectable()
 export class FilesStorageAdminUC {

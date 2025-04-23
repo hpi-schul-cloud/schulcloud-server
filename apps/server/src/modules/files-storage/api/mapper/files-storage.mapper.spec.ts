@@ -1,9 +1,9 @@
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
-import { FileRecordListResponse, FileRecordResponse } from '../api/dto';
-import { PreviewStatus } from '../domain';
-import { FileRecordParentType } from '../domain/interface';
-import { fileRecordTestFactory } from '../testing';
+import { PreviewStatus } from '../../domain';
+import { FileRecordParentType } from '../../domain/interface';
+import { fileRecordTestFactory } from '../../testing';
+import { FileRecordListResponse, FileRecordResponse } from '../dto';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {

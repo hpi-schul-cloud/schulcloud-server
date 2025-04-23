@@ -6,8 +6,8 @@ import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { FilesStorageService, PreviewService } from '../../domain';
-import { FilesStorageMapper } from '../../mapper';
 import { CopyFilesOfParentPayload } from '../dto';
+import { FilesStorageMapper } from '../mapper';
 
 @Injectable()
 export class FilesStorageConsumer {

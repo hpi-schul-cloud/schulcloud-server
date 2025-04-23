@@ -1,8 +1,8 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { NotImplementedException, StreamableFile } from '@nestjs/common';
-import { FileRecordListResponse, FileRecordResponse } from '../api/dto';
-import { FileRecord } from '../domain';
-import { FileRecordParentType, GetFileResponse, StorageLocation } from '../domain/interface';
+import { FileRecord } from '../../domain';
+import { FileRecordParentType, GetFileResponse, StorageLocation } from '../../domain/interface';
+import { FileRecordListResponse, FileRecordResponse } from '../dto';
 
 export class FilesStorageMapper {
 	private static authorizationEntityMap: Map<FileRecordParentType, AuthorizationBodyParamsReferenceType> = new Map([

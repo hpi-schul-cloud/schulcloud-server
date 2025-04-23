@@ -28,7 +28,6 @@ import { RequestLoggingInterceptor } from '@shared/common/interceptor';
 import { PaginationParams } from '@shared/controller/dto';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../../domain';
-import { FilesStorageMapper } from '../../mapper';
 import {
 	CopyFileListResponse,
 	CopyFileParams,
@@ -44,7 +43,7 @@ import {
 	RenameFileParams,
 	SingleFileParams,
 } from '../dto';
-import { FileRecordMapper } from '../mapper';
+import { FileRecordMapper, FilesStorageMapper } from '../mapper';
 import { FilesStorageUC } from '../uc';
 
 @ApiTags('file')
