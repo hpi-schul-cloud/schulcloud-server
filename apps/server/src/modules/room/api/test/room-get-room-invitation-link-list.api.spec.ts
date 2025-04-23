@@ -89,6 +89,20 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		describe('when the room does not exist', () => {
+			it('should return a 404 error', async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				await em.persistAndFlush([school, studentAccount, studentUser]);
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				const someId = new ObjectId().toHexString();
+				const response = await loggedInClient.get(someId);
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
 		describe('when the user has the required permissions', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
@@ -117,6 +131,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					roomAdminRole,
 					userGroupEntity,
 					roomMembership,
+					school,
 				]);
 				em.clear();
 
@@ -132,17 +147,6 @@ describe('Room Invitation Link Controller (API)', () => {
 					const response = await loggedInClient.get(`/${room.id}/room-invitation-links`);
 					expect(response.status).toBe(HttpStatus.OK);
 					expect(response.body).toHaveLength(3);
-				});
-			});
-
-			describe('when the room does not exist', () => {
-				it('should return a 404 error', async () => {
-					const { loggedInClient } = await setup();
-					const someId = new ObjectId().toHexString();
-
-					const response = await loggedInClient.get(someId);
-
-					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
 			});
 		});

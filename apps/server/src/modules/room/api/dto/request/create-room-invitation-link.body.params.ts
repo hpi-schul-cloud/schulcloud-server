@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
-import { IsBoolean, IsDate, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsDate, IsString, MaxLength, MinLength } from 'class-validator';
 import { RoomInvitationLinkDto } from '../../../domain/do/room-invitation-link.do';
 
 export class CreateRoomInvitationLinkBodyParams
@@ -26,18 +26,17 @@ export class CreateRoomInvitationLinkBodyParams
 		required: false,
 		type: Date,
 	})
-	@IsOptional()
 	@IsDate()
 	activeUntil?: Date;
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'Indicates if the link is restricted to teachers only',
 		required: true,
 	})
 	@IsBoolean()
 	isOnlyForTeachers!: boolean;
 
-	@ApiPropertyOptional({
+	@ApiProperty({
 		description: 'Indicates if the link is restricted to the creators school',
 		required: true,
 	})
