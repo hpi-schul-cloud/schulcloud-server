@@ -3,7 +3,6 @@ import { RoomInvitationLinkService } from './room-invitation-link.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RoomInvitationLinkRepo } from '../../repo';
 import { roomInvitationLinkTestFactory } from '@modules/room/testing/room-invitation-link.test.factory';
-import { RoomInvitationLinkProps } from '../do/room-invitation-link.do';
 
 describe('RoomInvitationLinkService', () => {
 	let module: TestingModule;

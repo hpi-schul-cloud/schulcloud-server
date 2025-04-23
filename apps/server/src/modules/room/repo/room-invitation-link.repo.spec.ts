@@ -91,7 +91,7 @@ describe('RoomInvitationLinkRepo', () => {
 		});
 
 		describe('when saving a room invitation link after changing its properties', () => {
-			it('should persist the newet value', async () => {
+			it('should persist the newest value', async () => {
 				const roomInvitationLink = roomInvitationLinkTestFactory.build();
 
 				await repo.save(roomInvitationLink);

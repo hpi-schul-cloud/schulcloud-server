@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { RoomInvitationLinkRepo } from '../../repo';
-import {
-	RoomInvitationLink,
-	RoomInvitationLinkDto,
-	RoomInvitationLinkUpdateProps,
-} from '../do/room-invitation-link.do';
+import { RoomInvitationLink, RoomInvitationLinkDto } from '../do/room-invitation-link.do';
 import { RoomInvitationLinkFactory } from '../factory/room-invitation-link.factory';
 
 @Injectable()
