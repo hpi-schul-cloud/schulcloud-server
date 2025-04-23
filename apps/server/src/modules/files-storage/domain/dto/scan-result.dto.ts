@@ -1,4 +1,4 @@
-import { ScanStatus } from '../../domain';
+import { ScanStatus } from '..';
 
 export class ScanResultDto {
 	public status: ScanStatus;

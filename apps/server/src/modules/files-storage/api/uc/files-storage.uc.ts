@@ -316,9 +316,9 @@ export class FilesStorageUC {
 		return modifiedFileRecord;
 	}
 
-	public async updateSecurityStatus(token: string, scanResultDto: ScanResultParams): Promise<void> {
+	public async updateSecurityStatus(token: string, scanResultParams: ScanResultParams): Promise<void> {
 		// No authorisation is possible atm.
-		await this.filesStorageService.updateSecurityStatus(token, scanResultDto);
+		await this.filesStorageService.updateSecurityStatus(token, scanResultParams);
 	}
 
 	// get

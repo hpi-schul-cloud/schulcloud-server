@@ -9,13 +9,13 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
-import { FileRecordMapper } from '../../mapper';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord, ParentInfo } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
 import { CopyFileResult, FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
 import { FileResponseBuilder } from '../mapper';
+import { ScanResultMapper } from '../mapper/scan-result.mapper';
 
 @Injectable()
 export class FilesStorageService {
@@ -145,7 +145,7 @@ export class FilesStorageService {
 					this.storageClient.create(filePath, file),
 					this.antivirusService.checkStream(streamToAntivirus),
 				]);
-				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(antivirusClientResponse);
+				const { status, reason } = ScanResultMapper.mapScanResultToDto(antivirusClientResponse);
 				fileRecord.updateSecurityCheckStatus(status, reason);
 			} else {
 				await this.storageClient.create(filePath, file);
@@ -220,7 +220,7 @@ export class FilesStorageService {
 	public async updateSecurityStatus(token: string, scanResult: ScanResult): Promise<void> {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+		const { status, reason } = ScanResultMapper.mapScanResultToDto(scanResult);
 		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);

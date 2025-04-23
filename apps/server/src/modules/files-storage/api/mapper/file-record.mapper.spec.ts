@@ -1,6 +1,6 @@
-import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../api/dto';
-import { ScanStatus } from '../domain';
-import { fileRecordTestFactory } from '../testing';
+import { ScanStatus } from '../../domain';
+import { fileRecordTestFactory } from '../../testing';
+import { FileRecordListResponse, FileRecordResponse, ScanResultDto, ScanResultParams } from '../dto';
 import { FileRecordMapper } from './file-record.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -72,7 +72,7 @@ describe('FilesStorageMapper', () => {
 
 			it('returns correct dto', () => {
 				const { params, virusSignature } = setup();
-				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+				const result = FileRecordMapper.mapScanResultToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.BLOCKED,
@@ -86,7 +86,7 @@ describe('FilesStorageMapper', () => {
 			it('returns correct dto', () => {
 				const params = buildParams(true);
 
-				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+				const result = FileRecordMapper.mapScanResultToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.BLOCKED,
@@ -107,7 +107,7 @@ describe('FilesStorageMapper', () => {
 			it('returns correct dto', () => {
 				const { params, error } = setup();
 
-				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+				const result = FileRecordMapper.mapScanResultToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.ERROR,
@@ -128,7 +128,7 @@ describe('FilesStorageMapper', () => {
 			it('returns correct dto', () => {
 				const { params, reason } = setup();
 
-				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+				const result = FileRecordMapper.mapScanResultToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.VERIFIED,
@@ -142,7 +142,7 @@ describe('FilesStorageMapper', () => {
 			it('returns correct dto', () => {
 				const params = buildParams(undefined, undefined, '');
 
-				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+				const result = FileRecordMapper.mapScanResultToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.ERROR,
@@ -156,7 +156,7 @@ describe('FilesStorageMapper', () => {
 			it('returns correct dto', () => {
 				const params = {};
 
-				const result = FileRecordMapper.mapScanResultParamsToDto(params);
+				const result = FileRecordMapper.mapScanResultToDto(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.ERROR,

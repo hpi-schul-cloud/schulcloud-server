@@ -1,18 +1,18 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AntivirusService } from '@infra/antivirus';
+import { AntivirusService, ScanResult } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import _ from 'lodash';
-import { FileRecordParams, ScanResultParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
+import { FileRecordParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordMapper } from '../../mapper';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { ScanResultMapper } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
@@ -209,7 +209,7 @@ describe('FilesStorageService update methods', () => {
 
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
-				const scanResult: ScanResultParams = { virus_detected: false };
+				const scanResult: ScanResult = { virus_detected: false };
 				const token = fileRecord.getSecurityToken() || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
@@ -232,7 +232,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+				const { status, reason } = ScanResultMapper.mapScanResultToDto(scanResult);
 				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
@@ -254,7 +254,7 @@ describe('FilesStorageService update methods', () => {
 
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
-				const scanResult: ScanResultParams = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
+				const scanResult: ScanResult = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
 				const token = fileRecord.getSecurityToken() || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
@@ -269,7 +269,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+				const { status, reason } = ScanResultMapper.mapScanResultToDto(scanResult);
 				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
@@ -291,7 +291,7 @@ describe('FilesStorageService update methods', () => {
 
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
-				const scanResult: ScanResultParams = { virus_detected: false, error: 'file to large' };
+				const scanResult: ScanResult = { virus_detected: false, error: 'file to large' };
 				const token = fileRecord.getSecurityToken() || '';
 
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
@@ -306,7 +306,7 @@ describe('FilesStorageService update methods', () => {
 
 				await service.updateSecurityStatus(token, scanResult);
 
-				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(scanResult);
+				const { status, reason } = ScanResultMapper.mapScanResultToDto(scanResult);
 				expect(spy).toHaveBeenCalledWith(status, reason);
 			});
 
@@ -322,7 +322,7 @@ describe('FilesStorageService update methods', () => {
 		describe('WHEN no matching file is found', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
-				const scanResult: ScanResultParams = { virus_detected: false };
+				const scanResult: ScanResult = { virus_detected: false };
 				const token = fileRecord.getSecurityToken() || '';
 				const error = new NotFoundException();
 
@@ -341,7 +341,7 @@ describe('FilesStorageService update methods', () => {
 		describe('WHEN repository by call save is throw an error', () => {
 			const setup = () => {
 				const { fileRecord } = buildFileRecordWithParams();
-				const scanResult: ScanResultParams = { virus_detected: false };
+				const scanResult: ScanResult = { virus_detected: false };
 				const token = fileRecord.getSecurityToken() || '';
 				const error = new Error('bla');
 
