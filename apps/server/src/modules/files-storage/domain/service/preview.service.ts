@@ -4,10 +4,11 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { PreviewParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
+import { PreviewBuilder } from '../../mapper';
 import { ErrorType } from '../error';
 import { FileRecord, PreviewStatus } from '../file-record.do';
 import { GetFileResponse, PreviewFileParams } from '../interface';
+import { FileResponseBuilder } from '../mapper';
 
 @Injectable()
 export class PreviewService {

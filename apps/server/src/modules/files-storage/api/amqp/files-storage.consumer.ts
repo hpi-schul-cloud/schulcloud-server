@@ -1,12 +1,12 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 // TODO: DO need to be changed to Do, but we have also type matching issues in this file
+import { LegacyLogger } from '@core/logger';
 import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@core/logger';
-import { FilesStorageMapper } from '../../mapper';
 import { FilesStorageService, PreviewService } from '../../domain';
+import { FilesStorageMapper } from '../../mapper';
 import { CopyFilesOfParentPayload } from '../dto';
 
 @Injectable()
@@ -33,7 +33,7 @@ export class FilesStorageConsumer {
 		this.logger.debug({ action: 'copyFilesOfParent', payload });
 
 		const { userId, source, target } = payload;
-		const [response] = await this.filesStorageService.copyFilesOfParent(userId, source, { target });
+		const [response] = await this.filesStorageService.copyFilesOfParent(userId, source, target);
 
 		return { message: response };
 	}
@@ -81,7 +81,7 @@ export class FilesStorageConsumer {
 	public async deleteFiles(@RabbitPayload() payload: EntityId[]): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'deleteFiles', payload });
 
-		const promise = payload.map((fileRecordId) => this.filesStorageService.getFileRecord({ fileRecordId }));
+		const promise = payload.map((fileRecordId) => this.filesStorageService.getFileRecord(fileRecordId));
 		const fileRecords = await Promise.all(promise);
 
 		await this.previewService.deletePreviews(fileRecords);
