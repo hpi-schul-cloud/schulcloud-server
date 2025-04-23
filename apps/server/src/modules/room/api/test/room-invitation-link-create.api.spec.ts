@@ -18,24 +18,6 @@ import { RoomProps } from '../../../room/domain';
 import { RoomEntity } from '../../../room/repo';
 import { CreateRoomInvitationLinkBodyParams } from '../dto/request/create-room-invitation-link.body.params';
 
-const createRoomWithGroupEntity = (
-	roomProps: Partial<RoomProps> = {},
-	users: GroupUserEmbeddable[]
-): {
-	roomEntity: RoomEntity;
-	roomMembership: RoomMembershipEntity;
-	userGroupEntity: GroupEntity;
-} => {
-	const owner = users[0].user;
-	const userGroupEntity = groupEntityFactory.withTypeRoom().buildWithId({ users });
-	const schoolId = owner.school?.id;
-	const roomEntity = roomEntityFactory.buildWithId({ ...roomProps, schoolId });
-	const roomMembership = roomMembershipEntityFactory.build({ roomId: roomEntity.id, userGroupId: userGroupEntity.id });
-	roomEntity._id = new ObjectId(roomEntity.id);
-
-	return { roomEntity, roomMembership, userGroupEntity };
-};
-
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -63,6 +45,31 @@ describe('Room Invitation Link Controller (API)', () => {
 	afterAll(async () => {
 		await app.close();
 	});
+
+	const createRoomWithGroupEntity = async (
+		roomProps: Partial<RoomProps> = {},
+		users: GroupUserEmbeddable[]
+	): Promise<{
+		roomEntity: RoomEntity;
+		roomMembership: RoomMembershipEntity;
+		userGroupEntity: GroupEntity;
+	}> => {
+		const owner = users[0].user;
+		const userGroupEntity = groupEntityFactory.withTypeRoom().buildWithId({ users });
+		const schoolId = owner.school?.id;
+		const roomEntity = roomEntityFactory.buildWithId({ ...roomProps, schoolId });
+		const roomMembership = roomMembershipEntityFactory.build({
+			roomId: roomEntity.id,
+			userGroupId: userGroupEntity.id,
+			schoolId: roomEntity.schoolId,
+		});
+		roomEntity._id = new ObjectId(roomEntity.id);
+
+		await em.persistAndFlush([roomEntity, userGroupEntity, roomMembership]);
+		em.clear();
+
+		return { roomEntity, roomMembership, userGroupEntity };
+	};
 
 	describe('POST /room-invitation-links', () => {
 		describe('when the user is not authenticated', () => {
@@ -105,14 +112,15 @@ describe('Room Invitation Link Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
-				const { roomEntity, roomMembership, userGroupEntity } = createRoomWithGroupEntity({}, [
+				await em.persistAndFlush([school, teacherAccount, teacherUser, roomOwnerRole]);
+				em.clear();
+
+				const { roomEntity } = await createRoomWithGroupEntity({}, [
 					{
 						user: teacherUser,
 						role: roomOwnerRole,
 					},
 				]);
-				await em.persistAndFlush([teacherAccount, teacherUser, roomEntity, roomMembership, userGroupEntity]);
-				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -124,10 +132,10 @@ describe('Room Invitation Link Controller (API)', () => {
 
 				const params: CreateRoomInvitationLinkBodyParams = {
 					roomId: roomEntity.id,
-					title: 'Room invitation link for teachers of my school',
+					title: 'Room invitation link for teachers',
 					activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
 					isOnlyForTeachers: true,
-					restrictedToCreatorSchool: true,
+					restrictedToCreatorSchool: false,
 					requiresConfirmation: false,
 				};
 
@@ -135,7 +143,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				expect(response.status).toBe(HttpStatus.CREATED);
 				expect(response.body).toMatchObject({
 					...params,
-					activeUntil: params.activeUntil!.toISOString(),
+					activeUntil: (params.activeUntil ?? new Date()).toISOString(),
 					id: expect.anything() as string,
 					creatorUserId: expect.anything() as string,
 					creatorSchoolId: expect.anything() as string,
@@ -148,14 +156,15 @@ describe('Room Invitation Link Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-				const { roomEntity, roomMembership, userGroupEntity } = createRoomWithGroupEntity({}, [
+				await em.persistAndFlush([teacherAccount, teacherUser, roomViewerRole]);
+				em.clear();
+
+				const { roomEntity } = await createRoomWithGroupEntity({}, [
 					{
 						user: teacherUser,
 						role: roomViewerRole,
 					},
 				]);
-				await em.persistAndFlush([teacherAccount, teacherUser, roomEntity, roomMembership, userGroupEntity]);
-				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
