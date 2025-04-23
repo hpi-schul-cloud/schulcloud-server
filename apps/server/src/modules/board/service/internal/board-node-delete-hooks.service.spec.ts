@@ -1,15 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	collaborativeTextEditorFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	h5pElementFactory,
 	linkElementFactory,
 } from '../../testing';
 import { BoardNodeDeleteHooksService } from './board-node-delete-hooks.service';
@@ -20,7 +23,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let collaborativeTextEditorService: CollaborativeTextEditorService;
+	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -156,6 +159,22 @@ describe(BoardNodeDeleteHooksService.name, () => {
 				await service.afterDelete(boardNode);
 
 				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(tool);
+			});
+		});
+
+		describe('when called with h5p element', () => {
+			const setup = () => {
+				return {
+					boardNode: h5pElementFactory.build({
+						contentId: new ObjectId().toHexString(),
+					}),
+				};
+			};
+
+			it('should throw not implemented', async () => {
+				const { boardNode } = setup();
+
+				await expect(service.afterDelete(boardNode)).rejects.toThrow(NotImplementedException);
 			});
 		});
 	});
