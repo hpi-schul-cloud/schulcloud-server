@@ -18,7 +18,6 @@ import { ApiValidationError } from '@shared/common/error';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
 import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
-import { RoomInvitationLinkUseLinkResponse } from './dto/response/room-invitation-link-use-link.response';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
@@ -104,9 +103,7 @@ export class RoomInvitationLinkController {
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomInvitationLinkUrlParams
-	): Promise<RoomInvitationLinkUseLinkResponse> {
-		const result = await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
-
-		return result;
+	): Promise<void> {
+		await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
 	}
 }
