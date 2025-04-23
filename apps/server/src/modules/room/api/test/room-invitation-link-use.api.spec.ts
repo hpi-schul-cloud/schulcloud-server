@@ -31,7 +31,11 @@ enum UserSchool {
 	OTHER_SCHOOL = 'OTHER_SCHOOL',
 }
 
-jest.setTimeout(60000);
+enum UserRole {
+	STUDENT = 'student',
+	TEACHER = 'teacher',
+	ADMINISTRATOR = 'administrator',
+}
 
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
@@ -68,7 +72,7 @@ describe('Room Invitation Link Controller (API)', () => {
 	describe('POST /room-invitation-links/:id', () => {
 		const setup = async (
 			roomInvitationLinkConfig: RoomInvitationLinkConfig,
-			roleName: RoleName,
+			roleName: UserRole,
 			userSchool: UserSchool
 		) => {
 			const school = schoolEntityFactory.buildWithId();
@@ -161,8 +165,8 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when the user is student', () => {
 			describe.each([
-				[RoleName.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[RoleName.STUDENT, {}, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, {}, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
@@ -183,10 +187,10 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when the link is only for teachers', () => {
 			describe.each([
-				[RoleName.TEACHER, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[RoleName.STUDENT, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.FORBIDDEN],
-				[RoleName.TEACHER, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[RoleName.STUDENT, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.TEACHER, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.FORBIDDEN],
+				[UserRole.TEACHER, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
@@ -207,10 +211,10 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe("when the link is restricted to creator's school", () => {
 			describe.each([
-				[RoleName.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-				[RoleName.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
-				[RoleName.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
-				[RoleName.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+				[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+				[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
+				[UserRole.TEACHER, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
@@ -231,10 +235,10 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when link requires confirmation', () => {
 			describe.each([
-				[RoleName.TEACHER, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],
-				[RoleName.STUDENT, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],
-				[RoleName.TEACHER, { requiresConfirmation: false }, UserSchool.SAME_SCHOOL, RoleName.ROOMVIEWER],
-				[RoleName.STUDENT, { requiresConfirmation: false }, UserSchool.SAME_SCHOOL, RoleName.ROOMVIEWER],
+				[UserRole.TEACHER, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],
+				[UserRole.STUDENT, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],
+				[UserRole.TEACHER, { requiresConfirmation: false }, UserSchool.SAME_SCHOOL, RoleName.ROOMVIEWER],
+				[UserRole.STUDENT, { requiresConfirmation: false }, UserSchool.SAME_SCHOOL, RoleName.ROOMVIEWER],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, newRole) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
@@ -264,10 +268,10 @@ describe('Room Invitation Link Controller (API)', () => {
 			const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 			const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
 			describe.each([
-				[RoleName.TEACHER, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[RoleName.STUDENT, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[RoleName.TEACHER, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[RoleName.STUDENT, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.TEACHER, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.TEACHER, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.STUDENT, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
@@ -288,9 +292,9 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when user is already member', () => {
 			describe.each([
-				[RoleName.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[RoleName.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[RoleName.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.BAD_REQUEST],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
