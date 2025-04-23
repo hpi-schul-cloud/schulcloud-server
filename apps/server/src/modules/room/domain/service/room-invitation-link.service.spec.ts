@@ -35,11 +35,13 @@ describe('RoomInvitationLinkService', () => {
 	describe('createLink', () => {
 		describe('when new link is created', () => {
 			it('should call repo to save the link', async () => {
+				const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+
 				const props = {
 					title: 'Test Link',
 					isOnlyForTeachers: true,
 					restrictedToCreatorSchool: false,
-					activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+					activeUntil: inOneWeek,
 					roomId: '789',
 					creatorUserId: '101112',
 					creatorSchoolId: '131415',

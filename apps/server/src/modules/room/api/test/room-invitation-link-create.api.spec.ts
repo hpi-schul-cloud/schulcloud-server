@@ -18,6 +18,8 @@ import { RoomProps } from '../../../room/domain';
 import { RoomEntity } from '../../../room/repo';
 import { CreateRoomInvitationLinkBodyParams } from '../dto/request/create-room-invitation-link.body.params';
 
+const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -100,7 +102,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					requiresConfirmation: true,
 					isOnlyForTeachers: true,
 					restrictedToCreatorSchool: true,
-					activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+					activeUntil: inOneWeek,
 				};
 				const response = await loggedInClient.post(undefined, params);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -133,7 +135,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				const params: CreateRoomInvitationLinkBodyParams = {
 					roomId: roomEntity.id,
 					title: 'Room invitation link for teachers',
-					activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+					activeUntil: inOneWeek,
 					isOnlyForTeachers: true,
 					restrictedToCreatorSchool: false,
 					requiresConfirmation: false,
@@ -177,7 +179,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				const params: CreateRoomInvitationLinkBodyParams = {
 					roomId: roomEntity.id,
 					title: 'Room invitation link for teachers of my school',
-					activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+					activeUntil: inOneWeek,
 					isOnlyForTeachers: true,
 					restrictedToCreatorSchool: true,
 					requiresConfirmation: false,

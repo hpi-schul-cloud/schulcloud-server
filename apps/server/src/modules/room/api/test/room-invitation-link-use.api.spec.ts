@@ -37,6 +37,8 @@ enum UserRole {
 	ADMINISTRATOR = 'administrator',
 }
 
+const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
+
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -90,7 +92,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				requiresConfirmation: roomInvitationLinkConfig.requiresConfirmation ?? false,
 				isOnlyForTeachers: roomInvitationLinkConfig.isOnlyForTeachers ?? false,
 				restrictedToCreatorSchool: roomInvitationLinkConfig.restrictedToCreatorSchool ?? false,
-				activeUntil: roomInvitationLinkConfig.activeUntil ?? new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+				activeUntil: roomInvitationLinkConfig.activeUntil ?? inOneWeek,
 				creatorUserId: new ObjectId().toHexString(),
 				creatorSchoolId: school.id,
 			});
@@ -156,7 +158,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					requiresConfirmation: true,
 					isOnlyForTeachers: true,
 					restrictedToCreatorSchool: true,
-					activeUntil: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+					activeUntil: inOneWeek,
 				};
 				const response = await loggedInClient.post(undefined, params);
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
