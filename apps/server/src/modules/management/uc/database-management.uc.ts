@@ -254,10 +254,10 @@ export class DatabaseManagementUc {
 		}
 
 		if (collections === undefined || collections.includes('external-tools')) {
-			const systemsCount: number = await this.externalToolsSeedDataService.import();
+			const externalToolsCount: number = await this.externalToolsSeedDataService.import();
 			seededCollectionsWithAmount.set(
 				'external-tools',
-				systemsCount + (seededCollectionsWithAmount.get('external-tools') ?? 0)
+				externalToolsCount + (seededCollectionsWithAmount.get('external-tools') ?? 0)
 			);
 		}
 
