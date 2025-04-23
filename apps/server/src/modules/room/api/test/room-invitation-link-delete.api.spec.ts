@@ -44,6 +44,8 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
+	jest.setTimeout(60000);
+
 	describe('DELETE /room-invitation-links/:id', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
@@ -164,9 +166,10 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has not the required permissions', () => {
 			const setup = async () => {
-				const roomInvitationLink = roomEntityFactory.build();
+				const room = roomEntityFactory.build();
+				const roomInvitationLink = roomInvitationLinkEntityFactory.build({ roomId: room.id });
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([roomInvitationLink, teacherAccount, teacherUser]);
+				await em.persistAndFlush([room, roomInvitationLink, teacherAccount, teacherUser]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -174,15 +177,15 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, roomInvitationLink };
 			};
 
-			// describe('when the room exists', () => {
-			// 	it('should return 403', async () => {
-			// 		const { loggedInClient, roomInvitationLink } = await setup();
+			describe('when the room exists', () => {
+				it('should return 403', async () => {
+					const { loggedInClient, roomInvitationLink } = await setup();
 
-			// 		const response = await loggedInClient.delete(roomInvitationLink.id);
+					const response = await loggedInClient.delete(roomInvitationLink.id);
 
-			// 		expect(response.status).toBe(HttpStatus.FORBIDDEN);
-			// 	});
-			// });
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
 
 			describe('when the room does not exist', () => {
 				it('should return a 404 error', async () => {
