@@ -36,7 +36,6 @@ import { RoomUc } from './room.uc';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { RoomRoleResponse } from './dto/response/room-role.response';
 import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
-import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-link-list.response';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
@@ -128,7 +127,7 @@ export class RoomController {
 	@ApiResponse({
 		status: HttpStatus.OK,
 		description: 'Returns a list of room invitation links.',
-		type: RoomInvitationLinkListResponse,
+		type: Array<RoomInvitationLinkResponse>,
 	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
@@ -140,7 +139,7 @@ export class RoomController {
 	): Promise<RoomInvitationLinkResponse[]> {
 		const roomInvitationLinks = await this.roomInvitationLinkUc.listLinksByRoomId(currentUser.userId, urlParams.roomId);
 
-		const response = RoomInvitationLinkMapper.mapToRoomInvitionLinksResponse(roomInvitationLinks);
+		const response = RoomInvitationLinkMapper.mapToRoomInvitationLinksResponse(roomInvitationLinks);
 
 		return response;
 	}

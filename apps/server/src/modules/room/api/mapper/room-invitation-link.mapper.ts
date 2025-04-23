@@ -18,7 +18,7 @@ export class RoomInvitationLinkMapper {
 		return response;
 	}
 
-	public static mapToRoomInvitionLinksResponse(links: RoomInvitationLinkResponse[]): RoomInvitationLinkResponse[] {
+	public static mapToRoomInvitationLinksResponse(links: RoomInvitationLinkResponse[]): RoomInvitationLinkResponse[] {
 		const response: RoomInvitationLinkResponse[] = links.map(
 			(link): RoomInvitationLinkResponse => this.mapToRoomInvitationLinkResponse(link)
 		);
