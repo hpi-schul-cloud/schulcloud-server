@@ -9,7 +9,7 @@ import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../../files-storage.config';
-import { CopyFileResponseBuilder, FileRecordMapper } from '../../mapper';
+import { FileRecordMapper } from '../../mapper';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
 import { FileRecord, ParentInfo } from '../file-record.do';
@@ -401,9 +401,10 @@ export class FilesStorageService {
 
 			await this.storageClient.copy([copyFiles]);
 			await this.sendToAntiVirusService(targetFile);
-			const copyFileResponse = CopyFileResponseBuilder.build(targetFile.id, sourceFile.id, targetFile.getName());
 
-			return copyFileResponse;
+			const copyFileResult: CopyFileResult = { id: targetFile.id, sourceId: sourceFile.id, name: targetFile.getName() };
+
+			return copyFileResult;
 		} catch (error) {
 			await this.fileRecordRepo.delete([targetFile]);
 			throw error;
@@ -422,15 +423,15 @@ export class FilesStorageService {
 				this.checkScanStatus(sourceFile);
 
 				const targetFile = await this.copyFileRecord(sourceFile, targetParentInfo, userId);
-				const fileResponse = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
+				const copyFileResult = await this.copyFilesWithRollbackOnError(sourceFile, targetFile);
 
-				return fileResponse;
+				return copyFileResult;
 			} catch (error) {
 				this.logger.error(`copy file failed for source fileRecordId ${sourceFile.id}`, error);
 
-				const fileResponse = CopyFileResponseBuilder.buildError(sourceFile.id, sourceFile.getName());
+				const copyFileResult: CopyFileResult = { id: undefined, sourceId: sourceFile.id, name: sourceFile.getName() };
 
-				return fileResponse;
+				return copyFileResult;
 			}
 		});
 

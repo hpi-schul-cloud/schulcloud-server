@@ -39,6 +39,7 @@ import {
 	ScanResultParams,
 	SingleFileParams,
 } from '../dto';
+import { CopyFileResponseBuilder } from '../mapper';
 
 // TODO: Delete files-storage uc spec tests and remove export?
 export const FileStorageAuthorizationContext = {
@@ -272,9 +273,13 @@ export class FilesStorageUC {
 			),
 		]);
 
-		const response = await this.filesStorageService.copyFilesOfParent(userId, params, copyFilesParams.target);
+		const copyFileResults = await this.filesStorageService.copyFilesOfParent(userId, params, copyFilesParams.target);
+		const copyFileResponses = copyFileResults[0].map((copyFileResult) =>
+			CopyFileResponseBuilder.build(copyFileResult.id, copyFileResult.sourceId, copyFileResult.name)
+		);
+		const countedFileResponses: Counted<CopyFileResponse[]> = [copyFileResponses, copyFileResults[1]];
 
-		return response;
+		return countedFileResponses;
 	}
 
 	public async copyOneFile(
