@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { AxiosResponse } from 'axios';
 import { Readable } from 'stream';
-import { FileDto } from '../domain/dto';
-import { fileRecordTestFactory } from '../testing';
+import { FileDto } from '../../domain/dto';
+import { fileRecordTestFactory } from '../../testing';
 import { FileDtoBuilder } from './file-dto.builder';
 
 describe('File Builder', () => {

@@ -19,10 +19,10 @@ import { of } from 'rxjs';
 import { Readable } from 'stream';
 import { FileRecord, FileRecordParentType, FilesStorageService, PreviewService, StorageLocation } from '../../domain';
 import { ErrorType } from '../../domain/error';
-import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { FileRecordParams } from '../dto';
+import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
 
 const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>
