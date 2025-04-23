@@ -5,10 +5,9 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
@@ -18,26 +17,16 @@ const buildFileRecordsWithParams = () => {
 
 	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
-	const params: FileRecordParams = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { params, fileRecords, parentId, creatorId };
+	return { fileRecords, parentId, creatorId };
 };
 
-const buildFileRecordWithParams = () => {
+const buildFileRecord = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecord = fileRecordTestFactory().build({ parentId, storageLocationId, name: 'text.txt' });
-	const params: SingleFileParams = {
-		fileRecordId: fileRecord.id,
-	};
 
-	return { params, fileRecord };
+	return { fileRecord };
 };
 
 describe('FilesStorageService get methods', () => {
@@ -91,24 +80,24 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecord is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
-				const { params, fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				fileRecordRepo.findOneById.mockResolvedValueOnce(fileRecord);
 
-				return { params, fileRecord };
+				return { fileRecord };
 			};
 
 			it('should call findOneById', async () => {
-				const { params, fileRecord } = setup();
+				const { fileRecord } = setup();
 
-				await service.getFileRecord(params);
+				await service.getFileRecord(fileRecord.id);
 
 				expect(fileRecordRepo.findOneById).toHaveBeenCalledWith(fileRecord.id);
 			});
 
 			it('should return the matched fileRecord', async () => {
-				const { params, fileRecord } = setup();
+				const { fileRecord } = setup();
 
-				const result = await service.getFileRecord(params);
+				const result = await service.getFileRecord(fileRecord.id);
 
 				expect(result).toEqual(fileRecord);
 			});
@@ -116,17 +105,17 @@ describe('FilesStorageService get methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { params } = buildFileRecordWithParams();
-
 				fileRecordRepo.findOneById.mockRejectedValueOnce(new Error('bla'));
 
-				return { params };
+				const fileRecordId = new ObjectId().toHexString();
+
+				return { fileRecordId };
 			};
 
 			it('should pass the error', async () => {
-				const { params } = setup();
+				const { fileRecordId } = setup();
 
-				await expect(service.getFileRecord(params)).rejects.toThrow(new Error('bla'));
+				await expect(service.getFileRecord(fileRecordId)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});
@@ -134,7 +123,7 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecordBySecurityCheckRequestToken is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
-				const { fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const token = 'token';
 				fileRecordRepo.findBySecurityCheckRequestToken.mockResolvedValueOnce(fileRecord);
 
@@ -179,24 +168,24 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecordMarkedForDelete is called', () => {
 		describe('WHEN marked file exists', () => {
 			const setup = () => {
-				const { params, fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				fileRecordRepo.findOneByIdMarkedForDelete.mockResolvedValueOnce(fileRecord);
 
-				return { params, fileRecord };
+				return { fileRecord };
 			};
 
 			it('should call findOneByIdMarkedForDelete', async () => {
-				const { params, fileRecord } = setup();
+				const { fileRecord } = setup();
 
-				await service.getFileRecordMarkedForDelete(params);
+				await service.getFileRecordMarkedForDelete(fileRecord.id);
 
 				expect(fileRecordRepo.findOneByIdMarkedForDelete).toHaveBeenCalledWith(fileRecord.id);
 			});
 
 			it('should return the matched fileRecord', async () => {
-				const { params, fileRecord } = setup();
+				const { fileRecord } = setup();
 
-				const result = await service.getFileRecordMarkedForDelete(params);
+				const result = await service.getFileRecordMarkedForDelete(fileRecord.id);
 
 				expect(result).toEqual(fileRecord);
 			});
@@ -204,17 +193,17 @@ describe('FilesStorageService get methods', () => {
 
 		describe('WHEN repository throws an error', () => {
 			const setup = () => {
-				const { params } = buildFileRecordWithParams();
-
 				fileRecordRepo.findOneByIdMarkedForDelete.mockRejectedValueOnce(new Error('test'));
 
-				return { params };
+				const fileRecordId = new ObjectId().toHexString();
+
+				return { fileRecordId };
 			};
 
 			it('should pass the error', async () => {
-				const { params } = setup();
+				const { fileRecordId } = setup();
 
-				await expect(service.getFileRecordMarkedForDelete(params)).rejects.toThrow(new Error('test'));
+				await expect(service.getFileRecordMarkedForDelete(fileRecordId)).rejects.toThrow(new Error('test'));
 			});
 		});
 	});
@@ -222,8 +211,7 @@ describe('FilesStorageService get methods', () => {
 	describe('getFileRecordsOfParent is called', () => {
 		describe('WHEN valid files exist', () => {
 			const setup = () => {
-				const { params, fileRecords } = buildFileRecordsWithParams();
-				const { parentId } = params;
+				const { parentId, fileRecords } = buildFileRecordsWithParams();
 				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
 				return { parentId, fileRecords };

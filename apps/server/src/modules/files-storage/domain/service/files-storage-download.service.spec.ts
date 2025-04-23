@@ -6,13 +6,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { ScanStatus } from '../../domain';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileResponseBuilder } from '../../mapper';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
+import { FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
@@ -21,14 +20,7 @@ const buildFileRecordsWithParams = () => {
 
 	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
-	const params: FileRecordParams = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { params, fileRecords, parentId };
+	return { fileRecords, parentId };
 };
 
 describe('FilesStorageService download methods', () => {
@@ -90,31 +82,28 @@ describe('FilesStorageService download methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const params = {
-					fileRecordId: fileRecord.id,
-					fileName: fileRecord.getName(),
-				};
+				const fileName = fileRecord.getName();
 
 				const fileResponse = createMock<GetFile>();
 				const expectedResponse = FileResponseBuilder.build(fileResponse, fileRecord.getName());
 
 				spy = jest.spyOn(service, 'downloadFile').mockResolvedValueOnce(expectedResponse);
 
-				return { fileRecord, params, expectedResponse };
+				return { fileRecord, fileName, expectedResponse };
 			};
 
 			it('calls downloadFile with correct params', async () => {
-				const { fileRecord, params } = setup();
+				const { fileRecord, fileName } = setup();
 
-				await service.download(fileRecord, params);
+				await service.download(fileRecord, fileName);
 
 				expect(service.downloadFile).toHaveBeenCalledWith(fileRecord, undefined);
 			});
 
 			it('returns correct response', async () => {
-				const { fileRecord, params, expectedResponse } = setup();
+				const { fileRecord, fileName, expectedResponse } = setup();
 
-				const response = await service.download(fileRecord, params);
+				const response = await service.download(fileRecord, fileName);
 
 				expect(response).toEqual(expectedResponse);
 			});
@@ -124,23 +113,19 @@ describe('FilesStorageService download methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const paramsFileName = 'paramsFileName';
-				const params = {
-					fileRecordId: fileRecord.id,
-					fileName: paramsFileName,
-				};
+				const fileName = 'paramsFileName';
 
 				spy = jest.spyOn(service, 'downloadFile');
 
-				return { fileRecord, params };
+				return { fileRecord, fileName };
 			};
 
 			it('throws error', async () => {
-				const { fileRecord, params } = setup();
+				const { fileRecord, fileName } = setup();
 
 				const error = new NotFoundException(ErrorType.FILE_NOT_FOUND);
 
-				await expect(service.download(fileRecord, params)).rejects.toThrow(error);
+				await expect(service.download(fileRecord, fileName)).rejects.toThrow(error);
 				expect(service.downloadFile).toBeCalledTimes(0);
 			});
 		});
@@ -150,22 +135,19 @@ describe('FilesStorageService download methods', () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
 				fileRecord.updateSecurityCheckStatus(ScanStatus.BLOCKED, 'blocked');
-				const params = {
-					fileRecordId: fileRecord.id,
-					fileName: fileRecord.getName(),
-				};
+				const fileName = fileRecord.getName();
 
 				jest.spyOn(service, 'downloadFile');
 
-				return { fileRecord, params };
+				return { fileRecord, fileName };
 			};
 
 			it('throws error', async () => {
-				const { fileRecord, params } = setup();
+				const { fileRecord, fileName } = setup();
 
 				const error = new NotAcceptableException(ErrorType.FILE_IS_BLOCKED);
 
-				await expect(service.download(fileRecord, params)).rejects.toThrow(error);
+				await expect(service.download(fileRecord, fileName)).rejects.toThrow(error);
 				expect(service.downloadFile).toBeCalledTimes(0);
 			});
 		});
@@ -174,20 +156,17 @@ describe('FilesStorageService download methods', () => {
 			const setup = () => {
 				const { fileRecords } = buildFileRecordsWithParams();
 				const fileRecord = fileRecords[0];
-				const params = {
-					fileRecordId: fileRecord.id,
-					fileName: fileRecord.getName(),
-				};
+				const fileName = fileRecord.getName();
 				const error = new Error('test');
 
 				spy = jest.spyOn(service, 'downloadFile').mockRejectedValueOnce(error);
 
-				return { fileRecord, params, error };
+				return { fileRecord, fileName, error };
 			};
 			it('passes error', async () => {
-				const { fileRecord, params, error } = setup();
+				const { fileRecord, fileName, error } = setup();
 
-				await expect(service.download(fileRecord, params)).rejects.toThrowError(error);
+				await expect(service.download(fileRecord, fileName)).rejects.toThrowError(error);
 			});
 		});
 	});

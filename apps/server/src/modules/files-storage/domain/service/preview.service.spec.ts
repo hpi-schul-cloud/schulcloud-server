@@ -8,13 +8,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileResponseBuilder, PreviewBuilder } from '../../mapper';
 import { FileRecordEntity } from '../../repo';
-import { fileRecordTestFactory } from '../../testing';
+import { fileRecordTestFactory, TestHelper } from '../../testing';
 import { ErrorType } from '../error';
 import { PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
-import { TestHelper } from '../../testing';
-import { FileRecordParentType, PreviewWidth, StorageLocation } from '../interface';
+import { FileRecordParentType, PreviewFileParams, PreviewWidth, StorageLocation } from '../interface';
+import { FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
 
@@ -95,7 +94,7 @@ describe('PreviewService', () => {
 			describe('WHEN forceUpdate is true', () => {
 				describe('WHEN first get of preview file is successfully', () => {
 					const setup = () => {
-						const bytesRange = 'bytes=0-100';
+						const bytesRange = undefined;
 						const mimeType = 'image/png';
 						const { fileRecord } = buildFileRecordWithParams(mimeType);
 						const previewParams = {
@@ -111,46 +110,52 @@ describe('PreviewService', () => {
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const hash = 'test hash';
 						const previewPath = fileRecord.createPreviewFilePath(hash);
 						const originPath = fileRecord.createPath();
 
-						return {
-							bytesRange,
+						const previewFileParams: PreviewFileParams = {
 							fileRecord,
 							previewParams,
+							hash,
+							originFilePath: originPath,
+							previewFilePath: previewPath,
 							format,
-							previewPath,
-							originPath,
+							bytesRange,
+						};
+
+						return {
+							fileRecord,
+							previewFileParams,
 							previewFileResponse,
 						};
 					};
 
 					it('calls previewProducer.generate with correct params', async () => {
-						const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } = setup();
+						const { fileRecord, previewFileParams } = setup();
 
-						await previewService.download(fileRecord, previewParams, bytesRange);
+						await previewService.download(fileRecord, previewFileParams);
 
 						expect(previewProducer.generate).toHaveBeenCalledWith({
-							originFilePath: originPath,
-							previewFilePath: previewPath,
-							previewOptions: { width: previewParams.width, format },
+							originFilePath: previewFileParams.originFilePath,
+							previewFilePath: previewFileParams.previewFilePath,
+							previewOptions: { width: previewFileParams.previewParams.width, format: previewFileParams.format },
 						});
 					});
 
 					it('calls S3ClientAdapters get method', async () => {
-						const { fileRecord, previewParams, previewPath } = setup();
+						const { fileRecord, previewFileParams } = setup();
 
-						await previewService.download(fileRecord, previewParams);
+						await previewService.download(fileRecord, previewFileParams);
 
-						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
+						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewFileParams.previewFilePath, undefined);
 						expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
 					});
 
 					it('returns preview file response', async () => {
-						const { fileRecord, previewParams, previewFileResponse } = setup();
+						const { fileRecord, previewFileParams, previewFileResponse } = setup();
 
-						const response = await previewService.download(fileRecord, previewParams);
+						const response = await previewService.download(fileRecord, previewFileParams);
 
 						expect(response).toEqual(previewFileResponse);
 					});
@@ -158,7 +163,7 @@ describe('PreviewService', () => {
 
 				describe('WHEN first get of preview file throws error and second is successfull', () => {
 					const setup = (error: Error | NotFoundException) => {
-						const bytesRange = 'bytes=0-100';
+						const bytesRange = undefined;
 						const mimeType = 'image/png';
 						const { fileRecord } = buildFileRecordWithParams(mimeType);
 						const previewParams = {
@@ -174,17 +179,23 @@ describe('PreviewService', () => {
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const hash = 'test hash';
 						const previewPath = fileRecord.createPreviewFilePath(hash);
 						const originPath = fileRecord.createPath();
 
-						return {
-							bytesRange,
+						const previewFileParams: PreviewFileParams = {
 							fileRecord,
 							previewParams,
+							hash,
+							originFilePath: originPath,
+							previewFilePath: previewPath,
 							format,
-							previewPath,
-							originPath,
+							bytesRange,
+						};
+
+						return {
+							fileRecord,
+							previewFileParams,
 							previewFileResponse,
 						};
 					};
@@ -192,26 +203,25 @@ describe('PreviewService', () => {
 					describe('WHEN error is a NotFoundException', () => {
 						it('calls previewProducer.generate with correct params', async () => {
 							const notFoundException = new NotFoundException();
-							const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } =
-								setup(notFoundException);
+							const { fileRecord, previewFileParams } = setup(notFoundException);
 
-							await previewService.download(fileRecord, previewParams, bytesRange);
+							await previewService.download(fileRecord, previewFileParams);
 
 							expect(previewProducer.generate).toHaveBeenCalledWith({
-								originFilePath: originPath,
-								previewFilePath: previewPath,
-								previewOptions: { width: previewParams.width, format },
+								originFilePath: previewFileParams.originFilePath,
+								previewFilePath: previewFileParams.previewFilePath,
+								previewOptions: { width: previewFileParams.previewParams.width, format: previewFileParams.format },
 							});
 							expect(previewProducer.generate).toHaveBeenCalledTimes(2);
 						});
 
 						it('calls S3ClientAdapters get method', async () => {
 							const notFoundException = new NotFoundException();
-							const { fileRecord, previewParams, previewPath } = setup(notFoundException);
+							const { fileRecord, previewFileParams } = setup(notFoundException);
 
-							await previewService.download(fileRecord, previewParams);
+							await previewService.download(fileRecord, previewFileParams);
 
-							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
+							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewFileParams.previewFilePath, undefined);
 							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(2);
 						});
 					});
@@ -219,9 +229,9 @@ describe('PreviewService', () => {
 					describe('WHEN error is other error', () => {
 						it('should pass error', async () => {
 							const error = new Error('testError');
-							const { fileRecord, previewParams } = setup(error);
+							const { fileRecord, previewFileParams } = setup(error);
 
-							await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow(error);
+							await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrow(error);
 						});
 					});
 				});
@@ -245,25 +255,31 @@ describe('PreviewService', () => {
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const hash = 'test hash';
 						const previewPath = fileRecord.createPreviewFilePath(hash);
 						const originPath = fileRecord.createPath();
 
-						return {
-							bytesRange,
+						const previewFileParams: PreviewFileParams = {
 							fileRecord,
 							previewParams,
+							hash,
+							originFilePath: originPath,
+							previewFilePath: previewPath,
 							format,
-							previewPath,
-							originPath,
+							bytesRange,
+						};
+
+						return {
+							fileRecord,
+							previewFileParams,
 							previewFileResponse,
 						};
 					};
 
 					it('should pass error', async () => {
-						const { fileRecord, previewParams } = setup();
+						const { fileRecord, previewFileParams } = setup();
 
-						await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow();
+						await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrow();
 					});
 				});
 			});
@@ -271,7 +287,7 @@ describe('PreviewService', () => {
 			describe('WHEN forceUpdate is false', () => {
 				describe('WHEN first get of preview file is successfull', () => {
 					const setup = () => {
-						const bytesRange = 'bytes=0-100';
+						const bytesRange = undefined;
 						const mimeType = 'image/png';
 						const { fileRecord } = buildFileRecordWithParams(mimeType);
 						const previewParams = {
@@ -287,42 +303,48 @@ describe('PreviewService', () => {
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const hash = 'test hash';
 						const previewPath = fileRecord.createPreviewFilePath(hash);
 						const originPath = fileRecord.createPath();
 
-						return {
-							bytesRange,
+						const previewFileParams: PreviewFileParams = {
 							fileRecord,
 							previewParams,
+							hash,
+							originFilePath: originPath,
+							previewFilePath: previewPath,
 							format,
-							previewPath,
-							originPath,
+							bytesRange,
+						};
+
+						return {
+							fileRecord,
+							previewFileParams,
 							previewFileResponse,
 						};
 					};
 
 					it('calls S3ClientAdapters get method', async () => {
-						const { fileRecord, previewParams, previewPath } = setup();
+						const { fileRecord, previewFileParams } = setup();
 
-						await previewService.download(fileRecord, previewParams);
+						await previewService.download(fileRecord, previewFileParams);
 
-						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
+						expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewFileParams.previewFilePath, undefined);
 						expect(s3ClientAdapter.get).toHaveBeenCalledTimes(1);
 					});
 
 					it('returns preview file response', async () => {
-						const { fileRecord, previewParams, previewFileResponse } = setup();
+						const { fileRecord, previewFileParams, previewFileResponse } = setup();
 
-						const response = await previewService.download(fileRecord, previewParams);
+						const response = await previewService.download(fileRecord, previewFileParams);
 
 						expect(response).toEqual(previewFileResponse);
 					});
 
 					it('does not call generate', async () => {
-						const { fileRecord, previewParams, bytesRange } = setup();
+						const { fileRecord, previewFileParams } = setup();
 
-						await previewService.download(fileRecord, previewParams, bytesRange);
+						await previewService.download(fileRecord, previewFileParams);
 
 						expect(previewProducer.generate).toHaveBeenCalledTimes(0);
 					});
@@ -330,7 +352,7 @@ describe('PreviewService', () => {
 
 				describe('WHEN first get of preview file throws error and second is successfull', () => {
 					const setup = (error: Error | NotFoundException) => {
-						const bytesRange = 'bytes=0-100';
+						const bytesRange = undefined;
 						const mimeType = 'image/png';
 						const { fileRecord } = buildFileRecordWithParams(mimeType);
 						const previewParams = {
@@ -346,17 +368,23 @@ describe('PreviewService', () => {
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const hash = 'test hash';
 						const previewPath = fileRecord.createPreviewFilePath(hash);
 						const originPath = fileRecord.createPath();
 
-						return {
-							bytesRange,
+						const previewFileParams: PreviewFileParams = {
 							fileRecord,
 							previewParams,
+							hash,
+							originFilePath: originPath,
+							previewFilePath: previewPath,
 							format,
-							previewPath,
-							originPath,
+							bytesRange,
+						};
+
+						return {
+							fileRecord,
+							previewFileParams,
 							previewFileResponse,
 						};
 					};
@@ -364,26 +392,25 @@ describe('PreviewService', () => {
 					describe('WHEN error is a NotFoundException', () => {
 						it('calls previewProducer.generate with correct params', async () => {
 							const notFoundException = new NotFoundException();
-							const { fileRecord, previewParams, bytesRange, originPath, previewPath, format } =
-								setup(notFoundException);
+							const { fileRecord, previewFileParams } = setup(notFoundException);
 
-							await previewService.download(fileRecord, previewParams, bytesRange);
+							await previewService.download(fileRecord, previewFileParams);
 
 							expect(previewProducer.generate).toHaveBeenCalledWith({
-								originFilePath: originPath,
-								previewFilePath: previewPath,
-								previewOptions: { width: previewParams.width, format },
+								originFilePath: previewFileParams.originFilePath,
+								previewFilePath: previewFileParams.previewFilePath,
+								previewOptions: { width: previewFileParams.previewParams.width, format: previewFileParams.format },
 							});
 							expect(previewProducer.generate).toHaveBeenCalledTimes(1);
 						});
 
 						it('calls S3ClientAdapters get method', async () => {
 							const notFoundException = new NotFoundException();
-							const { fileRecord, previewParams, previewPath } = setup(notFoundException);
+							const { fileRecord, previewFileParams } = setup(notFoundException);
 
-							await previewService.download(fileRecord, previewParams);
+							await previewService.download(fileRecord, previewFileParams);
 
-							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewPath, undefined);
+							expect(s3ClientAdapter.get).toHaveBeenCalledWith(previewFileParams.previewFilePath, undefined);
 							expect(s3ClientAdapter.get).toHaveBeenCalledTimes(2);
 						});
 					});
@@ -391,9 +418,9 @@ describe('PreviewService', () => {
 					describe('WHEN error is other error', () => {
 						it('should pass error', async () => {
 							const error = new Error('testError');
-							const { fileRecord, previewParams } = setup(error);
+							const { fileRecord, previewFileParams } = setup(error);
 
-							await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow(error);
+							await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrow(error);
 						});
 					});
 				});
@@ -417,25 +444,31 @@ describe('PreviewService', () => {
 						const name = `${fileNameWithoutExtension}.${format}`;
 						const previewFileResponse = FileResponseBuilder.build(previewFile, name);
 
-						const hash = PreviewBuilder.createPreviewNameHash(fileRecord.id, previewParams);
+						const hash = 'test hash';
 						const previewPath = fileRecord.createPreviewFilePath(hash);
 						const originPath = fileRecord.createPath();
 
-						return {
-							bytesRange,
+						const previewFileParams: PreviewFileParams = {
 							fileRecord,
 							previewParams,
+							hash,
+							originFilePath: originPath,
+							previewFilePath: previewPath,
 							format,
-							previewPath,
-							originPath,
+							bytesRange,
+						};
+
+						return {
+							fileRecord,
+							previewFileParams,
 							previewFileResponse,
 						};
 					};
 
 					it('should pass error', async () => {
-						const { fileRecord, previewParams } = setup();
+						const { fileRecord, previewFileParams } = setup();
 
-						await expect(previewService.download(fileRecord, previewParams)).rejects.toThrow();
+						await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrow();
 					});
 				});
 			});
@@ -450,21 +483,33 @@ describe('PreviewService', () => {
 					const { fileRecord } = buildFileRecordWithParams(mimeType);
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
+					const hash = 'test hash';
+					const previewPath = fileRecord.createPreviewFilePath(hash);
+					const originPath = fileRecord.createPath();
+
+					const previewFileParams: PreviewFileParams = {
+						fileRecord,
+						previewParams,
+						hash,
+						originFilePath: originPath,
+						previewFilePath: previewPath,
+						format,
+						bytesRange,
+					};
+
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
-						bytesRange,
 						fileRecord,
-						previewParams,
-						format,
+						previewFileParams,
 						error,
 					};
 				};
 
 				it('passes error', async () => {
-					const { fileRecord, previewParams, bytesRange, error } = setup();
+					const { fileRecord, previewFileParams, error } = setup();
 
-					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrowError(error);
 				});
 			});
 
@@ -476,21 +521,33 @@ describe('PreviewService', () => {
 					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.PENDING);
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
+					const hash = 'test hash';
+					const previewPath = fileRecord.createPreviewFilePath(hash);
+					const originPath = fileRecord.createPath();
+
+					const previewFileParams: PreviewFileParams = {
+						fileRecord,
+						previewParams,
+						hash,
+						originFilePath: originPath,
+						previewFilePath: previewPath,
+						format,
+						bytesRange,
+					};
+
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
-						bytesRange,
 						fileRecord,
-						previewParams,
-						format,
+						previewFileParams,
 						error,
 					};
 				};
 
 				it('passes error', async () => {
-					const { fileRecord, previewParams, bytesRange, error } = setup();
+					const { fileRecord, previewFileParams, error } = setup();
 
-					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrowError(error);
 				});
 			});
 
@@ -500,24 +557,35 @@ describe('PreviewService', () => {
 					const mimeType = 'image/png';
 					const format = mimeType.split('/')[1];
 					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.ERROR);
-
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
+
+					const hash = 'test hash';
+					const previewPath = fileRecord.createPreviewFilePath(hash);
+					const originPath = fileRecord.createPath();
+
+					const previewFileParams: PreviewFileParams = {
+						fileRecord,
+						previewParams,
+						hash,
+						originFilePath: originPath,
+						previewFilePath: previewPath,
+						format,
+						bytesRange,
+					};
 
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
-						bytesRange,
 						fileRecord,
-						previewParams,
-						format,
+						previewFileParams,
 						error,
 					};
 				};
 
 				it('calls download with correct params', async () => {
-					const { fileRecord, previewParams, bytesRange, error } = setup();
+					const { fileRecord, previewFileParams, error } = setup();
 
-					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrowError(error);
 				});
 			});
 
@@ -529,21 +597,33 @@ describe('PreviewService', () => {
 					const { fileRecord } = buildFileRecordWithParams(mimeType, ScanStatus.BLOCKED);
 					const previewParams = { ...defaultPreviewParams, forceUpdate: true };
 
+					const hash = 'test hash';
+					const previewPath = fileRecord.createPreviewFilePath(hash);
+					const originPath = fileRecord.createPath();
+
+					const previewFileParams: PreviewFileParams = {
+						fileRecord,
+						previewParams,
+						hash,
+						originFilePath: originPath,
+						previewFilePath: previewPath,
+						format,
+						bytesRange,
+					};
+
 					const error = new UnprocessableEntityException(ErrorType.PREVIEW_NOT_POSSIBLE);
 
 					return {
-						bytesRange,
 						fileRecord,
-						previewParams,
-						format,
+						previewFileParams,
 						error,
 					};
 				};
 
 				it('calls download with correct params', async () => {
-					const { fileRecord, previewParams, bytesRange, error } = setup();
+					const { fileRecord, previewFileParams, error } = setup();
 
-					await expect(previewService.download(fileRecord, previewParams, bytesRange)).rejects.toThrowError(error);
+					await expect(previewService.download(fileRecord, previewFileParams)).rejects.toThrowError(error);
 				});
 			});
 		});
