@@ -147,11 +147,9 @@ describe('Room Controller (API)', () => {
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 					await expect(em.findOneOrFail(RoomEntity, roomInvitationLink.id)).rejects.toThrow(NotFoundException);
 				});
-
-				// TODO: describe('when user does not have the permissions', () => {});
 			});
 
-			describe('when the room does not exist', () => {
+			describe('when the roomInvitationLink does not exist', () => {
 				it('should return a 404 error', async () => {
 					const { teacherOwnerAccount } = await setup();
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
@@ -177,7 +175,7 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, roomInvitationLink };
 			};
 
-			describe('when the room exists', () => {
+			describe('when the roomInvitationLink exists', () => {
 				it('should return 403', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup();
 
@@ -187,7 +185,7 @@ describe('Room Controller (API)', () => {
 				});
 			});
 
-			describe('when the room does not exist', () => {
+			describe('when the roomInvitationLink does not exist', () => {
 				it('should return a 404 error', async () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
