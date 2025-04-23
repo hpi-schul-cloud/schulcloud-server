@@ -1,4 +1,4 @@
-import { FilesStorageConfigResponse } from '../domain/dto/files-storage-config.response';
+import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(maxFileSize: number): FilesStorageConfigResponse {

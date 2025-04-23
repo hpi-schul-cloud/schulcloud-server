@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { FilesStorageConfigResponse } from '../dto';
 import { FilesStorageUC } from '../uc';
-import { FilesStorageConfigResponse } from '../../domain';
 
 @ApiTags('file/config')
 @Controller('file/config')

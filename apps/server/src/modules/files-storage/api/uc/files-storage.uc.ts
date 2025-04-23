@@ -20,26 +20,26 @@ import {
 	ErrorType,
 	FileRecord,
 	FileRecordParentType,
-	FilesStorageConfigResponse,
 	FilesStorageService,
 	GetFileResponse,
 	PreviewService,
 	StorageLocation,
 } from '../../domain';
-import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../../mapper';
+import { FileDtoBuilder, FilesStorageMapper } from '../../mapper';
 import {
 	CopyFileParams,
 	CopyFileResponse,
 	CopyFilesOfParentParams,
 	DownloadFileParams,
 	FileRecordParams,
+	FilesStorageConfigResponse,
 	FileUrlParams,
 	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
 } from '../dto';
-import { CopyFileResponseBuilder } from '../mapper';
+import { ConfigResponseMapper, CopyFileResponseBuilder } from '../mapper';
 
 // TODO: Delete files-storage uc spec tests and remove export?
 export const FileStorageAuthorizationContext = {

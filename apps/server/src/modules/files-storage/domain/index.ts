@@ -1,4 +1,4 @@
-export { FileDto, FilesStorageConfigResponse } from './dto';
+export { FileDto } from './dto';
 export { ErrorType } from './error';
 export * from './file-record.do';
 export * from './interface';
