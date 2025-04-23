@@ -165,7 +165,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				[RoleName.STUDENT, {}, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}'`, () => {
+				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
 					it(`should return http status ${httpStatus}`, async () => {
 						const { loggedInClient, roomInvitationLink } = await setup(
 							roomInvitationLinkConfig,
@@ -189,7 +189,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				[RoleName.STUDENT, { isOnlyForTeachers: false }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}'`, () => {
+				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
 					it(`should return http status ${httpStatus}`, async () => {
 						const { loggedInClient, roomInvitationLink } = await setup(
 							roomInvitationLinkConfig,
@@ -213,7 +213,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				[RoleName.STUDENT, { restrictedToCreatorSchool: false }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}'`, () => {
+				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
 					it(`should return http status ${httpStatus}`, async () => {
 						const { loggedInClient, roomInvitationLink } = await setup(
 							roomInvitationLinkConfig,
@@ -237,7 +237,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				[RoleName.STUDENT, { requiresConfirmation: false }, UserSchool.SAME_SCHOOL, RoleName.ROOMVIEWER],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, newRole) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}'`, () => {
+				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
 					it(`should add the user with role: ${newRole}`, async () => {
 						const { loggedInClient, roomInvitationLink, user } = await setup(
 							roomInvitationLinkConfig,
@@ -270,7 +270,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				[RoleName.STUDENT, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
-				describe(`when room config is '${config}'`, () => {
+				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
 					it(`should return http status ${httpStatus}`, async () => {
 						const { loggedInClient, roomInvitationLink } = await setup(
 							roomInvitationLinkConfig,
@@ -280,6 +280,30 @@ describe('Room Invitation Link Controller (API)', () => {
 
 						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 
+						expect(response.status).toBe(httpStatus);
+					});
+				});
+			});
+		});
+
+		describe('when user is already member', () => {
+			describe.each([
+				[RoleName.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[RoleName.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
+				[RoleName.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.BAD_REQUEST],
+			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+				const config = JSON.stringify(roomInvitationLinkConfig);
+				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
+					it(`should return http status ${httpStatus}`, async () => {
+						const { loggedInClient, roomInvitationLink } = await setup(
+							roomInvitationLinkConfig,
+							roleName,
+							fromSameSchool
+						);
+
+						await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 						expect(response.status).toBe(httpStatus);
 					});
 				});

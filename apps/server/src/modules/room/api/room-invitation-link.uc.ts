@@ -95,9 +95,6 @@ export class RoomInvitationLinkUc {
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
 
 		const validationResult = await this.checkValidity(roomInvitationLink, user);
-		if (validationResult !== RoomInvitationLinkValidationResult.VALID) {
-			return { validationResult };
-		}
 
 		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
 		await this.roomMembershipService.changeRoleOfRoomMembers(
@@ -139,7 +136,7 @@ export class RoomInvitationLinkUc {
 		);
 		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
 		if (isAlreadyMember) {
-			throw new ForbiddenException(RoomInvitationLinkValidationResult.ALREADY_MEMBER);
+			throw new BadRequestException(RoomInvitationLinkValidationResult.ALREADY_MEMBER);
 		}
 		return RoomInvitationLinkValidationResult.VALID;
 	}
