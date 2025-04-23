@@ -130,7 +130,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			};
 
 			it('should create a room invitation link and return 201', async () => {
-				const { loggedInClient, roomEntity } = await setup();
+				const { loggedInClient, roomEntity, teacherUser } = await setup();
 
 				const params: CreateRoomInvitationLinkBodyParams = {
 					roomId: roomEntity.id,
@@ -147,8 +147,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					...params,
 					activeUntil: (params.activeUntil ?? new Date()).toISOString(),
 					id: expect.anything() as string,
-					creatorUserId: expect.anything() as string,
-					creatorSchoolId: expect.anything() as string,
+					creatorUserId: teacherUser.id,
+					creatorSchoolId: teacherUser.school.id,
 				});
 			});
 		});
