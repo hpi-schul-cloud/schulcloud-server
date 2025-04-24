@@ -304,7 +304,6 @@ export class DatabaseManagementUc {
 	public async syncIndexes(): Promise<void> {
 		await this.createUserSearchIndex();
 		await this.createGroupUniqueIndex();
-		await this.createExternalToolMediumUniqueIndex();
 		return this.databaseManagementService.syncIndexes();
 	}
 
@@ -368,28 +367,6 @@ export class DatabaseManagementUc {
 				name: indexName,
 				unique: true,
 				partialFilterExpression: { externalSource: { $exists: true } },
-			}
-		);
-	}
-	private async createExternalToolMediumUniqueIndex(): Promise<void> {
-		const indexName = 'externalToolMediumUniqueIndex';
-		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
-		const indexExists: boolean = await collection.indexExists(indexName);
-
-		if (indexExists) {
-			this.logger.debug(`${indexName} does not require update`);
-			return;
-		}
-
-		await collection.createIndex(
-			{
-				'medium.mediumId': 1,
-				'medium.mediumSourceId': 1,
-			},
-			{
-				name: indexName,
-				unique: true,
-				partialFilterExpression: { medium: { $exists: true } },
 			}
 		);
 	}
