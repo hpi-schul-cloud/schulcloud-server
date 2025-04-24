@@ -1,5 +1,5 @@
-import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common/error';
@@ -77,4 +77,9 @@ export class LoginController {
 
 		return mapped;
 	}
+
+	@JwtAuthentication()
+	@Get('/check')
+	@ApiOperation({ summary: 'Checks if the JWT and the session are valid.' })
+	public checkIfAuthenticated(): void {}
 }
