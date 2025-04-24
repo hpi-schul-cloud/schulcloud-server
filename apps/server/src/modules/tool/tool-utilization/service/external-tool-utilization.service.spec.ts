@@ -2,34 +2,34 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardCommonToolService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ContextExternalToolRepo } from '../../context-external-tool/repo';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
-import { ExternalToolUtilization } from '../../external-tool/domain';
-import { SchoolExternalTool, SchoolExternalToolUtilization } from '../../school-external-tool/domain';
-import { SchoolExternalToolRepo } from '../../school-external-tool/repo';
+import { SchoolExternalToolService } from '../../school-external-tool';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { CommonToolUtilizationService } from './common-tool-utilization.service';
+import { ExternalToolUtilization, SchoolExternalToolUtilization } from '../domain';
+import { ExternalToolUtilizationService } from './external-tool-utilization.service';
 
-describe(CommonToolUtilizationService.name, () => {
+describe(ExternalToolUtilizationService.name, () => {
 	let module: TestingModule;
-	let service: CommonToolUtilizationService;
+	let service: ExternalToolUtilizationService;
 
-	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
-	let contextExternalToolRepo: DeepMocked<ContextExternalToolRepo>;
+	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let boardCommonToolService: DeepMocked<BoardCommonToolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CommonToolUtilizationService,
+				ExternalToolUtilizationService,
 				{
-					provide: SchoolExternalToolRepo,
-					useValue: createMock<SchoolExternalToolRepo>(),
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
 				},
 				{
-					provide: ContextExternalToolRepo,
-					useValue: createMock<ContextExternalToolRepo>(),
+					provide: ContextExternalToolService,
+					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
 					provide: BoardCommonToolService,
@@ -38,9 +38,9 @@ describe(CommonToolUtilizationService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(CommonToolUtilizationService);
-		schoolExternalToolRepo = module.get(SchoolExternalToolRepo);
-		contextExternalToolRepo = module.get(ContextExternalToolRepo);
+		service = module.get(ExternalToolUtilizationService);
+		schoolExternalToolService = module.get(SchoolExternalToolService);
+		contextExternalToolService = module.get(ContextExternalToolService);
 		boardCommonToolService = module.get(BoardCommonToolService);
 	});
 
@@ -55,7 +55,7 @@ describe(CommonToolUtilizationService.name, () => {
 	describe('getUtilizationForExternalTool', () => {
 		describe('when the tool has no usages', () => {
 			const setup = () => {
-				schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([]);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 			};
 
 			it('should return 0 usages for all contexts', async () => {
@@ -81,10 +81,10 @@ describe(CommonToolUtilizationService.name, () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildListWithId(2);
 
-				schoolExternalToolRepo.findByExternalToolId.mockResolvedValueOnce([schoolExternalTool]);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				boardCommonToolService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
 			};
 
@@ -110,9 +110,9 @@ describe(CommonToolUtilizationService.name, () => {
 	describe('getMetadataForSchoolExternalTool', () => {
 		describe('when the tool has no usages', () => {
 			const setup = () => {
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				boardCommonToolService.countBoardUsageForExternalTools.mockResolvedValueOnce(0);
 			};
 
@@ -137,9 +137,9 @@ describe(CommonToolUtilizationService.name, () => {
 			const setup = () => {
 				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildListWithId(2);
 
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
-				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				boardCommonToolService.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
 			};
 
