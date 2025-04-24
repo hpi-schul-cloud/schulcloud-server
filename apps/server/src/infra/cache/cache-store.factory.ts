@@ -47,6 +47,7 @@ export class CacheStoreFactory {
 		const sentinelPassword = this.configService.get<string>('REDIS_SENTINEL_PASSWORD');
 		const sentinels = await this.discoverSentinelHosts();
 		this.logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
+		console.log(`Sentinels:`, sentinels);
 
 		const redisInstance = new Redis({
 			sentinels,
