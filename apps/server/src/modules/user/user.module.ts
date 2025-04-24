@@ -8,9 +8,18 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { USER_DO_REPO, UserService } from './domain';
 import { UserAuthorizableService } from './domain/service/user-authorizable.service';
 import { UserDoMikroOrmRepo, UserMikroOrmRepo } from './repo';
+import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [RoleModule, LoggerModule, CqrsModule, RegistrationPinModule, CalendarModule, AuthorizationModule],
+	imports: [
+		RoleModule,
+		LoggerModule,
+		CqrsModule,
+		RegistrationPinModule,
+		CalendarModule,
+		AuthorizationModule,
+		DeletionModule,
+	],
 	providers: [
 		UserMikroOrmRepo,
 		{ provide: USER_DO_REPO, useClass: UserDoMikroOrmRepo },

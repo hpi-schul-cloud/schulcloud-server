@@ -9,7 +9,7 @@ import { UserInfoResponse } from './user-info.response';
 const NEWS_SOURCES = ['internal', 'rss'] as const;
 const TARGET_MODEL_VALUES = Object.values(NewsTargetModel);
 
-type SourceType = typeof NEWS_SOURCES[number];
+type SourceType = (typeof NEWS_SOURCES)[number];
 export class NewsResponse {
 	constructor({
 		id,

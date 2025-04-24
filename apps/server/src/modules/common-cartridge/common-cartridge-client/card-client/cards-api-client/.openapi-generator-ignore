@@ -56,4 +56,6 @@ models/*
 !models/timestamps-response.ts
 !models/video-conference-element-content.ts
 !models/video-conference-element-response.ts
+!models/h5p-element-content.ts
+!models/h5p-element-response.ts
 !models/visibility-settings-response.ts

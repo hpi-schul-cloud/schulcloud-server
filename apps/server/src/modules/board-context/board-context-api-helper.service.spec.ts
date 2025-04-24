@@ -5,10 +5,12 @@ import { CourseEntity, CourseFeatures, CourseGroupEntity } from '@modules/course
 import { courseEntityFactory } from '@modules/course/testing';
 import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { UserService } from '@modules/user';
+import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { BoardFeature } from '../board/domain';
+import { BoardFeature, ElementReferenceType } from '../board/domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';
 import { LegacySchoolService } from '../legacy-school';
 import { roomFactory } from '../room/testing';
@@ -20,6 +22,7 @@ describe('BoardContextApiHelperService', () => {
 	let service: BoardContextApiHelperService;
 	let courseService: jest.Mocked<CourseService>;
 	let roomService: jest.Mocked<RoomService>;
+	let userService: jest.Mocked<UserService>;
 	let boardNodeService: jest.Mocked<BoardNodeService>;
 	let legacySchoolService: jest.Mocked<LegacySchoolService>;
 	const config: Pick<ServerConfig, 'FEATURE_VIDEOCONFERENCE_ENABLED' | 'FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED'> =
@@ -42,6 +45,10 @@ describe('BoardContextApiHelperService', () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
+				{
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
 				},
@@ -61,6 +68,7 @@ describe('BoardContextApiHelperService', () => {
 		service = module.get<BoardContextApiHelperService>(BoardContextApiHelperService);
 		courseService = module.get(CourseService);
 		roomService = module.get(RoomService);
+		userService = module.get(UserService);
 		boardNodeService = module.get(BoardNodeService);
 		legacySchoolService = module.get(LegacySchoolService);
 	});
@@ -305,6 +313,134 @@ describe('BoardContextApiHelperService', () => {
 
 					expect(result).toEqual([]);
 				});
+			});
+		});
+	});
+
+	describe('getParentsOfElement', () => {
+		describe('when root parent element is course', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: 'courseId' },
+				});
+				const course = courseEntityFactory.build();
+				const elementId = 'elementId';
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(columnBoard);
+				courseService.findById.mockResolvedValueOnce(course);
+
+				return { elementId, course, columnBoard };
+			};
+
+			it('should return the parents of the element', async () => {
+				const { elementId, course, columnBoard } = setup();
+
+				const result = await service.getParentsOfElement(elementId);
+
+				const expectedResult = [
+					{
+						id: columnBoard.context.id,
+						name: course.name,
+						type: BoardExternalReferenceType.Course,
+					},
+					{
+						id: columnBoard.id,
+						name: columnBoard.title,
+						type: ElementReferenceType.BOARD,
+					},
+				];
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when root parent element is room', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build({
+					context: { type: BoardExternalReferenceType.Room, id: 'roomId' },
+				});
+				const room = roomFactory.build();
+				const elementId = 'elementId';
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(columnBoard);
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				return { elementId, room, columnBoard };
+			};
+
+			it('should return the parents of the element', async () => {
+				const { elementId, room, columnBoard } = setup();
+
+				const result = await service.getParentsOfElement(elementId);
+
+				const expectedResult = [
+					{
+						id: columnBoard.context.id,
+						name: room.name,
+						type: BoardExternalReferenceType.Room,
+					},
+					{
+						id: columnBoard.id,
+						name: columnBoard.title,
+						type: ElementReferenceType.BOARD,
+					},
+				];
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when root parent element is user', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build({
+					context: { type: BoardExternalReferenceType.User, id: 'userId' },
+				});
+				const user = userFactory.build();
+				const elementId = 'elementId';
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(columnBoard);
+				userService.getUserEntityWithRoles.mockResolvedValueOnce(user);
+
+				return { elementId, user, columnBoard };
+			};
+
+			it('should return the parents of the element', async () => {
+				const { elementId, user, columnBoard } = setup();
+
+				const result = await service.getParentsOfElement(elementId);
+
+				const expectedResult = [
+					{
+						id: columnBoard.context.id,
+						name: `${user.firstName} ${user.lastName}`,
+						type: BoardExternalReferenceType.User,
+					},
+					{
+						id: columnBoard.id,
+						name: columnBoard.title,
+						type: ElementReferenceType.BOARD,
+					},
+				];
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when root parent element is unsupported', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build({
+					context: { type: 'unsupportedType' as BoardExternalReferenceType, id: 'unsupportedId' },
+				});
+				const elementId = 'elementId';
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(columnBoard);
+
+				return { elementId, columnBoard };
+			};
+
+			it('should throw BadRequestException', async () => {
+				const { elementId } = setup();
+
+				await expect(service.getParentsOfElement(elementId)).rejects.toThrowError(
+					new Error('Unsupported board reference type unsupportedType')
+				);
 			});
 		});
 	});

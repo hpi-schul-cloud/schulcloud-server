@@ -1,6 +1,6 @@
 import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TokenEndpointAuthMethod, ToolConfigType } from '../../common/enum';
+import { TokenEndpointAuthMethod } from '../../common/enum';
 import { Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
@@ -24,7 +24,6 @@ describe('ExternalToolServiceMapper', () => {
 		it('should map an Oauth2ToolConfigDO to a ProviderOauthClient', () => {
 			const toolName = 'toolName';
 			const oauth2Config: Oauth2ToolConfig = new Oauth2ToolConfig({
-				type: ToolConfigType.OAUTH2,
 				baseUrl: 'baseUrl',
 				clientId: 'clientId',
 				clientSecret: 'clientSecret',
@@ -43,6 +42,8 @@ describe('ExternalToolServiceMapper', () => {
 				redirect_uris: ['reDir1', 'reDir2'],
 				frontchannel_logout_uri: 'frontchannelLogoutUri',
 				subject_type: 'pairwise',
+				grant_types: ['authorization_code', 'refresh_token'],
+				response_types: ['code', 'token', 'id_token'],
 			};
 
 			const result: Partial<ProviderOauthClient> = mapper.mapDoToProviderOauthClient(toolName, oauth2Config);

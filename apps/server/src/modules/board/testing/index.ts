@@ -20,3 +20,4 @@ export * from './submission-container-element.factory';
 export * from './submission-item.factory';
 export * from './test-socket-api-client';
 export * from './video-conference-element.factory';
+export * from './h5p-element.factory';
