@@ -1,7 +1,8 @@
 import { LegacyLogger } from '@core/logger';
-import KeyvValkey from '@keyv/valkey';
+import KeyvValkey, { KeyvValkeyOptions } from '@keyv/valkey';
 import { ConfigService } from '@nestjs/config';
 import * as dns from 'dns';
+import Redis from 'ioredis';
 import Keyv from 'keyv';
 import * as util from 'util';
 import { CacheConfig } from './interface/cache-config.interface';
@@ -47,16 +48,25 @@ export class CacheStoreFactory {
 		const sentinels = await this.discoverSentinelHosts();
 		this.logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
 
-		const config = {
-			options: { sentinels, sentinelPassword, password: sentinelPassword, name: sentinelName },
-		};
+		const redisInstance = new Redis({
+			sentinels,
+			sentinelPassword,
+			password: sentinelPassword,
+			name: sentinelName,
+		});
 
-		const keyvValkey = new KeyvValkey(config, { useRedisSets: false });
+		const keyvValkey = new KeyvValkey(redisInstance as unknown as KeyvValkeyOptions, { useRedisSets: false });
 
 		return keyvValkey;
 	}
 
 	private async discoverSentinelHosts(): Promise<{ host: string; port: number }[]> {
+		return [
+			{
+				host: 'record.name',
+				port: 123,
+			},
+		];
 		const serviceName = this.configService.getOrThrow<string>('REDIS_SENTINEL_SERVICE_NAME');
 		const resolveSrv = util.promisify(dns.resolveSrv);
 		try {
