@@ -1,32 +1,28 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { CacheModule, CacheModuleOptions } from '@nestjs/cache-manager';
-import { Module } from '@nestjs/common';
 import { LegacyLogger, LoggerModule } from '@core/logger';
-import { redisStore } from 'cache-manager-redis-yet';
-import { CacheStoreType } from './interface';
-import { CacheService } from './service/cache.service';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { CacheStoreFactory } from './cache-store.factory';
+import { CacheConfig } from './interface/cache-config.interface';
 
 @Module({
 	imports: [
 		CacheModule.registerAsync({
-			useFactory: async (cacheService: CacheService, logger: LegacyLogger): Promise<CacheModuleOptions> => {
-				if (cacheService.getStoreType() === CacheStoreType.REDIS) {
-					const redisUrl: string = Configuration.get('REDIS_URI') as string;
-					const store = await redisStore({ url: redisUrl });
-					const { client } = store;
-
-					client.on('error', (error) => logger.error(error));
-					client.on('connect', (msg) => logger.log(msg));
-
-					return { store };
-				}
-				return {};
+			useFactory: async (
+				cacheService: CacheStoreFactory,
+				logger: LegacyLogger,
+				configService: ConfigService<CacheConfig>
+			) => {
+				const storeInstance = await cacheService.build(configService, logger);
+				return {
+					stores: [storeInstance],
+				};
 			},
-			inject: [CacheService, LegacyLogger],
+			inject: [CacheStoreFactory, LegacyLogger, ConfigService],
 			imports: [LoggerModule, CacheWrapperModule],
 		}),
 	],
-	providers: [CacheService],
-	exports: [CacheModule, CacheService],
+	providers: [CacheStoreFactory],
+	exports: [CacheModule, CacheStoreFactory],
 })
 export class CacheWrapperModule {}

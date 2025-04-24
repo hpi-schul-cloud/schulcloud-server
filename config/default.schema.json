@@ -109,6 +109,24 @@
 			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
+		"REDIS_CLUSTER_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables Redis Cluster mode."
+		},
+		"REDIS_SENTINEL_NAME": {
+			"type": "string",
+			"default": "myprimary",
+			"description": "The name of the Redis Sentinel."
+		},
+		"REDIS_SENTINEL_PASSWORD": {
+			"type": "string",
+			"description": "The password for the Redis Sentinel service."
+		},
+		"REDIS_SENTINEL_SERVICE_NAME": {
+			"type": "string",
+			"description": "The name of the Redis Sentinel service."
+		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,

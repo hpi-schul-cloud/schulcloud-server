@@ -16,6 +16,7 @@ import { FeathersRosterService } from '@modules/roster';
 import { ServerModule } from '@modules/server/server.app.module';
 import { TeamService } from '@modules/team';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
@@ -40,6 +41,8 @@ async function bootstrap(): Promise<void> {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const cacheManager = await nestApp.resolve(CACHE_MANAGER);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
@@ -50,7 +53,7 @@ async function bootstrap(): Promise<void> {
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm);
+	const feathersExpress = await legacyAppPromise(orm, cacheManager);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	await feathersExpress.setup();
 
