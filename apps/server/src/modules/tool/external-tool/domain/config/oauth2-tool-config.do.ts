@@ -1,22 +1,22 @@
-import { ExternalToolConfig } from './external-tool-config.do';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../../../common/enum';
+import { ExternalToolConfig } from './external-tool-config.do';
 
 export class Oauth2ToolConfig extends ExternalToolConfig {
-	clientId: string;
+	public clientId: string;
 
-	clientSecret?: string;
+	public clientSecret?: string;
 
-	skipConsent: boolean;
+	public skipConsent: boolean;
 
-	tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+	public tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
 
-	frontchannelLogoutUri?: string;
+	public frontchannelLogoutUri?: string;
 
-	scope?: string;
+	public scope?: string;
 
-	redirectUris?: string[];
+	public redirectUris?: string[];
 
-	constructor(props: Oauth2ToolConfig) {
+	constructor(props: Omit<Oauth2ToolConfig, 'type'>) {
 		super({
 			type: ToolConfigType.OAUTH2,
 			baseUrl: props.baseUrl,
