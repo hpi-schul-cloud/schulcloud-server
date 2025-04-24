@@ -136,11 +136,7 @@ describe('FilesStorageUC', () => {
 
 				await filesStorageUC.download(fileDownloadParams);
 
-				expect(filesStorageService.download).toHaveBeenCalledWith(
-					fileRecord,
-					fileDownloadParams.fileRecordId,
-					undefined
-				);
+				expect(filesStorageService.download).toHaveBeenCalledWith(fileRecord, fileDownloadParams.fileName, undefined);
 			});
 
 			it('should return correct result', async () => {

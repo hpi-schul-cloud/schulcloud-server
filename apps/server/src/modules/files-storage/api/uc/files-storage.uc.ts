@@ -196,7 +196,7 @@ export class FilesStorageUC {
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.read);
 
-		return this.filesStorageService.download(fileRecord, params.fileRecordId, bytesRange);
+		return this.filesStorageService.download(fileRecord, params.fileName, bytesRange);
 	}
 
 	public async downloadBySecurityToken(token: string): Promise<GetFileResponse> {
@@ -217,7 +217,7 @@ export class FilesStorageUC {
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.read);
 
-		this.filesStorageService.checkFileName(fileRecord, params.fileRecordId);
+		this.filesStorageService.checkFileName(fileRecord, params.fileName);
 
 		const previewFileParams = PreviewBuilder.buildParams(fileRecord, previewParams, bytesRange);
 

@@ -15,7 +15,6 @@ describe('FilesStorageConsumer', () => {
 	let module: TestingModule;
 	let filesStorageService: DeepMocked<FilesStorageService>;
 	let service: FilesStorageConsumer;
-	let orm: MikroORM;
 
 	afterEach(() => {
 		jest.resetAllMocks();
@@ -26,7 +25,6 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities([FileRecordEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageConsumer,
@@ -44,7 +42,7 @@ describe('FilesStorageConsumer', () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: orm,
+					useValue: await setupEntities([FileRecordEntity]),
 				},
 			],
 		}).compile();
@@ -73,9 +71,7 @@ describe('FilesStorageConsumer', () => {
 					},
 				};
 				await service.copyFilesOfParent(payload);
-				expect(filesStorageService.copyFilesOfParent).toBeCalledWith(payload.userId, payload.source, {
-					target: payload.target,
-				});
+				expect(filesStorageService.copyFilesOfParent).toBeCalledWith(payload.userId, payload.source, payload.target);
 			});
 			it('regular RPC handler should receive a valid RPC response', async () => {
 				const sourceCourseId = new ObjectId().toHexString();
@@ -234,7 +230,7 @@ describe('FilesStorageConsumer', () => {
 				await service.deleteFiles([recordId]);
 
 				const result = [fileRecord];
-				expect(filesStorageService.getFileRecord).toBeCalledWith({ fileRecordId: recordId });
+				expect(filesStorageService.getFileRecord).toBeCalledWith(recordId);
 				expect(filesStorageService.delete).toBeCalledWith(result);
 			});
 
