@@ -9,8 +9,8 @@ import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolDeleteService } from '../../common/service';
 import { ExternalTool, Oauth2ToolConfig } from '../domain';
-import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolRepo } from '../repo';
+import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
 @Injectable()
 export class ExternalToolService {
@@ -99,15 +99,21 @@ export class ExternalToolService {
 
 	public findExternalToolByMedium(mediumId: string, mediaSourceId?: string): Promise<ExternalTool | null> {
 		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByMedium(mediumId, mediaSourceId);
+
 		return externalTool;
 	}
 
 	public findExternalToolsByMediaSource(mediaSourceId: string): Promise<ExternalTool[]> {
 		const externalTools: Promise<ExternalTool[]> = this.externalToolRepo.findAllByMediaSource(mediaSourceId);
+
 		return externalTools;
 	}
 
 	public async deleteExternalTool(externalTool: ExternalTool): Promise<void> {
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			await this.oauthProviderService.deleteOAuth2Client(externalTool.config.clientId);
+		}
+
 		await this.commonToolDeleteService.deleteExternalTool(externalTool);
 	}
 
