@@ -14,6 +14,8 @@ data:
   SC_THEME: "{{ SC_THEME }}"
   SC_SHORTNAME: "{{ SC_SHORTNAME }}"
   SC_DOMAIN: "{{ DOMAIN }}"
+  REDIS_CLUSTER_ENABLED: "true"
+  REDIS_SENTINEL_SERVICE_NAME: "schulcloud-server-valkey-headless.{{ NAMESPACE }}.svc.cluster.local"
   TLDRAW__WEBSOCKET_URL: "wss://{{ DOMAIN }}/tldraw-server"
   SHLVL: "1"
   #  Prints slow requests above 4 s in log
