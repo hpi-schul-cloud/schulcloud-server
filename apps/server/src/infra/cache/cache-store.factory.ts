@@ -1,8 +1,8 @@
 import { LegacyLogger } from '@core/logger';
-import KeyvValkey, { KeyvValkeyOptions } from '@keyv/valkey';
+import KeyvValkey from '@keyv/valkey';
 import { ConfigService } from '@nestjs/config';
 import * as dns from 'dns';
-import Redis from 'ioredis';
+import Redis from 'iovalkey';
 import Keyv from 'keyv';
 import * as util from 'util';
 import { CacheConfig } from './interface/cache-config.interface';
@@ -54,8 +54,7 @@ export class CacheStoreFactory {
 			password: sentinelPassword,
 			name: sentinelName,
 		});
-
-		const keyvValkey = new KeyvValkey(redisInstance as unknown as KeyvValkeyOptions, { useRedisSets: false });
+		const keyvValkey = new KeyvValkey(redisInstance, { useRedisSets: false });
 
 		return keyvValkey;
 	}
