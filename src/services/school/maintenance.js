@@ -61,6 +61,16 @@ class SchoolMaintenanceService {
 	}
 
 	/**
+	 * Returns if the school has already the new (or even newer) school year
+	 * @param {School} school
+	 * @returns Boolean
+	 * @memberof SchoolMaintenanceService
+	 */
+	schoolAlreadyInNextYear(school) {
+		return new Date().getFullYear() <= school.currentYear.startDate.getFullYear();
+	}
+
+	/**
 	 * POST /schools/:schoolId/maintenance
 	 * Enter/exit transfer period (LDAP) or migrate school to next school year (non-LDAP).
 	 *
@@ -72,6 +82,13 @@ class SchoolMaintenanceService {
 	async create(data, params) {
 		let { school } = params;
 		const patch = {};
+
+		if (school.inUserMigration) {
+			return Promise.reject();
+		} else if (this.schoolAlreadyInNextYear(school)) {
+			return Promise.reject('School_already_in_next_year');
+		}
+
 		const bumpYear = async () => {
 			patch.currentYear = await this.determineNextYear(school);
 			patch.$unset = { inMaintenanceSince: '' };
