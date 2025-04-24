@@ -13,32 +13,32 @@ export class UpdateRoomInvitationLinkBodyParams
 	@MaxLength(100)
 	@SanitizeHtml()
 	@IsString()
-	title!: string;
+	public title!: string;
 
 	@ApiPropertyOptional({
 		description: 'Expiration date of the invitation link',
 	})
 	@IsDate()
-	activeUntil?: Date;
+	public activeUntil?: Date;
 
 	@ApiPropertyOptional({
 		description: 'Indicates if the link is restricted to teachers only',
 		required: true,
 	})
 	@IsBoolean()
-	isOnlyForTeachers!: boolean;
+	public isOnlyForTeachers!: boolean;
 
 	@ApiPropertyOptional({
 		description: 'Indicates if the link is restricted to the creators school',
 		required: true,
 	})
 	@IsBoolean()
-	restrictedToCreatorSchool!: boolean;
+	public restrictedToCreatorSchool!: boolean;
 
 	@ApiProperty({
 		description: 'Indicates if the link requires confirmation by room admins / room owners',
 		required: true,
 	})
 	@IsBoolean()
-	requiresConfirmation!: boolean;
+	public requiresConfirmation!: boolean;
 }

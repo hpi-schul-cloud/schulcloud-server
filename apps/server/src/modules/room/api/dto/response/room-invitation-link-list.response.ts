@@ -9,7 +9,7 @@ export class RoomInvitationLinkListResponse {
 			oneOf: [{ $ref: getSchemaPath(RoomInvitationLinkResponse) }],
 		},
 	})
-	roomInvitationLinks: RoomInvitationLinkResponse[];
+	public roomInvitationLinks: RoomInvitationLinkResponse[];
 
 	constructor(roomInvitationLinks: RoomInvitationLinkResponse[]) {
 		this.roomInvitationLinks = roomInvitationLinks;

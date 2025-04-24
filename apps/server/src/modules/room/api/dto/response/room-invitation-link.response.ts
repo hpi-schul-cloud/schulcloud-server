@@ -3,31 +3,31 @@ import { EntityId } from '@shared/domain/types';
 
 export class RoomInvitationLinkResponse {
 	@ApiProperty()
-	id: EntityId;
+	public id: EntityId;
 
 	@ApiProperty()
-	roomId: EntityId;
+	public roomId: EntityId;
 
 	@ApiProperty()
-	title: string;
+	public title: string;
 
 	@ApiProperty()
-	restrictedToCreatorSchool: boolean;
+	public restrictedToCreatorSchool: boolean;
 
 	@ApiProperty()
-	isOnlyForTeachers: boolean;
+	public isOnlyForTeachers: boolean;
 
 	@ApiPropertyOptional({ type: Date })
-	activeUntil?: Date;
+	public activeUntil?: Date;
 
 	@ApiProperty()
-	requiresConfirmation: boolean;
+	public requiresConfirmation: boolean;
 
 	@ApiProperty()
-	creatorUserId: EntityId;
+	public creatorUserId: EntityId;
 
 	@ApiProperty()
-	creatorSchoolId: EntityId;
+	public creatorSchoolId: EntityId;
 
 	constructor(roomInvitationLink: RoomInvitationLinkResponse) {
 		this.id = roomInvitationLink.id;
