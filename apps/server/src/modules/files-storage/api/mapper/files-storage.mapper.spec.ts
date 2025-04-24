@@ -1,6 +1,7 @@
+import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { NotImplementedException } from '@nestjs/common';
-import { PreviewStatus } from '../../domain';
+import { PreviewStatus, StorageLocation } from '../../domain';
 import { FileRecordParentType } from '../../domain/interface';
 import { fileRecordTestFactory } from '../../testing';
 import { FileRecordListResponse, FileRecordResponse } from '../dto';
@@ -41,6 +42,25 @@ describe('FilesStorageMapper', () => {
 		it('should throw Error', () => {
 			const exec = () => {
 				FilesStorageMapper.mapToAllowedAuthorizationEntityType('' as FileRecordParentType);
+			};
+			expect(exec).toThrowError(NotImplementedException);
+		});
+	});
+
+	describe('mapToAllowedStorageLocationType()', () => {
+		it('should return allowed type equal SCHOOL', () => {
+			const result = FilesStorageMapper.mapToAllowedStorageLocationType(StorageLocation.SCHOOL);
+			expect(result).toBe(AuthorizationBodyParamsReferenceType.SCHOOLS);
+		});
+
+		it('should return allowed type equal INSTANCES', () => {
+			const result = FilesStorageMapper.mapToAllowedStorageLocationType(StorageLocation.INSTANCE);
+			expect(result).toBe(AuthorizationBodyParamsReferenceType.INSTANCES);
+		});
+
+		it('should throw Error', () => {
+			const exec = () => {
+				FilesStorageMapper.mapToAllowedStorageLocationType('' as StorageLocation);
 			};
 			expect(exec).toThrowError(NotImplementedException);
 		});
