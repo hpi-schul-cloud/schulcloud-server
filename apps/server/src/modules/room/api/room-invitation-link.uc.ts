@@ -11,12 +11,8 @@ import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
 import { RoomConfig } from '../room.config';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
-import { RoomInvitationLinkValidationResult } from './type/room-invitation-link-validation-result.enum';
+import { RoomInvitationLinkValidationError as RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
 
-type UseLinkResponse = {
-	validationResult: RoomInvitationLinkValidationResult;
-	redirectUrl?: string;
-};
 @Injectable()
 export class RoomInvitationLinkUc {
 	constructor(
@@ -88,13 +84,13 @@ export class RoomInvitationLinkUc {
 		return links;
 	}
 
-	public async useLink(userId: EntityId, linkId: string): Promise<UseLinkResponse> {
+	public async useLink(userId: EntityId, linkId: string): Promise<EntityId> {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
 
-		const validationResult = await this.checkValidity(roomInvitationLink, user);
+		await this.checkValidity(roomInvitationLink, user);
 
 		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
 		await this.roomMembershipService.changeRoleOfRoomMembers(
@@ -103,7 +99,7 @@ export class RoomInvitationLinkUc {
 			roomInvitationLink.startingRole
 		);
 
-		return { validationResult };
+		return roomInvitationLink.roomId;
 	}
 
 	private checkFeatureEnabled(): void {
@@ -112,33 +108,29 @@ export class RoomInvitationLinkUc {
 		}
 	}
 
-	private async checkValidity(
-		roomInvitationLink: RoomInvitationLink,
-		user: User
-	): Promise<RoomInvitationLinkValidationResult> {
+	private async checkValidity(roomInvitationLink: RoomInvitationLink, user: User): Promise<void> {
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
-			throw new BadRequestException(RoomInvitationLinkValidationResult.EXPIRED);
+			throw new BadRequestException(RoomInvitationLinkValidationError.EXPIRED);
 		}
 		if (roomInvitationLink.isOnlyForTeachers && isTeacher === false) {
-			throw new ForbiddenException(RoomInvitationLinkValidationResult.ONLY_FOR_TEACHERS);
+			throw new ForbiddenException(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS);
 		}
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
-			throw new ForbiddenException(RoomInvitationLinkValidationResult.RESTRICTED_TO_CREATOR_SCHOOL);
+			throw new ForbiddenException(RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL);
 		}
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
-			throw new ForbiddenException(RoomInvitationLinkValidationResult.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL);
+			throw new ForbiddenException(RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL);
 		}
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
 			roomInvitationLink.roomId
 		);
 		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
 		if (isAlreadyMember) {
-			throw new BadRequestException(RoomInvitationLinkValidationResult.ALREADY_MEMBER);
+			throw new BadRequestException(RoomInvitationLinkValidationError.ALREADY_MEMBER);
 		}
-		return RoomInvitationLinkValidationResult.VALID;
 	}
 
 	private async checkRoomAuthorizationByIds(

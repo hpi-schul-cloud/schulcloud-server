@@ -1,5 +1,4 @@
-export enum RoomInvitationLinkValidationResult {
-	VALID = 'VALID',
+export enum RoomInvitationLinkValidationError {
 	EXPIRED = 'EXPIRED',
 	ONLY_FOR_TEACHERS = 'ONLY_FOR_TEACHERS',
 	RESTRICTED_TO_CREATOR_SCHOOL = 'RESTRICTED_TO_CREATOR_SCHOOL',

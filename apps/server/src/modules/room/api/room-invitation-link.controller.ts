@@ -103,7 +103,9 @@ export class RoomInvitationLinkController {
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomInvitationLinkUrlParams
-	): Promise<void> {
-		await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
+	): Promise<string> {
+		const roomId = await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
+
+		return roomId;
 	}
 }
