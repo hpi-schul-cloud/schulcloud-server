@@ -46,8 +46,8 @@ export class BoardNodeFactory {
 			case ContentElementType.AUDIO_RECORD:
 				element = new AudioRecordElement({
 					...this.getBaseProps(),
-					caption: 'caption',
-					alternativeText: 'altText',
+					caption: '',
+					alternativeText: '',
 				});
 				break;
 			case ContentElementType.FILE:
