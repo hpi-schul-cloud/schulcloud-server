@@ -1,4 +1,5 @@
 import { RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
+import { RoomInvitationLinkListResponse } from '../dto/response/room-invitation-link-list.response';
 import { RoomInvitationLinkResponse } from '../dto/response/room-invitation-link.response';
 
 export class RoomInvitationLinkMapper {
@@ -18,10 +19,10 @@ export class RoomInvitationLinkMapper {
 		return response;
 	}
 
-	public static mapToRoomInvitationLinksResponse(links: RoomInvitationLinkResponse[]): RoomInvitationLinkResponse[] {
-		const response: RoomInvitationLinkResponse[] = links.map(
-			(link): RoomInvitationLinkResponse => this.mapToRoomInvitationLinkResponse(link)
-		);
+	public static mapToRoomInvitationLinksResponse(links: RoomInvitationLinkResponse[]): RoomInvitationLinkListResponse {
+		const response: RoomInvitationLinkListResponse = {
+			roomInvitationLinks: links.map((link): RoomInvitationLinkResponse => this.mapToRoomInvitationLinkResponse(link)),
+		};
 
 		return response;
 	}

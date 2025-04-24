@@ -29,15 +29,15 @@ export class RoomInvitationLinkResponse {
 	@ApiProperty()
 	creatorSchoolId: EntityId;
 
-	constructor(room: RoomInvitationLinkResponse) {
-		this.id = room.id;
-		this.roomId = room.roomId;
-		this.title = room.title;
-		this.restrictedToCreatorSchool = room.restrictedToCreatorSchool;
-		this.isOnlyForTeachers = room.isOnlyForTeachers;
-		this.activeUntil = room.activeUntil;
-		this.requiresConfirmation = room.requiresConfirmation;
-		this.creatorUserId = room.creatorUserId;
-		this.creatorSchoolId = room.creatorSchoolId;
+	constructor(roomInvitationLink: RoomInvitationLinkResponse) {
+		this.id = roomInvitationLink.id;
+		this.roomId = roomInvitationLink.roomId;
+		this.title = roomInvitationLink.title;
+		this.restrictedToCreatorSchool = roomInvitationLink.restrictedToCreatorSchool;
+		this.isOnlyForTeachers = roomInvitationLink.isOnlyForTeachers;
+		this.activeUntil = roomInvitationLink.activeUntil;
+		this.requiresConfirmation = roomInvitationLink.requiresConfirmation;
+		this.creatorUserId = roomInvitationLink.creatorUserId;
+		this.creatorSchoolId = roomInvitationLink.creatorSchoolId;
 	}
 }

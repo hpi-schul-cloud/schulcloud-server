@@ -12,6 +12,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing';
+import { RoomInvitationLinkListResponse } from '../dto/response/room-invitation-link-list.response';
 
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
@@ -145,8 +146,10 @@ describe('Room Invitation Link Controller (API)', () => {
 					const { loggedInClient, room } = await setup();
 
 					const response = await loggedInClient.get(`/${room.id}/room-invitation-links`);
+					const { roomInvitationLinks } = response.body as unknown as RoomInvitationLinkListResponse;
+
 					expect(response.status).toBe(HttpStatus.OK);
-					expect(response.body).toHaveLength(3);
+					expect(roomInvitationLinks).toHaveLength(3);
 				});
 			});
 		});
@@ -163,7 +166,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				return { loggedInClient, room };
 			};
 
-			describe('when the room exists', () => {
+			describe('when the room exists and has links', () => {
 				it('should return 403', async () => {
 					const { loggedInClient, room } = await setup();
 
