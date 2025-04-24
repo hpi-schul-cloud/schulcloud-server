@@ -60,12 +60,6 @@ export class CacheStoreFactory {
 	}
 
 	private async discoverSentinelHosts(): Promise<{ host: string; port: number }[]> {
-		return [
-			{
-				host: 'record.name',
-				port: 123,
-			},
-		];
 		const serviceName = this.configService.getOrThrow<string>('REDIS_SENTINEL_SERVICE_NAME');
 		const resolveSrv = util.promisify(dns.resolveSrv);
 		try {
