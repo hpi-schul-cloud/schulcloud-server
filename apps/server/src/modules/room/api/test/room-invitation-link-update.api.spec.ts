@@ -154,7 +154,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 
 			describe('when the required parameters are given', () => {
-				it('should update the room', async () => {
+				it('should update the room invitation link', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup();
 					const params: UpdateRoomInvitationLinkBodyParams = {
 						title: 'Room Inivitation renamed',

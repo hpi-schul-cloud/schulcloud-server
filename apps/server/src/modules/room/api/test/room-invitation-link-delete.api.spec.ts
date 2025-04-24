@@ -44,8 +44,6 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	jest.setTimeout(60000);
-
 	describe('DELETE /room-invitation-links/:id', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
