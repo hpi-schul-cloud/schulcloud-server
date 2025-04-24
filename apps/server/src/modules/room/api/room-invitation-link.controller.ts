@@ -22,7 +22,7 @@ import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 
-@ApiTags('Room-Invitation-Links')
+@ApiTags('Room Invitation Link')
 @JwtAuthentication()
 @Controller('room-invitation-links')
 export class RoomInvitationLinkController {
