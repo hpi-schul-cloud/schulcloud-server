@@ -7,10 +7,10 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import _ from 'lodash';
-import { FileRecordParams, SingleFileParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
+import { ParentInfo } from '../file-record.do';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { ScanResultMapper } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
@@ -21,7 +21,7 @@ const buildFileRecordsWithParams = () => {
 
 	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
-	const params: FileRecordParams = {
+	const params: ParentInfo = {
 		storageLocation: StorageLocation.SCHOOL,
 		storageLocationId,
 		parentId,
@@ -31,16 +31,13 @@ const buildFileRecordsWithParams = () => {
 	return { params, fileRecords, parentId };
 };
 
-const buildFileRecordWithParams = () => {
+const buildFileRecord = () => {
 	const parentId = new ObjectId().toHexString();
 	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecord = fileRecordTestFactory().build({ parentId, storageLocationId, name: 'text.txt' });
-	const params: SingleFileParams = {
-		fileRecordId: fileRecord.id,
-	};
 
-	return { params, fileRecord };
+	return { fileRecord };
 };
 
 describe('FilesStorageService update methods', () => {
@@ -144,7 +141,7 @@ describe('FilesStorageService update methods', () => {
 
 		describe('WHEN repository is throwing an error', () => {
 			const setup = () => {
-				const { fileRecord, params } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const fileName = 'renamed';
 
 				const spyGetFilesOfParent = jest
@@ -155,7 +152,6 @@ describe('FilesStorageService update methods', () => {
 				return {
 					fileName,
 					fileRecord,
-					params,
 					spyGetFilesOfParent,
 				};
 			};
@@ -208,7 +204,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const scanResult: ScanResult = { virus_detected: false };
 				const token = fileRecord.getSecurityToken() || '';
 
@@ -253,7 +249,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const scanResult: ScanResult = { virus_detected: true, virus_signature: 'Win.Test.EICAR_HDB-1' };
 				const token = fileRecord.getSecurityToken() || '';
 
@@ -290,7 +286,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const scanResult: ScanResult = { virus_detected: false, error: 'file to large' };
 				const token = fileRecord.getSecurityToken() || '';
 
@@ -321,7 +317,7 @@ describe('FilesStorageService update methods', () => {
 
 		describe('WHEN no matching file is found', () => {
 			const setup = () => {
-				const { fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const scanResult: ScanResult = { virus_detected: false };
 				const token = fileRecord.getSecurityToken() || '';
 				const error = new NotFoundException();
@@ -340,7 +336,7 @@ describe('FilesStorageService update methods', () => {
 
 		describe('WHEN repository by call save is throw an error', () => {
 			const setup = () => {
-				const { fileRecord } = buildFileRecordWithParams();
+				const { fileRecord } = buildFileRecord();
 				const scanResult: ScanResult = { virus_detected: false };
 				const token = fileRecord.getSecurityToken() || '';
 				const error = new Error('bla');

@@ -8,12 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
-import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory, readableStreamWithFileTypeFactory } from '../../testing';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
-import { FileRecord, FileRecordSecurityCheck, ScanStatus } from '../file-record.do';
+import { FileRecord, FileRecordSecurityCheck, ParentInfo, ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
@@ -30,7 +29,7 @@ const buildFileRecordsWithParams = () => {
 
 	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
-	const params: FileRecordParams = {
+	const params: ParentInfo = {
 		storageLocation: StorageLocation.SCHOOL,
 		storageLocationId,
 		parentId,

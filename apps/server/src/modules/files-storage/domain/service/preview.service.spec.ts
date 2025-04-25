@@ -5,11 +5,10 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory, TestHelper } from '../../testing';
 import { ErrorType } from '../error';
-import { PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
+import { ParentInfo, PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
 import { FileRecordParentType, PreviewFileParams, PreviewWidth, StorageLocation } from '../interface';
 import { FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
@@ -26,7 +25,7 @@ const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) =>
 		mimeType,
 	});
 
-	const params: FileRecordParams = {
+	const params: ParentInfo = {
 		storageLocationId: parentStorageLocationId,
 		storageLocation: StorageLocation.SCHOOL,
 		parentId,

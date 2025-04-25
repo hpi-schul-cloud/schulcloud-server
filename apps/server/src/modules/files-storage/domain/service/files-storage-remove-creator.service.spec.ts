@@ -5,10 +5,9 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
-import { FileRecordProps, FileRecordSecurityCheckProps } from '../file-record.do';
+import { FileRecordProps, FileRecordSecurityCheckProps, ParentInfo } from '../file-record.do';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -19,7 +18,7 @@ const buildFileRecordsWithParams = () => {
 
 	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
 
-	const params: FileRecordParams = {
+	const params: ParentInfo = {
 		storageLocation: StorageLocation.SCHOOL,
 		storageLocationId,
 		parentId,
