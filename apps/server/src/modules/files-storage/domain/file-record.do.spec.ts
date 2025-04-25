@@ -1,4 +1,6 @@
+import { BadRequestException } from '@nestjs/common';
 import { fileRecordTestFactory } from '../testing';
+import { ErrorType } from './error';
 import { FileRecord, PreviewOutputMimeTypes, PreviewStatus, ScanStatus } from './file-record.do';
 
 describe('FileRecord', () => {
@@ -148,6 +150,24 @@ describe('FileRecord', () => {
 		});
 	});
 
+	describe('setName', () => {
+		it('should update the name if a valid name is provided', () => {
+			const newName = 'new-name.txt';
+			const fileRecord = fileRecordTestFactory().build();
+
+			fileRecord.setName(newName);
+
+			expect(fileRecord.getName()).toBe(newName);
+		});
+
+		it('should throw BadRequestException if the name is empty', () => {
+			const fileRecord = fileRecordTestFactory().build();
+
+			expect(() => fileRecord.setName('')).toThrow(BadRequestException);
+			expect(() => fileRecord.setName('')).toThrowError(ErrorType.FILE_NAME_EMPTY);
+		});
+	});
+
 	describe('createPath', () => {
 		const setup = () => {
 			const fileRecord = fileRecordTestFactory().build();
@@ -180,12 +200,6 @@ describe('FileRecord', () => {
 	});
 
 	describe('getPreviewStatus', () => {
-		const setup = () => {
-			const fileRecord = fileRecordTestFactory().build();
-
-			return { fileRecord };
-		};
-
 		it('should return PREVIEW_POSSIBLE if security check is verified and MIME type is valid', () => {
 			const fileRecord = fileRecordTestFactory().withScanStatus(ScanStatus.VERIFIED).build({ mimeType: 'image/png' });
 
@@ -195,13 +209,21 @@ describe('FileRecord', () => {
 		});
 
 		it('should return PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE if MIME type is invalid', () => {
-			const { fileRecord } = setup();
+			const fileRecord = fileRecordTestFactory().build();
 
 			jest.spyOn(fileRecord, 'isPreviewPossible').mockReturnValue(false);
 
 			const status = fileRecord.getPreviewStatus();
 
 			expect(status).toBe(PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE);
+		});
+
+		it('should return PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK if securtiy check status is WONT_CHECK and MIME type is valid', () => {
+			const fileRecord = fileRecordTestFactory().withScanStatus(ScanStatus.WONT_CHECK).build({ mimeType: 'image/png' });
+
+			const status = fileRecord.getPreviewStatus();
+
+			expect(status).toBe(PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK);
 		});
 	});
 
@@ -226,6 +248,40 @@ describe('FileRecord', () => {
 			const previewName = fileRecord.getPreviewName(PreviewOutputMimeTypes.IMAGE_WEBP);
 
 			expect(previewName).toBe('file.webp');
+		});
+	});
+
+	describe('setSizeInByte', () => {
+		it('should set the size if it is within valid range', () => {
+			const fileRecord = fileRecordTestFactory().build();
+			const newSize = 2048;
+			const maxSize = 4096;
+
+			// Call the function
+			fileRecord['setSizeInByte'](newSize, maxSize);
+
+			// Assert the size is updated
+			expect(fileRecord.sizeInByte).toBe(newSize);
+		});
+
+		it('should throw BadRequestException if size is less than or equal to 0', () => {
+			const fileRecord = fileRecordTestFactory().build();
+			const invalidSize = 0;
+			const maxSize = 4096;
+
+			// Assert exception is thrown
+			expect(() => fileRecord['setSizeInByte'](invalidSize, maxSize)).toThrow(BadRequestException);
+			expect(() => fileRecord['setSizeInByte'](invalidSize, maxSize)).toThrowError(ErrorType.FILE_IS_EMPTY);
+		});
+
+		it('should throw BadRequestException if size exceeds maxSizeInByte', () => {
+			const fileRecord = fileRecordTestFactory().build();
+			const invalidSize = 8192;
+			const maxSize = 4096;
+
+			// Assert exception is thrown
+			expect(() => fileRecord['setSizeInByte'](invalidSize, maxSize)).toThrow(BadRequestException);
+			expect(() => fileRecord['setSizeInByte'](invalidSize, maxSize)).toThrowError(ErrorType.FILE_TOO_BIG);
 		});
 	});
 
