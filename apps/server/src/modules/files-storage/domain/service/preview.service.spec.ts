@@ -5,10 +5,8 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FileRecordParams } from '../../api/dto'; // TODO: invalid import
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory, TestHelper } from '../../testing';
 import { ErrorType } from '../error';
 import { PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
@@ -55,8 +53,6 @@ describe('PreviewService', () => {
 	let previewProducer: DeepMocked<PreviewProducer>;
 
 	beforeAll(async () => {
-		await setupEntities([FileRecordEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				PreviewService,
