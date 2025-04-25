@@ -17,7 +17,7 @@ export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | '
 export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 
 export class Room extends DomainObject<RoomProps> {
-	public constructor(props: RoomProps) {
+	constructor(props: RoomProps) {
 		super(props);
 	}
 
@@ -31,47 +31,47 @@ export class Room extends DomainObject<RoomProps> {
 		return copyProps;
 	}
 
-	public get name(): string {
+	get name(): string {
 		return this.props.name;
 	}
 
-	public set name(value: string) {
+	set name(value: string) {
 		this.props.name = value;
 	}
 
-	public get color(): RoomColor {
+	get color(): RoomColor {
 		return this.props.color;
 	}
 
-	public set color(value: RoomColor) {
+	set color(value: RoomColor) {
 		this.props.color = value;
 	}
 
-	public get schoolId(): EntityId {
+	get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 
-	public get startDate(): Date | undefined {
+	get startDate(): Date | undefined {
 		return this.props.startDate;
 	}
 
-	public set startDate(value: Date | undefined) {
+	set startDate(value: Date | undefined) {
 		this.props.startDate = value;
 	}
 
-	public get endDate(): Date | undefined {
+	get endDate(): Date | undefined {
 		return this.props.endDate;
 	}
 
-	public set endDate(value: Date | undefined) {
+	set endDate(value: Date | undefined) {
 		this.props.endDate = value;
 	}
 
-	public get createdAt(): Date {
+	get createdAt(): Date {
 		return this.props.createdAt;
 	}
 
-	public get updatedAt(): Date {
+	get updatedAt(): Date {
 		return this.props.updatedAt;
 	}
 }
