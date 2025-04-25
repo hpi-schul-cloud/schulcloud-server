@@ -4,19 +4,17 @@ import { User } from '@modules/user/repo';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CommonToolUtilizationService } from '../../common/service/common-tool-utilization.service';
-import { SchoolExternalTool, SchoolExternalToolUtilization, SchoolExternalToolProps } from '../domain';
+import { CommonToolValidationService } from '../../common/service';
+import { ExternalToolService } from '../../external-tool';
+import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolService } from '../service';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
-import { ExternalToolService } from '../../external-tool';
-import { CommonToolValidationService } from '../../common/service';
 
 @Injectable()
 export class SchoolExternalToolUc {
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolUtilizationService: CommonToolUtilizationService,
 		private readonly commonToolValidationService: CommonToolValidationService,
 		@Inject(forwardRef(() => AuthorizationService)) private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: SchoolService
@@ -126,24 +124,5 @@ export class SchoolExternalToolUc {
 		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 
 		return saved;
-	}
-
-	public async getUtilizationForSchoolExternalTool(
-		userId: EntityId,
-		schoolExternalToolId: EntityId
-	): Promise<SchoolExternalToolUtilization> {
-		const schoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const school = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
-
-		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-		this.authorizationService.checkPermission(user, school, context);
-
-		const schoolExternalToolUtilization = await this.commonToolUtilizationService.getUtilizationForSchoolExternalTool(
-			schoolExternalToolId
-		);
-
-		return schoolExternalToolUtilization;
 	}
 }
