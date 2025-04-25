@@ -133,8 +133,7 @@ export class CommonCartridgeImportService {
 
 		if (!contentElementType) return;
 
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		const resourceBody = this.commonCartridgeImportMapper.mapToResourceBody(resource, cardElementProps);
+		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(resource, cardElementProps);
 
 		if (!resourceBody) return;
 
@@ -143,7 +142,6 @@ export class CommonCartridgeImportService {
 		});
 
 		await this.cardClient.updateCardElement(contentElement.id, {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			data: resourceBody,
 		});
 	}

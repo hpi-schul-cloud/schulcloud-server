@@ -72,7 +72,7 @@ describe('CommonCartridgeImportMapper', () => {
 						resourceType: 'webLink',
 					};
 
-					const result = sut.mapToResourceBody(resource, cardElementProps);
+					const result = sut.mapResourceToContentBody(resource, cardElementProps);
 
 					return result;
 				};
@@ -110,7 +110,7 @@ describe('CommonCartridgeImportMapper', () => {
 						resourceType: 'webContent',
 					};
 
-					const result = sut.mapToResourceBody(resource, cardElementProps);
+					const result = sut.mapResourceToContentBody(resource, cardElementProps);
 
 					return result;
 				};
@@ -146,7 +146,7 @@ describe('CommonCartridgeImportMapper', () => {
 						resourceType: 'webContent',
 					};
 
-					const result = sut.mapToResourceBody(resource, cardElementProps);
+					const result = sut.mapResourceToContentBody(resource, cardElementProps);
 
 					return result;
 				};

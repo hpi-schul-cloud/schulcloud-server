@@ -1,9 +1,4 @@
-import {
-	ContentElementType,
-	LinkElementContentBody,
-	RichTextElementContentBody,
-	UpdateElementContentBodyParamsData,
-} from '@infra/cards-client';
+import { ContentElementType, LinkElementContentBody, RichTextElementContentBody } from '@infra/cards-client';
 import { InputFormat } from '@shared/domain/types';
 import {
 	CommonCartridgeImportOrganizationProps,
@@ -27,10 +22,10 @@ export class CommonCartridgeImportMapper {
 		}
 	}
 
-	public mapToResourceBody(
+	public mapResourceToContentBody(
 		resource: CommonCartridgeImportResourceProps,
 		cardElementProps: CommonCartridgeImportOrganizationProps
-	): UpdateElementContentBodyParamsData | undefined {
+	): LinkElementContentBody | RichTextElementContentBody | undefined {
 		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
 			const linkContentBody: LinkElementContentBody = this.createLinkFromResource(resource);
 
