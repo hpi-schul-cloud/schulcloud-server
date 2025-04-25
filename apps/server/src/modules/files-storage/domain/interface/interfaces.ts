@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 import { Readable } from 'stream';
-import type { PreviewParams } from '../../api/dto';
-import { FileRecord } from '../file-record.do';
+import { FileRecord, PreviewOutputMimeTypes } from '../file-record.do';
+import { PreviewWidth } from './preview-width.enum';
 import { StorageLocation } from './storage-location.enum';
 
 export interface GetFileResponse {
@@ -13,9 +13,15 @@ export interface GetFileResponse {
 	name: string;
 }
 
+export interface PreviewInfo {
+	outputFormat?: PreviewOutputMimeTypes;
+	width?: PreviewWidth;
+	forceUpdate?: boolean;
+}
+
 export interface PreviewFileParams {
 	fileRecord: FileRecord;
-	previewParams: PreviewParams;
+	previewParams: PreviewInfo;
 	hash: string;
 	originFilePath: string;
 	previewFilePath: string;

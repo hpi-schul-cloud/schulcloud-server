@@ -4,7 +4,13 @@ import { StringToBoolean } from '@shared/controller/transformer';
 import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ParentInfo, PreviewOutputMimeTypes } from '../../domain/file-record.do';
-import { FileRecordParentType, PreviewWidth, StorageLocation, StorageLocationParams } from '../../domain/interface';
+import {
+	FileRecordParentType,
+	PreviewInfo,
+	PreviewWidth,
+	StorageLocation,
+	StorageLocationParams,
+} from '../../domain/interface';
 
 export class StorageLocationParamsDto implements StorageLocationParams {
 	@ApiProperty()
@@ -120,7 +126,7 @@ export class CopyFilesOfParentPayload {
 	public target!: FileRecordParams;
 }
 
-export class PreviewParams {
+export class PreviewParams implements PreviewInfo {
 	@ApiPropertyOptional({ enum: PreviewOutputMimeTypes, enumName: 'PreviewOutputMimeTypes' })
 	@IsOptional()
 	@IsEnum(PreviewOutputMimeTypes)
