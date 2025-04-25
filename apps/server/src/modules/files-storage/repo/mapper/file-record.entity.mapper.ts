@@ -26,17 +26,13 @@ export class FileRecordEntityMapper {
 	public static mapDoToEntity(em: EntityManager, fileRecord: FileRecord): FileRecordEntity {
 		const props = fileRecord.getProps();
 
-		if (!(props instanceof FileRecordEntity)) {
-			const entity =
-				em.getUnitOfWork().getById<FileRecordEntity>(FileRecordEntity.name, props.id) || new FileRecordEntity();
-			em.assign(entity, props);
+		const entity =
+			em.getUnitOfWork().getById<FileRecordEntity>(FileRecordEntity.name, props.id) || new FileRecordEntity();
+		em.assign(entity, props);
 
-			entity.securityCheck = FileRecordEntityMapper.mapDoToEmbeddable(em, fileRecord);
+		entity.securityCheck = FileRecordEntityMapper.mapDoToEmbeddable(em, fileRecord);
 
-			return entity;
-		}
-
-		return props;
+		return entity;
 	}
 
 	private static mapDoToEmbeddable(em: EntityManager, fileRecord: FileRecord): FileRecordSecurityCheckEmbeddable {
