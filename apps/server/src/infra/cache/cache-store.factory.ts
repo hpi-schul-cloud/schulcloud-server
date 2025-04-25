@@ -1,27 +1,28 @@
 import { LegacyLogger } from '@core/logger';
+import { ValkeyConfig, ValkeyFactory } from '@infra/valkey-client';
 import KeyvValkey from '@keyv/valkey';
 import { ConfigService } from '@nestjs/config';
-import * as dns from 'dns';
-import Redis from 'iovalkey';
 import Keyv from 'keyv';
-import * as util from 'util';
-import { CacheConfig } from './interface/cache-config.interface';
+import { CacheConfig } from './interface';
+import { KeyvValkeyAdapter } from './service/cache.service';
 
 export class CacheStoreFactory {
-	private logger!: LegacyLogger;
-	private configService!: ConfigService<CacheConfig>;
+	private static logger: LegacyLogger;
+	private static config: ValkeyConfig;
 
-	public async build(configService: ConfigService<CacheConfig>, logger: LegacyLogger): Promise<Keyv<KeyvValkey>> {
+	public static async build(
+		configService: ConfigService<CacheConfig>,
+		logger: LegacyLogger
+	): Promise<Keyv<KeyvValkey>> {
 		this.logger = logger;
 		this.logger.setContext(KeyvValkey.name);
-		this.configService = configService;
+		this.config = this.buildValkeyConfig(configService);
 
 		let redisInstance: KeyvValkey | undefined;
 
-		if (this.configService.get<boolean>('REDIS_CLUSTER_ENABLED')) {
-			redisInstance = await this.createValkeySentinelInstance();
-		} else if (this.configService.get<string>('REDIS_URI')) {
-			redisInstance = this.createNewValkeyInstance();
+		if (this.config.CLUSTER_ENABLED || this.config.URI) {
+			const valkeyInstance = await ValkeyFactory.build(this.config, logger);
+			redisInstance = new KeyvValkeyAdapter(valkeyInstance, { useRedisSets: false });
 		} else {
 			// If no redis instance is provided, we create a new in-memory store
 			redisInstance = undefined;
@@ -35,48 +36,13 @@ export class CacheStoreFactory {
 		return store;
 	}
 
-	private createNewValkeyInstance(): KeyvValkey {
-		const redisUrl = this.configService.getOrThrow<string>('REDIS_URI');
-		const keyvValkey = new KeyvValkey(redisUrl, { useRedisSets: false });
-
-		return keyvValkey;
-	}
-
-	private async createValkeySentinelInstance(): Promise<KeyvValkey> {
-		const sentinelName = this.configService.get<string>('REDIS_SENTINEL_NAME');
-		const sentinelPassword = this.configService.get<string>('REDIS_SENTINEL_PASSWORD');
-		const sentinels = await this.discoverSentinelHosts();
-		this.logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
-		console.log(`Sentinels:`, sentinels);
-
-		const redisInstance = new Redis({
-			sentinels,
-			sentinelPassword,
-			password: sentinelPassword,
-			name: sentinelName,
-		});
-		const keyvValkey = new KeyvValkey(redisInstance, { useRedisSets: false });
-
-		return keyvValkey;
-	}
-
-	private async discoverSentinelHosts(): Promise<{ host: string; port: number }[]> {
-		const serviceName = this.configService.getOrThrow<string>('REDIS_SENTINEL_SERVICE_NAME');
-		const resolveSrv = util.promisify(dns.resolveSrv);
-		try {
-			const records = await resolveSrv(serviceName);
-
-			const hosts = records.map((record) => {
-				return {
-					host: record.name,
-					port: record.port,
-				};
-			});
-
-			return hosts;
-		} catch (err) {
-			this.logger.log('Error during service discovery:');
-			throw err;
-		}
+	private static buildValkeyConfig(configService: ConfigService<CacheConfig>): ValkeyConfig {
+		return {
+			URI: configService.get<string>('REDIS_URI'),
+			CLUSTER_ENABLED: configService.get<boolean>('REDIS_CLUSTER_ENABLED'),
+			SENTINEL_NAME: configService.get<string>('REDIS_SENTINEL_NAME'),
+			SENTINEL_PASSWORD: configService.get<string>('REDIS_SENTINEL_PASSWORD'),
+			SENTINEL_SERVICE_NAME: configService.get<string>('REDIS_SENTINEL_SERVICE_NAME'),
+		};
 	}
 }

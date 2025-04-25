@@ -1,4 +1,5 @@
 import { createRedisIdentifierFromJwtData, getRedisData, JwtRedisData } from '@imports-from-feathers';
+import { KeyvValkeyAdapter } from '@infra/cache';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -13,6 +14,9 @@ export class JwtWhitelistAdapter {
 		const expirationInMilliseconds: number = redisData.expirationInSeconds;
 
 		await this.cacheManager.set(redisIdentifier, redisData, expirationInMilliseconds);
+		const redisIdentifier1: string = createRedisIdentifierFromJwtData(accountId, '*');
+		const keys = await this.getStore().keys(redisIdentifier1);
+		console.log('keys', keys);
 	}
 
 	public async removeFromWhitelist(accountId: string, jti?: string): Promise<void> {
@@ -21,17 +25,24 @@ export class JwtWhitelistAdapter {
 		if (jti) {
 			const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, jti);
 			keys = [redisIdentifier];
-		}
-		// @TODO fix this
-		/*else {
+		} else {
 			const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, '*');
-			keys = await this.cacheManager.store.keys(redisIdentifier);
-		}*/
+			keys = await this.getStore().keys(redisIdentifier);
+		}
 
 		const deleteKeysPromise: Promise<boolean>[] = keys.map(
 			(key: string): Promise<boolean> => this.cacheManager.del(key)
 		);
 
 		await Promise.all(deleteKeysPromise);
+	}
+
+	protected getStore(): KeyvValkeyAdapter {
+		const store = this.cacheManager.stores.map((store): KeyvValkeyAdapter => {
+			if (store.store instanceof KeyvValkeyAdapter) return store.store;
+			throw new Error('Cache store not found');
+		});
+
+		return store[0];
 	}
 }

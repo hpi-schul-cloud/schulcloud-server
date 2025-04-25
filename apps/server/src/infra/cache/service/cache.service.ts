@@ -1,10 +1,11 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable } from '@nestjs/common';
-import { CacheStoreType } from '../interface/cache-store-type.enum';
+import KeyvValkey from '@keyv/valkey';
+import Redis from 'ioredis';
 
-@Injectable()
-export class CacheService {
-	getStoreType(): CacheStoreType {
-		return Configuration.has('REDIS_URI') ? CacheStoreType.REDIS : CacheStoreType.MEMORY;
+export class KeyvValkeyAdapter extends KeyvValkey {
+	public async keys(pattern: string): Promise<string[]> {
+		const keyName = this._getKeyName(pattern);
+		const keys = await (this.redis as Redis).keys(keyName);
+
+		return keys;
 	}
 }

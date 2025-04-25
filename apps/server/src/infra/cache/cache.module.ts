@@ -3,26 +3,21 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { CacheStoreFactory } from './cache-store.factory';
-import { CacheConfig } from './interface/cache-config.interface';
+import { CacheConfig } from './interface';
 
 @Module({
 	imports: [
 		CacheModule.registerAsync({
-			useFactory: async (
-				cacheService: CacheStoreFactory,
-				logger: LegacyLogger,
-				configService: ConfigService<CacheConfig>
-			) => {
-				const storeInstance = await cacheService.build(configService, logger);
+			useFactory: async (logger: LegacyLogger, configService: ConfigService<CacheConfig>) => {
+				const storeInstance = await CacheStoreFactory.build(configService, logger);
 				return {
 					stores: [storeInstance],
 				};
 			},
-			inject: [CacheStoreFactory, LegacyLogger, ConfigService],
-			imports: [LoggerModule, CacheWrapperModule],
+			inject: [LegacyLogger, ConfigService],
+			imports: [LoggerModule],
 		}),
 	],
-	providers: [CacheStoreFactory],
-	exports: [CacheModule, CacheStoreFactory],
+	exports: [CacheModule],
 })
 export class CacheWrapperModule {}
