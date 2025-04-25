@@ -19,7 +19,8 @@ import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import type { Server } from 'node:net';
 import request, { Response } from 'supertest';
-import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
+import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, LoginResponse, OauthLoginResponse } from '../dto';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 
 const ldapAccountUserName = 'ldapAccountUserName';
 const mockUserLdapDN = 'mockUserLdapDN';
@@ -504,6 +505,46 @@ describe('Login Controller (api)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('checkAuthentication', () => {
+		describe('when no JWT is passed in the request', () => {
+			it('should return status 401', async () => {
+				const response = await request(app.getHttpServer()).get(`${basePath}/check`);
+
+				expect(response.status).toEqual(401);
+			});
+		});
+
+		describe('when a valid JWT is passed in the cookie', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const res = await request(app.getHttpServer()).post(`${basePath}/local`).send({
+					username: teacherAccount.username,
+					password: defaultPassword,
+				});
+
+				const loginResponse = res.body as LoginResponse;
+
+				return { jwt: loginResponse.accessToken };
+			};
+
+			it('should return status 200', async () => {
+				const { jwt } = await setup();
+
+				const res = await request(app.getHttpServer())
+					.get(`${basePath}/check`)
+					.set({
+						cookie: `jwt=${jwt}`,
+					});
+
+				expect(res.status).toEqual(200);
 			});
 		});
 	});

@@ -87,5 +87,5 @@ export class LoginController {
 	@JwtAuthentication()
 	@Get('/check')
 	@ApiOperation({ summary: 'Checks if the JWT and the session are valid.' })
-	public checkIfAuthenticated(): void {}
+	public checkAuthentication(): void {}
 }
