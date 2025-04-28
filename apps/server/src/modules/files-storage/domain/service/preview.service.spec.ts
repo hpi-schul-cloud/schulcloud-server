@@ -6,7 +6,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory, TestHelper } from '../../testing';
+import { fileRecordTestFactory, GetFileTestFactory } from '../../testing';
 import { ErrorType } from '../error';
 import { ParentInfo, PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
 import { FileRecordParentType, PreviewFileParams, PreviewWidth, StorageLocation } from '../interface';
@@ -98,7 +98,7 @@ describe('PreviewService', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = TestHelper.createFile();
+						const previewFile = GetFileTestFactory.build();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
@@ -167,7 +167,7 @@ describe('PreviewService', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = TestHelper.createFile();
+						const previewFile = GetFileTestFactory.build();
 						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
@@ -242,7 +242,7 @@ describe('PreviewService', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = TestHelper.createFile();
+						const previewFile = GetFileTestFactory.build();
 						const notFoundException = new NotFoundException();
 						s3ClientAdapter.get.mockRejectedValueOnce(notFoundException).mockRejectedValueOnce(notFoundException);
 
@@ -291,7 +291,7 @@ describe('PreviewService', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = TestHelper.createFile();
+						const previewFile = GetFileTestFactory.build();
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
@@ -356,7 +356,7 @@ describe('PreviewService', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = TestHelper.createFile();
+						const previewFile = GetFileTestFactory.build();
 						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 						const fileNameWithoutExtension = fileRecord.getName().split('.')[0];
@@ -431,7 +431,7 @@ describe('PreviewService', () => {
 						};
 						const format = previewParams.outputFormat.split('/')[1];
 
-						const previewFile = TestHelper.createFile();
+						const previewFile = GetFileTestFactory.build();
 						const notFoundException = new NotFoundException();
 						s3ClientAdapter.get.mockRejectedValueOnce(notFoundException).mockRejectedValueOnce(notFoundException);
 

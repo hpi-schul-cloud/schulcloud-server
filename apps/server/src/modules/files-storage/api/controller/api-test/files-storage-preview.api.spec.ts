@@ -15,11 +15,11 @@ import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PreviewOutputMimeTypes, PreviewWidth, ScanStatus } from '../../../domain';
 import { ErrorType } from '../../../domain/error';
-import { TestHelper } from '../../../testing';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
 import { FileRecordEntity } from '../../../repo';
 import { FileRecordResponse } from '../../dto';
+import { GetFileTestFactory } from '../../../testing';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -227,7 +227,7 @@ describe('File Controller (API) - preview', () => {
 						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+						const previewFile = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { loggedInClient, uploadedFile };
@@ -267,7 +267,7 @@ describe('File Controller (API) - preview', () => {
 						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+						const previewFile = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { loggedInClient, uploadedFile };
@@ -351,7 +351,7 @@ describe('File Controller (API) - preview', () => {
 						const uploadedFile = await uploadFile(loggedInClient);
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
-						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+						const previewFile = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockResolvedValueOnce(previewFile);
 
 						return { loggedInClient, uploadedFile };
@@ -396,7 +396,7 @@ describe('File Controller (API) - preview', () => {
 						await setScanStatus(uploadedFile.id, ScanStatus.VERIFIED);
 
 						const error = new NotFoundException();
-						const previewFile = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+						const previewFile = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 						s3ClientAdapter.get.mockRejectedValueOnce(error).mockResolvedValueOnce(previewFile);
 
 						return { loggedInClient, uploadedFile };
