@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { fileRecordTestFactory } from '../../testing';
-import { FileRecordProps, FileRecordSecurityCheckProps, ParentInfo } from '../file-record.do';
+import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps, ParentInfo } from '../file-record.do';
 import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -83,52 +83,29 @@ describe('FilesStorageService delete methods', () => {
 	describe('removeCreatorIdFromFileRecord is called', () => {
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
-				const { fileRecords, creatorId } = buildFileRecordsWithParams();
+				const { fileRecords } = buildFileRecordsWithParams();
 
 				fileRecordRepo.findByCreatorId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+				const spy = jest.spyOn(FileRecord, 'removeCreatorId');
 
-				return { fileRecords, creatorId };
+				return { fileRecords, spy };
 			};
 
-			// TODO: replace test with correct unit step test
-			it('should call repo save with undefined creatorId', async () => {
-				const { fileRecords } = setup();
+			it('should call removing creatorId and save the result.', async () => {
+				const { fileRecords, spy } = setup();
 
 				await service.removeCreatorIdFromFileRecords(fileRecords);
 
-				const expectedFileRecordProps = fileRecords.map((fileRecord) => {
-					const fileRecordProps = fileRecord.getProps();
-					const securityCheckProps = fileRecord.getSecurityCheckProps();
-					const props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps } = {
-						props: fileRecordProps,
-						securityCheck: securityCheckProps,
-					};
-					return props;
-				});
-
-				expect(fileRecordRepo.save).toHaveBeenCalledWith(
-					expectedFileRecordProps.map(
-						(props: { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }) =>
-							expect.objectContaining({
-								props: {
-									...props.props,
-									creatorId: undefined,
-								},
-								securityCheck: props.securityCheck,
-							}) as { props: FileRecordProps; securityCheck: FileRecordSecurityCheckProps }
-					)
-				);
+				expect(spy).toBeCalledWith(fileRecords);
+				expect(fileRecordRepo.save).toHaveBeenCalledWith(fileRecords);
 			});
 
-			it('should getnumber of updated fileRecords', async () => {
+			it('should return updated fileRecords', async () => {
 				const { fileRecords } = setup();
 
 				const result = await service.removeCreatorIdFromFileRecords(fileRecords);
 
-				result.forEach((entity) => {
-					const props = entity.getProps();
-					expect(props.creatorId).toBe(undefined);
-				});
+				expect(result).toEqual(undefined);
 			});
 		});
 

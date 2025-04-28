@@ -145,10 +145,15 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		this.securityCheck = securityCheck;
 	}
 
+	// --- should be part of a aggregate that contain a file-record array ---
 	public static hasDuplicateName(fileRecords: FileRecord[], fileName: string): FileRecord | undefined {
 		const foundFileRecord = fileRecords.find((item: FileRecord) => item.hasName(fileName));
 
 		return foundFileRecord;
+	}
+
+	public static removeCreatorId(fileRecords: FileRecord[]): void {
+		fileRecords.forEach((entity: FileRecord) => entity.removeCreatorId());
 	}
 
 	public static resolveFileNameDuplicates(fileRecords: FileRecord[], fileName: string): string {
@@ -164,6 +169,28 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		return newFilename;
 	}
 
+	public static markForDelete(fileRecords: FileRecord[]): void {
+		fileRecords.map((fileRecord) => {
+			fileRecord.markForDelete();
+			return fileRecord;
+		});
+	}
+
+	public static unmarkForDelete(fileRecords: FileRecord[]): void {
+		fileRecords.map((fileRecord) => {
+			fileRecord.unmarkForDelete();
+			return fileRecord;
+		});
+	}
+
+	public static getPaths(fileRecords: FileRecord[]): string[] {
+		const paths = fileRecords.map((fileRecord) => fileRecord.createPath());
+
+		return paths;
+	}
+
+	// ---------------------------------------------------------
+
 	public static getFormat(mimeType: string): string {
 		const format = mimeType.split('/')[1];
 
@@ -172,30 +199,6 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 		}
 
 		return format;
-	}
-
-	public static markForDelete(fileRecords: FileRecord[]): FileRecord[] {
-		const markedFileRecords = fileRecords.map((fileRecord) => {
-			fileRecord.markForDelete();
-			return fileRecord;
-		});
-
-		return markedFileRecords;
-	}
-
-	public static unmarkForDelete(fileRecords: FileRecord[]): FileRecord[] {
-		const unmarkedFileRecords = fileRecords.map((fileRecord) => {
-			fileRecord.unmarkForDelete();
-			return fileRecord;
-		});
-
-		return unmarkedFileRecords;
-	}
-
-	public static getPaths(fileRecords: FileRecord[]): string[] {
-		const paths = fileRecords.map((fileRecord) => fileRecord.createPath());
-
-		return paths;
 	}
 
 	public getSecurityCheckProps(): FileRecordSecurityCheckProps {

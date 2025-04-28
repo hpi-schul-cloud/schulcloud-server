@@ -10,6 +10,8 @@ import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from '../dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
+import { FileDO } from '@infra/rabbitmq';
+import { FilesStorageMapper } from '../mapper';
 
 describe('FilesStorageConsumer', () => {
 	let module: TestingModule;
@@ -271,20 +273,24 @@ describe('FilesStorageConsumer', () => {
 				return { creatorId, fileRecords };
 			};
 
-			it('should call filesStorageService.getFileRecordsByCreatorId', async () => {
-				const { creatorId } = setup();
-
-				await service.removeCreatorIdFromFileRecords(creatorId);
-
-				expect(filesStorageService.getFileRecordsByCreatorId).toBeCalledWith(creatorId);
-			});
-
-			it('should call filesStorageService.removeCreatorIdFromFileRecords with params', async () => {
+			it('should called removing all ids of passed creator from fileRecords', async () => {
 				const { creatorId, fileRecords } = setup();
 
 				await service.removeCreatorIdFromFileRecords(creatorId);
 
+				expect(filesStorageService.getFileRecordsByCreatorId).toBeCalledWith(creatorId);
 				expect(filesStorageService.removeCreatorIdFromFileRecords).toBeCalledWith(fileRecords);
+			});
+
+			it('should return correct type', async () => {
+				const { creatorId, fileRecords } = setup();
+
+				const result = await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(result.message).toHaveLength(fileRecords.length);
+				expect(Object.keys(result.message[0])).toEqual(
+					expect.arrayContaining(['id', 'name', 'parentId', 'securityCheckStatus', 'size', 'mimeType', 'parentType'])
+				);
 			});
 		});
 

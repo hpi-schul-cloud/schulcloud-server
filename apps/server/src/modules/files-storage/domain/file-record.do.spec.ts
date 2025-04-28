@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { fileRecordTestFactory } from '../testing';
 import { ErrorType } from './error';
 import { FileRecord, PreviewOutputMimeTypes, PreviewStatus, ScanStatus } from './file-record.do';
+import { ObjectId } from 'bson';
 
 describe('FileRecord', () => {
 	describe('hasDuplicateName', () => {
@@ -114,6 +115,25 @@ describe('FileRecord', () => {
 		});
 	});
 
+	describe('FileRecord.resolveFileNameDuplicates', () => {
+		const setup = () => {
+			const creatorId = new ObjectId().toHexString();
+			const fileRecords = fileRecordTestFactory().buildList(3, { creatorId });
+
+			return { fileRecords };
+		};
+
+		it('should mark files for delete', () => {
+			const { fileRecords } = setup();
+
+			FileRecord.removeCreatorId(fileRecords);
+
+			expect(fileRecords[0].getProps().creatorId).toEqual(undefined);
+			expect(fileRecords[1].getProps().creatorId).toEqual(undefined);
+			expect(fileRecords[2].getProps().creatorId).toEqual(undefined);
+		});
+	});
+
 	describe('FileRecord.markForDelete', () => {
 		const setup = () => {
 			const fileRecords = fileRecordTestFactory().buildList(3);
@@ -124,11 +144,11 @@ describe('FileRecord', () => {
 		it('should mark files for delete', () => {
 			const { fileRecords } = setup();
 
-			const markedFileRecords = FileRecord.markForDelete(fileRecords);
+			FileRecord.markForDelete(fileRecords);
 
-			expect(markedFileRecords[0].getProps().deletedSince).toEqual(expect.any(Date));
-			expect(markedFileRecords[1].getProps().deletedSince).toEqual(expect.any(Date));
-			expect(markedFileRecords[2].getProps().deletedSince).toEqual(expect.any(Date));
+			expect(fileRecords[0].getProps().deletedSince).toEqual(expect.any(Date));
+			expect(fileRecords[1].getProps().deletedSince).toEqual(expect.any(Date));
+			expect(fileRecords[2].getProps().deletedSince).toEqual(expect.any(Date));
 		});
 	});
 
@@ -142,11 +162,11 @@ describe('FileRecord', () => {
 		it('should mark files for delete', () => {
 			const { fileRecords } = setup();
 
-			const markedFileRecords = FileRecord.unmarkForDelete(fileRecords);
+			FileRecord.unmarkForDelete(fileRecords);
 
-			expect(markedFileRecords[0].getProps().deletedSince).toEqual(undefined);
-			expect(markedFileRecords[1].getProps().deletedSince).toEqual(undefined);
-			expect(markedFileRecords[2].getProps().deletedSince).toEqual(undefined);
+			expect(fileRecords[0].getProps().deletedSince).toEqual(undefined);
+			expect(fileRecords[1].getProps().deletedSince).toEqual(undefined);
+			expect(fileRecords[2].getProps().deletedSince).toEqual(undefined);
 		});
 	});
 

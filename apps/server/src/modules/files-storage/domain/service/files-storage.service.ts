@@ -277,8 +277,8 @@ export class FilesStorageService {
 	public async delete(fileRecords: FileRecord[]): Promise<void> {
 		this.logger.debug({ action: 'delete', fileRecords });
 
-		const markedFileRecords = FileRecord.markForDelete(fileRecords);
-		await this.fileRecordRepo.save(markedFileRecords);
+		FileRecord.markForDelete(fileRecords);
+		await this.fileRecordRepo.save(fileRecords);
 
 		await this.deleteWithRollbackByError(fileRecords);
 	}
@@ -289,11 +289,9 @@ export class FilesStorageService {
 		}
 	}
 
-	public async removeCreatorIdFromFileRecords(fileRecords: FileRecord[]): Promise<FileRecord[]> {
-		fileRecords.forEach((entity: FileRecord) => entity.removeCreatorId());
+	public async removeCreatorIdFromFileRecords(fileRecords: FileRecord[]): Promise<void> {
+		FileRecord.removeCreatorId(fileRecords);
 		await this.fileRecordRepo.save(fileRecords);
-
-		return fileRecords;
 	}
 
 	public async markForDeleteByStorageLocation(params: StorageLocationParams): Promise<number> {
@@ -348,8 +346,8 @@ export class FilesStorageService {
 	public async restore(fileRecords: FileRecord[]): Promise<void> {
 		this.logger.debug({ action: 'restore', fileRecords });
 
-		const unmarkFileRecords = FileRecord.unmarkForDelete(fileRecords);
-		await this.fileRecordRepo.save(unmarkFileRecords);
+		FileRecord.unmarkForDelete(fileRecords);
+		await this.fileRecordRepo.save(fileRecords);
 
 		await this.restoreWithRollbackByError(fileRecords);
 	}

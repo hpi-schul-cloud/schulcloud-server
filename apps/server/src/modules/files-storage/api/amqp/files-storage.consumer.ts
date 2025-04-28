@@ -100,11 +100,10 @@ export class FilesStorageConsumer {
 	public async removeCreatorIdFromFileRecords(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'removeCreatorIdFromFileRecords', payload });
 
-		const [fileRecords, total] = await this.filesStorageService.getFileRecordsByCreatorId(payload);
-		let updatedFileRecords = await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
-		updatedFileRecords = updatedFileRecords ?? [];
+		const [fileRecords] = await this.filesStorageService.getFileRecordsByCreatorId(payload);
+		await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
 
-		const response = FilesStorageMapper.mapToFileRecordListResponse(updatedFileRecords, total);
+		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
 		return { message: response.data };
 	}
