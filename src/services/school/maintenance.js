@@ -1,6 +1,7 @@
 const hooks = require('./hooks/maintenance.hooks');
 const { schoolModel: School, yearModel: Years } = require('./model');
 const SchoolYearFacade = require('./logic/year');
+const { Unprocessable } = require('../../errors');
 
 const ldapSystemFilter = (s) => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
 
@@ -84,9 +85,9 @@ class SchoolMaintenanceService {
 		const patch = {};
 
 		if (school.inUserMigration) {
-			return Promise.reject();
+			throw new Unprocessable('School year change unavailable while in user migration');
 		} else if (this.schoolAlreadyInNextYear(school)) {
-			return Promise.reject('School_already_in_next_year');
+			throw new Unprocessable('School already in next year');
 		}
 
 		const bumpYear = async () => {
