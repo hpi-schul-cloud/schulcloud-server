@@ -9,6 +9,7 @@ export class RoomRolesTestFactory {
 		roomAdminRole: Role;
 		roomEditorRole: Role;
 		roomViewerRole: Role;
+		roomApplicantRole: Role;
 	} {
 		const roomOwnerRole = roleFactory.buildWithId({
 			name: RoleName.ROOMOWNER,
@@ -43,12 +44,17 @@ export class RoomRolesTestFactory {
 			name: RoleName.ROOMVIEWER,
 			permissions: [Permission.ROOM_VIEW, Permission.ROOM_LEAVE],
 		});
+		const roomApplicantRole = roleFactory.buildWithId({
+			name: RoleName.ROOMAPPLICANT,
+			permissions: [],
+		});
 
 		return {
 			roomOwnerRole,
 			roomAdminRole,
 			roomEditorRole,
 			roomViewerRole,
+			roomApplicantRole,
 		};
 	}
 }
