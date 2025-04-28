@@ -2,8 +2,8 @@ import { ScanResult } from '@infra/antivirus';
 import { ScanResultDto } from '../dto';
 import { ScanStatus } from '../file-record.do';
 
-export class ScanResultMapper {
-	public static mapScanResultToDto(scanResult: ScanResult): ScanResultDto {
+export class ScanResultDtoMapper {
+	public static fromScanResult(scanResult: ScanResult): ScanResultDto {
 		if (scanResult.virus_detected) {
 			return this.blockedResult(scanResult.virus_signature);
 		} else if (scanResult.error) {

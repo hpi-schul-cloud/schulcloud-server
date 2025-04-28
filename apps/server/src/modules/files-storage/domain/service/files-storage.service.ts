@@ -14,8 +14,7 @@ import { ErrorType } from '../error';
 import { FileRecord, ParentInfo } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
 import { CopyFileResult, FILE_RECORD_REPO, FileRecordRepo, GetFileResponse, StorageLocationParams } from '../interface';
-import { FileResponseBuilder } from '../mapper';
-import { ScanResultMapper } from '../mapper/scan-result.mapper';
+import { FileResponseBuilder, ScanResultDtoMapper } from '../mapper';
 
 @Injectable()
 export class FilesStorageService {
@@ -145,7 +144,7 @@ export class FilesStorageService {
 					this.storageClient.create(filePath, file),
 					this.antivirusService.checkStream(streamToAntivirus),
 				]);
-				const { status, reason } = ScanResultMapper.mapScanResultToDto(antivirusClientResponse);
+				const { status, reason } = ScanResultDtoMapper.fromScanResult(antivirusClientResponse);
 				fileRecord.updateSecurityCheckStatus(status, reason);
 			} else {
 				await this.storageClient.create(filePath, file);
@@ -220,7 +219,7 @@ export class FilesStorageService {
 	public async updateSecurityStatus(token: string, scanResult: ScanResult): Promise<void> {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 
-		const { status, reason } = ScanResultMapper.mapScanResultToDto(scanResult);
+		const { status, reason } = ScanResultDtoMapper.fromScanResult(scanResult);
 		fileRecord.updateSecurityCheckStatus(status, reason);
 
 		await this.fileRecordRepo.save(fileRecord);

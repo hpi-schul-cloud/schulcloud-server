@@ -1,10 +1,10 @@
+import { ScanResult } from '@infra/antivirus';
 import { ScanStatus } from '../../domain';
 import { ScanResultDto } from '../../domain/dto';
-import { ScanResult } from '@infra/antivirus';
-import { ScanResultMapper } from './scan-result.mapper';
+import { ScanResultDtoMapper } from './scan-result.mapper';
 
-describe('ScanResultMapper', () => {
-	describe('mapScanResultToDto()', () => {
+describe('ScanResultDtoMapper', () => {
+	describe('fromScanResult()', () => {
 		const buildParams = (virus_detected?: boolean, virus_signature?: string, error?: string): ScanResult => {
 			const params = {
 				virus_detected,
@@ -25,7 +25,7 @@ describe('ScanResultMapper', () => {
 
 			it('returns correct dto', () => {
 				const { params, virusSignature } = setup();
-				const result = ScanResultMapper.mapScanResultToDto(params);
+				const result = ScanResultDtoMapper.fromScanResult(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.BLOCKED,
@@ -39,7 +39,7 @@ describe('ScanResultMapper', () => {
 			it('returns correct dto', () => {
 				const params = buildParams(true);
 
-				const result = ScanResultMapper.mapScanResultToDto(params);
+				const result = ScanResultDtoMapper.fromScanResult(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.BLOCKED,
@@ -60,7 +60,7 @@ describe('ScanResultMapper', () => {
 			it('returns correct dto', () => {
 				const { params, error } = setup();
 
-				const result = ScanResultMapper.mapScanResultToDto(params);
+				const result = ScanResultDtoMapper.fromScanResult(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.ERROR,
@@ -81,7 +81,7 @@ describe('ScanResultMapper', () => {
 			it('returns correct dto', () => {
 				const { params, reason } = setup();
 
-				const result = ScanResultMapper.mapScanResultToDto(params);
+				const result = ScanResultDtoMapper.fromScanResult(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.VERIFIED,
@@ -95,7 +95,7 @@ describe('ScanResultMapper', () => {
 			it('returns correct dto', () => {
 				const params = buildParams(undefined, undefined, '');
 
-				const result = ScanResultMapper.mapScanResultToDto(params);
+				const result = ScanResultDtoMapper.fromScanResult(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.ERROR,
@@ -109,7 +109,7 @@ describe('ScanResultMapper', () => {
 			it('returns correct dto', () => {
 				const params = {};
 
-				const result = ScanResultMapper.mapScanResultToDto(params);
+				const result = ScanResultDtoMapper.fromScanResult(params);
 
 				const expectedResult: ScanResultDto = new ScanResultDto({
 					status: ScanStatus.ERROR,
