@@ -1,10 +1,10 @@
 import { PreviewFileOptions } from '@infra/preview-generator';
 import { PreviewFileParams, PreviewOutputMimeTypes } from '../../domain';
 import { fileRecordTestFactory } from '../../testing';
-import { PreviewFileParamsMapper } from './preview-file-params.mapper';
+import { PreviewFileOptionsMapper } from './preview-file-params.mapper';
 
-describe('PreviewBuilder', () => {
-	describe('buildPayload is called', () => {
+describe('PreviewFileOptionsMapper', () => {
+	describe('fromPreviewFileParams is called', () => {
 		const setup = () => {
 			const fileRecord = fileRecordTestFactory().build();
 			const previewParams = { outputFormat: PreviewOutputMimeTypes.IMAGE_WEBP };
@@ -33,7 +33,7 @@ describe('PreviewBuilder', () => {
 		it('should return preview payload', () => {
 			const { previewFileParams, expectedResponse } = setup();
 
-			const result = PreviewFileParamsMapper.buildPayload(previewFileParams);
+			const result = PreviewFileOptionsMapper.fromPreviewFileParams(previewFileParams);
 
 			expect(result).toEqual(expectedResponse);
 		});

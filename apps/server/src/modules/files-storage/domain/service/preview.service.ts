@@ -6,7 +6,7 @@ import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { ErrorType } from '../error';
 import { FileRecord, PreviewStatus } from '../file-record.do';
 import { GetFileResponse, PreviewFileParams } from '../interface';
-import { FileResponseBuilder, PreviewFileParamsMapper } from '../mapper';
+import { FileResponseBuilder, PreviewFileOptionsMapper } from '../mapper';
 
 @Injectable()
 export class PreviewService {
@@ -73,7 +73,7 @@ export class PreviewService {
 	}
 
 	private async generatePreview(params: PreviewFileParams): Promise<void> {
-		const payload = PreviewFileParamsMapper.buildPayload(params);
+		const payload = PreviewFileOptionsMapper.fromPreviewFileParams(params);
 
 		await this.previewProducer.generate(payload);
 	}
