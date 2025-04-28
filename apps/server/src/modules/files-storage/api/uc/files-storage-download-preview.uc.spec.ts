@@ -16,7 +16,7 @@ import {
 	PreviewService,
 	PreviewWidth,
 } from '../../domain';
-import { fileRecordTestFactory, GetFileResponseTestFactory, TestHelper } from '../../testing';
+import { fileRecordTestFactory, GetFileResponseTestFactory } from '../../testing';
 import { DownloadFileParams, SingleFileParams } from '../dto';
 import { FilesStorageMapper, PreviewBuilder } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
