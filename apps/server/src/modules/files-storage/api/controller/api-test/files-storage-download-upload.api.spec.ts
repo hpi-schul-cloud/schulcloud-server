@@ -11,11 +11,11 @@ import { TestApiClient } from '@testing/test-api-client';
 import NodeClam from 'clamscan';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { ErrorType } from '../../../domain';
-import { TestHelper } from '../../../testing';
 import { FilesStorageTestModule } from '../../../files-storage-test.module';
 import { FILES_STORAGE_S3_CONNECTION } from '../../../files-storage.config';
 import { FileRecordEntity } from '../../../repo';
 import { availableParentTypes } from './mocks';
+import { GetFileTestFactory } from '../../../testing';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
 	return {
@@ -298,7 +298,7 @@ describe('files-storage controller (API)', () => {
 
 					jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+					const expectedResponse = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
 					const result = await loggedInClient
@@ -358,8 +358,8 @@ describe('files-storage controller (API)', () => {
 
 					jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 
-					const expectedResponse1 = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
-					const expectedResponse2 = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+					const expectedResponse1 = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
+					const expectedResponse2 = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse1).mockResolvedValueOnce(expectedResponse2);
 
@@ -478,7 +478,7 @@ describe('files-storage controller (API)', () => {
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
 					const uploadedFile = result.body as FileRecordEntity;
 
-					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'image/webp' });
+					const expectedResponse = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4', mimeType: 'image/webp' });
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
@@ -535,7 +535,10 @@ describe('files-storage controller (API)', () => {
 						.set('content-type', 'multipart/form-data; boundary=----WebKitFormBoundaryiBMuOC0HyZ3YnA20');
 					const uploadedFile = result.body as FileRecordEntity;
 
-					const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4', mimeType: 'application/pdf' });
+					const expectedResponse = GetFileTestFactory.build({
+						contentRange: 'bytes 0-3/4',
+						mimeType: 'application/pdf',
+					});
 
 					s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 
@@ -589,7 +592,7 @@ describe('files-storage controller (API)', () => {
 
 				const fileApiClient = new TestApiClient(app, '');
 
-				const expectedResponse = TestHelper.createFile({ contentRange: 'bytes 0-3/4' });
+				const expectedResponse = GetFileTestFactory.build({ contentRange: 'bytes 0-3/4' });
 				s3ClientAdapter.get.mockResolvedValueOnce(expectedResponse);
 				const result = await loggedInClient
 					.post(`/upload/school/${validId}/schools/${validId}`)
