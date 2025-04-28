@@ -170,16 +170,14 @@ export class FileRecord extends DomainObject<FileRecordProps> {
 	}
 
 	public static markForDelete(fileRecords: FileRecord[]): void {
-		fileRecords.map((fileRecord) => {
+		fileRecords.forEach((fileRecord) => {
 			fileRecord.markForDelete();
-			return fileRecord;
 		});
 	}
 
 	public static unmarkForDelete(fileRecords: FileRecord[]): void {
-		fileRecords.map((fileRecord) => {
+		fileRecords.forEach((fileRecord) => {
 			fileRecord.unmarkForDelete();
-			return fileRecord;
 		});
 	}
 
