@@ -7,7 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
 import { FileRecordParamsTestFactory, fileRecordTestFactory } from '../../testing';
-import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps } from '../file-record.do';
+import { FileRecord, FileRecordProps, FileRecordSecurityCheck, FileRecordSecurityCheckProps } from '../file-record.do';
 import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
@@ -209,7 +209,19 @@ describe('FilesStorageService restore methods', () => {
 			it('should call repo save with right parameters', async () => {
 				const { fileRecords } = setup();
 
-				const unmarkedFileRecords = FileRecord.unmarkForDelete(fileRecords);
+				const unmarkedFileRecords = fileRecords.map((fileRecord) => {
+					const fileRecordProps = fileRecord.getProps();
+					const securityCheckProps = fileRecord.getSecurityCheckProps();
+
+					// Recreate the FileRecord instance with copied properties
+					const copiedFileRecord = new FileRecord(
+						{ ...fileRecordProps },
+						new FileRecordSecurityCheck(securityCheckProps)
+					);
+
+					return copiedFileRecord;
+				});
+				FileRecord.unmarkForDelete(unmarkedFileRecords);
 
 				await service.restore(fileRecords);
 
