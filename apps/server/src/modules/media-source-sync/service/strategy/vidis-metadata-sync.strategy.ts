@@ -1,6 +1,7 @@
 import { Logger } from '@core/logger';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
+import { MediumMetadataLogoService } from '@modules/medium-metadata/service/medium-metadata-logo.service';
 import { ExternalToolService } from '@modules/tool';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolLogoSizeExceededLoggableException } from '@modules/tool/external-tool/loggable';
@@ -12,7 +13,7 @@ import {
 	MediaSourceSyncReportFactory as ReportFactory,
 } from '../../factory';
 import { MediaSourceSyncReport } from '../../interface';
-import { MediaMetadataSyncFailedLoggable } from '../../loggable';
+import { MediaMetadataSyncFailedLoggable, UnknownLogoFileTypeLoggableException } from '../../loggable';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { BaseMetadataSyncStrategy } from './base-metadata-sync.strategy';
 
@@ -21,6 +22,7 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 	constructor(
 		protected readonly externalToolService: ExternalToolService,
 		protected readonly mediumMetadataService: MediumMetadataService,
+		private readonly mediumMetadataLogoService: MediumMetadataLogoService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly externalToolValidationService: ExternalToolValidationService,
 		private readonly logger: Logger
@@ -93,7 +95,7 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		});
 
 		const updatedExternalTools: ExternalTool[] = (await Promise.all(updatePromises)).filter(
-			(updateResult: ExternalTool | null) => !!updateResult
+			(updateResult: ExternalTool | null): updateResult is ExternalTool => !!updateResult
 		);
 
 		if (updatedExternalTools.length) {
@@ -127,18 +129,22 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 		externalTool: ExternalTool,
 		vidisMetadata: MediumMetadataDto
 	): MediaSourceSyncStatus.SUCCESS | MediaSourceSyncStatus.PARTIAL {
-		let status = MediaSourceSyncStatus.SUCCESS;
+		let status: MediaSourceSyncStatus = MediaSourceSyncStatus.SUCCESS;
 		if (!vidisMetadata.logo) {
 			return status;
 		}
 
-		const originalLogo = externalTool.logo;
-		const originalLogoUrl = externalTool.logoUrl;
+		const originalLogo: string | undefined = externalTool.logo;
+		const originalLogoUrl: string | undefined = externalTool.logoUrl;
 
 		try {
-			const contentType: ImageMimeType = this.externalToolLogoService.detectAndValidateLogoImageType(
+			const contentType: ImageMimeType | undefined = this.mediumMetadataLogoService.detectAndValidateLogoImageType(
 				vidisMetadata.logo
 			);
+
+			if (!contentType) {
+				throw new UnknownLogoFileTypeLoggableException();
+			}
 
 			externalTool.logo = vidisMetadata.logo;
 			externalTool.logoUrl = `data:${contentType.valueOf()};base64,${vidisMetadata.logo}`;

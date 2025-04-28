@@ -4,7 +4,6 @@ import { HttpService } from '@nestjs/axios';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ImageMimeType } from '@shared/domain/types';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of, throwError } from 'rxjs';
 import { ToolConfig } from '../../tool-config';
@@ -16,8 +15,9 @@ import {
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
+	ExternalToolLogoWrongFormatLoggableException,
 } from '../loggable';
-import { externalToolFactory } from '../testing';
+import { base64TestLogo, externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolService } from './external-tool.service';
 
@@ -125,9 +125,7 @@ describe(ExternalToolLogoService.name, () => {
 				it('should throw an error', () => {
 					const { externalTool } = setup();
 
-					const func = () => service.validateLogoSize(externalTool);
-
-					expect(func).toThrow(ExternalToolLogoSizeExceededLoggableException);
+					expect(() => service.validateLogoSize(externalTool)).toThrow(ExternalToolLogoSizeExceededLoggableException);
 				});
 			});
 
@@ -159,9 +157,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should not throw an error', () => {
 				const { externalTool } = setup();
 
-				const func = () => service.validateLogoSize(externalTool);
-
-				expect(func).not.toThrow();
+				expect(() => service.validateLogoSize(externalTool)).not.toThrow();
 			});
 		});
 	});
@@ -185,11 +181,13 @@ describe(ExternalToolLogoService.name, () => {
 			});
 		});
 
-		describe('when tool has a logo url', () => {
+		describe('when tool has a normal logo url', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().buildWithId();
-				const base64Logo = externalTool.logo as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
+				const logoUrl = 'https://test.com/logo.png';
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl,
+				});
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
 
 				httpService.get.mockReturnValue(
 					of(
@@ -197,15 +195,15 @@ describe(ExternalToolLogoService.name, () => {
 							data: logoBuffer,
 							status: HttpStatus.OK,
 							statusText: 'OK',
+							headers: {
+								'content-type': 'image/png',
+							},
 						})
 					)
 				);
 
-				const logoUrl = 'https://logo.com/';
-
 				return {
 					externalTool,
-					base64Logo,
 					logoUrl,
 				};
 			};
@@ -223,15 +221,46 @@ describe(ExternalToolLogoService.name, () => {
 
 				await service.fetchLogo(externalTool);
 
-				expect(logger.info).toHaveBeenCalledWith(new ExternalToolLogoFetchedLoggable(logoUrl));
+				expect(logger.debug).toHaveBeenCalledWith(new ExternalToolLogoFetchedLoggable(logoUrl));
 			});
 
 			it('should return base64 encoded logo', async () => {
-				const { externalTool, base64Logo } = setup();
+				const { externalTool } = setup();
 
 				const logo: string | undefined = await service.fetchLogo(externalTool);
 
-				expect(logo).toBe(base64Logo);
+				expect(logo).toBe(`data:image/png;base64,${base64TestLogo}`);
+			});
+		});
+
+		describe('when tool has a data url as logo url', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl: `data:image/png;base64,${base64TestLogo}`,
+				});
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+
+				httpService.get.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: logoBuffer,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+						})
+					)
+				);
+
+				return {
+					externalTool,
+				};
+			};
+
+			it('should return base64 encoded logo', async () => {
+				const { externalTool } = setup();
+
+				const logo: string | undefined = await service.fetchLogo(externalTool);
+
+				expect(logo).toBe(`data:image/png;base64,${base64TestLogo}`);
 			});
 		});
 
@@ -251,9 +280,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should throw error', async () => {
 				const { externalTool } = setup();
 
-				const func = () => service.fetchLogo(externalTool);
-
-				await expect(func()).rejects.toEqual(
+				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
 					new ExternalToolLogoFetchFailedLoggableException(externalTool.logoUrl as string, HttpStatus.NOT_FOUND)
 				);
 			});
@@ -273,9 +300,9 @@ describe(ExternalToolLogoService.name, () => {
 			it('should throw error', async () => {
 				const { externalTool } = setup();
 
-				const func = () => service.fetchLogo(externalTool);
-
-				await expect(func()).rejects.toEqual(new ExternalToolLogoWrongFileTypeLoggableException());
+				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
+					new ExternalToolLogoWrongFileTypeLoggableException()
+				);
 			});
 		});
 
@@ -293,9 +320,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should throw error', async () => {
 				const { externalTool } = setup();
 
-				const func = () => service.fetchLogo(externalTool);
-
-				await expect(func()).rejects.toEqual(
+				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
 					new ExternalToolLogoFetchFailedLoggableException(externalTool.logoUrl as string)
 				);
 			});
@@ -315,9 +340,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should throw error', async () => {
 				const { externalTool } = setup();
 
-				const func = () => service.fetchLogo(externalTool);
-
-				await expect(func()).rejects.toThrow(ExternalToolLogoFetchFailedLoggableException);
+				await expect(service.fetchLogo(externalTool)).rejects.toThrow(ExternalToolLogoFetchFailedLoggableException);
 			});
 		});
 	});
@@ -330,20 +353,19 @@ describe(ExternalToolLogoService.name, () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id,
-					base64logo: externalTool.logo as string,
+					externalTool,
 				};
 			};
 
 			it('should return ExternalToolLogo with proper properties', async () => {
-				const { externalToolId, base64logo } = setup();
+				const { externalTool } = setup();
 
-				const result: ExternalToolLogo = await service.getExternalToolBinaryLogo(externalToolId);
+				const result: ExternalToolLogo = await service.getExternalToolBinaryLogo(externalTool.id);
 
 				expect(result).toEqual(
 					new ExternalToolLogo({
 						contentType: 'image/png',
-						logo: Buffer.from(base64logo, 'base64'),
+						logo: Buffer.from(base64TestLogo, 'base64'),
 					})
 				);
 			});
@@ -356,16 +378,16 @@ describe(ExternalToolLogoService.name, () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id,
+					externalTool,
 				};
 			};
 
-			it('should throw an ExternalToolLogoWrongFileTypeLoggableException', async () => {
-				const { externalToolId } = setup();
+			it('should throw an ExternalToolLogoWrongFormatLoggableException', async () => {
+				const { externalTool } = setup();
 
-				const result: Promise<ExternalToolLogo> = service.getExternalToolBinaryLogo(externalToolId);
-
-				await expect(result).rejects.toThrow(ExternalToolLogoWrongFileTypeLoggableException);
+				await expect(service.getExternalToolBinaryLogo(externalTool.id)).rejects.toThrow(
+					ExternalToolLogoWrongFormatLoggableException
+				);
 			});
 		});
 
@@ -376,58 +398,16 @@ describe(ExternalToolLogoService.name, () => {
 				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalToolId: externalTool.id,
+					externalTool,
 				};
 			};
 
 			it('should throw ExternalToolLogoNotFoundLoggableException', async () => {
-				const { externalToolId } = setup();
+				const { externalTool } = setup();
 
-				const func = async () => service.getExternalToolBinaryLogo(externalToolId);
-
-				await expect(func).rejects.toThrow(ExternalToolLogoNotFoundLoggableException);
-			});
-		});
-	});
-
-	describe('detectContentTypeOrThrow', () => {
-		describe('when the image buffer passed is from a png', () => {
-			it('should return the content type "image/png"', () => {
-				const pngBase64Image = 'iVBORw0KGgoAAAAAADElEQVkSuQmCC';
-
-				const result = service.detectAndValidateLogoImageType(pngBase64Image);
-
-				expect(result).toEqual(ImageMimeType.PNG.valueOf());
-			});
-		});
-
-		describe('when the image buffer passed is from a jpeg', () => {
-			it('should return the content type "image/jpeg"', () => {
-				const jpegBase64Image = '/9j/4AAQYswLEoooA//9k=';
-
-				const result = service.detectAndValidateLogoImageType(jpegBase64Image);
-
-				expect(result).toEqual(ImageMimeType.JPEG.valueOf());
-			});
-		});
-
-		describe('when the image buffer passed is from a gif', () => {
-			it('should return the content type "image/gif"', () => {
-				const gifBase64Image = 'R0lGODdhAQCAkQBADs=';
-
-				const result = service.detectAndValidateLogoImageType(gifBase64Image);
-
-				expect(result).toEqual(ImageMimeType.GIF.valueOf());
-			});
-		});
-
-		describe('when the image buffer passed is from an unsupported format', () => {
-			it('should throw an ExternalToolLogoWrongFileTypeLoggableException', () => {
-				const unsupportedFile = 'JVBERi0xLjUKJYCBgoMKMSAwZ3';
-
-				expect(() => {
-					service.detectAndValidateLogoImageType(unsupportedFile);
-				}).toThrow(new ExternalToolLogoWrongFileTypeLoggableException());
+				await expect(service.getExternalToolBinaryLogo(externalTool.id)).rejects.toThrow(
+					ExternalToolLogoNotFoundLoggableException
+				);
 			});
 		});
 	});
