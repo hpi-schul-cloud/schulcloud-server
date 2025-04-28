@@ -12,6 +12,7 @@ import {
 	StorageLocationParams,
 } from '../../domain/interface';
 
+// "paramsDto" is the same information twice
 export class StorageLocationParamsDto implements StorageLocationParams {
 	@ApiProperty()
 	@IsMongoId()
@@ -21,7 +22,7 @@ export class StorageLocationParamsDto implements StorageLocationParams {
 	@IsEnum(StorageLocation)
 	public storageLocation!: StorageLocation;
 }
-// TODO: ParentInfo vs StorageLocationParams
+
 export class FileRecordParams implements ParentInfo {
 	@ApiProperty()
 	@IsMongoId()

@@ -16,7 +16,7 @@ import {
 	PreviewService,
 	PreviewWidth,
 } from '../../domain';
-import { fileRecordTestFactory, TestHelper } from '../../testing';
+import { fileRecordTestFactory, GetFileResponseTestFactory, TestHelper } from '../../testing';
 import { DownloadFileParams, SingleFileParams } from '../dto';
 import { FilesStorageMapper, PreviewBuilder } from '../mapper';
 import { FilesStorageUC, FileStorageAuthorizationContext } from './files-storage.uc';
@@ -121,7 +121,7 @@ describe('FilesStorageUC', () => {
 				const previewParams = { ...defaultPreviewParamsWithWidth };
 				const format = previewParams.outputFormat.split('/')[1];
 
-				const previewFileResponse = TestHelper.createFileResponse();
+				const previewFileResponse = GetFileResponseTestFactory.build();
 
 				filesStorageService.getFileRecord.mockResolvedValueOnce(fileRecord);
 				previewService.download.mockResolvedValueOnce(previewFileResponse);

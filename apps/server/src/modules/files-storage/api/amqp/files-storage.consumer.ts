@@ -1,5 +1,4 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-// TODO: DO need to be changed to Do, but we have also type matching issues in this file
 import { LegacyLogger } from '@core/logger';
 import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';

@@ -151,7 +151,7 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 		return fileRecord;
 	}
 
-	private async flush(): Promise<void> {
+	private flush(): Promise<void> {
 		return this.em.flush();
 	}
 }

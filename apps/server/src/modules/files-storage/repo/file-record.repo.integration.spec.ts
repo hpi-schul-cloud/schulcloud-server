@@ -150,7 +150,6 @@ describe('FileRecordRepo', () => {
 			return { fileRecords1, fileRecords2, markedForDeleteFileRecords, parentId1 };
 		};
 
-		// TODO: the next 2 pagination test are for private stuff and must be repeated in all or outsource
 		it('should work with pagination limit', async () => {
 			const { fileRecords1, parentId1 } = setup();
 			await em.persistAndFlush([...fileRecords1]);

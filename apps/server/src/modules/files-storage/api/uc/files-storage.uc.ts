@@ -46,7 +46,6 @@ import {
 	PreviewBuilder,
 } from '../mapper';
 
-// TODO: Delete files-storage uc spec tests and remove export?
 export const FileStorageAuthorizationContext = {
 	create: AuthorizationContextBuilder.write([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_CREATE]),
 	read: AuthorizationContextBuilder.read([AuthorizationContextParamsRequiredPermissions.FILESTORAGE_VIEW]),

@@ -25,9 +25,12 @@ export class FileSecurityController {
 
 	@ApiExcludeEndpoint()
 	@Put('/update-status/:token')
-	public async updateSecurityStatus(@Body() scanResultDto: ScanResultParams, @Param('token') token: string) {
+	public async updateSecurityStatus(
+		@Body() scanResultDto: ScanResultParams,
+		@Param('token') token: string
+	): Promise<{ status: string }> {
 		await this.filesStorageUC.updateSecurityStatus(token, scanResultDto);
 
-		// TODO: Invalid missing return type
+		return { status: 'ok' };
 	}
 }

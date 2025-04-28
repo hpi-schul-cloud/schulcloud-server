@@ -2,9 +2,8 @@ import { GetFile } from '@infra/s3-client';
 import { Readable } from 'stream';
 import { GetFileResponse } from '../domain/interface';
 
-// TODO: Should named testFactory
-export class TestHelper {
-	public static createFile = (props?: { contentRange?: string; mimeType?: string }): GetFile => {
+export class GetFileTestFactory {
+	public static build(props?: { contentRange?: string; mimeType?: string }): GetFile {
 		const text = 'testText';
 		const readable = Readable.from(text);
 
@@ -17,13 +16,15 @@ export class TestHelper {
 		};
 
 		return fileResponse;
-	};
+	}
+}
 
-	public static createFileResponse = (contentRange?: string): GetFileResponse => {
+export class GetFileResponseTestFactory {
+	public static build(contentRange?: string): GetFileResponse {
 		const name = 'testName';
-		const file = this.createFile({ contentRange });
+		const file = GetFileTestFactory.build({ contentRange });
 		const fileResponse = { ...file, name };
 
 		return fileResponse;
-	};
+	}
 }
