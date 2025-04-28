@@ -1,7 +1,7 @@
 galaxy_info:
-  role_name: schulcloud-server-valkey
+  role_name: session-valkey
   author: Schul-Cloud Verbund
-  description: role for the schulcloud server valkey
+  description: role for the session valkey
   company: Schul-Cloud Verbund
   license: license (AGPLv3)
   min_ansible_version: '2.8'
