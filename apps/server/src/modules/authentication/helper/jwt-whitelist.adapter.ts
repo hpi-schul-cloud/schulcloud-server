@@ -14,9 +14,6 @@ export class JwtWhitelistAdapter {
 		const expirationInMilliseconds: number = redisData.expirationInSeconds;
 
 		await this.cacheManager.set(redisIdentifier, redisData, expirationInMilliseconds);
-		const redisIdentifier1: string = createRedisIdentifierFromJwtData(accountId, '*');
-		const keys = await this.getStore().keys(redisIdentifier1);
-		console.log('keys', keys);
 	}
 
 	public async removeFromWhitelist(accountId: string, jti?: string): Promise<void> {
