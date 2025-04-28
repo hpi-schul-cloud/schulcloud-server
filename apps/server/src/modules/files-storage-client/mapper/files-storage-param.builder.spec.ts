@@ -1,6 +1,6 @@
+import { StorageLocation } from '@infra/files-storage-client';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { StorageLocation } from '@modules/files-storage/domain/interface';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task } from '@modules/task/repo';
