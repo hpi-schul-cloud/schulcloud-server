@@ -44,7 +44,7 @@ export class FileRecordEntity extends BaseEntityWithTimestamps implements FileRe
 	name!: string;
 
 	@Property()
-	mimeType!: string; // TODO mime-type enum?
+	mimeType!: string;
 
 	@Embedded(() => FileRecordSecurityCheckEmbeddable, { object: true, nullable: false })
 	securityCheck!: FileRecordSecurityCheckEmbeddable;

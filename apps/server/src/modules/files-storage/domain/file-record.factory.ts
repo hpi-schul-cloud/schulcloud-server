@@ -45,7 +45,7 @@ export class FileRecordFactory {
 	}
 
 	public static copy(fileRecord: FileRecord, userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
-		const { size, name, mimeType, id, createdAt, updatedAt } = fileRecord.getProps();
+		const { size, name, mimeType, id } = fileRecord.getProps();
 		const { parentType, parentId, storageLocation, storageLocationId } = targetParentInfo;
 		const newSecurityCheck = fileRecord.createSecurityScanBasedOnStatus();
 
@@ -59,12 +59,10 @@ export class FileRecordFactory {
 			creatorId: userId,
 			storageLocationId,
 			storageLocation,
-			// TODO: sollte hier der Status vom kopierten File übernommen werden? Oder undefined?
-			// isUploading: true
+			isUploading: undefined,
 			isCopyFrom: id,
-			// TODO: hier den Status übernehmen?
-			createdAt,
-			updatedAt,
+			createdAt: new Date(),
+			updatedAt: new Date(),
 		};
 
 		const fileRecordCopy = FileRecordFactory.build(props, newSecurityCheck);
