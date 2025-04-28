@@ -10,8 +10,6 @@ import { FileRecordEntity } from '../../repo';
 import { fileRecordTestFactory } from '../../testing';
 import { CopyFilesOfParentPayload, FileRecordResponse } from '../dto';
 import { FilesStorageConsumer } from './files-storage.consumer';
-import { FileDO } from '@infra/rabbitmq';
-import { FilesStorageMapper } from '../mapper';
 
 describe('FilesStorageConsumer', () => {
 	let module: TestingModule;
