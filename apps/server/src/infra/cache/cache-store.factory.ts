@@ -4,7 +4,7 @@ import KeyvValkey from '@keyv/valkey';
 import { ConfigService } from '@nestjs/config';
 import Keyv from 'keyv';
 import { CacheConfig } from './interface';
-import { KeyvValkeyAdapter } from './service/cache.service';
+import { KeyvValkeyAdapter } from './keyv-valkey.adapter';
 
 export class CacheStoreFactory {
 	private static logger: LegacyLogger;
