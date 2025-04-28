@@ -6,27 +6,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory } from '../../testing';
-import { ParentInfo, ScanStatus } from '../file-record.do';
+import { FileRecordParamsTestFactory, fileRecordTestFactory } from '../../testing';
+import { ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
-import { CopyFileResult, FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { CopyFileResult, FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { FilesStorageService } from './files-storage.service';
-
-const buildFileRecordsWithParentInfo = () => {
-	const parentId = new ObjectId().toHexString();
-	const storageLocationId = new ObjectId().toHexString();
-
-	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
-
-	const parentInfo: ParentInfo = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { parentInfo, fileRecords, parentId };
-};
 
 describe('FilesStorageService copy methods', () => {
 	let module: TestingModule;
@@ -93,8 +77,8 @@ describe('FilesStorageService copy methods', () => {
 					fileRecords: sourceFileRecords,
 					parentInfo: sourceParentInfo,
 					parentId: userId,
-				} = buildFileRecordsWithParentInfo();
-				const { fileRecords: targetFileRecords, parentInfo: targetParentInfo } = buildFileRecordsWithParentInfo();
+				} = FileRecordParamsTestFactory.build();
+				const { fileRecords: targetFileRecords, parentInfo: targetParentInfo } = FileRecordParamsTestFactory.build();
 
 				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([
 					sourceFileRecords,
@@ -145,8 +129,8 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN no file is found', () => {
 			const setup = () => {
-				const { fileRecords, parentInfo: sourceParentInfo, parentId: userId } = buildFileRecordsWithParentInfo();
-				const { parentInfo: targetParentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentInfo: sourceParentInfo, parentId: userId } = FileRecordParamsTestFactory.build();
+				const { parentInfo: targetParentInfo } = FileRecordParamsTestFactory.build();
 
 				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([[], 0]);
 
@@ -174,8 +158,8 @@ describe('FilesStorageService copy methods', () => {
 					fileRecords: sourceFileRecords,
 					parentInfo: sourceParentInfo,
 					parentId: userId,
-				} = buildFileRecordsWithParentInfo();
-				const { parentInfo: targetParentInfo } = buildFileRecordsWithParentInfo();
+				} = FileRecordParamsTestFactory.build();
+				const { parentInfo: targetParentInfo } = FileRecordParamsTestFactory.build();
 				const error = new Error('test');
 
 				fileRecordRepo.findByStorageLocationIdAndParentId.mockResolvedValueOnce([
@@ -199,7 +183,7 @@ describe('FilesStorageService copy methods', () => {
 	describe('copy is called', () => {
 		describe('WHEN files copied successfully and security status is VERIFIED', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, parentInfo: sourceParentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentId: userId, parentInfo: sourceParentInfo } = FileRecordParamsTestFactory.build();
 				const sourceFile = fileRecords[0];
 				sourceFile.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'verified');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, sourceParentInfo);
@@ -251,7 +235,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source files scan status is PENDING', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, parentInfo: sourceParentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentId: userId, parentInfo: sourceParentInfo } = FileRecordParamsTestFactory.build();
 				const sourceFile = fileRecords[0];
 				sourceFile.updateSecurityCheckStatus(ScanStatus.PENDING, 'not yet scanned');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, sourceParentInfo);
@@ -272,7 +256,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN source files scan status is BLOCKED', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, parentInfo: sourceParentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentId: userId, parentInfo: sourceParentInfo } = FileRecordParamsTestFactory.build();
 				const fileRecord = fileRecords[0];
 				fileRecord.updateSecurityCheckStatus(ScanStatus.BLOCKED, 'blocked');
 
@@ -296,12 +280,10 @@ describe('FilesStorageService copy methods', () => {
 
 				const fileRecord = fileRecordTestFactory().withDeletedSince().build({ parentId: userId, storageLocationId });
 
-				const parentInfo: ParentInfo = {
-					storageLocation: StorageLocation.SCHOOL,
+				const parentInfo = FileRecordParamsTestFactory.buildFromInput({
 					storageLocationId,
 					parentId: userId,
-					parentType: FileRecordParentType.User,
-				};
+				});
 
 				return { fileRecord, userId, parentInfo };
 			};
@@ -323,7 +305,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN copying two files and one file record save throws error', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, parentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentId: userId, parentInfo } = FileRecordParamsTestFactory.build();
 				const sourceFile1 = fileRecords[0];
 				const sourceFile2 = fileRecords[2];
 				const error = new Error('test');
@@ -356,7 +338,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN storage client throws error', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, parentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentId: userId, parentInfo } = FileRecordParamsTestFactory.build();
 				const sourceFile = fileRecords[0];
 				sourceFile.updateSecurityCheckStatus(ScanStatus.VERIFIED, 'verified');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, parentInfo);
@@ -383,7 +365,7 @@ describe('FilesStorageService copy methods', () => {
 
 		describe('WHEN anti virus service throws error', () => {
 			const setup = () => {
-				const { fileRecords, parentId: userId, parentInfo } = buildFileRecordsWithParentInfo();
+				const { fileRecords, parentId: userId, parentInfo } = FileRecordParamsTestFactory.build();
 				const sourceFile = fileRecords[0];
 				sourceFile.updateSecurityCheckStatus(ScanStatus.PENDING, 'not yet scanned');
 				const targetFile = FileRecordFactory.copy(sourceFile, userId, parentInfo);

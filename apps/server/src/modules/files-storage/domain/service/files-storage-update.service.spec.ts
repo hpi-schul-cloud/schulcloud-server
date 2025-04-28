@@ -8,28 +8,11 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import _ from 'lodash';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory } from '../../testing';
+import { FileRecordParamsTestFactory, fileRecordTestFactory } from '../../testing';
 import { ErrorType } from '../error';
-import { ParentInfo } from '../file-record.do';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { ScanResultMapper } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
-
-const buildFileRecordsWithParams = () => {
-	const parentId = new ObjectId().toHexString();
-	const storageLocationId = new ObjectId().toHexString();
-
-	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
-
-	const params: ParentInfo = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { params, fileRecords, parentId };
-};
 
 const buildFileRecord = () => {
 	const parentId = new ObjectId().toHexString();
@@ -97,7 +80,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, params } = buildFileRecordsWithParams();
+				const { fileRecords, parentInfo } = FileRecordParamsTestFactory.build();
 				const fileRecord = fileRecords[0];
 				const fileName = 'renamed';
 
@@ -107,7 +90,7 @@ describe('FilesStorageService update methods', () => {
 					fileName,
 					fileRecord,
 					fileRecords,
-					params,
+					params: parentInfo,
 				};
 			};
 
@@ -171,7 +154,7 @@ describe('FilesStorageService update methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, params } = buildFileRecordsWithParams();
+				const { fileRecords, parentInfo } = FileRecordParamsTestFactory.build();
 				const fileRecord = fileRecords[0];
 				const fileName = fileRecords[0].getName();
 
@@ -181,7 +164,7 @@ describe('FilesStorageService update methods', () => {
 					fileName,
 					fileRecord,
 					fileRecords,
-					params,
+					params: parentInfo,
 				};
 			};
 

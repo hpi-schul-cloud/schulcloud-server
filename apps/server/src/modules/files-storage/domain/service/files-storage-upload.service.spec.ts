@@ -9,12 +9,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory, readableStreamWithFileTypeFactory } from '../../testing';
+import { FileRecordParamsTestFactory, fileRecordTestFactory, readableStreamWithFileTypeFactory } from '../../testing';
 import { FileDto } from '../dto';
 import { ErrorType } from '../error';
-import { FileRecord, FileRecordSecurityCheck, ParentInfo, ScanStatus } from '../file-record.do';
+import { FileRecord, FileRecordSecurityCheck, ScanStatus } from '../file-record.do';
 import { FileRecordFactory } from '../file-record.factory';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 jest.mock('file-type-cjs/file-type-cjs-index', () => {
@@ -22,22 +22,6 @@ jest.mock('file-type-cjs/file-type-cjs-index', () => {
 		fileTypeStream: jest.fn(),
 	};
 });
-
-const buildFileRecordsWithParams = () => {
-	const parentId = new ObjectId().toHexString();
-	const storageLocationId = new ObjectId().toHexString();
-
-	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
-
-	const params: ParentInfo = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { params, fileRecords, parentId };
-};
 
 describe('FilesStorageService upload methods', () => {
 	let module: TestingModule;
@@ -96,7 +80,7 @@ describe('FilesStorageService upload methods', () => {
 
 	describe('uploadFile is called', () => {
 		const createUploadFileParams = (props: { mimeType: string } = { mimeType: 'dto-mime-type' }) => {
-			const { params, fileRecords, parentId: userId } = buildFileRecordsWithParams();
+			const { parentInfo: params, fileRecords, parentId: userId } = FileRecordParamsTestFactory.build();
 
 			const file = createMock<FileDto>();
 			const readable = Readable.from('abc');

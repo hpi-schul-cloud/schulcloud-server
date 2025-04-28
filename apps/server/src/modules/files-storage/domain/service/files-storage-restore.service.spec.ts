@@ -6,26 +6,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory } from '../../testing';
-import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps, ParentInfo } from '../file-record.do';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FileRecordParamsTestFactory, fileRecordTestFactory } from '../../testing';
+import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps } from '../file-record.do';
+import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
 	const parentId = new ObjectId().toHexString();
-	const parentSchoolId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const yesterday = new Date(Date.now() - 86400000);
-	const fileRecords = fileRecordTestFactory()
-		.withDeletedSince(yesterday)
-		.buildList(3, { parentId, storageLocationId: parentSchoolId });
+	const fileRecords = fileRecordTestFactory().withDeletedSince(yesterday).buildList(3, { parentId, storageLocationId });
 
-	const params: ParentInfo = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId: parentSchoolId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
+	const params = FileRecordParamsTestFactory.buildFromInput({ parentId, storageLocationId });
 
 	return { params, fileRecords, parentId };
 };

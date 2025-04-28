@@ -8,26 +8,10 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory } from '../../testing';
-import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps, ParentInfo } from '../file-record.do';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FileRecord, FileRecordProps, FileRecordSecurityCheckProps } from '../file-record.do';
+import { FILE_RECORD_REPO, FileRecordRepo, StorageLocation } from '../interface';
 import { FilesStorageService } from './files-storage.service';
-
-const buildFileRecordsWithParams = () => {
-	const parentId = new ObjectId().toHexString();
-	const storageLocationId = new ObjectId().toHexString();
-
-	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
-
-	const params: ParentInfo = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { params, fileRecords, parentId };
-};
+import { fileRecordTestFactory } from '../../testing';
 
 describe('FilesStorageService delete methods', () => {
 	let module: TestingModule;
@@ -84,7 +68,7 @@ describe('FilesStorageService delete methods', () => {
 	describe('delete is called', () => {
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
+				const fileRecords = fileRecordTestFactory().buildList(3);
 
 				fileRecordRepo.save.mockResolvedValueOnce();
 
@@ -132,7 +116,7 @@ describe('FilesStorageService delete methods', () => {
 
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
+				const fileRecords = fileRecordTestFactory().buildList(3);
 
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 
@@ -148,7 +132,7 @@ describe('FilesStorageService delete methods', () => {
 
 		describe('WHEN filestorage client throw an error', () => {
 			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
+				const fileRecords = fileRecordTestFactory().buildList(3);
 
 				storageClient.moveToTrash.mockRejectedValueOnce(new Error('bla'));
 
@@ -173,8 +157,8 @@ describe('FilesStorageService delete methods', () => {
 			});
 
 			const setup = () => {
-				const { fileRecords, params } = buildFileRecordsWithParams();
-				const { parentId } = params;
+				const parentId = new ObjectId().toHexString();
+				const fileRecords = fileRecordTestFactory().buildList(3, { parentId });
 
 				spy = jest.spyOn(service, 'delete');
 				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
@@ -200,8 +184,7 @@ describe('FilesStorageService delete methods', () => {
 
 			const setup = () => {
 				const fileRecords = [];
-				const { params } = buildFileRecordsWithParams();
-				const { parentId } = params;
+				const parentId = new ObjectId().toHexString();
 
 				spy = jest.spyOn(service, 'delete');
 
@@ -225,8 +208,8 @@ describe('FilesStorageService delete methods', () => {
 			});
 
 			const setup = () => {
-				const { params, fileRecords } = buildFileRecordsWithParams();
-				const { parentId } = params;
+				const parentId = new ObjectId().toHexString();
+				const fileRecords = fileRecordTestFactory().buildList(3, { parentId });
 
 				spy = jest.spyOn(service, 'delete').mockRejectedValue(new Error('bla'));
 				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);

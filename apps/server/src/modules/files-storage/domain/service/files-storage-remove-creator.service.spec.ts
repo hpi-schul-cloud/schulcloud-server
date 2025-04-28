@@ -2,31 +2,13 @@ import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory } from '../../testing';
-import { FileRecord, ParentInfo } from '../file-record.do';
-import { FILE_RECORD_REPO, FileRecordParentType, FileRecordRepo, StorageLocation } from '../interface';
+import { FileRecord } from '../file-record.do';
+import { FILE_RECORD_REPO, FileRecordRepo } from '../interface';
 import { FilesStorageService } from './files-storage.service';
-
-const buildFileRecordsWithParams = () => {
-	const parentId = new ObjectId().toHexString();
-	const storageLocationId = new ObjectId().toHexString();
-	const creatorId = new ObjectId().toHexString();
-
-	const fileRecords = fileRecordTestFactory().buildList(3, { parentId, storageLocationId });
-
-	const params: ParentInfo = {
-		storageLocation: StorageLocation.SCHOOL,
-		storageLocationId,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
-
-	return { params, fileRecords, parentId, creatorId };
-};
+import { fileRecordTestFactory } from '../../testing';
 
 describe('FilesStorageService delete methods', () => {
 	let module: TestingModule;
@@ -83,7 +65,7 @@ describe('FilesStorageService delete methods', () => {
 	describe('removeCreatorIdFromFileRecord is called', () => {
 		describe('WHEN valid files exists', () => {
 			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
+				const fileRecords = fileRecordTestFactory().buildList(3);
 
 				fileRecordRepo.findByCreatorId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 				const spy = jest.spyOn(FileRecord, 'removeCreatorId');
@@ -111,7 +93,7 @@ describe('FilesStorageService delete methods', () => {
 
 		describe('WHEN repository throw an error', () => {
 			const setup = () => {
-				const { fileRecords } = buildFileRecordsWithParams();
+				const fileRecords = fileRecordTestFactory().buildList(3);
 
 				fileRecordRepo.save.mockRejectedValueOnce(new Error('bla'));
 

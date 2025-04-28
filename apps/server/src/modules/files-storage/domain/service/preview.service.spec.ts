@@ -6,31 +6,26 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
-import { fileRecordTestFactory, GetFileTestFactory } from '../../testing';
+import { FileRecordParamsTestFactory, fileRecordTestFactory, GetFileTestFactory } from '../../testing';
 import { ErrorType } from '../error';
-import { ParentInfo, PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
-import { FileRecordParentType, PreviewFileParams, PreviewWidth, StorageLocation } from '../interface';
+import { PreviewOutputMimeTypes, ScanStatus } from '../file-record.do';
+import { PreviewFileParams, PreviewWidth } from '../interface';
 import { FileResponseBuilder } from '../mapper';
 import { FilesStorageService } from './files-storage.service';
 import { PreviewService } from './preview.service';
 
 const buildFileRecordWithParams = (mimeType: string, scanStatus?: ScanStatus) => {
 	const parentId = new ObjectId().toHexString();
-	const parentStorageLocationId = new ObjectId().toHexString();
+	const storageLocationId = new ObjectId().toHexString();
 
 	const fileRecord = fileRecordTestFactory().withScanStatus(scanStatus).build({
 		parentId,
-		storageLocationId: parentStorageLocationId,
+		storageLocationId,
 		name: 'text.png',
 		mimeType,
 	});
 
-	const params: ParentInfo = {
-		storageLocationId: parentStorageLocationId,
-		storageLocation: StorageLocation.SCHOOL,
-		parentId,
-		parentType: FileRecordParentType.User,
-	};
+	const params = FileRecordParamsTestFactory.buildFromInput({ parentId, storageLocationId });
 
 	return { params, fileRecord, parentId };
 };
