@@ -109,21 +109,26 @@
 			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
 			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
 		},
-		"REDIS_CLUSTER_ENABLED": {
+		"SESSION_VALKEY_URI": {
+			"type": "string",
+			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+			"description": "URL of a Valkey server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+		},
+		"SESSION_VALKEY_CLUSTER_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables Redis Cluster mode."
 		},
-		"REDIS_SENTINEL_NAME": {
+		"SESSION_VALKEY_SENTINEL_NAME": {
 			"type": "string",
 			"default": "myprimary",
 			"description": "The name of the Redis Sentinel."
 		},
-		"REDIS_SENTINEL_PASSWORD": {
+		"SESSION_VALKEY_SENTINEL_PASSWORD": {
 			"type": "string",
 			"description": "The password for the Redis Sentinel service."
 		},
-		"REDIS_SENTINEL_SERVICE_NAME": {
+		"SESSION_VALKEY_SENTINEL_SERVICE_NAME": {
 			"type": "string",
 			"description": "The name of the Redis Sentinel service."
 		},
@@ -159,7 +164,7 @@
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 7200,
-			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no SESSION_VALKEY_URI is set, this value is ignored."
 		},
 		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
 			"type": "boolean",
@@ -169,7 +174,7 @@
 		"JWT_EXTENDED_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 2629746,
-			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no SESSION_VALKEY_URI is set, this value is ignored."
 		},
 		"TSP_API_CLIENT_BASE_URL": {
 			"type": "string",

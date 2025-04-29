@@ -38,11 +38,11 @@ export class CacheStoreFactory {
 
 	private static buildValkeyConfig(configService: ConfigService<CacheConfig>): ValkeyConfig {
 		return {
-			URI: configService.get<string>('REDIS_URI'),
-			CLUSTER_ENABLED: configService.get<boolean>('REDIS_CLUSTER_ENABLED'),
-			SENTINEL_NAME: configService.get<string>('REDIS_SENTINEL_NAME'),
-			SENTINEL_PASSWORD: configService.get<string>('REDIS_SENTINEL_PASSWORD'),
-			SENTINEL_SERVICE_NAME: configService.get<string>('REDIS_SENTINEL_SERVICE_NAME'),
+			URI: configService.get<string>('SESSION_VALKEY_URI'),
+			CLUSTER_ENABLED: configService.get<boolean>('SESSION_VALKEY_CLUSTER_ENABLED'),
+			SENTINEL_NAME: configService.get<string>('SESSION_VALKEY_SENTINEL_NAME'),
+			SENTINEL_PASSWORD: configService.get<string>('SESSION_VALKEY_SENTINEL_PASSWORD'),
+			SENTINEL_SERVICE_NAME: configService.get<string>('SESSION_VALKEY_SENTINEL_SERVICE_NAME'),
 		};
 	}
 }
