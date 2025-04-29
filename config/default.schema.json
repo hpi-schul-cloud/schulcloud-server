@@ -1632,6 +1632,16 @@
 			"default": "true",
 			"description": "Enables the rooms feature"
 		},
+		"FEATURE_ROOMS_DUPLICATION_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the rooms feature to duplicate rooms"
+		},
+		"FEATURE_ROOM_INVITATION_LINKS_ENABLED": {
+			"type": "boolean",
+			"default": "true",
+			"description": "Enables the room invitation links feature"
+		},
 		"FEATURE_ROOMS_CHANGE_PERMISSIONS_ENABLED": {
 			"type": "boolean",
 			"default": "false",
