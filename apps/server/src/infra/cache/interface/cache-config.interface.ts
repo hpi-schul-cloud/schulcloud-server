@@ -4,6 +4,4 @@ export interface CacheConfig {
 	REDIS_SENTINEL_NAME: string;
 	REDIS_SENTINEL_PASSWORD: string;
 	REDIS_SENTINEL_SERVICE_NAME: string;
-	REDIS_SENTINEL_SERVICE_PORT: number;
-	REDIS_SENTINEL_SERVICE_HOST: string;
 }
