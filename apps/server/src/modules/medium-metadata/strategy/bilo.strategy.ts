@@ -18,17 +18,16 @@ export class BiloStrategy implements MediumMetadataStrategy {
 	}
 
 	public async getMediumMetadataItem(mediumId: string, mediaSource: MediaSource): Promise<MediumMetadataDto> {
-		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
-			[mediumId],
-			mediaSource,
-			true
+		const metadataItem: BiloMediaQueryDataResponse = await this.biloMediaClientAdapter.fetchMediumMetadata(
+			mediumId,
+			mediaSource
 		);
-
-		if (!metadataItems.length) {
+		if (!metadataItem) {
 			throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
 		}
 
-		const mediumMetadataDto: MediumMetadataDto = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(metadataItems[0]);
+		const mediumMetadataDto: MediumMetadataDto =
+			MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(metadataItem);
 
 		return mediumMetadataDto;
 	}

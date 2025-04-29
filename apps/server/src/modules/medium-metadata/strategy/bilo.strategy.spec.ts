@@ -4,6 +4,7 @@ import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BiloNotFoundResponseLoggableException } from '../../../infra/bilo-client/loggable';
 import {
 	MediumMetadataNotFoundLoggableException,
 	MediumMetadataStrategyNotImplementedLoggableException,
@@ -56,9 +57,9 @@ describe(BiloStrategy.name, () => {
 
 				const metadataItem = biloMediaQueryDataResponseFactory.build({ id: mediumId });
 
-				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce([metadataItem]);
+				biloMediaClientAdapter.fetchMediumMetadata.mockResolvedValueOnce(metadataItem);
 
-				const expectedMediaMetadataDto = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(metadataItem);
+				const expectedMediaMetadataDto = MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(metadataItem);
 
 				return { mediumId, mediaSource, expectedMediaMetadataDto };
 			};
@@ -76,8 +77,7 @@ describe(BiloStrategy.name, () => {
 			const setup = () => {
 				const mediumId = 'medium-id';
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
-
-				biloMediaClientAdapter.fetchMediaMetadata.mockResolvedValueOnce([]);
+				biloMediaClientAdapter.fetchMediumMetadata.mockRejectedValueOnce(new BiloNotFoundResponseLoggableException());
 
 				return { mediumId, mediaSource };
 			};
@@ -85,9 +85,9 @@ describe(BiloStrategy.name, () => {
 			it('should throw not found exception', async () => {
 				const { mediumId, mediaSource } = setup();
 
-				const result = strategy.getMediumMetadataItem(mediumId, mediaSource);
+				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
 
-				await expect(result).rejects.toThrow(MediumMetadataNotFoundLoggableException);
+				await expect(promise).rejects.toThrow(new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.id));
 			});
 		});
 	});
