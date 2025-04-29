@@ -14,14 +14,14 @@ export class CacheStoreFactory {
 		configService: ConfigService<CacheConfig>,
 		logger: LegacyLogger
 	): Promise<Keyv<KeyvValkey>> {
-		this.logger = logger;
-		this.logger.setContext(KeyvValkey.name);
-		this.config = this.buildValkeyConfig(configService);
+		CacheStoreFactory.logger = logger;
+		CacheStoreFactory.logger.setContext(KeyvValkey.name);
+		CacheStoreFactory.config = CacheStoreFactory.buildValkeyConfig(configService);
 
 		let redisInstance: KeyvValkey | undefined;
 
-		if (this.config.CLUSTER_ENABLED || this.config.URI) {
-			const valkeyInstance = await ValkeyFactory.build(this.config, logger);
+		if (CacheStoreFactory.config.CLUSTER_ENABLED || CacheStoreFactory.config.URI) {
+			const valkeyInstance = await ValkeyFactory.build(CacheStoreFactory.config, logger);
 			redisInstance = new KeyvValkeyAdapter(valkeyInstance, { useRedisSets: false });
 		} else {
 			// If no redis instance is provided, we create a new in-memory store
@@ -30,8 +30,8 @@ export class CacheStoreFactory {
 
 		const store = new Keyv<KeyvValkey>({ store: redisInstance, useKeyPrefix: false });
 
-		store.on('error', (error) => this.logger.error(error));
-		store.on('connect', (msg) => this.logger.log(msg));
+		store.on('error', (error) => CacheStoreFactory.logger.error(error));
+		store.on('connect', (msg) => CacheStoreFactory.logger.log(msg));
 
 		return store;
 	}
