@@ -147,7 +147,9 @@ export class BiloMediaClientAdapter {
 	private async validateResponse(response: BiloMediaQueryResponse): Promise<void> {
 		if (response.status === 400) {
 			throw new BiloBadRequestResponseLoggableException();
-		} else if (response.status === 404) {
+		}
+
+		if (response.status === 404) {
 			throw new BiloNotFoundResponseLoggableException();
 		}
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
