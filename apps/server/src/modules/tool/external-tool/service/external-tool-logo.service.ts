@@ -82,8 +82,7 @@ export class ExternalToolLogoService {
 
 				contentType = header.substring(5);
 			} else {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				contentType = response.headers['content-type'];
+				contentType = response.headers['content-type'] as string | undefined;
 			}
 
 			if (!contentType || !Object.values(ImageMimeType).includes(contentType as ImageMimeType)) {

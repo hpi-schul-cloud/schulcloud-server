@@ -288,9 +288,20 @@ describe(ExternalToolLogoService.name, () => {
 
 		describe('when error occurs on fetching logo because of an wrong file type', () => {
 			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const base64 = 'Y29uc29sZS5sb2coIkhlbGxvIFdvcmxkIik7';
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({
+					logoUrl: `data:image/javascript;base64,${base64}`,
+				});
 
-				httpService.get.mockReturnValue(throwError(() => new ExternalToolLogoWrongFileTypeLoggableException()));
+				httpService.get.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: base64,
+							status: HttpStatus.OK,
+							statusText: 'OK',
+						})
+					)
+				);
 
 				return {
 					externalTool,
@@ -300,9 +311,7 @@ describe(ExternalToolLogoService.name, () => {
 			it('should throw error', async () => {
 				const { externalTool } = setup();
 
-				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
-					new ExternalToolLogoWrongFileTypeLoggableException()
-				);
+				await expect(service.fetchLogo(externalTool)).rejects.toThrow(ExternalToolLogoWrongFileTypeLoggableException);
 			});
 		});
 
@@ -323,24 +332,6 @@ describe(ExternalToolLogoService.name, () => {
 				await expect(service.fetchLogo(externalTool)).rejects.toEqual(
 					new ExternalToolLogoFetchFailedLoggableException(externalTool.logoUrl as string)
 				);
-			});
-		});
-
-		describe('when error occurs on fetching logo because of another error', () => {
-			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory.buildWithId();
-
-				httpService.get.mockReturnValue(throwError(() => new Error('Failed to fetch logo')));
-
-				return {
-					externalTool,
-				};
-			};
-
-			it('should throw error', async () => {
-				const { externalTool } = setup();
-
-				await expect(service.fetchLogo(externalTool)).rejects.toThrow(ExternalToolLogoFetchFailedLoggableException);
 			});
 		});
 	});
