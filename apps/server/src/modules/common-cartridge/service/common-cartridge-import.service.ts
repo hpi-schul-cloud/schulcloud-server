@@ -58,59 +58,63 @@ export class CommonCartridgeImportService {
 		board: CommonCartridgeOrganizationProps,
 		parser: CommonCartridgeFileParser
 	): Promise<void> {
-		const columns = parser
+		const columnsWithResource = parser
 			.getOrganizations()
 			.filter(
-				(organization) => organization.path.startsWith(board.identifier) && organization.pathDepth === DEPTH_COLUMN
+				(organization) =>
+					organization.pathDepth === DEPTH_COLUMN &&
+					organization.path.startsWith(board.identifier) &&
+					organization.isResource
+			);
+
+		const columnsWithoutResource = parser
+			.getOrganizations()
+			.filter(
+				(organization) =>
+					organization.pathDepth === DEPTH_COLUMN &&
+					organization.path.startsWith(board.identifier) &&
+					!organization.isResource
 			);
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
-		for await (const column of columns) {
-			const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		for await (const column of columnsWithResource) {
+			await this.createColumnWithResouce(parser, boardId, column);
+		}
 
-			const cards = parser
-				.getOrganizations()
-				.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
-
-			const cardsWithResource = cards.filter((card) => card.isResource);
-			const cardsWithoutResource = cards.filter((card) => !card.isResource);
-
-			await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: column.title });
-
-			for await (const card of cardsWithResource) {
-				await this.createCardWithElement(parser, columnResponse, card);
-			}
-
-			for await (const card of cardsWithoutResource) {
-				await this.createCard(parser, columnResponse, card);
-			}
+		for await (const column of columnsWithoutResource) {
+			await this.createColumn(parser, boardId, column);
 		}
 	}
 
-	private async createCard(
+	private async createColumnWithResouce(
 		parser: CommonCartridgeFileParser,
-		column: ColumnResponse,
-		cardProps: CommonCartridgeImportOrganizationProps
+		boardId: string,
+		columnProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
-		const organizations = parser.getOrganizations();
-		const cardElements = organizations.filter(
-			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
-		);
+		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
-		const card = await this.columnClient.createCard(column.id, {});
-
-		for await (const cardElement of cardElements) {
-			await this.createCardElement(parser, card.id, cardElement);
-		}
+		await this.createCardElementWithResource(parser, columnResponse, columnProps);
 	}
 
-	private async createCardWithElement(
+	private async createColumn(
 		parser: CommonCartridgeFileParser,
-		column: ColumnResponse,
+		boardId: string,
+		columnProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
+		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
+
+		await this.createCards(parser, columnResponse, columnProps);
+	}
+
+	private async createCardElementWithResource(
+		parser: CommonCartridgeFileParser,
+		columnResponse: ColumnResponse,
 		cardProps: CommonCartridgeImportOrganizationProps
 	): Promise<void> {
-		const card = await this.columnClient.createCard(column.id, {});
+		const card = await this.columnClient.createCard(columnResponse.id, {});
 
 		await this.cardClient.updateCardTitle(card.id, {
 			title: cardProps.title,
@@ -118,6 +122,72 @@ export class CommonCartridgeImportService {
 
 		await this.createCardElement(parser, card.id, cardProps);
 	}
+
+	private async createCards(
+		parser: CommonCartridgeFileParser,
+		columnResponse: ColumnResponse,
+		column: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const cards = parser
+			.getOrganizations()
+			.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
+
+		for await (const card of cards) {
+			await this.createCard(parser, columnResponse, card);
+		}
+
+		// const elementsOfAColumn = parser
+		// 	.getOrganizations()
+		// 	.filter(
+		// 		(organization) =>
+		// 			organization.pathDepth === DEPTH_CARD_ELEMENTS &&
+		// 			cards.some((card) => organization.path.startsWith(card.path))
+		// 	);
+
+		// console.log('elementsOfAColumn', elementsOfAColumn);
+		// console.log('cardsOfAColumn', cards);
+
+		// const cardsWithResource = elementsOfAColumn.filter((card) => card.isResource);
+		// const cardsWithoutResource = elementsOfAColumn.filter((card) => !card.isResource);
+
+		// for await (const card of cardsWithResource) {
+		// 	await this.createCardWithElement(parser, columnResponse, card);
+		// }
+	}
+
+	private async createCard(
+		parser: CommonCartridgeFileParser,
+		column: ColumnResponse,
+		cardProps: CommonCartridgeImportOrganizationProps
+	): Promise<void> {
+		const card = await this.columnClient.createCard(column.id, {});
+		await this.cardClient.updateCardTitle(card.id, {
+			title: cardProps.title,
+		});
+
+		const organizations = parser.getOrganizations();
+		const cardElements = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
+		);
+
+		for await (const cardElement of cardElements) {
+			await this.createCardElement(parser, card.id, cardElement);
+		}
+	}
+
+	// private async createCardWithElement(
+	// 	parser: CommonCartridgeFileParser,
+	// 	column: ColumnResponse,
+	// 	cardProps: CommonCartridgeImportOrganizationProps
+	// ): Promise<void> {
+	// 	const card = await this.columnClient.createCard(column.id, {});
+
+	// 	await this.cardClient.updateCardTitle(card.id, {
+	// 		title: cardProps.title,
+	// 	});
+
+	// 	await this.createCardElement(parser, card.id, cardProps);
+	// }
 
 	private async createCardElement(
 		parser: CommonCartridgeFileParser,
