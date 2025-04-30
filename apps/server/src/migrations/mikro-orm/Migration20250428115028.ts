@@ -17,6 +17,7 @@ export class Migration20250428115028 extends Migration {
 			logoBase64: { $exists: true },
 		});
 
+		let count = 0;
 		for await (const tool of cursor) {
 			const signature: string | undefined = Object.keys(base64ImageTypeSignatures).find((signature: string) =>
 				tool.logoBase64.startsWith(signature)
@@ -31,7 +32,14 @@ export class Migration20250428115028 extends Migration {
 					$set: { logoBase64: dataUri },
 				}
 			);
+
+			count += 1;
+			if (count % 10 === 0) {
+				console.info(`Processed ${count} external tools.`);
+			}
 		}
+
+		console.info(`${count} external tool logos updated.`);
 	}
 
 	public async down(): Promise<void> {
@@ -39,6 +47,7 @@ export class Migration20250428115028 extends Migration {
 			logoBase64: { $exists: true },
 		});
 
+		let count = 0;
 		for await (const tool of cursor) {
 			if (!tool.logoBase64.startsWith('data:')) {
 				continue;
@@ -52,6 +61,13 @@ export class Migration20250428115028 extends Migration {
 					$set: { logoBase64: base64 },
 				}
 			);
+
+			count += 1;
+			if (count % 10 === 0) {
+				console.info(`Processed ${count} external tools.`);
+			}
 		}
+
+		console.info(`${count} external tool logos reverted.`);
 	}
 }
