@@ -21,12 +21,12 @@ import { validate, ValidationError } from 'class-validator';
 import { lastValueFrom } from 'rxjs';
 import { MediaQueryBadResponseReport } from './interface';
 import {
+	BiloBadRequestResponseLoggableException,
 	BiloMediaQueryBadResponseLoggable,
 	BiloMediaQueryBadResponseLoggableException,
 	BiloMediaQueryUnprocessableResponseLoggableException,
+	BiloNotFoundResponseLoggableException,
 } from './loggable';
-import { BiloBadRequestResponseLoggableException } from './loggable/bilo-bad-request-response.loggable-exception';
-import { BiloNotFoundResponseLoggableException } from './loggable/bilo-not-found-response.loggable-exception';
 import { BiloMediaQueryBodyParams } from './request';
 import { BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
 
