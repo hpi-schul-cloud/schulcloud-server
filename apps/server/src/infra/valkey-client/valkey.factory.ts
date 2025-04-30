@@ -1,14 +1,22 @@
-import { LegacyLogger } from '@core/logger';
+import { Logger } from '@core/logger';
 import * as dns from 'dns';
 import { Redis } from 'iovalkey';
 import * as util from 'util';
 import { ValkeyConfig } from './valkey.config';
+import { DomainErrorHandler } from '@core/error';
+import { ConntectedLoggable } from './conntected.loggable';
+import { SentinalHost } from './sentinal-host.type';
+import { DiscoveredSentinalHostsLoggable } from './discover-sentinal.loggable';
 
 export class ValkeyFactory {
-	public static async build(config: ValkeyConfig, logger: LegacyLogger): Promise<Redis> {
+	public static async build(
+		config: ValkeyConfig,
+		logger: Logger,
+		domainErrorHandler: DomainErrorHandler
+	): Promise<Redis> {
 		let redisInstance: Redis;
 
-		if (config.CLUSTER_ENABLED) {
+		if (config.CLUSTER_ENABLED === true) {
 			redisInstance = await ValkeyFactory.createValkeySentinelInstance(config, logger);
 		} else if (config.URI) {
 			redisInstance = ValkeyFactory.createNewValkeyInstance(config);
@@ -16,61 +24,64 @@ export class ValkeyFactory {
 			throw new Error('No Redis URI provided and Redis cluster is not enabled.');
 		}
 
-		redisInstance.on('error', (error) => logger.error(error));
-		redisInstance.on('connect', (msg) => logger.log(msg));
+		redisInstance.on('error', (error) => domainErrorHandler.exec(error));
+		redisInstance.on('connect', (msg) => logger.info(new ConntectedLoggable(msg)));
 
 		return redisInstance;
 	}
 
 	private static createNewValkeyInstance(config: ValkeyConfig): Redis {
 		const redisUri = ValkeyFactory.checkRedisConfig(config);
-		const redisInstance = new Redis(redisUri);
-
-		return redisInstance;
-	}
-
-	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: LegacyLogger): Promise<Redis> {
-		const { sentinelName, sentinelPassword } = ValkeyFactory.checkSentinelConfig(config);
-		const sentinels = await ValkeyFactory.discoverSentinelHosts(config);
-
-		logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
-
-		const redisInstance = new Redis({
-			sentinels,
-			sentinelPassword,
-			password: sentinelPassword,
-			name: sentinelName,
-		});
-
-		return redisInstance;
-	}
-
-	private static async discoverSentinelHosts(config: ValkeyConfig): Promise<{ host: string; port: number }[]> {
-		const serviceName = config.SENTINEL_SERVICE_NAME;
-		if (!serviceName) {
-			throw new Error('SENTINEL_SERVICE_NAME is required for service discovery');
-		}
-
-		const resolveSrv = util.promisify(dns.resolveSrv);
 		try {
-			const records = await resolveSrv(serviceName);
+			const redisInstance = new Redis(redisUri);
 
-			const hosts = records.map((record) => {
-				return {
-					host: record.name,
-					port: record.port,
-				};
+			return redisInstance;
+		} catch (err) {
+			throw new Error('Can not create valky instance.', { cause: err });
+		}
+	}
+
+	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: Logger): Promise<Redis> {
+		const { sentinelName, sentinelPassword, sentinalServiceName } = ValkeyFactory.checkSentinelConfig(config);
+		try {
+			const sentinels = await ValkeyFactory.discoverSentinelHosts(sentinalServiceName);
+			logger.info(new DiscoveredSentinalHostsLoggable(sentinels));
+
+			const redisInstance = new Redis({
+				sentinels,
+				sentinelPassword,
+				password: sentinelPassword,
+				name: sentinelName,
 			});
 
-			return hosts;
+			return redisInstance;
 		} catch (err) {
-			throw new Error('Error during service discovery:', { cause: err });
+			throw new Error('Can not create valky "sentinal" instance.', { cause: err });
 		}
 	}
 
-	private static checkSentinelConfig(config: ValkeyConfig): { sentinelName: string; sentinelPassword: string } {
+	private static async discoverSentinelHosts(sentinalServiceName: string): Promise<SentinalHost[]> {
+		const resolveSrv = util.promisify(dns.resolveSrv);
+		const records = await resolveSrv(sentinalServiceName);
+
+		const hosts = records.map((record) => {
+			return {
+				host: record.name,
+				port: record.port,
+			};
+		});
+
+		return hosts;
+	}
+
+	private static checkSentinelConfig(config: ValkeyConfig): {
+		sentinelName: string;
+		sentinelPassword: string;
+		sentinalServiceName: string;
+	} {
 		const sentinelName = config.SENTINEL_NAME;
 		const sentinelPassword = config.SENTINEL_PASSWORD;
+		const sentinalServiceName = config.SENTINEL_SERVICE_NAME;
 
 		if (!sentinelName) {
 			throw new Error('SENTINEL_NAME is required for creating a Valkey Sentinel instance');
@@ -80,7 +91,11 @@ export class ValkeyFactory {
 			throw new Error('SENTINEL_PASSWORD is required for creating a Valkey Sentinel instance');
 		}
 
-		return { sentinelName, sentinelPassword };
+		if (!sentinalServiceName) {
+			throw new Error('SENTINEL_SERVICE_NAME is required for service discovery');
+		}
+
+		return { sentinelName, sentinelPassword, sentinalServiceName };
 	}
 
 	private static checkRedisConfig(config: ValkeyConfig): string {
