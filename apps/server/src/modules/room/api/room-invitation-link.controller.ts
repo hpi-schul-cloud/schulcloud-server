@@ -24,6 +24,7 @@ import { RoomInvitationLinkError } from './dto/response/room-invitation-link.err
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
+import { RoomIdResponse } from './dto/response/room-id.response';
 
 @ApiTags('Room Invitation Link')
 @JwtAuthentication()
@@ -101,7 +102,7 @@ export class RoomInvitationLinkController {
 
 	@Post(':roomInvitationLinkId')
 	@ApiOperation({ summary: 'Use a room invitation link to join a room' })
-	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({ status: HttpStatus.OK, type: RoomIdResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -110,9 +111,9 @@ export class RoomInvitationLinkController {
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomInvitationLinkUrlParams
-	): Promise<string> {
+	): Promise<RoomIdResponse> {
 		const roomId = await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
 
-		return roomId;
+		return { id: roomId };
 	}
 }
