@@ -294,9 +294,9 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when user is already member', () => {
 			describe.each([
-				[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[UserRole.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
