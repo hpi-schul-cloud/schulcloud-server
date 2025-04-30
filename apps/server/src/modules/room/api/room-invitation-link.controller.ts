@@ -11,6 +11,7 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -21,6 +22,7 @@ import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-in
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
+import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
 
 @ApiTags('Room Invitation Link')
 @JwtAuthentication()
@@ -77,7 +79,7 @@ export class RoomInvitationLinkController {
 		return response;
 	}
 
-	@Delete(':roomInvitationLinkId')
+	@Delete()
 	@ApiOperation({ summary: 'Delete a room invitation link' })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Deletion successful' })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
@@ -86,11 +88,14 @@ export class RoomInvitationLinkController {
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@HttpCode(204)
-	public async deleteLink(
+	public async deleteLinks(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomInvitationLinkUrlParams
+		@Query() queryParams: RoomInvitationLinksQueryParams
 	): Promise<void> {
-		await this.roomInvitationLinkUc.deleteLink(currentUser.userId, urlParams.roomInvitationLinkId);
+		const roomInvitationLinkIds = Array.isArray(queryParams.roomInvitationLinkIds)
+			? queryParams.roomInvitationLinkIds
+			: [queryParams.roomInvitationLinkIds];
+		await this.roomInvitationLinkUc.deleteLinks(currentUser.userId, roomInvitationLinkIds);
 	}
 
 	@Post(':roomInvitationLinkId')

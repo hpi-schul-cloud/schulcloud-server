@@ -44,11 +44,11 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('DELETE /room-invitation-links/:id', () => {
+	describe('DELETE /room-invitation-links', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const someId = new ObjectId().toHexString();
-				const response = await testApiClient.delete(someId);
+				const response = await testApiClient.delete().query({ roomInvitationLinkIds: [someId] });
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -69,7 +69,7 @@ describe('Room Controller (API)', () => {
 			it('should return a 403 error', async () => {
 				const { loggedInClient } = await setup();
 				const someId = new ObjectId().toHexString();
-				const response = await loggedInClient.delete(someId);
+				const response = await loggedInClient.delete().query({ roomInvitationLinkIds: [someId] });
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
@@ -87,7 +87,9 @@ describe('Room Controller (API)', () => {
 
 			it('should return a 400 error', async () => {
 				const { loggedInClient } = await setup();
-				const response = await loggedInClient.delete('42');
+				const response = await loggedInClient.delete('').query({
+					roomInvitationLinkIds: ['invalid-mongo-id'],
+				});
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
@@ -141,9 +143,33 @@ describe('Room Controller (API)', () => {
 					const { teacherOwnerAccount, roomInvitationLink } = await setup();
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
 
-					const response = await loggedInClient.delete(roomInvitationLink.id);
+					const roomInvitationLinkIds = [roomInvitationLink.id];
+					const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
+
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
 					await expect(em.findOneOrFail(RoomEntity, roomInvitationLink.id)).rejects.toThrow(NotFoundException);
+				});
+			});
+
+			describe('when multiple roomInvitationLinks exist', () => {
+				it('should delete the roomInvitationLink', async () => {
+					const { teacherOwnerAccount, roomInvitationLink, room } = await setup();
+					const additionalLinks = roomInvitationLinkEntityFactory.buildList(3, {
+						roomId: room.id,
+					});
+					await em.persistAndFlush(additionalLinks);
+					em.clear();
+
+					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+					const roomInvitationLinkIds = additionalLinks.map((link) => link.id);
+
+					const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
+
+					expect(response.status).toBe(HttpStatus.NO_CONTENT);
+					await expect(em.findOneOrFail(RoomEntity, roomInvitationLinkIds[0])).rejects.toThrow(NotFoundException);
+					await expect(em.findOneOrFail(RoomEntity, roomInvitationLinkIds[1])).rejects.toThrow(NotFoundException);
+					await expect(em.findOneOrFail(RoomEntity, roomInvitationLinkIds[2])).rejects.toThrow(NotFoundException);
+					expect(em.findOneOrFail(RoomEntity, roomInvitationLink.id)).toBeDefined();
 				});
 			});
 
@@ -151,9 +177,9 @@ describe('Room Controller (API)', () => {
 				it('should return a 404 error', async () => {
 					const { teacherOwnerAccount } = await setup();
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
-					const someId = new ObjectId().toHexString();
+					const someId = '6811e5b670344a0164cb67a9'; //new ObjectId().toHexString();
 
-					const response = await loggedInClient.delete(someId);
+					const response = await loggedInClient.delete().query({ roomInvitationLinkIds: [someId] });
 
 					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
@@ -177,7 +203,9 @@ describe('Room Controller (API)', () => {
 				it('should return 403', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup();
 
-					const response = await loggedInClient.delete(roomInvitationLink.id);
+					const response = await loggedInClient.delete().query({
+						roomInvitationLinkIds: [roomInvitationLink.id],
+					});
 
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);
 				});
@@ -188,7 +216,7 @@ describe('Room Controller (API)', () => {
 					const { loggedInClient } = await setup();
 					const someId = new ObjectId().toHexString();
 
-					const response = await loggedInClient.delete(someId);
+					const response = await loggedInClient.delete().query({ roomInvitationLinkIds: [someId] });
 
 					expect(response.status).toBe(HttpStatus.NOT_FOUND);
 				});
