@@ -255,8 +255,8 @@ describe('MediumMetadataController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 				expect(response.body).toEqual<ErrorResponse>({
-					type: 'BILO_NOT_FOUND_RESPONSE',
-					title: 'Bilo Not Found Response',
+					type: 'MEDIUM_METADATA_NOT_FOUND',
+					title: 'Medium Metadata Not Found',
 					message: 'Not Found',
 					code: 404,
 				});
@@ -301,8 +301,8 @@ describe('MediumMetadataController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual<ErrorResponse>({
-					type: 'BILO_BAD_REQUEST_RESPONSE',
-					title: 'Bilo Bad Request Response',
+					type: 'MEDIUM_BAD_REQUEST',
+					title: 'Medium Bad Request',
 					message: 'Bad Request',
 					code: 400,
 				});
