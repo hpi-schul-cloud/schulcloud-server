@@ -1,2 +1,2 @@
-export * from './valkey.config';
-export * from './valkey.factory';
+export { ValkeyConfig } from './valkey.config';
+export { ValkeyFactory } from './valkey.factory';

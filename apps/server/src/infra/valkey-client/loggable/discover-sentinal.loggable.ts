@@ -1,6 +1,6 @@
 import { Loggable } from '@core/logger/interfaces';
 import { LogMessage } from '@core/logger/types';
-import { SentinalHost } from './sentinal-host.type';
+import { SentinalHost } from '../types';
 
 export class DiscoveredSentinalHostsLoggable implements Loggable {
 	constructor(private readonly data: SentinalHost[]) {}

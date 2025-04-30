@@ -4,9 +4,8 @@ import { Redis } from 'iovalkey';
 import * as util from 'util';
 import { ValkeyConfig } from './valkey.config';
 import { DomainErrorHandler } from '@core/error';
-import { ConntectedLoggable } from './conntected.loggable';
-import { SentinalHost } from './sentinal-host.type';
-import { DiscoveredSentinalHostsLoggable } from './discover-sentinal.loggable';
+import { ConntectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
+import { SentinalHost } from './types';
 
 export class ValkeyFactory {
 	public static async build(
