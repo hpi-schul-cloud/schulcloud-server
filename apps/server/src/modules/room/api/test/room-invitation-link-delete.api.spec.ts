@@ -13,7 +13,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RoomEntity } from '../../repo';
+import { RoomInvitationLinkEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 
 describe('Room Controller (API)', () => {
@@ -35,9 +35,12 @@ describe('Room Controller (API)', () => {
 		config = serverConfig();
 	});
 
-	beforeEach(async () => {
-		await cleanupCollections(em);
+	beforeEach(() => {
 		config.FEATURE_ROOM_INVITATION_LINKS_ENABLED = true;
+	});
+
+	afterEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
@@ -147,7 +150,9 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
 
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
-					await expect(em.findOneOrFail(RoomEntity, roomInvitationLink.id)).rejects.toThrow(NotFoundException);
+					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).rejects.toThrow(
+						NotFoundException
+					);
 				});
 			});
 
@@ -166,10 +171,16 @@ describe('Room Controller (API)', () => {
 					const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
 
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
-					await expect(em.findOneOrFail(RoomEntity, roomInvitationLinkIds[0])).rejects.toThrow(NotFoundException);
-					await expect(em.findOneOrFail(RoomEntity, roomInvitationLinkIds[1])).rejects.toThrow(NotFoundException);
-					await expect(em.findOneOrFail(RoomEntity, roomInvitationLinkIds[2])).rejects.toThrow(NotFoundException);
-					expect(em.findOneOrFail(RoomEntity, roomInvitationLink.id)).toBeDefined();
+					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[0])).rejects.toThrow(
+						NotFoundException
+					);
+					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[1])).rejects.toThrow(
+						NotFoundException
+					);
+					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[2])).rejects.toThrow(
+						NotFoundException
+					);
+					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toBeDefined();
 				});
 			});
 
@@ -177,7 +188,7 @@ describe('Room Controller (API)', () => {
 				it('should return a 404 error', async () => {
 					const { teacherOwnerAccount } = await setup();
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
-					const someId = '6811e5b670344a0164cb67a9'; //new ObjectId().toHexString();
+					const someId = new ObjectId().toHexString();
 
 					const response = await loggedInClient.delete().query({ roomInvitationLinkIds: [someId] });
 
