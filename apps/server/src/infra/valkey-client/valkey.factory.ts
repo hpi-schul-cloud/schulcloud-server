@@ -1,6 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import * as dns from 'dns';
-import Redis from 'iovalkey';
+import { Redis } from 'iovalkey';
 import * as util from 'util';
 import { ValkeyConfig } from './valkey.config';
 
@@ -31,7 +31,7 @@ export class ValkeyFactory {
 
 	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: LegacyLogger): Promise<Redis> {
 		const { sentinelName, sentinelPassword } = ValkeyFactory.checkSentinelConfig(config);
-		const sentinels = await ValkeyFactory.discoverSentinelHosts(config, logger);
+		const sentinels = await ValkeyFactory.discoverSentinelHosts(config);
 
 		logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
 
