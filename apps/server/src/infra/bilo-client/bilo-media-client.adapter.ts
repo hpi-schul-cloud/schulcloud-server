@@ -52,8 +52,11 @@ export class BiloMediaClientAdapter {
 		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource.oauthConfig);
 
 		const axiosResponse = await this.sendPostRequest<BiloMediaQueryResponse[]>(url, body, token.accessToken);
-
-		await this.validateResponse(axiosResponse.data[0]);
+		if (axiosResponse.data.length) {
+			await this.validateResponse(axiosResponse.data[0]);
+		} else {
+			throw new BiloMediaQueryUnprocessableResponseLoggableException();
+		}
 
 		const metadata: BiloMediaQueryDataResponse = axiosResponse.data[0].data;
 		return metadata;
@@ -61,8 +64,7 @@ export class BiloMediaClientAdapter {
 
 	public async fetchMediaMetadata(
 		mediumIds: string[],
-		biloMediaSource: MediaSource,
-		shouldThrowOnAnyBadResponse: boolean
+		biloMediaSource: MediaSource
 	): Promise<BiloMediaQueryDataResponse[]> {
 		if (!biloMediaSource.oauthConfig) {
 			throw new MediaSourceOauthConfigNotFoundLoggableException(
@@ -79,10 +81,7 @@ export class BiloMediaClientAdapter {
 
 		const axiosResponse = await this.sendPostRequest<BiloMediaQueryResponse[]>(url, body, token.accessToken);
 
-		const validResponses = await this.validateAndFilterMediaQueryResponses(
-			axiosResponse.data,
-			shouldThrowOnAnyBadResponse
-		);
+		const validResponses = await this.validateAndFilterMediaQueryResponses(axiosResponse.data);
 		const metadataItems: BiloMediaQueryDataResponse[] = validResponses.map(
 			(response: BiloMediaQueryResponse) => response.data
 		);
@@ -106,8 +105,7 @@ export class BiloMediaClientAdapter {
 	}
 
 	private async validateAndFilterMediaQueryResponses(
-		responses: BiloMediaQueryResponse[],
-		shouldThrowOnAnyBadResponse: boolean
+		responses: BiloMediaQueryResponse[]
 	): Promise<BiloMediaQueryResponse[]> {
 		if (!Array.isArray(responses)) {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
@@ -134,11 +132,7 @@ export class BiloMediaClientAdapter {
 		await Promise.all(validatePromises);
 
 		if (badResponseReports.length) {
-			if (shouldThrowOnAnyBadResponse) {
-				throw new BiloMediaQueryBadResponseLoggableException(badResponseReports);
-			} else {
-				this.logger.debug(new BiloMediaQueryBadResponseLoggable(badResponseReports));
-			}
+			this.logger.debug(new BiloMediaQueryBadResponseLoggable(badResponseReports));
 		}
 
 		return validResponses;
@@ -152,9 +146,12 @@ export class BiloMediaClientAdapter {
 		if (response.status === 404) {
 			throw new BiloNotFoundResponseLoggableException();
 		}
+
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
 		if (validationErrors.length > 0) {
-			throw new BiloBadRequestResponseLoggableException();
+			throw new BiloMediaQueryBadResponseLoggableException([
+				{ mediumId: response.query.id, status: response.status, validationErrors },
+			]);
 		}
 	}
 

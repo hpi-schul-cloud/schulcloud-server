@@ -1,14 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BiloMediaClientAdapter } from '@infra/bilo-client';
+import {
+	BiloBadRequestResponseLoggableException,
+	BiloNotFoundResponseLoggableException,
+} from '@infra/bilo-client/loggable';
 import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BiloNotFoundResponseLoggableException } from '../../../infra/bilo-client/loggable';
 import {
 	MediumMetadataNotFoundLoggableException,
 	MediumMetadataStrategyNotImplementedLoggableException,
 } from '../loggable';
+import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { BiloStrategy } from './bilo.strategy';
 
@@ -87,7 +91,25 @@ describe(BiloStrategy.name, () => {
 
 				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
 
-				await expect(promise).rejects.toThrow(new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.id));
+				await expect(promise).rejects.toThrow(MediumMetadataNotFoundLoggableException);
+			});
+		});
+
+		describe('when media provider returns bad request response', () => {
+			const setup = () => {
+				const mediumId = 'medium-id';
+				const mediaSource = mediaSourceFactory.withBildungslogin().build();
+				biloMediaClientAdapter.fetchMediumMetadata.mockRejectedValueOnce(new BiloBadRequestResponseLoggableException());
+
+				return { mediumId, mediaSource };
+			};
+
+			it('should throw bad request exception', async () => {
+				const { mediumId, mediaSource } = setup();
+
+				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
+
+				await expect(promise).rejects.toThrow(MediumBadRequestLoggableException);
 			});
 		});
 	});
