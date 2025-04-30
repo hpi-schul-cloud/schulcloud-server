@@ -92,14 +92,20 @@ export class RoomInvitationLinkUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
 
-		await this.checkValidity(roomInvitationLink, user);
+		this.checkValidity(roomInvitationLink, user);
 
-		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
-		await this.roomMembershipService.changeRoleOfRoomMembers(
-			roomInvitationLink.roomId,
-			[userId],
-			roomInvitationLink.startingRole
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
+			roomInvitationLink.roomId
 		);
+		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
+		if (!isAlreadyMember) {
+			await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
+			await this.roomMembershipService.changeRoleOfRoomMembers(
+				roomInvitationLink.roomId,
+				[userId],
+				roomInvitationLink.startingRole
+			);
+		}
 
 		return roomInvitationLink.roomId;
 	}
@@ -110,7 +116,7 @@ export class RoomInvitationLinkUc {
 		}
 	}
 
-	private async checkValidity(roomInvitationLink: RoomInvitationLink, user: User): Promise<void> {
+	private checkValidity(roomInvitationLink: RoomInvitationLink, user: User): void {
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
@@ -125,13 +131,6 @@ export class RoomInvitationLinkUc {
 		}
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
 			throw new ForbiddenException(RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL);
-		}
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
-			roomInvitationLink.roomId
-		);
-		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
-		if (isAlreadyMember) {
-			throw new BadRequestException(RoomInvitationLinkValidationError.ALREADY_MEMBER);
 		}
 	}
 
