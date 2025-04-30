@@ -22,7 +22,7 @@ const createName = (year) => {
 	return `${year}/${String(year + 1).substring(2, 4)}`;
 };
 
-describe.only('school maintenance mode', () => {
+describe('school maintenance mode', () => {
 	let app;
 	let maintenanceService;
 
