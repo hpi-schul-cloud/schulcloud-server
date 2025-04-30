@@ -7,7 +7,7 @@
 
 Based on [NestJS](https://docs.nestjs.com/)
 
-> Find the [documentation](https://documentation.dbildungscloud.dev/docs/schulcloud-server/architecture) of this repository at GitHub pages. It contains information about
+> Find the [documentation](https://documentation.dbildungscloud.dev/docs/intro) of this repository at GitHub pages. It contains information about
 
 - api design
 - code guidelines
