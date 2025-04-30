@@ -1,9 +1,9 @@
 import { LegacyLogger } from '@core/logger';
+import { StorageLocation } from '@infra/files-storage-client';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';

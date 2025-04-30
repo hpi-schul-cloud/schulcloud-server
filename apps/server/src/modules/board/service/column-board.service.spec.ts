@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
