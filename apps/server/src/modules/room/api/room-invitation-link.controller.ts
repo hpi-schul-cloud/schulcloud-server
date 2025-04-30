@@ -14,15 +14,16 @@ import {
 	Query,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
+import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
 import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
+import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
-import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
 
 @ApiTags('Room Invitation Link')
 @JwtAuthentication()
@@ -105,6 +106,7 @@ export class RoomInvitationLinkController {
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@ApiExtraModels(RoomInvitationLinkError)
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomInvitationLinkUrlParams
