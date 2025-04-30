@@ -2,7 +2,7 @@ import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import * as dns from 'dns';
 import * as util from 'util';
-import { ConntectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
+import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
 import { SentinalHost } from './types';
 import { ValkeyClient } from './valkey.class';
 import { ValkeyConfig } from './valkey.config';
@@ -14,9 +14,8 @@ export class ValkeyFactory {
 		domainErrorHandler: DomainErrorHandler
 	): Promise<ValkeyClient> {
 		let redisInstance: ValkeyClient;
-		console.log('ValkeyFactory.build', config);
 
-		if (config.CLUSTER_ENABLED === true) {
+		if (config.CLUSTER_ENABLED) {
 			redisInstance = await ValkeyFactory.createValkeySentinelInstance(config, logger);
 		} else if (config.URI) {
 			redisInstance = ValkeyFactory.createNewValkeyInstance(config);
@@ -25,7 +24,7 @@ export class ValkeyFactory {
 		}
 
 		redisInstance.on('error', (error) => domainErrorHandler.exec(error));
-		redisInstance.on('connect', (msg) => logger.info(new ConntectedLoggable(msg)));
+		redisInstance.on('connect', (msg: unknown) => logger.info(new ConnectedLoggable(msg)));
 
 		return redisInstance;
 	}

@@ -1,7 +1,7 @@
 import { Loggable } from '@core/logger/interfaces';
 import { LogMessage } from '@core/logger/types';
 
-export class ConntectedLoggable implements Loggable {
+export class ConnectedLoggable implements Loggable {
 	constructor(private readonly message: unknown) {}
 
 	public getLogMessage(): LogMessage {
