@@ -1,43 +1,28 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { KeyvValkeyAdapter } from '@infra/cache';
+import { VALKEY_CLIENT, ValkeyClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Cache } from 'cache-manager';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 
 describe(JwtWhitelistAdapter.name, () => {
 	let module: TestingModule;
 	let jwtWhitelistAdapter: JwtWhitelistAdapter;
 
-	let cacheManager: DeepMocked<Cache>;
-	let store: DeepMocked<KeyvValkeyAdapter>;
+	let valkeyClient: DeepMocked<ValkeyClient>;
 
 	beforeAll(async () => {
-		store = createMock<KeyvValkeyAdapter>({
-			keys: jest.fn().mockResolvedValue([]),
-		});
-	
 		module = await Test.createTestingModule({
 			providers: [
 				JwtWhitelistAdapter,
 				{
-					provide: CACHE_MANAGER,
-					useValue: createMock<Cache>({
-						set: jest.fn(),
-						del: jest.fn(),
-						stores: [
-							{
-								store,
-							},
-						],
-					}) as unknown as Cache,
+					provide: VALKEY_CLIENT,
+					useValue: createMock<ValkeyClient>(),
 				},
 			],
 		}).compile();
 
-		cacheManager = module.get(CACHE_MANAGER);
+		valkeyClient = module.get(VALKEY_CLIENT);
 		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 	});
 
@@ -68,16 +53,17 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await jwtWhitelistAdapter.addToWhitelist(accountId, jti);
 
-				expect(cacheManager.set).toHaveBeenCalledWith(
+				expect(valkeyClient.set).toHaveBeenCalledWith(
 					`jwt:${accountId}:${jti}`,
-					{
+					JSON.stringify({
 						IP: 'NONE',
 						Browser: 'NONE',
 						Device: 'NONE',
 						privateDevice: false,
-						expirationInSeconds: expirationInSeconds * 1000,
-					},
-					expirationInSeconds * 1000
+						expirationInSeconds: expirationInSeconds,
+					}),
+					'EX',
+					expirationInSeconds
 				);
 			});
 		});
@@ -100,7 +86,7 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await jwtWhitelistAdapter.removeFromWhitelist(accountId, jti);
 
-				expect(cacheManager.del).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
+				expect(valkeyClient.del).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
 			});
 		});
 
@@ -109,6 +95,8 @@ describe(JwtWhitelistAdapter.name, () => {
 				const accountId = new ObjectId().toHexString();
 				const jwtKey1 = `jwt:${accountId}:jti1`;
 				const jwtKey2 = `jwt:${accountId}:jti2`;
+
+				valkeyClient.keys.mockResolvedValueOnce([jwtKey1, jwtKey2]);
 
 				return {
 					accountId,
@@ -122,8 +110,8 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await jwtWhitelistAdapter.removeFromWhitelist(accountId);
 
-				expect(cacheManager.del).toHaveBeenNthCalledWith(1, jwtKey1);
-				expect(cacheManager.del).toHaveBeenNthCalledWith(2, jwtKey2);
+				expect(valkeyClient.del).toHaveBeenNthCalledWith(1, jwtKey1);
+				expect(valkeyClient.del).toHaveBeenNthCalledWith(2, jwtKey2);
 			});
 		});
 	});
