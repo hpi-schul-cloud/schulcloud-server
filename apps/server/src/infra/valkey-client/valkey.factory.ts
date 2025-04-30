@@ -30,8 +30,10 @@ export class ValkeyFactory {
 	}
 
 	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: LegacyLogger): Promise<Redis> {
-		const { sentinelName, sentinelPassword } = ValkeyFactory.checkSentinalConfig(config);
+		const { sentinelName, sentinelPassword } = ValkeyFactory.checkSentinelConfig(config);
 		const sentinels = await ValkeyFactory.discoverSentinelHosts(config, logger);
+
+		logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
 
 		const redisInstance = new Redis({
 			sentinels,
@@ -43,10 +45,7 @@ export class ValkeyFactory {
 		return redisInstance;
 	}
 
-	private static async discoverSentinelHosts(
-		config: ValkeyConfig,
-		logger: LegacyLogger
-	): Promise<{ host: string; port: number }[]> {
+	private static async discoverSentinelHosts(config: ValkeyConfig): Promise<{ host: string; port: number }[]> {
 		const serviceName = config.SENTINEL_SERVICE_NAME;
 		if (!serviceName) {
 			throw new Error('SENTINEL_SERVICE_NAME is required for service discovery');
@@ -63,18 +62,13 @@ export class ValkeyFactory {
 				};
 			});
 
-			logger.log(`Discovered sentinels: ${JSON.stringify(hosts)}`);
-
 			return hosts;
 		} catch (err) {
-			// TODO: Log or throw but not both, but i think the try catch must place in createValkeySentinelInstance, similar the try catch in createNewValkeyInstance is missed,
-			// or only one try catch in build
-			logger.log('Error during service discovery:');
-			throw err;
+			throw new Error('Error during service discovery:', { cause: err });
 		}
 	}
 
-	private static checkSentinalConfig(config: ValkeyConfig): { sentinelName: string; sentinelPassword: string } {
+	private static checkSentinelConfig(config: ValkeyConfig): { sentinelName: string; sentinelPassword: string } {
 		const sentinelName = config.SENTINEL_NAME;
 		const sentinelPassword = config.SENTINEL_PASSWORD;
 
