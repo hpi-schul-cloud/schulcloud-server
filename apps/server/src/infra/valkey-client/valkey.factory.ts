@@ -5,55 +5,33 @@ import * as util from 'util';
 import { ValkeyConfig } from './valkey.config';
 
 export class ValkeyFactory {
-	private static logger: LegacyLogger;
-	private static config: ValkeyConfig;
-
 	public static async build(config: ValkeyConfig, logger: LegacyLogger): Promise<Redis> {
-		ValkeyFactory.config = config;
-		ValkeyFactory.logger = logger;
-		ValkeyFactory.logger.setContext(Redis.name);
-
 		let redisInstance: Redis;
 
-		if (ValkeyFactory.config.CLUSTER_ENABLED) {
-			redisInstance = await ValkeyFactory.createValkeySentinelInstance();
-		} else if (ValkeyFactory.config.URI) {
-			redisInstance = ValkeyFactory.createNewValkeyInstance();
+		if (config.CLUSTER_ENABLED) {
+			redisInstance = await ValkeyFactory.createValkeySentinelInstance(config, logger);
+		} else if (config.URI) {
+			redisInstance = ValkeyFactory.createNewValkeyInstance(config);
 		} else {
 			throw new Error('No Redis URI provided and Redis cluster is not enabled.');
 		}
 
-		redisInstance.on('error', (error) => ValkeyFactory.logger.error(error));
-		redisInstance.on('connect', (msg) => ValkeyFactory.logger.log(msg));
+		redisInstance.on('error', (error) => logger.error(error));
+		redisInstance.on('connect', (msg) => logger.log(msg));
 
 		return redisInstance;
 	}
 
-	private static createNewValkeyInstance(): Redis {
-		const redisUri = ValkeyFactory.config.URI;
-		if (!redisUri) {
-			throw new Error('URI is required for creating a new Valkey instance');
-		}
-
+	private static createNewValkeyInstance(config: ValkeyConfig): Redis {
+		const redisUri = ValkeyFactory.checkRedisConfig(config);
 		const redisInstance = new Redis(redisUri);
 
 		return redisInstance;
 	}
 
-	private static async createValkeySentinelInstance(): Promise<Redis> {
-		const sentinelName = ValkeyFactory.config.SENTINEL_NAME;
-		const sentinelPassword = ValkeyFactory.config.SENTINEL_PASSWORD;
-
-		if (!sentinelName) {
-			throw new Error('SENTINEL_NAME is required for creating a Valkey Sentinel instance');
-		}
-
-		if (!sentinelPassword) {
-			throw new Error('SENTINEL_PASSWORD is required for creating a Valkey Sentinel instance');
-		}
-
-		const sentinels = await ValkeyFactory.discoverSentinelHosts();
-		ValkeyFactory.logger.log(`Discovered sentinels: ${JSON.stringify(sentinels)}`);
+	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: LegacyLogger): Promise<Redis> {
+		const { sentinelName, sentinelPassword } = ValkeyFactory.checkSentinalConfig(config);
+		const sentinels = await ValkeyFactory.discoverSentinelHosts(config, logger);
 
 		const redisInstance = new Redis({
 			sentinels,
@@ -65,8 +43,11 @@ export class ValkeyFactory {
 		return redisInstance;
 	}
 
-	private static async discoverSentinelHosts(): Promise<{ host: string; port: number }[]> {
-		const serviceName = ValkeyFactory.config.SENTINEL_SERVICE_NAME;
+	private static async discoverSentinelHosts(
+		config: ValkeyConfig,
+		logger: LegacyLogger
+	): Promise<{ host: string; port: number }[]> {
+		const serviceName = config.SENTINEL_SERVICE_NAME;
 		if (!serviceName) {
 			throw new Error('SENTINEL_SERVICE_NAME is required for service discovery');
 		}
@@ -82,10 +63,37 @@ export class ValkeyFactory {
 				};
 			});
 
+			logger.log(`Discovered sentinels: ${JSON.stringify(hosts)}`);
+
 			return hosts;
 		} catch (err) {
-			ValkeyFactory.logger.log('Error during service discovery:');
+			// TODO: Log or throw but not both, but i think the try catch must place in createValkeySentinelInstance, similar the try catch in createNewValkeyInstance is missed,
+			// or only one try catch in build
+			logger.log('Error during service discovery:');
 			throw err;
 		}
+	}
+
+	private static checkSentinalConfig(config: ValkeyConfig): { sentinelName: string; sentinelPassword: string } {
+		const sentinelName = config.SENTINEL_NAME;
+		const sentinelPassword = config.SENTINEL_PASSWORD;
+
+		if (!sentinelName) {
+			throw new Error('SENTINEL_NAME is required for creating a Valkey Sentinel instance');
+		}
+
+		if (!sentinelPassword) {
+			throw new Error('SENTINEL_PASSWORD is required for creating a Valkey Sentinel instance');
+		}
+
+		return { sentinelName, sentinelPassword };
+	}
+
+	private static checkRedisConfig(config: ValkeyConfig): string {
+		if (!config.URI) {
+			throw new Error('URI is required for creating a new Valkey instance');
+		}
+
+		return config.URI;
 	}
 }
