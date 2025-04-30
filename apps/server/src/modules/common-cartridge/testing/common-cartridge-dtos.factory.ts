@@ -197,7 +197,7 @@ export const boardTaskFactory = Factory.define<BoardTaskDto>(({ sequence }) => {
 	};
 });
 
-export const boardCloumnBoardFactory = Factory.define<BoardColumnBoardDto>(() => {
+export const boardColumnFactory = Factory.define<BoardColumnBoardDto>(() => {
 	return {
 		id: faker.string.uuid(),
 		title: faker.lorem.word(),
@@ -225,7 +225,7 @@ export const roomFactory = Factory.define<RoomBoardDto>(({ sequence }) => {
 			},
 			{
 				type: BoardElementDtoType.COLUMN_BOARD,
-				content: boardCloumnBoardFactory.build(),
+				content: boardColumnFactory.build(),
 			},
 		],
 		isArchived: faker.datatype.boolean(),
