@@ -14,3 +14,11 @@ export interface AuthenticationConfig extends AccountConfig {
 	LOGIN_BLOCK_TIME: number;
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: boolean;
 }
+
+export interface CacheConfig {
+	SESSION_VALKEY_CLUSTER_ENABLED: boolean;
+	SESSION_VALKEY_URI: string;
+	SESSION_VALKEY_SENTINEL_NAME: string;
+	SESSION_VALKEY_SENTINEL_PASSWORD: string;
+	SESSION_VALKEY_SENTINEL_SERVICE_NAME: string;
+}

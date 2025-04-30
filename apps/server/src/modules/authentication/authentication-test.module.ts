@@ -1,7 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
-import { CacheWrapperModule } from '@infra/cache';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
 import { AccountModule } from '@modules/account';
@@ -61,7 +60,6 @@ const createJwtOptions = () => {
 		OauthModule,
 		RoleModule,
 		IdentityManagementModule,
-		CacheWrapperModule,
 		AuthGuardModule.register([AuthGuardOptions.JWT]),
 		UserModule,
 		HttpModule,

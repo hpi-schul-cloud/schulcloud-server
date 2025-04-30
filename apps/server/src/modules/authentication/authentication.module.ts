@@ -1,7 +1,7 @@
 import { LoggerModule } from '@core/logger';
-import { CacheWrapperModule } from '@infra/cache';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
+import { ValkeyClientModule, ValkeyConfig } from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
@@ -14,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { AuthenticationConfig } from './authentication-config';
+import { AuthenticationConfig, CacheConfig } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -47,6 +47,18 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 	return options;
 };
 
+const createValkeyModuleOptions = (configService: ConfigService<CacheConfig>): ValkeyConfig => {
+	const config = {
+		URI: configService.get('SESSION_VALKEY_URI', { infer: true }),
+		CLUSTER_ENABLED: configService.get('SESSION_VALKEY_CLUSTER_ENABLED', { infer: true }),
+		SENTINEL_NAME: configService.get('SESSION_VALKEY_SENTINEL_NAME', { infer: true }),
+		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY_SENTINEL_PASSWORD', { infer: true }),
+		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY_SENTINEL_SERVICE_NAME', { infer: true }),
+	};
+
+	return config;
+};
+
 @Module({
 	imports: [
 		LoggerModule,
@@ -60,7 +72,10 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 		OauthModule,
 		RoleModule,
 		IdentityManagementModule,
-		CacheWrapperModule,
+		ValkeyClientModule.registerAsync({
+			useFactory: createValkeyModuleOptions,
+			inject: [ConfigService],
+		}),
 		UserModule,
 		HttpModule,
 		EncryptionModule,

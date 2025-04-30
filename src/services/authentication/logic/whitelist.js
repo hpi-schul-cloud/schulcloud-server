@@ -20,7 +20,7 @@ const getRedisData = ({ IP = 'NONE', Browser = 'NONE', Device = 'NONE', privateD
 		Browser,
 		Device,
 		privateDevice,
-		expirationInSeconds: expirationInSeconds * 1000,
+		expirationInSeconds,
 	};
 };
 
@@ -75,7 +75,7 @@ const addTokenToWhitelist = async (redisIdentifier, privateDevice = false) => {
 	if (redisClientExists()) {
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
-		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), expirationInSeconds);
+		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 		return { ttl: expirationInSeconds };
 	}
 };
@@ -86,7 +86,7 @@ const addTokenToWhitelistWithIdAndJti = async (accountId, jti, privateDevice = f
 		const redisData = getRedisData({ privateDevice });
 		const { expirationInSeconds } = redisData;
 		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
-		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), expirationInSeconds);
+		await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 		return { ttl: expirationInSeconds };
 	}
 };
@@ -110,7 +110,7 @@ const ensureTokenIsWhitelisted = async ({ accountId, jti, privateDevice }) => {
 		const tokenIsWhitelisted = await isTokenWhitelisted(redisIdentifier);
 		if (tokenIsWhitelisted) {
 			// extend token expiration if token is already whitelisted
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), expirationInSeconds);
+			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 			return;
 		}
 		throw new AutoLogout('Session was expired due to inactivity - autologout.');

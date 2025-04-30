@@ -16,7 +16,6 @@ import { FeathersRosterService } from '@modules/roster';
 import { ServerModule } from '@modules/server/server.app.module';
 import { TeamService } from '@modules/team';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
@@ -32,6 +31,7 @@ import {
 	enableOpenApiDocs,
 } from './helpers';
 import legacyAppPromise = require('../../../../src/app');
+import { VALKEY_CLIENT } from '@infra/valkey-client';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -42,7 +42,7 @@ async function bootstrap(): Promise<void> {
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const cacheManager = await nestApp.resolve(CACHE_MANAGER);
+	const cacheManager = await nestApp.resolve(VALKEY_CLIENT);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);

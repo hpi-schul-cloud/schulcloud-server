@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { KeyvValkeyAdapter } from '@infra/cache';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Cache, Store } from 'cache-manager';
+import { Cache } from 'cache-manager';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 
 describe(JwtWhitelistAdapter.name, () => {
@@ -11,17 +12,27 @@ describe(JwtWhitelistAdapter.name, () => {
 	let jwtWhitelistAdapter: JwtWhitelistAdapter;
 
 	let cacheManager: DeepMocked<Cache>;
-	let store: DeepMocked<Store>;
+	let store: DeepMocked<KeyvValkeyAdapter>;
 
 	beforeAll(async () => {
+		store = createMock<KeyvValkeyAdapter>({
+			keys: jest.fn().mockResolvedValue([]),
+		});
+	
 		module = await Test.createTestingModule({
 			providers: [
 				JwtWhitelistAdapter,
 				{
 					provide: CACHE_MANAGER,
 					useValue: createMock<Cache>({
-						store: (store = createMock<Store>()),
-					}),
+						set: jest.fn(),
+						del: jest.fn(),
+						stores: [
+							{
+								store,
+							},
+						],
+					}) as unknown as Cache,
 				},
 			],
 		}).compile();
@@ -64,7 +75,7 @@ describe(JwtWhitelistAdapter.name, () => {
 						Browser: 'NONE',
 						Device: 'NONE',
 						privateDevice: false,
-						expirationInSeconds,
+						expirationInSeconds: expirationInSeconds * 1000,
 					},
 					expirationInSeconds * 1000
 				);
@@ -98,8 +109,6 @@ describe(JwtWhitelistAdapter.name, () => {
 				const accountId = new ObjectId().toHexString();
 				const jwtKey1 = `jwt:${accountId}:jti1`;
 				const jwtKey2 = `jwt:${accountId}:jti2`;
-
-				store.keys.mockResolvedValueOnce([jwtKey1, jwtKey2]);
 
 				return {
 					accountId,

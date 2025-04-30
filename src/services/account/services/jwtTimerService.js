@@ -45,7 +45,7 @@ class JwtTimerService {
 			const redisData = getRedisData({ privateDevice });
 			const { expirationInSeconds } = redisData;
 			// TODO this should happen via autologout hook in background
-			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), expirationInSeconds);
+			await redisSetAsync(redisIdentifier, JSON.stringify(redisData), 'EX', expirationInSeconds);
 			return Promise.resolve({ ttl: expirationInSeconds });
 		}
 		throw new MethodNotAllowed('This feature is disabled on this instance!');

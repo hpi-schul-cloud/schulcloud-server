@@ -1,19 +1,20 @@
+import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import * as dns from 'dns';
-import { Redis } from 'iovalkey';
 import * as util from 'util';
-import { ValkeyConfig } from './valkey.config';
-import { DomainErrorHandler } from '@core/error';
 import { ConntectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
 import { SentinalHost } from './types';
+import { ValkeyClient } from './valkey.class';
+import { ValkeyConfig } from './valkey.config';
 
 export class ValkeyFactory {
 	public static async build(
 		config: ValkeyConfig,
 		logger: Logger,
 		domainErrorHandler: DomainErrorHandler
-	): Promise<Redis> {
-		let redisInstance: Redis;
+	): Promise<ValkeyClient> {
+		let redisInstance: ValkeyClient;
+		console.log('ValkeyFactory.build', config);
 
 		if (config.CLUSTER_ENABLED === true) {
 			redisInstance = await ValkeyFactory.createValkeySentinelInstance(config, logger);
@@ -29,10 +30,10 @@ export class ValkeyFactory {
 		return redisInstance;
 	}
 
-	private static createNewValkeyInstance(config: ValkeyConfig): Redis {
+	private static createNewValkeyInstance(config: ValkeyConfig): ValkeyClient {
 		const redisUri = ValkeyFactory.checkRedisConfig(config);
 		try {
-			const redisInstance = new Redis(redisUri);
+			const redisInstance = new ValkeyClient(redisUri);
 
 			return redisInstance;
 		} catch (err) {
@@ -40,13 +41,13 @@ export class ValkeyFactory {
 		}
 	}
 
-	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: Logger): Promise<Redis> {
+	private static async createValkeySentinelInstance(config: ValkeyConfig, logger: Logger): Promise<ValkeyClient> {
 		const { sentinelName, sentinelPassword, sentinalServiceName } = ValkeyFactory.checkSentinelConfig(config);
 		try {
 			const sentinels = await ValkeyFactory.discoverSentinelHosts(sentinalServiceName);
 			logger.info(new DiscoveredSentinalHostsLoggable(sentinels));
 
-			const redisInstance = new Redis({
+			const redisInstance = new ValkeyClient({
 				sentinels,
 				sentinelPassword,
 				password: sentinelPassword,
