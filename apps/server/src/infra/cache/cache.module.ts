@@ -9,6 +9,7 @@ import { CacheConfig } from './interface';
 	imports: [
 		CacheModule.registerAsync({
 			useFactory: async (logger: LegacyLogger, configService: ConfigService<CacheConfig>) => {
+				logger.setContext(CacheModule.name);
 				const storeInstance = await CacheStoreFactory.build(configService, logger);
 				return {
 					stores: [storeInstance],
