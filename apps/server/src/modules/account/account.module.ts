@@ -3,7 +3,6 @@ import { IdentityManagementModule } from '@infra/identity-management';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { DeletionModule } from '@modules/deletion';
 import { ConfigService } from '@nestjs/config';
 import { AccountConfig } from './account-config';
 import { ACCOUNT_REPO, AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
@@ -20,7 +19,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 }
 
 @Module({
-	imports: [IdentityManagementModule, SystemModule, LoggerModule, UserModule, DeletionModule],
+	imports: [IdentityManagementModule, SystemModule, LoggerModule, UserModule],
 	providers: [
 		{ provide: ACCOUNT_REPO, useClass: AccountMikroOrmRepo },
 		AccountServiceDb,
