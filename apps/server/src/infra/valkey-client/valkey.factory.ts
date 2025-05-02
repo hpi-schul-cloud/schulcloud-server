@@ -103,7 +103,8 @@ export class ValkeyFactory {
 	}
 
 	private static checkRedisConfig(config: ValkeyConfig): string {
-		if (!config.URI) {
+		const uri = RegExp('^(redis://|rediss://)([a-zA-Z0-9._-]+(:[0-9]{1,5})?)(/([a-zA-Z0-9._-]+))?$');
+		if (!config.URI || !uri.test(config.URI)) {
 			throw new Error('URI is required for creating a new Valkey instance');
 		}
 
