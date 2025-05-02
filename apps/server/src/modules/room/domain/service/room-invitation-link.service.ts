@@ -23,12 +23,17 @@ export class RoomInvitationLinkService {
 		return links;
 	}
 
-	public async deleteLink(linkId: string): Promise<void> {
-		await this.roomInvitationLinkRepo.delete(linkId);
+	public async deleteLinks(linkIds: string[]): Promise<void> {
+		await this.roomInvitationLinkRepo.delete(linkIds);
 	}
 
 	public async findById(linkId: string): Promise<RoomInvitationLink> {
 		const roomInvitationLink = await this.roomInvitationLinkRepo.findById(linkId);
 		return roomInvitationLink;
+	}
+
+	public async findByIds(linkIds: string[]): Promise<RoomInvitationLink[]> {
+		const roomInvitationLinks = await this.roomInvitationLinkRepo.findByIds(linkIds);
+		return roomInvitationLinks;
 	}
 }

@@ -81,12 +81,74 @@ describe('RoomInvitationLinkService', () => {
 		});
 	});
 
+	describe('findById', () => {
+		describe('when link exists', () => {
+			it('should return the links', async () => {
+				const roomId = '123';
+				const roomInvitationLinks = roomInvitationLinkTestFactory.buildList(3, { roomId });
+				const secondLink = roomInvitationLinks[1];
+				repo.findById.mockResolvedValue(secondLink);
+
+				const result = await service.findById(secondLink.id);
+
+				expect(result).toEqual(secondLink);
+			});
+		});
+
+		describe('when link does not exists', () => {
+			it('should return an empty array', async () => {
+				repo.findById.mockRejectedValue(new Error('Link not found'));
+
+				await expect(service.findById('non-existing-link-id')).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('findByIds', () => {
+		describe('when link exists', () => {
+			it('should return the links', async () => {
+				const roomId = '123';
+				const roomInvitationLinks = roomInvitationLinkTestFactory.buildList(3, { roomId });
+				const secondLink = roomInvitationLinks[1];
+				repo.findByIds.mockResolvedValue([secondLink]);
+
+				const result = await service.findByIds([secondLink.id]);
+
+				expect(result).toEqual([secondLink]);
+			});
+		});
+
+		describe('when link does not exists', () => {
+			it('should return an empty array', async () => {
+				repo.findByIds.mockResolvedValue([]);
+
+				const result = await service.findByIds(['non-existing-link-id']);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
+
+	describe('findByRoomId', () => {
+		describe('when room has invitation links', () => {
+			it('should return the links', async () => {
+				const roomId = '123';
+				const roomInvitationLinks = roomInvitationLinkTestFactory.buildList(3, { roomId });
+				repo.findByRoomId.mockResolvedValue(roomInvitationLinks);
+
+				const result = await service.findLinkByRoomId(roomId);
+
+				expect(result).toEqual(roomInvitationLinks);
+			});
+		});
+	});
+
 	describe('deleteLink', () => {
 		it('should call repo to delete the link', async () => {
 			const linkId = '123';
-			await service.deleteLink(linkId);
+			await service.deleteLinks([linkId]);
 
-			expect(repo.delete).toHaveBeenCalledWith(linkId);
+			expect(repo.delete).toHaveBeenCalledWith([linkId]);
 		});
 	});
 });
