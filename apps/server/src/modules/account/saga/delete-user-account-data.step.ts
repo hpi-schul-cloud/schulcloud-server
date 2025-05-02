@@ -13,15 +13,17 @@ import {
 } from '@modules/saga';
 import { EntityId } from '@shared/domain/types';
 import { AccountService } from '..';
+import { Injectable } from '@nestjs/common';
 
-export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
+@Injectable()
+export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly accountService: AccountService,
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
-		this.logger.setContext(DeleteUserSubmissionDataStep.name);
+		this.logger.setContext(DeleteUserAccountDataStep.name);
 		this.sagaService.registerStep(ModuleName.ACCOUNT, this);
 	}
 

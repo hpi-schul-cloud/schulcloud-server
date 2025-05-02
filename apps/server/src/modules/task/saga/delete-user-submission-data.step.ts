@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import {
 	ModuleName,
 	SagaService,
@@ -10,10 +11,11 @@ import {
 	StepStatus,
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
-import { Logger } from '@core/logger';
-import { Submission, SubmissionRepo } from '../repo';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { Submission, SubmissionRepo } from '../repo';
 
+@Injectable()
 export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 	constructor(
 		private readonly sagaService: SagaService,

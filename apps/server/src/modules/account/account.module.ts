@@ -10,6 +10,7 @@ import { AccountServiceDb } from './domain/services/account-db.service';
 import { AccountServiceIdm } from './domain/services/account-idm.service';
 import { AccountService } from './domain/services/account.service';
 import { AccountMikroOrmRepo } from './repo';
+import { DeleteUserAccountDataStep } from './saga';
 
 function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
@@ -30,6 +31,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 			useFactory: accountIdmToDtoMapperFactory,
 			inject: [ConfigService],
 		},
+		DeleteUserAccountDataStep,
 	],
 	exports: [AccountService],
 })

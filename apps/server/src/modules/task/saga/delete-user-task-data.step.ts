@@ -11,10 +11,12 @@ import {
 	StepStatus,
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { TaskService } from '..';
 import { Task, TaskRepo } from '../repo';
 
+@Injectable()
 export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 	constructor(
 		private readonly sagaService: SagaService,
