@@ -3,10 +3,9 @@ import { Logger } from '@core/logger';
 import * as dns from 'dns';
 import { Redis } from 'iovalkey';
 import * as util from 'util';
-import { InMemoryClient } from './in-memory.client';
+import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
 import { SentinalHost, StorageClient } from './types';
-import { ValkeyClient } from './valkey.client';
 import { ValkeyConfig } from './valkey.config';
 
 export class ValkeyFactory {

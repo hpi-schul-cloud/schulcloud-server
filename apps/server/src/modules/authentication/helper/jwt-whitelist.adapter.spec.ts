@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { VALKEY_CLIENT, ValkeyClient } from '@infra/valkey-client';
+import { StorageClient, VALKEY_CLIENT } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
@@ -9,7 +9,7 @@ describe(JwtWhitelistAdapter.name, () => {
 	let module: TestingModule;
 	let jwtWhitelistAdapter: JwtWhitelistAdapter;
 
-	let valkeyClient: DeepMocked<ValkeyClient>;
+	let valkeyClient: DeepMocked<StorageClient>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -17,7 +17,7 @@ describe(JwtWhitelistAdapter.name, () => {
 				JwtWhitelistAdapter,
 				{
 					provide: VALKEY_CLIENT,
-					useValue: createMock<ValkeyClient>(),
+					useValue: createMock<StorageClient>(),
 				},
 			],
 		}).compile();

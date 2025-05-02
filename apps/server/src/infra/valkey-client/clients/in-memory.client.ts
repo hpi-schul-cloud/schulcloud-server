@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
-import { InMemoryLoggable } from './loggable';
-import { StorageClient } from './types';
+import { InMemoryLoggable } from '../loggable';
+import { StorageClient } from '../types';
 
 export class InMemoryClient implements StorageClient {
 	private readonly store: Record<string, string> = {};

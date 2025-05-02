@@ -1,5 +1,5 @@
 import { Redis } from 'iovalkey';
-import { StorageClient } from './types';
+import { StorageClient } from '../types';
 
 export class ValkeyClient implements StorageClient {
 	constructor(private readonly redisInstance: Redis) {}
