@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions, Server } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Redis } from 'ioredis';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { Redis } from 'iovalkey';
+import { Server, ServerOptions } from 'socket.io';
 
 export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
