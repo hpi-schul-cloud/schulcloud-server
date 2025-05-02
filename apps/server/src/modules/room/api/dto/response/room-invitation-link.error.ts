@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { ApiProperty } from '@nestjs/swagger';
 import { RoomInvitationLinkValidationError } from '../../type/room-invitation-link-validation-error.enum';
 
