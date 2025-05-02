@@ -17,6 +17,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {
+	private readonly moduleName: ModuleName = ModuleName.ACCOUNT;
+
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly accountService: AccountService,
@@ -24,14 +26,14 @@ export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {
 	) {
 		super('deleteUserData');
 		this.logger.setContext(DeleteUserAccountDataStep.name);
-		this.sagaService.registerStep(ModuleName.ACCOUNT, this);
+		this.sagaService.registerStep(this.moduleName, this);
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
 		const { userId } = params;
 
 		const accountsDeleted = await this.deleteUserAccount(userId);
-		const result = StepReportBuilder.build(ModuleName.ACCOUNT, [accountsDeleted]);
+		const result = StepReportBuilder.build(this.moduleName, [accountsDeleted]);
 
 		await Promise.resolve();
 
@@ -42,7 +44,7 @@ export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting account owned by user',
-				ModuleName.ACCOUNT,
+				this.moduleName,
 				userId,
 				StepStatus.PENDING
 			)
@@ -55,7 +57,7 @@ export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted single Submissions owned by user',
-				ModuleName.ACCOUNT,
+				this.moduleName,
 				userId,
 				StepStatus.FINISHED,
 				0,

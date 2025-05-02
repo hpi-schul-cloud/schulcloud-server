@@ -18,6 +18,8 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
+	private readonly moduleName: ModuleName = ModuleName.BOARD;
+
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly boardNodeService: BoardNodeService,
@@ -26,7 +28,7 @@ export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
 	) {
 		super('deleteUserData');
 		this.logger.setContext(DeleteUserBoardDataStep.name);
-		this.sagaService.registerStep(ModuleName.BOARD, this);
+		this.sagaService.registerStep(this.moduleName, this);
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
@@ -35,7 +37,7 @@ export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
 		const boardsDeleted = await this.deleteBoardsOwnedByUser(userId);
 		// TODO: remove user references from boards
 
-		const result = StepReportBuilder.build(ModuleName.BOARD, [boardsDeleted]);
+		const result = StepReportBuilder.build(this.moduleName, [boardsDeleted]);
 
 		return result;
 	}
@@ -44,7 +46,7 @@ export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting boards owned by user',
-				ModuleName.BOARD,
+				this.moduleName,
 				userId,
 				StepStatus.PENDING
 			)
@@ -69,7 +71,7 @@ export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted boards owned by user',
-				ModuleName.BOARD,
+				this.moduleName,
 				userId,
 				StepStatus.FINISHED,
 				0,

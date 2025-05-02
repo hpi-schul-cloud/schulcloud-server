@@ -17,6 +17,8 @@ import { Submission, SubmissionRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
+	private readonly moduleName: ModuleName = ModuleName.TASK_SUBMISSION;
+
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly submissionRepo: SubmissionRepo,
@@ -24,7 +26,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 	) {
 		super('deleteUserData');
 		this.logger.setContext(DeleteUserSubmissionDataStep.name);
-		this.sagaService.registerStep(ModuleName.TASK_SUBMISSION, this);
+		this.sagaService.registerStep(this.moduleName, this);
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
@@ -35,7 +37,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 			this.removeUserReferencesFromSubmissions(userId),
 		]);
 
-		const result = StepReportBuilder.build(ModuleName.TASK_SUBMISSION, [submissionsDeleted, submissionsModified]);
+		const result = StepReportBuilder.build(this.moduleName, [submissionsDeleted, submissionsModified]);
 
 		return result;
 	}
@@ -44,7 +46,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting single Submissions owned by user',
-				ModuleName.TASK_SUBMISSION,
+				this.moduleName,
 				userId,
 				StepStatus.PENDING
 			)
@@ -69,7 +71,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted single Submissions owned by user',
-				ModuleName.TASK_SUBMISSION,
+				this.moduleName,
 				userId,
 				StepStatus.FINISHED,
 				submissionsCount,
@@ -84,7 +86,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting user references from Submissions',
-				ModuleName.TASK_SUBMISSION,
+				this.moduleName,
 				userId,
 				StepStatus.PENDING
 			)
@@ -96,7 +98,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 			this.logger.info(
 				new UserDeletionStepOperationLoggable(
 					'no references from Submissions found',
-					ModuleName.TASK_SUBMISSION,
+					this.moduleName,
 					userId,
 					StepStatus.FINISHED,
 					0,
@@ -123,7 +125,7 @@ export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted references from Submissions collection',
-				ModuleName.TASK_SUBMISSION,
+				this.moduleName,
 				userId,
 				StepStatus.FINISHED,
 				groupSubmissionsCount,

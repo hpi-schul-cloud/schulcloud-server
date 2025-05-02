@@ -18,6 +18,8 @@ import { Task, TaskRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
+	private readonly moduleName: ModuleName = ModuleName.TASK;
+
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly taskService: TaskService,
@@ -26,7 +28,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 	) {
 		super('deleteUserData');
 		this.logger.setContext(DeleteUserTaskDataStep.name);
-		this.sagaService.registerStep(ModuleName.TASK, this);
+		this.sagaService.registerStep(this.moduleName, this);
 	}
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
 		const { userId: creatorId } = params;
@@ -40,7 +42,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
 		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
 
-		const result = StepReportBuilder.build(ModuleName.TASK, [
+		const result = StepReportBuilder.build(this.moduleName, [
 			tasksDeleted,
 			StepOperationReportBuilder.build(StepOperationType.UPDATE, modifiedTasksCount, modifiedTasksRef),
 		]);
@@ -50,7 +52,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 
 	public async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<StepOperationReport> {
 		this.logger.info(
-			new UserDeletionStepOperationLoggable('Deleting data from Task', ModuleName.TASK, creatorId, StepStatus.PENDING)
+			new UserDeletionStepOperationLoggable('Deleting data from Task', this.moduleName, creatorId, StepStatus.PENDING)
 		);
 
 		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
@@ -69,7 +71,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted data from Task',
-				ModuleName.TASK,
+				this.moduleName,
 				creatorId,
 				StepStatus.FINISHED,
 				counterOfTasksOnlyWithCreatorId,
@@ -84,7 +86,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting user data from Task',
-				ModuleName.TASK,
+				this.moduleName,
 				creatorId,
 				StepStatus.PENDING
 			)
@@ -106,7 +108,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted user data from Task',
-				ModuleName.TASK,
+				this.moduleName,
 				creatorId,
 				StepStatus.FINISHED,
 				counterOfTasksWithCoursesorLessons,
@@ -120,7 +122,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting user data from Task archive collection',
-				ModuleName.TASK,
+				this.moduleName,
 				userId,
 				StepStatus.PENDING
 			)
@@ -144,7 +146,7 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Successfully deleted user data from Task archive collection',
-				ModuleName.TASK,
+				this.moduleName,
 				userId,
 				StepStatus.FINISHED,
 				counterOfTasksWithUserInFinished,
