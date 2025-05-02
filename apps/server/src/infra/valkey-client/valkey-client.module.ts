@@ -1,10 +1,21 @@
 import { DomainErrorHandler, ErrorModule } from '@core/error';
 import { Logger, LoggerModule } from '@core/logger';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
-import { ValkeyClientModuleAsyncOptions } from './types';
+import { StorageClient, ValkeyClientModuleAsyncOptions } from './types';
 import { ValkeyConfig } from './valkey.config';
 import { VALKEY_CLIENT, VALKEY_CLIENT_OPTIONS } from './valkey.constants';
 import { ValkeyFactory } from './valkey.factory';
+
+const createValkeyClient = (
+	config: ValkeyConfig,
+	logger: Logger,
+	domainErrorHandler: DomainErrorHandler
+): Promise<StorageClient> => {
+	logger.setContext(ValkeyClientModule.name);
+	const instance = ValkeyFactory.build(config, logger, domainErrorHandler);
+
+	return instance;
+};
 
 @Module({})
 export class ValkeyClientModule {
@@ -13,7 +24,7 @@ export class ValkeyClientModule {
 			{
 				provide: VALKEY_CLIENT,
 				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler) =>
-					ValkeyFactory.build(config, logger, domainErrorHandler),
+					createValkeyClient(config, logger, domainErrorHandler),
 				inject: [Logger, DomainErrorHandler],
 			},
 		];
@@ -31,7 +42,7 @@ export class ValkeyClientModule {
 			{
 				provide: VALKEY_CLIENT,
 				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler, config: ValkeyConfig) =>
-					ValkeyFactory.build(config, logger, domainErrorHandler),
+					createValkeyClient(config, logger, domainErrorHandler),
 				inject: [Logger, DomainErrorHandler, VALKEY_CLIENT_OPTIONS],
 			},
 			ValkeyClientModule.createAsyncProviders(options),

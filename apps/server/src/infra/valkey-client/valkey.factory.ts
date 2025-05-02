@@ -1,10 +1,12 @@
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import * as dns from 'dns';
+import { Redis } from 'iovalkey';
 import * as util from 'util';
+import { InMemoryClient } from './in-memory.client';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
-import { SentinalHost } from './types';
-import { ValkeyClient } from './valkey.class';
+import { SentinalHost, StorageClient } from './types';
+import { ValkeyClient } from './valkey.client';
 import { ValkeyConfig } from './valkey.config';
 
 export class ValkeyFactory {
@@ -12,29 +14,30 @@ export class ValkeyFactory {
 		config: ValkeyConfig,
 		logger: Logger,
 		domainErrorHandler: DomainErrorHandler
-	): Promise<ValkeyClient> {
-		let redisInstance: ValkeyClient;
+	): Promise<StorageClient> {
+		let storageClient: StorageClient;
 
 		if (config.CLUSTER_ENABLED) {
-			redisInstance = await ValkeyFactory.createValkeySentinelInstance(config, logger);
+			storageClient = await ValkeyFactory.createValkeySentinelInstance(config, logger);
 		} else if (config.URI) {
-			redisInstance = ValkeyFactory.createNewValkeyInstance(config);
+			storageClient = ValkeyFactory.createNewValkeyInstance(config);
 		} else {
-			throw new Error('No Redis URI provided and Redis cluster is not enabled.');
+			storageClient = new InMemoryClient(logger);
 		}
 
-		redisInstance.on('error', (error) => domainErrorHandler.exec(error));
-		redisInstance.on('connect', (msg: unknown) => logger.info(new ConnectedLoggable(msg)));
+		storageClient.on('error', (error) => domainErrorHandler.exec(error));
+		storageClient.on('connect', (msg: unknown) => logger.info(new ConnectedLoggable(msg)));
 
-		return redisInstance;
+		return storageClient;
 	}
 
 	private static createNewValkeyInstance(config: ValkeyConfig): ValkeyClient {
-		const redisUri = ValkeyFactory.checkRedisConfig(config);
+		const uri = ValkeyFactory.checkRedisConfig(config);
 		try {
-			const redisInstance = new ValkeyClient(redisUri);
+			const redisInstance = new Redis(uri);
+			const valkeyClientInstance = new ValkeyClient(redisInstance);
 
-			return redisInstance;
+			return valkeyClientInstance;
 		} catch (err) {
 			throw new Error('Can not create valky instance.', { cause: err });
 		}
@@ -46,14 +49,17 @@ export class ValkeyFactory {
 			const sentinels = await ValkeyFactory.discoverSentinelHosts(sentinalServiceName);
 			logger.info(new DiscoveredSentinalHostsLoggable(sentinels));
 
-			const redisInstance = new ValkeyClient({
+			const sentinelsConfig = {
 				sentinels,
 				sentinelPassword,
 				password: sentinelPassword,
 				name: sentinelName,
-			});
+			};
 
-			return redisInstance;
+			const redisInstance = new Redis(sentinelsConfig);
+			const valkeyClientInstance = new ValkeyClient(redisInstance);
+
+			return valkeyClientInstance;
 		} catch (err) {
 			throw new Error('Can not create valky "sentinal" instance.', { cause: err });
 		}
