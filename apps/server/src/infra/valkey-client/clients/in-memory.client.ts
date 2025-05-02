@@ -39,7 +39,7 @@ export class InMemoryClient implements StorageClient {
 	}
 
 	public keys(pattern: string): Promise<string[]> {
-		const regex = new RegExp(pattern.replace('*', '.*'));
+		const regex = new RegExp(pattern.replace(/\*/g, '.*'));
 		this.logger.warning(new InMemoryLoggable(`Pattern: ${pattern}`));
 
 		return Promise.resolve(Object.keys(this.store).filter((key) => regex.test(key)));
