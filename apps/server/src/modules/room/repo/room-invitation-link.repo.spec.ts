@@ -44,6 +44,21 @@ describe('RoomInvitationLinkRepo', () => {
 		});
 	});
 
+	describe('findByIds', () => {
+		it('should find a room invitation link by id', async () => {
+			const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(3);
+			await em.persistAndFlush(roomInvitationLinks);
+			em.clear();
+			const [, second, third] = roomInvitationLinks;
+
+			const result = await repo.findByIds([second.id, third.id]);
+
+			expect(result).toHaveLength(2);
+			expect(second).toEqual(expect.objectContaining(result[0].getProps()));
+			expect(third).toEqual(expect.objectContaining(result[1].getProps()));
+		});
+	});
+
 	describe('findByRoomId', () => {
 		describe('when roomId is not found', () => {
 			it('should return an empty array', async () => {
@@ -110,7 +125,7 @@ describe('RoomInvitationLinkRepo', () => {
 			await em.persistAndFlush(roomInvitationLink);
 			em.clear();
 
-			await repo.delete(roomInvitationLink.id);
+			await repo.delete([roomInvitationLink.id]);
 
 			await expect(repo.findById(roomInvitationLink.id)).rejects.toThrow();
 		});
