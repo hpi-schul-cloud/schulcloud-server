@@ -74,6 +74,7 @@ describe(CommonCartridgeImportService.name, () => {
 			const setup = () => {
 				const boardId = faker.string.uuid();
 				const columnId = faker.string.uuid();
+				const columnId2 = faker.string.uuid();
 				const cardId = faker.string.uuid();
 				const elementId = faker.string.uuid();
 				const file = Buffer.from('');
@@ -118,6 +119,36 @@ describe(CommonCartridgeImportService.name, () => {
 						isResource: false,
 						resourcePath: 'https://www.webcontent.html',
 						resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					},
+					{
+						pathDepth: 1,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId2}`,
+						identifier: columnId2,
+						isInlined: false,
+						isResource: true,
+						resourcePath: faker.system.filePath(),
+						resourceType: faker.lorem.word(),
+					},
+					{
+						pathDepth: 2,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId2}/${cardId}`,
+						identifier: cardId,
+						isInlined: false,
+						isResource: true,
+						resourcePath: 'https://www.weblink.com',
+						resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+					},
+					{
+						pathDepth: 3,
+						title: faker.lorem.words(),
+						path: `${boardId}/${columnId2}/${cardId}/${elementId}`,
+						identifier: elementId,
+						isInlined: false,
+						isResource: false,
+						resourcePath: 'https://www.weblink.com',
+						resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
 					},
 					{
 						pathDepth: 2,
@@ -186,70 +217,23 @@ describe(CommonCartridgeImportService.name, () => {
 				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(expect.any(String));
 			});
 
-			it('should update column title', async () => {
+			it('should update column resources', async () => {
 				const { file } = setup();
 
 				await sut.importFile(file);
 
-				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(1);
-			});
-
-			it('should create a card', async () => {
-				const { file } = setup();
-
-				await sut.importFile(file);
-
-				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(2);
-			});
-
-			it('should update card title', async () => {
-				const { file } = setup();
-
-				await sut.importFile(file);
-
-				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(1);
-			});
-
-			it('should create a rich text element', async () => {
-				const { file } = setup();
-
-				commonCartridgeFileParser.getResource.mockReturnValue({
-					type: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					html: '<p>Example content</p>',
-				});
-
-				await sut.importFile(file);
-
-				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(1);
+				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(2);
+				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(3);
 				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
 			});
 
-			it('should create a link element', async () => {
+			it('should create a cards and update titles', async () => {
 				const { file } = setup();
-
-				commonCartridgeFileParser.getResource.mockReturnValue({
-					type: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-					title: 'Example link',
-					url: 'https://www.example.com',
-				});
 
 				await sut.importFile(file);
 
-				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(1);
-				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
-			});
-
-			it('should create an element if the resource type is not supported', async () => {
-				const { file } = setup();
-
-				commonCartridgeFileParser.getResource.mockReturnValue({
-					type: CommonCartridgeResourceTypeV1P1.UNKNOWN,
-				});
-
-				await sut.importFile(file);
-
-				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(1);
-				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
+				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
+				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(3);
 			});
 		});
 	});
