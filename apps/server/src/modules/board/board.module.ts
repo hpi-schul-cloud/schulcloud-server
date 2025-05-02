@@ -14,14 +14,15 @@ import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
+import { DeleteUserBoardDataStep } from './saga';
 import {
 	BoardCommonToolService,
 	BoardNodeAuthorizableService,
 	BoardNodeService,
+	BoardUserDeleteService,
 	ColumnBoardService,
 	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
-	BoardUserDeleteService,
 } from './service';
 import {
 	BoardContextService,
@@ -33,7 +34,6 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
 	imports: [
@@ -51,7 +51,6 @@ import { DeletionModule } from '@modules/deletion';
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,
-		DeletionModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -74,6 +73,7 @@ import { DeletionModule } from '@modules/deletion';
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
+		DeleteUserBoardDataStep,
 	],
 	exports: [
 		BoardNodeAuthorizableService,

@@ -16,6 +16,7 @@ import { BoardExternalReferenceType, MediaBoard } from '../domain';
 import { BoardNodeService } from './board-node.service';
 import { MediaBoardService } from './media-board/media-board.service';
 
+// @deprecated 'This service is replaced by DeleteUserSubmissionDataStep.'
 @Injectable()
 export class BoardUserDeleteService implements DeletionService {
 	constructor(
