@@ -3,6 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
+import { ValkeyClientModule } from '@infra/valkey-client';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
@@ -65,6 +66,7 @@ const createJwtOptions = () => {
 		HttpModule,
 		EncryptionModule,
 		UserModule,
+		ValkeyClientModule.register({}),
 	],
 	providers: [
 		LegacySchoolRepo,
