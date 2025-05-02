@@ -1,7 +1,7 @@
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import * as dns from 'dns';
-import { Redis } from 'iovalkey';
+import Valkey from 'iovalkey';
 import * as util from 'util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
@@ -33,8 +33,8 @@ export class ValkeyFactory {
 	private static createNewValkeyInstance(config: ValkeyConfig): ValkeyClient {
 		const uri = ValkeyFactory.checkRedisConfig(config);
 		try {
-			const redisInstance = new Redis(uri);
-			const valkeyClientInstance = new ValkeyClient(redisInstance);
+			const valkeyInstance = new Valkey(uri);
+			const valkeyClientInstance = new ValkeyClient(valkeyInstance);
 
 			return valkeyClientInstance;
 		} catch (err) {
@@ -55,8 +55,8 @@ export class ValkeyFactory {
 				name: sentinelName,
 			};
 
-			const redisInstance = new Redis(sentinelsConfig);
-			const valkeyClientInstance = new ValkeyClient(redisInstance);
+			const valkeyInstance = new Valkey(sentinelsConfig);
+			const valkeyClientInstance = new ValkeyClient(valkeyInstance);
 
 			return valkeyClientInstance;
 		} catch (err) {
