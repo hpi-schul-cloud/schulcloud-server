@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { SagaRegistryService, SagaStepRegistryService } from '../service';
+import { ModuleName } from '../type';
 import { Saga } from '../type/saga';
 
 @Injectable()
@@ -16,11 +17,15 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 	public async execute(params: { userId: EntityId }): Promise<boolean> {
 		console.log('Executing userDeletion with userId:', params.userId);
 
-		// const deleteUserDataFromClassReport = await this.stepRegistry.executeStep('class', 'deleteUserData', {
-		// 	userId: params.userId,
-		// });
+		// TODO make sure all necessary steps are registered
 
-		// console.log('deleteUserDataFromClassReport:', deleteUserDataFromClassReport);
+		await this.stepRegistry.executeStep(ModuleName.TASK_SUBMISSION, 'deleteUserData', {
+			userId: params.userId,
+		});
+
+		await this.stepRegistry.executeStep(ModuleName.TASK, 'deleteUserData', {
+			userId: params.userId,
+		});
 
 		return await Promise.resolve(true);
 	}
