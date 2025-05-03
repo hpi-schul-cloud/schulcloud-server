@@ -10,14 +10,15 @@ import {
 	CourseGroupService,
 	CourseService,
 	CourseSyncService,
+	// TODO: remove?
 	GroupDeletedHandlerService,
 } from './domain';
 import { CourseGroupRepo, CourseRepo } from './repo';
 import { CourseMikroOrmRepo } from './repo/course-mikro-orm.repo';
-import { DeletionModule } from '@modules/deletion';
+import { DeleteUserCourseDataStep, DeleteUserCourseGroupDataStep } from './saga';
 
 @Module({
-	imports: [RoleModule, LoggerModule, AuthorizationModule, DeletionModule],
+	imports: [RoleModule, LoggerModule, AuthorizationModule],
 	providers: [
 		CourseAuthorizableService,
 		CourseGroupAuthorizableService,
@@ -31,7 +32,10 @@ import { DeletionModule } from '@modules/deletion';
 		CourseDoService,
 		CourseSyncService,
 		CourseGroupService,
+		// TODO: remove?
 		GroupDeletedHandlerService,
+		DeleteUserCourseDataStep,
+		DeleteUserCourseGroupDataStep,
 	],
 	exports: [CourseService, CourseSyncService, CourseDoService],
 })
