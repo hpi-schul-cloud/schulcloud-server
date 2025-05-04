@@ -1,14 +1,27 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import util from 'util';
+import _ from 'lodash';
 import { Loggable } from './interfaces';
 import { LogMessageWithContext } from './types';
 
 export class LoggingUtils {
 	static createMessageWithContext(loggable: Loggable, context?: string | undefined): LogMessageWithContext {
-		const message = loggable.getLogMessage();
-		const stringifiedMessage = this.stringifyMessage(message);
-		const messageWithContext = { message: stringifiedMessage, context };
+		const loggableMessage = loggable.getLogMessage();
 
-		return messageWithContext;
+		if (Configuration.get('JSON_LOG_FORMAT') !== true) {
+			return { message: this.stringifyMessage(loggableMessage), context };
+		}
+		let finalMessage;
+		let finalMistratedLoggable: any = loggableMessage;
+		if ('message' in loggableMessage) {
+			finalMessage = loggableMessage.message;
+			const { message, ...loggableMessageWithoutMessage } = loggableMessage;
+			finalMistratedLoggable = loggableMessageWithoutMessage;
+		}
+
+		const finalContext = context || 'Unknown';
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		return { message: finalMessage, context: _.merge({}, { name: finalContext }, finalMistratedLoggable) };
 	}
 
 	private static stringifyMessage(message: unknown): string {

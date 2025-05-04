@@ -12,6 +12,7 @@ export interface CommonCartridgeConfig extends LoggerConfig, JwtAuthGuardConfig,
 const commonCartridgeConfig: CommonCartridgeConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
+	JSON_LOG_FORMAT: Configuration.get('JSON_LOG_FORMAT') as boolean,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	JWT_PUBLIC_KEY: (Configuration.get('JWT_PUBLIC_KEY') as string).replace(/\\n/g, '\n'),
