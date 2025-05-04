@@ -38,7 +38,6 @@ export class CommonCartridgeFileParser {
 
 	public getTitle(): string | undefined {
 		const title = this.manifestParser.getTitle();
-
 		return title;
 	}
 
