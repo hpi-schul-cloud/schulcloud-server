@@ -1,12 +1,12 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
 import { Module } from '@nestjs/common';
 import { ExternalToolPseudonymRepo } from './repo';
+import { DeleteUserPseudonymDataStep } from './saga';
 import { PseudonymService } from './service';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [LoggerModule, DeletionModule],
-	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger],
+	imports: [LoggerModule],
+	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger, DeleteUserPseudonymDataStep],
 	exports: [PseudonymService],
 })
 export class PseudonymModule {}
