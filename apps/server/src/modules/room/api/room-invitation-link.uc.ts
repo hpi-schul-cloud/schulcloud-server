@@ -122,41 +122,33 @@ export class RoomInvitationLinkUc {
 
 	private async checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): Promise<void> {
 		if (!roomInvitationLink) {
-			throw new RoomInvitationLinkError(
-				RoomInvitationLinkValidationError.INVALID_LINK,
-				undefined,
-				HttpStatus.NOT_FOUND
-			);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.INVALID_LINK, HttpStatus.NOT_FOUND);
 		}
 
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
-			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, undefined, HttpStatus.BAD_REQUEST);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED, HttpStatus.BAD_REQUEST);
 		}
 		if (roomInvitationLink.isOnlyForTeachers && isTeacher === false) {
-			throw new RoomInvitationLinkError(
-				RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS,
-				undefined,
-				HttpStatus.FORBIDDEN
-			);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS, HttpStatus.FORBIDDEN);
 		}
 		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
 			throw new RoomInvitationLinkError(
 				RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL,
-				creatorSchool.getInfo().name,
-				HttpStatus.FORBIDDEN
+				HttpStatus.FORBIDDEN,
+				creatorSchool.getInfo().name
 			);
 		}
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
 			const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 			throw new RoomInvitationLinkError(
 				RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL,
-				creatorSchool.getInfo().name,
-				HttpStatus.FORBIDDEN
+				HttpStatus.FORBIDDEN,
+				creatorSchool.getInfo().name
 			);
 		}
 	}
