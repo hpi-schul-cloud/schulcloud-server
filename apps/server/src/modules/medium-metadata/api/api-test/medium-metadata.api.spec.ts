@@ -255,8 +255,8 @@ describe('MediumMetadataController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 				expect(response.body).toEqual<ErrorResponse>({
-					type: 'MEDIUM_METADATA_NOT_FOUND',
-					title: 'Medium Metadata Not Found',
+					title: 'Medium Not Found',
+					type: 'MEDIUM_NOT_FOUND',
 					message: 'Not Found',
 					code: 404,
 				});
