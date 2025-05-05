@@ -14,4 +14,10 @@ export class RegistrationPinService {
 
 		return registrationPins;
 	}
+
+	public async deleteByEmail(email: string): Promise<number> {
+		const numDeleted = await this.registrationPinRepo.deleteRegistrationPinByEmail(email);
+
+		return numDeleted;
+	}
 }

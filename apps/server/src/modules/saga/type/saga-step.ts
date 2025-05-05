@@ -20,7 +20,6 @@ export const enum ModuleName {
 	FILES_STORAGE = 'fileRecords',
 	LESSON = 'lessons',
 	PSEUDONYM = 'pseudonyms',
-	REGISTRATIONPIN = 'registrationPin',
 	ROCKETCHATUSER = 'rocketChatUser',
 	ROCKETCHATSERVICE = 'rocketChatService',
 	TASK = 'task',
@@ -28,6 +27,7 @@ export const enum ModuleName {
 	TEAM = 'teams',
 	USER = 'user',
 	USER_CALENDAR = 'calendar',
+	USER_REGISTRATIONPIN = 'registrationPin',
 	NEWS = 'news',
 }
 

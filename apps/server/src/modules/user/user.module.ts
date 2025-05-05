@@ -8,7 +8,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { USER_DO_REPO, UserService } from './domain';
 import { UserAuthorizableService } from './domain/service/user-authorizable.service';
 import { UserDoMikroOrmRepo, UserMikroOrmRepo } from './repo';
-import { DeleteUserStep } from './saga';
+import { DeleteUserCalendarDataStep, DeleteUserRegistrationPinDataStep, DeleteUserStep } from './saga';
 
 @Module({
 	imports: [RoleModule, LoggerModule, CqrsModule, RegistrationPinModule, CalendarModule, AuthorizationModule],
@@ -18,6 +18,8 @@ import { DeleteUserStep } from './saga';
 		UserService,
 		UserAuthorizableService,
 		DeleteUserStep,
+		DeleteUserCalendarDataStep,
+		DeleteUserRegistrationPinDataStep,
 	],
 	exports: [UserService, UserMikroOrmRepo],
 })

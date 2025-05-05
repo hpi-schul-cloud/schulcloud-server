@@ -1,4 +1,5 @@
 import { Logger } from '@core/logger';
+import { RegistrationPinService } from '@modules/registration-pin';
 import {
 	ModuleName,
 	SagaService,
@@ -14,17 +15,15 @@ import {
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { RegistrationPinEntity } from '../entity';
-import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserRegistrationPinDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName = ModuleName.REGISTRATIONPIN;
+	private readonly moduleName = ModuleName.USER_REGISTRATIONPIN;
 
 	constructor(
 		private readonly sagaService: SagaService,
 		private readonly userService: UserService,
-		private readonly registrationPinRepo: RegistrationPinRepo,
+		private readonly registrationPinService: RegistrationPinService,
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
@@ -53,22 +52,10 @@ export class DeleteUserRegistrationPinDataStep extends SagaStep<'deleteUserData'
 		);
 
 		const registrationEmails = await this.findRegistrationEmails(userId);
-		const [allRegistrationPins, totalCount] = await this.findRegistrationPinsByEmails(registrationEmails);
+		const allRegistrationPinIds = await this.findAllRegistrationPinIdsByEmails(registrationEmails);
+		const totalDeletedCount = await this.deleteAllRegistrationPinsByEmails(registrationEmails);
 
-		const totalDeleted = await Promise.all(
-			registrationEmails.map((email) => this.registrationPinRepo.deleteRegistrationPinByEmail(email))
-		);
-		const totalDeletedCount = totalDeleted.reduce((sum, count) => sum + count, 0);
-
-		if (totalDeletedCount !== totalCount) {
-			throw new Error(`Failed to delete all user data from RegistrationPin`);
-		}
-
-		const result = StepOperationReportBuilder.build(
-			StepOperationType.DELETE,
-			totalDeletedCount,
-			this.getRegistrationPinsId(allRegistrationPins)
-		);
+		const result = StepOperationReportBuilder.build(StepOperationType.DELETE, totalDeletedCount, allRegistrationPinIds);
 
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
@@ -84,22 +71,9 @@ export class DeleteUserRegistrationPinDataStep extends SagaStep<'deleteUserData'
 		return result;
 	}
 
-	public async findRegistrationPinsByEmails(registrationEmails: string[]): Promise<[RegistrationPinEntity[], number]> {
-		const results = await Promise.all(
-			registrationEmails.map(async (email) => {
-				const [registrationPins, count] = await this.registrationPinRepo.findAllByEmail(email);
-				return { email, registrationPins, count };
-			})
-		);
-
-		const registrationPins = results.flatMap((result) => result.registrationPins);
-		const count = results.reduce((sum, result) => sum + result.count, 0);
-
-		return [registrationPins, count];
-	}
-
 	public async findRegistrationEmails(userId: EntityId): Promise<string[]> {
 		const user = await this.userService.findByIdOrNull(userId);
+
 		const parentEmails = await this.userService.getParentEmailsFromUser(userId);
 
 		const registrationEmails: string[] = [];
@@ -110,7 +84,29 @@ export class DeleteUserRegistrationPinDataStep extends SagaStep<'deleteUserData'
 		return registrationEmails;
 	}
 
-	private getRegistrationPinsId(registrationPins: RegistrationPinEntity[]): EntityId[] {
-		return registrationPins.map((registrationPin) => registrationPin.id);
+	public async findAllRegistrationPinIdsByEmails(registrationEmails: string[]): Promise<EntityId[]> {
+		const results = await Promise.all(
+			registrationEmails.map(async (email) => {
+				const registrationPins = await this.registrationPinService.findByEmail(email);
+				return registrationPins;
+			})
+		);
+
+		const allRegistrationPins = results.flatMap((registrationPins) => registrationPins);
+		const allRegistrationPinIds = allRegistrationPins.map((item) => item.id);
+
+		return allRegistrationPinIds;
+	}
+
+	public async deleteAllRegistrationPinsByEmails(registrationEmails: string[]): Promise<number> {
+		const results = await Promise.all(
+			registrationEmails.map(async (email) => {
+				const numDeleted = await this.registrationPinService.deleteByEmail(email);
+				return numDeleted;
+			})
+		);
+		const totalDeletedCount = results.reduce((sum, count) => sum + count, 0);
+
+		return totalDeletedCount;
 	}
 }
