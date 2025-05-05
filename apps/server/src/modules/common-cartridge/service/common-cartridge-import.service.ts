@@ -3,7 +3,6 @@ import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
-import { CommonCartridgeImportOrganizationProps } from '..';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
@@ -79,7 +78,7 @@ export class CommonCartridgeImportService {
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for await (const column of columnsWithResource) {
-			await this.createColumnWithResouce(parser, boardId, column);
+			await this.createColumnWithResource(parser, boardId, column);
 		}
 
 		for await (const column of columnsWithoutResource) {
@@ -87,10 +86,10 @@ export class CommonCartridgeImportService {
 		}
 	}
 
-	private async createColumnWithResouce(
+	private async createColumnWithResource(
 		parser: CommonCartridgeFileParser,
 		boardId: string,
-		columnProps: CommonCartridgeImportOrganizationProps
+		columnProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
@@ -101,7 +100,7 @@ export class CommonCartridgeImportService {
 	private async createColumn(
 		parser: CommonCartridgeFileParser,
 		boardId: string,
-		columnProps: CommonCartridgeImportOrganizationProps
+		columnProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
@@ -112,7 +111,7 @@ export class CommonCartridgeImportService {
 	private async createCardElementWithResource(
 		parser: CommonCartridgeFileParser,
 		columnResponse: ColumnResponse,
-		cardProps: CommonCartridgeImportOrganizationProps
+		cardProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const card = await this.columnClient.createCard(columnResponse.id, {});
 
@@ -126,7 +125,7 @@ export class CommonCartridgeImportService {
 	private async createCards(
 		parser: CommonCartridgeFileParser,
 		columnResponse: ColumnResponse,
-		column: CommonCartridgeImportOrganizationProps
+		column: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const cards = parser
 			.getOrganizations()
@@ -158,7 +157,7 @@ export class CommonCartridgeImportService {
 	private async createCard(
 		parser: CommonCartridgeFileParser,
 		column: ColumnResponse,
-		cardProps: CommonCartridgeImportOrganizationProps
+		cardProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		const card = await this.columnClient.createCard(column.id, {});
 		await this.cardClient.updateCardTitle(card.id, {
@@ -192,7 +191,7 @@ export class CommonCartridgeImportService {
 	private async createCardElement(
 		parser: CommonCartridgeFileParser,
 		cardId: string,
-		cardElementProps: CommonCartridgeImportOrganizationProps
+		cardElementProps: CommonCartridgeOrganizationProps
 	): Promise<void> {
 		if (!cardElementProps.isResource) return;
 
