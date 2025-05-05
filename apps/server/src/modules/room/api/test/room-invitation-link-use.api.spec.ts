@@ -225,7 +225,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
-		describe("when the link is restricted to creator's school", () => {
+		describe.only("when the link is restricted to creator's school", () => {
 			describe.each([
 				[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 				[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],

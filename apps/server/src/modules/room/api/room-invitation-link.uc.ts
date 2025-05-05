@@ -139,14 +139,14 @@ export class RoomInvitationLinkUc {
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
 			throw new RoomInvitationLinkError(
 				RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL,
-				creatorSchool.name
+				creatorSchool.getInfo().name
 			);
 		}
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
 			const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
 			throw new RoomInvitationLinkError(
 				RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL,
-				creatorSchool.name
+				creatorSchool.getInfo().name
 			);
 		}
 	}
