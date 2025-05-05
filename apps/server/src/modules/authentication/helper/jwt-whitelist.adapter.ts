@@ -1,10 +1,11 @@
 import { createRedisIdentifierFromJwtData, getRedisData, JwtRedisData } from '@imports-from-feathers';
-import { StorageClient, VALKEY_CLIENT } from '@infra/valkey-client';
+import { StorageClient } from '@infra/valkey-client';
 import { Inject, Injectable } from '@nestjs/common';
+import { SESSION_VALKEY_CLIENT } from '../authentication-config';
 
 @Injectable()
 export class JwtWhitelistAdapter {
-	constructor(@Inject(VALKEY_CLIENT) private readonly storageClient: StorageClient) {}
+	constructor(@Inject(SESSION_VALKEY_CLIENT) private readonly storageClient: StorageClient) {}
 
 	public async addToWhitelist(accountId: string, jti: string): Promise<void> {
 		const redisIdentifier: string = createRedisIdentifierFromJwtData(accountId, jti);

@@ -19,7 +19,7 @@ export class ValkeyFactory {
 		if (config.CLUSTER_ENABLED) {
 			storageClient = await ValkeyFactory.createValkeySentinelInstance(config, logger);
 		} else if (config.URI) {
-			storageClient = ValkeyFactory.createNewValkeyInstance(config);
+			storageClient = ValkeyFactory.createNewValkeyInstance(config.URI);
 		} else {
 			storageClient = new InMemoryClient(logger);
 		}
@@ -30,10 +30,10 @@ export class ValkeyFactory {
 		return storageClient;
 	}
 
-	private static createNewValkeyInstance(config: ValkeyConfig): ValkeyClient {
-		const uri = ValkeyFactory.checkRedisConfig(config);
+	private static createNewValkeyInstance(uri?: string): ValkeyClient {
+		const validatedUri = ValkeyFactory.checkRedisURI(uri);
 		try {
-			const valkeyInstance = new Valkey(uri);
+			const valkeyInstance = new Valkey(validatedUri);
 			const valkeyClientInstance = new ValkeyClient(valkeyInstance);
 
 			return valkeyClientInstance;
@@ -102,12 +102,11 @@ export class ValkeyFactory {
 		return { sentinelName, sentinelPassword, sentinalServiceName };
 	}
 
-	private static checkRedisConfig(config: ValkeyConfig): string {
-		const uri = RegExp('^(redis://|rediss://)([a-zA-Z0-9._-]+(:[0-9]{1,5})?)(/([a-zA-Z0-9._-]+))?$');
-		if (!config.URI || !uri.test(config.URI)) {
-			throw new Error('URI is required for creating a new Valkey instance');
+	private static checkRedisURI(redisUri?: string): string {
+		const redisUriExpValidation = RegExp('^(redis://|rediss://)([a-zA-Z0-9._-]+(:[0-9]{1,5})?)(/([a-zA-Z0-9._-]+))?$');
+		if (redisUri && redisUriExpValidation.test(redisUri)) {
+			return redisUri;
 		}
-
-		return config.URI;
+		throw new Error('URI is not valid');
 	}
 }

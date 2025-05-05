@@ -6,6 +6,7 @@ export type ValkeyClientModuleFactory = {
 };
 
 export type ValkeyClientModuleAsyncOptions = {
+	injectionToken: string;
 	inject?: InjectionToken[];
 	useFactory?: (...args: never[]) => Promise<ValkeyConfig> | ValkeyConfig;
 };

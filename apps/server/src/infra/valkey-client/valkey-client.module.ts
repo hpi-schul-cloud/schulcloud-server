@@ -3,7 +3,7 @@ import { Logger, LoggerModule } from '@core/logger';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { StorageClient, ValkeyClientModuleAsyncOptions } from './types';
 import { ValkeyConfig } from './valkey.config';
-import { VALKEY_CLIENT, VALKEY_CLIENT_OPTIONS } from './valkey.constants';
+import { VALKEY_CLIENT_OPTIONS } from './valkey.constants';
 import { ValkeyFactory } from './valkey.factory';
 
 const createValkeyClient = (
@@ -19,10 +19,17 @@ const createValkeyClient = (
 
 @Module({})
 export class ValkeyClientModule {
-	public static register(config: ValkeyConfig): DynamicModule {
+	public static registerInMemory(injectionToken: string): DynamicModule {
+		return this.register(injectionToken, {
+			CLUSTER_ENABLED: false,
+			URI: undefined,
+		});
+	}
+
+	public static register(injectionToken: string, config: ValkeyConfig): DynamicModule {
 		const providers = [
 			{
-				provide: VALKEY_CLIENT,
+				provide: injectionToken,
 				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler) =>
 					createValkeyClient(config, logger, domainErrorHandler),
 				inject: [Logger, DomainErrorHandler],
@@ -40,7 +47,7 @@ export class ValkeyClientModule {
 	public static registerAsync(options: ValkeyClientModuleAsyncOptions): DynamicModule {
 		const providers = [
 			{
-				provide: VALKEY_CLIENT,
+				provide: options.injectionToken,
 				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler, config: ValkeyConfig) =>
 					createValkeyClient(config, logger, domainErrorHandler),
 				inject: [Logger, DomainErrorHandler, VALKEY_CLIENT_OPTIONS],

@@ -15,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
 import { UserModule } from '../user';
+import { SESSION_VALKEY_CLIENT } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -66,7 +67,7 @@ const createJwtOptions = () => {
 		HttpModule,
 		EncryptionModule,
 		UserModule,
-		ValkeyClientModule.register({}),
+		ValkeyClientModule.registerInMemory(SESSION_VALKEY_CLIENT),
 	],
 	providers: [
 		LegacySchoolRepo,

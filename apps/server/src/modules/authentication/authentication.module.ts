@@ -14,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { AuthenticationConfig, CacheConfig } from './authentication-config';
+import { AuthenticationConfig, CacheConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -73,6 +73,7 @@ const createValkeyModuleOptions = (configService: ConfigService<CacheConfig>): V
 		RoleModule,
 		IdentityManagementModule,
 		ValkeyClientModule.registerAsync({
+			injectionToken: SESSION_VALKEY_CLIENT,
 			useFactory: createValkeyModuleOptions,
 			inject: [ConfigService],
 		}),

@@ -15,6 +15,7 @@ export interface AuthenticationConfig extends AccountConfig {
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: boolean;
 }
 
+export const SESSION_VALKEY_CLIENT = 'SESSION_VALKEY_CLIENT';
 export interface CacheConfig {
 	SESSION_VALKEY_CLUSTER_ENABLED: boolean;
 	SESSION_VALKEY_URI: string;

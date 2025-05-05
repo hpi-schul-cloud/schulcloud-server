@@ -1,8 +1,12 @@
 import type Valkey from 'iovalkey';
 import { StorageClient } from '../types';
 
+/**
+ *  This class is a wrapper around the Valkey library to provide a consistent interface for storage operations.
+ */
 export class ValkeyClient implements StorageClient {
-	constructor(private readonly valkeyInstance: Valkey) {}
+	// You can use the Valkey library directly for usage in external packages.
+	constructor(public readonly valkeyInstance: Valkey) {}
 
 	public async get(key: string): Promise<string | null> {
 		const result = await this.valkeyInstance.get(key);

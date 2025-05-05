@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { StorageClient, VALKEY_CLIENT } from '@infra/valkey-client';
+import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
+import { SESSION_VALKEY_CLIENT } from '../authentication-config';
 
 describe(JwtWhitelistAdapter.name, () => {
 	let module: TestingModule;
@@ -16,13 +17,13 @@ describe(JwtWhitelistAdapter.name, () => {
 			providers: [
 				JwtWhitelistAdapter,
 				{
-					provide: VALKEY_CLIENT,
+					provide: SESSION_VALKEY_CLIENT,
 					useValue: createMock<StorageClient>(),
 				},
 			],
 		}).compile();
 
-		valkeyClient = module.get(VALKEY_CLIENT);
+		valkeyClient = module.get(SESSION_VALKEY_CLIENT);
 		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 	});
 
