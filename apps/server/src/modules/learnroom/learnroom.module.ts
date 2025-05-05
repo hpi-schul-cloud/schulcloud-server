@@ -11,6 +11,7 @@ import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 
+import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
@@ -43,6 +44,7 @@ import { BoardCopyService, CommonCartridgeImportService, CourseCopyService, Cour
 		SchoolModule,
 		GroupModule,
 		RoleModule,
+		SagaModule,
 	],
 	providers: [
 		{
@@ -61,6 +63,6 @@ import { BoardCopyService, CommonCartridgeImportService, CourseCopyService, Cour
 		ColumnBoardNodeRepo,
 		DeleteUserDashboardDataStep,
 	],
-	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService, DashboardService],
+	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService],
 })
 export class LearnroomModule {}

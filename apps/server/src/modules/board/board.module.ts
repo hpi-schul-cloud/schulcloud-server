@@ -5,6 +5,7 @@ import { CollaborativeTextEditorModule } from '@modules/collaborative-text-edito
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { SagaModule } from '@modules/saga';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -19,7 +20,6 @@ import {
 	BoardCommonToolService,
 	BoardNodeAuthorizableService,
 	BoardNodeService,
-	BoardUserDeleteService,
 	ColumnBoardService,
 	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
@@ -51,6 +51,7 @@ import {
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,
+		SagaModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -69,7 +70,6 @@ import {
 		ColumnBoardLinkService,
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
-		BoardUserDeleteService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,

@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger/logger.module';
 import { IdentityManagementModule } from '@infra/identity-management';
+import { SagaModule } from '@modules/saga';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
@@ -20,7 +21,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 }
 
 @Module({
-	imports: [IdentityManagementModule, SystemModule, LoggerModule, UserModule],
+	imports: [IdentityManagementModule, SystemModule, LoggerModule, UserModule, SagaModule],
 	providers: [
 		{ provide: ACCOUNT_REPO, useClass: AccountMikroOrmRepo },
 		AccountServiceDb,
