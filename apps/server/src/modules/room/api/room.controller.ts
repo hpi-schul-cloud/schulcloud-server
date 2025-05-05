@@ -139,7 +139,7 @@ export class RoomController {
 	): Promise<RoomInvitationLinkListResponse> {
 		const roomInvitationLinks = await this.roomInvitationLinkUc.listLinksByRoomId(currentUser.userId, urlParams.roomId);
 
-		const response = RoomInvitationLinkMapper.mapToRoomInvitationLinksResponse(roomInvitationLinks);
+		const response = RoomInvitationLinkMapper.mapToRoomInvitationLinkListResponse(roomInvitationLinks);
 
 		return response;
 	}

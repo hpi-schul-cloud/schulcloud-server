@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { CopyFileDto } from '@modules/files-storage-client/dto';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import {
