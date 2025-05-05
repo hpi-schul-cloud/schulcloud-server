@@ -25,9 +25,6 @@ export class BiloStrategy implements MediumMetadataStrategy {
 				mediumId,
 				mediaSource
 			);
-			// if (!metadataItem) {
-			// 	throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
-			// }
 
 			const mediumMetadataDto: MediumMetadataDto =
 				MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(metadataItem);
