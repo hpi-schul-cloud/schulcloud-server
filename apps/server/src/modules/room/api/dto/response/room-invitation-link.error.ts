@@ -1,30 +1,36 @@
 /* istanbul ignore file */
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { RoomInvitationLinkValidationError } from '../../type/room-invitation-link-validation-error.enum';
 import { BusinessError } from '@shared/common/error';
 import { HttpStatus } from '@nestjs/common';
 
 export class RoomInvitationLinkError extends BusinessError {
-	@ApiProperty({
-		description: 'The error code.',
+	@ApiPropertyOptional({
+		description: 'The error details.',
 		enum: RoomInvitationLinkValidationError,
 		enumName: 'RoomInvitationLinkValidationError',
 	})
-	public readonly validationMessage: RoomInvitationLinkValidationError;
+	public readonly details?: {
+		validationMessage: RoomInvitationLinkValidationError;
+		schoolName?: string;
+	};
 
-	@ApiPropertyOptional({ description: 'The error details.' })
-	public readonly schoolName?: string;
-
-	constructor(validationMessage: RoomInvitationLinkValidationError, schoolName?: string) {
+	constructor(
+		validationMessage: RoomInvitationLinkValidationError,
+		schoolName?: string,
+		code = HttpStatus.BAD_REQUEST
+	) {
 		super(
 			{
 				type: 'ROOM_INVITATION_LINK_VALIDATION_ERROR',
-				title: 'API Room Invitation Link Validation Error',
-				defaultMessage: 'API Room Invitation Link validation failed, see validationMessage for details',
+				title: 'Room Invitation link validation error',
+				defaultMessage: 'wte',
 			},
-			HttpStatus.BAD_REQUEST
+			code
 		);
-		this.validationMessage = validationMessage;
-		this.schoolName = schoolName;
+		this.details = {
+			validationMessage: validationMessage,
+			schoolName: schoolName,
+		};
 	}
 }

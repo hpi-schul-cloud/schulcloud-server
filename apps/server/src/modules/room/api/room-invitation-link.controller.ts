@@ -15,7 +15,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common/error';
+import { ApiValidationError, BusinessError } from '@shared/common/error';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
 import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
@@ -103,7 +103,7 @@ export class RoomInvitationLinkController {
 	@Post(':roomInvitationLinkId')
 	@ApiOperation({ summary: 'Use a room invitation link to join a room' })
 	@ApiResponse({ status: HttpStatus.OK, type: RoomIdResponse })
-	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: RoomInvitationLinkError })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: BusinessError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
