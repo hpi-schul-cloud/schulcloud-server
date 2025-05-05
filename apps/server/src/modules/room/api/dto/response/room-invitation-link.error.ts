@@ -17,8 +17,8 @@ export class RoomInvitationLinkError extends BusinessError {
 
 	constructor(
 		validationMessage: RoomInvitationLinkValidationError,
-		schoolName?: string,
-		code = HttpStatus.BAD_REQUEST
+		code = HttpStatus.BAD_REQUEST,
+		schoolName?: string
 	) {
 		super(
 			{
