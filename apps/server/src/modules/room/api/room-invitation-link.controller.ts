@@ -103,7 +103,7 @@ export class RoomInvitationLinkController {
 	@Post(':roomInvitationLinkId')
 	@ApiOperation({ summary: 'Use a room invitation link to join a room' })
 	@ApiResponse({ status: HttpStatus.OK, type: RoomIdResponse })
-	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: RoomInvitationLinkError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })

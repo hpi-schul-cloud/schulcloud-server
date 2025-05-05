@@ -1,8 +1,9 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
@@ -11,6 +12,7 @@ import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
 import { RoomConfig } from '../room.config';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
+import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
 
 @Injectable()
@@ -19,7 +21,8 @@ export class RoomInvitationLinkUc {
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomInvitationLinkService: RoomInvitationLinkService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService
 	) {}
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
@@ -93,7 +96,7 @@ export class RoomInvitationLinkUc {
 
 		const [roomInvitationLink] = await this.roomInvitationLinkService.findByIds([linkId]);
 
-		this.checkValidity(roomInvitationLink, user);
+		await this.checkValidity(roomInvitationLink, user);
 
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
 			roomInvitationLink.roomId
@@ -117,7 +120,7 @@ export class RoomInvitationLinkUc {
 		}
 	}
 
-	private checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): void {
+	private async checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): Promise<void> {
 		if (!roomInvitationLink) {
 			throw new NotFoundException(RoomInvitationLinkValidationError.INVALID_LINK);
 		}
@@ -126,16 +129,25 @@ export class RoomInvitationLinkUc {
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
 		if (roomInvitationLink.activeUntil && roomInvitationLink.activeUntil < new Date()) {
-			throw new BadRequestException(RoomInvitationLinkValidationError.EXPIRED);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.EXPIRED);
 		}
 		if (roomInvitationLink.isOnlyForTeachers && isTeacher === false) {
-			throw new ForbiddenException(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS);
+			throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.ONLY_FOR_TEACHERS);
 		}
+		const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
+
 		if (roomInvitationLink.restrictedToCreatorSchool && user.school.id !== roomInvitationLink.creatorSchoolId) {
-			throw new ForbiddenException(RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.RESTRICTED_TO_CREATOR_SCHOOL,
+				creatorSchool.name
+			);
 		}
 		if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
-			throw new ForbiddenException(RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL);
+			const creatorSchool = await this.schoolService.getSchoolById(roomInvitationLink.creatorSchoolId);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.CANT_INVITE_STUDENTS_FROM_OTHER_SCHOOL,
+				creatorSchool.name
+			);
 		}
 	}
 
