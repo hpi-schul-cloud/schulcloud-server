@@ -122,7 +122,11 @@ export class RoomInvitationLinkUc {
 
 	private async checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): Promise<void> {
 		if (!roomInvitationLink) {
-			throw new NotFoundException(RoomInvitationLinkValidationError.INVALID_LINK);
+			throw new RoomInvitationLinkError(
+				RoomInvitationLinkValidationError.INVALID_LINK,
+				undefined,
+				HttpStatus.NOT_FOUND
+			);
 		}
 
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
