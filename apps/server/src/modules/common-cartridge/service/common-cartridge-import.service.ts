@@ -115,10 +115,6 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const card = await this.columnClient.createCard(columnResponse.id, {});
 
-		await this.cardClient.updateCardTitle(card.id, {
-			title: cardProps.title,
-		});
-
 		await this.createCardElement(parser, card.id, cardProps);
 	}
 
