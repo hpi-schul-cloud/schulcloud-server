@@ -225,7 +225,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
-		describe.only("when the link is restricted to creator's school", () => {
+		describe("when the link is restricted to creator's school", () => {
 			describe.each([
 				[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
 				[UserRole.STUDENT, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
@@ -303,7 +303,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		});
 
 		describe('when link activeUntil is set', () => {
-			const EXPIRED = { message: RoomInvitationLinkValidationError.EXPIRED.toString() };
+			const EXPIRED = { details: { validationMessage: RoomInvitationLinkValidationError.EXPIRED.toString() } };
 			const SUCCESS = { id: expect.any(String) };
 			const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 			const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);

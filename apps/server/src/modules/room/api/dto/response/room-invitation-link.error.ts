@@ -24,7 +24,7 @@ export class RoomInvitationLinkError extends BusinessError {
 			{
 				type: 'ROOM_INVITATION_LINK_VALIDATION_ERROR',
 				title: 'Room Invitation link validation error',
-				defaultMessage: 'wte',
+				defaultMessage: 'room invitation link is invalid',
 			},
 			code
 		);
