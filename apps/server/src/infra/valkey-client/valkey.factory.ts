@@ -16,7 +16,7 @@ export class ValkeyFactory {
 	): Promise<StorageClient> {
 		let storageClient: StorageClient;
 
-		if (config.CLUSTER_ENABLED) {
+		if (config.CLUSTER_ENABLED === true) {
 			storageClient = await ValkeyFactory.createValkeySentinelInstance(config, logger);
 		} else if (config.URI) {
 			storageClient = ValkeyFactory.createNewValkeyInstance(config.URI);
