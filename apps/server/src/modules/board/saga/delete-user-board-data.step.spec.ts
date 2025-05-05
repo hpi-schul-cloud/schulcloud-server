@@ -2,23 +2,23 @@ import { Logger } from '@core/logger';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '../../deletion';
+	ModuleName,
+	SagaService,
+	StepOperationReportBuilder,
+	StepOperationType,
+	StepReportBuilder,
+} from '@modules/saga';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { UserDeletionInjectionService } from '../../deletion';
 import { BoardNodeEntity } from '../repo';
+import { BoardNodeService, MediaBoardService } from '../service';
 import { mediaBoardFactory } from '../testing';
-import { BoardNodeService } from './board-node.service';
-import { MediaBoardService } from './media-board';
-import { BoardUserDeleteService } from './board-user-delete.service';
+import { DeleteUserBoardDataStep } from './delete-user-board-data.step';
 
-describe(BoardUserDeleteService.name, () => {
+describe(DeleteUserBoardDataStep.name, () => {
 	let module: TestingModule;
-	let service: BoardUserDeleteService;
+	let service: DeleteUserBoardDataStep;
 
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
@@ -28,7 +28,11 @@ describe(BoardUserDeleteService.name, () => {
 
 		module = await Test.createTestingModule({
 			providers: [
-				BoardUserDeleteService,
+				DeleteUserBoardDataStep,
+				{
+					provide: SagaService,
+					useValue: createMock<SagaService>(),
+				},
 				{
 					provide: BoardNodeService,
 					useValue: createMock<BoardNodeService>(),
@@ -50,7 +54,7 @@ describe(BoardUserDeleteService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(BoardUserDeleteService);
+		service = module.get(DeleteUserBoardDataStep);
 		boardNodeService = module.get(BoardNodeService);
 		mediaBoardService = module.get(MediaBoardService);
 	});
@@ -80,7 +84,7 @@ describe(BoardUserDeleteService.name, () => {
 			it('should delete all user boards', async () => {
 				const { board, userId } = setup();
 
-				await service.deleteUserData(userId);
+				await service.execute({ userId });
 
 				expect(boardNodeService.delete).toHaveBeenCalledWith(board);
 			});
@@ -88,11 +92,11 @@ describe(BoardUserDeleteService.name, () => {
 			it('should return a report report', async () => {
 				const { board, userId } = setup();
 
-				const result = await service.deleteUserData(userId);
+				const result = await service.execute({ userId });
 
 				expect(result).toEqual(
-					DomainDeletionReportBuilder.build(DomainName.BOARD, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [board.id]),
+					StepReportBuilder.build(ModuleName.BOARD, [
+						StepOperationReportBuilder.build(StepOperationType.DELETE, 1, [board.id]),
 					])
 				);
 			});
