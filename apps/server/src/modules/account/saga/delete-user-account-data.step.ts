@@ -12,7 +12,7 @@ import {
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
 import { EntityId } from '@shared/domain/types';
-import { AccountService } from '..';
+import { AccountService } from '../domain';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
