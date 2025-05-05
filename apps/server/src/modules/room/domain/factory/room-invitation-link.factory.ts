@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { RoomInvitationLink, RoomInvitationLinkDto, RoomInvitationLinkProps } from '../do/room-invitation-link.do';
 
 export class RoomInvitationLinkFactory {
