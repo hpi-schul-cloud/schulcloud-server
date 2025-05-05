@@ -223,7 +223,7 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file);
 
 				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(2);
-				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(3);
+				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(2);
 				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledTimes(1);
 			});
 
@@ -233,7 +233,7 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file);
 
 				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
-				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(3);
+				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(2);
 			});
 		});
 	});
