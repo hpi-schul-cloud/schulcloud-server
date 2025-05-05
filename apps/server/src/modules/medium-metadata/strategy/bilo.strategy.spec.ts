@@ -8,7 +8,11 @@ import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MediumMetadataStrategyNotImplementedLoggableException, MediumNotFoundLoggableException } from '../loggable';
+import {
+	MediumMetadataNotFoundLoggableException,
+	MediumMetadataStrategyNotImplementedLoggableException,
+	MediumNotFoundLoggableException,
+} from '../loggable';
 import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { BiloStrategy } from './bilo.strategy';
@@ -74,7 +78,7 @@ describe(BiloStrategy.name, () => {
 			});
 		});
 
-		describe('when metadata not found', () => {
+		describe('when medium not found', () => {
 			const setup = () => {
 				const mediumId = 'medium-id';
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
@@ -92,6 +96,25 @@ describe(BiloStrategy.name, () => {
 			});
 		});
 
+		describe('when medium metadata not found', () => {
+			const setup = () => {
+				const mediumId = 'medium-id';
+				const mediaSource = mediaSourceFactory.withBildungslogin().build();
+				biloMediaClientAdapter.fetchMediumMetadata.mockRejectedValueOnce(
+					new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.id)
+				);
+
+				return { mediumId, mediaSource };
+			};
+
+			it('should throw not found exception', async () => {
+				const { mediumId, mediaSource } = setup();
+
+				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
+
+				await expect(promise).rejects.toThrow(MediumMetadataNotFoundLoggableException);
+			});
+		});
 		describe('when media provider returns bad request response', () => {
 			const setup = () => {
 				const mediumId = 'medium-id';

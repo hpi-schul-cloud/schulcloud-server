@@ -6,11 +6,7 @@ import {
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
-import {
-	MediumMetadataNotFoundLoggableException,
-	MediumMetadataStrategyNotImplementedLoggableException,
-	MediumNotFoundLoggableException,
-} from '../loggable';
+import { MediumMetadataStrategyNotImplementedLoggableException, MediumNotFoundLoggableException } from '../loggable';
 import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataStrategy } from './interface';
@@ -29,9 +25,9 @@ export class BiloStrategy implements MediumMetadataStrategy {
 				mediumId,
 				mediaSource
 			);
-			if (!metadataItem) {
-				throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
-			}
+			// if (!metadataItem) {
+			// 	throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
+			// }
 
 			const mediumMetadataDto: MediumMetadataDto =
 				MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(metadataItem);

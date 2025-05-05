@@ -19,6 +19,7 @@ import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { lastValueFrom } from 'rxjs';
+import { MediumMetadataNotFoundLoggableException } from '../../modules/medium-metadata/loggable';
 import { MediaQueryBadResponseReport } from './interface';
 import {
 	BiloBadRequestResponseLoggableException,
@@ -55,7 +56,7 @@ export class BiloMediaClientAdapter {
 		if (axiosResponse.data.length) {
 			await this.validateResponse(axiosResponse.data[0]);
 		} else {
-			throw new BiloMediaQueryUnprocessableResponseLoggableException();
+			throw new MediumMetadataNotFoundLoggableException(id, biloMediaSource.id);
 		}
 
 		const metadata: BiloMediaQueryDataResponse = axiosResponse.data[0].data;
