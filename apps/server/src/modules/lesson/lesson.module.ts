@@ -7,11 +7,18 @@ import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
 import { EtherpadService, LessonCopyService, LessonService } from './domain';
 import { LessonRepo } from './repo';
-import { DeletionModule } from '@modules/deletion';
+import { DeleteUserLessonDataStep } from './saga';
 
 @Module({
-	imports: [FilesStorageClientModule, LoggerModule, CopyHelperModule, TaskModule, AuthorizationModule, DeletionModule],
-	providers: [LessonRepo, LessonService, EtherpadService, LessonCopyService, FeathersServiceProvider],
+	imports: [FilesStorageClientModule, LoggerModule, CopyHelperModule, TaskModule, AuthorizationModule],
+	providers: [
+		LessonRepo,
+		LessonService,
+		EtherpadService,
+		LessonCopyService,
+		FeathersServiceProvider,
+		DeleteUserLessonDataStep,
+	],
 	exports: [LessonService, LessonCopyService],
 })
 export class LessonModule {}
