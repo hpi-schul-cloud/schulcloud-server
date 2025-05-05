@@ -18,7 +18,7 @@ import { FileEntity } from '../entity';
 
 @Injectable()
 export class DeleteUserFilesDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.FILES;
+	private readonly moduleName = ModuleName.FILES;
 
 	constructor(
 		private readonly sagaService: SagaService,

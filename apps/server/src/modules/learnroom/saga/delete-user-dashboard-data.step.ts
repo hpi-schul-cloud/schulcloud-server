@@ -18,7 +18,7 @@ import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo
 
 @Injectable()
 export class DeleteUserDashboardDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.LEARNROOM_DASHBOARD;
+	private readonly moduleName = ModuleName.LEARNROOM_DASHBOARD;
 
 	constructor(
 		private readonly sagaService: SagaService,

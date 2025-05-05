@@ -18,7 +18,7 @@ import { ClassesRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserClassDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.CLASS;
+	private readonly moduleName = ModuleName.CLASS;
 
 	constructor(
 		private readonly sagaService: SagaService,

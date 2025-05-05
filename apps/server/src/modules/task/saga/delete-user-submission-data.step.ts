@@ -17,7 +17,7 @@ import { Submission, SubmissionRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserSubmissionDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.TASK_SUBMISSION;
+	private readonly moduleName = ModuleName.TASK_SUBMISSION;
 
 	constructor(
 		private readonly sagaService: SagaService,

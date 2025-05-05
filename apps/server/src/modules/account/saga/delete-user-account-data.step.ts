@@ -17,7 +17,7 @@ import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.ACCOUNT;
+	private readonly moduleName = ModuleName.ACCOUNT;
 
 	constructor(
 		private readonly sagaService: SagaService,

@@ -17,7 +17,7 @@ import { CourseGroupEntity, CourseGroupRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserCourseGroupDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.COURSE_COURSEGROUP;
+	private readonly moduleName = ModuleName.COURSE_COURSEGROUP;
 
 	constructor(
 		private readonly sagaService: SagaService,

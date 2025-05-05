@@ -18,7 +18,7 @@ import { Task, TaskRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.TASK;
+	private readonly moduleName = ModuleName.TASK;
 
 	constructor(
 		private readonly sagaService: SagaService,

@@ -11,7 +11,7 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 		private readonly sagaRegistry: SagaRegistryService
 	) {
 		super('userDeletion');
-		sagaRegistry.registerSaga(this);
+		this.sagaRegistry.registerSaga(this);
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<boolean> {
