@@ -14,7 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { Algorithm, SignOptions } from 'jsonwebtoken';
-import { AuthenticationConfig, CacheConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
+import { AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -47,13 +47,13 @@ const createJwtOptions = (configService: ConfigService<AuthenticationConfig>) =>
 	return options;
 };
 
-const createValkeyModuleOptions = (configService: ConfigService<CacheConfig>): ValkeyConfig => {
+const createValkeyModuleOptions = (configService: ConfigService<AuthenticationConfig>): ValkeyConfig => {
 	const config = {
-		URI: configService.get('SESSION_VALKEY_URI', { infer: true }),
-		CLUSTER_ENABLED: configService.get('SESSION_VALKEY_CLUSTER_ENABLED', { infer: true }),
-		SENTINEL_NAME: configService.get('SESSION_VALKEY_SENTINEL_NAME', { infer: true }),
-		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY_SENTINEL_PASSWORD', { infer: true }),
-		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY_SENTINEL_SERVICE_NAME', { infer: true }),
+		MODE: configService.getOrThrow('SESSION_VALKEY__MODE', { infer: true }),
+		URI: configService.get('SESSION_VALKEY__URI', { infer: true }),
+		SENTINEL_NAME: configService.get('SESSION_VALKEY__SENTINEL_NAME', { infer: true }),
+		SENTINEL_PASSWORD: configService.get('SESSION_VALKEY__SENTINEL_PASSWORD', { infer: true }),
+		SENTINEL_SERVICE_NAME: configService.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME', { infer: true }),
 	};
 
 	return config;

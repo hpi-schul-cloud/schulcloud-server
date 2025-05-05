@@ -2,7 +2,7 @@ import { DomainErrorHandler, ErrorModule } from '@core/error';
 import { Logger, LoggerModule } from '@core/logger';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { StorageClient, ValkeyClientModuleAsyncOptions } from './types';
-import { ValkeyConfig } from './valkey.config';
+import { ValkeyConfig, ValkeyMode } from './valkey.config';
 import { VALKEY_CLIENT_OPTIONS } from './valkey.constants';
 import { ValkeyFactory } from './valkey.factory';
 
@@ -21,8 +21,7 @@ const createValkeyClient = (
 export class ValkeyClientModule {
 	public static registerInMemory(injectionToken: string): DynamicModule {
 		return this.register(injectionToken, {
-			CLUSTER_ENABLED: false,
-			URI: undefined,
+			MODE: ValkeyMode.IN_MEMORY,
 		});
 	}
 

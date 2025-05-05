@@ -1,5 +1,11 @@
+export enum ValkeyMode {
+	CLUSTER = 'cluster',
+	SINGLE = 'single',
+	IN_MEMORY = 'in-memory',
+}
+
 export interface ValkeyConfig {
-	CLUSTER_ENABLED?: boolean;
+	MODE: ValkeyMode;
 	URI?: string;
 	SENTINEL_NAME?: string;
 	SENTINEL_PASSWORD?: string;

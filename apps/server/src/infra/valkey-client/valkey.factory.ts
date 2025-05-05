@@ -6,28 +6,36 @@ import * as util from 'util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
 import { SentinalHost, StorageClient } from './types';
-import { ValkeyConfig } from './valkey.config';
+import { ValkeyConfig, ValkeyMode } from './valkey.config';
 
 export class ValkeyFactory {
 	public static async build(
-		config: ValkeyConfig,
+		valkeyConfig: ValkeyConfig,
 		logger: Logger,
 		domainErrorHandler: DomainErrorHandler
 	): Promise<StorageClient> {
 		let storageClient: StorageClient;
 
-		if (config.CLUSTER_ENABLED === true) {
-			storageClient = await ValkeyFactory.createValkeySentinelInstance(config, logger);
-		} else if (config.URI) {
-			storageClient = ValkeyFactory.createNewValkeyInstance(config.URI);
+		if (valkeyConfig.MODE === ValkeyMode.CLUSTER) {
+			storageClient = await ValkeyFactory.createValkeySentinelInstance(valkeyConfig, logger);
+		} else if (valkeyConfig.MODE === ValkeyMode.SINGLE) {
+			storageClient = ValkeyFactory.createNewValkeyInstance(valkeyConfig.URI);
+		} else if (valkeyConfig.MODE === ValkeyMode.IN_MEMORY) {
+			storageClient = ValkeyFactory.createInMemoryInstance(logger);
 		} else {
-			storageClient = new InMemoryClient(logger);
+			throw new Error(`Undefined valkey mode ${JSON.stringify(valkeyConfig.MODE)}`);
 		}
 
 		storageClient.on('error', (error) => domainErrorHandler.exec(error));
 		storageClient.on('connect', (msg: unknown) => logger.info(new ConnectedLoggable(msg)));
 
 		return storageClient;
+	}
+
+	private static createInMemoryInstance(logger: Logger): StorageClient {
+		const inMemoryClientInstance = new InMemoryClient(logger);
+
+		return inMemoryClientInstance;
 	}
 
 	private static createNewValkeyInstance(uri?: string): ValkeyClient {
@@ -38,7 +46,7 @@ export class ValkeyFactory {
 
 			return valkeyClientInstance;
 		} catch (err) {
-			throw new Error('Can not create valky instance.', { cause: err });
+			throw new Error('Can not create valkey instance.', { cause: err });
 		}
 	}
 
@@ -60,7 +68,7 @@ export class ValkeyFactory {
 
 			return valkeyClientInstance;
 		} catch (err) {
-			throw new Error('Can not create valky "sentinal" instance.', { cause: err });
+			throw new Error('Can not create valkey "sentinal" instance.', { cause: err });
 		}
 	}
 
