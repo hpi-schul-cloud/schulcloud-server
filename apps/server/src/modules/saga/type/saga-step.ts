@@ -9,7 +9,7 @@ export interface StepType {
 	// step2: { params: { message: string }; result: boolean };
 }
 
-export const enum ModuleName {
+export enum ModuleName {
 	ACCOUNT = 'account',
 	BOARD = 'board',
 	CLASS = 'class',

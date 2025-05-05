@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { SagaRegistryService, SagaStepRegistryService } from '../service';
-import { ModuleName } from '../type';
+import { ModuleName, StepReport } from '../type';
 import { Saga } from '../type/saga';
 
 @Injectable()
@@ -14,19 +14,39 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 		this.sagaRegistry.registerSaga(this);
 	}
 
-	public async execute(params: { userId: EntityId }): Promise<boolean> {
+	public async execute(params: { userId: EntityId }): Promise<StepReport[]> {
 		console.log('Executing userDeletion with userId:', params.userId);
 
-		// TODO make sure all necessary steps are registered
+		// TODO define proper sequence of steps
+		const moduleNames = Object.values(ModuleName);
 
-		await this.stepRegistry.executeStep(ModuleName.TASK_SUBMISSION, 'deleteUserData', {
-			userId: params.userId,
-		});
+		this.checkAllStepsRegistered(moduleNames);
 
-		await this.stepRegistry.executeStep(ModuleName.TASK, 'deleteUserData', {
-			userId: params.userId,
-		});
+		const results = await Promise.allSettled(
+			moduleNames.map((moduleName) =>
+				this.stepRegistry.executeStep(moduleName, 'deleteUserData', {
+					userId: params.userId,
+				})
+			)
+		);
 
-		return await Promise.resolve(true);
+		const successReports: StepReport[] = [];
+
+		for (const result of results) {
+			if (result.status === 'rejected') {
+				throw new Error(`Step failed: ${result.reason as string}`);
+			} else {
+				const reports = Array.isArray(result.value) ? result.value : [result.value];
+				successReports.push(...reports);
+			}
+		}
+
+		return successReports;
+	}
+
+	private checkAllStepsRegistered(moduleNames: ModuleName[]): void {
+		for (const moduleName of moduleNames) {
+			this.stepRegistry.checkStep(moduleName, 'deleteUserData');
+		}
 	}
 }
