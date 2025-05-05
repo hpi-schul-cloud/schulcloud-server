@@ -9,7 +9,10 @@ import { DeletionLog } from '../do';
 export class DeletionLogService {
 	constructor(private readonly deletionLogRepo: DeletionLogRepo) {}
 
-	async createDeletionLog(deletionRequestId: EntityId, domainDeletionReport: DomainDeletionReport): Promise<void> {
+	public async createDeletionLog(
+		deletionRequestId: EntityId,
+		domainDeletionReport: DomainDeletionReport
+	): Promise<void> {
 		const newDeletionLog = new DeletionLog({
 			id: new ObjectId().toHexString(),
 			deletionRequestId,
@@ -24,7 +27,7 @@ export class DeletionLogService {
 		await this.deletionLogRepo.create(newDeletionLog);
 	}
 
-	async findByDeletionRequestId(deletionRequestId: EntityId): Promise<DeletionLog[]> {
+	public async findByDeletionRequestId(deletionRequestId: EntityId): Promise<DeletionLog[]> {
 		const deletionLogs: DeletionLog[] = await this.deletionLogRepo.findAllByDeletionRequestId(deletionRequestId);
 
 		return deletionLogs;
