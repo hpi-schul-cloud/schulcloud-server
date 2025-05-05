@@ -130,24 +130,6 @@ export class CommonCartridgeImportService {
 		for await (const card of cards) {
 			await this.createCard(parser, columnResponse, card);
 		}
-
-		// const elementsOfAColumn = parser
-		// 	.getOrganizations()
-		// 	.filter(
-		// 		(organization) =>
-		// 			organization.pathDepth === DEPTH_CARD_ELEMENTS &&
-		// 			cards.some((card) => organization.path.startsWith(card.path))
-		// 	);
-
-		// console.log('elementsOfAColumn', elementsOfAColumn);
-		// console.log('cardsOfAColumn', cards);
-
-		// const cardsWithResource = elementsOfAColumn.filter((card) => card.isResource);
-		// const cardsWithoutResource = elementsOfAColumn.filter((card) => !card.isResource);
-
-		// for await (const card of cardsWithResource) {
-		// 	await this.createCardWithElement(parser, columnResponse, card);
-		// }
 	}
 
 	private async createCard(
@@ -169,20 +151,6 @@ export class CommonCartridgeImportService {
 			await this.createCardElement(parser, card.id, cardElement);
 		}
 	}
-
-	// private async createCardWithElement(
-	// 	parser: CommonCartridgeFileParser,
-	// 	column: ColumnResponse,
-	// 	cardProps: CommonCartridgeImportOrganizationProps
-	// ): Promise<void> {
-	// 	const card = await this.columnClient.createCard(column.id, {});
-
-	// 	await this.cardClient.updateCardTitle(card.id, {
-	// 		title: cardProps.title,
-	// 	});
-
-	// 	await this.createCardElement(parser, card.id, cardProps);
-	// }
 
 	private async createCardElement(
 		parser: CommonCartridgeFileParser,
