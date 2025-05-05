@@ -249,6 +249,28 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		describe('when the link is invalid', () => {
+			describe.each([[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.NOT_FOUND]])(
+				'when the user is a %s',
+				(roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+					const config = JSON.stringify(roomInvitationLinkConfig);
+					describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
+						it(`should return http status ${httpStatus}`, async () => {
+							const { loggedInClient } = await setup(roomInvitationLinkConfig, roleName, fromSameSchool);
+
+							const linkId = new ObjectId().toHexString();
+
+							const response = await loggedInClient.post(`/${linkId}`);
+							const body = response.body as { message: string };
+
+							expect(response.status).toBe(httpStatus);
+							expect(body.message).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
+						});
+					});
+				}
+			);
+		});
+
 		describe('when link requires confirmation', () => {
 			describe.each([
 				[UserRole.TEACHER, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],

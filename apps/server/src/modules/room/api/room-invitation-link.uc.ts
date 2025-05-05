@@ -90,7 +90,8 @@ export class RoomInvitationLinkUc {
 		this.checkFeatureEnabled();
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomInvitationLink = await this.roomInvitationLinkService.findById(linkId);
+
+		const [roomInvitationLink] = await this.roomInvitationLinkService.findByIds([linkId]);
 
 		this.checkValidity(roomInvitationLink, user);
 
@@ -116,7 +117,11 @@ export class RoomInvitationLinkUc {
 		}
 	}
 
-	private checkValidity(roomInvitationLink: RoomInvitationLink, user: User): void {
+	private checkValidity(roomInvitationLink: RoomInvitationLink | undefined, user: User): void {
+		if (!roomInvitationLink) {
+			throw new NotFoundException(RoomInvitationLinkValidationError.INVALID_LINK);
+		}
+
 		const isTeacher = user.getRoles().some((role) => role.name === RoleName.TEACHER);
 		const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 
