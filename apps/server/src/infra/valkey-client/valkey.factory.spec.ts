@@ -182,9 +182,7 @@ describe(ValkeyFactory.name, () => {
 					const { config } = setup();
 					config.URI = 'wrongURI';
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
-						'URI is required for creating a new Valkey instance'
-					);
+					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
 				});
 			});
 		});
