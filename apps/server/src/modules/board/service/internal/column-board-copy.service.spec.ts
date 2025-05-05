@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';

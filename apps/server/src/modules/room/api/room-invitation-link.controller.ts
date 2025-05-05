@@ -11,16 +11,20 @@ import {
 	Param,
 	Post,
 	Put,
+	Query,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
+import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
 import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
+import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
+import { RoomIdResponse } from './dto/response/room-id.response';
 
 @ApiTags('Room Invitation Link')
 @JwtAuthentication()
@@ -77,7 +81,7 @@ export class RoomInvitationLinkController {
 		return response;
 	}
 
-	@Delete(':roomInvitationLinkId')
+	@Delete()
 	@ApiOperation({ summary: 'Delete a room invitation link' })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Deletion successful' })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
@@ -86,26 +90,30 @@ export class RoomInvitationLinkController {
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@HttpCode(204)
-	public async deleteLink(
+	public async deleteLinks(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() urlParams: RoomInvitationLinkUrlParams
+		@Query() queryParams: RoomInvitationLinksQueryParams
 	): Promise<void> {
-		await this.roomInvitationLinkUc.deleteLink(currentUser.userId, urlParams.roomInvitationLinkId);
+		const roomInvitationLinkIds = Array.isArray(queryParams.roomInvitationLinkIds)
+			? queryParams.roomInvitationLinkIds
+			: [queryParams.roomInvitationLinkIds];
+		await this.roomInvitationLinkUc.deleteLinks(currentUser.userId, roomInvitationLinkIds);
 	}
 
 	@Post(':roomInvitationLinkId')
 	@ApiOperation({ summary: 'Use a room invitation link to join a room' })
-	@ApiResponse({ status: HttpStatus.OK })
+	@ApiResponse({ status: HttpStatus.OK, type: RoomIdResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@ApiExtraModels(RoomInvitationLinkError)
 	public async useLink(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomInvitationLinkUrlParams
-	): Promise<string> {
+	): Promise<RoomIdResponse> {
 		const roomId = await this.roomInvitationLinkUc.useLink(currentUser.userId, urlParams.roomInvitationLinkId);
 
-		return roomId;
+		return { id: roomId };
 	}
 }
