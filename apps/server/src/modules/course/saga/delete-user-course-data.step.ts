@@ -17,7 +17,7 @@ import { CourseEntity, CourseRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
-	private readonly moduleName: ModuleName = ModuleName.COURSE;
+	private readonly moduleName = ModuleName.COURSE;
 
 	constructor(
 		private readonly sagaService: SagaService,
@@ -41,8 +41,14 @@ export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
 
 	public async removeUserReferences(userId: EntityId): Promise<StepOperationReport> {
 		this.logger.info(
-			new UserDeletionStepOperationLoggable('Removing user from courses', this.moduleName, userId, StepStatus.PENDING)
+			new UserDeletionStepOperationLoggable(
+				'Deleting user data from Courses',
+				this.moduleName,
+				userId,
+				StepStatus.PENDING
+			)
 		);
+
 		const [courses] = await this.courseRepo.findAllByUserId(userId);
 
 		const count = await this.courseRepo.removeUserReference(userId);
@@ -51,7 +57,7 @@ export class DeleteUserCourseDataStep extends SagaStep<'deleteUserData'> {
 
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
-				'Successfully removed user from courses',
+				'Successfully removed user data from Courses',
 				this.moduleName,
 				userId,
 				StepStatus.FINISHED,
