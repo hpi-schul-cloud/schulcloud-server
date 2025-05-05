@@ -9,6 +9,7 @@ import { MediumMetadataDto } from '../dto';
 import {
 	MediumMetadataNotFoundLoggableException,
 	MediumMetadataStrategyNotImplementedLoggableException,
+	MediumNotFoundLoggableException,
 } from '../loggable';
 import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
@@ -38,7 +39,7 @@ export class BiloStrategy implements MediumMetadataStrategy {
 			return mediumMetadataDto;
 		} catch (error) {
 			if (error instanceof BiloNotFoundResponseLoggableException) {
-				throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
+				throw new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId);
 			} else if (error instanceof BiloBadRequestResponseLoggableException) {
 				throw new MediumBadRequestLoggableException(mediumId, mediaSource.sourceId);
 			} else {

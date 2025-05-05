@@ -8,10 +8,7 @@ import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client/testing';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	MediumMetadataNotFoundLoggableException,
-	MediumMetadataStrategyNotImplementedLoggableException,
-} from '../loggable';
+import { MediumMetadataStrategyNotImplementedLoggableException, MediumNotFoundLoggableException } from '../loggable';
 import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { BiloStrategy } from './bilo.strategy';
@@ -91,7 +88,7 @@ describe(BiloStrategy.name, () => {
 
 				const promise = strategy.getMediumMetadataItem(mediumId, mediaSource);
 
-				await expect(promise).rejects.toThrow(MediumMetadataNotFoundLoggableException);
+				await expect(promise).rejects.toThrow(MediumNotFoundLoggableException);
 			});
 		});
 

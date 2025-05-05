@@ -246,7 +246,7 @@ describe('MediumMetadataController (API)', () => {
 				return { loggedInClient, mediaSourceEntity };
 			};
 
-			it('should return an internal server error', async () => {
+			it('should return not found error', async () => {
 				const { loggedInClient, mediaSourceEntity } = await setup();
 
 				const response: Response = await loggedInClient.get(
