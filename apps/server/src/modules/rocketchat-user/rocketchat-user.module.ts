@@ -4,7 +4,6 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { RocketChatModule } from '@modules/rocketchat/rocket-chat.module';
 import { RocketChatUserRepo } from './repo';
 import { RocketChatUserService } from './service/rocket-chat-user.service';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
 	imports: [
@@ -16,7 +15,6 @@ import { DeletionModule } from '@modules/deletion';
 			adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
 			adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
 		}),
-		DeletionModule,
 	],
 	providers: [RocketChatUserRepo, RocketChatUserService],
 	exports: [RocketChatUserService],
