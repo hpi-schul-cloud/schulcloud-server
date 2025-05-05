@@ -18,6 +18,12 @@ export class RoomInvitationLinkRepo {
 		return domainobject;
 	}
 
+	public async findByIds(ids: EntityId[]): Promise<RoomInvitationLink[]> {
+		const entities = await this.em.find(RoomInvitationLinkEntity, { id: { $in: ids } });
+		const domainobjects = entities.map((entity) => this.roomInvitationLinkDomainMapper.mapEntityToDo(entity));
+		return domainobjects;
+	}
+
 	public async findByRoomId(roomId: EntityId): Promise<RoomInvitationLink[]> {
 		const entities = await this.em.find(RoomInvitationLinkEntity, { roomId });
 		const domainObjects = entities.map((entity) => this.roomInvitationLinkDomainMapper.mapEntityToDo(entity));
@@ -29,8 +35,10 @@ export class RoomInvitationLinkRepo {
 		await this.em.persistAndFlush(entity);
 	}
 
-	public async delete(id: EntityId): Promise<void> {
-		const entity = await this.em.findOneOrFail(RoomInvitationLinkEntity, id);
-		await this.em.removeAndFlush(entity);
+	public async delete(ids: EntityId[]): Promise<void> {
+		const entities = await this.em.find(RoomInvitationLinkEntity, { id: { $in: ids } });
+		const promises = entities.map((entity) => this.em.remove(entity));
+		await Promise.all(promises);
+		await this.em.flush();
 	}
 }

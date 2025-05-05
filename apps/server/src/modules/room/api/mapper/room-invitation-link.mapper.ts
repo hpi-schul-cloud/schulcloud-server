@@ -19,8 +19,11 @@ export class RoomInvitationLinkMapper {
 		return response;
 	}
 
-	public static mapToRoomInvitationLinksResponse(links: RoomInvitationLinkResponse[]): RoomInvitationLinkListResponse {
-		const response = new RoomInvitationLinkListResponse(links);
+	public static mapToRoomInvitationLinkListResponse(
+		links: RoomInvitationLinkResponse[]
+	): RoomInvitationLinkListResponse {
+		const mappedLinks = links.map((link) => this.mapToRoomInvitationLinkResponse(link));
+		const response = new RoomInvitationLinkListResponse(mappedLinks);
 
 		return response;
 	}
