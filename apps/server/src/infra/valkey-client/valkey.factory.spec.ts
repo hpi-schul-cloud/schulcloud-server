@@ -5,6 +5,7 @@ import Valkey from 'iovalkey';
 import * as util from 'util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ValkeyFactory } from './valkey.factory';
+import { ValkeyMode } from './valkey.config';
 
 jest.mock('iovalkey');
 jest.mock('util');
@@ -18,11 +19,10 @@ describe(ValkeyFactory.name, () => {
 	});
 
 	describe('createRedisInstance', () => {
-		describe('when CLUSTER_ENABLED is false and URI is undefined', () => {
+		describe('when config mode is in memory', () => {
 			const setup = () => {
 				const config = {
-					CLUSTER_ENABLED: false,
-					URI: undefined,
+					MODE: ValkeyMode.IN_MEMORY,
 				};
 
 				return { config };
@@ -37,14 +37,14 @@ describe(ValkeyFactory.name, () => {
 			});
 		});
 
-		describe('when CLUSTER_ENABLED is true', () => {
+		describe('when config mode is cluster', () => {
 			const setup = () => {
 				const sentinelServiceName = 'serviceName';
 				const sentinelName = 'sentinelName';
 				const sentinelPassword = 'sentinelPassword';
 
 				const config = {
-					CLUSTER_ENABLED: true,
+					MODE: ValkeyMode.CLUSTER,
 					SENTINEL_SERVICE_NAME: sentinelServiceName,
 					SENTINEL_NAME: sentinelName,
 					SENTINEL_PASSWORD: sentinelPassword,
@@ -112,7 +112,7 @@ describe(ValkeyFactory.name, () => {
 					});
 
 					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
-						'Can not create valky "sentinal" instance.'
+						'Can not create valkey "sentinal" instance.'
 					);
 				});
 
@@ -148,10 +148,10 @@ describe(ValkeyFactory.name, () => {
 			});
 		});
 
-		describe('when CLUSTER_ENABLED is false and URI exists', () => {
+		describe('when config mode is single and uri exists', () => {
 			const setup = () => {
 				const config = {
-					CLUSTER_ENABLED: false,
+					MODE: ValkeyMode.SINGLE,
 					URI: 'redis://localhost:6379',
 				};
 
@@ -184,6 +184,23 @@ describe(ValkeyFactory.name, () => {
 
 					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
 				});
+			});
+		});
+
+		describe('when config mode is single and uri undefined', () => {
+			const setup = () => {
+				const config = {
+					MODE: ValkeyMode.SINGLE,
+					URI: undefined,
+				};
+
+				return { config };
+			};
+
+			it('URI is required for creating a new Valkey instance', async () => {
+				const { config } = setup();
+
+				await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
 			});
 		});
 	});
