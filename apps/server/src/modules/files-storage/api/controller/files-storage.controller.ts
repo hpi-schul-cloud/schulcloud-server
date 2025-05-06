@@ -264,7 +264,7 @@ export class FilesStorageController {
 	}
 
 	@ApiOperation({ summary: 'Mark several files for deletion. The files are permanently deleted after a certain time.' })
-	@ApiResponse({ status: 200, type: FileRecordResponse })
+	@ApiResponse({ status: 200, type: FileRecordListResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
