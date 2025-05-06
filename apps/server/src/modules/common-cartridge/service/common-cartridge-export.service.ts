@@ -27,6 +27,7 @@ import {
 	LinkElementResponseDto,
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
+import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -209,33 +210,59 @@ export class CommonCartridgeExportService {
 		element: CardResponseElementsInnerDto,
 		cardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
-		if (RichTextElementResponseDto.isRichTextElement(element)) {
-			const resource = this.mapper.mapRichTextElementToResource(element);
+		switch (element.type) {
+			case ContentElementType.RICH_TEXT:
+				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
+				cardOrganization.addResource(resource);
+				break;
+			case ContentElementType.LINK:
+				const linkResource = this.mapper.mapLinkElementToResource(element as LinkElementResponseDto);
+				cardOrganization.addResource(linkResource);
+				break;
+			case ContentElementType.FILE:
+				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+				await Promise.all(
+					filesMetadata.map(async (fileMetadata) => {
+						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
 
-			cardOrganization.addResource(resource);
+						if (file) {
+							const resource = this.mapper.mapFileToResource(fileMetadata, file, element as FileElementResponseDto);
+
+							cardOrganization.addResource(resource);
+						}
+					})
+				);
+				break;
+			default:
+				break;
 		}
+		// if (RichTextElementResponseDto.isRichTextElement(element)) {
+		// 	const resource = this.mapper.mapRichTextElementToResource(element);
 
-		if (LinkElementResponseDto.isLinkElement(element)) {
-			const resource = this.mapper.mapLinkElementToResource(element);
+		// 	cardOrganization.addResource(resource);
+		// }
 
-			cardOrganization.addResource(resource);
-		}
+		// if (LinkElementResponseDto.isLinkElement(element)) {
+		// 	const resource = this.mapper.mapLinkElementToResource(element);
 
-		if (FileElementResponseDto.isFileElement(element)) {
-			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+		// 	cardOrganization.addResource(resource);
+		// }
 
-			await Promise.all(
-				filesMetadata.map(async (fileMetadata) => {
-					const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+		// if (FileElementResponseDto.isFileElement(element)) {
+		// 	const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
-					if (file) {
-						const resource = this.mapper.mapFileToResource(fileMetadata, file, element);
+		// 	await Promise.all(
+		// 		filesMetadata.map(async (fileMetadata) => {
+		// 			const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
 
-						cardOrganization.addResource(resource);
-					}
-				})
-			);
-		}
+		// 			if (file) {
+		// 				const resource = this.mapper.mapFileToResource(fileMetadata, file, element);
+
+		// 				cardOrganization.addResource(resource);
+		// 			}
+		// 		})
+		// 	);
+		// }
 	}
 
 	private filterTasksFromBoardElements(elements: BoardElementDto[]): BoardTaskDto[] {
