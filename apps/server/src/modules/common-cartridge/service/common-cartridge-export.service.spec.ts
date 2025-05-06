@@ -23,7 +23,7 @@ import {
 } from '../common-cartridge-client/room-client/dto';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import {
-	boardCloumnBoardFactory,
+	boardColumnFactory,
 	boardLessonFactory,
 	boardTaskFactory,
 	columnBoardFactory,
@@ -33,7 +33,7 @@ import {
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -72,7 +72,7 @@ describe('CommonCartridgeExportService', () => {
 		room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
 		room.elements[1].content.id = lesson.lessonId;
 		room.elements[1].content.name = lesson.name;
-		room.elements[2].content = new BoardColumnBoardDto(boardCloumnBoardFactory.build());
+		room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
 
 		coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 		lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);

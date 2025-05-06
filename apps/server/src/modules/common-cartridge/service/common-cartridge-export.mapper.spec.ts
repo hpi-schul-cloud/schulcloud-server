@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto } from '@modules/files-storage-client';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import {
 	boardTaskFactory,
 	courseMetadataFactory,
