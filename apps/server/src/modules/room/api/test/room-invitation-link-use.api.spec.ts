@@ -19,6 +19,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
 import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
+import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
@@ -249,6 +250,28 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		describe('when the link is invalid', () => {
+			describe.each([[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.NOT_FOUND]])(
+				'when the user is a %s',
+				(roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+					const config = JSON.stringify(roomInvitationLinkConfig);
+					describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
+						it(`should return http status ${httpStatus}`, async () => {
+							const { loggedInClient } = await setup(roomInvitationLinkConfig, roleName, fromSameSchool);
+
+							const linkId = new ObjectId().toHexString();
+
+							const response = await loggedInClient.post(`/${linkId}`);
+							const body = response.body as RoomInvitationLinkError;
+
+							expect(response.status).toBe(httpStatus);
+							expect(body.details?.validationMessage).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
+						});
+					});
+				}
+			);
+		});
+
 		describe('when link requires confirmation', () => {
 			describe.each([
 				[UserRole.TEACHER, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],
@@ -281,7 +304,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		});
 
 		describe('when link activeUntil is set', () => {
-			const EXPIRED = { message: RoomInvitationLinkValidationError.EXPIRED.toString() };
+			const EXPIRED = { details: { validationMessage: RoomInvitationLinkValidationError.EXPIRED.toString() } };
 			const SUCCESS = { id: expect.any(String) };
 			const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 			const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
