@@ -12,6 +12,7 @@ import {
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
+	fileFolderElementFactory,
 	h5pElementFactory,
 	linkElementFactory,
 } from '../../testing';
@@ -67,6 +68,20 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		describe('when called with file element', () => {
 			const setup = () => {
 				return { boardNode: fileElementFactory.build() };
+			};
+
+			it('should delete files', async () => {
+				const { boardNode } = setup();
+
+				await service.afterDelete(boardNode);
+
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+			});
+		});
+
+		describe('when called with file folder element', () => {
+			const setup = () => {
+				return { boardNode: fileFolderElementFactory.build() };
 			};
 
 			it('should delete files', async () => {
