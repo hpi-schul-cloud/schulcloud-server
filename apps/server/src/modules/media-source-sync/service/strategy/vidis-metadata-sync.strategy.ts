@@ -146,8 +146,10 @@ export class VidisMetadataSyncStrategy extends BaseMetadataSyncStrategy {
 				throw new UnknownLogoFileTypeLoggableException();
 			}
 
-			externalTool.logo = vidisMetadata.logo;
-			externalTool.logoUrl = `data:${contentType.valueOf()};base64,${vidisMetadata.logo}`;
+			const logo = `data:${contentType.valueOf()};base64,${vidisMetadata.logo}`;
+
+			externalTool.logo = logo;
+			externalTool.logoUrl = logo;
 
 			this.externalToolLogoService.validateLogoSize(externalTool);
 		} catch (error: unknown) {

@@ -118,7 +118,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 								...externalTools[i].getProps(),
 								name: metadataItems[i].name,
 								description: metadataItems[i].description,
-								logo: metadataItems[i].logo,
+								logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataItems[i].logo as string}`,
 								logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItems[i].logo as string}`,
 							},
 							externalTools[i].id
@@ -266,7 +266,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 					const updatedExternalTool = externalToolFactory.buildWithId(
 						{
 							...externalTool.getProps(),
-							logo: metadataItem.logo,
+							logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 							description: metadataItem.description,
 						},
@@ -396,7 +396,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 						{
 							...externalTool.getProps(),
 							description: metadataItem.description,
-							logo: metadataItem.logo,
+							logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 						},
 						externalTool.id
@@ -713,7 +713,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 								...toolWithoutError.getProps(),
 								name: metadataWithoutError.name,
 								description: metadataWithoutError.description,
-								logo: metadataWithoutError.logo,
+								logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataWithoutError.logo as string}`,
 								logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataWithoutError.logo as string}`,
 							},
 							toolWithoutError.id
