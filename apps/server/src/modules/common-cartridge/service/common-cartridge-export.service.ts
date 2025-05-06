@@ -215,7 +215,7 @@ export class CommonCartridgeExportService {
 						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
 						if (file) {
 							fileMetadataBufferArray.push({
-								id: fileMetadata.id,
+								id: element.id,
 								name: fileMetadata.name,
 								fileBuffer: file,
 								fileDto: fileMetadata,
@@ -248,11 +248,10 @@ export class CommonCartridgeExportService {
 				break;
 			case ContentElementType.FILE:
 				const filesMetadata = fileMetadataBufferArray;
-
 				filesMetadata.map((fileMetadata) => {
-					const { fileBuffer, fileDto } = fileMetadata;
+					const { id, fileBuffer, fileDto } = fileMetadata;
 
-					if (fileBuffer) {
+					if (fileBuffer && element.id === id) {
 						const resource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
 
 						cardOrganization.addResource(resource);
