@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
@@ -28,6 +28,7 @@ import {
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { forEach } from 'lodash';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -202,14 +203,40 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
-
-		await Promise.all(card.elements.map((element) => this.addCardElementToOrganization(element, cardOrganization)));
+		// check whether the card contains any files
+		// if yes, download them with their files Metadata (call is in the following function)
+		// if no, just add the card to the organization
+		const fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[] = [];
+		forEach(card.elements, async (element) => {
+			if (element.type === ContentElementType.FILE) {
+				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+				await Promise.all(
+					filesMetadata.map(async (fileMetadata) => {
+						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+						if (file) {
+							fileMetadataBufferArray.push({
+								id: fileMetadata.id,
+								name: fileMetadata.name,
+								fileBuffer: file,
+								fileDto: fileMetadata,
+							});
+						}
+					})
+				);
+			}
+		});
+		await Promise.all(
+			card.elements.map((element) =>
+				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
+			)
+		);
 	}
 
-	private async addCardElementToOrganization(
+	private addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
-		cardOrganization: CommonCartridgeOrganizationNode
-	): Promise<void> {
+		cardOrganization: CommonCartridgeOrganizationNode,
+		fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[]
+	): void {
 		switch (element.type) {
 			case ContentElementType.RICH_TEXT:
 				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
@@ -220,18 +247,18 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
-				await Promise.all(
-					filesMetadata.map(async (fileMetadata) => {
-						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+				const filesMetadata = fileMetadataBufferArray;
 
-						if (file) {
-							const resource = this.mapper.mapFileToResource(fileMetadata, file, element as FileElementResponseDto);
+				filesMetadata.map((fileMetadata) => {
+					const { fileBuffer, fileDto } = fileMetadata;
 
-							cardOrganization.addResource(resource);
-						}
-					})
-				);
+					if (fileBuffer) {
+						const resource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
+
+						cardOrganization.addResource(resource);
+					}
+				});
+
 				break;
 			default:
 				break;
