@@ -115,7 +115,7 @@ export class ValkeyFactory {
 	}
 
 	private static checkRedisURI(redisUri?: string): string {
-		const redisUriExpValidation = RegExp('^(redis://|rediss://)([a-zA-Z0-9._-]+(:[0-9]{1,5})?)(/([a-zA-Z0-9._-]+))?$');
+		const redisUriExpValidation = /^(redis:\/\/|rediss:\/\/)([a-zA-Z0-9._-]+(:\d{1,5})?)(\/([a-zA-Z0-9._-]+))?$/;
 		if (redisUri && redisUriExpValidation.test(redisUri)) {
 			return redisUri;
 		}
