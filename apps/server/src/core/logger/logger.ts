@@ -30,7 +30,7 @@ export class Logger {
 		this.logger.debug(message);
 	}
 
-	public setContext(name: string) {
+	public setContext(name: string): void {
 		this.context = name;
 	}
 }

@@ -62,10 +62,8 @@ describe('class hooks', () => {
 		let app;
 		let nestServices;
 		let server;
-		let configBefore;
 
 		before(async () => {
-			configBefore = Configuration.toObject({});
 			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
 			Configuration.set('FEATURE_GROUPS_IN_COURSE_ENABLED', 'false');
@@ -74,7 +72,6 @@ describe('class hooks', () => {
 		});
 
 		after(async () => {
-			Configuration.reset(configBefore);
 			await testObjects.cleanup();
 			await server.close();
 			await closeNestServices(nestServices);

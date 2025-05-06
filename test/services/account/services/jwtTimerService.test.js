@@ -64,7 +64,7 @@ describe('jwtTimer service', () => {
 				/* eslint-enable global-require */
 
 				redisHelpers.clearRedis();
-				Configuration.set('REDIS_URI', '//validHost:4444');
+				Configuration.set('SESSION_VALKEY_URI', '//validHost:4444');
 				const redisMock = new RedisClientMock();
 				redisHelpers.initializeRedisClient(redisMock);
 			});

@@ -45,7 +45,7 @@ const setupApp = async (orm) => {
 
 	setupFacadeLocator(app);
 	setupSwagger(app);
-	await initializeRedisClient();
+
 	app
 		.use(compress())
 		.options('*', cors())
@@ -93,8 +93,9 @@ const setupApp = async (orm) => {
 	return app;
 };
 
-module.exports = async (orm) => {
+module.exports = async (orm, cacheManager) => {
 	if (feathersApp) return feathersApp;
 	feathersApp = await setupApp(orm);
+	await initializeRedisClient(cacheManager);
 	return feathersApp;
 };
