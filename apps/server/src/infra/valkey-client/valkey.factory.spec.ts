@@ -6,6 +6,7 @@ import * as util from 'util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ValkeyFactory } from './valkey.factory';
 import { ValkeyMode } from './valkey.config';
+import { ConnectedLoggable } from './loggable';
 
 jest.mock('iovalkey');
 jest.mock('util');
@@ -34,6 +35,16 @@ describe(ValkeyFactory.name, () => {
 				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
 
 				expect(redisInstance).toBeInstanceOf(InMemoryClient);
+			});
+
+			it('should log ConnectedLoggable if connect event is emitted', async () => {
+				const { config } = setup();
+
+				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
+
+				redisInstance.emit('connect', { test: true });
+
+				expect(logger.info).toHaveBeenNthCalledWith(1, new ConnectedLoggable({ test: true }));
 			});
 		});
 

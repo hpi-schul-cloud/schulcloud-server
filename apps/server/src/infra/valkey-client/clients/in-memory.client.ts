@@ -1,12 +1,15 @@
 import { Logger } from '@core/logger';
 import { InMemoryLoggable } from '../loggable';
 import { StorageClient } from '../types';
+import EventEmitter from 'events';
 
-export class InMemoryClient implements StorageClient {
+export class InMemoryClient extends EventEmitter implements StorageClient {
 	private readonly store: Record<string, string> = {};
 	private readonly ttlStore: Record<string, number> = {};
 
-	constructor(private readonly logger: Logger) {}
+	constructor(private readonly logger: Logger) {
+		super();
+	}
 
 	public set(key: string, value: string, ...args: unknown[]): Promise<void> {
 		this.store[key] = value;
@@ -49,9 +52,5 @@ export class InMemoryClient implements StorageClient {
 		this.logger.warning(new InMemoryLoggable(`TTL - Key: ${key} - TTL: ${this.ttlStore[key]}`));
 
 		return Promise.resolve(this.ttlStore[key] ?? -1);
-	}
-
-	public on(event: string): void {
-		this.logger.warning(new InMemoryLoggable(`Event: ${event}`));
 	}
 }

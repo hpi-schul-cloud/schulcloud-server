@@ -5,4 +5,5 @@ export interface StorageClient {
 	ttl(key: string): Promise<number>;
 	keys(pattern: string): Promise<string[]>;
 	on(event: string, callback: (...args: unknown[]) => void): void;
+	emit(eventName: string, ...args: unknown[]): boolean;
 }

@@ -39,4 +39,8 @@ export class ValkeyClient implements StorageClient {
 	public on(event: string, callback: (...args: unknown[]) => void): void {
 		this.valkeyInstance.on(event, callback);
 	}
+
+	public emit(event: string, ...args: unknown[]): boolean {
+		return this.valkeyInstance.emit(event, args);
+	}
 }

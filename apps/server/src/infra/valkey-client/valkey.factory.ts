@@ -26,8 +26,12 @@ export class ValkeyFactory {
 			throw new Error(`Undefined valkey mode ${JSON.stringify(valkeyConfig.MODE)}`);
 		}
 
-		storageClient.on('error', (error) => domainErrorHandler.exec(error));
-		storageClient.on('connect', (msg: unknown) => logger.info(new ConnectedLoggable(msg)));
+		storageClient.on('error', (error) => {
+			domainErrorHandler.exec(error);
+		});
+		storageClient.on('connect', (msg: unknown) => {
+			logger.info(new ConnectedLoggable(msg));
+		});
 
 		return storageClient;
 	}
