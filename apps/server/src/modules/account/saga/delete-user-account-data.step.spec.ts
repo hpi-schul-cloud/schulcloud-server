@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DeleteUserAccountDataStep } from './delete-user-account-data.step';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@core/logger';
-import { AccountService } from '..';
+import { AccountService } from '../domain';
 import {
 	ModuleName,
 	SagaService,
