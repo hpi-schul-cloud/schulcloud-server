@@ -3,37 +3,43 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
+	ModuleName,
+	SagaService,
+	StepOperationReportBuilder,
+	StepOperationType,
+	StepReportBuilder,
+	UserDeletionStepOperationLoggable,
+} from '@modules/saga';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from 'bson';
-import { DashboardService } from '.';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DashboardElementRepo } from '../repo';
-import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { DASHBOARD_REPO, DashboardRepo, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { DeleteUserDashboardDataStep } from './delete-user-dashboard-data.step';
 
-describe(DashboardService.name, () => {
+describe(DeleteUserDashboardDataStep.name, () => {
 	let module: TestingModule;
+	let step: DeleteUserDashboardDataStep;
 	let dashboardRepo: IDashboardRepo;
 	let dashboardElementRepo: DeepMocked<DashboardElementRepo>;
-	let dashboardService: DeepMocked<DashboardService>;
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [
-				DashboardService,
+				DeleteUserDashboardDataStep,
+				{
+					provide: SagaService,
+					useValue: createMock<SagaService>(),
+				},
 				{
 					provide: DASHBOARD_REPO,
-					useValue: createMock<DashboardService>(),
+					useValue: createMock<DashboardRepo>(),
 				},
 				{
 					provide: DashboardElementRepo,
@@ -43,17 +49,12 @@ describe(DashboardService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
-				},
 			],
 		}).compile();
-		dashboardService = module.get(DashboardService);
+		step = module.get(DeleteUserDashboardDataStep);
 		dashboardRepo = module.get(DASHBOARD_REPO);
 		dashboardElementRepo = module.get(DashboardElementRepo);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -62,6 +63,20 @@ describe(DashboardService.name, () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	describe('step registration', () => {
+		it('should register the step with the saga service', () => {
+			const sagaService = createMock<SagaService>();
+			const step = new DeleteUserDashboardDataStep(
+				sagaService,
+				createMock<DashboardRepo>(),
+				createMock<DashboardElementRepo>(),
+				createMock<Logger>()
+			);
+
+			expect(sagaService.registerStep).toHaveBeenCalledWith(ModuleName.LEARNROOM_DASHBOARD, step);
+		});
 	});
 
 	describe('when deleting dashboard by userId', () => {
@@ -81,8 +96,8 @@ describe(DashboardService.name, () => {
 				userId: user.id,
 			});
 
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [dashboardId]),
+			const expectedResult = StepReportBuilder.build(ModuleName.LEARNROOM_DASHBOARD, [
+				StepOperationReportBuilder.build(StepOperationType.DELETE, 1, [dashboardId]),
 			]);
 
 			return { dashboard, expectedResult, user };
@@ -93,7 +108,7 @@ describe(DashboardService.name, () => {
 				const { user } = setup();
 				const spy = jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist');
 
-				await dashboardService.deleteUserData(user.id);
+				await step.execute({ userId: user.id });
 
 				expect(spy).toHaveBeenCalledWith(user.id);
 			});
@@ -103,7 +118,7 @@ describe(DashboardService.name, () => {
 				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(dashboard);
 				const spy = jest.spyOn(dashboardElementRepo, 'deleteByDashboardId');
 
-				await dashboardService.deleteUserData(user.id);
+				await step.execute({ userId: user.id });
 
 				expect(spy).toHaveBeenCalledWith(dashboard.id);
 			});
@@ -112,7 +127,7 @@ describe(DashboardService.name, () => {
 				const { user } = setup();
 				const spy = jest.spyOn(dashboardRepo, 'deleteDashboardByUserId');
 
-				await dashboardService.deleteUserData(user.id);
+				await step.execute({ userId: user.id });
 
 				expect(spy).toHaveBeenCalledWith(user.id);
 			});
@@ -122,9 +137,17 @@ describe(DashboardService.name, () => {
 				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(dashboard);
 				jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
 
-				const result = await dashboardService.deleteUserData(user.id);
+				const result = await step.execute({ userId: user.id });
 
 				expect(result).toEqual(expectedResult);
+			});
+
+			it('should log the deletion operation', async () => {
+				const { user } = setup();
+
+				await step.execute({ userId: user.id });
+
+				expect(logger.info).toHaveBeenCalledWith(expect.any(UserDeletionStepOperationLoggable));
 			});
 		});
 	});
