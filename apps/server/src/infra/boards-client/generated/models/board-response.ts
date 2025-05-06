@@ -18,6 +18,9 @@
 import type { BoardFeature } from './board-feature';
 // May contain unused imports in some cases
 // @ts-ignore
+import type { BoardLayout } from './board-layout';
+// May contain unused imports in some cases
+// @ts-ignore
 import type { ColumnResponse } from './column-response';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -61,10 +64,10 @@ export interface BoardResponse {
     'isVisible': boolean;
     /**
      * 
-     * @type {string}
+     * @type {BoardLayout}
      * @memberof BoardResponse
      */
-    'layout': string;
+    'layout': BoardLayout;
     /**
      * 
      * @type {Array<BoardFeature>}
@@ -72,4 +75,6 @@ export interface BoardResponse {
      */
     'features': Array<BoardFeature>;
 }
+
+
 
