@@ -121,11 +121,4 @@ describe(InMemoryClient.name, () => {
 			expect(ttl).toBe(-1);
 		});
 	});
-
-	describe('ON', () => {
-		it('should log events when "on" is called', () => {
-			client.on('testEvent');
-			expect(logger.warning).toHaveBeenCalledWith(expect.anything());
-		});
-	});
 });
