@@ -1,1 +1,1 @@
-export * from './delete-user-rocketchat-user-data.step';
+export * from './delete-user-rocketchat-data.step';
