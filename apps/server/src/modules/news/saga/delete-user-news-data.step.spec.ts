@@ -2,31 +2,39 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
+	ModuleName,
+	SagaService,
+	StepOperationReportBuilder,
+	StepOperationType,
+	StepReportBuilder,
+} from '@modules/saga';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { NewsRepo } from '../../repo';
-import { teamNewsFactory } from '../../testing';
-import { NewsService } from './news.service';
+import { NewsRepo } from '../repo';
+import { teamNewsFactory } from '../testing';
+import { DeleteUserNewsDataStep } from './delete-user-news-data.step';
 
-describe(NewsService.name, () => {
+describe(DeleteUserNewsDataStep.name, () => {
 	let module: TestingModule;
-	let service: NewsService;
+	let step: DeleteUserNewsDataStep;
 	let repo: DeepMocked<NewsRepo>;
+
+	afterAll(async () => {
+		await module.close();
+	});
 
 	beforeAll(async () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
-				NewsService,
+				DeleteUserNewsDataStep,
+				{
+					provide: SagaService,
+					useValue: createMock<SagaService>(),
+				},
 				{
 					provide: NewsRepo,
 					useValue: createMock<NewsRepo>(),
@@ -35,29 +43,27 @@ describe(NewsService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
-				},
 			],
 		}).compile();
 
-		service = module.get(NewsService);
+		step = module.get(DeleteUserNewsDataStep);
 		repo = module.get(NewsRepo);
 	});
 
-	afterEach(() => {
-		repo.findByCreatorOrUpdaterId.mockClear();
-		repo.save.mockClear();
+	beforeEach(() => {
+		jest.clearAllMocks();
 	});
 
-	afterAll(async () => {
-		await module.close();
+	describe('step registration', () => {
+		it('should register the step with the saga service', () => {
+			const sagaService = createMock<SagaService>();
+			const step = new DeleteUserNewsDataStep(sagaService, createMock<NewsRepo>(), createMock<Logger>());
+
+			expect(sagaService.registerStep).toHaveBeenCalledWith(ModuleName.NEWS, step);
+		});
 	});
 
-	describe('deleteUserData', () => {
+	describe('execute', () => {
 		describe('when user is creator or updater of news', () => {
 			const setup = () => {
 				const user1 = userFactory.build();
@@ -75,16 +81,16 @@ describe(NewsService.name, () => {
 					updater: user2,
 				});
 
-				const expectedResultWithDeletedCreator = DomainDeletionReportBuilder.build(DomainName.NEWS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [news1.id, news3.id]),
+				const expectedResultWithDeletedCreator = StepReportBuilder.build(ModuleName.NEWS, [
+					StepOperationReportBuilder.build(StepOperationType.UPDATE, 2, [news1.id, news3.id]),
 				]);
 
-				const expectedResultWithDeletedUpdater = DomainDeletionReportBuilder.build(DomainName.NEWS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [news2.id, news3.id]),
+				const expectedResultWithDeletedUpdater = StepReportBuilder.build(ModuleName.NEWS, [
+					StepOperationReportBuilder.build(StepOperationType.UPDATE, 2, [news2.id, news3.id]),
 				]);
 
-				const expectedResultWithoutUpdatedNews = DomainDeletionReportBuilder.build(DomainName.NEWS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+				const expectedResultWithoutUpdatedNews = StepReportBuilder.build(ModuleName.NEWS, [
+					StepOperationReportBuilder.build(StepOperationType.UPDATE, 0, []),
 				]);
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[news1, news3], 2]);
@@ -106,7 +112,7 @@ describe(NewsService.name, () => {
 			it('should call findByCreatorOrUpdaterId', async () => {
 				const { user1 } = setup();
 
-				await service.deleteUserData(user1.id);
+				await step.execute({ userId: user1.id });
 
 				expect(repo.findByCreatorOrUpdaterId).toHaveBeenCalledWith(user1.id);
 			});
@@ -114,7 +120,7 @@ describe(NewsService.name, () => {
 			it('should call removeUserReference', async () => {
 				const { user1 } = setup();
 
-				await service.deleteUserData(user1.id);
+				await step.execute({ userId: user1.id });
 
 				expect(repo.removeUserReference).toHaveBeenCalledWith(user1.id);
 			});
@@ -122,7 +128,7 @@ describe(NewsService.name, () => {
 			it('should return DomainDeletionReport', async () => {
 				const { expectedResultWithDeletedCreator, user1 } = setup();
 
-				const result = await service.deleteUserData(user1.id);
+				const result = await step.execute({ userId: user1.id });
 
 				expect(result).toEqual(expectedResultWithDeletedCreator);
 			});
@@ -131,8 +137,8 @@ describe(NewsService.name, () => {
 		describe('when user is neither creator nor updater', () => {
 			const setup = () => {
 				const anotherUserId = new ObjectId().toHexString();
-				const expectedResultWithoutUpdatedNews = DomainDeletionReportBuilder.build(DomainName.NEWS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+				const expectedResultWithoutUpdatedNews = StepReportBuilder.build(ModuleName.NEWS, [
+					StepOperationReportBuilder.build(StepOperationType.UPDATE, 0, []),
 				]);
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[], 0]);
@@ -146,7 +152,7 @@ describe(NewsService.name, () => {
 			it('should return response with 0 updated news', async () => {
 				const { anotherUserId, expectedResultWithoutUpdatedNews } = setup();
 
-				const result = await service.deleteUserData(anotherUserId);
+				const result = await step.execute({ userId: anotherUserId });
 
 				expect(result).toEqual(expectedResultWithoutUpdatedNews);
 			});

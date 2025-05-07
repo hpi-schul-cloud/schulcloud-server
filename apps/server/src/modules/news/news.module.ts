@@ -3,7 +3,6 @@ import { AuthorizationModule } from '@modules/authorization';
 import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { NewsController, NewsUc, TeamNewsController } from './api';
-import { NewsService } from './domain';
 import { NewsRepo } from './repo/news.repo';
 import { DeleteUserNewsDataStep } from './saga';
 
@@ -11,7 +10,7 @@ import { DeleteUserNewsDataStep } from './saga';
 @Module({
 	imports: [LoggerModule, forwardRef(() => AuthorizationModule), SagaModule],
 	controllers: [NewsController, TeamNewsController],
-	providers: [NewsUc, NewsRepo, NewsService, DeleteUserNewsDataStep],
-	exports: [NewsUc, NewsService],
+	providers: [NewsUc, NewsRepo, DeleteUserNewsDataStep],
+	exports: [NewsUc],
 })
 export class NewsModule {}
