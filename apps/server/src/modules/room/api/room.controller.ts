@@ -278,4 +278,15 @@ export class RoomController {
 
 		return Promise.resolve(response);
 	}
+
+	@Post(':roomId/copy')
+	// @RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	async copyRoom(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: CourseRoomUrlParams
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId);
+		// const dto = CopyMapper.mapToResponse(copyStatus);
+		// return dto;
+	}
 }

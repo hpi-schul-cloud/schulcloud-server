@@ -113,6 +113,14 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
+	async copyRoom(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
+		// this.checkFeatureEnabled();
+		// const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
+		// await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, context);
+		// const result = await this.courseCopyService.copyCourse({ userId, courseId });
+		// return result;
+	}
+
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
 		this.checkFeatureEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
@@ -189,6 +197,12 @@ export class RoomUc {
 	private checkFeatureEnabled(): void {
 		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
+		}
+	}
+
+	private checkFeatureRoomsDuplicationEnabled(): void {
+		if (!this.configService.get('FEATURE_ROOMS_DUPLICATION_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_DUPLICATION_ENABLED');
 		}
 	}
 
