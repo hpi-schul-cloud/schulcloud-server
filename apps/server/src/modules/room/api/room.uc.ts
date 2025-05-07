@@ -93,6 +93,7 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write);
+		console.log('roomMembershipAuthorizable', roomMembershipAuthorizable.members[0].roles);
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		await this.roomService.updateRoom(room, props);
@@ -113,8 +114,12 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
-	async copyRoom(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
-		// this.checkFeatureEnabled();
+	async copyRoom(userId: EntityId, courseId: EntityId): Promise<void> {
+		this.checkFeatureEnabled();
+		this.checkFeatureRoomsDuplicationEnabled();
+		// TODO: nur admins und owners des Raums dürfen kopieren
+
+		// const user = await this.authorizationService.getUserWithPermissions(userId);
 		// const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
 		// await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, context);
 		// const result = await this.courseCopyService.copyCourse({ userId, courseId });
@@ -320,5 +325,13 @@ export class RoomUc {
 			.flatMap((role) => role.permissions ?? []);
 
 		return permissions;
+	}
+	private getRoleNames(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): RoleName[] {
+		const roleNames = roomMembershipAuthorizable.members
+			.filter((member) => member.userId === userId)
+			.flatMap((member) => member.roles)
+			.map((role) => role.name);
+
+		return roleNames;
 	}
 }
