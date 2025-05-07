@@ -34,7 +34,7 @@ export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
 		const { userId } = params;
 
-		const boardsDeleted = await this.deleteBoardsOwnedByUser(userId);
+		const boardsDeleted = await this.deleteMediaBoardsOwnedByUser(userId);
 		// TODO: remove user references from boards
 
 		const result = StepReportBuilder.build(this.moduleName, [boardsDeleted]);
@@ -42,7 +42,7 @@ export class DeleteUserBoardDataStep extends SagaStep<'deleteUserData'> {
 		return result;
 	}
 
-	public async deleteBoardsOwnedByUser(userId: EntityId): Promise<StepOperationReport> {
+	public async deleteMediaBoardsOwnedByUser(userId: EntityId): Promise<StepOperationReport> {
 		this.logger.info(
 			new UserDeletionStepOperationLoggable(
 				'Deleting boards owned by user',

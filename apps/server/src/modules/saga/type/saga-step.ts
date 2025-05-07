@@ -21,7 +21,6 @@ export enum ModuleName {
 	LESSON = 'lessons',
 	PSEUDONYM = 'pseudonyms',
 	ROCKETCHATUSER = 'rocketChatUser',
-	// ROCKETCHATSERVICE = 'rocketChatService',
 	TASK = 'task',
 	TASK_SUBMISSION = 'submissions',
 	TEAM = 'teams',

@@ -34,6 +34,7 @@ import { DeleteUserCourseDataStep, DeleteUserCourseGroupDataStep } from './saga'
 		CourseSyncService,
 		CourseGroupService,
 		// TODO: remove?
+		// group event should be discussed if useful, the event does not seem to be be used anywhere else for now
 		GroupDeletedHandlerService,
 		DeleteUserCourseDataStep,
 		DeleteUserCourseGroupDataStep,
