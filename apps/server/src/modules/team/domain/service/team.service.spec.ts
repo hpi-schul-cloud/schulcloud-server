@@ -1,12 +1,5 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -32,12 +25,6 @@ describe('TeamService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
@@ -82,52 +69,6 @@ describe('TeamService', () => {
 				const result = await service.findUserDataFromTeams(teamUser.user.id);
 
 				expect(result.length).toEqual(2);
-			});
-		});
-	});
-
-	describe('deleteUserDataFromTeams', () => {
-		describe('when deleting by userId', () => {
-			const setup = () => {
-				const teamUser = teamUserFactory.buildWithId();
-				const team1 = teamFactory.withTeamUser([teamUser]).build();
-				const team2 = teamFactory.withTeamUser([teamUser]).build();
-
-				teamRepo.findByUserId.mockResolvedValue([team1, team2]);
-				teamRepo.removeUserReferences.mockResolvedValue(2);
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [team1.id, team2.id]),
-				]);
-
-				return {
-					expectedResult,
-					teamUser,
-				};
-			};
-
-			it('should call teamRepo.findByUserId', async () => {
-				const { teamUser } = setup();
-
-				await service.deleteUserData(teamUser.user.id);
-
-				expect(teamRepo.findByUserId).toBeCalledWith(teamUser.user.id);
-			});
-
-			it('should call teamRepo.removeUserReferences', async () => {
-				const { teamUser } = setup();
-
-				await service.deleteUserData(teamUser.user.id);
-
-				expect(teamRepo.removeUserReferences).toBeCalledWith(teamUser.user.id);
-			});
-
-			it('should return DomainDeletionReport', async () => {
-				const { expectedResult, teamUser } = setup();
-
-				const result = await service.deleteUserData(teamUser.user.id);
-
-				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
