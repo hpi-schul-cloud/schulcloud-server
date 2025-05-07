@@ -1,14 +1,15 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { Controller, Get, Param } from '@nestjs/common';
 import {
-	Controller,
-	Get,
-	InternalServerErrorException,
-	NotFoundException,
-	Param,
-	UnauthorizedException,
-} from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common/error';
+	ApiBadRequestResponse,
+	ApiInternalServerErrorResponse,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+	ApiTags,
+	ApiUnauthorizedResponse,
+	ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import { MediumMetadataDto } from '../dto';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataUc } from '../uc';
@@ -21,13 +22,17 @@ import { MediumMetadataResponse } from './response';
 export class MediumMetadataController {
 	constructor(private readonly mediumMetadataUc: MediumMetadataUc) {}
 
+	@ApiOperation({ summary: 'Returns configuration data of a medium' })
+	@ApiOkResponse({
+		description: 'The medium metadata',
+		type: MediumMetadataResponse,
+	})
+	@ApiBadRequestResponse()
+	@ApiUnauthorizedResponse()
+	@ApiNotFoundResponse()
+	@ApiInternalServerErrorResponse()
+	@ApiUnprocessableEntityResponse()
 	@Get('medium/:mediumId/media-source/:mediaSourceId/')
-	@ApiOperation({ summary: 'Returns configuration metadata for media source of a medium' })
-	@ApiResponse({ status: 200, type: MediumMetadataResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 401, type: UnauthorizedException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	public async getMediumMetadata(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: MediumMetadataParams
