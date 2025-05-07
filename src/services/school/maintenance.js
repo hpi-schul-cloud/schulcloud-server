@@ -1,6 +1,7 @@
 const hooks = require('./hooks/maintenance.hooks');
 const { schoolModel: School, yearModel: Years } = require('./model');
 const SchoolYearFacade = require('./logic/year');
+const { Unprocessable } = require('../../errors');
 
 const ldapSystemFilter = (s) => s.type === 'ldap' && s.ldapConfig && s.ldapConfig.active === true;
 
@@ -61,6 +62,16 @@ class SchoolMaintenanceService {
 	}
 
 	/**
+	 * Returns if the school has already the new (or even newer) school year
+	 * @param {School} school
+	 * @returns Boolean
+	 * @memberof SchoolMaintenanceService
+	 */
+	schoolAlreadyInNextYear(school) {
+		return new Date().getFullYear() <= school.currentYear.startDate.getFullYear();
+	}
+
+	/**
 	 * POST /schools/:schoolId/maintenance
 	 * Enter/exit transfer period (LDAP) or migrate school to next school year (non-LDAP).
 	 *
@@ -72,6 +83,13 @@ class SchoolMaintenanceService {
 	async create(data, params) {
 		let { school } = params;
 		const patch = {};
+
+		if (school.inUserMigration) {
+			throw new Unprocessable('School year change unavailable while in user migration');
+		} else if (this.schoolAlreadyInNextYear(school)) {
+			throw new Unprocessable('School already in next year');
+		}
+
 		const bumpYear = async () => {
 			patch.currentYear = await this.determineNextYear(school);
 			patch.$unset = { inMaintenanceSince: '' };
