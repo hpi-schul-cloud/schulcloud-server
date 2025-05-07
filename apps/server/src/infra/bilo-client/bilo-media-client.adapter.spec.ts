@@ -21,7 +21,6 @@ import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { ValidationError } from 'class-validator';
 import { of, throwError } from 'rxjs';
-import { MediumMetadataNotFoundLoggableException } from '../../modules/medium-metadata/loggable';
 import { BiloMediaClientAdapter } from './bilo-media-client.adapter';
 import { MediaQueryBadResponseReport } from './interface';
 import {
@@ -689,7 +688,7 @@ describe(BiloMediaClientAdapter.name, () => {
 			});
 		});
 
-		describe('when the response body received is not an array', () => {
+		describe('when the response body is unprocessable', () => {
 			const setup = () => {
 				const mediumId = '123';
 
@@ -719,12 +718,12 @@ describe(BiloMediaClientAdapter.name, () => {
 				};
 			};
 
-			it('should throw a MediumMetadataNotFoundLoggableException', async () => {
+			it('should throw a BiloMediaQueryUnprocessableResponseLoggableException', async () => {
 				const { mediumId, mediaSource } = setup();
 
 				const promise = service.fetchMediumMetadata(mediumId, mediaSource);
 
-				await expect(promise).rejects.toThrow(MediumMetadataNotFoundLoggableException);
+				await expect(promise).rejects.toThrow(BiloMediaQueryUnprocessableResponseLoggableException);
 			});
 		});
 	});

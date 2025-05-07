@@ -189,7 +189,7 @@ describe('MediumMetadataController (API)', () => {
 				return { loggedInClient };
 			};
 
-			it('should returnbad request', async () => {
+			it('should return bad request', async () => {
 				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.get(`medium/medium-id-1/media-source/%ZZ`);
@@ -305,6 +305,51 @@ describe('MediumMetadataController (API)', () => {
 					title: 'Medium Bad Request',
 					message: 'Bad Request',
 					code: 400,
+				});
+			});
+		});
+
+		describe('when the media source responded with unprocessable response', () => {
+			const setup = async () => {
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+
+				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
+					Permission.MEDIA_SOURCE_ADMIN,
+				]);
+
+				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				em.clear();
+
+				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
+					id_token: 'idToken',
+					refresh_token: 'refreshToken',
+					access_token: 'accessToken',
+				});
+
+				const responses: BiloMediaQueryResponse[] = biloMediaQueryResponseFactory.buildList(1, {
+					data: undefined,
+				});
+
+				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
+
+				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+
+				return { loggedInClient, mediaSourceEntity };
+			};
+
+			it('should return unprocessable error', async () => {
+				const { loggedInClient, mediaSourceEntity } = await setup();
+
+				const response: Response = await loggedInClient.get(
+					`medium/medium-id-1/media-source/${mediaSourceEntity.sourceId}`
+				);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNPROCESSABLE_ENTITY);
+				expect(response.body).toEqual<ErrorResponse>({
+					type: 'MEDIUM_UNPROCESSABLE_RESPONSE',
+					title: 'Medium Unprocessable Response',
+					message: 'Unprocessable Entity',
+					code: 422,
 				});
 			});
 		});

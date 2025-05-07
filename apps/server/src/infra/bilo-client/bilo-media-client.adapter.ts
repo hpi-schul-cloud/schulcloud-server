@@ -19,7 +19,6 @@ import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { lastValueFrom } from 'rxjs';
-import { MediumMetadataNotFoundLoggableException } from '../../modules/medium-metadata/loggable';
 import { MediaQueryBadResponseReport } from './interface';
 import {
 	BiloBadRequestResponseLoggableException,
@@ -52,12 +51,17 @@ export class BiloMediaClientAdapter {
 		const body: BiloMediaQueryBodyParams[] = [{ id }];
 		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource.oauthConfig);
 
-		const axiosResponse = await this.sendPostRequest<BiloMediaQueryResponse[]>(url, body, token.accessToken);
-		if (axiosResponse.data.length) {
-			await this.validateResponse(axiosResponse.data[0]);
-		} else {
-			throw new MediumMetadataNotFoundLoggableException(id, biloMediaSource.id);
+		const axiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = await this.sendPostRequest<BiloMediaQueryResponse[]>(
+			url,
+			body,
+			token.accessToken
+		);
+
+		if (!axiosResponse.data.length) {
+			throw new BiloMediaQueryUnprocessableResponseLoggableException();
 		}
+
+		await this.validateResponse(axiosResponse.data[0]);
 
 		const metadata: BiloMediaQueryDataResponse = axiosResponse.data[0].data;
 		return metadata;
@@ -148,6 +152,9 @@ export class BiloMediaClientAdapter {
 			throw new BiloNotFoundResponseLoggableException();
 		}
 
+		if (!response.data) {
+			throw new BiloMediaQueryUnprocessableResponseLoggableException();
+		}
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
 		if (validationErrors.length > 0) {
 			throw new BiloMediaQueryBadResponseLoggableException([

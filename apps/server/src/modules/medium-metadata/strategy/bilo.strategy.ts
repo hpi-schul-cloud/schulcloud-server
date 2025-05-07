@@ -1,12 +1,17 @@
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
 import {
 	BiloBadRequestResponseLoggableException,
+	BiloMediaQueryUnprocessableResponseLoggableException,
 	BiloNotFoundResponseLoggableException,
 } from '@infra/bilo-client/loggable';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
-import { MediumMetadataStrategyNotImplementedLoggableException, MediumNotFoundLoggableException } from '../loggable';
+import {
+	MediumMetadataStrategyNotImplementedLoggableException,
+	MediumNotFoundLoggableException,
+	MediumUnprocessableResponseLoggableException,
+} from '../loggable';
 import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataStrategy } from './interface';
@@ -35,6 +40,8 @@ export class BiloStrategy implements MediumMetadataStrategy {
 				throw new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId);
 			} else if (error instanceof BiloBadRequestResponseLoggableException) {
 				throw new MediumBadRequestLoggableException(mediumId, mediaSource.sourceId);
+			} else if (error instanceof BiloMediaQueryUnprocessableResponseLoggableException) {
+				throw new MediumUnprocessableResponseLoggableException(mediumId, mediaSource.sourceId);
 			} else {
 				throw error;
 			}
