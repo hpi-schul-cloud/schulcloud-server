@@ -51,11 +51,7 @@ export class BiloMediaClientAdapter {
 		const body: BiloMediaQueryBodyParams[] = [{ id }];
 		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource.oauthConfig);
 
-		const axiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = await this.sendPostRequest<BiloMediaQueryResponse[]>(
-			url,
-			body,
-			token.accessToken
-		);
+		const axiosResponse = await this.sendPostRequest<BiloMediaQueryResponse[]>(url, body, token.accessToken);
 
 		if (!axiosResponse.data.length) {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
