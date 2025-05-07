@@ -60,6 +60,8 @@ export class ExternalToolRepoMapper {
 			createdAt: entity.createdAt,
 			isPreferred: entity.isPreferred,
 			iconName: entity.iconName,
+			isDraft: entity.isDraft,
+			isTemplate: entity.isTemplate,
 		});
 	}
 
@@ -141,6 +143,8 @@ export class ExternalToolRepoMapper {
 			medium: this.mapExternalToolMediumDOToEntity(domainObject.medium),
 			isPreferred: domainObject.isPreferred,
 			iconName: domainObject.iconName,
+			isDraft: domainObject.isDraft,
+			isTemplate: domainObject.isTemplate,
 		};
 	}
 

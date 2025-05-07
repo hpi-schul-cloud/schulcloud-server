@@ -45,6 +45,8 @@ export class ExternalToolsSeedDataService {
 					isHidden: true,
 					isDeactivated: false,
 					isPreferred: false,
+					isDraft: false,
+					isTemplate: false,
 				})
 			);
 		}

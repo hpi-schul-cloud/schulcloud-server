@@ -40,6 +40,10 @@ export interface ExternalToolProps extends AuthorizableObject {
 	isPreferred: boolean;
 
 	iconName?: string;
+
+	isDraft: boolean;
+
+	isTemplate: boolean;
 }
 
 export class ExternalTool extends DomainObject<ExternalToolProps> {
@@ -171,6 +175,22 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.props.iconName = value;
 	}
 
+	get isDraft(): boolean {
+		return this.props.isDraft;
+	}
+
+	set isDraft(value: boolean) {
+		this.props.isDraft = value;
+	}
+
+	get isTemplate(): boolean {
+		return this.props.isTemplate;
+	}
+
+	set isTemplate(value: boolean) {
+		this.props.isTemplate = value;
+	}
+
 	public static readonly thumbnailNameAffix = 'thumbnail';
 
 	constructor(props: ExternalToolProps) {
@@ -199,17 +219,19 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.createdAt = props.createdAt;
 		this.isPreferred = props.isPreferred;
 		this.iconName = props.iconName;
+		this.isDraft = props.isDraft;
+		this.isTemplate = props.isTemplate;
 	}
 
-	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
+	public static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
 		return ToolConfigType.BASIC === config.type;
 	}
 
-	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
+	public static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
 		return ToolConfigType.OAUTH2 === config.type;
 	}
 
-	static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
+	public static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
 		return ToolConfigType.LTI11 === config.type;
 	}
 

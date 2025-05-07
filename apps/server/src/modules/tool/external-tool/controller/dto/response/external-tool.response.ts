@@ -66,6 +66,12 @@ export class ExternalToolResponse {
 	})
 	public iconName?: string;
 
+	@ApiProperty({ type: Boolean, description: 'Is the external tool is draft' })
+	public isDraft: boolean;
+
+	@ApiProperty({ type: Boolean, description: 'Is the external tool is template' })
+	public isTemplate: boolean;
+
 	constructor(response: ExternalToolResponse) {
 		this.id = response.id;
 		this.name = response.name;
@@ -82,5 +88,7 @@ export class ExternalToolResponse {
 		this.medium = response.medium;
 		this.isPreferred = response.isPreferred;
 		this.iconName = response.iconName;
+		this.isDraft = response.isDraft;
+		this.isTemplate = response.isTemplate;
 	}
 }
