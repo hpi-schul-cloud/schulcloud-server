@@ -77,6 +77,8 @@ export class ExternalToolResponseMapper {
 			medium: this.mapMediumToResponse(externalTool.medium),
 			isPreferred: externalTool.isPreferred,
 			iconName: externalTool.iconName,
+			isDraft: externalTool.isDraft,
+			isTemplate: externalTool.isTemplate,
 		});
 	}
 

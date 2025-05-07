@@ -48,6 +48,10 @@ export type ExternalToolDto<T> = {
 	isPreferred: boolean;
 
 	iconName?: string;
+
+	isDraft: boolean;
+
+	isTemplate: boolean;
 };
 
 export type ExternalToolCreate = ExternalToolDto<BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate>;

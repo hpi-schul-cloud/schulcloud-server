@@ -39,6 +39,10 @@ export interface ExternalToolEntityProps {
 	isPreferred: boolean;
 
 	iconName?: string;
+
+	isDraft: boolean;
+
+	isTemplate: boolean;
 }
 
 @Entity({ tableName: 'external-tools' })
@@ -90,6 +94,12 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	iconName?: string;
 
+	@Property()
+	isDraft: boolean;
+
+	@Property()
+	isTemplate: boolean;
+
 	constructor(props: ExternalToolEntityProps) {
 		super();
 		if (props.id) {
@@ -110,5 +120,7 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.medium = props.medium;
 		this.isPreferred = props.isPreferred;
 		this.iconName = props.iconName;
+		this.isDraft = props.isDraft;
+		this.isTemplate = props.isTemplate;
 	}
 }

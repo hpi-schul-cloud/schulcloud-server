@@ -109,4 +109,12 @@ export class ExternalToolCreateParams {
 		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
 	})
 	public iconName?: string;
+
+	@IsBoolean()
+	@ApiProperty({ type: Boolean, description: 'Should the tool be a draft tool', default: false })
+	public isDraft!: boolean;
+
+	@IsBoolean()
+	@ApiProperty({ type: Boolean, description: 'Should the tool be a template tool', default: false })
+	public isTemplate!: boolean;
 }

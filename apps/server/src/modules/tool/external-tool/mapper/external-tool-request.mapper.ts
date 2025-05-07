@@ -92,6 +92,8 @@ export class ExternalToolRequestMapper {
 			medium: this.mapRequestToExternalToolMedium(externalToolUpdateParams.medium),
 			isPreferred: externalToolUpdateParams.isPreferred,
 			iconName: externalToolUpdateParams.iconName,
+			isDraft: externalToolUpdateParams.isDraft,
+			isTemplate: externalToolUpdateParams.isTemplate,
 		};
 	}
 
@@ -124,6 +126,8 @@ export class ExternalToolRequestMapper {
 			description: externalToolCreateParams.description,
 			isPreferred: externalToolCreateParams.isPreferred,
 			iconName: externalToolCreateParams.iconName,
+			isDraft: externalToolCreateParams.isDraft,
+			isTemplate: externalToolCreateParams.isTemplate,
 		};
 	}
 
