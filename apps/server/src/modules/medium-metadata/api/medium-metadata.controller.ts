@@ -22,8 +22,11 @@ import { MediumMetadataResponse } from './response';
 export class MediumMetadataController {
 	constructor(private readonly mediumMetadataUc: MediumMetadataUc) {}
 
-	@ApiOperation({ summary: 'Returns configuration metadata for media source of a medium' })
-	@ApiOkResponse()
+	@ApiOperation({ summary: 'Returns configuration data of a medium' })
+	@ApiOkResponse({
+		description: 'The medium metadata',
+		type: MediumMetadataResponse,
+	})
 	@ApiBadRequestResponse()
 	@ApiUnauthorizedResponse()
 	@ApiNotFoundResponse()
