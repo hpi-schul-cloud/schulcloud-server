@@ -1,3 +1,4 @@
+import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
 	Body,
@@ -18,30 +19,32 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
-import { ErrorResponse } from '@core/error/dto';
 import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
+import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
+import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
 import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.body.params';
 import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
+import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-link-list.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
-import { RoomMapper } from './mapper/room.mapper';
-import { RoomUc } from './room.uc';
-import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { RoomRoleResponse } from './dto/response/room-role.response';
-import { PassOwnershipBodyParams } from './dto/request/pass-ownership.body.params';
+import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
+import { RoomMapper } from './mapper/room.mapper';
+import { RoomInvitationLinkUc } from './room-invitation-link.uc';
+import { RoomUc } from './room.uc';
 
 @ApiTags('Room')
 @JwtAuthentication()
 @Controller('rooms')
 export class RoomController {
-	constructor(private readonly roomUc: RoomUc) {}
+	constructor(private readonly roomUc: RoomUc, private readonly roomInvitationLinkUc: RoomInvitationLinkUc) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of rooms.' })
@@ -115,6 +118,28 @@ export class RoomController {
 		const boards = await this.roomUc.getRoomBoards(currentUser.userId, urlParams.roomId);
 
 		const response = RoomMapper.mapToRoomBoardListResponse(boards);
+
+		return response;
+	}
+
+	@Get(':roomId/room-invitation-links')
+	@ApiOperation({ summary: 'Get the list of room invitation links of a room.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns the list of room invitation links.',
+		type: RoomInvitationLinkListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getInvitationLinks(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomInvitationLinkListResponse> {
+		const roomInvitationLinks = await this.roomInvitationLinkUc.listLinksByRoomId(currentUser.userId, urlParams.roomId);
+
+		const response = RoomInvitationLinkMapper.mapToRoomInvitationLinkListResponse(roomInvitationLinks);
 
 		return response;
 	}

@@ -1,10 +1,10 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-client';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { UserDeletionInjectionService } from '@modules/deletion';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task } from '@modules/task/repo';

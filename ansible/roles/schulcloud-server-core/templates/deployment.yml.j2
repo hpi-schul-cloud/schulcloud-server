@@ -65,6 +65,8 @@ spec:
             name: api-secret
         - secretRef:
             name: api-files-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['npm', 'run', 'nest:start:prod']
         readinessProbe:
           httpGet:

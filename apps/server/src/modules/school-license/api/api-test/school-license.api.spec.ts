@@ -1,5 +1,5 @@
-import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { PageOfferDTO } from '@infra/vidis-client';
+import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
@@ -78,7 +78,9 @@ describe('SchoolLicenseController (API)', () => {
 			it('should return status created', async () => {
 				const { loggedInClient } = await setup();
 
-				await loggedInClient.post('').send().expect(HttpStatus.CREATED);
+				const response = await loggedInClient.post();
+
+				expect(response.statusCode).toEqual(HttpStatus.CREATED);
 			});
 		});
 
