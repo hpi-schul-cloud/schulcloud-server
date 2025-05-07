@@ -87,7 +87,7 @@ describe('redis helpers', () => {
 
 		before(async () => {
 			configBefore = Configuration.toObject({ plainSecrets: true });
-			Configuration.set('REDIS_URI', '//validHost:6666');
+			Configuration.set('SESSION_VALKEY_URI', '//validHost:6666');
 			redisHelpers.clearRedis();
 			const redisMock = new RedisClientMock();
 			redisHelpers.initializeRedisClient(redisMock);

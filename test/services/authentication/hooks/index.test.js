@@ -53,7 +53,7 @@ describe('authentication hooks', () => {
 		await testObjects.cleanup();
 
 		configBefore = Configuration.toObject({ plainSecrets: true });
-		Configuration.set('REDIS_URI', '//validHost:5555');
+		Configuration.set('SESSION_VALKEY_URI', '//validHost:5555');
 		Configuration.set('JWT_TIMEOUT_SECONDS', 7200);
 		redisHelpers.clearRedis();
 		// we need clean file that no redis instance is saved from any test before
