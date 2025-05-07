@@ -35,6 +35,7 @@ import type { LanguageType } from '@shared/domain/interface';
 import type { SchulcloudTheme } from '@shared/domain/types';
 import type { Algorithm } from 'jsonwebtoken';
 import type { Timezone } from './types/timezone.enum';
+import { ValkeyMode } from '@infra/valkey-client';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -364,6 +365,19 @@ const config: ServerConfig = {
 	SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS: Configuration.get(
 		'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
 	) as number,
+	SESSION_VALKEY__MODE: Configuration.get('SESSION_VALKEY__MODE') as ValkeyMode,
+	SESSION_VALKEY__URI: Configuration.has('SESSION_VALKEY__URI')
+		? (Configuration.get('SESSION_VALKEY__URI') as string)
+		: undefined,
+	SESSION_VALKEY__SENTINEL_NAME: Configuration.has('SESSION_VALKEY__SENTINEL_NAME')
+		? (Configuration.get('SESSION_VALKEY__SENTINEL_NAME') as string)
+		: undefined,
+	SESSION_VALKEY__SENTINEL_PASSWORD: Configuration.has('SESSION_VALKEY__URI')
+		? (Configuration.get('SESSION_VALKEY__SENTINEL_PASSWORD') as string)
+		: undefined,
+	SESSION_VALKEY__SENTINEL_SERVICE_NAME: Configuration.has('SESSION_VALKEY__URI')
+		? (Configuration.get('SESSION_VALKEY__SENTINEL_SERVICE_NAME') as string)
+		: undefined,
 };
 
 export const serverConfig = (): ServerConfig => config;

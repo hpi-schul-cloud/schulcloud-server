@@ -17,7 +17,7 @@ const redisMock = {
 	subscribe: jest.fn(),
 };
 
-jest.mock('ioredis', () => {
+jest.mock('iovalkey', () => {
 	return {
 		Redis: jest.fn().mockImplementation(() => redisMock),
 	};

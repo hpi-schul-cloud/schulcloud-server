@@ -11,11 +11,13 @@ import {
 	DrawingElement,
 	ExternalToolElement,
 	FileElement,
+	FileFolderElement,
 	H5pElement,
 	isCollaborativeTextEditorElement,
 	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
+	isFileFolderElement,
 	isH5pElement,
 	isLinkElement,
 	isMediaExternalToolElement,
@@ -40,8 +42,8 @@ export class BoardNodeDeleteHooksService {
 
 	private async singleAfterDelete(boardNode: AnyBoardNode): Promise<void> {
 		// TODO improve this e.g. using exhaustive check or discriminated union
-		if (isFileElement(boardNode)) {
-			await this.afterDeleteFileElement(boardNode);
+		if (isFileElement(boardNode) || isFileFolderElement(boardNode)) {
+			this.afterDeleteFileElement(boardNode);
 		} else if (isLinkElement(boardNode)) {
 			await this.afterDeleteLinkElement(boardNode);
 		} else if (isDrawingElement(boardNode)) {
@@ -60,8 +62,8 @@ export class BoardNodeDeleteHooksService {
 		await Promise.allSettled(boardNode.children.map(async (child) => this.afterDelete(child)));
 	}
 
-	public async afterDeleteFileElement(fileElement: FileElement): Promise<void> {
-		await this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
+	public afterDeleteFileElement(fileElement: FileElement | FileFolderElement): void {
+		void this.filesStorageClientAdapterService.deleteFilesOfParent(fileElement.id);
 	}
 
 	public async afterDeleteLinkElement(linkElement: LinkElement): Promise<void> {

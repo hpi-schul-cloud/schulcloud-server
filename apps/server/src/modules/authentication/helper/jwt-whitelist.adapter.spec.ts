@@ -1,32 +1,29 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Cache, Store } from 'cache-manager';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
+import { SESSION_VALKEY_CLIENT } from '../authentication-config';
 
 describe(JwtWhitelistAdapter.name, () => {
 	let module: TestingModule;
 	let jwtWhitelistAdapter: JwtWhitelistAdapter;
 
-	let cacheManager: DeepMocked<Cache>;
-	let store: DeepMocked<Store>;
+	let valkeyClient: DeepMocked<StorageClient>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				JwtWhitelistAdapter,
 				{
-					provide: CACHE_MANAGER,
-					useValue: createMock<Cache>({
-						store: (store = createMock<Store>()),
-					}),
+					provide: SESSION_VALKEY_CLIENT,
+					useValue: createMock<StorageClient>(),
 				},
 			],
 		}).compile();
 
-		cacheManager = module.get(CACHE_MANAGER);
+		valkeyClient = module.get(SESSION_VALKEY_CLIENT);
 		jwtWhitelistAdapter = module.get(JwtWhitelistAdapter);
 	});
 
@@ -57,16 +54,17 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await jwtWhitelistAdapter.addToWhitelist(accountId, jti);
 
-				expect(cacheManager.set).toHaveBeenCalledWith(
+				expect(valkeyClient.set).toHaveBeenCalledWith(
 					`jwt:${accountId}:${jti}`,
-					{
+					JSON.stringify({
 						IP: 'NONE',
 						Browser: 'NONE',
 						Device: 'NONE',
 						privateDevice: false,
-						expirationInSeconds,
-					},
-					expirationInSeconds * 1000
+						expirationInSeconds: expirationInSeconds,
+					}),
+					'EX',
+					expirationInSeconds
 				);
 			});
 		});
@@ -89,7 +87,7 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await jwtWhitelistAdapter.removeFromWhitelist(accountId, jti);
 
-				expect(cacheManager.del).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
+				expect(valkeyClient.del).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
 			});
 		});
 
@@ -99,7 +97,7 @@ describe(JwtWhitelistAdapter.name, () => {
 				const jwtKey1 = `jwt:${accountId}:jti1`;
 				const jwtKey2 = `jwt:${accountId}:jti2`;
 
-				store.keys.mockResolvedValueOnce([jwtKey1, jwtKey2]);
+				valkeyClient.keys.mockResolvedValueOnce([jwtKey1, jwtKey2]);
 
 				return {
 					accountId,
@@ -113,8 +111,8 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await jwtWhitelistAdapter.removeFromWhitelist(accountId);
 
-				expect(cacheManager.del).toHaveBeenNthCalledWith(1, jwtKey1);
-				expect(cacheManager.del).toHaveBeenNthCalledWith(2, jwtKey2);
+				expect(valkeyClient.del).toHaveBeenNthCalledWith(1, jwtKey1);
+				expect(valkeyClient.del).toHaveBeenNthCalledWith(2, jwtKey2);
 			});
 		});
 	});

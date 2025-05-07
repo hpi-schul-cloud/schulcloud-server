@@ -52,7 +52,7 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 		title: faker.lorem.sentence(),
 		columns: [columnFactory.build(), columnFactory.build()],
 		isVisible: faker.datatype.boolean(),
-		layout: faker.lorem.word(),
+		layout: BoardLayout.COLUMNS,
 		features: [],
 		timestamps: {
 			createdAt: faker.date.recent().toISOString(),
@@ -197,7 +197,7 @@ export const boardTaskFactory = Factory.define<BoardTaskDto>(({ sequence }) => {
 	};
 });
 
-export const boardCloumnBoardFactory = Factory.define<BoardColumnBoardDto>(() => {
+export const boardColumnFactory = Factory.define<BoardColumnBoardDto>(() => {
 	return {
 		id: faker.string.uuid(),
 		title: faker.lorem.word(),
@@ -225,7 +225,7 @@ export const roomFactory = Factory.define<RoomBoardDto>(({ sequence }) => {
 			},
 			{
 				type: BoardElementDtoType.COLUMN_BOARD,
-				content: boardCloumnBoardFactory.build(),
+				content: boardColumnFactory.build(),
 			},
 		],
 		isArchived: faker.datatype.boolean(),
