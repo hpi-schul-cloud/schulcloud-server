@@ -5,6 +5,7 @@ import { SagaModule } from '@modules/saga';
 import { Module } from '@nestjs/common';
 import { RocketChatUserRepo } from './repo';
 import { RocketChatUserService } from './service/rocket-chat-user.service';
+import { DeleteUserRocketChatDataStep } from './saga';
 
 @Module({
 	imports: [
@@ -18,7 +19,7 @@ import { RocketChatUserService } from './service/rocket-chat-user.service';
 		}),
 		SagaModule,
 	],
-	providers: [RocketChatUserRepo, RocketChatUserService],
+	providers: [RocketChatUserRepo, RocketChatUserService, DeleteUserRocketChatDataStep],
 	exports: [RocketChatUserService],
 })
 export class RocketChatUserModule {}
