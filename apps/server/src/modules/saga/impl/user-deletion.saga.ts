@@ -6,6 +6,27 @@ import { Saga } from '../type/saga';
 
 @Injectable()
 export class UserDeletionSaga extends Saga<'userDeletion'> {
+	private readonly executionOrder = [
+		ModuleName.ACCOUNT,
+		ModuleName.BOARD,
+		ModuleName.CLASS,
+		ModuleName.COURSE,
+		ModuleName.COURSE_COURSEGROUP,
+		ModuleName.LEARNROOM_DASHBOARD,
+		ModuleName.FILES,
+		ModuleName.FILES_STORAGE,
+		ModuleName.LESSON,
+		ModuleName.PSEUDONYM,
+		ModuleName.ROCKETCHATUSER,
+		ModuleName.TASK,
+		ModuleName.TASK_SUBMISSION,
+		ModuleName.TEAM,
+		ModuleName.USER,
+		ModuleName.USER_CALENDAR,
+		ModuleName.USER_REGISTRATIONPIN,
+		ModuleName.NEWS,
+	];
+
 	constructor(
 		private readonly stepRegistry: SagaStepRegistryService,
 		private readonly sagaRegistry: SagaRegistryService
@@ -17,8 +38,7 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 	public async execute(params: { userId: EntityId }): Promise<StepReport[]> {
 		console.log('Executing userDeletion with userId:', params.userId);
 
-		// TODO define proper sequence of steps
-		const moduleNames = Object.values(ModuleName);
+		const moduleNames = this.executionOrder;
 
 		this.checkAllStepsRegistered(moduleNames);
 
