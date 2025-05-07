@@ -11,7 +11,7 @@ import {
 	StepStatus,
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolPseudonymRepo } from '../repo';
 
@@ -30,6 +30,10 @@ export class DeleteUserPseudonymDataStep extends SagaStep<'deleteUserData'> {
 	}
 	public async execute(params: { userId: EntityId }): Promise<StepReport> {
 		const { userId } = params;
+
+		if (!userId) {
+			throw new InternalServerErrorException('User ID is required');
+		}
 
 		const userPseudonymsDeleted = await this.deleteUserPseudonyms(userId);
 

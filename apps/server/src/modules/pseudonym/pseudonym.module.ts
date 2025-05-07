@@ -7,7 +7,7 @@ import { PseudonymService } from './service';
 
 @Module({
 	imports: [LoggerModule, SagaModule],
-	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger, DeleteUserPseudonymDataStep, SagaModule],
+	providers: [PseudonymService, ExternalToolPseudonymRepo, LegacyLogger, DeleteUserPseudonymDataStep],
 	exports: [PseudonymService],
 })
 export class PseudonymModule {}
