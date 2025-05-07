@@ -1,1 +1,1 @@
-export * from './delete-user-file-data.step';
+export * from './delete-user-files-data.step';
