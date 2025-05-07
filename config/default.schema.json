@@ -104,10 +104,34 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
-		"REDIS_URI": {
-			"type": "string",
-			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
-			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+		"SESSION_VALKEY": {
+			"type": "object",
+			"description": "Session configuration ",
+			"properties": {
+				"MODE": {
+					"type": "string",
+					"default": "cluster",
+					"enum": ["cluster", "single" ,"in-memory"],
+					"description": "Define valkey mode."
+				},
+				"URI": {
+					"type": "string",
+					"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
+					"description": "URL of a Valkey server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+				},
+				"SENTINEL_NAME": {
+					"type": "string",
+					"description": "The name of the Redis Sentinel."
+				},
+				"SENTINEL_PASSWORD": {
+					"type": "string",
+					"description": "The password for the Redis Sentinel service."
+				},
+				"SENTINEL_SERVICE_NAME": {
+					"type": "string",
+					"description": "The name of the Redis Sentinel service."
+				}
+			}
 		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
@@ -141,7 +165,7 @@
 		"JWT_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 7200,
-			"description": "After this many seconds of inactivity, a user gets logged out automatically. If no REDIS_URI is set, this value is ignored."
+			"description": "After this many seconds of inactivity, a user gets logged out automatically."
 		},
 		"FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED": {
 			"type": "boolean",
@@ -151,7 +175,7 @@
 		"JWT_EXTENDED_TIMEOUT_SECONDS": {
 			"type": "integer",
 			"default": 2629746,
-			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration. If no REDIS_URI is set, this value is ignored."
+			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration."
 		},
 		"TSP_API_CLIENT_BASE_URL": {
 			"type": "string",

@@ -3,7 +3,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink, RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
 
-@Entity({ tableName: 'room-invition-links' })
+@Entity({ tableName: 'room-invitation-links' })
 export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implements RoomInvitationLinkProps {
 	@Property({ nullable: false })
 	title!: string;

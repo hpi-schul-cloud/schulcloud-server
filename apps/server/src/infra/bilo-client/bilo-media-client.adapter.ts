@@ -1,7 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { Logger } from '@core/logger';
 import { AxiosErrorLoggable } from '@core/error/loggable';
+import { Logger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import {
 	MediaSource,
@@ -10,20 +8,24 @@ import {
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import {
-	OAuthTokenDto,
+	ClientCredentialsGrantTokenRequest,
 	OauthAdapterService,
 	OAuthGrantType,
-	ClientCredentialsGrantTokenRequest,
+	OAuthTokenDto,
 } from '@modules/oauth-adapter';
-import { lastValueFrom, Observable } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
+import { lastValueFrom } from 'rxjs';
 import { MediaQueryBadResponseReport } from './interface';
 import {
+	BiloBadRequestResponseLoggableException,
 	BiloMediaQueryBadResponseLoggable,
 	BiloMediaQueryBadResponseLoggableException,
 	BiloMediaQueryUnprocessableResponseLoggableException,
+	BiloNotFoundResponseLoggableException,
 } from './loggable';
 import { BiloMediaQueryBodyParams } from './request';
 import { BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
@@ -37,10 +39,33 @@ export class BiloMediaClientAdapter {
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
+	public async fetchMediumMetadata(id: string, biloMediaSource: MediaSource): Promise<BiloMediaQueryDataResponse> {
+		if (!biloMediaSource.oauthConfig) {
+			throw new MediaSourceOauthConfigNotFoundLoggableException(
+				biloMediaSource.id,
+				MediaSourceDataFormat.BILDUNGSLOGIN
+			);
+		}
+
+		const url: string = this.constructUrl(biloMediaSource.oauthConfig.baseUrl, './query');
+		const body: BiloMediaQueryBodyParams[] = [{ id }];
+		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource.oauthConfig);
+
+		const axiosResponse = await this.sendPostRequest<BiloMediaQueryResponse[]>(url, body, token.accessToken);
+
+		if (!axiosResponse.data.length) {
+			throw new BiloMediaQueryUnprocessableResponseLoggableException();
+		}
+
+		await this.validateResponse(axiosResponse.data[0]);
+
+		const metadata: BiloMediaQueryDataResponse = axiosResponse.data[0].data;
+		return metadata;
+	}
+
 	public async fetchMediaMetadata(
 		mediumIds: string[],
-		biloMediaSource: MediaSource,
-		shouldThrowOnAnyBadResponse: boolean
+		biloMediaSource: MediaSource
 	): Promise<BiloMediaQueryDataResponse[]> {
 		if (!biloMediaSource.oauthConfig) {
 			throw new MediaSourceOauthConfigNotFoundLoggableException(
@@ -49,45 +74,15 @@ export class BiloMediaClientAdapter {
 			);
 		}
 
-		let sanitizedBaseUrl = biloMediaSource.oauthConfig.baseUrl;
-		if (!sanitizedBaseUrl.endsWith('/')) {
-			sanitizedBaseUrl = sanitizedBaseUrl + '/';
-		}
-
-		const url = new URL('./query', sanitizedBaseUrl);
-
+		const url: string = this.constructUrl(biloMediaSource.oauthConfig.baseUrl, './query');
 		const body: BiloMediaQueryBodyParams[] = mediumIds.map((id: string): BiloMediaQueryBodyParams => {
 			return { id };
 		});
-
 		const token: OAuthTokenDto = await this.fetchAccessToken(biloMediaSource.oauthConfig);
 
-		const observable: Observable<AxiosResponse<BiloMediaQueryResponse[]>> = this.httpService.post(
-			url.toString(),
-			body,
-			{
-				headers: {
-					Authorization: `Bearer ${token.accessToken}`,
-					'Content-Type': 'application/vnd.de.bildungslogin.mediaquery+json',
-				},
-			}
-		);
+		const axiosResponse = await this.sendPostRequest<BiloMediaQueryResponse[]>(url, body, token.accessToken);
 
-		let axiosResponse: AxiosResponse<BiloMediaQueryResponse[]>;
-		try {
-			axiosResponse = await lastValueFrom(observable);
-		} catch (error: unknown) {
-			if (isAxiosError(error)) {
-				throw new AxiosErrorLoggable(error, 'BILO_GET_MEDIA_METADATA_FAILED');
-			} else {
-				throw error;
-			}
-		}
-
-		const validResponses = await this.validateAndFilterMediaQueryResponses(
-			axiosResponse.data,
-			shouldThrowOnAnyBadResponse
-		);
+		const validResponses = await this.validateAndFilterMediaQueryResponses(axiosResponse.data);
 		const metadataItems: BiloMediaQueryDataResponse[] = validResponses.map(
 			(response: BiloMediaQueryResponse) => response.data
 		);
@@ -111,15 +106,14 @@ export class BiloMediaClientAdapter {
 	}
 
 	private async validateAndFilterMediaQueryResponses(
-		responses: BiloMediaQueryResponse[],
-		shouldThrowOnAnyBadResponse: boolean
+		responses: BiloMediaQueryResponse[]
 	): Promise<BiloMediaQueryResponse[]> {
-		const validResponses: BiloMediaQueryResponse[] = [];
-		const badResponseReports: MediaQueryBadResponseReport[] = [];
-
 		if (!Array.isArray(responses)) {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
 		}
+
+		const validResponses: BiloMediaQueryResponse[] = [];
+		const badResponseReports: MediaQueryBadResponseReport[] = [];
 
 		const validatePromises = responses.map(async (response: BiloMediaQueryResponse): Promise<void> => {
 			if (response.status !== 200) {
@@ -139,13 +133,57 @@ export class BiloMediaClientAdapter {
 		await Promise.all(validatePromises);
 
 		if (badResponseReports.length) {
-			if (shouldThrowOnAnyBadResponse) {
-				throw new BiloMediaQueryBadResponseLoggableException(badResponseReports);
-			} else {
-				this.logger.debug(new BiloMediaQueryBadResponseLoggable(badResponseReports));
-			}
+			this.logger.debug(new BiloMediaQueryBadResponseLoggable(badResponseReports));
 		}
 
 		return validResponses;
+	}
+
+	private async validateResponse(response: BiloMediaQueryResponse): Promise<void> {
+		if (response.status === 400) {
+			throw new BiloBadRequestResponseLoggableException();
+		}
+
+		if (response.status === 404) {
+			throw new BiloNotFoundResponseLoggableException();
+		}
+
+		if (!response.data) {
+			throw new BiloMediaQueryUnprocessableResponseLoggableException();
+		}
+		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
+		if (validationErrors.length > 0) {
+			throw new BiloMediaQueryBadResponseLoggableException([
+				{ mediumId: response.query.id, status: response.status, validationErrors },
+			]);
+		}
+	}
+
+	private async sendPostRequest<T>(
+		url: string,
+		body: BiloMediaQueryBodyParams[],
+		accessToken: string
+	): Promise<AxiosResponse<T>> {
+		try {
+			const response = await lastValueFrom(
+				this.httpService.post<T>(url, body, {
+					headers: {
+						Authorization: `Bearer ${accessToken}`,
+						'Content-Type': 'application/vnd.de.bildungslogin.mediaquery+json',
+					},
+				})
+			);
+			return response;
+		} catch (error: unknown) {
+			if (isAxiosError(error)) {
+				throw new AxiosErrorLoggable(error, 'BILO_GET_MEDIA_METADATA_FAILED');
+			} else {
+				throw error;
+			}
+		}
+	}
+
+	private constructUrl(baseUrl: string, path: string): string {
+		return new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 	}
 }

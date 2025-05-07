@@ -1,8 +1,8 @@
 import { ErrorLogMessage, Loggable } from '@core/logger';
-import { InternalServerErrorException } from '@nestjs/common';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 export class BiloMediaQueryUnprocessableResponseLoggableException
-	extends InternalServerErrorException
+	extends UnprocessableEntityException
 	implements Loggable
 {
 	constructor() {
@@ -14,7 +14,7 @@ export class BiloMediaQueryUnprocessableResponseLoggableException
 			type: 'BILO_MEDIA_QUERY_UNPROCESSABLE_RESPONSE',
 			stack: this.stack,
 			data: {
-				message: 'The response body from bilo media query could not be processed because it is not an array',
+				message: 'The response body from bilo media query could not be processed',
 			},
 		};
 	}

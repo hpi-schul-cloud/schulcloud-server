@@ -7,7 +7,6 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger, Logger } from '@core/logger';
-import { RedisIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
@@ -29,9 +28,11 @@ async function bootstrap(): Promise<void> {
 	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
+	/* This is not used yet, and will be replaced by the new socket.io adapter
 	const ioAdapter = new RedisIoAdapter(nestApp);
 	ioAdapter.connectToRedis();
 	nestApp.useWebSocketAdapter(ioAdapter);
+	*/
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
