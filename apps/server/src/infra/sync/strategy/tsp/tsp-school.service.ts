@@ -3,7 +3,7 @@ import { School, SchoolService } from '@modules/school';
 import { FederalState, FederalStateService, FileStorageType, SchoolYearService } from '@modules/school/domain';
 import { SchoolFactory } from '@modules/school/domain/factory';
 import { SchoolFeature, SchoolPermissions } from '@modules/school/domain/type';
-import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
 import { ObjectId } from 'bson';

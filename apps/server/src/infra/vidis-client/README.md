@@ -4,36 +4,19 @@
 
 ## How to use the api client
 
-The clients for the different Tsp endpoints should be created through TspClientFactory.
-Through the create methods of the factory the basic configuration will be set. Currently the
-factory sets the base url and generates the JWT used for the requests. You can use the client
-like this:
+The clients for the different VIDIS endpoints should be created through the various API factory
+provided in the generated files (IDMBetreiberApiFactory, EducationProviderApiFactory, DefaultApiFactory).
+Through the create methods of the factory the basic configuration will be set. 
 
-```typescript
-export class MyNewService {
-    // inject the factory into the constructor
-    constructor(private readonly vidisClientFactory: VidisClientFactory) {}
-
-    public async doSomeStuff(): Promise<void> {
-        // this will create a fully initialized client
-        const exportClient = vidisClientFactory.createExportClient();
-
-        // calling the api
-        const versionResponse = await exportClient.version();
-
-
-        // do other stuff...
-    }
-}
-```
+Currently, the factory only sets the base url. The factory do accept parameters for auth, but does 
+not do anything with it. This is because the openapi-yml file provided from VIDIS is incomplete. 
+You will need to set the authentication header manually (see the existing vidis client adapter 
+for an example).
 
 ## How the code generation works
 
-> IMPORTANT: Currently we are using the `openapi.json` and not the spec from 
-> https://test2.schulportal-thueringen.de/tip-ms/api/swagger.json, because we have to patch the security schemas
-> manually into to the specification so the generator can generate them correctly. The provided
-> specification does not contain all necessary definitions. Only the `Export` endpoints are
-> decorated with the security definitions.
+> IMPORTANT: The `vidis.yml` is provided from VIDIS is incomplete and does not reflect the full
+> specifications of the VIDIS API endpoint
 
 We are using the openapi-generator-cli to generate apis, models and supporting files in the
 `generated` directory. **DO NOT** modify anything in the `generated` folder, because it will

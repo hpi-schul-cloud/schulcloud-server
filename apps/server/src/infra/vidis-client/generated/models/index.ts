@@ -6,4 +6,5 @@ export * from './offer-dto';
 export * from './page-activation-dto';
 export * from './page-offer-dto';
 export * from './page-school-dto';
+export * from './school-activation-dto';
 export * from './school-dto';

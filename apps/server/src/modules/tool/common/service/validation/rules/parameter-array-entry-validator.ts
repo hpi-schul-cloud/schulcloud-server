@@ -14,7 +14,7 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 		new ParameterEntryRegexValidator(),
 	];
 
-	validate(
+	public validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],
 		toolId: EntityId | undefined
@@ -32,7 +32,8 @@ export class ParameterArrayEntryValidator implements ParameterArrayValidator {
 
 					errors.push(...entryErrors);
 				});
-			} else if (!param.isOptional) {
+			}
+			if (!foundEntry && !param.isOptional) {
 				errors.push(new ToolParameterRequiredLoggableException(toolId, param));
 			}
 		}

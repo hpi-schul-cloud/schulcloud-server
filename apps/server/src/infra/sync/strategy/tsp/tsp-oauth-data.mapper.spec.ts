@@ -11,10 +11,10 @@ import {
 	oauthDataDtoFactory,
 	provisioningSystemDtoFactory,
 } from '@modules/provisioning/testing/';
+import { RoleName } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { TspMissingExternalIdLoggable } from './loggable/tsp-missing-external-id.loggable';
 import { TspOauthDataMapper } from './tsp-oauth-data.mapper';
@@ -71,12 +71,18 @@ describe(TspOauthDataMapper.name, () => {
 				const tspTeachers = [tspTeacher];
 
 				const klasseId = faker.string.uuid();
+				const klasse2Id = faker.string.uuid();
 
 				const tspClass = robjExportKlasseFactory.build({
 					klasseId,
 					lehrerUid,
 				});
-				const tspClasses = [tspClass];
+				const tspClass2 = robjExportKlasseFactory.build({
+					klasseId: klasse2Id,
+					lehrerUid,
+					klasseName: '1a',
+				});
+				const tspClasses = [tspClass, tspClass2];
 
 				const tspStudent = robjExportSchuelerFactory.build({
 					schuelerUid: faker.string.uuid(),
@@ -85,7 +91,14 @@ describe(TspOauthDataMapper.name, () => {
 					schuleNummer: school.externalId,
 					klasseId,
 				});
-				const tspStudents = [tspStudent];
+				const tspStudentWithSecondClass = robjExportSchuelerFactory.build({
+					schuelerUid: tspStudent.schuelerUid,
+					schuelerNachname: tspStudent.schuelerNachname,
+					schuelerVorname: tspStudent.schuelerVorname,
+					schuleNummer: school.externalId,
+					klasseId: klasse2Id,
+				});
+				const tspStudents = [tspStudent, tspStudentWithSecondClass];
 
 				const provisioningSystemDto: ProvisioningSystemDto = provisioningSystemDtoFactory.build({
 					systemId: system.id,
@@ -95,6 +108,11 @@ describe(TspOauthDataMapper.name, () => {
 				const externalClassDto = externalClassDtoFactory.build({
 					externalId: tspClasses[0].klasseId ?? '',
 					name: tspClasses[0].klasseName,
+				});
+				const externalClassDto2 = externalClassDtoFactory.build({
+					externalId: tspClasses[1].klasseId ?? '',
+					name: 'a',
+					gradeLevel: 1,
 				});
 
 				const externalTeacherUserDto = externalUserDtoFactory.build({
@@ -127,13 +145,13 @@ describe(TspOauthDataMapper.name, () => {
 						oauthDataDtoFactory.build({
 							system: provisioningSystemDto,
 							externalUser: externalTeacherUserDto,
-							externalClasses: [externalClassDto],
+							externalClasses: [externalClassDto, externalClassDto2],
 							externalSchool: externalSchoolDto,
 						}),
 						oauthDataDtoFactory.build({
 							system: provisioningSystemDto,
 							externalUser: externalStudentUserDto,
-							externalClasses: [externalClassDto],
+							externalClasses: [externalClassDto, externalClassDto2],
 							externalSchool: externalSchoolDto,
 						}),
 					],
@@ -151,13 +169,26 @@ describe(TspOauthDataMapper.name, () => {
 								},
 							],
 						],
+						[
+							tspClass2.klasseId ?? '',
+							[
+								{
+									externalId: tspTeacher.lehrerUid,
+									role: RoleName.TEACHER,
+								},
+								{
+									externalId: tspStudent.schuelerUid,
+									role: RoleName.STUDENT,
+								},
+							],
+						],
 					]),
 				};
 
 				return { system, school, tspTeachers, tspStudents, tspClasses, expected };
 			};
 
-			it('should return an array of oauth data dtos', () => {
+			it('should return an array of oauth data dtos without duplicate users', () => {
 				const { system, school, tspTeachers, tspStudents, tspClasses, expected } = setup();
 
 				const result = sut.mapTspDataToOauthData(system, [school], tspTeachers, tspStudents, tspClasses);

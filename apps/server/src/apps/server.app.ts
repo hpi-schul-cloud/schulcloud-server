@@ -6,6 +6,7 @@ import { LegacyLogger, Logger } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
 import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
@@ -14,7 +15,7 @@ import { InternalServerModule } from '@modules/internal-server/internal-server.a
 import { RocketChatService } from '@modules/rocketchat';
 import { FeathersRosterService } from '@modules/roster';
 import { ServerModule } from '@modules/server/server.app.module';
-import { TeamService } from '@modules/teams/service/team.service';
+import { TeamService } from '@modules/team';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -40,6 +41,8 @@ async function bootstrap(): Promise<void> {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const cacheManager = await nestApp.resolve(SESSION_VALKEY_CLIENT);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
@@ -50,7 +53,7 @@ async function bootstrap(): Promise<void> {
 
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm);
+	const feathersExpress = await legacyAppPromise(orm, cacheManager);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	await feathersExpress.setup();
 

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { EntityId } from '@shared/domain/types';
 
 export class CourseCommonCartridgeMetadataResponse {
@@ -11,7 +12,7 @@ export class CourseCommonCartridgeMetadataResponse {
 
 	@ApiProperty({
 		description: 'The id of the course',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

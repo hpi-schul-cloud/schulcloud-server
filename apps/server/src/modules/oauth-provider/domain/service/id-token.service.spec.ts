@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { PseudonymService } from '@modules/pseudonym/service';
+import { pseudonymFactory } from '@modules/pseudonym/testing';
+import { TeamRepo } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
+import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { UserService } from '@modules/user/service/user.service';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TeamsRepo } from '@shared/repo/teams';
 import { setupEntities } from '@testing/database';
-import { pseudonymFactory } from '@testing/factory/domainobject';
-import { teamFactory } from '@testing/factory/team.factory';
 import { IdTokenCreationLoggableException } from '../error';
 import { IdToken, OauthScope } from '../interface';
 import { IdTokenService } from './id-token.service';
@@ -20,7 +20,7 @@ describe('IdTokenService', () => {
 
 	let oauthProviderLoginFlowService: DeepMocked<OauthProviderLoginFlowService>;
 	let pseudonymService: DeepMocked<PseudonymService>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -36,8 +36,8 @@ describe('IdTokenService', () => {
 					useValue: createMock<PseudonymService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: UserService,
@@ -50,7 +50,7 @@ describe('IdTokenService', () => {
 
 		oauthProviderLoginFlowService = module.get(OauthProviderLoginFlowService);
 		pseudonymService = module.get(PseudonymService);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 
 		await setupEntities([User]);
@@ -111,7 +111,7 @@ describe('IdTokenService', () => {
 				const tool = externalToolFactory.withOauth2Config().buildWithId();
 				const pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
-				teamsRepo.findByUserId.mockResolvedValue([team]);
+				teamRepo.findByUserId.mockResolvedValue([team]);
 				userService.findById.mockResolvedValue(user);
 				userService.getDisplayName.mockResolvedValue(displayName);
 				oauthProviderLoginFlowService.findToolByClientId.mockResolvedValue(tool);

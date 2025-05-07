@@ -2,14 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface/permission.enum';
-import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -43,34 +41,6 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('PATCH /rooms/:roomId/leave', () => {
-		const setupRoomRoles = () => {
-			const ownerRole = roleFactory.buildWithId({
-				name: RoleName.ROOMOWNER,
-				permissions: [
-					Permission.ROOM_VIEW,
-					Permission.ROOM_EDIT,
-					Permission.ROOM_DELETE,
-					Permission.ROOM_MEMBERS_ADD,
-					Permission.ROOM_MEMBERS_REMOVE,
-				],
-			});
-			const adminRole = roleFactory.buildWithId({
-				name: RoleName.ROOMADMIN,
-				permissions: [
-					Permission.ROOM_VIEW,
-					Permission.ROOM_EDIT,
-					Permission.ROOM_MEMBERS_ADD,
-					Permission.ROOM_MEMBERS_REMOVE,
-					Permission.ROOM_LEAVE,
-				],
-			});
-			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOMVIEWER,
-				permissions: [Permission.ROOM_VIEW],
-			});
-			return { ownerRole, adminRole, viewerRole };
-		};
-
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
@@ -82,15 +52,18 @@ describe('Room Controller (API)', () => {
 			const { teacherUser: inRoomAdmin3 } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: inRoomViewer } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 			const { teacherUser: outTeacher } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
+			const { teacherUser: roomOwner } = UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
 
 			const users = { teacherUser, inRoomAdmin2, inRoomAdmin3, inRoomViewer, outTeacher };
 
-			const { ownerRole, adminRole, viewerRole } = setupRoomRoles();
+			const { roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const roomUsers = [teacherUser, inRoomAdmin2, inRoomAdmin3].map((user) => {
-				return { role: adminRole, user };
+				return { role: roomAdminRole, user };
 			});
-			roomUsers.push({ role: viewerRole, user: inRoomViewer });
+
+			roomUsers.push({ role: roomOwnerRole, user: roomOwner });
+			roomUsers.push({ role: roomViewerRole, user: inRoomViewer });
 
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: roomUsers,
@@ -113,7 +86,9 @@ describe('Room Controller (API)', () => {
 				roomMemberships,
 				teacherAccount,
 				userGroupEntity,
-				ownerRole,
+				roomOwnerRole,
+				roomAdminRole,
+				roomViewerRole,
 			]);
 			em.clear();
 
@@ -164,7 +139,8 @@ describe('Room Controller (API)', () => {
 				it('should return OK', async () => {
 					const { room, teacherAccount } = await setupRoomWithMembers();
 					const loggedInClient = await testApiClient.login(teacherAccount);
-
+					console.log('teacherAccount', teacherAccount);
+					console.log('loggedInClient', loggedInClient);
 					const response = await loggedInClient.patch(`/${room.id}/leave`);
 
 					expect(response.status).toBe(HttpStatus.OK);

@@ -1,27 +1,24 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { MikroORM } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { pseudonymFactory } from '@testing/factory/domainobject';
 import { ObjectId } from 'bson';
 import { ExternalToolPseudonymEntity } from '../entity';
-import { ExternalToolPseudonymRepo } from '../repo';
+import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
+import { pseudonymFactory } from '../testing';
 import { PseudonymService } from './pseudonym.service';
 
 describe('PseudonymService', () => {
@@ -29,9 +26,10 @@ describe('PseudonymService', () => {
 	let service: PseudonymService;
 
 	let externalToolPseudonymRepo: DeepMocked<ExternalToolPseudonymRepo>;
-	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
+		await setupEntities([ExternalToolPseudonymEntity]);
+
 		module = await Test.createTestingModule({
 			providers: [
 				PseudonymService,
@@ -44,21 +42,16 @@ describe('PseudonymService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: await setupEntities([ExternalToolPseudonymEntity]),
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
 
 		service = module.get(PseudonymService);
 		externalToolPseudonymRepo = module.get(ExternalToolPseudonymRepo);
-		eventBus = module.get(EventBus);
 	});
 
 	beforeEach(() => {
@@ -503,50 +496,6 @@ describe('PseudonymService', () => {
 				expect(result).toEqual(
 					`<iframe src="${host}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`
 				);
-			});
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.FILERECORDS;
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString(),
-				]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in classService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await service.handle({ deletionRequestId, targetRefId });
-
-				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await service.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

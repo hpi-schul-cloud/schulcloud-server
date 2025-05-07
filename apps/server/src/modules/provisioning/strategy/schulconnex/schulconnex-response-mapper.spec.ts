@@ -1,3 +1,4 @@
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import {
 	SchulconnexGroupRole,
@@ -12,10 +13,9 @@ import {
 	schulconnexResponseFactory,
 } from '@infra/schulconnex-client/testing';
 import { GroupTypes } from '@modules/group';
+import { RoleName } from '@modules/role';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@core/logger';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { ProvisioningConfig } from '../../provisioning.config';

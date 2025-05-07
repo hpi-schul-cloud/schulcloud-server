@@ -21,7 +21,7 @@ export class CardUc {
 	}
 
 	// TODO reactor: No reason to check permission for all cards; this is only cards from same board
-	async findCards(userId: EntityId, cardIds: EntityId[]): Promise<Card[]> {
+	public async findCards(userId: EntityId, cardIds: EntityId[]): Promise<Card[]> {
 		this.logger.debug({ action: 'findCards', userId, cardIds });
 
 		const cards = await this.boardNodeService.findByClassAndIds(Card, cardIds);
@@ -41,7 +41,7 @@ export class CardUc {
 		return allowedCards;
 	}
 
-	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<Card> {
+	public async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<Card> {
 		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
@@ -51,7 +51,7 @@ export class CardUc {
 		return card;
 	}
 
-	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<Card> {
+	public async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<Card> {
 		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
@@ -61,7 +61,7 @@ export class CardUc {
 		return card;
 	}
 
-	async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
+	public async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
 		this.logger.debug({ action: 'deleteCard', userId, cardId });
 
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
@@ -74,7 +74,7 @@ export class CardUc {
 
 	// --- elements ---
 
-	async createElement(
+	public async createElement(
 		userId: EntityId,
 		cardId: EntityId,
 		type: ContentElementType,
@@ -92,7 +92,7 @@ export class CardUc {
 		return element;
 	}
 
-	async moveElement(
+	public async moveElement(
 		userId: EntityId,
 		elementId: EntityId,
 		targetCardId: EntityId,

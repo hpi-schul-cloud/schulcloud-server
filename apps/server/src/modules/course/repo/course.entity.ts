@@ -1,20 +1,16 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
-import { LessonParent } from '@modules/lesson/repository';
+import { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { CourseSyncAttribute } from '../domain';
 // eslint-disable-next-line import/no-cycle
 import { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
-
-export enum SyncAttribute {
-	TEACHERS = 'teachers',
-}
 
 export enum CourseType {
 	'Course' = 'course',
@@ -48,7 +44,7 @@ export interface CourseProperties {
 	classes?: ClassEntity[];
 	groups?: GroupEntity[];
 	syncedWithGroup?: GroupEntity;
-	excludeFromSync?: SyncAttribute[];
+	excludeFromSync?: CourseSyncAttribute[];
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -71,7 +67,7 @@ export class UsersList {
 }
 
 @Entity({ tableName: 'courses' })
-export class CourseEntity extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
+export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent, LessonParent {
 	@Property()
 	name: string;
 
@@ -128,7 +124,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements EntityWith
 	syncedWithGroup?: GroupEntity;
 
 	@Enum({ nullable: true, array: true })
-	excludeFromSync?: SyncAttribute[];
+	excludeFromSync?: CourseSyncAttribute[];
 
 	constructor(props: CourseProperties) {
 		super();

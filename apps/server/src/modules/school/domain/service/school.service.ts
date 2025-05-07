@@ -7,13 +7,13 @@ import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
+import { SchoolFactory } from '../factory';
+import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import {
 	SchoolHasNoSystemLoggableException,
 	SystemCanNotBeDeletedLoggableException,
 	SystemNotFoundLoggableException,
-} from '../error';
-import { SchoolFactory } from '../factory';
-import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
+} from '../loggable';
 import { SchoolQuery } from '../query';
 import { InstanceFeature } from '../type';
 

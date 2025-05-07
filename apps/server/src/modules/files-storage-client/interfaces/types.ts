@@ -1,6 +1,5 @@
-import { LessonEntity } from '@modules/lesson/repository';
-import { Task } from '@modules/task/repo';
-import { Submission } from '@shared/domain/entity';
+import { LessonEntity } from '@modules/lesson/repo';
+import { Submission, Task } from '@modules/task/repo';
 
 export type EntitiesWithFiles = Task | LessonEntity | Submission;
 export type EntityWithEmbeddedFiles = Task | LessonEntity;

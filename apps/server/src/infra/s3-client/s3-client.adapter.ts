@@ -2,35 +2,36 @@ import {
 	CopyObjectCommand,
 	CopyObjectCommandOutput,
 	CreateBucketCommand,
-	DeleteObjectCommandOutput,
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
 	HeadObjectCommandOutput,
 	ListObjectsV2Command,
+	ListObjectsV2CommandOutput,
 	PutObjectCommandInput,
 	S3Client,
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
 import { LegacyLogger } from '@core/logger';
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { Readable } from 'stream';
-import { S3_CLIENT, S3_CONFIG } from './constants';
 import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
 
-@Injectable()
 export class S3ClientAdapter {
 	private deletedFolderName = 'trash';
+	private S3_MAX_DEFAULT_VALUE_FOR_KEYS = 1000;
 
 	constructor(
-		@Inject(S3_CLIENT) readonly client: S3Client,
-		@Inject(S3_CONFIG) readonly config: S3Config,
-		private logger: LegacyLogger
+		private readonly client: S3Client,
+		private readonly config: S3Config,
+		private logger: LegacyLogger,
+		private errorHandler: DomainErrorHandler
 	) {
-		this.logger.setContext(S3ClientAdapter.name);
+		this.logger.setContext(`${S3ClientAdapter.name}:${config.connectionName}`);
 	}
 
 	// is public but only used internally
@@ -113,26 +114,41 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async moveToTrash(paths: string[]): Promise<CopyObjectCommandOutput[]> {
+	public async moveToTrash(paths: string[]): Promise<void> {
 		try {
+			if (paths.length === 0) return;
+
 			const copyPaths = paths.map((path) => {
 				return { sourcePath: path, targetPath: `${this.deletedFolderName}/${path}` };
 			});
 
-			const result = await this.copy(copyPaths);
+			await this.copy(copyPaths);
 
 			// try catch with rollback is not needed,
 			// because the second copyRequest try override existing files in trash folder
 			await this.delete(paths);
-
-			return result;
 		} catch (err: unknown) {
-			if (TypeGuard.getValueFromDeepObjectKey(err, ['cause', 'name']) === 'NoSuchKey') {
-				this.logger.warn(`could not find one of the files for deletion with ids ${paths.join(',')}`);
-
-				return [];
-			}
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
+		}
+	}
+
+	public async moveDirectoryToTrash(path: string, nextMarker?: string): Promise<void> {
+		try {
+			this.logger.debug({ action: 'moveDirectoryToTrash', params: { path, bucket: this.config.bucket } });
+
+			const data = await this.listObjects(path, nextMarker);
+			const filteredPathObjects = this.filterValidPathKeys(data);
+
+			await this.moveToTrash(filteredPathObjects);
+
+			if (data.IsTruncated && data.NextContinuationToken) {
+				await this.moveDirectoryToTrash(path, data.NextContinuationToken);
+			}
+		} catch (err) {
+			throw new InternalServerErrorException(
+				'S3ClientAdapter:moveDirectoryToTrash',
+				ErrorUtils.createHttpExceptionOptions(err)
+			);
 		}
 	}
 
@@ -173,7 +189,8 @@ export class S3ClientAdapter {
 				return data;
 			});
 
-			const result = await Promise.all(copyRequests);
+			const settledPromises = await Promise.allSettled(copyRequests);
+			const result = this.handleSettledPromises(settledPromises, 'S3ClientAdapter:copy:settledPromises');
 
 			return result;
 		} catch (err) {
@@ -181,9 +198,22 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async delete(paths: string[]): Promise<DeleteObjectCommandOutput> {
+	private handleSettledPromises<T>(settled: PromiseSettledResult<T>[], errorMessage: string): T[] {
+		const rejected = settled.filter((p) => p.status === 'rejected');
+		if (rejected.length > 0) {
+			const reasons = rejected.map((p: PromiseRejectedResult): unknown => p.reason);
+			this.errorHandler.exec(new Error(errorMessage, ErrorUtils.createHttpExceptionOptions(reasons)));
+		}
+
+		const result = settled.filter((p) => p.status === 'fulfilled').map((p) => p.value);
+
+		return result;
+	}
+
+	public async delete(paths: string[]): Promise<void> {
 		try {
 			this.logger.debug({ action: 'delete', params: { paths, bucket: this.config.bucket } });
+			if (paths.length === 0) return;
 
 			const pathObjects = paths.map((p) => {
 				return { Key: p };
@@ -193,9 +223,7 @@ export class S3ClientAdapter {
 				Delete: { Objects: pathObjects },
 			});
 
-			const result = await this.client.send(req);
-
-			return result;
+			await this.client.send(req);
 		} catch (err) {
 			throw new InternalServerErrorException('S3ClientAdapter:delete', ErrorUtils.createHttpExceptionOptions(err));
 		}
@@ -218,14 +246,7 @@ export class S3ClientAdapter {
 		let files: string[] = params.files ? params.files : [];
 		const MaxKeys = maxKeys && maxKeys - files.length;
 
-		const req = new ListObjectsV2Command({
-			Bucket: this.config.bucket,
-			Prefix: path,
-			ContinuationToken: nextMarker,
-			MaxKeys,
-		});
-
-		const data = await this.client.send(req);
+		const data = await this.listObjects(path, nextMarker, MaxKeys);
 
 		const returnedFiles =
 			data?.Contents?.filter((o) => o.Key)
@@ -264,23 +285,17 @@ export class S3ClientAdapter {
 		}
 	}
 
-	public async deleteDirectory(path: string): Promise<void> {
+	public async deleteDirectory(path: string, nextMarker?: string): Promise<void> {
 		try {
 			this.logger.debug({ action: 'deleteDirectory', params: { path, bucket: this.config.bucket } });
 
-			const req = new ListObjectsV2Command({
-				Bucket: this.config.bucket,
-				Prefix: path,
-			});
+			const data = await this.listObjects(path, nextMarker);
+			const filteredPathObjects = this.filterValidPathKeys(data);
 
-			const data = await this.client.send(req);
+			await this.delete(filteredPathObjects);
 
-			if (data.Contents?.length && data.Contents?.length > 0) {
-				const pathObjects = data.Contents.map((p) => p.Key);
-
-				const filteredPathObjects = pathObjects.filter((p): p is string => !!p);
-
-				await this.delete(filteredPathObjects);
+			if (data.IsTruncated && data.NextContinuationToken) {
+				await this.deleteDirectory(path, data.NextContinuationToken);
 			}
 		} catch (err) {
 			throw new InternalServerErrorException(
@@ -290,10 +305,39 @@ export class S3ClientAdapter {
 		}
 	}
 
+	private async listObjects(
+		path: string,
+		nextMarker?: string,
+		maxKeys = this.S3_MAX_DEFAULT_VALUE_FOR_KEYS
+	): Promise<ListObjectsV2CommandOutput> {
+		const req = new ListObjectsV2Command({
+			Bucket: this.config.bucket,
+			Prefix: path,
+			ContinuationToken: nextMarker,
+			MaxKeys: maxKeys,
+		});
+
+		const data = await this.client.send(req);
+
+		return data;
+	}
+
+	private filterValidPathKeys(data: ListObjectsV2CommandOutput): string[] {
+		let filteredPathObjects: string[] = [];
+
+		if (data.Contents) {
+			const pathObjects = data.Contents.map((p) => p.Key);
+
+			filteredPathObjects = pathObjects.filter((p): p is string => !!p);
+		}
+
+		return filteredPathObjects;
+	}
+
 	/* istanbul ignore next */
 	private checkStreamResponsive(stream: Readable, context: string): void {
 		let timer: NodeJS.Timeout;
-		const refreshTimeout = () => {
+		const refreshTimeout = (): void => {
 			if (timer) clearTimeout(timer);
 			timer = setTimeout(() => {
 				this.logger.log(`Stream unresponsive: S3 object key ${context}`);

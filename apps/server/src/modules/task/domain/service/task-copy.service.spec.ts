@@ -1,18 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { CopyFilesService } from '@modules/files-storage-client';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
-import { Task, TaskRepo } from '../../repo';
+import { Submission, Task, TaskRepo } from '../../repo';
 import { taskFactory } from '../../testing';
 import { TaskCopyService } from './task-copy.service';
 
@@ -411,32 +410,34 @@ describe('task copy service', () => {
 
 			const setupWithFiles = () => {
 				const school = schoolEntityFactory.build();
-				const file1 = legacyFileEntityMockFactory.build();
-				const file2 = legacyFileEntityMockFactory.build();
-				const imageHTML1 = getImageHTML(file1.id, file1.name);
-				const imageHTML2 = getImageHTML(file2.id, file2.name);
+				const fileId1 = new ObjectId().toHexString();
+				const fileId2 = new ObjectId().toHexString();
+				const fileName1 = 'file-1.jpg';
+				const fileName2 = 'file-2.jpg';
+				const imageHTML1 = getImageHTML(fileId1, fileName1);
+				const imageHTML2 = getImageHTML(fileId2, fileName2);
 
 				const description = `<p>Some images: ${imageHTML1} ${imageHTML2}</p>`;
 				const user = userFactory.build({});
 				const originalCourse = courseEntityFactory.build();
 				const originalTask = taskFactory.buildWithId({ creator: user, description, course: originalCourse });
 				taskRepo.findById.mockResolvedValueOnce(originalTask);
-				return { school, file1, file2, user, originalTask };
+				return { school, fileId1, fileId2, user, originalTask };
 			};
 
 			it('it should replace urls of copied files in task description', async () => {
-				const { file1, file2, originalTask, user } = setupWithFiles();
+				const { fileId1, fileId2, originalTask, user } = setupWithFiles();
 
 				const replacement1 = '...weired_replacement1...';
 				const replacement2 = '...weired_replacement2...';
 
 				const fileUrlReplacements = [
 					{
-						regex: new RegExp(`${file1.id}.+?"`, 'g'),
+						regex: new RegExp(`${fileId1}.+?"`, 'g'),
 						replacement: replacement1,
 					},
 					{
-						regex: new RegExp(`${file2.id}.+?"`, 'g'),
+						regex: new RegExp(`${fileId2}.+?"`, 'g'),
 						replacement: replacement2,
 					},
 				];
@@ -452,8 +453,8 @@ describe('task copy service', () => {
 				});
 
 				const { description } = status.copyEntity as Task;
-				expect(description).not.toContain(file1.id);
-				expect(description).not.toContain(file2.id);
+				expect(description).not.toContain(fileId1);
+				expect(description).not.toContain(fileId2);
 				expect(description).toContain(replacement1);
 				expect(description).toContain(replacement2);
 			});

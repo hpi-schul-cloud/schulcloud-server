@@ -1,8 +1,8 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityId, SystemTypeEnum } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { System, SystemQuery, SystemRepo } from '../../domain';
+import { System, SystemQuery, SystemRepo, SystemTypeEnum } from '../../domain';
 import { SystemEntityMapper } from './mapper';
 import { SystemScope } from './scope';
 import { SystemEntity } from './system.entity';

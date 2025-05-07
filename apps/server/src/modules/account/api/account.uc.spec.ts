@@ -5,20 +5,19 @@ import { EntityNotFoundError } from '@shared/common/error';
 
 import { faker } from '@faker-js/faker';
 import { AuthorizationService } from '@modules/authorization';
+import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
-import { Role } from '@shared/domain/entity';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { Account, AccountSave } from '../domain';
-import { AccountEntity } from '../domain/entity/account.entity';
-import { AccountService } from '../domain/services';
-import { AccountEntityToDoMapper } from '../repo/micro-orm/mapper';
+import { Account, AccountSave, AccountService } from '../domain';
+import { AccountEntity, AccountEntityToDoMapper } from '../repo';
 import { accountFactory } from '../testing';
 import { AccountUc } from './account.uc';
 import { AccountSearchDto, AccountSearchType, UpdateAccountDto } from './dto';
@@ -76,7 +75,7 @@ describe('AccountUc', () => {
 		describe('When user does not exist', () => {
 			const setup = () => {
 				authorizationService.getUserWithPermissions.mockImplementation(() => {
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 			};
 
@@ -103,7 +102,7 @@ describe('AccountUc', () => {
 				});
 
 				accountService.findByUserIdOrFail.mockImplementation((): Promise<Account> => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockUserWithoutAccount };
@@ -1332,7 +1331,7 @@ describe('AccountUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<Account> => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockSuperheroUser };
@@ -1361,7 +1360,7 @@ describe('AccountUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<Account> => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockSuperheroUser };
@@ -1415,7 +1414,7 @@ describe('AccountUc', () => {
 				});
 
 				authorizationService.getUserWithPermissions.mockImplementation((): Promise<User> => {
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 
 				return { mockStudentAccount };
@@ -1967,7 +1966,7 @@ describe('AccountUc', () => {
 					if (mockAdminUser.id === userId) {
 						return Promise.resolve(mockAdminUser);
 					}
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 				authorizationService.checkAllPermissions.mockImplementation((): boolean => {
 					throw new UnauthorizedException();
@@ -2001,12 +2000,12 @@ describe('AccountUc', () => {
 					if (mockSuperheroUser.id === userId) {
 						return Promise.resolve(mockSuperheroUser);
 					}
-					throw new EntityNotFoundError(User.name);
+					throw new EntityNotFoundError('User');
 				});
 
 				accountService.findById.mockImplementation((id: EntityId): Promise<Account> => {
 					if (id === 'xxx') {
-						throw new EntityNotFoundError(AccountEntity.name);
+						throw new EntityNotFoundError('AccountEntity');
 					}
 					return Promise.reject();
 				});

@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { storageProviderFactory } from '@testing/factory/storageprovider.factory';
+import { storageProviderFactory } from '@modules/school/testing';
 import { FileOwnerModel } from '../domain';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
 import { FileEntity } from './file.entity';

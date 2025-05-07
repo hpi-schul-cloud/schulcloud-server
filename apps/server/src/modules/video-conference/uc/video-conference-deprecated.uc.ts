@@ -6,17 +6,15 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { RoleName } from '@modules/role';
 import { SchoolFeature } from '@modules/school/domain';
+import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
-import { VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
-import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
-import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -29,8 +27,10 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { ErrorStatus } from '../error/error-status.enum';
-import { VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
+import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } from '../domain';
+import { ErrorStatus } from '../error';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceRepo } from '../repo';
 import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
@@ -49,7 +49,7 @@ export class VideoConferenceDeprecatedUc {
 		private readonly bbbService: BBBService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamRepo: TeamRepo,
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
@@ -304,7 +304,7 @@ export class VideoConferenceDeprecatedUc {
 				return roles.includes(RoleName.EXPERT);
 			}
 			case VideoConferenceScope.EVENT: {
-				const team: TeamEntity = await this.teamsRepo.findById(scopeId);
+				const team: TeamEntity = await this.teamRepo.findById(scopeId);
 				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
 					(userInTeam: TeamUserEntity) => userInTeam.user.id === currentUser.userId
 				);
@@ -349,7 +349,7 @@ export class VideoConferenceDeprecatedUc {
 			}
 			case VideoConferenceScope.EVENT: {
 				const event: CalendarEventDto = await this.calendarService.findEvent(userId, refId);
-				const team = await this.teamsRepo.findById(event.teamId, true);
+				const team = await this.teamRepo.findById(event.teamId, true);
 
 				return {
 					scopeInfo: {

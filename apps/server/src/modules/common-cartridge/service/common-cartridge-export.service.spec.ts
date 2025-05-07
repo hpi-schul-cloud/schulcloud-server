@@ -1,14 +1,12 @@
+import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { BoardResponse, BoardsClientAdapter } from '@infra/boards-client';
+import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
-import { BoardsClientAdapter, BoardResponse } from '@infra/boards-client';
-import { CoursesClientAdapter } from '@infra/courses-client';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { faker } from '@faker-js/faker';
-import { FileRecordParentType } from '@modules/files-storage/interface';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import { CommonCartridgeExportService } from './common-cartridge-export.service';
 import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
 import {
 	CardListResponseDto,
@@ -16,6 +14,7 @@ import {
 	RichTextElementContentDto,
 } from '../common-cartridge-client/card-client/dto';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
+import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import {
 	BoardColumnBoardDto,
 	BoardLessonDto,
@@ -24,7 +23,7 @@ import {
 } from '../common-cartridge-client/room-client/dto';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import {
-	boardCloumnBoardFactory,
+	boardColumnFactory,
 	boardLessonFactory,
 	boardTaskFactory,
 	columnBoardFactory,
@@ -33,7 +32,8 @@ import {
 	listOfCardResponseFactory,
 	roomFactory,
 } from '../testing/common-cartridge-dtos.factory';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -72,7 +72,7 @@ describe('CommonCartridgeExportService', () => {
 		room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
 		room.elements[1].content.id = lesson.lessonId;
 		room.elements[1].content.name = lesson.name;
-		room.elements[2].content = new BoardColumnBoardDto(boardCloumnBoardFactory.build());
+		room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
 
 		coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 		lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);

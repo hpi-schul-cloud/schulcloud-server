@@ -1,9 +1,9 @@
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { CourseEntity, CourseGroupEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';

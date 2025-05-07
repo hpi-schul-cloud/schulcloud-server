@@ -1,5 +1,5 @@
 import { schoolFactory, schoolYearDoFactory } from '../../testing';
-import { MissingYearsLoggableException } from '../error';
+import { MissingYearsLoggableException } from '../loggable';
 import { SchoolYearHelper } from './school-year.helper';
 
 describe('SchoolYearHelper', () => {

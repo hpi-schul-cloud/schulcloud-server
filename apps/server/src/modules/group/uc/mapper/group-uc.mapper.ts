@@ -1,9 +1,9 @@
 import { Class } from '@modules/class/domain';
 import { Course } from '@modules/course';
+import { RoleName } from '@modules/role';
 import { SchoolYearEntity } from '@modules/school/repo';
 import { System } from '@modules/system';
 import { UserDo } from '@modules/user';
-import { RoleName } from '@shared/domain/interface';
 import { Group } from '../../domain';
 import { ClassInfoDto, ClassRootType, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
 

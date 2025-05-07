@@ -2,14 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface/permission.enum';
-import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -130,12 +128,9 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const rooms = roomEntityFactory.buildListWithId(2, { schoolId: school.id });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const role = roleFactory.buildWithId({
-					name: RoleName.ROOMVIEWER,
-					permissions: [Permission.ROOM_VIEW],
-				});
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
-					users: [{ role, user: studentUser }],
+					users: [{ role: roomViewerRole, user: studentUser }],
 					type: GroupEntityTypes.ROOM,
 					organization: studentUser.school,
 					externalSource: undefined,

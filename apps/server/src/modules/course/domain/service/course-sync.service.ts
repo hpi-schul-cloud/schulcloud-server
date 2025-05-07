@@ -1,12 +1,11 @@
 import { Group, GroupUser } from '@modules/group';
-import { RoleDto, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SyncAttribute } from '../../repo';
 import { Course } from '../course.do';
 import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
+import { CourseSyncAttribute } from '../interface';
 import { CourseDoService } from './course-do.service';
 
 @Injectable()
@@ -27,7 +26,7 @@ export class CourseSyncService {
 		const shouldSyncTeachers: boolean = isTeacherInBoth || keepsAllTeachers;
 
 		if (!shouldSyncTeachers) {
-			course.excludeFromSync = [SyncAttribute.TEACHERS];
+			course.excludeFromSync = [CourseSyncAttribute.TEACHERS];
 		}
 
 		await this.synchronize([course], group);
@@ -50,7 +49,16 @@ export class CourseSyncService {
 		await this.synchronize(courses, newGroup, oldGroup);
 	}
 
-	private async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
+	public async stopSynchronizations(courses: Course[]): Promise<void> {
+		for (const course of courses) {
+			course.syncedWithGroup = undefined;
+			course.excludeFromSync = undefined;
+		}
+
+		await this.courseService.saveAll(courses);
+	}
+
+	public async synchronize(courses: Course[], group: Group, oldGroup?: Group): Promise<void> {
 		const [studentRole, teacherRole, substituteTeacherRole] = await Promise.all([
 			this.roleService.findByName(RoleName.STUDENT),
 			this.roleService.findByName(RoleName.TEACHER),
@@ -78,9 +86,9 @@ export class CourseSyncService {
 				course.name = group.name;
 			}
 
-			const excludedFromSync: Set<SyncAttribute> = new Set(course.excludeFromSync || []);
+			const excludedFromSync: Set<CourseSyncAttribute> = new Set(course.excludeFromSync || []);
 
-			if (excludedFromSync.has(SyncAttribute.TEACHERS)) {
+			if (excludedFromSync.has(CourseSyncAttribute.TEACHERS)) {
 				course.students = studentIds;
 			} else {
 				course.teachers = teacherIds.length > 0 ? teacherIds : course.teachers;

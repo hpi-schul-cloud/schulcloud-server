@@ -1,4 +1,4 @@
-import { Embedded, Entity, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { MediaSourceDataFormat } from '../enum';
@@ -33,6 +33,7 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 		this.vidisConfig = props.vidisConfig;
 	}
 
+	@Unique()
 	@Property()
 	sourceId: string;
 

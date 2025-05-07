@@ -1,6 +1,6 @@
 import { courseEntityFactory } from '@modules/course/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { LessonEntity, LessonProperties } from '../repository';
+import { LessonEntity, LessonProperties } from '../repo';
 
 class LessonFactory extends BaseFactory<LessonEntity, LessonProperties> {}
 

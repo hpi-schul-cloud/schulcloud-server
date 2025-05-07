@@ -1,13 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomEntity } from '../../repo';
@@ -99,20 +98,17 @@ describe('Room Controller (API)', () => {
 					endDate: new Date('2024-10-20'),
 					schoolId: school.id,
 				});
-				const role = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT],
-				});
+				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
-					users: [{ role, user: teacherUser }],
+					users: [{ role: roomEditorRole, user: teacherUser }],
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
 					roomId: room.id,
 					userGroupId: userGroup.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, role]);
+				await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

@@ -1,8 +1,7 @@
 import { BaseDO, RoleReference } from '@shared/domain/domainobject';
-import { Consent } from '@shared/domain/domainobject/consent';
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { UserSourceOptions } from './user-source-options.do';
+import { Consent } from './consent';
 
 export class SecondarySchoolReference {
 	public schoolId: EntityId;
@@ -19,6 +18,8 @@ export class UserDo extends BaseDO {
 	public createdAt?: Date;
 
 	public updatedAt?: Date;
+
+	public deletedAt?: Date;
 
 	public email: string;
 
@@ -66,7 +67,7 @@ export class UserDo extends BaseDO {
 
 	public consent?: Consent;
 
-	public sourceOptions?: UserSourceOptions;
+	public source?: string;
 
 	public lastSyncedAt?: Date;
 
@@ -75,6 +76,7 @@ export class UserDo extends BaseDO {
 
 		this.createdAt = domainObject.createdAt;
 		this.updatedAt = domainObject.updatedAt;
+		this.deletedAt = domainObject.deletedAt;
 		this.email = domainObject.email;
 		this.firstName = domainObject.firstName;
 		this.lastName = domainObject.lastName;
@@ -98,7 +100,7 @@ export class UserDo extends BaseDO {
 		this.previousExternalId = domainObject.previousExternalId;
 		this.birthday = domainObject.birthday;
 		this.consent = domainObject.consent;
-		this.sourceOptions = domainObject.sourceOptions;
+		this.source = domainObject.source;
 		this.lastSyncedAt = domainObject.lastSyncedAt;
 	}
 }

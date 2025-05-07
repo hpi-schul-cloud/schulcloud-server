@@ -20,8 +20,7 @@ import { School, SchoolService, SchoolYearService } from '@modules/school/domain
 import { schoolFactory, schoolYearDoFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';

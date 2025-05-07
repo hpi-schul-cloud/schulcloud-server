@@ -1,20 +1,19 @@
 import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { Account } from '../account';
-import { AccountSave } from '../account-save';
+import { Account, AccountSave } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
 	constructor(
-		private readonly accountRepo: AccountRepo,
+		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
 		private readonly configService: ConfigService<AccountConfig, true>
 	) {

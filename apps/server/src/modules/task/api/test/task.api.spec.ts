@@ -7,10 +7,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { InputFormat } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { taskFactory } from '../../testing';
+import { submissionFactory, taskFactory } from '../../testing';
 
 const tomorrow = new Date(Date.now() + 86400000);
 

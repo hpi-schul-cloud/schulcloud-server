@@ -1,5 +1,5 @@
-import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@modules/authorization';
+import { Module } from '@nestjs/common';
 import {
 	CourseGroupRule,
 	CourseRule,
@@ -10,11 +10,11 @@ import {
 	SchoolRule,
 	SchoolSystemOptionsRule,
 	SubmissionRule,
+	SystemRule,
 	TaskRule,
 	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
-	SystemRule,
 } from './rules';
 
 @Module({

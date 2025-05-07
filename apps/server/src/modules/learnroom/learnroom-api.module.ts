@@ -25,6 +25,7 @@ import {
 	LessonCopyUC,
 	RoomBoardDTOFactory,
 } from './uc';
+import { DeletionModule } from '@modules/deletion';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -43,6 +44,7 @@ import {
 		UserModule,
 		ClassModule,
 		CourseModule,
+		DeletionModule,
 	],
 	controllers: [DashboardController, CourseRoomsController, CourseController],
 	providers: [

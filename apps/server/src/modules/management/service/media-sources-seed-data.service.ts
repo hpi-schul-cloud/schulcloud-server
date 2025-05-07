@@ -32,6 +32,7 @@ export class MediaSourcesSeedDataService {
 						password: encryptedVidisPassword,
 						baseUrl: 'https://service-stage.vidis.schule/o/vidis-rest',
 						region: 'test-region',
+						schoolNumberPrefix: 'DE-VIDIS-vidis_test_',
 					},
 				})
 			);

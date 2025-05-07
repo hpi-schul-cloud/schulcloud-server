@@ -1,18 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { SubmissionService } from '../domain';
-import { Task } from '../repo';
-import { taskFactory } from '../testing';
+import { Submission, Task } from '../repo';
+import { submissionFactory, taskFactory } from '../testing';
 import { SubmissionUc } from './submission.uc';
 
 describe('Submission Uc', () => {

@@ -1,23 +1,20 @@
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ConfigService } from '@nestjs/config';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	AuthorizationError,
@@ -27,13 +24,11 @@ import {
 } from '@shared/common/error';
 import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
-import { Account, AccountSave, UpdateAccount } from '..';
 import { AccountConfig } from '../../account-config';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountEntityToDoMapper } from '../../repo/micro-orm/mapper';
 import { accountDoFactory, accountFactory } from '../../testing';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, AccountSave, UpdateAccount } from '../do';
 import { IdmCallbackLoggableException } from '../error';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
@@ -48,8 +43,7 @@ describe('AccountService', () => {
 	let logger: DeepMocked<Logger>;
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
-	let eventBus: DeepMocked<EventBus>;
-	let orm: MikroORM;
+	let userDeletionInjectionService: DeepMocked<UserDeletionInjectionService>;
 
 	const newAccountService = () =>
 		new AccountService(
@@ -59,8 +53,7 @@ describe('AccountService', () => {
 			logger,
 			userService,
 			accountRepo,
-			eventBus,
-			orm
+			userDeletionInjectionService
 		);
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -72,7 +65,7 @@ describe('AccountService', () => {
 	});
 
 	beforeAll(async () => {
-		orm = await setupEntities([AccountEntity, User]);
+		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -94,7 +87,7 @@ describe('AccountService', () => {
 					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
-					provide: AccountRepo,
+					provide: ACCOUNT_REPO,
 					useValue: createMock<AccountRepo>(),
 				},
 				{
@@ -102,14 +95,10 @@ describe('AccountService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
-				},
-				{
-					provide: MikroORM,
-					useValue: orm,
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
@@ -119,8 +108,8 @@ describe('AccountService', () => {
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 		userService = module.get(UserService);
-		accountRepo = module.get(AccountRepo);
-		eventBus = module.get(EventBus);
+		accountRepo = module.get(ACCOUNT_REPO);
+		userDeletionInjectionService = module.get(UserDeletionInjectionService);
 	});
 
 	beforeEach(() => {
@@ -1082,13 +1071,11 @@ describe('AccountService', () => {
 					school: mockSchool,
 				});
 				const externalSystem = systemFactory.build();
-				const mockExternalUserAccount = accountFactory.build({
+				const mockExternalAccount = accountDoFactory.build({
 					userId: mockExternalUser.id,
 					password: defaultPasswordHash,
 					systemId: externalSystem.id,
 				});
-
-				const mockExternalAccount: Account = AccountEntityToDoMapper.mapToDo(mockExternalUserAccount);
 
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockExternalAccount);
 
@@ -1113,11 +1100,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccountEntity = accountFactory.buildWithId({
+				const mockStudentAccount = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccount: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccountEntity);
 
 				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccount);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
@@ -1142,11 +1128,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
@@ -1172,13 +1157,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
@@ -1211,12 +1193,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
@@ -1243,12 +1223,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 
@@ -1280,12 +1258,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
@@ -1316,11 +1292,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
@@ -1353,11 +1328,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
@@ -1383,12 +1357,10 @@ describe('AccountService', () => {
 				const mockTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-
-				const mockTeacherAccount = accountFactory.buildWithId({
+				const mockTeacherAccountDo = accountDoFactory.build({
 					userId: mockTeacherUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockTeacherAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 
 				accountServiceDb.validatePassword.mockResolvedValue(true);
 
@@ -1419,12 +1391,10 @@ describe('AccountService', () => {
 				const mockTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockTeacherAccount = accountFactory.buildWithId({
+				const mockTeacherAccountDo = accountDoFactory.build({
 					userId: mockTeacherUser.id,
 					password: defaultPasswordHash,
 				});
-
-				const mockTeacherAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockTeacherAccount);
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValue(true);
@@ -1450,11 +1420,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockResolvedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValue(true);
@@ -1483,11 +1452,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockResolvedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValue(true);
@@ -1517,30 +1485,29 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					mockStudentAccount.password = account.password;
+					Object.assign(mockStudentAccountDo, account);
 
-					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+					return Promise.resolve(mockStudentAccountDo);
 				});
 
-				return { mockStudentAccount, mockStudentAccountDo, mockStudentUser };
+				return { mockStudentAccountDo, mockStudentUser };
 			};
 
 			it('should update target account password', async () => {
-				const { mockStudentAccount, mockStudentAccountDo, mockStudentUser } = setup();
-				const previousPasswordHash = mockStudentAccount.password;
+				const { mockStudentAccountDo, mockStudentUser } = setup();
+				const previousPasswordHash = mockStudentAccountDo.password;
 				const body = { password: defaultPassword } as UpdateAccount;
 
 				expect(mockStudentUser.forcePasswordChange).toBeFalsy();
 				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
-				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
+				expect(mockStudentAccountDo.password).not.toBe(previousPasswordHash);
 				expect(mockStudentUser.forcePasswordChange).toBeTruthy();
 			});
 		});
@@ -1552,16 +1519,16 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account);
-					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+					Object.assign(mockStudentAccountDo, account);
+
+					return Promise.resolve(mockStudentAccountDo);
 				});
 				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
 
@@ -1586,16 +1553,16 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account);
-					return Promise.resolve(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+					Object.assign(mockStudentAccountDo, account);
+
+					return Promise.resolve(mockStudentAccountDo);
 				});
 
 				return { mockStudentUser, mockStudentAccountDo };
@@ -1616,11 +1583,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockResolvedValue();
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
@@ -1646,11 +1612,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
 
@@ -1675,11 +1640,10 @@ describe('AccountService', () => {
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1708,11 +1672,10 @@ describe('AccountService', () => {
 					userId: mockOtherTeacherUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccount = accountFactory.buildWithId({
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
-				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDo(mockStudentAccount);
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
 				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
@@ -1749,7 +1712,7 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockUserWithoutAccount);
 				accountServiceDb.findByUserIdOrFail.mockImplementation(() => {
-					throw new EntityNotFoundError(AccountEntity.name);
+					throw new EntityNotFoundError('AccountEntity');
 				});
 
 				return { mockUserWithoutAccount };
@@ -1789,11 +1752,14 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 					systemId: externalSystem.id,
 				});
+				const mockExternalUserAccountDo = accountDoFactory.build({
+					userId: mockExternalUser.id,
+					password: defaultPasswordHash,
+					systemId: externalSystem.id,
+				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockExternalUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(
-					AccountEntityToDoMapper.mapToDo(mockExternalUserAccount)
-				);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockExternalUserAccountDo);
 
 				return { mockExternalUserAccount };
 			};
@@ -1819,14 +1785,17 @@ describe('AccountService', () => {
 					forcePasswordChange: false,
 					preferences: { firstLogin: true },
 				});
-
 				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
@@ -1852,14 +1821,17 @@ describe('AccountService', () => {
 					forcePasswordChange: false,
 					preferences: { firstLogin: false },
 				});
-
 				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
@@ -1886,14 +1858,17 @@ describe('AccountService', () => {
 					forcePasswordChange: false,
 					preferences: { firstLogin: false },
 				});
-
 				const mockStudentAccount = accountFactory.buildWithId({
 					userId: mockStudentUser.id,
 					password: undefined,
 				});
+				const mockStudentAccountDo = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
@@ -1924,11 +1899,15 @@ describe('AccountService', () => {
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
+				const mockStudentAccountDo = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
@@ -1959,11 +1938,15 @@ describe('AccountService', () => {
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
+				const mockStudentAccountDo = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
@@ -1990,16 +1973,19 @@ describe('AccountService', () => {
 					forcePasswordChange: false,
 				});
 				mockStudentUser.preferences = undefined;
-
 				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
@@ -2026,15 +2012,18 @@ describe('AccountService', () => {
 					preferences: { firstLogin: false },
 					forcePasswordChange: false,
 				});
-
 				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo = accountDoFactory.build({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
 				accountServiceDb.save.mockResolvedValueOnce({
 					getProps: () => {
@@ -2053,7 +2042,7 @@ describe('AccountService', () => {
 						otherPassword,
 						otherPassword
 					)
-				).rejects.toThrow(new EntityNotFoundError(User.name));
+				).rejects.toThrow(new EntityNotFoundError('User'));
 			});
 		});
 
@@ -2066,16 +2055,19 @@ describe('AccountService', () => {
 					forcePasswordChange: false,
 					preferences: { firstLogin: false },
 				});
-
 				const mockStudentAccount = accountFactory.buildWithId({
 					userId: mockStudentUser.id,
 					password: defaultPasswordHash,
 					username: 'fail@to.update',
 				});
+				const mockStudentAccountDo = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				userService.saveEntity.mockResolvedValueOnce();
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDo(mockStudentAccount));
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountServiceDb.save.mockRejectedValueOnce(undefined);
 				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
 
@@ -2160,48 +2152,6 @@ describe('AccountService', () => {
 				const result = await accountService.deleteUserData(userId);
 
 				expect(result).toEqual(expectedData);
-			});
-		});
-	});
-
-	describe('handle', () => {
-		const setup = () => {
-			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.ACCOUNT;
-			const accountId = new ObjectId().toHexString();
-			const deletionRequest = deletionRequestFactory.buildWithId({ targetRefId, targetRefDomain });
-			const deletionRequestId = deletionRequest.id;
-
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
-			]);
-
-			return {
-				deletionRequestId,
-				expectedData,
-				targetRefId,
-			};
-		};
-
-		describe('when UserDeletedEvent is received', () => {
-			it('should call deleteUserData in accountService', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await accountService.handle({ deletionRequestId, targetRefId });
-
-				expect(accountService.deleteUserData).toHaveBeenCalledWith(targetRefId);
-			});
-
-			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequestId, expectedData, targetRefId } = setup();
-
-				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
-
-				await accountService.handle({ deletionRequestId, targetRefId });
-
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

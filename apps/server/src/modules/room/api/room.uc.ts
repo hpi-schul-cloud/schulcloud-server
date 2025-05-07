@@ -1,5 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '@modules/board';
+import { RoleName, RoomRole } from '@modules/role';
 import { RoomMembershipAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
@@ -7,7 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, Permission, RoleName, RoomRole } from '@shared/domain/interface';
+import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
@@ -122,7 +123,7 @@ export class RoomUc {
 		});
 
 		const userIds = roomMembershipAuthorizable.members.map((member) => member.userId);
-		const users = await this.userService.findByIds(userIds);
+		const users = (await this.userService.findByIds(userIds)).filter((user) => !user.deletedAt);
 
 		const memberResponses = users.map((user) => {
 			const member = roomMembershipAuthorizable.members.find((item) => item.userId === user.id);
@@ -250,12 +251,13 @@ export class RoomUc {
 	}
 
 	private mapToMember(member: UserWithRoomRoles, user: UserDo): RoomMemberResponse {
+		const schoolRoleNames = user.roles.map((role) => role.name);
 		return new RoomMemberResponse({
 			userId: member.userId,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			roomRoleName: member.roles[0].name,
-			schoolRoleName: user.roles[0].name,
+			schoolRoleNames,
 			schoolName: user.schoolName ?? '',
 		});
 	}

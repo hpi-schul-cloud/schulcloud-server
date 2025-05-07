@@ -10,7 +10,6 @@ import { ValidationError } from '@shared/common/error';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { CommonToolValidationService } from '../../common/service';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalToolService } from '../../external-tool';
 import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../service';
@@ -18,13 +17,12 @@ import { schoolExternalToolFactory } from '../testing';
 import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 
-describe('SchoolExternalToolUc', () => {
+describe(SchoolExternalToolUc.name, () => {
 	let module: TestingModule;
 	let uc: SchoolExternalToolUc;
 
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
 	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolService: DeepMocked<SchoolService>;
@@ -41,10 +39,6 @@ describe('SchoolExternalToolUc', () => {
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
-				},
-				{
-					provide: CommonToolMetadataService,
-					useValue: createMock<CommonToolMetadataService>(),
 				},
 				{
 					provide: CommonToolValidationService,
@@ -64,7 +58,6 @@ describe('SchoolExternalToolUc', () => {
 		uc = module.get(SchoolExternalToolUc);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		externalToolService = module.get(ExternalToolService);
-		commonToolMetadataService = module.get(CommonToolMetadataService);
 		commonToolValidationService = module.get(CommonToolValidationService);
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(SchoolService);
@@ -425,68 +418,6 @@ describe('SchoolExternalToolUc', () => {
 			const result = await uc.updateSchoolExternalTool(user.id, schoolExternalToolId, updatedTool.getProps());
 
 			expect(result).toEqual(updatedTool);
-		});
-	});
-
-	describe('getMetadataForSchoolExternalTool', () => {
-		describe('when authorize user', () => {
-			const setupMetadata = () => {
-				const toolId = new ObjectId().toHexString();
-				const tool = schoolExternalToolFactory.buildWithId({ id: toolId }, toolId);
-				const userId = new ObjectId().toHexString();
-				const user = userFactory.buildWithId({}, userId);
-				const school = schoolFactory.build({ id: tool.schoolId });
-
-				schoolExternalToolService.findById.mockResolvedValue(tool);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				return {
-					user,
-					toolId: tool.id,
-					school,
-				};
-			};
-
-			it('should check the permissions of the user', async () => {
-				const { user, toolId, school } = setupMetadata();
-
-				await uc.getMetadataForSchoolExternalTool(user.id, toolId);
-
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
-					user,
-					school,
-					AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN])
-				);
-			});
-		});
-
-		describe('when externalToolId is given', () => {
-			const setupMetadata = () => {
-				const user = userFactory.buildWithId();
-				const toolId = new ObjectId().toHexString();
-				const school = schoolFactory.build({ id: new ObjectId().toHexString() });
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					id: toolId,
-				});
-
-				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-
-				return {
-					toolId,
-					user,
-				};
-			};
-
-			it('should call the service to get metadata', async () => {
-				const { toolId, user } = setupMetadata();
-
-				await uc.getMetadataForSchoolExternalTool(user.id, toolId);
-
-				expect(commonToolMetadataService.getMetadataForSchoolExternalTool).toHaveBeenCalledWith(toolId);
-			});
 		});
 	});
 });

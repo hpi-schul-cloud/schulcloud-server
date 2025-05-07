@@ -3,28 +3,12 @@ import { MediaSourceSyncOperationReport, MediaSourceSyncReport } from '../interf
 
 export class MediaSourceSyncReportFactory {
 	public static buildFromOperations(operations: MediaSourceSyncOperationReport[]): MediaSourceSyncReport {
-		const successCount: number = operations
-			.filter((report: MediaSourceSyncOperationReport) => report.status === MediaSourceSyncStatus.SUCCESS)
-			.reduce((totalCount: number, success: MediaSourceSyncOperationReport) => {
-				totalCount += success.count;
-				return totalCount;
-			}, 0);
+		const successCount: number = this.countReportByStatus(operations, MediaSourceSyncStatus.SUCCESS);
+		const failedCount: number = this.countReportByStatus(operations, MediaSourceSyncStatus.FAILED);
+		const undeliveredCount: number = this.countReportByStatus(operations, MediaSourceSyncStatus.UNDELIVERED);
+		const partialCount: number = this.countReportByStatus(operations, MediaSourceSyncStatus.PARTIAL);
 
-		const failedCount: number = operations
-			.filter((report: MediaSourceSyncOperationReport) => report.status === MediaSourceSyncStatus.FAILED)
-			.reduce((totalCount: number, failed: MediaSourceSyncOperationReport) => {
-				totalCount += failed.count;
-				return totalCount;
-			}, 0);
-
-		const undeliveredCount: number = operations
-			.filter((report: MediaSourceSyncOperationReport) => report.status === MediaSourceSyncStatus.UNDELIVERED)
-			.reduce((totalCount: number, undelivered: MediaSourceSyncOperationReport) => {
-				totalCount += undelivered.count;
-				return totalCount;
-			}, 0);
-
-		const totalCount: number = failedCount + successCount + undeliveredCount;
+		const totalCount: number = failedCount + successCount + undeliveredCount + partialCount;
 
 		const filteredOperations = operations.filter((report: MediaSourceSyncOperationReport) => report.count > 0);
 
@@ -33,6 +17,7 @@ export class MediaSourceSyncReportFactory {
 			successCount,
 			failedCount,
 			undeliveredCount,
+			partialCount,
 			operations: filteredOperations,
 		};
 
@@ -45,9 +30,24 @@ export class MediaSourceSyncReportFactory {
 			successCount: 0,
 			undeliveredCount: 0,
 			failedCount: 0,
+			partialCount: 0,
 			operations: [],
 		};
 
 		return report;
+	}
+
+	private static countReportByStatus(
+		operations: MediaSourceSyncOperationReport[],
+		status: MediaSourceSyncStatus
+	): number {
+		const count: number = operations
+			.filter((report: MediaSourceSyncOperationReport) => report.status === status)
+			.reduce((totalCount: number, report: MediaSourceSyncOperationReport) => {
+				totalCount += report.count;
+				return totalCount;
+			}, 0);
+
+		return count;
 	}
 }

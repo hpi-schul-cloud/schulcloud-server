@@ -6,13 +6,12 @@ import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
@@ -49,14 +48,11 @@ describe('Sharing Controller (API)', () => {
 		const setup = async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({ schoolId: school.id });
-			const role = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_EDIT],
-			});
+			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
-				users: [{ role, user: teacherUser }],
+				users: [{ role: roomEditorRole, user: teacherUser }],
 			});
 			const roomMembership = roomMembershipEntityFactory.build({
 				roomId: room.id,
@@ -66,7 +62,7 @@ describe('Sharing Controller (API)', () => {
 			const board = columnBoardEntityFactory.build({
 				context: { id: room.id, type: BoardExternalReferenceType.Room },
 			});
-			await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, role, board]);
+			await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole, board]);
 			em.clear();
 
 			const shareToken = await shareTokenService.createToken({

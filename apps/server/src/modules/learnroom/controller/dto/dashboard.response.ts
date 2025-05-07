@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 
 export class DashboardGridSubElementResponse {
 	@ApiProperty({
 		description: 'The id of the Grid element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 
@@ -35,7 +36,7 @@ export class DashboardGridSubElementResponse {
 export class DashboardGridElementResponse {
 	@ApiProperty({
 		description: 'The id of the Grid element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id?: string;
 
@@ -67,7 +68,7 @@ export class DashboardGridElementResponse {
 
 	@ApiProperty({
 		description: 'The id of the group element',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	groupId?: string;
 
@@ -109,7 +110,7 @@ export class DashboardResponse {
 
 	@ApiProperty({
 		description: 'The id of the Dashboard entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	id: string;
 

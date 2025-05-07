@@ -2,9 +2,9 @@ import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AccountModule } from './account.module';
-import { AccountEntity } from './domain/entity/account.entity';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './domain';
 import { AccountService } from './domain/services/account.service';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/micro-orm/mapper';
+import { AccountEntity } from './repo';
 
 describe('AccountModule', () => {
 	let module: TestingModule;

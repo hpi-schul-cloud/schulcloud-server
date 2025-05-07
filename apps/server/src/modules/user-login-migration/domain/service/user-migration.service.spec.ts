@@ -2,10 +2,10 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
+import { roleFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory } from '@testing/factory/role.factory';
 import { userLoginMigrationDOFactory } from '../../testing';
 import { UserLoginMigrationDO } from '../do';
 import {

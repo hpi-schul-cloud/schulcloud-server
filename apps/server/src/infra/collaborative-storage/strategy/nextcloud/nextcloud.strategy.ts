@@ -1,13 +1,12 @@
 import { LegacyLogger } from '@core/logger';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
 import { PseudonymService } from '@modules/pseudonym';
+import { Pseudonym } from '@modules/pseudonym/repo';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Pseudonym } from '@shared/domain/domainobject';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { CollaborativeStorageStrategy } from '../base.interface.strategy';
 import { NextcloudClient } from './nextcloud.client';

@@ -110,4 +110,91 @@ describe(MediaSourceService.name, () => {
 			});
 		});
 	});
+
+	describe('findByFormatAndSourceId', () => {
+		describe('when a media source data format and source id is given', () => {
+			const setup = () => {
+				const format = MediaSourceDataFormat.VIDIS;
+				const sourceId = 'source-id';
+				const mediaSource = mediaSourceFactory.build({ format, sourceId });
+
+				mediaSourceRepo.findByFormatAndSourceId.mockResolvedValueOnce(mediaSource);
+
+				return {
+					format,
+					sourceId,
+					mediaSource,
+				};
+			};
+
+			it('should return the media source', async () => {
+				const { format, sourceId, mediaSource } = setup();
+
+				const result = await service.findByFormatAndSourceId(format, sourceId);
+
+				expect(mediaSourceRepo.findByFormatAndSourceId).toBeCalledWith(format, sourceId);
+				expect(result).toEqual(mediaSource);
+			});
+		});
+	});
+
+	describe('getAllMediaSources', () => {
+		describe('when media sources are available', () => {
+			const setup = () => {
+				const mediaSources = mediaSourceFactory.buildList(2);
+
+				mediaSourceRepo.findAll.mockResolvedValueOnce(mediaSources);
+
+				return {
+					mediaSources,
+				};
+			};
+
+			it('should return a list of media sources', async () => {
+				const { mediaSources } = setup();
+
+				const result = await service.getAllMediaSources();
+
+				expect(result).toEqual(mediaSources);
+				expect(mediaSources).toHaveLength(2);
+			});
+
+			it('should call the media source repo', async () => {
+				setup();
+
+				await service.getAllMediaSources();
+
+				expect(mediaSourceRepo.findAll).toBeCalled();
+			});
+		});
+
+		describe('when no media sources are available', () => {
+			const setup = () => {
+				const mediaSources = [];
+
+				mediaSourceRepo.findAll.mockResolvedValueOnce(mediaSources);
+
+				return {
+					mediaSources,
+				};
+			};
+
+			it('should return an empty list', async () => {
+				const { mediaSources } = setup();
+
+				const result = await service.getAllMediaSources();
+
+				expect(result).toEqual(mediaSources);
+				expect(mediaSources).toHaveLength(0);
+			});
+
+			it('should call the media source repo', async () => {
+				setup();
+
+				await service.getAllMediaSources();
+
+				expect(mediaSourceRepo.findAll).toBeCalled();
+			});
+		});
+	});
 });

@@ -85,7 +85,12 @@ export class ExternalToolResponseMapper {
 			return undefined;
 		}
 
-		return new ExternalToolMediumResponse({ ...medium });
+		return new ExternalToolMediumResponse({
+			mediumId: medium.mediumId,
+			publisher: medium.publisher,
+			mediaSourceId: medium.mediaSourceId,
+			modifiedAt: medium.metadataModifiedAt,
+		});
 	}
 
 	private static mapBasicToolConfigDOToResponse(externalToolConfigDO: BasicToolConfig): BasicToolConfigResponse {
@@ -100,7 +105,7 @@ export class ExternalToolResponseMapper {
 		return new Oauth2ToolConfigResponse({ ...externalToolConfigDO });
 	}
 
-	static mapCustomParameterToResponse(customParameters: CustomParameter[]): CustomParameterResponse[] {
+	public static mapCustomParameterToResponse(customParameters: CustomParameter[]): CustomParameterResponse[] {
 		return customParameters.map((customParameterDO: CustomParameter) => {
 			return {
 				name: customParameterDO.name,

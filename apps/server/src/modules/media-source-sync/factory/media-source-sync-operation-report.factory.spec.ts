@@ -12,11 +12,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.build(operation, status, count);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation,
 					status,
 					count,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 
@@ -27,11 +27,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.build(operation, status);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation,
 					status,
 					count: 0,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 	});
@@ -44,11 +44,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(operation, count);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation,
 					status: MediaSourceSyncStatus.SUCCESS,
 					count,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 
@@ -58,11 +58,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.buildWithSuccessStatus(operation);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation,
 					status: MediaSourceSyncStatus.SUCCESS,
 					count: 0,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 	});
@@ -75,11 +75,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(operation, count);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation,
 					status: MediaSourceSyncStatus.FAILED,
 					count,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 
@@ -89,11 +89,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.buildWithFailedStatus(operation);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation,
 					status: MediaSourceSyncStatus.FAILED,
 					count: 0,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 	});
@@ -105,11 +105,11 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 
 				const report = MediaSourceSyncOperationReportFactory.buildUndeliveredReport(count);
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation: MediaSourceSyncOperation.ANY,
 					status: MediaSourceSyncStatus.UNDELIVERED,
 					count,
-				} as MediaSourceSyncOperationReport);
+				});
 			});
 		});
 
@@ -117,11 +117,42 @@ describe(MediaSourceSyncOperationReportFactory.name, () => {
 			it('should return the correct sync operation report with 0 count', () => {
 				const report = MediaSourceSyncOperationReportFactory.buildUndeliveredReport();
 
-				expect(report).toMatchObject({
+				expect(report).toMatchObject<MediaSourceSyncOperationReport>({
 					operation: MediaSourceSyncOperation.ANY,
 					status: MediaSourceSyncStatus.UNDELIVERED,
 					count: 0,
-				} as MediaSourceSyncOperationReport);
+				});
+			});
+		});
+
+		describe('buildWithPartialStatus', () => {
+			describe('when the operation and count is passed', () => {
+				it('should return the correct sync operation report', () => {
+					const operation = MediaSourceSyncOperation.UPDATE;
+					const count = 35;
+
+					const report = MediaSourceSyncOperationReportFactory.buildWithPartialStatus(operation, count);
+
+					expect(report).toMatchObject<MediaSourceSyncOperationReport>({
+						operation,
+						status: MediaSourceSyncStatus.PARTIAL,
+						count,
+					});
+				});
+			});
+
+			describe('when no count is passed', () => {
+				it('should return the correct sync operation report with 0 count', () => {
+					const operation = MediaSourceSyncOperation.CREATE;
+
+					const report = MediaSourceSyncOperationReportFactory.buildWithPartialStatus(operation);
+
+					expect(report).toMatchObject<MediaSourceSyncOperationReport>({
+						operation,
+						status: MediaSourceSyncStatus.PARTIAL,
+						count: 0,
+					});
+				});
 			});
 		});
 	});

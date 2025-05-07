@@ -1,22 +1,11 @@
+import { linkElementFactory } from '../testing';
 import { LinkElement, isLinkElement } from './link-element.do';
-import { BoardNodeProps } from './types/board-node-props';
 
 describe('LinkElement', () => {
 	let linkElement: LinkElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		linkElement = new LinkElement({
-			...boardNodeProps,
+		linkElement = linkElementFactory.build({
 			url: 'https://example.com',
 			title: 'Example',
 			description: 'Example description',

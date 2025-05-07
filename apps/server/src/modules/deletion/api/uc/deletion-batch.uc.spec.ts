@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from 'bson';
-import { UserService, UserDo } from '@modules/user';
+import { RoleName } from '@modules/role';
+import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { RoleName } from '@shared/domain/interface';
-import { DeletionBatchUc } from './deletion-batch.uc';
-import { DeletionBatchService, CreateDeletionBatchParams } from '../../domain/service';
-import { BatchStatus, DomainName } from '../../domain/types';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ObjectId } from 'bson';
+import { CreateDeletionBatchParams, DeletionBatchService } from '../../domain/service';
 import { deletionBatchFactory } from '../../domain/testing';
+import { BatchStatus, DomainName } from '../../domain/types';
 import { CantCreateDeletionRequestsForBatchErrorLoggable } from '../loggable/cant-create-deletion-requests-for-batch-error.loggable';
+import { DeletionBatchUc } from './deletion-batch.uc';
 
 describe('DeletionBatchUc', () => {
 	let module: TestingModule;

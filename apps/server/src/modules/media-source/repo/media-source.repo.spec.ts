@@ -3,10 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSource } from '../do';
-import { MediaSourceEntity, MediaSourceOauthConfigEmbeddable } from '../entity';
+import { MediaSourceEntity } from '../entity';
 import { MediaSourceDataFormat } from '../enum';
-import { mediaSourceEntityFactory, mediaSourceFactory, mediaSourceOAuthConfigEmbeddableFactory } from '../testing';
-import { MediaSourceConfigMapper } from './media-source-config.mapper';
+import { mediaSourceEntityFactory, mediaSourceFactory } from '../testing';
 import { MediaSourceMapper } from './media-source.mapper';
 import { MediaSourceRepo } from './media-source.repo';
 
@@ -36,12 +35,7 @@ describe(MediaSourceRepo.name, () => {
 	describe('findBySourceId', () => {
 		describe('when a media source exists', () => {
 			const setup = async () => {
-				const config: MediaSourceOauthConfigEmbeddable = mediaSourceOAuthConfigEmbeddableFactory.build();
-
-				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build({
-					oauthConfig: config,
-					vidisConfig: undefined,
-				});
+				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
 
 				await em.persistAndFlush([mediaSource]);
 
@@ -49,12 +43,11 @@ describe(MediaSourceRepo.name, () => {
 
 				return {
 					mediaSource,
-					config,
 				};
 			};
 
 			it('should return user licenses for user', async () => {
-				const { mediaSource, config } = await setup();
+				const { mediaSource } = await setup();
 
 				const result = await repo.findBySourceId(mediaSource.sourceId);
 
@@ -63,8 +56,6 @@ describe(MediaSourceRepo.name, () => {
 						id: mediaSource.id,
 						name: mediaSource.name,
 						sourceId: mediaSource.sourceId,
-						format: mediaSource.format,
-						oauthConfig: MediaSourceConfigMapper.mapOauthConfigToDo(config),
 					})
 				);
 			});
@@ -111,24 +102,21 @@ describe(MediaSourceRepo.name, () => {
 		describe('when a media source data format is provided', () => {
 			describe('when there the media source exists', () => {
 				const setup = async () => {
-					const format = MediaSourceDataFormat.VIDIS;
-					const mediaSourceEntity = mediaSourceEntityFactory.build({ format });
-					const otherMediaSourceEntity = mediaSourceEntityFactory.build({
-						format: MediaSourceDataFormat.BILDUNGSLOGIN,
-					});
+					const vidisMediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
+					const biloMediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 
-					await em.persistAndFlush([mediaSourceEntity, otherMediaSourceEntity]);
+					await em.persistAndFlush([vidisMediaSourceEntity, biloMediaSourceEntity]);
 					em.clear();
 
-					const expectedDO = MediaSourceMapper.mapEntityToDo(mediaSourceEntity);
+					const expectedDO = MediaSourceMapper.mapEntityToDo(vidisMediaSourceEntity);
 
-					return { format, expectedDO };
+					return { expectedDO };
 				};
 
 				it('should return the media source', async () => {
-					const { format, expectedDO } = await setup();
+					const { expectedDO } = await setup();
 
-					const result: MediaSource | null = await repo.findByFormat(format);
+					const result: MediaSource | null = await repo.findByFormat(MediaSourceDataFormat.VIDIS);
 
 					expect(result).toEqual(expectedDO);
 				});
@@ -139,6 +127,49 @@ describe(MediaSourceRepo.name, () => {
 					const format = MediaSourceDataFormat.VIDIS;
 
 					const result: MediaSource | null = await repo.findByFormat(format);
+
+					expect(result).toBeNull();
+				});
+			});
+		});
+	});
+
+	describe('findByFormatAndSourceId', () => {
+		describe('when a media source data format and source id is provided', () => {
+			describe('when the media source exists', () => {
+				const setup = async () => {
+					const format = MediaSourceDataFormat.VIDIS;
+
+					const vidisMediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
+					const biloMediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+
+					await em.persistAndFlush([vidisMediaSourceEntity, biloMediaSourceEntity]);
+
+					em.clear();
+
+					const expectedDO = MediaSourceMapper.mapEntityToDo(vidisMediaSourceEntity);
+
+					return { format, vidisMediaSourceEntity, expectedDO };
+				};
+
+				it('should return the media source', async () => {
+					const { format, vidisMediaSourceEntity, expectedDO } = await setup();
+
+					const result: MediaSource | null = await repo.findByFormatAndSourceId(
+						format,
+						vidisMediaSourceEntity.sourceId
+					);
+
+					expect(result).toEqual(expectedDO);
+				});
+			});
+
+			describe('when the media source does not exist', () => {
+				it('should return null', async () => {
+					const format = MediaSourceDataFormat.VIDIS;
+					const sourceId = 'source-id';
+
+					const result: MediaSource | null = await repo.findByFormatAndSourceId(format, sourceId);
 
 					expect(result).toBeNull();
 				});

@@ -1,28 +1,27 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { MediaSource, MediaSourceProps } from '../do';
+import { MediaSource, MediaSourceOauthConfig, MediaSourceProps, MediaSourceVidisConfig } from '../do';
 import { MediaSourceDataFormat } from '../enum';
 import { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
 import { mediaSourceVidisConfigFactory } from './media-source-vidis-config.factory';
 
 class MediaSourceFactory extends BaseFactory<MediaSource, MediaSourceProps> {
-	public withVidis(): this {
+	public withVidis(props?: DeepPartial<MediaSourceVidisConfig>): this {
 		const params: DeepPartial<MediaSourceProps> = {
 			format: MediaSourceDataFormat.VIDIS,
-			vidisConfig: mediaSourceVidisConfigFactory.build(),
+			vidisConfig: mediaSourceVidisConfigFactory.build(props),
 			oauthConfig: undefined,
 		};
 
 		return this.params(params);
 	}
 
-	public withBildungslogin(): this {
+	public withBildungslogin(props?: DeepPartial<MediaSourceOauthConfig>): this {
 		const params: DeepPartial<MediaSourceProps> = {
 			format: MediaSourceDataFormat.BILDUNGSLOGIN,
-			oauthConfig: mediaSourceOauthConfigFactory.build(),
+			oauthConfig: mediaSourceOauthConfigFactory.build(props),
 			vidisConfig: undefined,
-			sourceId: 'medium-source-id',
 		};
 
 		return this.params(params);

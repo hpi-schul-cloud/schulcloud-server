@@ -1,14 +1,14 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { CourseEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, Submission } from '@shared/domain/entity';
-import { EntityWithSchool } from '@shared/domain/interface';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { ITask, TaskStatus } from '../domain';
+import { Submission } from './submission.entity';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -50,7 +50,7 @@ export interface TaskProperties extends ITask {
 @Index({ properties: ['id', 'private'] })
 @Index({ properties: ['finished', 'course'] })
 @Index({ properties: ['finished', 'course'] })
-export class Task extends BaseEntityWithTimestamps implements EntityWithSchool {
+export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 

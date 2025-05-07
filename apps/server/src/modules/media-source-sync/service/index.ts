@@ -1,1 +1,1 @@
-export { MediaSourceSyncService } from './media-source-sync.service';
+export { MediaMetadataSyncService } from './media-metadata-sync.service';

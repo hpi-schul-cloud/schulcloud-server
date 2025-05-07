@@ -3,13 +3,12 @@ import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ColumnBoardProps } from '../../domain';
@@ -44,15 +43,13 @@ describe(`board copy with room relation (api)`, () => {
 	describe('with valid user', () => {
 		const setup = async (columnBoardProps: Partial<ColumnBoardProps> = {}) => {
 			const room = roomEntityFactory.buildWithId();
-			const role = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_EDIT],
-			});
+
+			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
-				users: [{ role, user: teacherUser }],
+				users: [{ role: roomEditorRole, user: teacherUser }],
 			});
 			const roomMembership = roomMembershipEntityFactory.build({
 				roomId: room.id,
@@ -63,7 +60,15 @@ describe(`board copy with room relation (api)`, () => {
 				...columnBoardProps,
 				context: { id: room.id, type: BoardExternalReferenceType.Room },
 			});
-			await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, role, columnBoardNode]);
+			await em.persistAndFlush([
+				room,
+				roomMembership,
+				teacherAccount,
+				teacherUser,
+				userGroup,
+				roomEditorRole,
+				columnBoardNode,
+			]);
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);

@@ -1,4 +1,4 @@
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { SynchronizationEntity } from '@modules/synchronization';
 import { User } from '@modules/user/repo';
 

@@ -64,6 +64,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -84,6 +85,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"board-element"
 		]
@@ -116,6 +118,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -153,6 +156,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -183,6 +187,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -202,6 +207,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -242,29 +248,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
-		"restrictToContexts": []
-	},
-	{
-		"_id": {
-			"$oid": "65f958bdd8b35469f14032b1"
-		},
-		"config_type": "oauth2",
-		"name": "nextcloud",
-		"config_baseUrl": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"config_clientId": "yourLocalFancyId",
-		"config_skipConsent": true,
-		"createdAt": {
-			"$date": "2024-03-19T09:19:57.984Z"
-		},
-		"isHidden": true,
-		"logoUrl": "",
-		"openNewTab": true,
-		"parameters": [],
-		"updatedAt": {
-			"$date": "2024-03-19T09:19:57.984Z"
-		},
-		"url": "https://nextcloud-nbc.dbildungscloud.dev/",
-		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -308,6 +292,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -348,6 +333,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -401,6 +387,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -454,6 +441,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -487,6 +475,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -519,6 +508,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -586,6 +576,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -653,6 +644,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -709,6 +701,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -765,6 +758,7 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -784,6 +778,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -824,6 +819,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -864,6 +860,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -883,6 +880,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -902,6 +900,7 @@
 		"isHidden": true,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": []
 	},
 	{
@@ -922,6 +921,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"course"
 		]
@@ -944,6 +944,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"media-board"
 		]
@@ -966,6 +967,7 @@
 		"isHidden": false,
 		"openNewTab": true,
 		"isDeactivated": false,
+		"isPreferred": false,
 		"restrictToContexts": [
 			"course",
 			"board-element",
@@ -1155,6 +1157,79 @@
 		"isHidden": false,
 		"isDeactivated": false,
 		"openNewTab": true,
+		"isPreferred": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "67dbd43b7de2b7ac7bf74f60"
+		},
+		"createdAt": {
+			"$date": "2024-03-22T14:35:34.160Z"
+		},
+		"updatedAt": {
+			"$date": "2024-03-25T09:17:04.688Z"
+		},
+		"name": "VIDIS Test Medium 1",
+		"description": "Available for school numbers: 20202, 40404",
+		"medium": {
+			"mediumId": "1422092",
+			"mediaSourceId": "vidis.fwu.de"
+		},
+		"config_type": "basic",
+		"config_baseUrl": "https://vidis-login-example.buergercloud.de/oauth2/authorization/vidis?vidis_idp_hint=idp-nd-sanis-o-t",
+		"isHidden": false,
+		"isDeactivated": false,
+		"openNewTab": true,
+		"isPreferred": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "67dbd77a6e5b0b3ee08fcffe"
+		},
+		"createdAt": {
+			"$date": "2024-03-22T14:35:34.160Z"
+		},
+		"updatedAt": {
+			"$date": "2024-03-25T09:17:04.688Z"
+		},
+		"name": "VIDIS Test Medium 2",
+		"description": "Available for school numbers: 30303, 20202",
+		"medium": {
+			"mediumId": "1454059",
+			"mediaSourceId": "vidis.fwu.de"
+		},
+		"config_type": "basic",
+		"config_baseUrl": "https://vidis-login-example.buergercloud.de/oauth2/authorization/vidis?vidis_idp_hint=idp-nd-sanis-o-t",
+		"isHidden": false,
+		"isDeactivated": false,
+		"openNewTab": true,
+		"isPreferred": false,
+		"restrictToContexts": []
+	},
+	{
+		"_id": {
+			"$oid": "67dbd80d4d6a09d074792fb8"
+		},
+		"createdAt": {
+			"$date": "2024-03-22T14:35:34.160Z"
+		},
+		"updatedAt": {
+			"$date": "2024-03-25T09:17:04.688Z"
+		},
+		"name": "VIDIS Test Medium 3",
+		"description": "Available for school numbers: 30303, 20202",
+		"medium": {
+			"mediumId": "1432766",
+			"mediaSourceId": "vidis.fwu.de"
+		},
+		"config_type": "basic",
+		"config_baseUrl": "https://vidis-login-example.buergercloud.de/oauth2/authorization/vidis?vidis_idp_hint=idp-nd-sanis-o-t",
+		"isHidden": false,
+		"isDeactivated": false,
+		"openNewTab": true,
+		"isPreferred": false,
 		"restrictToContexts": []
 	}
 ]

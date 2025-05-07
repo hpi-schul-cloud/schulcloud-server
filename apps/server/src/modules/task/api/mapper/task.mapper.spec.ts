@@ -1,12 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
-import { Material, Submission } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { TaskStatus, TaskUpdate } from '../../domain';
-import { Task, TaskParentDescriptions } from '../../repo';
+import { Submission, Task, TaskParentDescriptions } from '../../repo';
 import { taskFactory } from '../../testing';
 import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../dto';
 import { TaskMapper } from './task.mapper';

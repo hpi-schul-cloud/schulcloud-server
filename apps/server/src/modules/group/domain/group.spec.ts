@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { roleFactory } from '@modules/role/testing';
 import { userDoFactory } from '@modules/user/testing';
-import { roleFactory } from '@testing/factory/role.factory';
 import { groupFactory } from '../testing';
 import { Group } from './group';
 import { GroupUser } from './group-user';

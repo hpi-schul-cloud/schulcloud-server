@@ -1,21 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repository';
+import { ComponentProperties, ComponentType, LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { Task } from '@modules/task/repo';
+import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
-import { legacyFileEntityMockFactory } from '@testing/factory/legacy-file-entity-mock.factory';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
 const getImageHTML = (id: string, name: string) => {
 	const fileUrl = `"/api/v3/file/download/${id}/${name}"`;
+
 	return `<figure class="image"><img src=${fileUrl} alt /></figure>`;
 };
 
@@ -60,10 +60,13 @@ describe('copy files service', () => {
 	describe('copy files of entity', () => {
 		const setup = () => {
 			const school = schoolEntityFactory.build();
-			const file1 = legacyFileEntityMockFactory.build();
-			const file2 = legacyFileEntityMockFactory.build();
-			const imageHTML1 = getImageHTML(file1.id, file1.name);
-			const imageHTML2 = getImageHTML(file2.id, file2.name);
+			const fileId1 = new ObjectId().toHexString();
+			const fileId2 = new ObjectId().toHexString();
+			const fileName1 = 'file-1.jpg';
+			const fileName2 = 'file-2.jpg';
+			const imageHTML1 = getImageHTML(fileId1, fileName1);
+			const imageHTML2 = getImageHTML(fileId2, fileName2);
+
 			return { school, imageHTML1, imageHTML2 };
 		};
 

@@ -7,10 +7,10 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym } from '@shared/domain/domainobject';
 import { setupEntities } from '@testing/database';
-import { pseudonymFactory } from '@testing/factory/domainobject';
+import { Pseudonym } from '../repo';
 import { PseudonymService } from '../service';
+import { pseudonymFactory } from '../testing';
 import { PseudonymUc } from './pseudonym.uc';
 
 describe('PseudonymUc', () => {

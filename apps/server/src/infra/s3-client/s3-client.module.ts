@@ -1,40 +1,28 @@
-import { S3Client } from '@aws-sdk/client-s3';
-import { DynamicModule, Module } from '@nestjs/common';
+import { DomainErrorHandler, ErrorModule } from '@core/error';
 import { LegacyLogger, LoggerModule } from '@core/logger';
+import { DynamicModule, Module } from '@nestjs/common';
 import { S3Config } from './interface';
-import { S3ClientAdapter } from './s3-client.adapter';
-
-const createS3ClientAdapter = (config: S3Config, legacyLogger: LegacyLogger) => {
-	const { region, accessKeyId, secretAccessKey, endpoint } = config;
-
-	const s3Client = new S3Client({
-		region,
-		credentials: {
-			accessKeyId,
-			secretAccessKey,
-		},
-		endpoint,
-		forcePathStyle: true,
-		tls: true,
-	});
-	return new S3ClientAdapter(s3Client, config, legacyLogger);
-};
+import { S3ClientFactory } from './s3-client.factory';
 
 @Module({})
 export class S3ClientModule {
-	static register(configs: S3Config[]): DynamicModule {
+	public static register(configs: S3Config[]): DynamicModule {
 		const providers = configs.flatMap((config) => [
 			{
 				provide: config.connectionName,
-				useFactory: (logger: LegacyLogger) => createS3ClientAdapter(config, logger),
-				inject: [LegacyLogger],
+				useFactory: (
+					clientFactory: S3ClientFactory,
+					legacyLogger: LegacyLogger,
+					domainErrorHandler: DomainErrorHandler
+				) => clientFactory.build(config, legacyLogger, domainErrorHandler),
+				inject: [S3ClientFactory, LegacyLogger, DomainErrorHandler],
 			},
 		]);
 
 		return {
 			module: S3ClientModule,
-			imports: [LoggerModule],
-			providers,
+			imports: [LoggerModule, ErrorModule],
+			providers: [...providers, S3ClientFactory],
 			exports: providers,
 		};
 	}

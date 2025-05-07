@@ -23,7 +23,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
-import { ExternalTool } from '../domain';
+import { ExternalTool, ExternalToolMedium } from '../domain';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -141,7 +141,14 @@ export class ExternalToolRequestMapper {
 		if (!externalToolMediumParams) {
 			return undefined;
 		}
-		return { ...externalToolMediumParams };
+		const externalToolMedium: ExternalToolMedium = new ExternalToolMedium({
+			mediumId: externalToolMediumParams.mediumId,
+			publisher: externalToolMediumParams.publisher,
+			mediaSourceId: externalToolMediumParams.mediaSourceId,
+			metadataModifiedAt: externalToolMediumParams.modifiedAt,
+		});
+
+		return externalToolMedium;
 	}
 
 	private mapRequestToBasicToolConfig(externalToolConfigParams: BasicToolConfigParams): BasicToolConfigDto {
@@ -190,7 +197,7 @@ export class ExternalToolRequestMapper {
 		});
 	}
 
-	mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalTool> | undefined {
+	public mapSortingQueryToDomain(sortingQuery: SortExternalToolParams): SortOrderMap<ExternalTool> | undefined {
 		const { sortBy } = sortingQuery;
 		if (sortBy == null) {
 			return undefined;
@@ -202,7 +209,9 @@ export class ExternalToolRequestMapper {
 		return result;
 	}
 
-	mapExternalToolFilterQueryToExternalToolSearchQuery(params: ExternalToolSearchParams): ExternalToolSearchQuery {
+	public mapExternalToolFilterQueryToExternalToolSearchQuery(
+		params: ExternalToolSearchParams
+	): ExternalToolSearchQuery {
 		const searchQuery: ExternalToolSearchQuery = {
 			name: params.name,
 			clientId: params.clientId,

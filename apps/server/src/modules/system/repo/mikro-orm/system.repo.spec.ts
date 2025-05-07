@@ -1,10 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType } from '../../domain';
+import { System, SYSTEM_REPO, SystemProps, SystemRepo, SystemType, SystemTypeEnum } from '../../domain';
 import {
 	systemEntityFactory,
 	systemFactory,

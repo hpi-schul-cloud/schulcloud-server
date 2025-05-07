@@ -5,15 +5,15 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
@@ -224,15 +224,18 @@ describe(BoardContextService.name, () => {
 			describe('when user with editor role is associated with the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const role = roleFactory.build({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
-					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
+					const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+					const group = groupFactory.build({
+						type: GroupTypes.ROOM,
+						users: [{ userId: user.id, roleId: roomEditorRole.id }],
+					});
 					const room = roomFactory.build();
 					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role, user };
+					return { columnBoard, role: roomEditorRole, user };
 				};
 
 				it('should return their information + editor role', async () => {
@@ -260,15 +263,18 @@ describe(BoardContextService.name, () => {
 			describe('when user with view role is associated with the room', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const role = roleFactory.build({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
-					const group = groupFactory.build({ type: GroupTypes.ROOM, users: [{ userId: user.id, roleId: role.id }] });
+					const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+					const group = groupFactory.build({
+						type: GroupTypes.ROOM,
+						users: [{ userId: user.id, roleId: roomViewerRole.id }],
+					});
 					const room = roomFactory.build();
 					roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
 					const columnBoard = columnBoardFactory.build({
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
 
-					return { columnBoard, role, user };
+					return { columnBoard, role: roomViewerRole, user };
 				};
 
 				it('should return their information + reader role', async () => {

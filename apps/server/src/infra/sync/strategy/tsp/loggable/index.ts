@@ -1,7 +1,4 @@
 export { TspDataFetchedLoggable } from './tsp-data-fetched.loggable';
-export { TspLegacyMigrationStartLoggable } from './tsp-legacy-migration-start.loggable';
-export { TspLegacySchoolMigrationCountLoggable } from './tsp-legacy-school-migration-count.loggable';
-export { TspLegacySchoolMigrationSuccessLoggable } from './tsp-legacy-school-migration-success.loggable';
 export { TspMissingExternalIdLoggable } from './tsp-missing-external-id.loggable';
 export { TspSchoolsFetchedLoggable } from './tsp-schools-fetched.loggable';
 export { TspSchoolsSyncedLoggable } from './tsp-schools-synced.loggable';
@@ -9,7 +6,6 @@ export { TspSchulnummerMissingLoggable } from './tsp-schulnummer-missing.loggabl
 export { TspSyncedUsersLoggable } from './tsp-synced-users.loggable';
 export { TspSyncingUsersLoggable } from './tsp-syncing-users.loggable';
 export { TspSystemNotFoundLoggableException } from './tsp-system-not-found.loggable-exception';
-export { TspUsersMigratedLoggable } from './tsp-users-migrated.loggable';
 export { TspClassSyncSummaryLoggable } from './tsp-class-sync-summary.loggable';
 export { TspClassSyncStartLoggable } from './tsp-class-sync-start.loggable';
 export { TspClassSyncBatchLoggable } from './tsp-class-sync-batch.loggable';

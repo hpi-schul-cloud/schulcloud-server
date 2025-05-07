@@ -1,4 +1,4 @@
-import { RoleName } from '@shared/domain/interface';
+import { RoleName } from '@modules/role';
 
 export class ExternalUserDto {
 	public externalId: string;

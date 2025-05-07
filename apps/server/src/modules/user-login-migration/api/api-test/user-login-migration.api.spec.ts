@@ -283,7 +283,8 @@ describe('UserLoginMigrationController (API)', () => {
 				const response: Response = await loggedInClient.post(`/start`);
 
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-				await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
+				const result = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
+				expect(result).not.toBe(undefined);
 			});
 		});
 

@@ -1,6 +1,6 @@
-import { UserDo } from '@modules/user/domain';
+import { UserDo } from '@modules/user';
 import { Page } from '@shared/domain/domainobject';
-import { SchoolUserListResponse, SchoolUserResponse } from '../dto/response/school-user.response';
+import { SchoolUserListResponse, SchoolUserResponse } from '../dto';
 
 export class SchoolUserResponseMapper {
 	public static mapToResponse(user: UserDo): SchoolUserResponse {

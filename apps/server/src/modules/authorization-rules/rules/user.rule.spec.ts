@@ -1,11 +1,11 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserRule } from './user.rule';
 
 describe('UserRule', () => {

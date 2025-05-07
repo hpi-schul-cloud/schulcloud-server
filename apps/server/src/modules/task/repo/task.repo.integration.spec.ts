@@ -1,18 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { submissionFactory } from '@testing/factory/submission.factory';
+import { submissionFactory, taskFactory } from '../testing';
+import { Submission } from './submission.entity';
 import { Task } from './task.entity';
 import { TaskRepo } from './task.repo';
-import { taskFactory } from '../testing';
 
 const yesterday = new Date(Date.now() - 86400000);
 const tomorrow = new Date(Date.now() + 86400000);

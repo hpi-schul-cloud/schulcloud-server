@@ -1,12 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
+import { Pseudonym } from './pseudonym.do';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {

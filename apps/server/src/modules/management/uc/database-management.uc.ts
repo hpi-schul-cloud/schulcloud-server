@@ -4,14 +4,14 @@ import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } fr
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProviderEntity } from '@shared/domain/entity';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generate-seed-data';
-import { MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
+import { ExternalToolsSeedDataService, MediaSourcesSeedDataService, SystemsSeedDataService } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
 
 export interface CollectionFilePath {
@@ -41,7 +41,8 @@ export class DatabaseManagementUc {
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
 		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
 		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
-		private readonly systemsSeedDataService: SystemsSeedDataService
+		private readonly systemsSeedDataService: SystemsSeedDataService,
+		private readonly externalToolsSeedDataService: ExternalToolsSeedDataService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -252,6 +253,14 @@ export class DatabaseManagementUc {
 			seededCollectionsWithAmount.set('systems', systemsCount + (seededCollectionsWithAmount.get('systems') ?? 0));
 		}
 
+		if (collections === undefined || collections.includes('external-tools')) {
+			const externalToolsCount: number = await this.externalToolsSeedDataService.import();
+			seededCollectionsWithAmount.set(
+				'external-tools',
+				externalToolsCount + (seededCollectionsWithAmount.get('external-tools') ?? 0)
+			);
+		}
+
 		const seededCollectionsWithAmountFormatted: string[] = Array.from(seededCollectionsWithAmount).map(
 			([key, value]) => `${key}:${value}`
 		);
@@ -303,6 +312,8 @@ export class DatabaseManagementUc {
 	 */
 	public async syncIndexes(): Promise<void> {
 		await this.createUserSearchIndex();
+		await this.createGroupUniqueIndex();
+		await this.createExternalToolMediumUniqueIndex();
 		return this.databaseManagementService.syncIndexes();
 	}
 
@@ -343,6 +354,51 @@ export class DatabaseManagementUc {
 				},
 				default_language: 'none', // no stop words and no stemming,
 				language_override: 'de',
+			}
+		);
+	}
+
+	private async createGroupUniqueIndex(): Promise<void> {
+		const indexName = 'groupExternalSourceUniqueIndex';
+		const collection = this.databaseManagementService.getDatabaseCollection('groups');
+		const indexExists: boolean = await collection.indexExists(indexName);
+
+		if (indexExists) {
+			this.logger.debug(`${indexName} does not require update`);
+			return;
+		}
+
+		await collection.createIndex(
+			{
+				'externalSource.externalId': 1,
+				'externalSource.system': 1,
+			},
+			{
+				name: indexName,
+				unique: true,
+				partialFilterExpression: { externalSource: { $exists: true } },
+			}
+		);
+	}
+	private async createExternalToolMediumUniqueIndex(): Promise<void> {
+		const indexName = 'externalToolMediumUniqueIndex';
+		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
+		const indexExists: boolean = await collection.indexExists(indexName);
+
+		if (indexExists) {
+			this.logger.debug(`${indexName} does not require update`);
+			return;
+		}
+
+		await collection.createIndex(
+			{
+				'medium.mediumId': 1,
+				'medium.mediumSourceId': 1,
+			},
+			{
+				name: indexName,
+				unique: true,
+				partialFilterExpression: { medium: { $exists: true } },
 			}
 		);
 	}

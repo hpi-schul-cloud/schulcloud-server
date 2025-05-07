@@ -1,8 +1,8 @@
-import { RoleMapper } from '@modules/role/mapper/role.mapper';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { Role } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { roleFactory } from '@testing/factory/role.factory';
+import { Role } from '../repo';
+import { roleFactory } from '../testing';
+import { RoleDto } from '../service';
+import { RoleMapper } from './role.mapper';
 
 describe('RoleMapper', () => {
 	it('mapFromEntityToDto', () => {

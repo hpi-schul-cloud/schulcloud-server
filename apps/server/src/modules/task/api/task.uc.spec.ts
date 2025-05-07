@@ -4,21 +4,19 @@ import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller/dto';
-import { Material, Submission } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
-import { submissionFactory } from '@testing/factory/submission.factory';
 import { TaskService, TaskStatus } from '../domain';
-import { Task, TaskRepo } from '../repo';
-import { taskFactory } from '../testing';
+import { Submission, Task, TaskRepo } from '../repo';
+import { submissionFactory, taskFactory } from '../testing';
 import { TaskUC } from './task.uc';
 
 describe('TaskUC', () => {

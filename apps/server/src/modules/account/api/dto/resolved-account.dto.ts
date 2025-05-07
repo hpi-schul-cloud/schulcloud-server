@@ -3,7 +3,7 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PrivacyProtect } from '@shared/controller/validator';
 import { EntityId } from '@shared/domain/types';
 import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsString, Matches } from 'class-validator';
-import { passwordPattern } from '../../domain/password-pattern';
+import { passwordPattern } from '../../domain';
 
 export class ResolvedAccountDto {
 	@ApiPropertyOptional()

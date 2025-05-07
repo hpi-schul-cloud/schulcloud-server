@@ -6,7 +6,7 @@ metadata:
   labels:
     app: data-deletion-trigger-cronjob
 data:
-  NODE_OPTIONS: "--max-old-space-size=3072"
+  NODE_OPTIONS: "--max-old-space-size=1536"
   NEST_LOG_LEVEL: "error"
   EXIT_ON_ERROR: "true"
   SC_DOMAIN: "{{ DOMAIN }}"

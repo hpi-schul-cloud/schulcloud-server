@@ -9,11 +9,8 @@ const imports = [
 	MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES }),
 	RabbitMQWrapperTestModule,
 ];
-const controllers = [];
-const providers = [];
+
 @Module({
 	imports,
-	controllers,
-	providers,
 })
 export class FilesStorageTestModule {}

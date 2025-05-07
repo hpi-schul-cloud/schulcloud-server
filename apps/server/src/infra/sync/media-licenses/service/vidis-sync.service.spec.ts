@@ -1,17 +1,17 @@
+import { Logger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { SchoolForSchoolMediaLicenseSyncNotFoundLoggable } from '@infra/sync/media-licenses/loggable';
-import { OfferDTO } from '@infra/vidis-client';
+import { OfferDTO, SchoolActivationDTO } from '@infra/vidis-client';
+import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSource } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
+import { School, SchoolService } from '@modules/school';
 import { MediaSchoolLicense, SchoolLicenseType } from '@modules/school-license';
 import { MediaSchoolLicenseProps } from '@modules/school-license/domain';
-import { School, SchoolService } from '@modules/school';
+import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { schoolFactory } from '@modules/school/testing';
-import { Logger } from '@core/logger';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DeepPartial } from 'fishery';
-import { vidisOfferItemFactory } from '../testing';
 import { VidisSyncService } from './vidis-sync.service';
 
 describe(VidisSyncService.name, () => {
@@ -89,11 +89,14 @@ describe(VidisSyncService.name, () => {
 			describe('when there are school activations from vidis', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.build();
-					const officialSchoolNumbers = ['00100', '00200'];
-					const items: OfferDTO[] = vidisOfferItemFactory.buildList(2, { schoolActivations: officialSchoolNumbers });
+					const schoolActivations: SchoolActivationDTO[] = [
+						{ date: '01-01-2025', regionName: '00100' },
+						{ date: '01-01-2025', regionName: '00200' },
+					];
+					const items: OfferDTO[] = vidisOfferItemFactory.buildList(2, { schoolActivations });
 
-					const schools: School[] = officialSchoolNumbers.map((officialSchoolNumber: string) =>
-						schoolFactory.build({ officialSchoolNumber })
+					const schools: School[] = schoolActivations.map((officialSchoolNumber: SchoolActivationDTO) =>
+						schoolFactory.build({ officialSchoolNumber: officialSchoolNumber.regionName })
 					);
 
 					schoolService.getSchoolByOfficialSchoolNumber
@@ -165,7 +168,10 @@ describe(VidisSyncService.name, () => {
 			describe('when a school from the school activations provided could not be found', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.build();
-					const missingSchoolNumbers = ['00100', '00200'];
+					const missingSchoolNumbers: SchoolActivationDTO[] = [
+						{ date: '01-01-2025', regionName: '00100' },
+						{ date: '01-01-2025', regionName: '00200' },
+					];
 					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations: missingSchoolNumbers });
 
 					schoolService.getSchoolByOfficialSchoolNumber.mockResolvedValue(null);
@@ -182,8 +188,10 @@ describe(VidisSyncService.name, () => {
 
 					await service.syncMediaSchoolLicenses(mediaSource, items);
 
-					missingSchoolNumbers.forEach((schoolNumber: string) => {
-						expect(logger.info).toHaveBeenCalledWith(new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolNumber));
+					missingSchoolNumbers.forEach((schoolActivation: SchoolActivationDTO) => {
+						expect(logger.info).toHaveBeenCalledWith(
+							new SchoolForSchoolMediaLicenseSyncNotFoundLoggable(schoolActivation.regionName)
+						);
 					});
 				});
 
@@ -199,11 +207,19 @@ describe(VidisSyncService.name, () => {
 
 			describe('when the school activations have the vidis-specific prefix', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.build();
-					const schoolActivations = ['DE-NI-00100', 'DE-NI-00200', 'DE-NI-00300'];
+					const mediaSource = mediaSourceFactory
+						.withVidis({
+							schoolNumberPrefix: 'DE-NI-',
+						})
+						.build();
+					const schoolActivations: SchoolActivationDTO[] = [
+						{ date: '01-01-2025', regionName: 'DE-NI-00100' },
+						{ date: '01-01-2025', regionName: 'DE-NI-00200' },
+						{ date: '01-01-2025', regionName: 'OTHER-00300' },
+					];
 					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations });
 
-					const expectedSchoolNumbers = ['00100', '00200', '00300'];
+					const expectedSchoolNumbers = ['00100', '00200', 'OTHER-00300'];
 					const schools: School[] = expectedSchoolNumbers.map((officialSchoolNumber: string) =>
 						schoolFactory.build({ officialSchoolNumber })
 					);
@@ -255,7 +271,11 @@ describe(VidisSyncService.name, () => {
 			describe('when the school activations do not have the vidis-specific prefix', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.build();
-					const schoolActivations = ['00100', '00200', '00300'];
+					const schoolActivations: SchoolActivationDTO[] = [
+						{ date: '01-01-2025', regionName: '00100' },
+						{ date: '01-01-2025', regionName: '00200' },
+						{ date: '01-01-2025', regionName: '00300' },
+					];
 					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations });
 
 					const expectedSchoolNumbers = ['00100', '00200', '00300'];
@@ -331,7 +351,7 @@ describe(VidisSyncService.name, () => {
 			describe('when the offer item does not has a medium id', () => {
 				const setup = () => {
 					const mediaSource = mediaSourceFactory.build();
-					const schoolActivations = ['00100'];
+					const schoolActivations: SchoolActivationDTO[] = [{ date: '01-01-2025', regionName: '00100' }];
 					const items: OfferDTO[] = vidisOfferItemFactory.buildList(1, { schoolActivations, offerId: undefined });
 
 					return {

@@ -20,11 +20,11 @@ import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common/error';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { Counted } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUserFilter, ImportUserMatchCreatorScope } from '../domain/interface';
 import { ImportUser, MatchCreator } from '../entity';
 import {
@@ -897,7 +897,7 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				systemRepoSpy = systemService.findById.mockReturnValueOnce(Promise.resolve(systemDo));
 				config.FEATURE_USER_MIGRATION_SYSTEM_ID = system.id;
-				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
+				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate);
 			});
 
 			afterEach(() => {

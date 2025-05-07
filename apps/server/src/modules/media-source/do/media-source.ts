@@ -6,9 +6,9 @@ import { MediaSourceVidisConfig } from './media-source-vidis-config';
 export interface MediaSourceProps extends AuthorizableObject {
 	id: string;
 
-	name?: string;
-
 	sourceId: string;
+
+	name?: string;
 
 	oauthConfig?: MediaSourceOauthConfig;
 

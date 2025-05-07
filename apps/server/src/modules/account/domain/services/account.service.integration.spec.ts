@@ -7,21 +7,20 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { UserModule } from '@modules/user';
 import { ConfigModule } from '@nestjs/config';
-import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
-import { Account, AccountSave } from '..';
-import { AccountRepo } from '../../repo/micro-orm/account.repo';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../../repo/micro-orm/mapper';
+import { AccountEntity, AccountMikroOrmRepo } from '../../repo';
 import { accountFactory } from '../../testing';
-import { AccountEntity } from '../entity/account.entity';
+import { Account, AccountSave, IdmAccount } from '../do';
+import { ACCOUNT_REPO, AccountRepo } from '../interface';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { UserDeletionInjectionService } from '../../../deletion';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -92,7 +91,10 @@ describe('AccountService Integration', () => {
 				AccountService,
 				AccountServiceIdm,
 				AccountServiceDb,
-				AccountRepo,
+				{
+					provide: ACCOUNT_REPO,
+					useValue: AccountMikroOrmRepo,
+				},
 				{
 					provide: KeycloakIdentityManagementService,
 					useValue: createMock<KeycloakIdentityManagementService>(),
@@ -106,16 +108,16 @@ describe('AccountService Integration', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: EventBus,
-					useValue: {
-						publish: jest.fn(),
-					},
+					provide: UserDeletionInjectionService,
+					useValue: createMock<UserDeletionInjectionService>({
+						injectUserDeletionService: jest.fn(),
+					}),
 				},
 			],
 		}).compile();
 		accountService = module.get(AccountService);
 		identityManagementService = module.get(IdentityManagementService);
-		accountRepo = module.get(AccountRepo);
+		accountRepo = module.get(ACCOUNT_REPO);
 		em = module.get(EntityManager);
 		keycloakAdminService = module.get(KeycloakAdministrationService);
 		isIdmReachable = await keycloakAdminService.testKcConnection();

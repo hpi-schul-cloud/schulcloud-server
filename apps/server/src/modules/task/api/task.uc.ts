@@ -2,7 +2,7 @@ import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modu
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
-import { LessonEntity } from '@modules/lesson/repository';
+import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';

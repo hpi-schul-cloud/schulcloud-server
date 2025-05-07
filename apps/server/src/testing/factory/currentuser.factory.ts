@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { ICurrentUser } from '@infra/auth-guard';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
@@ -31,7 +32,7 @@ class CurrentUser implements ICurrentUser {
 	}
 }
 
-export class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
+class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 	public withRole(role: string): this {
 		const params = { roles: [role] };
 		return this.params(params);

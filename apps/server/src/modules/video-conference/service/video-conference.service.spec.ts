@@ -11,10 +11,15 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { TeamRepo } from '@modules/team/repo';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
@@ -22,18 +27,14 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { VideoConferenceDO } from '@shared/domain/domainobject';
-import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { TeamsRepo } from '@shared/repo/teams';
-import { VideoConferenceRepo } from '@shared/repo/videoconference';
 import { setupEntities } from '@testing/database';
-import { roleFactory } from '@testing/factory/role.factory';
-import { teamFactory } from '@testing/factory/team.factory';
-import { teamUserFactory } from '@testing/factory/teamuser.factory';
-import { videoConferenceDOFactory } from '@testing/factory/video-conference.do.factory';
 import { BBBRole } from '../bbb';
+import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
+import { VideoConferenceRepo } from '../repo';
+import { videoConferenceDOFactory } from '../testing';
 import { VideoConferenceState } from '../uc/dto';
 import { VideoConferenceConfig } from '../video-conference-config';
 import { VideoConferenceService } from './video-conference.service';
@@ -47,7 +48,7 @@ describe(VideoConferenceService.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let roomService: DeepMocked<RoomService>;
-	let teamsRepo: DeepMocked<TeamsRepo>;
+	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let configService: DeepMocked<ConfigService<VideoConferenceConfig, true>>;
@@ -93,8 +94,8 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<RoomService>(),
 				},
 				{
-					provide: TeamsRepo,
-					useValue: createMock<TeamsRepo>(),
+					provide: TeamRepo,
+					useValue: createMock<TeamRepo>(),
 				},
 				{
 					provide: UserService,
@@ -115,7 +116,7 @@ describe(VideoConferenceService.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		roomMembershipService = module.get(RoomMembershipService);
 		roomService = module.get(RoomService);
-		teamsRepo = module.get(TeamsRepo);
+		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		configService = module.get(ConfigService);
@@ -376,7 +377,7 @@ describe(VideoConferenceService.name, () => {
 					.withTeamUser([teamUser])
 					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
 					.build();
-				teamsRepo.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 
 				userService.findById.mockResolvedValue(user);
 
@@ -396,12 +397,12 @@ describe(VideoConferenceService.name, () => {
 				expect(result).toBe(true);
 			});
 
-			it('should call teamsRepo.findById', async () => {
+			it('should call teamRepo.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
 				await service.hasExpertRole(userId, conferenceScope, scopeId);
 
-				expect(teamsRepo.findById).toHaveBeenCalledWith(scopeId);
+				expect(teamRepo.findById).toHaveBeenCalledWith(scopeId);
 			});
 		});
 
@@ -411,7 +412,7 @@ describe(VideoConferenceService.name, () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 				const team = teamFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build({ teamUsers: [] });
-				teamsRepo.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 
 				return {
 					user,
@@ -474,13 +475,10 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room editor role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleEditor = roleFactory.buildWithId({
-					name: RoleName.ROOMEDITOR,
-					permissions: [Permission.ROOM_EDIT],
-				});
+				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
-					users: [{ userId: user.id, roleId: roleEditor.id }],
+					users: [{ userId: user.id, roleId: roomEditorRole.id }],
 				});
 				const room = roomFactory.build();
 				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -490,7 +488,7 @@ describe(VideoConferenceService.name, () => {
 				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: user.id, roles: [roleEditor] }],
+					members: [{ userId: user.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -574,7 +572,7 @@ describe(VideoConferenceService.name, () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
-				teamsRepo.findById.mockResolvedValueOnce(entity);
+				teamRepo.findById.mockResolvedValueOnce(entity);
 
 				return {
 					user,
@@ -656,10 +654,10 @@ describe(VideoConferenceService.name, () => {
 		describe('when user has room viewer role in room scope', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-				const roleViewer = roleFactory.buildWithId({ name: RoleName.ROOMVIEWER, permissions: [Permission.ROOM_VIEW] });
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const group = groupFactory.build({
 					type: GroupTypes.ROOM,
-					users: [{ userId: user.id, roleId: roleViewer.id }],
+					users: [{ userId: user.id, roleId: roomViewerRole.id }],
 				});
 				const room = roomFactory.build();
 				roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -670,13 +668,13 @@ describe(VideoConferenceService.name, () => {
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roleViewer] }],
+						members: [{ userId: user.id, roles: [roomViewerRole] }],
 						schoolId: room.schoolId,
 					})
 					.mockResolvedValueOnce({
 						id: 'foo',
 						roomId: room.id,
-						members: [{ userId: user.id, roles: [roleViewer] }],
+						members: [{ userId: user.id, roles: [roomViewerRole] }],
 						schoolId: room.schoolId,
 					});
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
@@ -1096,10 +1094,10 @@ describe(VideoConferenceService.name, () => {
 			const team = teamFactory
 				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
 				.build();
-			const roleEditor = roleFactory.buildWithId({ name: RoleName.ROOMEDITOR, permissions: [Permission.ROOM_EDIT] });
+			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupFactory.build({
 				type: GroupTypes.ROOM,
-				users: [{ userId: roomUser.id, roleId: roleEditor.id }],
+				users: [{ userId: roomUser.id, roleId: roomEditorRole.id }],
 			});
 			const room = roomFactory.build();
 			roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
@@ -1107,13 +1105,13 @@ describe(VideoConferenceService.name, () => {
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				})
 				.mockResolvedValueOnce({
 					id: 'foo',
 					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roleEditor] }],
+					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
 					schoolId: room.schoolId,
 				});
 
@@ -1251,7 +1249,7 @@ describe(VideoConferenceService.name, () => {
 		describe('when conference scope is VideoConferenceScope.EVENT', () => {
 			const setupForEvent = () => {
 				const { userId, scopeId, team, conferenceScope } = setup(VideoConferenceScope.EVENT);
-				teamsRepo.findById.mockResolvedValue(team);
+				teamRepo.findById.mockResolvedValue(team);
 				calendarService.findEvent.mockResolvedValue({ title: 'Event', teamId: team.id });
 
 				return { userId, conferenceScope, scopeId };

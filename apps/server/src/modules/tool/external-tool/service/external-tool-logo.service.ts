@@ -1,8 +1,8 @@
+import { Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
+import { EntityId, ImageMimeType } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
 import { ToolConfig } from '../../tool-config';
@@ -17,11 +17,11 @@ import {
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
 
-const contentTypeDetector: Record<string, string> = {
-	ffd8ffe0: 'image/jpeg',
-	ffd8ffe1: 'image/jpeg',
-	'89504e47': 'image/png',
-	'47494638': 'image/gif',
+const base64ImageTypeSignatures: Record<string, ImageMimeType> = {
+	'/9j/': ImageMimeType.JPEG,
+	iVBORw0KGgo: ImageMimeType.PNG,
+	R0lGODdh: ImageMimeType.GIF,
+	R0lGODlh: ImageMimeType.GIF,
 };
 
 @Injectable()
@@ -79,9 +79,10 @@ export class ExternalToolLogoService {
 			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
-			this.detectContentTypeOrThrow(buffer);
 
 			const logoBase64: string = buffer.toString('base64');
+
+			this.detectAndValidateLogoImageType(logoBase64);
 
 			return logoBase64;
 		} catch (error) {
@@ -102,25 +103,24 @@ export class ExternalToolLogoService {
 			throw new ExternalToolLogoNotFoundLoggableException(toolId);
 		}
 
-		const logoBinaryData: Buffer = Buffer.from(tool.logo, 'base64');
-
 		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
-			contentType: this.detectContentTypeOrThrow(logoBinaryData),
-			logo: logoBinaryData,
+			contentType: this.detectAndValidateLogoImageType(tool.logo).valueOf(),
+			logo: Buffer.from(tool.logo, 'base64'),
 		});
 
 		return externalToolLogo;
 	}
 
-	private detectContentTypeOrThrow(imageBuffer: Buffer): string {
-		const imageSignature: string = imageBuffer.toString('hex', 0, 4);
+	public detectAndValidateLogoImageType(base64Image: string): ImageMimeType {
+		const detectedSignature: string | undefined = Object.keys(base64ImageTypeSignatures).find((signature: string) =>
+			base64Image.startsWith(signature)
+		);
 
-		const contentType: string | ExternalToolLogoWrongFileTypeLoggableException =
-			contentTypeDetector[imageSignature] || new ExternalToolLogoWrongFileTypeLoggableException();
-
-		if (contentType instanceof ExternalToolLogoWrongFileTypeLoggableException) {
+		if (!detectedSignature) {
 			throw new ExternalToolLogoWrongFileTypeLoggableException();
 		}
+
+		const contentType: ImageMimeType = base64ImageTypeSignatures[detectedSignature];
 
 		return contentType;
 	}

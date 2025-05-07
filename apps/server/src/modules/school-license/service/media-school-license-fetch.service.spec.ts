@@ -1,7 +1,7 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
-import { vidisPageOfferFactory } from '@infra/sync/media-licenses/testing';
+import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { Configuration, IDMBetreiberApiFactory, IDMBetreiberApiInterface, PageOfferDTO } from '@infra/vidis-client';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';

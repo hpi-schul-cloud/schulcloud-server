@@ -11,9 +11,9 @@ export {
 	AuthorizationLoaderService,
 	AuthorizationLoaderServiceGeneric,
 	AuthorizationService,
-	CurrentUserLoader,
 	ForbiddenLoggableException,
 	Rule,
+	type CurrentUserLoader,
 } from './domain';
 // Should not used anymore
 export { FeathersAuthorizationService } from './feathers';

@@ -8,11 +8,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
-import { FileSecurityController, FilesStorageConfigController, FilesStorageController } from './controller';
+import {
+	FileSecurityController,
+	FilesStorageAdminController,
+	FilesStorageConfigController,
+	FilesStorageController,
+	FilesStorageAdminUC,
+	FilesStorageUC,
+} from './api';
 import { authorizationClientConfig, config } from './files-storage.config';
 import { ENTITIES } from './files-storage.entity.imports';
 import { FilesStorageModule } from './files-storage.module';
-import { FilesStorageUC } from './uc';
 
 @Module({
 	imports: [
@@ -34,7 +40,12 @@ import { FilesStorageUC } from './uc';
 			// debug: true, // use it for locally debugging of querys
 		}),
 	],
-	controllers: [FilesStorageController, FilesStorageConfigController, FileSecurityController],
-	providers: [FilesStorageUC],
+	controllers: [
+		FilesStorageController,
+		FilesStorageConfigController,
+		FileSecurityController,
+		FilesStorageAdminController,
+	],
+	providers: [FilesStorageUC, FilesStorageAdminUC],
 })
 export class FilesStorageApiModule {}

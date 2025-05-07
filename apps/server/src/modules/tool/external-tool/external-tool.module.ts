@@ -4,12 +4,12 @@ import { FilesStorageClientModule } from '@infra/files-storage-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { InstanceModule } from '../../instance';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ExternalToolRule } from './authorization/external-tool.rule';
-import { ExternalToolMetadataMapper } from './mapper';
+import { ExternalToolUtilizationMapper } from './mapper';
 import {
 	DatasheetPdfService,
 	ExternalToolAuthorizableService,
@@ -24,7 +24,7 @@ import {
 
 @Module({
 	imports: [
-		forwardRef(() => CommonToolModule),
+		CommonToolModule,
 		LoggerModule,
 		OauthProviderServiceModule,
 		EncryptionModule,
@@ -40,7 +40,7 @@ import {
 		ExternalToolValidationService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
-		ExternalToolMetadataMapper,
+		ExternalToolUtilizationMapper,
 		ToolContextMapper,
 		DatasheetPdfService,
 		ExternalToolAuthorizableService,

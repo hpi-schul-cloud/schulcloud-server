@@ -15,7 +15,9 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common/error';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
-import { SchoolExternalTool, SchoolExternalToolMetadata, SchoolExternalToolProps } from '../domain';
+import { SchoolExternalToolUtilization } from '../../tool-utilization/domain';
+import { SchoolExternalToolUtilizationUc } from '../../tool-utilization/uc/school-external-tool-utilization.uc';
+import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
 import {
 	SchoolExternalToolMetadataMapper,
 	SchoolExternalToolRequestMapper,
@@ -35,7 +37,11 @@ import {
 @JwtAuthentication()
 @Controller('tools/school-external-tools')
 export class ToolSchoolController {
-	constructor(private readonly schoolExternalToolUc: SchoolExternalToolUc, private readonly logger: LegacyLogger) {}
+	constructor(
+		private readonly schoolExternalToolUc: SchoolExternalToolUc,
+		private readonly schoolExternalToolUtilizationUc: SchoolExternalToolUtilizationUc,
+		private readonly logger: LegacyLogger
+	) {}
 
 	@Get()
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
@@ -146,9 +152,9 @@ export class ToolSchoolController {
 	}
 
 	@Get('/:schoolExternalToolId/metadata')
-	@ApiOperation({ summary: 'Gets the metadata of an school external tool.' })
+	@ApiOperation({ summary: 'Gets the utilization of an school external tool.' })
 	@ApiOkResponse({
-		description: 'Metadata of school external tool fetched successfully.',
+		description: 'Utilization of school external tool fetched successfully.',
 		type: SchoolExternalToolMetadataResponse,
 	})
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
@@ -156,11 +162,14 @@ export class ToolSchoolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
 	): Promise<SchoolExternalToolMetadataResponse> {
-		const schoolExternalToolMetadata: SchoolExternalToolMetadata =
-			await this.schoolExternalToolUc.getMetadataForSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
+		const schoolExternalToolUtilization: SchoolExternalToolUtilization =
+			await this.schoolExternalToolUtilizationUc.getUtilizationForSchoolExternalTool(
+				currentUser.userId,
+				params.schoolExternalToolId
+			);
 
 		const mapped: SchoolExternalToolMetadataResponse =
-			SchoolExternalToolMetadataMapper.mapToSchoolExternalToolMetadataResponse(schoolExternalToolMetadata);
+			SchoolExternalToolMetadataMapper.mapToSchoolExternalToolMetadataResponse(schoolExternalToolUtilization);
 
 		return mapped;
 	}

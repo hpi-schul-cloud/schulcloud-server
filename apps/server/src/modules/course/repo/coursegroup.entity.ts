@@ -1,10 +1,9 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { LessonParent } from '@modules/lesson/repository';
+import { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { EntityWithSchool } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 // eslint-disable-next-line import/no-cycle
 import { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
@@ -17,7 +16,7 @@ export interface CourseGroupProperties {
 
 @Entity({ tableName: 'coursegroups' })
 @Index({ properties: ['school', 'course'] })
-export class CourseGroupEntity extends BaseEntityWithTimestamps implements EntityWithSchool, TaskParent, LessonParent {
+export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskParent, LessonParent {
 	@Property()
 	name: string;
 

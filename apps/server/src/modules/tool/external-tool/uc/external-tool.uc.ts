@@ -10,13 +10,11 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import {
 	BasicToolConfig,
 	ExternalTool,
 	ExternalToolConfig,
 	ExternalToolDatasheetTemplateData,
-	ExternalToolMetadata,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
@@ -39,7 +37,6 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService,
 		private readonly datasheetPdfService: DatasheetPdfService,
 		private readonly externalToolImageService: ExternalToolImageService,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
@@ -144,10 +141,6 @@ export class ExternalToolUc {
 			config: updatedConfigProps,
 		});
 
-		if (pendingExternalTool.medium && currentExternalTool.medium?.metadataModifiedAt) {
-			pendingExternalTool.medium.metadataModifiedAt = currentExternalTool.medium.metadataModifiedAt;
-		}
-
 		pendingExternalTool.logo = await this.externalToolLogoService.fetchLogo(pendingExternalTool);
 
 		await this.toolValidationService.validateUpdate(toolId, pendingExternalTool);
@@ -212,21 +205,6 @@ export class ExternalToolUc {
 		await this.externalToolImageService.deleteAllFiles(externalToolId);
 
 		await this.externalToolService.deleteExternalTool(externalTool);
-	}
-
-	public async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
-		const externalTool: ExternalTool = await this.externalToolService.findById(toolId);
-
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(
-			user,
-			externalTool,
-			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
-		);
-
-		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
-
-		return metadata;
 	}
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {

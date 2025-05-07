@@ -33,46 +33,61 @@ export class ToolConfigurationStatusService {
 		userId: EntityId
 	): Promise<ContextExternalToolConfigurationStatus> {
 		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
-			isOutdatedOnScopeContext: false,
-			isIncompleteOnScopeContext: false,
-			isIncompleteOperationalOnScopeContext: false,
-			isOutdatedOnScopeSchool: false,
 			isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
 			isNotLicensed: !(await this.isToolLicensed(externalTool, userId)),
+			...this.getSchoolScopeValidationStatus(externalTool, schoolExternalTool),
+			...this.getContextScopeValidationStatus(externalTool, contextExternalTool),
 		});
 
+		return configurationStatus;
+	}
+
+	private getSchoolScopeValidationStatus(
+		externalTool: ExternalTool,
+		schoolExternalTool: SchoolExternalTool
+	): { isOutdatedOnScopeSchool: boolean } {
 		const schoolParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
 			externalTool,
 			schoolExternalTool
 		);
 
 		if (schoolParameterErrors.length) {
-			configurationStatus.isOutdatedOnScopeSchool = true;
+			return {
+				isOutdatedOnScopeSchool: true,
+			};
 		}
 
+		return {
+			isOutdatedOnScopeSchool: false,
+		};
+	}
+
+	private getContextScopeValidationStatus(
+		externalTool: ExternalTool,
+		contextExternalTool: ContextExternalToolLaunchable
+	): {
+		isOutdatedOnScopeContext: boolean;
+		isIncompleteOnScopeContext: boolean;
+		isIncompleteOperationalOnScopeContext: boolean;
+	} {
 		const contextParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
 			externalTool,
 			contextExternalTool
 		);
 
-		if (contextParameterErrors.length) {
-			configurationStatus.isOutdatedOnScopeContext = true;
-
-			if (
-				contextParameterErrors.some(
-					(error: ValidationError) => error instanceof ToolParameterMandatoryValueMissingLoggableException
-				)
-			) {
-				configurationStatus.isIncompleteOnScopeContext = true;
-			} else if (this.isIncompleteOperational(contextParameterErrors) && !this.isOutdated(contextParameterErrors)) {
-				configurationStatus.isIncompleteOperationalOnScopeContext = true;
-				configurationStatus.isOutdatedOnScopeContext = false;
-			} else if (this.isIncompleteOperational(contextParameterErrors) && this.isOutdated(contextParameterErrors)) {
-				configurationStatus.isIncompleteOperationalOnScopeContext = true;
-			}
+		if (this.isMandatoryValueMissing(contextParameterErrors)) {
+			return {
+				isIncompleteOnScopeContext: true,
+				isOutdatedOnScopeContext: true,
+				isIncompleteOperationalOnScopeContext: false,
+			};
 		}
 
-		return configurationStatus;
+		return {
+			isIncompleteOnScopeContext: false,
+			isOutdatedOnScopeContext: this.isOutdated(contextParameterErrors),
+			isIncompleteOperationalOnScopeContext: this.isIncompleteOperational(contextParameterErrors),
+		};
 	}
 
 	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool): boolean {
@@ -125,6 +140,12 @@ export class ToolConfigurationStatusService {
 		return true;
 	}
 
+	private isMandatoryValueMissing(errors: ValidationError[]): boolean {
+		return errors.some(
+			(error: ValidationError) => error instanceof ToolParameterMandatoryValueMissingLoggableException
+		);
+	}
+
 	private isIncompleteOperational(errors: ValidationError[]): boolean {
 		return errors.some((error: ValidationError) => error instanceof ToolParameterOptionalValueMissingLoggableException);
 	}
@@ -137,7 +158,7 @@ export class ToolConfigurationStatusService {
 		return parameterWithoutOptional.length > 0;
 	}
 
-	isOptional(error: ValidationError): boolean {
+	private isOptional(error: ValidationError): boolean {
 		return error instanceof ToolParameterOptionalValueMissingLoggableException;
 	}
 }

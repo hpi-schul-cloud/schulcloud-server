@@ -1,9 +1,8 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repository';
-import { Task } from '@modules/task/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
-import { Material, Submission } from '@shared/domain/entity';
 import { setupEntities } from '@testing/database';
 import { LegacyBoardElementType } from './legacy-board-element.entity';
 import { TaskBoardElement } from './task-board-element.entity';

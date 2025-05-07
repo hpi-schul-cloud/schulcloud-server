@@ -1,15 +1,14 @@
-// Remove the eslint-disables after fixing the import issue in EPIC-96
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import type { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { SchoolEntity } from '@modules/school/repo';
+import type { SchoolEntity } from '@modules/school/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { User } from '@modules/user/repo';
+import type { User } from '@modules/user/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
-import { LanguageType, Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import type { LanguageType, Permission } from '@shared/domain/interface';
+import type { EntityId } from '@shared/domain/types';
 import _ from 'lodash';
 
 interface UserParams {
@@ -89,5 +88,34 @@ export class UserAndAccountTestFactory {
 		const account = UserAndAccountTestFactory.buildAccount(user, params);
 
 		return { superheroAccount: account, superheroUser: user };
+	}
+
+	public static buildByRole(
+		roleName: 'administrator' | 'teacher' | 'student',
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { account: AccountEntity; user: User } {
+		const user = UserAndAccountTestFactory.buildUser(roleName, params, additionalPermissions);
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+		return { account, user };
+	}
+
+	private static buildUser(
+		roleName: 'administrator' | 'teacher' | 'student',
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): User {
+		switch (roleName) {
+			case 'administrator':
+				return userFactory.asAdmin(additionalPermissions).buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'teacher':
+				return userFactory
+					.asTeacher(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'student':
+				return userFactory
+					.asStudent(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		}
 	}
 }

@@ -1,5 +1,5 @@
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '../../../shared/domain/domain-object';
 import { ClassSourceOptions } from './class-source-options.do';
 
 export interface ClassProps extends AuthorizableObject {
@@ -57,6 +57,10 @@ export class Class extends DomainObject<ClassProps> {
 
 	get gradeLevel(): number | undefined {
 		return this.props.gradeLevel;
+	}
+
+	set gradeLevel(gradeLevel: number | undefined) {
+		this.props.gradeLevel = gradeLevel;
 	}
 
 	get ldapDN(): string | undefined {

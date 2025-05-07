@@ -1,7 +1,7 @@
 import { Counted } from '@shared/domain/types';
-import { Account } from '../../domain/account';
-import { AccountUcMapper } from './account-uc.mapper';
+import { Account } from '../../domain';
 import { accountDoFactory } from '../../testing';
+import { AccountUcMapper } from './account-uc.mapper';
 
 describe('AccountUcMapper', () => {
 	describe('mapToResolvedAccountDto', () => {

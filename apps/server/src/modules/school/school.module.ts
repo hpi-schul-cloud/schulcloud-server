@@ -1,12 +1,13 @@
+import { AuthorizationModule } from '@modules/authorization';
+import { SystemModule } from '@modules/system';
 import { Module } from '@nestjs/common';
-import { SystemModule } from '../system';
 import { FederalStateService, SCHOOL_REPO, SCHOOL_YEAR_REPO, SchoolService, SchoolYearService } from './domain';
 import { SystemDeletedHandler } from './domain/event-handler';
-import { FederalStateRepo, SchoolYearMikroOrmRepo } from './repo';
-import { SchoolMikroOrmRepo } from './repo/mikro-orm/school.repo';
+import { SchoolAuthorizableService } from './domain/service/school-authorizable.service';
+import { FederalStateRepo, SchoolMikroOrmRepo, SchoolYearMikroOrmRepo } from './repo';
 
 @Module({
-	imports: [SystemModule],
+	imports: [SystemModule, AuthorizationModule],
 	providers: [
 		SchoolService,
 		SchoolYearService,
@@ -15,6 +16,7 @@ import { SchoolMikroOrmRepo } from './repo/mikro-orm/school.repo';
 		{ provide: SCHOOL_YEAR_REPO, useClass: SchoolYearMikroOrmRepo },
 		FederalStateRepo,
 		SystemDeletedHandler,
+		SchoolAuthorizableService,
 	],
 	exports: [SchoolService, SchoolYearService, FederalStateService],
 })

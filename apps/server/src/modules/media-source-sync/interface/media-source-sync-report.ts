@@ -5,5 +5,6 @@ export interface MediaSourceSyncReport {
 	successCount: number;
 	failedCount: number;
 	undeliveredCount: number;
+	partialCount: number;
 	operations: MediaSourceSyncOperationReport[];
 }

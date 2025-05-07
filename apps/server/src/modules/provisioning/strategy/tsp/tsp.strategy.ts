@@ -1,6 +1,6 @@
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { validate } from 'class-validator';
 import jwt, { JwtPayload } from 'jsonwebtoken';

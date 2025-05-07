@@ -4,13 +4,12 @@ import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing';
@@ -99,13 +98,10 @@ describe('Room Controller (API)', () => {
 					context: { type: BoardExternalReferenceType.Room, id: room.id },
 				});
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const role = roleFactory.buildWithId({
-					name: RoleName.ROOMVIEWER,
-					permissions: [Permission.ROOM_VIEW],
-				});
+				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role, user: studentUser }],
+					users: [{ role: roomViewerRole, user: studentUser }],
 					organization: studentUser.school,
 					externalSource: undefined,
 				});
@@ -114,7 +110,15 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([room, board, studentAccount, studentUser, role, userGroupEntity, roomMembership]);
+				await em.persistAndFlush([
+					room,
+					board,
+					studentAccount,
+					studentUser,
+					roomViewerRole,
+					userGroupEntity,
+					roomMembership,
+				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

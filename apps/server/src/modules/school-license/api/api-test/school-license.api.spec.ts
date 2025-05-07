@@ -1,13 +1,12 @@
-import { vidisPageOfferFactory } from '@infra/sync/media-licenses/testing';
 import { PageOfferDTO } from '@infra/vidis-client';
+import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
+import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
@@ -59,7 +58,7 @@ describe('SchoolLicenseController (API)', () => {
 					officialSchoolNumber: '00100',
 					federalState,
 				});
-				const mediaSource = mediaSourceEntityFactory.build({ format: MediaSourceDataFormat.VIDIS });
+				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 				await em.persistAndFlush([adminUser, adminAccount, federalState, school, mediaSource]);
@@ -79,14 +78,16 @@ describe('SchoolLicenseController (API)', () => {
 			it('should return status created', async () => {
 				const { loggedInClient } = await setup();
 
-				await loggedInClient.post('').send().expect(HttpStatus.CREATED);
+				const response = await loggedInClient.post();
+
+				expect(response.statusCode).toEqual(HttpStatus.CREATED);
 			});
 		});
 
 		describe('when official school number was not found', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId({});
-				const mediaSource = mediaSourceEntityFactory.build({ format: MediaSourceDataFormat.VIDIS });
+				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 
@@ -146,7 +147,7 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when user has no permission', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId({ officialSchoolNumber: '00100' });
-				const mediaSource = mediaSourceEntityFactory.build({ format: MediaSourceDataFormat.VIDIS });
+				const mediaSource = mediaSourceEntityFactory.withVidisFormat().build();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				await em.persistAndFlush([teacherUser, teacherAccount, school, mediaSource]);
@@ -185,7 +186,7 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when the user has media school licenses', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const mediaSource = mediaSourceEntityFactory.buildWithId({ name: 'Vidis' });
+				const mediaSource = mediaSourceEntityFactory.withVidisFormat().buildWithId({ name: 'Vidis' });
 				const mediaSchoolLicense = mediaSchoolLicenseEntityFactory.buildWithId({
 					school,
 					mediaSource,
@@ -238,7 +239,7 @@ describe('SchoolLicenseController (API)', () => {
 		describe('when user has no permission', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const mediaSource = mediaSourceEntityFactory.buildWithId({ name: 'Vidis' });
+				const mediaSource = mediaSourceEntityFactory.withVidisFormat().buildWithId({ name: 'Vidis' });
 				const mediaSchoolLicense = mediaSchoolLicenseEntityFactory.buildWithId({
 					school,
 					mediaSource,

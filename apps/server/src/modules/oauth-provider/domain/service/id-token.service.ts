@@ -1,9 +1,7 @@
 import { PseudonymService } from '@modules/pseudonym';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { TeamEntity, TeamRepo } from '@modules/team/repo';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { TeamEntity } from '@shared/domain/entity';
-import { TeamsRepo } from '@shared/repo/teams';
 import { IdTokenCreationLoggableException } from '../error';
 import { GroupNameIdTuple, IdToken, OauthScope } from '../interface';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
@@ -13,14 +11,14 @@ export class IdTokenService {
 	constructor(
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly teamsRepo: TeamsRepo,
+		private readonly teamRepo: TeamRepo,
 		private readonly userService: UserService
 	) {}
 
 	public async createIdToken(userId: string, scopes: string[], clientId: string): Promise<IdToken> {
 		let teams: TeamEntity[] = [];
 		if (scopes.includes(OauthScope.GROUPS)) {
-			teams = await this.teamsRepo.findByUserId(userId);
+			teams = await this.teamRepo.findByUserId(userId);
 		}
 
 		const user = await this.userService.findById(userId);

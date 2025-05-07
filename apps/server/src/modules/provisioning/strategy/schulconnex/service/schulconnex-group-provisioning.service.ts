@@ -8,14 +8,14 @@ import {
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
+import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 @Injectable()
 export class SchulconnexGroupProvisioningService {
@@ -26,6 +26,7 @@ export class SchulconnexGroupProvisioningService {
 		private readonly groupService: GroupService,
 		private readonly courseService: CourseDoService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
+		private readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		private readonly logger: Logger
 	) {}
 
@@ -197,10 +198,13 @@ export class SchulconnexGroupProvisioningService {
 
 			if (group.isEmpty()) {
 				const courses = await this.courseService.findBySyncedGroup(group);
-				if (!courses || courses.length === 0) {
-					await this.groupService.delete(group);
-					return null;
+
+				if (courses.length > 0) {
+					await this.schulconnexCourseSyncService.desyncCoursesAndCreateHistories(group, courses);
 				}
+
+				await this.groupService.delete(group);
+				return null;
 			}
 
 			return this.groupService.save(group);
@@ -224,10 +228,12 @@ export class SchulconnexGroupProvisioningService {
 		if (group.isEmpty()) {
 			const courses = await this.courseService.findBySyncedGroup(group);
 
-			if (!courses.length) {
-				await this.groupService.delete(group);
-				return null;
+			if (courses.length > 0) {
+				await this.schulconnexCourseSyncService.desyncCoursesAndCreateHistories(group, courses);
 			}
+
+			await this.groupService.delete(group);
+			return null;
 		}
 
 		const savedGroup = await this.groupService.save(group);

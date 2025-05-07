@@ -1,16 +1,16 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface/permission.enum';
-import { RoleName } from '@shared/domain/interface/rolename.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { roleFactory } from '@testing/factory/role.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
@@ -49,25 +49,18 @@ describe('Room Controller (API)', () => {
 			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-			const editRole = roleFactory.buildWithId({
-				name: RoleName.ROOMEDITOR,
-				permissions: [Permission.ROOM_VIEW, Permission.ROOM_EDIT],
-			});
-			const viewerRole = roleFactory.buildWithId({
-				name: RoleName.ROOMVIEWER,
-				permissions: [Permission.ROOM_VIEW],
-			});
+			const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 			const teacherRole = teacherUser.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const students = userFactory.buildList(2, { school, roles: [studentRole] });
 			const teachers = userFactory.buildList(2, { school, roles: [teacherRole] });
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
-					{ role: editRole, user: teacherUser },
-					{ role: editRole, user: teachers[0] },
-					{ role: editRole, user: teachers[1] },
-					{ role: viewerRole, user: students[0] },
-					{ role: viewerRole, user: students[1] },
+					{ role: roomEditorRole, user: teacherUser },
+					{ role: roomEditorRole, user: teachers[0] },
+					{ role: roomEditorRole, user: teachers[1] },
+					{ role: roomViewerRole, user: students[0] },
+					{ role: roomViewerRole, user: students[1] },
 				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
@@ -91,7 +84,7 @@ describe('Room Controller (API)', () => {
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, students, teachers, teacherUser, viewerRole, editRole };
+			return { loggedInClient, room, students, teachers, teacherUser, roomViewerRole, roomEditorRole };
 		};
 
 		const setupLoggedInUser = async () => {
@@ -132,7 +125,7 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has the required permissions', () => {
 			it('should return a list of members', async () => {
-				const { loggedInClient, room, students, teachers, teacherUser, editRole, viewerRole } =
+				const { loggedInClient, room, students, teachers, teacherUser, roomEditorRole, roomViewerRole } =
 					await setupRoomWithMembers();
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
@@ -143,16 +136,16 @@ describe('Room Controller (API)', () => {
 				expect(body.data).toContainEqual(
 					expect.objectContaining({
 						userId: teacherUser.id,
-						roomRoleName: editRole.name,
-						schoolRoleName: RoleName.TEACHER,
+						roomRoleName: roomEditorRole.name,
+						schoolRoleNames: [RoleName.TEACHER],
 					})
 				);
 				students.forEach((student) => {
 					expect(body.data).toContainEqual(
 						expect.objectContaining({
 							userId: student.id,
-							roomRoleName: viewerRole.name,
-							schoolRoleName: RoleName.STUDENT,
+							roomRoleName: roomViewerRole.name,
+							schoolRoleNames: [RoleName.STUDENT],
 						})
 					);
 				});
@@ -160,8 +153,8 @@ describe('Room Controller (API)', () => {
 					expect(body.data).toContainEqual(
 						expect.objectContaining({
 							userId: teacher.id,
-							roomRoleName: editRole.name,
-							schoolRoleName: RoleName.TEACHER,
+							roomRoleName: roomEditorRole.name,
+							schoolRoleNames: [RoleName.TEACHER],
 						})
 					);
 				});

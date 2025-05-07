@@ -3,19 +3,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { UserService } from '@modules/user';
-import { UserDo } from '@modules/user/domain';
+import { UserDo, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
+import { UserLoginMigrationDO } from '../do';
 import {
 	SchoolMigrationDatabaseOperationFailedLoggableException,
 	SchoolNumberMismatchLoggableException,
 } from '../loggable';
 import { SchoolMigrationService } from './school-migration.service';
-import { UserLoginMigrationDO } from '../do';
 
 describe(SchoolMigrationService.name, () => {
 	let module: TestingModule;

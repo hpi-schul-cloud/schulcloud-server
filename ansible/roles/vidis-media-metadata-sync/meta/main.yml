@@ -1,0 +1,9 @@
+galaxy_info:
+  role_name: vidis-media-metadata-sync
+  author: Schul-Cloud Verbund
+  description: vidis-media-metadata-sync role for the VIDIS media metadata synchronization purposes
+  company: Schul-Cloud Verbund
+  license: license (AGPLv3)
+  min_ansible_version: 2.8
+  galaxy_tags: []
+dependencies: []

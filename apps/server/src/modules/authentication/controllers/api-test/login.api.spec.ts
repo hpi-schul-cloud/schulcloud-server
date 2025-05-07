@@ -1,7 +1,9 @@
 import { EntityManager } from '@mikro-orm/core';
-import { AccountEntity } from '@modules/account/domain/entity/account.entity';
+import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { SystemEntity } from '@modules/system/repo';
@@ -10,9 +12,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { roleFactory } from '@testing/factory/role.factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
@@ -144,7 +144,8 @@ describe('Login Controller (api)', () => {
 					username: user.email,
 					password: 'wrongPassword',
 				};
-				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
+				expect(result.status).toEqual(401);
 			});
 		});
 		describe('when user login fails cause account is deactivated', () => {
@@ -168,7 +169,8 @@ describe('Login Controller (api)', () => {
 					username: newUser.email,
 					password: defaultPassword,
 				};
-				await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(401);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
+				expect(result.status).toEqual(401);
 			});
 		});
 	});

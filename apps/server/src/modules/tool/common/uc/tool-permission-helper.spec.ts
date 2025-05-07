@@ -12,13 +12,12 @@ import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modul
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { LessonEntity } from '@modules/lesson/repository';
-import { Task } from '@modules/task/repo';
+import { LessonEntity, Material } from '@modules/lesson/repo';
+import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Material, Submission } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';

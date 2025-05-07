@@ -1,8 +1,8 @@
+import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { ImportUser, ImportUserProperties, ImportUserRoleName, MatchCreator } from '@modules/user-import/entity';
 import { User } from '@modules/user/repo';
-import { RoleName } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { v4 as uuidv4 } from 'uuid';

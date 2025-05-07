@@ -1,9 +1,9 @@
-import { RoleConfig } from '@modules/role';
-import { LoggerConfig } from '@core/logger';
-import { CalendarConfig } from '@infra/calendar';
-import { AccountConfig } from '@modules/account';
-import { RegistrationPinConfig } from '@modules/registration-pin';
-import { LegacySchoolConfig } from '@modules/legacy-school';
+import type { RoleConfig } from '@modules/role';
+import type { LoggerConfig } from '@core/logger';
+import type { CalendarConfig } from '@infra/calendar';
+import type { AccountConfig } from '@modules/account';
+import type { RegistrationPinConfig } from '@modules/registration-pin';
+import type { LegacySchoolConfig } from '@modules/legacy-school';
 
 export interface UserConfig
 	extends RoleConfig,

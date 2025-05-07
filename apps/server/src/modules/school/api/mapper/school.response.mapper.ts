@@ -1,6 +1,5 @@
 import { School, SchoolForLdapLogin } from '../../domain';
-import { SchoolForExternalInviteResponse, SchoolResponse, YearsResponse } from '../dto/response';
-import { SchoolForLdapLoginResponse } from '../dto/response/school-for-ldap-login.response';
+import { YearsResponse, SchoolResponse, SchoolForExternalInviteResponse, SchoolForLdapLoginResponse } from '../dto';
 import { CountyResponseMapper } from './county.response.mapper';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SystemResponseMapper } from './school-systems.response.mapper';

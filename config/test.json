@@ -58,10 +58,6 @@
 		"S3_ACCESS_KEY": "S3RVER",
 		"S3_SECRET_KEY": "S3RVER"
 	},
-	"TSP_SCHOOL_SYNCER": {
-		"SCHOOL_LIMIT": 10,
-		"STUDENTS_TEACHERS_CLASSES_LIMIT": 150
-	},
 	"FEATURE_VIDEOCONFERENCE_ENABLED": true,
 	"VIDEOCONFERENCE_HOST": "https://bigbluebutton.schul-cloud.org/bigbluebutton",
 	"VIDEOCONFERENCE_SALT": "ThisIsNOTaRealSaltThisIsNOTaRealSaltThisIsNOTaRealSalt1234567890",
@@ -87,5 +83,8 @@
 		"URI": "http://localhost:9001/api/1/",
 		"PAD_URI": "http://localhost:9001/p",
 		"API_KEY": "381d67e6347d235ac9446"
+	},
+	"SESSION_VALKEY": {
+		"MODE": "in-memory"
 	}
 }

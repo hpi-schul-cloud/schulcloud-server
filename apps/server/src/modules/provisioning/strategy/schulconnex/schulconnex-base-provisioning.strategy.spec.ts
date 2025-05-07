@@ -16,11 +16,11 @@ import {
 } from '@infra/schulconnex-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupTypes } from '@modules/group/domain';
+import { RoleName } from '@modules/role';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
-import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
 import { randomUUID } from 'crypto';

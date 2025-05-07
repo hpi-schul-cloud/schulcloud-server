@@ -1,0 +1,17 @@
+- name: VIDIS media metadata sync CronJob ConfigMap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-media-metadata-sync-cronjob-configmap.yml.j2
+    state: "{{ 'present' if WITH_VIDIS_MEDIA_METADATA_SYNC is defined and WITH_VIDIS_MEDIA_METADATA_SYNC|bool else 'absent'}}"
+  tags:
+    - configmap
+
+- name: media metadata sync sync CronJob
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: vidis-media-metadata-sync-cronjob.yml.j2
+    state: "{{ 'present' if WITH_VIDIS_MEDIA_METADATA_SYNC is defined and WITH_VIDIS_MEDIA_METADATA_SYNC|bool else 'absent'}}"
+  tags:
+    - cronjob

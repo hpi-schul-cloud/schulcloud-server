@@ -7,10 +7,13 @@ export class MediaSourceVidisConfig {
 
 	public region: string;
 
+	public schoolNumberPrefix: string;
+
 	constructor(props: MediaSourceVidisConfig) {
 		this.username = props.username;
 		this.password = props.password;
 		this.baseUrl = props.baseUrl;
 		this.region = props.region;
+		this.schoolNumberPrefix = props.schoolNumberPrefix;
 	}
 }

@@ -147,11 +147,6 @@ userSchema.index(
 // maybe the schoolId index is enough ?
 // https://ticketsystem.dbildungscloud.de/browse/SC-3724
 
-if (Configuration.get('FEATURE_TSP_ENABLED') === true) {
-	// to speed up lookups during TSP sync
-	userSchema.index({ 'sourceOptions.$**': 1 });
-}
-
 // This 'pre-save' method slices the firstName, lastName and email
 // To allow searching the users
 function buildSearchIndexOnSave() {

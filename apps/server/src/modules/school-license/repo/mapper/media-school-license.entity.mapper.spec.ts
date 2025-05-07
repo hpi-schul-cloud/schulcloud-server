@@ -1,8 +1,8 @@
 import { MediaSource } from '@modules/media-source';
-import { MediaSourceMapper } from '@modules/media-source/repo';
 import { MediaSourceEntity } from '@modules/media-source/entity';
+import { MediaSourceMapper } from '@modules/media-source/repo';
 import { School } from '@modules/school';
-import { SchoolEntityMapper } from '@modules/school/repo/mikro-orm/mapper';
+import { SchoolEntityMapper } from '@modules/school/repo';
 import { MediaSchoolLicense } from '../../domain';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
 import { MediaSchoolLicenseEntityMapper } from './media-school-license.entity.mapper';
