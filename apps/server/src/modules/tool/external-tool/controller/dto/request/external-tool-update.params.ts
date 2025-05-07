@@ -115,10 +115,10 @@ export class ExternalToolUpdateParams {
 	public iconName?: string;
 
 	@IsBoolean()
-	@ApiProperty({ type: Boolean, description: 'Is the external tool is draft' })
+	@ApiProperty({ type: Boolean, description: 'Is the external tool a draft' })
 	public isDraft!: boolean;
 
 	@IsBoolean()
-	@ApiProperty({ type: Boolean, description: 'Is the external tool is template' })
+	@ApiProperty({ type: Boolean, description: 'Is the external tool a template' })
 	public isTemplate!: boolean;
 }
