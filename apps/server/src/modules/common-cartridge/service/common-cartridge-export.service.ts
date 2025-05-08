@@ -202,9 +202,6 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
-		// check whether the card contains any files
-		// if yes, download them with their files Metadata (call is in the following function)
-		// if no, just add the card to the organization
 		const fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[] = [];
 		await Promise.all(card.elements.map((element) => this.downloadAndStoreFiles(element, fileMetadataBufferArray)));
 		await Promise.all(
@@ -266,33 +263,6 @@ export class CommonCartridgeExportService {
 			default:
 				break;
 		}
-		// if (RichTextElementResponseDto.isRichTextElement(element)) {
-		// 	const resource = this.mapper.mapRichTextElementToResource(element);
-
-		// 	cardOrganization.addResource(resource);
-		// }
-
-		// if (LinkElementResponseDto.isLinkElement(element)) {
-		// 	const resource = this.mapper.mapLinkElementToResource(element);
-
-		// 	cardOrganization.addResource(resource);
-		// }
-
-		// if (FileElementResponseDto.isFileElement(element)) {
-		// 	const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
-
-		// 	await Promise.all(
-		// 		filesMetadata.map(async (fileMetadata) => {
-		// 			const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-
-		// 			if (file) {
-		// 				const resource = this.mapper.mapFileToResource(fileMetadata, file, element);
-
-		// 				cardOrganization.addResource(resource);
-		// 			}
-		// 		})
-		// 	);
-		// }
 	}
 
 	private filterTasksFromBoardElements(elements: BoardElementDto[]): BoardTaskDto[] {
