@@ -51,6 +51,44 @@ describe('FileRecordRepo', () => {
 		});
 	});
 
+	describe('findMultipleById', () => {
+		it('should find multiple entities by their ids', async () => {
+			const fileRecord1 = fileRecordEntityFactory.build();
+			const fileRecord2 = fileRecordEntityFactory.build();
+			const fileRecord3 = fileRecordEntityFactory.build();
+
+			await em.persistAndFlush([fileRecord1, fileRecord2, fileRecord3]);
+			em.clear();
+
+			const [result, total] = await repo.findMultipleById([fileRecord1.id, fileRecord2.id]);
+
+			const expectedFileRecords = [fileRecord1, fileRecord2].map((fileRecord) =>
+				FileRecordEntityMapper.mapEntityToDo(fileRecord)
+			);
+			expect(total).toBe(2);
+			expect(result).toHaveLength(2);
+			expect(result).toEqual(expect.arrayContaining(expectedFileRecords));
+		});
+
+		it('should not find entities marked for delete', async () => {
+			const fileRecord1 = fileRecordEntityFactory.build();
+			const fileRecord2 = fileRecordEntityFactory.build();
+			const fileRecord3 = fileRecordEntityFactory.build({ deletedSince: new Date() });
+
+			await em.persistAndFlush([fileRecord1, fileRecord2, fileRecord3]);
+			em.clear();
+
+			const [result, total] = await repo.findMultipleById([fileRecord1.id, fileRecord2.id, fileRecord3.id]);
+
+			const expectedFileRecords = [fileRecord1, fileRecord2].map((fileRecord) =>
+				FileRecordEntityMapper.mapEntityToDo(fileRecord)
+			);
+			expect(total).toBe(2);
+			expect(result).toHaveLength(2);
+			expect(result).toEqual(expect.arrayContaining(expectedFileRecords));
+		});
+	});
+
 	describe('findOneByIdMarkedForDelete', () => {
 		it('should find an entity by its id and deletedSince is defined', async () => {
 			const fileRecord = fileRecordEntityFactory.withDeletedSince().build();
@@ -128,6 +166,7 @@ describe('FileRecordRepo', () => {
 			expect(remainingCount).toBe(0);
 		});
 	});
+
 	describe('findByParentId', () => {
 		const setup = () => {
 			const parentId1 = new ObjectId().toHexString();
