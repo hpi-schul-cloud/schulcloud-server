@@ -207,29 +207,34 @@ export class CommonCartridgeExportService {
 		// if yes, download them with their files Metadata (call is in the following function)
 		// if no, just add the card to the organization
 		const fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[] = [];
-		forEach(card.elements, async (element) => {
-			if (element.type === ContentElementType.FILE) {
-				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
-				await Promise.all(
-					filesMetadata.map(async (fileMetadata) => {
-						const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-						if (file) {
-							fileMetadataBufferArray.push({
-								id: element.id,
-								name: fileMetadata.name,
-								fileBuffer: file,
-								fileDto: fileMetadata,
-							});
-						}
-					})
-				);
-			}
-		});
+		forEach(card.elements, (element) => this.downloadAndStoreFiles(element, fileMetadataBufferArray));
 		await Promise.all(
 			card.elements.map((element) =>
 				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
 			)
 		);
+	}
+
+	private async downloadAndStoreFiles(
+		element: CardResponseElementsInnerDto,
+		fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[]
+	): Promise<void> {
+		if (element.type === ContentElementType.FILE) {
+			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+			await Promise.all(
+				filesMetadata.map(async (fileMetadata) => {
+					const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+					if (file) {
+						fileMetadataBufferArray.push({
+							id: element.id,
+							name: fileMetadata.name,
+							fileBuffer: file,
+							fileDto: fileMetadata,
+						});
+					}
+				})
+			);
+		}
 	}
 
 	private addCardElementToOrganization(
