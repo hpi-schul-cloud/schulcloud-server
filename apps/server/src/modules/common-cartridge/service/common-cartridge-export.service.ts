@@ -258,9 +258,6 @@ export class CommonCartridgeExportService {
 						cardOrganization.addResource(resource);
 					}
 				});
-
-				break;
-			default:
 				break;
 		}
 	}
