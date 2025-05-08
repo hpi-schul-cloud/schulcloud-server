@@ -120,6 +120,54 @@ describe('FilesStorageService get methods', () => {
 		});
 	});
 
+	describe('getFileRecords is called', () => {
+		describe('WHEN valid files exists', () => {
+			const setup = () => {
+				const { fileRecord: fileRecord1 } = buildFileRecord();
+				const { fileRecord: fileRecord2 } = buildFileRecord();
+				const fileRecords = [fileRecord1, fileRecord2];
+				fileRecordRepo.findMultipleById.mockResolvedValueOnce([fileRecords, 2]);
+
+				const fileRecordIds = [fileRecords[0].id, fileRecords[1].id];
+
+				return { fileRecordIds, fileRecords };
+			};
+
+			it('should call findMultipleById', async () => {
+				const { fileRecordIds } = setup();
+
+				await service.getFileRecords(fileRecordIds);
+
+				expect(fileRecordRepo.findMultipleById).toHaveBeenCalledWith(fileRecordIds);
+			});
+
+			it('should return the matched fileRecords', async () => {
+				const { fileRecordIds, fileRecords } = setup();
+
+				const [result, total] = await service.getFileRecords(fileRecordIds);
+
+				expect(result).toEqual(fileRecords);
+				expect(total).toEqual(2);
+			});
+		});
+
+		describe('WHEN repository throws an error', () => {
+			const setup = () => {
+				fileRecordRepo.findMultipleById.mockRejectedValueOnce(new Error('bla'));
+
+				const fileRecordId = new ObjectId().toHexString();
+
+				return { fileRecordId };
+			};
+
+			it('should pass the error', async () => {
+				const { fileRecordId } = setup();
+
+				await expect(service.getFileRecords([fileRecordId])).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
 	describe('getFileRecordBySecurityCheckRequestToken is called', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
