@@ -111,7 +111,7 @@ describe('AuthorizationService', () => {
 				const user = userFactory.buildWithId();
 				const testRule = new TestRule(false);
 
-				ruleManager.selectRule.mockReturnValueOnce(testRule);
+				ruleManager.selectRule.mockReturnValueOnce([testRule]);
 
 				return { context, user };
 			};
@@ -131,7 +131,7 @@ describe('AuthorizationService', () => {
 				const user = userFactory.buildWithId();
 				const testRule = new TestRule(true);
 
-				ruleManager.selectRule.mockReturnValueOnce(testRule);
+				ruleManager.selectRule.mockReturnValueOnce([testRule]);
 
 				return { context, user };
 			};

@@ -10,11 +10,11 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 
-/**
- * Check this rule in BC-9295
- */
+// System Nutzer CAN_EXECUTE_INSTANCE_OPERATIONS, (SCHOOL_EDIT) | UPLOAD_DATA_POLICY_DOCUMENTS
+// System Nutzer möchte seine Rolle verändern -> api -> uc -> Rule
+// kein Nutzer darf jemals seine eigene Rolle verändern?
 @Injectable()
-export class SchoolRule implements Rule<School> {
+export class SchoolInstanceOperationRule implements Rule<School> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -28,43 +28,36 @@ export class SchoolRule implements Rule<School> {
 		return isApplicable;
 	}
 
-	public hasPermission(user: User, object: School, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, school: School, context: AuthorizationContext): boolean {
 		let hasPermission = false;
 
 		if (context.action === Action.read) {
-			hasPermission = this.hasReadAccess(user, object, context);
+			hasPermission = this.hasReadAccess(user, context);
 		}
 		if (context.action === Action.write) {
-			hasPermission = this.hasWriteAccess(user, object, context);
+			hasPermission = this.hasWriteAccess(user, context);
 		}
 
 		return hasPermission;
 	}
 
-	private hasReadAccess(user: User, object: School, context: AuthorizationContext): boolean {
-		const isUserSchool = this.isUserSchool(user, object);
+	private hasReadAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.SCHOOL_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		return hasPermission && isUserSchool;
+		return hasPermission;
 	}
 
-	private hasWriteAccess(user: User, object: School, context: AuthorizationContext): boolean {
-		const isUserSchool = this.isUserSchool(user, object);
+	private hasWriteAccess(user: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.SCHOOL_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		return hasPermission && isUserSchool;
-	}
-
-	private isUserSchool(user: User, object: School): boolean {
-		// better currentUser.isMemberOfSchool(object);
-		const isUserSchool = user.school.id === object.id;
-
-		return isUserSchool;
+		return hasPermission;
 	}
 }
