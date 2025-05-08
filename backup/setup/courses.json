@@ -700,5 +700,73 @@
 		"times": [],
 		"__v": 0,
 		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681a1e5c5640b0702d7e25af"
+		},
+		"name": "KI_CC_Test_Kurs",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"userIds": [
+			{
+				"$oid": "0000d224816abba584714c9c"
+			}
+		],
+		"classIds": [],
+		"groupIds": [],
+		"teacherIds": [
+			{
+				"$oid": "0000d231816abba584714c9e"
+			}
+		],
+		"substitutionIds": [],
+		"color": "#0091EA",
+		"startDate": {
+			"$date": "2024-07-31T22:00:00Z"
+		},
+		"untilDate": {
+			"$date": "2031-07-30T22:00:00Z"
+		},
+		"isCopyFrom": null,
+		"features": [],
+		"excludeFromSync": [],
+		"createdAt": {
+			"$date": "2025-05-06T14:36:12.025Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-06T14:36:12.025Z"
+		},
+		"times": [],
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:19.846Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:59:33.179Z"
+		},
+		"name": "🤖💻 Chancen und Risiken von KI im Schulkontext",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"color": "#304FFE",
+		"userIds": [],
+		"teacherIds": [
+			{
+				"$oid": "0000d231816abba584714c9e"
+			}
+		],
+		"substitutionIds": [],
+		"classIds": [],
+		"groupIds": [],
+		"description": "",
+		"features": [],
+		"times": []
 	}
 ]
