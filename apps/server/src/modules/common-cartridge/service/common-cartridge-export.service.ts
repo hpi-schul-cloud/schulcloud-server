@@ -28,7 +28,6 @@ import {
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
-import { forEach } from 'lodash';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -207,9 +206,7 @@ export class CommonCartridgeExportService {
 		// if yes, download them with their files Metadata (call is in the following function)
 		// if no, just add the card to the organization
 		const fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[] = [];
-		await Promise.all(
-			forEach(card.elements, (element) => this.downloadAndStoreFiles(element, fileMetadataBufferArray))
-		);
+		await Promise.all(card.elements.map((element) => this.downloadAndStoreFiles(element, fileMetadataBufferArray)));
 		await Promise.all(
 			card.elements.map((element) =>
 				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
