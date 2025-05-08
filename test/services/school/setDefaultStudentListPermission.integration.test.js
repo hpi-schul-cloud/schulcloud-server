@@ -10,10 +10,8 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 		let server;
 		let app;
 		let nestServices;
-		let configBefore;
 
 		before(async () => {
-			configBefore = Configuration.toObject({});
 			app = await appPromise();
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'true');
 			server = await app.listen(0);
@@ -21,7 +19,6 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 		});
 
 		after(async () => {
-			Configuration.reset(configBefore);
 			await server.close();
 			await closeNestServices(nestServices);
 		});
@@ -48,10 +45,8 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 		let server;
 		let app;
 		let nestServices;
-		let configBefore;
 
 		before(async () => {
-			configBefore = Configuration.toObject({});
 			app = await appPromise();
 			nestServices = await setupNestServices(app);
 			Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', 'false');
@@ -59,7 +54,6 @@ describe('school student list permission scenarios for TEACHER_STUDENT_VISIBILIT
 		});
 
 		after(async () => {
-			Configuration.reset(configBefore);
 			await server.close();
 		});
 
