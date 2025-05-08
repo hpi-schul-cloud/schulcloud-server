@@ -1,35 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager, MikroORM } from '@mikro-orm/core';
 
+import { ModuleName, SagaService, StepOperationReport, StepOperationType, StepReport } from '@modules/saga';
 import { DeletionRequest } from '../do';
-import { DeletionRequestService, DeletionLogService, UserDeletionInjectionService } from './';
-import { SagaService } from '@modules/saga';
-
-/*
-	'account',
-	'board',
-	'class',
-	'courseGroup',
-	'course',
-	'dashboard',
-	'file',
-	'fileRecords',
-	'lessons',
-	'news',
-	'pseudonyms',
-	'rocketChatUser',
-	'submissions',
-	'task',
-	'teams',
-	'user',
- */
+import { DomainDeletionReport, DomainOperationReport } from '../interface';
+import { DomainName, OperationType } from '../types';
+import { DeletionLogEntry, DeletionLogService, DeletionRequestService } from './';
 
 @Injectable()
 export class DeletionExecutionService {
 	constructor(
-		private readonly orm: MikroORM,
-		private readonly em: EntityManager,
-		private readonly userDeletionInjectionService: UserDeletionInjectionService,
 		private readonly sagaService: SagaService,
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService
@@ -42,14 +21,80 @@ export class DeletionExecutionService {
 			const reports = await this.sagaService.executeSaga('userDeletion', {
 				userId: deletionRequest.targetRefId,
 			});
-			for (const report of reports) {
-				// TODO refactor deletion log to be compatible with saga
-				console.log('report', report);
-				// await this.deletionLogService.createDeletionLog(deletionRequest.id, report);
-			}
+
+			const logEntries = reports.map((report) => {
+				const entry: DeletionLogEntry = {
+					deletionRequestId: deletionRequest.id,
+					domainDeletionReport: this.mapToDomainDeletionReport(report),
+				};
+				return entry;
+			});
+
+			await this.deletionLogService.createDeletionLog(logEntries);
+
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
+	}
+
+	public mapToDomainDeletionReport(report: StepReport): DomainDeletionReport {
+		const domainDeletionReport: DomainDeletionReport = {
+			domain: this.mapToDomainName(report.moduleName),
+			operations: report.operations.map((stepReport) => this.mapToDomainOperationReport(stepReport)),
+		};
+
+		return domainDeletionReport;
+	}
+
+	private mapToDomainName(moduleName: ModuleName): DomainName {
+		const mapping: Record<ModuleName, DomainName> = {
+			[ModuleName.ACCOUNT]: DomainName.ACCOUNT,
+			[ModuleName.BOARD]: DomainName.BOARD,
+			[ModuleName.CLASS]: DomainName.CLASS,
+			[ModuleName.COURSE]: DomainName.COURSE,
+			[ModuleName.COURSE_COURSEGROUP]: DomainName.COURSEGROUP,
+			[ModuleName.LEARNROOM_DASHBOARD]: DomainName.DASHBOARD,
+			[ModuleName.FILES]: DomainName.FILE,
+			[ModuleName.FILES_STORAGE]: DomainName.FILERECORDS,
+			[ModuleName.LESSON]: DomainName.LESSONS,
+			[ModuleName.PSEUDONYM]: DomainName.PSEUDONYMS,
+			[ModuleName.ROCKETCHATUSER]: DomainName.ROCKETCHATUSER,
+			[ModuleName.TASK]: DomainName.TASK,
+			[ModuleName.TASK_SUBMISSION]: DomainName.SUBMISSIONS,
+			[ModuleName.TEAM]: DomainName.TEAMS,
+			[ModuleName.USER]: DomainName.USER,
+			[ModuleName.USER_CALENDAR]: DomainName.CALENDAR,
+			[ModuleName.USER_REGISTRATIONPIN]: DomainName.REGISTRATIONPIN,
+			[ModuleName.NEWS]: DomainName.NEWS,
+		} as const;
+
+		if (mapping[moduleName]) {
+			return mapping[moduleName];
+		}
+
+		throw new Error(`Unknown module name: ${moduleName}`);
+	}
+
+	private mapToDomainOperationReport(report: StepOperationReport): DomainOperationReport {
+		const domainOperationReport: DomainOperationReport = {
+			count: report.count,
+			operation: this.mapToDomainOperationType(report.operation),
+			refs: report.refs,
+		};
+		return domainOperationReport;
+	}
+
+	public mapToDomainOperationType(operationType: StepOperationType): OperationType {
+		const mapping: Record<StepOperationType, OperationType> = {
+			[StepOperationType.UPDATE]: OperationType.UPDATE,
+			[StepOperationType.DELETE]: OperationType.DELETE,
+		} as const;
+
+		if (mapping[operationType]) {
+			return mapping[operationType];
+		}
+
+		throw new Error(`Unknown operation type: ${operationType}`);
 	}
 }
