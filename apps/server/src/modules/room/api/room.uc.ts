@@ -115,17 +115,11 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
-	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<void> {
+	public async duplicateRoom(userId: EntityId, roomId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 		this.checkFeatureRoomsDuplicationEnabled();
-		// nur admins und owners des Raums dürfen kopieren
-		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
-			Permission.ROOM_DUPLICATE,
-		]);
-		console.log('roomMembershipAuthorizable', roomMembershipAuthorizable);
-		// if (!this.hasAnyRole(roomMembershipAuthorizable, [RoleName.ROOMOWNER, RoleName.ROOMADMIN])) {
-		// 	// throw  ;
-		// }
+		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
+		//TODO Service is missing
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {

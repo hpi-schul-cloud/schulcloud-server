@@ -281,23 +281,22 @@ export class RoomController {
 		return Promise.resolve(response);
 	}
 
-	@Post(':roomId/copy')
+	@Post(':roomId/duplicate')
 	@ApiOperation({
 		summary: ' creates a copy of the given room. Can only be used if you are the owner or admin of the origin room',
 	})
-	@ApiResponse({ status: HttpStatus.OK, description: 'successfully copied', type: String })
+	@ApiResponse({ status: HttpStatus.OK, description: 'successfully duplicated', type: String })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	public async copyRoom(
+	public async duplicateRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomIdResponse> {
-		await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId);
+		await this.roomUc.duplicateRoom(currentUser.userId, urlParams.roomId);
+		//TODO replace response if service is implemented
 		return { id: currentUser.userId };
-		// const dto = CopyMapper.mapToResponse(copyStatus);
-		// return dto;
 	}
 }
