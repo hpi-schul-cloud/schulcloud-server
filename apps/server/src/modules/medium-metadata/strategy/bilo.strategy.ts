@@ -1,11 +1,18 @@
 import { BiloMediaClientAdapter, BiloMediaQueryDataResponse } from '@infra/bilo-client';
+import {
+	BiloBadRequestResponseLoggableException,
+	BiloMediaQueryUnprocessableResponseLoggableException,
+	BiloNotFoundResponseLoggableException,
+} from '@infra/bilo-client/loggable';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { Injectable } from '@nestjs/common';
 import { MediumMetadataDto } from '../dto';
 import {
-	MediumMetadataNotFoundLoggableException,
 	MediumMetadataStrategyNotImplementedLoggableException,
+	MediumNotFoundLoggableException,
+	MediumUnprocessableResponseLoggableException,
 } from '../loggable';
+import { MediumBadRequestLoggableException } from '../loggable/medium-bad-request-loggable.exception';
 import { MediumMetadataMapper } from '../mapper';
 import { MediumMetadataStrategy } from './interface';
 
@@ -18,19 +25,27 @@ export class BiloStrategy implements MediumMetadataStrategy {
 	}
 
 	public async getMediumMetadataItem(mediumId: string, mediaSource: MediaSource): Promise<MediumMetadataDto> {
-		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
-			[mediumId],
-			mediaSource,
-			true
-		);
+		try {
+			const metadataItem: BiloMediaQueryDataResponse = await this.biloMediaClientAdapter.fetchMediumMetadata(
+				mediumId,
+				mediaSource
+			);
 
-		if (!metadataItems.length) {
-			throw new MediumMetadataNotFoundLoggableException(mediumId, mediaSource.sourceId);
+			const mediumMetadataDto: MediumMetadataDto =
+				MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(metadataItem);
+
+			return mediumMetadataDto;
+		} catch (error) {
+			if (error instanceof BiloNotFoundResponseLoggableException) {
+				throw new MediumNotFoundLoggableException(mediumId, mediaSource.sourceId);
+			} else if (error instanceof BiloBadRequestResponseLoggableException) {
+				throw new MediumBadRequestLoggableException(mediumId, mediaSource.sourceId);
+			} else if (error instanceof BiloMediaQueryUnprocessableResponseLoggableException) {
+				throw new MediumUnprocessableResponseLoggableException(mediumId, mediaSource.sourceId);
+			} else {
+				throw error;
+			}
 		}
-
-		const mediumMetadataDto: MediumMetadataDto = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(metadataItems[0]);
-
-		return mediumMetadataDto;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars,require-await,@typescript-eslint/require-await

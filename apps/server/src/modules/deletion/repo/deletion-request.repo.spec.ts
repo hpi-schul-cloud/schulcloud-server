@@ -286,55 +286,6 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
-	describe('findInProgressCount', () => {
-		const setup = async () => {
-			const newerThan = new Date(2023, 8, 1);
-
-			const deletionRequestEntity1: DeletionRequestEntity = deletionRequestEntityFactory.build({
-				createdAt: new Date(2023, 7, 1),
-				updatedAt: new Date(2023, 8, 2),
-				deleteAfter: new Date(2023, 8, 1),
-				status: StatusModel.PENDING,
-			});
-			const deletionRequestEntity2: DeletionRequestEntity = deletionRequestEntityFactory.build({
-				createdAt: new Date(2023, 7, 1),
-				updatedAt: new Date(2023, 8, 2),
-				deleteAfter: new Date(2023, 8, 1),
-				status: StatusModel.FAILED,
-			});
-			const deletionRequestEntity3: DeletionRequestEntity = deletionRequestEntityFactory.build({
-				createdAt: new Date(2023, 8, 1),
-				updatedAt: new Date(2023, 7, 1),
-				deleteAfter: new Date(2023, 9, 1),
-				status: StatusModel.FAILED,
-			});
-			const deletionRequestEntity4: DeletionRequestEntity = deletionRequestEntityFactory.build({
-				createdAt: new Date(2023, 8, 1),
-				updatedAt: new Date(2023, 8, 1),
-				deleteAfter: new Date(2023, 9, 1),
-				status: StatusModel.REGISTERED,
-			});
-
-			await em.persistAndFlush([
-				deletionRequestEntity1,
-				deletionRequestEntity2,
-				deletionRequestEntity3,
-				deletionRequestEntity4,
-			]);
-			em.clear();
-
-			return { newerThan };
-		};
-
-		it('should return the count of deletionRequests with status pending or failed', async () => {
-			const { newerThan } = await setup();
-
-			const result = await repo.findInProgressCount(newerThan);
-
-			expect(result).toBe(2);
-		});
-	});
-
 	describe('update', () => {
 		describe('when updating deletionRequest', () => {
 			const setup = async () => {

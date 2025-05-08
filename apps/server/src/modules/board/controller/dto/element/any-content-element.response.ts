@@ -4,6 +4,7 @@ import type { DrawingElementResponse } from './drawing-element.response';
 import type { ExternalToolElementResponse } from './external-tool-element.response';
 import { FileElementResponse } from './file-element.response';
 import type { FileFolderElementResponse } from './file-folder-element.response';
+import type { H5pElementResponse } from './h5p-element.response';
 import type { LinkElementResponse } from './link-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
 import type { SubmissionContainerElementResponse } from './submission-container-element.response';
@@ -19,7 +20,8 @@ export type AnyContentElementResponse =
 	| CollaborativeTextEditorElementResponse
 	| DeletedElementResponse
 	| VideoConferenceElementResponse
-	| FileFolderElementResponse;
+	| FileFolderElementResponse
+	| H5pElementResponse;
 
 export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
 	element instanceof FileElementResponse;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
@@ -46,6 +46,12 @@ export class DeletionRequestService {
 		return deletionRequest;
 	}
 
+	public async findByIds(deletionRequestIds: EntityId[]): Promise<(DeletionRequest | null)[]> {
+		const deletionRequests = await this.deletionRequestRepo.findByIds(deletionRequestIds);
+
+		return deletionRequests;
+	}
+
 	public async findAllItemsToExecute(limit: number, getFailed = false): Promise<DeletionRequest[]> {
 		const newerThan = new Date(Date.now() - this.thresholdNewer);
 		const olderThan = new Date(Date.now() - this.thresholdOlder);
@@ -54,12 +60,6 @@ export class DeletionRequestService {
 			: await this.deletionRequestRepo.findAllItems(limit);
 
 		return deletionRequests;
-	}
-
-	public async findInProgressCount(): Promise<number> {
-		const newerThan = new Date(Date.now() - this.thresholdOlder);
-		const count = await this.deletionRequestRepo.findInProgressCount(newerThan);
-		return count;
 	}
 
 	public async findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {

@@ -289,67 +289,6 @@ data:
 
     # ========== End of the Bettermarks tool configuration section.
 
-    # ========== Start of the Nextcloud configuration section.
-
-    # This configures nextcloud in superhero dashboard as oauth2 tool and also in hydra
-    if [ -n "$NEXTCLOUD_CLIENT_SECRET" ] && [ -n "$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME" ]; then
-         # Add Nextcloud client in hydra
-         echo "POSTing nextcloud to hydra..."
-         curl --retry 10 --retry-all-errors --retry-delay 10 \
-               -H 'X-Forwarded-Proto: https' \
-               -X POST $HYDRA_URI/clients \
-               -d '{
-                     "client_name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-                     "client_id": "'$NEXTCLOUD_CLIENT_ID'",
-                     "client_secret": "'$NEXTCLOUD_CLIENT_SECRET'",
-                     "scope": "'"$NEXTCLOUD_SCOPES"'",
-                     "token_endpoint_auth_method": "client_secret_post",
-                     "grant_types": ["authorization_code", "refresh_token"],
-                     "response_types": ["code", "token", "id_token"],
-                     "redirect_uris": [
-                       "'$NEXTCLOUD_BASE_URL'apps/user_oidc/code",
-                       "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
-                     ],
-                     "client_uri": "'$NEXTCLOUD_BASE_URL'",
-                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout",
-                     "subject_type": "pairwise"
-                   }'
-         echo "POSTed nextcloud to hydra."
-
-         # Add Nextcloud' tools configuration as an external tool
-         # (stored in the 'external-tools' collection) that uses OAuth.
-         echo "Inserting nextcloud to external-tools..."
-         mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
-             {
-               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-               "config_type": "oauth2"
-             },
-             { $setOnInsert: {
-               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
-               "url": "'$NEXTCLOUD_BASE_URL'",
-               "logoUrl": "",
-               "config_type": "oauth2",
-               "config_baseUrl": "'$NEXTCLOUD_BASE_URL'",
-               "config_clientId": "'$NEXTCLOUD_CLIENT_ID'",
-               "config_skipConsent": true,
-               "parameters": [],
-               "isHidden": true,
-               "openNewTab": true,
-               "createdAt": new Date(),
-               "updatedAt": new Date(),
-               "version": 1
-             } },
-             {
-               "upsert": true
-             }
-         );'
-         echo "Inserted nextcloud to external-tools."
-
-         echo "Nextcloud config data init performed successfully."
-    fi
-
-    # ========== End of the Nextcloud configuration section.
-
     # ========== Start of the CTL seed data configuration section.
     echo "Inserting ctl seed data secrets to external-tools..."
 

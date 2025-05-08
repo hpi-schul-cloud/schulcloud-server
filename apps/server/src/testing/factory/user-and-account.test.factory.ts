@@ -89,4 +89,33 @@ export class UserAndAccountTestFactory {
 
 		return { superheroAccount: account, superheroUser: user };
 	}
+
+	public static buildByRole(
+		roleName: 'administrator' | 'teacher' | 'student',
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { account: AccountEntity; user: User } {
+		const user = UserAndAccountTestFactory.buildUser(roleName, params, additionalPermissions);
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+		return { account, user };
+	}
+
+	private static buildUser(
+		roleName: 'administrator' | 'teacher' | 'student',
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): User {
+		switch (roleName) {
+			case 'administrator':
+				return userFactory.asAdmin(additionalPermissions).buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'teacher':
+				return userFactory
+					.asTeacher(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'student':
+				return userFactory
+					.asStudent(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		}
+	}
 }

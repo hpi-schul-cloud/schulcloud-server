@@ -69,15 +69,6 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	public async findInProgressCount(newerThan: Date): Promise<number> {
-		const scope = new DeletionRequestScope();
-		scope.byStatusAndDate([StatusModel.PENDING, StatusModel.FAILED], undefined, newerThan);
-
-		const count = await this.em.count(DeletionRequestEntity, scope.query);
-
-		return count;
-	}
-
 	public async update(deletionRequest: DeletionRequest): Promise<void> {
 		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
 		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);

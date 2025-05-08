@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -10,29 +8,21 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseGroupEntity, CourseGroupRepo } from '../../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class CourseGroupService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class CourseGroupService implements DeletionService {
 	constructor(
 		private readonly repo: CourseGroupRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(CourseGroupService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async findAllCourseGroupsByUserId(userId: EntityId): Promise<Counted<CourseGroupEntity[]>> {
