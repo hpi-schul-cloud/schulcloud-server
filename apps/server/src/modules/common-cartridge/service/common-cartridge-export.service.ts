@@ -203,7 +203,6 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
-
 		const fileMetadataBufferArray = await Promise.all(
 			card.elements.map((element) => this.downloadAndStoreFiles(element))
 		).then((array) => array.flat());
