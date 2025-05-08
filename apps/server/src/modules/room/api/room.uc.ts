@@ -322,8 +322,4 @@ export class RoomUc {
 
 		return permissions;
 	}
-
-	private hasAnyRole(context: OwnershipContext, roles: RoleName[]): boolean {
-		return context.targetUser.roles.some((role) => roles.includes(role.name));
-	}
 }
