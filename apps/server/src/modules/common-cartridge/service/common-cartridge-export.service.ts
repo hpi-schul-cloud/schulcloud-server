@@ -217,19 +217,17 @@ export class CommonCartridgeExportService {
 	): Promise<void> {
 		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
-			await Promise.all(
-				filesMetadata.map(async (fileMetadata) => {
-					const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
-					if (file) {
-						fileMetadataBufferArray.push({
-							id: element.id,
-							name: fileMetadata.name,
-							fileBuffer: file,
-							fileDto: fileMetadata,
-						});
-					}
-				})
-			);
+			for (const fileMetadata of filesMetadata) {
+				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+				if (file) {
+					fileMetadataBufferArray.push({
+						id: element.id,
+						name: fileMetadata.name,
+						fileBuffer: file,
+						fileDto: fileMetadata,
+					});
+				}
+			}
 		}
 	}
 
