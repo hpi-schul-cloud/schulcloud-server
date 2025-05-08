@@ -249,7 +249,7 @@ export class CommonCartridgeExportService {
 				for (const fileMetadata of fileMetadataBufferArray) {
 					const { id, fileBuffer, fileDto } = fileMetadata;
 					if (fileBuffer && element.id === id) {
-						const resource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
+						const fileResource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
 
 						cardOrganization.addResource(resource);
 					}
