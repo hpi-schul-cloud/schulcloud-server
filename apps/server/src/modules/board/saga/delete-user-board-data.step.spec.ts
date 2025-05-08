@@ -10,7 +10,6 @@ import {
 } from '@modules/saga';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { UserDeletionInjectionService } from '../../deletion';
 import { BoardNodeEntity } from '../repo';
 import { BoardNodeService, MediaBoardService } from '../service';
 import { mediaBoardFactory } from '../testing';
@@ -44,12 +43,6 @@ describe(DeleteUserBoardDataStep.name, () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();

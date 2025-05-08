@@ -4,12 +4,10 @@ import { CalendarService } from '@infra/calendar';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleName, RoleService } from '@modules/role';

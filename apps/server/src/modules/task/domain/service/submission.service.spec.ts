@@ -2,7 +2,6 @@ import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { UserDeletionInjectionService } from '@modules/deletion';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
@@ -37,12 +36,6 @@ describe('Submission Service', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
