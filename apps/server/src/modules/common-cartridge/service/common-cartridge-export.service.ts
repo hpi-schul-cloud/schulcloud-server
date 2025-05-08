@@ -246,15 +246,14 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				fileMetadataBufferArray.map((fileMetadata) => {
+				for (const fileMetadata of fileMetadataBufferArray) {
 					const { id, fileBuffer, fileDto } = fileMetadata;
-
 					if (fileBuffer && element.id === id) {
 						const resource = this.mapper.mapFileToResource(fileDto, fileBuffer, element as FileElementResponseDto);
 
 						cardOrganization.addResource(resource);
 					}
-				});
+				}
 				break;
 		}
 	}
