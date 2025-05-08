@@ -28,6 +28,7 @@ import {
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+
 type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
 
 @Injectable()
