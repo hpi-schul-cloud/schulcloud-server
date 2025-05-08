@@ -1,23 +1,12 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { deletedElementFactory } from '../testing';
 import { DeletedElement } from './deleted-element.do';
-import { BoardNodeProps, ContentElementType } from './types';
+import { ContentElementType } from './types';
 
 describe(DeletedElement.name, () => {
 	let element: DeletedElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: new ObjectId().toHexString(),
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		element = new DeletedElement({
-			...boardNodeProps,
+		element = deletedElementFactory.build({
 			deletedElementType: ContentElementType.EXTERNAL_TOOL,
 			title: 'Old Tool',
 		});
@@ -48,7 +37,7 @@ describe(DeletedElement.name, () => {
 	});
 
 	it('should return description', () => {
-		expect(element.description).toEqual(undefined);
+		expect(element.description).toEqual('description');
 	});
 
 	it('should set description', () => {

@@ -138,37 +138,46 @@ describe('team repo', () => {
 		});
 	});
 
-	describe('updateTeams', () => {
-		it('should update teams without deleted user', async () => {
-			// Arrange
+	describe('removeUserReference', () => {
+		const setup = async () => {
 			const teamUser1: TeamUserEntity = teamUserFactory.buildWithId();
 			const teamUser2: TeamUserEntity = teamUserFactory.buildWithId();
-			const teamUser3: TeamUserEntity = teamUserFactory.buildWithId();
 			const team1 = teamFactory.withTeamUser([teamUser1, teamUser2]).buildWithId();
-			const team2 = teamFactory.withTeamUser([teamUser1, teamUser2, teamUser3]).buildWithId();
+			const team2 = teamFactory.withTeamUser([teamUser1, teamUser2]).buildWithId();
 			const team3 = teamFactory.withTeamUser([teamUser1]).buildWithId();
-			const team4 = teamFactory.withTeamUser([teamUser3]).buildWithId();
+			const team4 = teamFactory.withTeamUser([teamUser2]).buildWithId();
 
 			await em.persistAndFlush([team1, team2, team3, team4]);
 			em.clear();
 
-			// Arrange Team Array after teamUser1 deletion
-			team1.teamUsers = [teamUser2];
-			team2.teamUsers = [teamUser2, teamUser3];
-			team3.teamUsers = [];
-			const updatedArray: TeamEntity[] = [team1, team2, team3];
+			return { teamUser1, teamUser2, team1, team2, team3, team4 };
+		};
 
-			// Act
-			await repo.save(updatedArray);
+		it('should return number of updated teams', async () => {
+			const { teamUser1 } = await setup();
+
+			const result = await repo.removeUserReferences(teamUser1.user.id);
+
+			expect(result).toEqual(3);
+		});
+
+		it('should actually remove the user reference from the teams', async () => {
+			const { teamUser1 } = await setup();
+
+			await repo.removeUserReferences(teamUser1.user.id);
 
 			const result1 = await repo.findByUserId(teamUser1.user.id);
 			expect(result1).toHaveLength(0);
+		});
 
-			const result2 = await repo.findByUserId(teamUser2.user.id);
-			expect(result2).toHaveLength(2);
+		it('should not remove other users from same teams', async () => {
+			const { teamUser1, teamUser2, team1 } = await setup();
 
-			const result3 = await repo.findByUserId(teamUser3.user.id);
-			expect(result3).toHaveLength(2);
+			await repo.removeUserReferences(teamUser1.user.id);
+
+			const team = await repo.findById(team1.id, true);
+			expect(team.teamUsers.length).toEqual(1);
+			expect(team.teamUsers[0].userId.id).toEqual(teamUser2.user.id);
 		});
 	});
 });

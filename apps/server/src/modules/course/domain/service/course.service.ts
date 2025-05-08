@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -10,30 +8,22 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseEntity, CourseRepo } from '../../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class CourseService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class CourseService implements DeletionService {
 	constructor(
 		private readonly repo: CourseRepo,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(CourseService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public findById(courseId: EntityId): Promise<CourseEntity> {
@@ -61,11 +51,9 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 				StatusModel.PENDING
 			)
 		);
-		const [courses, count] = await this.repo.findAllByUserId(userId);
+		const [courses] = await this.repo.findAllByUserId(userId);
 
-		courses.forEach((course: CourseEntity) => course.removeUser(userId));
-
-		await this.repo.save(courses);
+		const count = await this.repo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.COURSE, [
 			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCoursesId(courses)),

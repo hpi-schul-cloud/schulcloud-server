@@ -1,12 +1,10 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderService,
 } from '@modules/authorization';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -15,33 +13,25 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Counted, EntityId } from '@shared/domain/types';
-import { ComponentProperties, LessonEntity, LessonRepo } from '../../repo';
+import { LessonEntity, LessonRepo } from '../../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class LessonService implements AuthorizationLoaderService, DeletionService, IEventHandler<UserDeletedEvent> {
+export class LessonService implements AuthorizationLoaderService, DeletionService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		injectionService: AuthorizationInjectionService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(LessonService.name);
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.Lesson, this);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
@@ -74,27 +64,12 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 			)
 		);
 		const lessons = await this.lessonRepo.findByUserId(userId);
+		const lessonIds = this.getLessonsId(lessons);
 
-		const updatedLessons = lessons.map((lesson: LessonEntity) => {
-			lesson.contents.map((c: ComponentProperties) => {
-				if (c.user?.toHexString() === userId) {
-					c.user = undefined;
-				}
-				return c;
-			});
-			return lesson;
-		});
-
-		await this.lessonRepo.save(updatedLessons);
-
-		const numberOfUpdatedLessons = updatedLessons.length;
+		const numberOfUpdatedLessons = await this.lessonRepo.removeUserReference(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
-			DomainOperationReportBuilder.build(
-				OperationType.UPDATE,
-				numberOfUpdatedLessons,
-				this.getLessonsId(updatedLessons)
-			),
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedLessons, lessonIds),
 		]);
 
 		this.logger.info(

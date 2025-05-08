@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import {
-	DataDeletedEvent,
 	DataDeletionDomainOperationLoggable,
 	DeletionService,
 	DomainDeletionReport,
@@ -11,31 +9,23 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	StatusModel,
-	UserDeletedEvent,
+	UserDeletionInjectionService,
 } from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Submission, SubmissionRepo } from '../../repo';
 
 @Injectable()
-@EventsHandler(UserDeletedEvent)
-export class SubmissionService implements DeletionService, IEventHandler<UserDeletedEvent> {
+export class SubmissionService implements DeletionService {
 	constructor(
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
-		private readonly eventBus: EventBus,
-		private readonly orm: MikroORM
+		userDeletionInjectionService: UserDeletionInjectionService
 	) {
 		this.logger.setContext(SubmissionService.name);
-	}
-
-	@UseRequestContext()
-	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
-		const dataDeleted = await this.deleteUserData(targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	async findById(submissionId: EntityId): Promise<Submission> {
@@ -115,27 +105,35 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 			)
 		);
 
-		let [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
+		const [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
 
-		if (submissionsCount > 0) {
-			submissionsEntities = submissionsEntities.filter((submission) => submission.isGroupSubmission());
-			submissionsCount = submissionsEntities.length;
+		if (submissionsCount <= 0) {
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'no references from Submissions found',
+					DomainName.SUBMISSIONS,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			const result = DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []);
+
+			return result;
 		}
 
-		if (submissionsCount > 0) {
-			submissionsEntities.forEach((submission) => {
-				submission.removeStudentById(userId);
-				submission.removeUserFromTeamMembers(userId);
-			});
-
-			await this.submissionRepo.save(submissionsEntities);
-		}
-
-		const result = DomainOperationReportBuilder.build(
-			OperationType.UPDATE,
-			submissionsCount,
-			this.getSubmissionsId(submissionsEntities)
+		const submissionsIds = this.getSubmissionsId(
+			submissionsEntities.filter((submission) => submission.isGroupSubmission())
 		);
+
+		const groupSubmissionsCount = submissionsIds.length;
+
+		await this.submissionRepo.removeUserReference(submissionsIds);
+		await this.submissionRepo.deleteUserFromGroupSubmissions(userId);
+
+		const result = DomainOperationReportBuilder.build(OperationType.UPDATE, groupSubmissionsCount, submissionsIds);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -143,7 +141,7 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 				DomainName.SUBMISSIONS,
 				userId,
 				StatusModel.FINISHED,
-				submissionsCount,
+				groupSubmissionsCount,
 				0
 			)
 		);

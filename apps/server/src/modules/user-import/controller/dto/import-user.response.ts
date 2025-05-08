@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { PaginationResponse } from '@shared/controller/dto';
 import { IsMongoId, IsString } from 'class-validator';
 import { UserMatchResponse } from './user-match.response';
@@ -19,7 +20,7 @@ export class ImportUserResponse {
 
 	@IsMongoId()
 	@ApiProperty({
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		description: 'id reference to a import user',
 	})
 	// no school, system

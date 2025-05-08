@@ -40,6 +40,12 @@
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -83,6 +89,12 @@
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -134,6 +146,12 @@
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -146,7 +164,7 @@
 		"updatedAt": {
 			"$date": "2023-10-17T12:15:26.461Z"
 		},
-		"name": "Cypress-Test-Group-Course-Sync",
+		"name": "Cypress-Test-Group-Course-Sync1",
 		"type": "other",
 		"users": [
 			{
@@ -185,57 +203,12 @@
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
-		}
-	},
-	{
-		"_id": {
-			"$oid": "66a0e6d782d5ff057ed0da48"
 		},
-		"createdAt": {
-			"$date": "2023-10-17T12:15:26.458Z"
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
 		},
-		"updatedAt": {
-			"$date": "2023-10-17T12:15:26.461Z"
-		},
-		"name": "Cypress-Test-Group-Course-Sync2",
-		"type": "course",
-		"users": [
-			{
-				"user": {
-					"$oid": "5fa2c71bb229544f2c6966d9"
-				},
-				"role": {
-					"$oid": "0000d186816abba584714c98"
-				}
-			},
-			{
-				"user": {
-					"$oid": "5fa2cccab229544f2c696917"
-				},
-				"role": {
-					"$oid": "0000d186816abba584714c99"
-				}
-			},
-			{
-				"user": {
-					"$oid": "5fa2c77eb229544f2c696725"
-				},
-				"role": {
-					"$oid": "67404edd76a89449722a7fb1"
-				}
-			}
-		],
-		"organization": {
-			"$oid": "5fa2c5ccb229544f2c69666c"
-		},
-		"externalSource": {
-			"externalId": "fd84869b-56e8-41d2-a3dd-6c7239068ed5",
-			"system": {
-				"$oid": "0000d186816abba584714c93"
-			},
-			"lastSyncedAt": {
-				"$date": "2024-07-24T12:03:08.936Z"
-			}
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -271,6 +244,12 @@
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	},
 	{
@@ -314,6 +293,12 @@
 			"lastSyncedAt": {
 				"$date": "2024-07-24T12:03:08.936Z"
 			}
+		},
+		"validPeriod_from": {
+			"$date": "2023-08-01T00:00:00.000Z"
+		},
+		"validPeriod_until": {
+			"$date": "2026-07-31T00:00:00.000Z"
 		}
 	}
 ]

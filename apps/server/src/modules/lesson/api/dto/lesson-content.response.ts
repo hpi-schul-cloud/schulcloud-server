@@ -1,4 +1,5 @@
 import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
+import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { EntityId } from '@shared/domain/types';
 import {
 	ComponentEtherpadProperties,
@@ -77,14 +78,14 @@ export class LessonContentResponse {
 
 	@ApiProperty({
 		description: 'The id of the Material entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 		deprecated: true,
 	})
 	public _id?: EntityId;
 
 	@ApiProperty({
 		description: 'The id of the Material entity',
-		pattern: '[a-f0-9]{24}',
+		pattern: bsonStringPattern,
 	})
 	public id?: EntityId;
 

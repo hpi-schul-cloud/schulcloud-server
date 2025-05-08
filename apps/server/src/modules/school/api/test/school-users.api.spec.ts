@@ -34,6 +34,8 @@ describe('School Controller (API)', () => {
 		await cleanupCollections(em);
 		await em.clearCache('roles-cache-byname-teacher');
 		await em.clearCache('roles-cache-bynames-teacher');
+		await em.clearCache('roles-cache-byname-student');
+		await em.clearCache('roles-cache-bynames-student');
 	});
 
 	afterAll(async () => {
@@ -211,6 +213,159 @@ describe('School Controller (API)', () => {
 						}),
 					])
 				);
+			});
+		});
+	});
+
+	describe('get Students', () => {
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const response = await testApiClient.get(`${someId}/students`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when schoolId is invalid format', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return 400', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get(`/123/students`);
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
+			});
+		});
+
+		describe('when schoolId doesnt exist', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				await em.persistAndFlush([teacherAccount, teacherUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return 404', async () => {
+				const { loggedInClient } = await setup();
+				const someId = new ObjectId().toHexString();
+
+				const response = await loggedInClient.get(`/${someId}/students`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when user has no permission to view students', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const studentRole = studentUser.roles[0];
+				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
+
+				await em.persistAndFlush([studentAccount, studentUser, ...studentsOfSchool]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient, school };
+			};
+
+			it('should return 403', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response = await loggedInClient.get(`${school.id}/students`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user has correct permission to view students but is not in the correct school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				const otherSchool = schoolEntityFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: otherSchool });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const studentRole = studentUser.roles[0];
+				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
+
+				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, ...studentsOfSchool]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, school };
+			};
+
+			it('should not return any users', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response = await loggedInClient.get(`${school.id}/students`);
+				const body = response.body as SchoolUserListResponse;
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(body.data.length).toEqual(0);
+			});
+		});
+
+		describe('when user has permission to view students and is in the correct school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				const otherSchool = schoolEntityFactory.build();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school: otherSchool });
+				const studentRole = studentUser.roles[0];
+				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
+
+				await em.persistAndFlush([studentUser, studentAccount, teacherAccount, teacherUser, ...studentsOfSchool]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, studentsOfSchool, school };
+			};
+
+			it('should return 200 with students from own school', async () => {
+				const { loggedInClient, studentsOfSchool, school } = await setup();
+
+				const response = await loggedInClient.get(`${school.id}/students`);
+
+				const body = response.body as SchoolUserListResponse;
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(body.data).toEqual(
+					expect.arrayContaining([
+						...studentsOfSchool.map((student) => {
+							return {
+								id: student.id,
+								firstName: student.firstName,
+								lastName: student.lastName,
+								schoolName: school.name,
+							};
+						}),
+					])
+				);
+				expect(body.data.length).toEqual(studentsOfSchool.length);
 			});
 		});
 	});

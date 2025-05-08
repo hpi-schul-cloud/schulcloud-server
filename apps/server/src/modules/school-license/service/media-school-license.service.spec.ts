@@ -1,5 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
@@ -11,7 +12,7 @@ import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
 import { MEDIA_SCHOOL_LICENSE_REPO, MediaSchoolLicenseRepo } from '../repo';
-import { mediaSchoolLicenseFactory, vidisOfferFactory } from '../testing';
+import { mediaSchoolLicenseFactory } from '../testing';
 import { MediaSchoolLicenseFetchService } from './media-school-license-fetch.service';
 import { MediaSchoolLicenseService } from './media-school-license.service';
 
@@ -298,7 +299,7 @@ describe(MediaSchoolLicenseService.name, () => {
 				const schoolId = new ObjectId().toHexString();
 				const school = schoolFactory.build({ id: schoolId, officialSchoolNumber: '00100' });
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				const offersFromMediaSource = vidisOfferFactory.buildList(3);
+				const offersFromMediaSource = vidisOfferItemFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
@@ -327,7 +328,7 @@ describe(MediaSchoolLicenseService.name, () => {
 				const schoolId = new ObjectId().toHexString();
 				const school = schoolFactory.build({ id: schoolId, officialSchoolNumber: '00100' });
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				const offersFromMediaSource = vidisOfferFactory.buildList(3);
+				const offersFromMediaSource = vidisOfferItemFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
@@ -404,7 +405,7 @@ describe(MediaSchoolLicenseService.name, () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				const offersFromMediaSource = vidisOfferFactory.buildList(3);
+				const offersFromMediaSource = vidisOfferItemFactory.buildList(3);
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);
@@ -432,7 +433,7 @@ describe(MediaSchoolLicenseService.name, () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				const offersFromMediaSource = vidisOfferFactory.buildList(5, { offerId: 12345 });
+				const offersFromMediaSource = vidisOfferItemFactory.buildList(5, { offerId: 12345 });
 				const mediaSchoolLicenses = mediaSchoolLicenseFactory.buildList(5, {
 					type: SchoolLicenseType.MEDIA_LICENSE,
 					mediaSource,
@@ -485,7 +486,7 @@ describe(MediaSchoolLicenseService.name, () => {
 			const setup = () => {
 				const school = schoolFactory.build({ officialSchoolNumber: '00100' });
 				const mediaSource = mediaSourceFactory.withVidis().build();
-				const offersFromMediaSource = vidisOfferFactory.buildList(3, { offerId: undefined });
+				const offersFromMediaSource = vidisOfferItemFactory.buildList(3, { offerId: undefined });
 
 				schoolService.getSchoolById.mockResolvedValue(school);
 				mediaSourceService.findByFormat.mockResolvedValue(mediaSource);

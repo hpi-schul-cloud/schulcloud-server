@@ -1,22 +1,11 @@
+import { videoConferenceElementFactory } from '../testing';
 import { VideoConferenceElement, isVideoConferenceElement } from './video-conference-element.do';
-import { BoardNodeProps } from './types/board-node-props';
 
 describe('VideoConferenceElement', () => {
 	let videoConferenceElement: VideoConferenceElement;
 
-	const boardNodeProps: BoardNodeProps = {
-		id: '1',
-		path: '',
-		level: 1,
-		position: 1,
-		children: [],
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	};
-
 	beforeEach(() => {
-		videoConferenceElement = new VideoConferenceElement({
-			...boardNodeProps,
+		videoConferenceElement = videoConferenceElementFactory.build({
 			title: 'Example',
 		});
 	});

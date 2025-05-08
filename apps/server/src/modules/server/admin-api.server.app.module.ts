@@ -6,17 +6,35 @@ import { AuthGuardModule, AuthGuardOptions } from '@infra/auth-guard';
 import { EtherpadClientModule } from '@infra/etherpad-client';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
-import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
-import { AdminApiRegistrationPinModule } from '@modules/registration-pin/admin-api-registration-pin.module';
-import { ToolAdminApiModule } from '@modules/tool/tool-admin-api.module';
-import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CqrsModule } from '@nestjs/cqrs';
 import { createConfigModuleOptions } from '@shared/common/config-module-options';
 import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+
+import { AdminApiRegistrationPinModule } from '@modules/registration-pin/admin-api-registration-pin.module';
+import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
+import { ToolAdminApiModule } from '@modules/tool/tool-admin-api.module';
+import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
+
+// needed for deletion module
+import { AccountApiModule } from '@modules/account/account-api.module';
+import { BoardApiModule } from '@modules/board/board-api.module';
+import { ClassModule } from '@modules/class';
+import { CourseApiModule } from '@modules/course/course-api.module';
+import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
+import { FilesModule } from '@modules/files';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
+import { NewsModule } from '@modules/news';
+import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
+import { RocketChatModule } from '@modules/rocketchat';
+import { RocketChatUserModule } from '@modules/rocketchat-user';
+import { TaskApiModule } from '@modules/task/task-api.module';
+import { TeamApiModule } from '@modules/team/team-api.module';
+import { UserApiModule } from '@modules/user/user-api.module';
+
 import { adminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
 
@@ -33,6 +51,20 @@ const serverModules = [
 		basePath: Configuration.has('ETHERPAD__URI') ? (Configuration.get('ETHERPAD__URI') as string) : undefined,
 	}),
 	AuthGuardModule.register([AuthGuardOptions.X_API_KEY]),
+	AccountApiModule,
+	BoardApiModule,
+	ClassModule,
+	CourseApiModule,
+	FilesModule,
+	FilesStorageClientModule,
+	LearnroomApiModule,
+	NewsModule,
+	PseudonymApiModule,
+	RocketChatModule,
+	RocketChatUserModule,
+	TaskApiModule,
+	TeamApiModule,
+	UserApiModule,
 ];
 
 @Module({

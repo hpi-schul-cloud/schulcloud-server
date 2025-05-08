@@ -1,6 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';
@@ -9,7 +10,6 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { StorageLocation } from '@modules/files-storage/interface';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';

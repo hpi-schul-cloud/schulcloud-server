@@ -8,6 +8,7 @@ import {
 	ManyToMany,
 	ManyToOne,
 	Property,
+	Unique,
 	wrap,
 } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
@@ -19,7 +20,6 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ConsentEntity } from './consent.entity';
 import { UserParentsEntity } from './user-parents.entity';
-import { UserSourceOptionsEntity } from './user-source-options-entity';
 
 export interface UserProperties {
 	email: string;
@@ -45,7 +45,6 @@ export interface UserProperties {
 	lastSyncedAt?: Date;
 	consent?: ConsentEntity;
 	source?: string;
-	sourceOptions?: UserSourceOptionsEntity;
 }
 
 interface UserInfo {
@@ -74,6 +73,11 @@ export class UserSchoolEmbeddable {
 @Entity({ tableName: 'users' })
 @Index({ properties: ['id', 'email'] })
 @Index({ properties: ['firstName', 'lastName'] })
+@Unique({
+	properties: ['externalId', 'source'],
+	options: { partialFilterExpression: { source: { $exists: true } } },
+	// TODO: LDAP, Moin.Schule and BRB-IDM have to set source as well.
+})
 @Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
@@ -166,9 +170,6 @@ export class User extends BaseEntityWithTimestamps {
 	@Index()
 	source?: string;
 
-	@Embedded(() => UserSourceOptionsEntity, { object: true, nullable: true })
-	sourceOptions?: UserSourceOptionsEntity;
-
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -195,10 +196,6 @@ export class User extends BaseEntityWithTimestamps {
 		this.consent = props.consent;
 		if (props.source !== undefined) {
 			this.source = props.source;
-		}
-
-		if (props.sourceOptions !== undefined) {
-			this.sourceOptions = props.sourceOptions;
 		}
 	}
 
