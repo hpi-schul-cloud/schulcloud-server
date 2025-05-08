@@ -119,7 +119,10 @@ export class RoomUc {
 		this.checkFeatureEnabled();
 		this.checkFeatureRoomsDuplicationEnabled();
 		// nur admins und owners des Raums dürfen kopieren
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [
+			Permission.ROOM_DUPLICATE,
+		]);
+		console.log('roomMembershipAuthorizable', roomMembershipAuthorizable);
 		// if (!this.hasAnyRole(roomMembershipAuthorizable, [RoleName.ROOMOWNER, RoleName.ROOMADMIN])) {
 		// 	// throw  ;
 		// }
