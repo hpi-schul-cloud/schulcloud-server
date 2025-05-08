@@ -283,7 +283,7 @@ export class RoomController {
 	@ApiOperation({
 		summary: ' creates a copy of the given room. Can only be used if you are the owner or admin of the origin room',
 	})
-	@ApiResponse({ status: HttpStatus.OK, description: 'Removing successful', type: String })
+	@ApiResponse({ status: HttpStatus.OK, description: 'successfully copied', type: String })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -293,7 +293,7 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomItemResponse> {
-		const copyStatus = await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId);
+		await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId);
 		// const dto = CopyMapper.mapToResponse(copyStatus);
 		// return dto;
 	}

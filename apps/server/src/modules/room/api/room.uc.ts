@@ -93,7 +93,8 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write);
-		console.log('roomMembershipAuthorizable', roomMembershipAuthorizable.members[0].roles);
+		console.log('roomMembershipAuthorizable', roomMembershipAuthorizable);
+		console.log('roles of roomMembershipAuthorizable', roomMembershipAuthorizable.members[0].roles);
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		await this.roomService.updateRoom(room, props);
@@ -114,16 +115,14 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
-	async copyRoom(userId: EntityId, courseId: EntityId): Promise<void> {
+	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<void> {
 		this.checkFeatureEnabled();
 		this.checkFeatureRoomsDuplicationEnabled();
-		// TODO: nur admins und owners des Raums dürfen kopieren
-
-		// const user = await this.authorizationService.getUserWithPermissions(userId);
-		// const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
-		// await this.authorization.checkPermissionByReferences(userId, AuthorizableReferenceType.Course, courseId, context);
-		// const result = await this.courseCopyService.copyCourse({ userId, courseId });
-		// return result;
+		// nur admins und owners des Raums dürfen kopieren
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		// if (!this.hasAnyRole(roomMembershipAuthorizable, [RoleName.ROOMOWNER, RoleName.ROOMADMIN])) {
+		// 	// throw  ;
+		// }
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
@@ -326,12 +325,8 @@ export class RoomUc {
 
 		return permissions;
 	}
-	private getRoleNames(userId: EntityId, roomMembershipAuthorizable: RoomMembershipAuthorizable): RoleName[] {
-		const roleNames = roomMembershipAuthorizable.members
-			.filter((member) => member.userId === userId)
-			.flatMap((member) => member.roles)
-			.map((role) => role.name);
 
-		return roleNames;
+	private hasAnyRole(context: OwnershipContext, roles: RoleName[]): boolean {
+		return context.targetUser.roles.some((role) => roles.includes(role.name));
 	}
 }
