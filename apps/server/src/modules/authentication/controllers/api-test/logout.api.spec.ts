@@ -6,7 +6,6 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemEntityFactory, systemOauthConfigEntityFactory, systemOauthConfigFactory } from '@modules/system/testing';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -16,7 +15,6 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Cache } from 'cache-manager';
 import { Request } from 'express';
 import { Response } from 'supertest';
 
@@ -38,7 +36,6 @@ describe('Logout Controller (api)', () => {
 
 	let app: INestApplication;
 	let em: EntityManager;
-	let cacheManager: Cache;
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
 
@@ -54,7 +51,6 @@ describe('Logout Controller (api)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		cacheManager = app.get(CACHE_MANAGER);
 		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
@@ -79,12 +75,11 @@ describe('Logout Controller (api)', () => {
 			};
 
 			it('should log out the user', async () => {
-				const { loggedInClient, studentAccount } = await setup();
+				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.post('');
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(await cacheManager.store.keys(`jwt:${studentAccount.id}:*`)).toHaveLength(0);
 			});
 		});
 
@@ -129,12 +124,11 @@ describe('Logout Controller (api)', () => {
 			};
 
 			it('should log out the user', async () => {
-				const { logoutToken, studentAccount } = await setup();
+				const { logoutToken } = await setup();
 
 				const response: Response = await testApiClient.post('/oidc', { logout_token: logoutToken });
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(await cacheManager.store.keys(`jwt:${studentAccount.id}:*`)).toHaveLength(0);
 			});
 		});
 	});
@@ -159,7 +153,6 @@ describe('Logout Controller (api)', () => {
 			app = moduleFixture.createNestApplication();
 			await app.init();
 			em = app.get(EntityManager);
-			cacheManager = app.get(CACHE_MANAGER);
 			testApiClient = new TestApiClient(app, baseRouteName);
 			axiosMock = new MockAdapter(axios);
 		};

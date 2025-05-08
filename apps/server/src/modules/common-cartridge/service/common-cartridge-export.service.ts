@@ -6,7 +6,7 @@ import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/board
 import { CardClientAdapter } from '../common-cartridge-client/card-client';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
-import { CommonCartridgeExportMapper } from './common-cartridge.mapper';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';

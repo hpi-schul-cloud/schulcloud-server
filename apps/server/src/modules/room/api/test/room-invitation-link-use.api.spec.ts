@@ -18,6 +18,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
+import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
+import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
@@ -187,6 +189,19 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		describe('when the link is vaild', () => {
+			it('should return 201 and the roomId', async () => {
+				const { loggedInClient, roomInvitationLink } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);
+
+				const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+
+				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(response.body).toEqual({
+					id: roomInvitationLink.roomId,
+				});
+			});
+		});
+
 		describe('when the link is only for teachers', () => {
 			describe.each([
 				[UserRole.TEACHER, { isOnlyForTeachers: true }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
@@ -235,6 +250,28 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
+		describe('when the link is invalid', () => {
+			describe.each([[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.NOT_FOUND]])(
+				'when the user is a %s',
+				(roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+					const config = JSON.stringify(roomInvitationLinkConfig);
+					describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
+						it(`should return http status ${httpStatus}`, async () => {
+							const { loggedInClient } = await setup(roomInvitationLinkConfig, roleName, fromSameSchool);
+
+							const linkId = new ObjectId().toHexString();
+
+							const response = await loggedInClient.post(`/${linkId}`);
+							const body = response.body as RoomInvitationLinkError;
+
+							expect(response.status).toBe(httpStatus);
+							expect(body.details?.validationMessage).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
+						});
+					});
+				}
+			);
+		});
+
 		describe('when link requires confirmation', () => {
 			describe.each([
 				[UserRole.TEACHER, { requiresConfirmation: true }, UserSchool.SAME_SCHOOL, RoleName.ROOMAPPLICANT],
@@ -267,14 +304,16 @@ describe('Room Invitation Link Controller (API)', () => {
 		});
 
 		describe('when link activeUntil is set', () => {
+			const EXPIRED = { details: { validationMessage: RoomInvitationLinkValidationError.EXPIRED.toString() } };
+			const SUCCESS = { id: expect.any(String) };
 			const inTheFuture = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 			const inThePast = new Date(Date.now() - 1000 * 60 * 60 * 24 * 7);
 			describe.each([
-				[UserRole.TEACHER, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[UserRole.STUDENT, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
-				[UserRole.TEACHER, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[UserRole.STUDENT, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
+				[UserRole.TEACHER, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED, SUCCESS],
+				[UserRole.STUDENT, { activeUntil: inTheFuture }, UserSchool.SAME_SCHOOL, HttpStatus.CREATED, SUCCESS],
+				[UserRole.TEACHER, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST, EXPIRED],
+				[UserRole.STUDENT, { activeUntil: inThePast }, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST, EXPIRED],
+			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus, body) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {
 					it(`should return http status ${httpStatus}`, async () => {
@@ -287,6 +326,7 @@ describe('Room Invitation Link Controller (API)', () => {
 						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 
 						expect(response.status).toBe(httpStatus);
+						expect(response.body).toEqual(expect.objectContaining(body));
 					});
 				});
 			});
@@ -294,9 +334,9 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when user is already member', () => {
 			describe.each([
-				[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.BAD_REQUEST],
-				[UserRole.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.BAD_REQUEST],
+				[UserRole.TEACHER, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.STUDENT, {}, UserSchool.SAME_SCHOOL, HttpStatus.CREATED],
+				[UserRole.TEACHER, {}, UserSchool.OTHER_SCHOOL, HttpStatus.CREATED],
 			])('when the user is a %s', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
 				const config = JSON.stringify(roomInvitationLinkConfig);
 				describe(`when room config is '${config}' and user from '${fromSameSchool}'`, () => {

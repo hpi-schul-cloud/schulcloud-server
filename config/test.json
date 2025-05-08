@@ -83,5 +83,8 @@
 		"URI": "http://localhost:9001/api/1/",
 		"PAD_URI": "http://localhost:9001/p",
 		"API_KEY": "381d67e6347d235ac9446"
+	},
+	"SESSION_VALKEY": {
+		"MODE": "in-memory"
 	}
 }

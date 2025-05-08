@@ -10,10 +10,8 @@ import { install as sourceMapInstall } from 'source-map-support';
 // application imports
 import { LegacyLogger } from '@core/logger';
 import { FilesStorageApiModule } from '@modules/files-storage/files-storage-api.app.module';
-import { API_VERSION_PATH } from '@modules/files-storage/files-storage.const';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
-import { enableOpenApiDocs } from './helpers';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { enableOpenApiDocs, createRequestLoggerMiddleware } from './helpers';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -25,7 +23,8 @@ async function bootstrap(): Promise<void> {
 	const nestApp = await NestFactory.create(FilesStorageApiModule, nestExpressAdapter);
 
 	// WinstonLogger
-	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
+	const legacyLogger = await nestApp.resolve(LegacyLogger);
+	nestApp.useLogger(legacyLogger);
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
@@ -42,7 +41,7 @@ async function bootstrap(): Promise<void> {
 	const rootExpress = express();
 
 	const port = 4444;
-	const basePath = API_VERSION_PATH;
+	const basePath = '/api/v3';
 
 	// exposed alias mounts
 	rootExpress.use(basePath, nestExpress);

@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions, Server } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { Redis } from 'ioredis';
+import { IoAdapter } from '@nestjs/platform-socket.io';
+import { createAdapter } from '@socket.io/redis-adapter';
+import { Redis } from 'iovalkey';
+import { Server, ServerOptions } from 'socket.io';
 
 export class RedisIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
-	connectToRedis(): void {
-		const redisUri = Configuration.has('REDIS_URI') ? (Configuration.get('REDIS_URI') as string) : 'localhost:6379';
+	public connectToRedis(): void {
+		const redisUri = Configuration.has('SESSION_VALKEY__URI')
+			? (Configuration.get('SESSION_VALKEY__URI') as string)
+			: 'localhost:6379';
 		const pubClient = new Redis(redisUri);
 		const subClient = new Redis(redisUri);
 
@@ -27,7 +29,7 @@ export class RedisIoAdapter extends IoAdapter {
 		this.adapterConstructor = createAdapter(pubClient, subClient);
 	}
 
-	createIOServer(port: number, options?: ServerOptions): Server {
+	public createIOServer(port: number, options?: ServerOptions): Server {
 		this.connectToRedis();
 		// istanbul ignore next
 		if (!this.adapterConstructor) {
@@ -39,6 +41,7 @@ export class RedisIoAdapter extends IoAdapter {
 			throw new Error('Unable to create RedisServer');
 		}
 		server.adapter(this.adapterConstructor);
+
 		return server;
 	}
 }

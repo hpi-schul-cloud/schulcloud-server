@@ -80,7 +80,7 @@ describe(MediumMetadataService.name, () => {
 			const setup = () => {
 				const mediaSource = mediaSourceFactory.withBildungslogin().build();
 				const bilomedia = biloMediaQueryDataResponseFactory.build();
-				const mediaMetadata = MediumMetadataMapper.mapBiloMetadataToMediumMetadata(bilomedia);
+				const mediaMetadata = MediumMetadataMapper.mapBiloMediumMetadataToMediumMetadata(bilomedia);
 
 				mediaSourceService.findBySourceId.mockResolvedValue(mediaSource);
 				biloStrategy.getMediumMetadataItem.mockResolvedValue(mediaMetadata);
