@@ -28,6 +28,7 @@ import {
 	FileElementResponseDto,
 } from '../common-cartridge-client/card-client/dto';
 import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+type FileMetadataBuffer = { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -202,9 +203,10 @@ export class CommonCartridgeExportService {
 			title: card.title ?? '',
 			identifier: createIdentifier(card.id),
 		});
-		const fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[] = [];
+		const fileMetadataBufferArray = await Promise.all(
+			card.elements.map((element) => this.downloadAndStoreFiles(element))
+		).then((array) => array.flat());
 
-		await Promise.all(card.elements.map((element) => this.downloadAndStoreFiles(element, fileMetadataBufferArray)));
 		await Promise.all(
 			card.elements.map((element) =>
 				this.addCardElementToOrganization(element, cardOrganization, fileMetadataBufferArray)
@@ -212,10 +214,9 @@ export class CommonCartridgeExportService {
 		);
 	}
 
-	private async downloadAndStoreFiles(
-		element: CardResponseElementsInnerDto,
-		fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[]
-	): Promise<void> {
+	private async downloadAndStoreFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataBuffer[]> {
+		const fileMetadataBufferArray: FileMetadataBuffer[] = [];
+
 		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 
@@ -232,12 +233,13 @@ export class CommonCartridgeExportService {
 				}
 			}
 		}
+		return fileMetadataBufferArray;
 	}
 
 	private addCardElementToOrganization(
 		element: CardResponseElementsInnerDto,
 		cardOrganization: CommonCartridgeOrganizationNode,
-		fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[]
+		fileMetadataBufferArray: FileMetadataBuffer[]
 	): void {
 		switch (element.type) {
 			case ContentElementType.RICH_TEXT:
