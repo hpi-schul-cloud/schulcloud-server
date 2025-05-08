@@ -203,6 +203,7 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(card.id),
 		});
 		const fileMetadataBufferArray: { id: string; name: string; fileBuffer: Buffer; fileDto: FileDto }[] = [];
+
 		await Promise.all(card.elements.map((element) => this.downloadAndStoreFiles(element, fileMetadataBufferArray)));
 		await Promise.all(
 			card.elements.map((element) =>
@@ -217,8 +218,10 @@ export class CommonCartridgeExportService {
 	): Promise<void> {
 		if (element.type === ContentElementType.FILE) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+
 			for (const fileMetadata of filesMetadata) {
 				const file = await this.filesStorageClientAdapter.download(fileMetadata.id, fileMetadata.name);
+
 				if (file) {
 					fileMetadataBufferArray.push({
 						id: element.id,
