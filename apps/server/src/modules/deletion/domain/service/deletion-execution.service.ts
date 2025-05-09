@@ -85,7 +85,7 @@ export class DeletionExecutionService {
 		return domainOperationReport;
 	}
 
-	public mapToDomainOperationType(operationType: StepOperationType): OperationType {
+	private mapToDomainOperationType(operationType: StepOperationType): OperationType {
 		const mapping: Record<StepOperationType, OperationType> = {
 			[StepOperationType.UPDATE]: OperationType.UPDATE,
 			[StepOperationType.DELETE]: OperationType.DELETE,

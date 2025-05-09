@@ -152,5 +152,27 @@ describe(DeletionExecutionService.name, () => {
 				operations: [{ operation: 'delete', count: 1, refs: ['id1'] }],
 			});
 		});
+
+		it('should throw an error for an unknown module name', () => {
+			const invalidModuleName = 'UNKNOWN_MODULE' as ModuleName;
+			const report = {
+				moduleName: invalidModuleName,
+				operations: [{ operation: StepOperationType.DELETE, count: 1, refs: ['id1'] }],
+			};
+
+			expect(() => service.mapToDomainDeletionReport(report)).toThrowError(`Unknown module name: ${invalidModuleName}`);
+		});
+
+		it('should throw an error for unknonw operation type', () => {
+			const invalidOperationType = 'UNKNOWN_OPERATION' as StepOperationType;
+			const report = {
+				moduleName: ModuleName.ACCOUNT,
+				operations: [{ operation: invalidOperationType, count: 1, refs: ['id1'] }],
+			};
+
+			expect(() => service.mapToDomainDeletionReport(report)).toThrowError(
+				`Unknown operation type: ${invalidOperationType}`
+			);
+		});
 	});
 });
