@@ -66,7 +66,7 @@ describe('RegistrationPinService', () => {
 
 		it('should call registrationPinRepo.deleteRegistrationPinByEmail ', async () => {
 			const { registrationPin } = setup();
-			await service.findByEmail(registrationPin.email);
+			await service.deleteByEmail(registrationPin.email);
 			expect(registrationPinRepo.deleteRegistrationPinByEmail).toHaveBeenCalledWith(registrationPin.email);
 		});
 
