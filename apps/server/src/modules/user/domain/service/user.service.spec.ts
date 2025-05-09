@@ -1,15 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { CalendarService } from '@infra/calendar';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-} from '@modules/deletion';
-import { RegistrationPinService } from '@modules/registration-pin';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
@@ -37,8 +29,6 @@ describe('UserService', () => {
 	let userDoRepo: DeepMocked<UserDoRepo>;
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
-	let registrationPinService: DeepMocked<RegistrationPinService>;
-	let calendarService: DeepMocked<CalendarService>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -67,16 +57,8 @@ describe('UserService', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: RegistrationPinService,
-					useValue: createMock<RegistrationPinService>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: CalendarService,
-					useValue: createMock<CalendarService>(),
 				},
 			],
 		}).compile();
@@ -86,8 +68,6 @@ describe('UserService', () => {
 		userDoRepo = module.get(USER_DO_REPO);
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
-		registrationPinService = module.get(RegistrationPinService);
-		calendarService = module.get(CalendarService);
 	});
 
 	afterAll(async () => {
@@ -727,108 +707,6 @@ describe('UserService', () => {
 			await service.saveAll(users);
 
 			expect(userDoRepo.saveAll).toHaveBeenCalledWith(users);
-		});
-	});
-
-	describe('removeUserRegistrationPin', () => {
-		describe('when registrationPinService.deleteUserData return DomainDeletionReport', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const userId = user.id;
-				const userRegistrationPinId = new ObjectId().toHexString();
-
-				const results = [
-					DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
-					]),
-				];
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
-				]);
-
-				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
-				userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
-				registrationPinService.deleteUserData.mockResolvedValue(results[0]);
-
-				return {
-					expectedResult,
-					userId,
-					user,
-				};
-			};
-
-			it('should return domainOperation object with information about deleted registrationsPin', async () => {
-				const { userId, expectedResult } = setup();
-
-				const result = await service.removeUserRegistrationPin(userId);
-
-				expect(result).toEqual(expectedResult);
-			});
-		});
-
-		describe('when no emails for registrationPin found', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId({ email: undefined });
-				const userId = user.id;
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
-				]);
-
-				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
-				userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
-
-				return {
-					expectedResult,
-					userId,
-					user,
-				};
-			};
-
-			it('should return domainOperation object with proper information: count=0, and empty refs array', async () => {
-				const { userId, expectedResult } = setup();
-
-				const result = await service.removeUserRegistrationPin(userId);
-
-				expect(result).toEqual(expectedResult);
-			});
-		});
-	});
-
-	describe('removeCalendarEvents', () => {
-		describe('when calendarService.deleteUserData return DomainDeletionReport', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const userId = user.id;
-				const deletedEventId = new ObjectId().toHexString();
-
-				const results = [
-					DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [deletedEventId]),
-					]),
-				];
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.CALENDAR, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [deletedEventId]),
-				]);
-
-				calendarService.deleteUserData.mockResolvedValue(results[0]);
-
-				return {
-					expectedResult,
-					userId,
-					user,
-				};
-			};
-
-			it('should return domainOperation object with information about deleted calendarEvents', async () => {
-				const { userId, expectedResult } = setup();
-
-				const result = await service.removeCalendarEvents(userId);
-
-				expect(result).toEqual(expectedResult);
-			});
 		});
 	});
 
