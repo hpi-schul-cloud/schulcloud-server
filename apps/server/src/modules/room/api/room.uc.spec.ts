@@ -135,18 +135,18 @@ describe('RoomUc', () => {
 		const setup = () => {
 			const user = userFactory.build();
 			const room = roomFactory.build();
-			const spyCheckFeatureEnabled = jest.spyOn(
-				uc as unknown as { checkFeatureEnabled: () => void },
-				'checkFeatureEnabled'
-			);
-			const spyCheckFeatureRoomsDuplicationEnabled = jest.spyOn(
-				uc as unknown as { checkFeatureRoomsDuplicationEnabled: () => void },
-				'checkFeatureRoomsDuplicationEnabled'
-			);
-			const spyCheckRoomAuthorizationByIds = jest.spyOn(
-				uc as unknown as { checkRoomAuthorizationByIds: () => void },
-				'checkRoomAuthorizationByIds'
-			);
+			const spyCheckFeatureEnabled = jest
+				.spyOn(uc as unknown as { checkFeatureEnabled: () => void }, 'checkFeatureEnabled')
+				.mockImplementation(() => {});
+			const spyCheckFeatureRoomsDuplicationEnabled = jest
+				.spyOn(
+					uc as unknown as { checkFeatureRoomsDuplicationEnabled: () => void },
+					'checkFeatureRoomsDuplicationEnabled'
+				)
+				.mockImplementation(() => {});
+			const spyCheckRoomAuthorizationByIds = jest
+				.spyOn(uc as unknown as { checkRoomAuthorizationByIds: () => void }, 'checkRoomAuthorizationByIds')
+				.mockImplementation(() => {});
 			return {
 				room,
 				user,
