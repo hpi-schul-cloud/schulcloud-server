@@ -24,7 +24,7 @@ import { ContextExternalToolEntity, ContextExternalToolType } from '../../../con
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolEntity } from '../../repo';
-import { externalToolEntityFactory, externalToolFactory } from '../../testing';
+import { base64TestLogo, externalToolEntityFactory } from '../../testing';
 import {
 	ExternalToolBulkCreateParams,
 	ExternalToolCreateParams,
@@ -105,9 +105,8 @@ describe('ToolController (API)', () => {
 				await em.persistAndFlush([adminAccount, adminUser, instance]);
 				em.clear();
 
-				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
-				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer, { 'content-type': 'image/png' });
 
 				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
@@ -277,9 +276,8 @@ describe('ToolController (API)', () => {
 				await em.persistAndFlush([adminAccount, adminUser, instance]);
 				em.clear();
 
-				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
-				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer);
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+				axiosMock.onGet(logoUrl).reply(HttpStatus.OK, logoBuffer, { 'content-type': 'image/png' });
 
 				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onPost(/api\/v3\/file\/upload-from-url/).reply(HttpStatus.OK, fileRecordResponse);
@@ -529,9 +527,8 @@ describe('ToolController (API)', () => {
 
 				const params = { ...postParams, id: externalToolEntity.id };
 
-				const base64Logo: string = externalToolEntity.logoBase64 as string;
-				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
-				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
+				const logoBuffer: Buffer = Buffer.from(base64TestLogo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer, { 'content-type': 'image/png' });
 
 				const fileRecordResponse = fileRecordResponseFactory.build();
 				axiosMock.onDelete(/api\/v3\/file\/delete/).reply(HttpStatus.OK);

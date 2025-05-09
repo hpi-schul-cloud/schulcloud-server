@@ -9,6 +9,6 @@ import { BiloStrategy, VidisStrategy } from './strategy';
 @Module({
 	imports: [BiloClientModule, MediaSourceModule, VidisClientModule],
 	providers: [BiloStrategy, VidisStrategy, MediumMetadataService, MediumMetadataLogoService],
-	exports: [MediumMetadataService],
+	exports: [MediumMetadataService, MediumMetadataLogoService],
 })
 export class MediumMetadataModule {}
