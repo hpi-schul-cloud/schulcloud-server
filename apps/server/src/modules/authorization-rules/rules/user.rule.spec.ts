@@ -2,7 +2,7 @@ import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@mod
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
+import { userDoFactory, userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -37,7 +37,7 @@ describe('UserRule', () => {
 		const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 		const school = schoolEntityFactory.buildWithId();
 		const user = userFactory.buildWithId({ roles: [role], school });
-		const entity = userFactory.buildWithId();
+		const entity = userDoFactory.buildWithId();
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
@@ -48,7 +48,7 @@ describe('UserRule', () => {
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
-			const entity = user;
+			const entity = userDoFactory.buildWithId({ id: user.id, schoolId: school.id });
 			return { user, entity, school };
 		};
 
@@ -70,7 +70,7 @@ describe('UserRule', () => {
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
-			const entity = userFactory.buildWithId({ school });
+			const entity = userDoFactory.buildWithId({ schoolId: school.id });
 			return { user, entity, school };
 		};
 
@@ -96,7 +96,7 @@ describe('UserRule', () => {
 			const userSchool = schoolEntityFactory.buildWithId();
 			const entitySchool = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school: userSchool });
-			const entity = userFactory.buildWithId({ school: entitySchool, discoverable: isDiscoverable });
+			const entity = userDoFactory.buildWithId({ schoolId: entitySchool.id, discoverable: isDiscoverable });
 			return { user, entity, school: userSchool };
 		};
 
