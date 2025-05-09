@@ -1,12 +1,5 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -32,12 +25,6 @@ describe('CourseService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
@@ -103,45 +90,6 @@ describe('CourseService', () => {
 				expect(courses.length).toEqual(3);
 				expect(courses).toEqual(allCourses);
 			});
-		});
-	});
-
-	describe('deleteUserData', () => {
-		const setup = () => {
-			const user = userFactory.buildWithId();
-			const course1 = courseEntityFactory.buildWithId({ students: [user] });
-			const course2 = courseEntityFactory.buildWithId({ teachers: [user] });
-			const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
-			const allCourses = [course1, course2, course3];
-
-			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
-
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSE, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [course1.id, course2.id, course3.id]),
-			]);
-
-			return {
-				expectedResult,
-				user,
-			};
-		};
-
-		it('should call courseRepo.findAllByUserId', async () => {
-			const { user } = setup();
-			await courseService.deleteUserData(user.id);
-			expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
-		});
-
-		it('should call repo.removeUserReference', async () => {
-			const { user } = setup();
-			await courseService.deleteUserData(user.id);
-			expect(courseRepo.removeUserReference).toBeCalledWith(user.id);
-		});
-
-		it('should return DomainDeletionReport', async () => {
-			const { expectedResult, user } = setup();
-			const result = await courseService.deleteUserData(user.id);
-			expect(result).toEqual(expectedResult);
 		});
 	});
 

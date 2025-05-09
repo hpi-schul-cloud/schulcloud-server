@@ -1,18 +1,9 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { Submission, Task, TaskRepo } from '../../repo';
@@ -48,12 +39,6 @@ describe('TaskService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
@@ -124,192 +109,6 @@ describe('TaskService', () => {
 			await taskService.delete(task);
 
 			expect(taskRepo.delete).toBeCalledWith(task);
-		});
-	});
-
-	describe('deleteTasksByOnlyCreator', () => {
-		describe('when task has only user as parent', () => {
-			const setup = () => {
-				const creator = userFactory.buildWithId();
-				const taskWithoutCourse = taskFactory.buildWithId({ creator });
-
-				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
-
-				const expectedResult = DomainOperationReportBuilder.build(OperationType.DELETE, 1, [taskWithoutCourse.id]);
-				return { creator, expectedResult };
-			};
-
-			it('should call taskRepo.findByOnlyCreatorId with creatorId', async () => {
-				const { creator } = setup();
-
-				await taskService.deleteTasksByOnlyCreator(creator.id);
-
-				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
-			});
-
-			it('should return the object with information on the actions performed', async () => {
-				const { creator, expectedResult } = setup();
-
-				const result = await taskService.deleteTasksByOnlyCreator(creator.id);
-
-				expect(result).toEqual(expectedResult);
-			});
-		});
-	});
-
-	describe('removeCreatorIdFromTasks', () => {
-		describe('when tasks where user is parent, and when task has course', () => {
-			const setup = () => {
-				const creator = userFactory.buildWithId();
-				const course = courseEntityFactory.build();
-				const taskWithCourse = taskFactory.buildWithId({ creator, course });
-
-				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
-
-				const expectedResult = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [taskWithCourse.id]);
-				const taskWithCourseToUpdate = { ...taskWithCourse, creator: undefined };
-
-				return { creator, expectedResult, taskWithCourseToUpdate };
-			};
-
-			it('should call taskRepo.findByCreatorIdWithCourseAndLesson with creatorId', async () => {
-				const { creator } = setup();
-
-				await taskService.removeCreatorIdFromTasks(creator.id);
-
-				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
-			});
-
-			it('should call taskRepo.save with task to update', async () => {
-				const { creator, taskWithCourseToUpdate } = setup();
-
-				await taskService.removeCreatorIdFromTasks(creator.id);
-
-				expect(taskRepo.save).toBeCalledWith([taskWithCourseToUpdate]);
-			});
-
-			it('should return the object with information on the actions performed', async () => {
-				const { creator, expectedResult } = setup();
-
-				const result = await taskService.removeCreatorIdFromTasks(creator.id);
-
-				expect(result).toEqual(expectedResult);
-			});
-		});
-	});
-
-	describe('removeUserFromFinished', () => {
-		describe('when task has user in finished array', () => {
-			const setup = () => {
-				const creator = userFactory.buildWithId();
-				const finishedTask = taskFactory.finished(creator).buildWithId();
-
-				taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
-
-				const expectedResult = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [finishedTask.id]);
-
-				return { creator, expectedResult };
-			};
-
-			it('should call taskRepo.findByUserIdInFinished with creatorId', async () => {
-				const { creator } = setup();
-
-				await taskService.removeUserFromFinished(creator.id);
-
-				expect(taskRepo.findByUserIdInFinished).toBeCalledWith(creator.id);
-			});
-
-			it('should return the object with information on the actions performed', async () => {
-				const { creator, expectedResult } = setup();
-
-				const result = await taskService.removeUserFromFinished(creator.id);
-
-				expect(result).toEqual(expectedResult);
-			});
-		});
-	});
-
-	describe('deleteUserData', () => {
-		const setup = () => {
-			const creator = userFactory.buildWithId();
-			const taskWithoutCourse = taskFactory.buildWithId({ creator });
-			const course = courseEntityFactory.build();
-			const taskWithCourse = taskFactory.buildWithId({ creator, course });
-			const finishedTask = taskFactory.finished(creator).buildWithId();
-
-			taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
-			taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
-			taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
-
-			const expectedResultByOnlyCreator = DomainOperationReportBuilder.build(OperationType.DELETE, 1, [
-				taskWithoutCourse.id,
-			]);
-
-			const expectedResultWithCreatorInTask = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [
-				taskWithCourse.id,
-			]);
-
-			const expectedResultForFinishedTask = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [
-				finishedTask.id,
-			]);
-
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.TASK, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [taskWithoutCourse.id]),
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [taskWithCourse.id, finishedTask.id]),
-			]);
-
-			return {
-				creator,
-				expectedResultByOnlyCreator,
-				expectedResultWithCreatorInTask,
-				expectedResultForFinishedTask,
-				expectedResult,
-			};
-		};
-
-		it('should call deleteTasksByOnlyCreator with userId', async () => {
-			const { creator, expectedResultByOnlyCreator } = setup();
-			jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
-
-			await taskService.deleteUserData(creator.id);
-
-			expect(taskService.deleteTasksByOnlyCreator).toHaveBeenCalledWith(creator.id);
-		});
-
-		it('should call removeCreatorIdFromTasks with userId', async () => {
-			const { creator, expectedResultWithCreatorInTask } = setup();
-			jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
-
-			await taskService.deleteUserData(creator.id);
-
-			expect(taskService.removeCreatorIdFromTasks).toHaveBeenCalledWith(creator.id);
-		});
-
-		it('should call removeUserFromFinished with userId', async () => {
-			const { creator, expectedResultForFinishedTask } = setup();
-			jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
-
-			await taskService.deleteUserData(creator.id);
-
-			expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(creator.id);
-		});
-
-		it('should return domainOperation object with information about deleted user data', async () => {
-			const {
-				creator,
-				expectedResult,
-				expectedResultForFinishedTask,
-				expectedResultWithCreatorInTask,
-				expectedResultByOnlyCreator,
-			} = setup();
-
-			jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
-			jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
-			jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
-
-			const result = await taskService.deleteUserData(creator.id);
-
-			expect(result).toEqual(expectedResult);
 		});
 	});
 });
