@@ -118,7 +118,7 @@ export class RoomUc {
 		this.checkFeatureEnabled();
 		this.checkFeatureRoomsDuplicationEnabled();
 		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
-		//TODO Service is missing
+		//Service is missing
 		return roomId;
 	}
 
