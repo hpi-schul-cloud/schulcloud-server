@@ -79,7 +79,7 @@ describe(DeletionExecutionService.name, () => {
 			expect(deletionRequestService.markDeletionRequestAsPending).toHaveBeenCalledWith(deletionRequest.id);
 		});
 
-		it('should call deleteUserData for each deletion service', async () => {
+		it('should call user deletion saga', async () => {
 			const { deletionRequest } = setup();
 
 			await service.executeDeletionRequest(deletionRequest);

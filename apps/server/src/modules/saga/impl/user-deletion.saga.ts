@@ -36,8 +36,6 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 	}
 
 	public async execute(params: { userId: EntityId }): Promise<StepReport[]> {
-		console.log('Executing userDeletion with userId:', params.userId);
-
 		const moduleNames = this.executionOrder;
 
 		this.checkAllStepsRegistered(moduleNames);
