@@ -141,7 +141,7 @@ export class SchoolUc {
 
 		this.checkHasPermissionToAccessTeachers(user);
 
-		const isUserOfSchool = this.isSchoolInternalUser(user, school);
+		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.TEACHER_LIST]);
 
 		let result: Page<UserDo>;
 		if (isUserOfSchool) {
@@ -154,12 +154,35 @@ export class SchoolUc {
 		return responseDto;
 	}
 
+	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
+		const [school, user] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+		]);
+
+		this.checkHasPermissionToAccessStudents(user);
+
+		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.STUDENT_LIST]);
+
+		let result: Page<UserDo> = { data: [], total: 0 };
+		if (isUserOfSchool) {
+			result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		}
+
+		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
+		return responseDto;
+	}
+
 	private checkHasPermissionToAccessTeachers(user: User) {
 		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
 	}
 
-	private isSchoolInternalUser(user: User, school: School): boolean {
-		const authContext = AuthorizationContextBuilder.read([Permission.TEACHER_LIST]);
+	private checkHasPermissionToAccessStudents(user: User) {
+		this.authorizationService.checkAllPermissions(user, [Permission.STUDENT_LIST]);
+	}
+
+	private isSchoolInternalUser(user: User, school: School, permissions: Permission[]): boolean {
+		const authContext = AuthorizationContextBuilder.read(permissions);
 		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
 		return isUserOfSchool;
 	}
