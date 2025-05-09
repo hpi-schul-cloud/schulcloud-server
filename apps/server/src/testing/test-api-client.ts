@@ -53,12 +53,13 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public delete(subPath?: string): supertest.Test {
+	public delete<T extends object | string>(subPath?: string, data?: T): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.delete(path)
 			.set(this.kindOfAuth, this.authHeader)
-			.set(headerConst.accept, headerConst.json);
+			.set(headerConst.accept, headerConst.json)
+			.send(data);
 
 		return testRequestInstance;
 	}

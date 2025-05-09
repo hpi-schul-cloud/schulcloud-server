@@ -35,6 +35,12 @@ export class FilesStorageService {
 		return fileRecord;
 	}
 
+	public getFileRecords(fileRecordIds: EntityId[]): Promise<Counted<FileRecord[]>> {
+		const fileRecords = this.fileRecordRepo.findMultipleById(fileRecordIds);
+
+		return fileRecords;
+	}
+
 	public async getFileRecordBySecurityCheckRequestToken(token: string): Promise<FileRecord> {
 		const fileRecord = await this.fileRecordRepo.findBySecurityCheckRequestToken(token);
 

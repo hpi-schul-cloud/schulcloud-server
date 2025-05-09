@@ -6,6 +6,8 @@ import { StorageLocation } from './storage-location.enum';
 export interface FileRecordRepo {
 	findOneById(id: EntityId): Promise<FileRecord>;
 
+	findMultipleById(ids: EntityId[], options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>>;
+
 	findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord>;
 
 	findByParentId(parentId: EntityId, options?: IFindOptions<FileRecord>): Promise<Counted<FileRecord[]>>;
