@@ -74,48 +74,7 @@ describe('UserRule', () => {
 			return { user, entity, school };
 		};
 
-		it('should return "true" if user has the permissions', () => {
-			const { user, entity } = setup();
-			const res = service.hasPermission(user, entity, {
-				action: Action.read,
-				requiredPermissions: [grantedPermission],
-			});
-			expect(res).toBe(true);
-		});
-
-		it('should return "false" if user has not permission', () => {
-			const { user, entity } = setup();
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
-			expect(res).toBe(false);
-		});
-	});
-
-	describe('when accessing a user of another school', () => {
-		const setup = (isDiscoverable = false) => {
-			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
-			const userSchool = schoolEntityFactory.buildWithId();
-			const entitySchool = schoolEntityFactory.buildWithId();
-			const user = userFactory.buildWithId({ roles: [role], school: userSchool });
-			const entity = userFactory.buildWithId({ school: entitySchool, discoverable: isDiscoverable });
-			return { user, entity, school: userSchool };
-		};
-
-		it('should return "true" if user has the permissions, and entity is discoverable', () => {
-			const { user, entity } = setup(true);
-			const res = service.hasPermission(user, entity, {
-				action: Action.read,
-				requiredPermissions: [grantedPermission],
-			});
-			expect(res).toBe(true);
-		});
-
-		it('should return "false" if entity is discoverable, but user does not have the permissions', () => {
-			const { user, entity } = setup(true);
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
-			expect(res).toBe(false);
-		});
-
-		it('should return "false" if user has the permission, but entity is not discoverable', () => {
+		it('should return "false" even if user has the permissions', () => {
 			const { user, entity } = setup();
 			const res = service.hasPermission(user, entity, {
 				action: Action.read,
