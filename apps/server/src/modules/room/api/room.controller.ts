@@ -296,7 +296,7 @@ export class RoomController {
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomIdResponse> {
 		await this.roomUc.duplicateRoom(currentUser.userId, urlParams.roomId);
-		//TODO replace response if service is implemented
+		// replace response if service is implemented
 		return { id: currentUser.userId };
 	}
 }

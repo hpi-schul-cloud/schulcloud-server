@@ -181,4 +181,16 @@ describe('RoomUc', () => {
 			]);
 		});
 	});
+	describe('checkFeatureRoomsDuplicationEnabled', () => {
+		it('should throw FeatureDisabledLoggableException when feature is disabled', () => {
+			jest.spyOn(configService, 'get').mockReturnValue(false); // Feature deaktiviert
+
+			// Zugriff auf die private Methode
+			const checkFeatureRoomsDuplicationEnabled = (
+				uc as unknown as { checkFeatureRoomsDuplicationEnabled: () => void }
+			).checkFeatureRoomsDuplicationEnabled.bind(uc);
+
+			expect(() => checkFeatureRoomsDuplicationEnabled()).toThrow(FeatureDisabledLoggableException);
+		});
+	});
 });
