@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
 import { CommonCartridgeFileParser } from './common-cartridge-file-parser';
@@ -235,6 +236,71 @@ describe('CommonCartridgeFileParser', () => {
 
 				expect(() => sut.getResourceAsString(organizationProps)).toThrow(CommonCartridgeResourceNotFoundException);
 				expect(admZipMock.getEntry).toHaveBeenCalledTimes(1);
+			});
+		});
+	});
+
+	describe('getFilesResource', () => {
+		describe('when accessing existing files resource', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				const organizationProps = {
+					...setupOrganizationProps().organizationProps,
+					resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+				};
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue(faker.lorem.paragraph());
+				resourceFactoryMock.create.mockReturnValue({} as CommonCartridgeResourceProps);
+				return { organizationProps, currentUser };
+			};
+			it('should return files resource', () => {
+				const { organizationProps, currentUser } = setup();
+
+				const resource = sut.getFilesResource(organizationProps, currentUser);
+
+				expect(resource).toEqual(expect.any(Object));
+			});
+		});
+
+		describe('when accessing non-existing files resource', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				const organizationProps = {
+					...setupOrganizationProps().organizationProps,
+					resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
+				};
+				return { organizationProps, currentUser };
+			};
+			it('should return undefined', () => {
+				const { organizationProps, currentUser } = setup();
+
+				const resource = sut.getFilesResource(organizationProps, currentUser);
+
+				expect(resource).toBeUndefined();
+			});
+		});
+
+		describe('when accessing files resource with html type', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				const organizationProps = {
+					...setupOrganizationProps().organizationProps,
+					resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
+					path: 'somePath.html',
+				};
+
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue(faker.lorem.paragraph());
+				resourceFactoryMock.create.mockReturnValue({} as CommonCartridgeResourceProps);
+
+				return { organizationProps, currentUser };
+			};
+			it('should ignore and return undefined', () => {
+				const { organizationProps, currentUser } = setup();
+
+				const resource = sut.getFilesResource(organizationProps, currentUser);
+
+				expect(resource).toBeUndefined();
 			});
 		});
 	});

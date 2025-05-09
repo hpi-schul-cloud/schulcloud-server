@@ -1,0 +1,25 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Schulcloud-Verbund-Software Server API",
+    "description": "This is v3 of Schulcloud-Verbund-Software Server. Checkout /docs for v1.",
+    "version": "3.0",
+    "contact": {}
+  },
+  "servers": [
+    {
+      "url": "/api/v3/"
+    }
+  ],
+  "paths": {},
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {}
+  }
+}

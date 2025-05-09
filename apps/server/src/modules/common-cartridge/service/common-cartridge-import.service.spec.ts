@@ -4,7 +4,9 @@ import { BoardsClientAdapter } from '@infra/boards-client';
 import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
@@ -16,6 +18,7 @@ describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeImportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
+	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let columnClientAdapterMock: DeepMocked<ColumnClientAdapter>;
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
@@ -30,8 +33,8 @@ describe(CommonCartridgeImportService.name, () => {
 					useValue: createMock<CoursesClientAdapter>(),
 				},
 				{
-					provide: BoardsClientAdapter,
-					useValue: createMock<BoardsClientAdapter>(),
+					provide: FilesStorageClientAdapter,
+					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 				{
 					provide: ColumnClientAdapter,
@@ -50,6 +53,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 		sut = module.get(CommonCartridgeImportService);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
+		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 		boardsClientAdapterMock = module.get(BoardsClientAdapter);
 		columnClientAdapterMock = module.get(ColumnClientAdapter);
 		cardClientAdapterMock = module.get(CardClientAdapter);
@@ -69,7 +73,7 @@ describe(CommonCartridgeImportService.name, () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('importFile', () => {
+	describe('importManifestFile', () => {
 		describe('when importing a file', () => {
 			const setup = () => {
 				const boardId = faker.string.uuid();
@@ -78,6 +82,7 @@ describe(CommonCartridgeImportService.name, () => {
 				const cardId = faker.string.uuid();
 				const elementId = faker.string.uuid();
 				const file = Buffer.from('');
+				const currentUser = currentUserFactory.build();
 				commonCartridgeFileParser.getTitle.mockReturnValue('test course');
 				commonCartridgeFileParser.getOrganizations.mockReturnValue([
 					{
@@ -176,14 +181,15 @@ describe(CommonCartridgeImportService.name, () => {
 
 				boardsClientAdapterMock.createBoard.mockResolvedValue({ id: boardId });
 
-				return { file };
+				return { file, currentUser };
 			};
 
 			it('should create a course', async () => {
-				const { file } = setup();
+				const { currentUser } = setup();
+				await sut.importManifestFile(Buffer.from(''), currentUser);
 
-				await sut.importFile(file);
-
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: expect.any(String) });
+				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledTimes(2);
 				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'test course' });
 			});
 

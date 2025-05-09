@@ -1,7 +1,9 @@
+import { ICurrentUser } from '@infra/auth-guard';
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
@@ -15,26 +17,44 @@ const DEPTH_BOARD = 0;
 export class CommonCartridgeImportService {
 	constructor(
 		private readonly coursesClient: CoursesClientAdapter,
+		private readonly fileStorageClient: FilesStorageClientAdapter,
 		private boardsClient: BoardsClientAdapter,
 		private columnClient: ColumnClientAdapter,
 		private cardClient: CardClientAdapter,
 		private commonCartridgeImportMapper: CommonCartridgeImportMapper
 	) {}
 
-	public async importFile(file: Buffer): Promise<void> {
+	public async importManifestFile(file: Buffer, currentUser: ICurrentUser): Promise<void> {
 		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
 
-		await this.createCourse(parser);
+		await this.createCourse(parser, currentUser);
 	}
 
-	private async createCourse(parser: CommonCartridgeFileParser): Promise<void> {
+	private async createCourse(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
 		const courseName = parser.getTitle() ?? 'Untitled Course';
 
-		const course = await this.coursesClient.createCourse({ title: courseName });
-
-		await this.createBoards(course.courseId, parser);
+		await this.coursesClient.createCourse({ title: courseName });
+		await this.uploadCourseFiles(parser, currentUser);
 	}
 
+	private async uploadCourseFiles(parser: CommonCartridgeFileParser, currentUser: ICurrentUser): Promise<void> {
+		const organizations = parser.getOrganizations();
+
+		for await (const organization of organizations) {
+			const commonCartridgeFileResourceProps = parser.getFilesResource(organization, currentUser);
+			if (commonCartridgeFileResourceProps) {
+				const filePropertyBag: FilePropertyBag = {
+					lastModified: Date.now(),
+					type: commonCartridgeFileResourceProps.type,
+				};
+				await this.fileStorageClient.upload(
+					currentUser.schoolId,
+					commonCartridgeFileResourceProps.storageLocation,
+					commonCartridgeFileResourceProps.parentId, // parent id not exist yet in this context this could be boardnode id
+					commonCartridgeFileResourceProps.parentType,
+					new File([commonCartridgeFileResourceProps.file], organization.title, filePropertyBag)
+				);
+			}
 	private async createBoards(parentId: string, parser: CommonCartridgeFileParser): Promise<void> {
 		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
 

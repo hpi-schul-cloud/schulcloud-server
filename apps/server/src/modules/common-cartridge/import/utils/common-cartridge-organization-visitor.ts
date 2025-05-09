@@ -78,7 +78,7 @@ export class CommonCartridgeOrganizationVisitor {
 		const title = this.getElementTitle(element.element);
 		const identifier = this.getElementIdentifier(element.element);
 		const identifierRef = this.getElementIdentifierRef(element.element);
-		const isResource = identifierRef !== '';
+		const isResource = identifierRef !== ''; // identifierRef is '' isResource is false
 		const resourcePath = isResource ? this.getResourcePath(identifierRef) : '';
 		const resourceType = isResource ? this.getResourceType(identifierRef) : '';
 		const isInlined = isResource && !resourcePath;
