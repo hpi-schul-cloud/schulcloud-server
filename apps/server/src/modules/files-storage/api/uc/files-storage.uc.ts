@@ -33,6 +33,7 @@ import {
 	FileRecordParams,
 	FilesStorageConfigResponse,
 	FileUrlParams,
+	MultiFileParams,
 	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
@@ -76,6 +77,16 @@ export class FilesStorageUC {
 		const referenceType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 
 		await this.authorizationClientAdapter.checkPermissionsByReference(referenceType, parentId, context);
+	}
+
+	private async checkPermissions(fileRecords: FileRecord[], context: AuthorizationContextParams): Promise<void> {
+		const promises = fileRecords.map(async (fileRecord) => {
+			const { parentType, parentId } = fileRecord.getParentInfo();
+
+			await this.checkPermission(parentType, parentId, context);
+		});
+
+		await Promise.all(promises);
 	}
 
 	public getPublicConfig(): FilesStorageConfigResponse {
@@ -229,6 +240,7 @@ export class FilesStorageUC {
 	public async deleteFilesOfParent(params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
 		const [fileRecords, count] = await this.filesStorageService.getFileRecordsOfParent(params.parentId);
+
 		await this.previewService.deletePreviews(fileRecords);
 		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
@@ -240,10 +252,24 @@ export class FilesStorageUC {
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(parentType, parentId, FileStorageAuthorizationContext.delete);
-		await this.previewService.deletePreviews([fileRecord]);
-		await this.filesStorageService.delete([fileRecord]);
+		await this.deletePreviewsAndFiles([fileRecord]);
 
 		return fileRecord;
+	}
+
+	public async deleteMultipleFiles(params: MultiFileParams): Promise<Counted<FileRecord[]>> {
+		const [fileRecords, count] = await this.filesStorageService.getFileRecords(params.fileRecordIds);
+
+		await this.checkPermissions(fileRecords, FileStorageAuthorizationContext.delete);
+
+		await this.deletePreviewsAndFiles(fileRecords);
+
+		return [fileRecords, count];
+	}
+
+	private async deletePreviewsAndFiles(fileRecords: FileRecord[]): Promise<void> {
+		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.delete(fileRecords);
 	}
 
 	// restore

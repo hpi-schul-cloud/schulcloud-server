@@ -16,6 +16,12 @@ export class FileRecordScope extends Scope<FileRecordEntity> {
 		return this;
 	}
 
+	public byFileRecordIds(fileRecordIds: EntityId[]): FileRecordScope {
+		this.addQuery({ id: { $in: fileRecordIds } });
+
+		return this;
+	}
+
 	public byStorageLocation(storageLocation: StorageLocation): FileRecordScope {
 		this.addQuery({ storageLocation });
 
