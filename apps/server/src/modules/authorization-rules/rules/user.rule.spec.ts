@@ -1,6 +1,6 @@
 import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
-import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,13 +11,9 @@ import { UserRule } from './user.rule';
 describe('UserRule', () => {
 	let service: UserRule;
 	let authorizationHelper: AuthorizationHelper;
-	let user: User;
-	let entity: User;
-	let role: Role;
 	let injectionService: AuthorizationInjectionService;
-	const permissionA = 'a' as Permission;
-	const permissionB = 'b' as Permission;
-	const permissionC = 'c' as Permission;
+	const grantedPermission = 'a' as Permission;
+	const deniedPermission = 'c' as Permission;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -31,11 +27,6 @@ describe('UserRule', () => {
 		injectionService = await module.get(AuthorizationInjectionService);
 	});
 
-	beforeEach(() => {
-		role = roleFactory.build({ permissions: [permissionA, permissionB] });
-		user = userFactory.build({ roles: [role] });
-	});
-
 	describe('constructor', () => {
 		it('should inject into AuthorizationInjectionService', () => {
 			expect(injectionService.getAuthorizationRules()).toContain(service);
@@ -43,38 +34,100 @@ describe('UserRule', () => {
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
-		entity = userFactory.build();
-		user = userFactory.build({ roles: [role], school: entity });
+		const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+		const school = schoolEntityFactory.buildWithId();
+		const user = userFactory.buildWithId({ roles: [role], school });
+		const entity = userFactory.buildWithId();
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
-	it('should return "true" if user in scope', () => {
-		user = userFactory.build({ roles: [role], school: entity });
-		entity = user;
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
-		expect(res).toBe(true);
+	describe('when a user accesses himself', () => {
+		const setup = () => {
+			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ roles: [role], school });
+			const entity = user;
+			return { user, entity, school };
+		};
+
+		it('should return "true" if user accesses himself', () => {
+			const { user, entity } = setup();
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+			expect(res).toBe(true);
+		});
+
+		it('should return "false" if user accesses himself but has not permission', () => {
+			const { user, entity } = setup();
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+			expect(res).toBe(false);
+		});
 	});
 
-	it('should return "true" if user in scope but has not permission', () => {
-		user = userFactory.build({ roles: [role], school: entity });
-		entity = user;
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
-		expect(res).toBe(true);
+	describe('when accessing a user of the same school', () => {
+		const setup = () => {
+			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ roles: [role], school });
+			const entity = userFactory.buildWithId({ school });
+			return { user, entity, school };
+		};
+
+		it('should return "true" if user has the permissions', () => {
+			const { user, entity } = setup();
+			const res = service.hasPermission(user, entity, {
+				action: Action.read,
+				requiredPermissions: [grantedPermission],
+			});
+			expect(res).toBe(true);
+		});
+
+		it('should return "false" if user has not permission', () => {
+			const { user, entity } = setup();
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+			expect(res).toBe(false);
+		});
 	});
 
-	it('should return "true" if user has permission but not owner', () => {
-		user = userFactory.build({ roles: [role], school: entity });
-		entity = userFactory.build();
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
-		expect(res).toBe(true);
-	});
+	describe('when accessing a user of another school', () => {
+		const setup = (isDiscoverable = false) => {
+			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+			const userSchool = schoolEntityFactory.buildWithId();
+			const entitySchool = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ roles: [role], school: userSchool });
+			const entity = userFactory.buildWithId({ school: entitySchool, discoverable: isDiscoverable });
+			return { user, entity, school: userSchool };
+		};
 
-	it('should return "false" if user has not permission', () => {
-		entity = userFactory.build();
-		user = userFactory.build({ roles: [role], school: entity });
-		const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
-		expect(res).toBe(false);
+		it('should return "true" if user has the permissions, and entity is discoverable', () => {
+			const { user, entity } = setup(true);
+			const res = service.hasPermission(user, entity, {
+				action: Action.read,
+				requiredPermissions: [grantedPermission],
+			});
+			expect(res).toBe(true);
+		});
+
+		it('should return "false" if entity is discoverable, but user does not have the permissions', () => {
+			const { user, entity } = setup(true);
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+			expect(res).toBe(false);
+		});
+
+		it('should return "false" if user has the permission, but entity is not discoverable', () => {
+			const { user, entity } = setup();
+			const res = service.hasPermission(user, entity, {
+				action: Action.read,
+				requiredPermissions: [grantedPermission],
+			});
+			expect(res).toBe(false);
+		});
+
+		it('should return "false" if user has not permission', () => {
+			const { user, entity } = setup();
+			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+			expect(res).toBe(false);
+		});
 	});
 });

@@ -19,8 +19,13 @@ export class UserRule implements Rule<User> {
 
 	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		const isOwner = user === entity;
 
-		return hasPermission || isOwner;
+		const isOwner = user === entity;
+		const isUsersSchool = user.school.id === entity.school.id;
+		const isDiscoverable = entity.discoverable || false;
+
+		const isVisible = isOwner || isUsersSchool || isDiscoverable;
+
+		return hasPermission && isVisible;
 	}
 }
