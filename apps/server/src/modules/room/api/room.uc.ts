@@ -18,6 +18,7 @@ import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
+import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -143,6 +144,17 @@ export class RoomUc {
 		userIds: Array<EntityId>
 	): Promise<RoomRole> {
 		this.checkFeatureEnabled();
+		const users = await this.userService.findByIds(userIds);
+		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
+		users.forEach((user) => {
+			const hasPermission = this.authorizationService.hasPermission(currentUser, user, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+			if (!hasPermission) {
+				throw new UserToAddToRoomNotFoundLoggableException([user.id || '']);
+			}
+		});
 		await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
 		return roleName;
