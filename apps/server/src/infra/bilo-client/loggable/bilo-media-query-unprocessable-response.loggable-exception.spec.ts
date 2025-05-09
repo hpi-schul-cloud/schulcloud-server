@@ -12,7 +12,7 @@ describe(BiloMediaQueryUnprocessableResponseLoggableException.name, () => {
 				type: 'BILO_MEDIA_QUERY_UNPROCESSABLE_RESPONSE',
 				stack: exception.stack,
 				data: {
-					message: 'The response body from bilo media query could not be processed because it is not an array',
+					message: 'The response body from bilo media query could not be processed',
 				},
 			});
 		});

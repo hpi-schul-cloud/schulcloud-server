@@ -109,4 +109,14 @@ export class SchoolController {
 		const res = await this.schoolUc.getSchoolTeachers(urlParams.schoolId, user.userId);
 		return res;
 	}
+
+	@Get('/:schoolId/students')
+	@JwtAuthentication()
+	public async getStudents(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolUserListResponse> {
+		const res = await this.schoolUc.getSchoolStudents(urlParams.schoolId, user.userId);
+		return res;
+	}
 }
