@@ -8,6 +8,7 @@ import { DrawingElementResponse } from './drawing-element.response';
 import { ExternalToolElementResponse } from './external-tool-element.response';
 import { FileElementResponse } from './file-element.response';
 import { FileFolderElementResponse } from './file-folder-element.response';
+import { H5pElementResponse } from './h5p-element.response';
 import { LinkElementResponse } from './link-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
 import { SubmissionContainerElementResponse } from './submission-container-element.response';
@@ -45,7 +46,8 @@ export class ParentNodeInfoResponse {
 	DeletedElementResponse,
 	VideoConferenceElementResponse,
 	FileFolderElementResponse,
-	ParentNodeInfoResponse
+	ParentNodeInfoResponse,
+	H5pElementResponse
 )
 export class ElementWithParentHierarchyResponse {
 	constructor(props: ElementWithParentHierarchyResponse) {
@@ -66,6 +68,7 @@ export class ElementWithParentHierarchyResponse {
 			{ $ref: getSchemaPath(DeletedElementResponse) },
 			{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 			{ $ref: getSchemaPath(FileFolderElementResponse) },
+			{ $ref: getSchemaPath(H5pElementResponse) },
 		],
 	})
 	element: AnyContentElementResponse;
