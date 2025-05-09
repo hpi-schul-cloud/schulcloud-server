@@ -93,6 +93,7 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write);
+
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		await this.roomService.updateRoom(room, props);
@@ -111,6 +112,14 @@ export class RoomUc {
 		});
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
+	}
+
+	public async duplicateRoom(userId: EntityId, roomId: EntityId): Promise<EntityId> {
+		this.checkFeatureEnabled();
+		this.checkFeatureRoomsDuplicationEnabled();
+		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
+		//Service is missing
+		return roomId;
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
@@ -189,6 +198,12 @@ export class RoomUc {
 	private checkFeatureEnabled(): void {
 		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
+		}
+	}
+
+	private checkFeatureRoomsDuplicationEnabled(): void {
+		if (!this.configService.get('FEATURE_ROOMS_DUPLICATION_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_DUPLICATION_ENABLED');
 		}
 	}
 
