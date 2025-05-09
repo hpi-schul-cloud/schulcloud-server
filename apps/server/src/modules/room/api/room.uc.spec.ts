@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ColumnBoardService } from '@modules/board';
 import { RoomMembershipRepo, RoomMembershipService } from '@modules/room-membership';
 import { UserService } from '@modules/user';
@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
+import { IFindOptions, Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
@@ -129,6 +129,56 @@ describe('RoomUc', () => {
 			await expect(uc.createRoom(user.id, { color: RoomColor.BLUE, name: 'test' })).rejects.toThrow();
 
 			expect(roomService.deleteRoom).toHaveBeenCalledWith(room);
+		});
+	});
+	describe('duplicateRoom', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const room = roomFactory.build();
+			const spyCheckFeatureEnabled = jest.spyOn(
+				uc as unknown as { checkFeatureEnabled: () => void },
+				'checkFeatureEnabled'
+			);
+			const spyCheckFeatureRoomsDuplicationEnabled = jest.spyOn(
+				uc as unknown as { checkFeatureRoomsDuplicationEnabled: () => void },
+				'checkFeatureRoomsDuplicationEnabled'
+			);
+			const spyCheckRoomAuthorizationByIds = jest.spyOn(
+				uc as unknown as { checkRoomAuthorizationByIds: () => void },
+				'checkRoomAuthorizationByIds'
+			);
+			return {
+				room,
+				user,
+				spyCheckFeatureEnabled,
+				spyCheckFeatureRoomsDuplicationEnabled,
+				spyCheckRoomAuthorizationByIds,
+			};
+		};
+
+		it('should call checkFeatureEnabled', async () => {
+			const { room, user, spyCheckFeatureEnabled } = setup();
+			await uc.duplicateRoom(user.id, room.id);
+			expect(spyCheckFeatureEnabled).toHaveBeenCalled();
+		});
+
+		it('should call checkFeatureRoomsDuplicationEnabled', async () => {
+			const { room, user, spyCheckFeatureRoomsDuplicationEnabled } = setup();
+			await uc.duplicateRoom(user.id, room.id);
+			expect(spyCheckFeatureRoomsDuplicationEnabled).toHaveBeenCalled();
+		});
+
+		it('should call checkRoomAuthorizationById', async () => {
+			const { room, user, spyCheckRoomAuthorizationByIds } = setup();
+			await uc.duplicateRoom(user.id, room.id);
+			expect(spyCheckRoomAuthorizationByIds).toHaveBeenCalled();
+		});
+		it('should call checkRoomAuthorizationById with with the correct arguments', async () => {
+			const { room, user, spyCheckRoomAuthorizationByIds } = setup();
+			await uc.duplicateRoom(user.id, room.id);
+			expect(spyCheckRoomAuthorizationByIds).toHaveBeenCalledWith(user.id, room.id, Action.write, [
+				Permission.ROOM_DUPLICATE,
+			]);
 		});
 	});
 });
