@@ -93,8 +93,7 @@ export class RoomUc {
 		const room = await this.roomService.getSingleRoom(roomId);
 
 		const roomMembershipAuthorizable = await this.checkRoomAuthorizationByIds(userId, roomId, Action.write);
-		console.log('roomMembershipAuthorizable', roomMembershipAuthorizable);
-		console.log('roles of roomMembershipAuthorizable', roomMembershipAuthorizable.members[0].roles);
+
 		const permissions = this.getPermissions(userId, roomMembershipAuthorizable);
 
 		await this.roomService.updateRoom(room, props);
@@ -115,11 +114,12 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
-	public async duplicateRoom(userId: EntityId, roomId: EntityId): Promise<void> {
+	public async duplicateRoom(userId: EntityId, roomId: EntityId): Promise<EntityId> {
 		this.checkFeatureEnabled();
 		this.checkFeatureRoomsDuplicationEnabled();
 		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
 		//TODO Service is missing
+		return roomId;
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
