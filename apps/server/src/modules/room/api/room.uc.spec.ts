@@ -181,4 +181,5 @@ describe('RoomUc', () => {
 			]);
 		});
 	});
+	describe('featureIsEnabled', () => {});
 });
