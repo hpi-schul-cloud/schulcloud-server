@@ -13,6 +13,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { userFactory } from '@modules/user/testing';
+import { SchoolEntity } from '@modules/school/repo';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -84,7 +86,7 @@ describe('Room Controller (API)', () => {
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
-			return { loggedInClient, room, otherTeacherUser };
+			return { loggedInClient, room, otherTeacherUser, school };
 		};
 
 		describe('when the user is not authenticated', () => {
@@ -98,8 +100,8 @@ describe('Room Controller (API)', () => {
 		});
 
 		describe('when the user has not the required permissions', () => {
-			const setupLoggedInUser = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const setupLoggedInUser = async (school: SchoolEntity) => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				await em.persistAndFlush([teacherAccount, teacherUser]);
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -108,8 +110,8 @@ describe('Room Controller (API)', () => {
 			};
 
 			it('should return forbidden error', async () => {
-				const { room, otherTeacherUser } = await setupRoomWithMembers();
-				const { loggedInClient } = await setupLoggedInUser();
+				const { room, otherTeacherUser, school } = await setupRoomWithMembers();
+				const { loggedInClient } = await setupLoggedInUser(school);
 
 				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
 					userIds: [otherTeacherUser.id],
@@ -141,6 +143,21 @@ describe('Room Controller (API)', () => {
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);
+			});
+		});
+
+		describe('when adding a user from a different school, that is not discoverable', () => {
+			it('should throw a 404 error', async () => {
+				const { loggedInClient, room } = await setupRoomWithMembers();
+				const school = schoolEntityFactory.buildWithId();
+				const targetUser = userFactory.buildWithId({ school, discoverable: false });
+				await em.persistAndFlush(targetUser);
+
+				const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+					userIds: [targetUser.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
 			});
 		});
 	});
