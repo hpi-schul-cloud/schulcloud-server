@@ -78,7 +78,7 @@ export class DeleteUserRegistrationPinDataStep extends SagaStep<'deleteUserData'
 
 		const registrationEmails: string[] = [];
 		if (user && user.email) {
-			registrationEmails.concat([user.email, ...parentEmails]);
+			registrationEmails.push(user.email, ...parentEmails);
 		}
 
 		return registrationEmails;
