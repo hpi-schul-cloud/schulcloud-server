@@ -312,20 +312,28 @@ export class RoomUc {
 
 	private async checkUsersAccessible(currentUserId: EntityId, userIds: Array<EntityId>): Promise<void> {
 		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
-		const users = await this.userService.findByIds(userIds);
+		const foundUsers = await this.userService.findByIds(userIds);
 
-		const isUserVisible = (user: UserDo): boolean =>
+		const isUserAccessible = this.getUserAccessibleFunction(currentUser);
+
+		const foundAndAccessibleIds = foundUsers.filter(isUserAccessible).map(this.userToId);
+		const notAccessibleUserIds = this.removeIdsFrom(userIds, foundAndAccessibleIds);
+
+		if (notAccessibleUserIds.length > 0) {
+			throw new UserToAddToRoomNotFoundLoggableException(notAccessibleUserIds);
+		}
+	}
+
+	private removeIdsFrom(original: EntityId[], toRemove: EntityId[]): EntityId[] {
+		return original.filter((item) => !toRemove.includes(item));
+	}
+
+	private getUserAccessibleFunction =
+		(currentUser: User) =>
+		(user: UserDo): boolean =>
 			this.authorizationService.hasPermission(currentUser, user, {
 				action: Action.write,
 				requiredPermissions: [],
 			});
-		const userToId = (user: UserDo): string => user.id || '';
-
-		const foundIds = users.filter(isUserVisible).map(userToId);
-		const notFoundIds = userIds.filter((userId) => foundIds.includes(userId) === false);
-
-		if (notFoundIds.length > 0) {
-			throw new UserToAddToRoomNotFoundLoggableException(notFoundIds);
-		}
-	}
+	private userToId = (user: UserDo): string => user.id || '';
 }

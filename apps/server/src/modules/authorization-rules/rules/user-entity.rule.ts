@@ -20,8 +20,8 @@ export class UserEntityRule implements Rule<User> {
 	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		const isOwner = user.id === entity.id;
+		const isHimself = user.id === entity.id;
 
-		return hasPermission && isOwner;
+		return hasPermission && isHimself;
 	}
 }

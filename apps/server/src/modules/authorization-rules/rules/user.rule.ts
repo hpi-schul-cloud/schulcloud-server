@@ -21,11 +21,11 @@ export class UserRule implements Rule<UserDo> {
 	public hasPermission(user: User, entity: UserDo, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		const isOwner = user.id === entity.id;
+		const isHimself = user.id === entity.id;
 		const isUsersSchool = user.school.id === entity.schoolId;
 		const isDiscoverable = entity.discoverable || false;
 
-		const isVisible = isOwner || isUsersSchool || isDiscoverable;
+		const isVisible = isHimself || isUsersSchool || isDiscoverable;
 
 		return hasPermission && isVisible;
 	}
