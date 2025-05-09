@@ -4,89 +4,47 @@ import {
 	AuthorizationInjectionService,
 	AuthorizationLoaderService,
 } from '@modules/authorization';
-import {
-	DataDeletionDomainOperationLoggable,
-	DeletionService,
-	DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	StatusModel,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LessonEntity, LessonRepo } from '../../repo';
 
 @Injectable()
-export class LessonService implements AuthorizationLoaderService, DeletionService {
+export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		injectionService: AuthorizationInjectionService,
-		private readonly logger: Logger,
-		userDeletionInjectionService: UserDeletionInjectionService
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(LessonService.name);
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.Lesson, this);
-		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
-	async deleteLesson(lesson: LessonEntity): Promise<void> {
+	public async deleteLesson(lesson: LessonEntity): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
 		await this.lessonRepo.delete(lesson);
 	}
 
-	async findById(lessonId: EntityId): Promise<LessonEntity> {
-		return this.lessonRepo.findById(lessonId);
+	public async findById(lessonId: EntityId): Promise<LessonEntity> {
+		const lesson = await this.lessonRepo.findById(lessonId);
+
+		return lesson;
 	}
 
-	async findByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<LessonEntity[]>> {
-		return this.lessonRepo.findAllByCourseIds(courseIds, filters);
-	}
-
-	async findAllLessonsByUserId(userId: EntityId): Promise<LessonEntity[]> {
-		const lessons = await this.lessonRepo.findByUserId(userId);
+	public async findByCourseIds(
+		courseIds: EntityId[],
+		filters?: { hidden?: boolean }
+	): Promise<Counted<LessonEntity[]>> {
+		const lessons = await this.lessonRepo.findAllByCourseIds(courseIds, filters);
 
 		return lessons;
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Deleting user data from Lessons',
-				DomainName.LESSONS,
-				userId,
-				StatusModel.PENDING
-			)
-		);
+	public async findAllLessonsByUserId(userId: EntityId): Promise<LessonEntity[]> {
 		const lessons = await this.lessonRepo.findByUserId(userId);
-		const lessonIds = this.getLessonsId(lessons);
 
-		const numberOfUpdatedLessons = await this.lessonRepo.removeUserReference(userId);
-
-		const result = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
-			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedLessons, lessonIds),
-		]);
-
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Successfully removed user data from Classes',
-				DomainName.LESSONS,
-				userId,
-				StatusModel.FINISHED,
-				numberOfUpdatedLessons,
-				0
-			)
-		);
-
-		return result;
-	}
-
-	private getLessonsId(lessons: LessonEntity[]): EntityId[] {
-		return lessons.map((lesson) => lesson.id);
+		return lessons;
 	}
 }

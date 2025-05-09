@@ -20,7 +20,6 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { UserDeletionInjectionService } from '../../../deletion';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -106,12 +105,6 @@ describe('AccountService Integration', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
