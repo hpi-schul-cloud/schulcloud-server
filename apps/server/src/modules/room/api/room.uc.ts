@@ -144,18 +144,8 @@ export class RoomUc {
 		userIds: Array<EntityId>
 	): Promise<RoomRole> {
 		this.checkFeatureEnabled();
-		const users = await this.userService.findByIds(userIds);
-		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
-		users.forEach((user) => {
-			const hasPermission = this.authorizationService.hasPermission(currentUser, user, {
-				action: Action.write,
-				requiredPermissions: [],
-			});
-			if (!hasPermission) {
-				throw new UserToAddToRoomNotFoundLoggableException([user.id || '']);
-			}
-		});
 		await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkUsersAccessible(currentUserId, userIds);
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
 		return roleName;
 	}
@@ -318,5 +308,24 @@ export class RoomUc {
 			.flatMap((role) => role.permissions ?? []);
 
 		return permissions;
+	}
+
+	private async checkUsersAccessible(currentUserId: EntityId, userIds: Array<EntityId>): Promise<void> {
+		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const users = await this.userService.findByIds(userIds);
+
+		const isUserVisible = (user: UserDo): boolean =>
+			this.authorizationService.hasPermission(currentUser, user, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+		const userToId = (user: UserDo): string => user.id || '';
+
+		const foundIds = users.filter(isUserVisible).map(userToId);
+		const notFoundIds = userIds.filter((userId) => foundIds.includes(userId) === false);
+
+		if (notFoundIds.length > 0) {
+			throw new UserToAddToRoomNotFoundLoggableException(notFoundIds);
+		}
 	}
 }
