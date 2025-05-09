@@ -32,6 +32,8 @@ spec:
                 name: api-secret
             - secretRef:
                 name: api-files-secret
+            - secretRef:
+                name: session-valkey-password
             command: ['/schulcloud-server/scripts/ldapSync.sh']
             resources:
               limits:
