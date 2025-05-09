@@ -1,0 +1,27 @@
+import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { User } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
+
+@Injectable()
+export class UserEntityRule implements Rule<User> {
+	constructor(
+		private readonly authorizationHelper: AuthorizationHelper,
+		authorisationInjectionService: AuthorizationInjectionService
+	) {
+		authorisationInjectionService.injectAuthorizationRule(this);
+	}
+
+	public isApplicable(user: User, object: unknown): boolean {
+		const isMatched = object instanceof User;
+
+		return isMatched;
+	}
+
+	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+
+		const isOwner = user.id === entity.id;
+
+		return hasPermission && isOwner;
+	}
+}
