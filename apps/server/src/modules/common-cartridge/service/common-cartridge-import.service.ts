@@ -167,7 +167,11 @@ export class CommonCartridgeImportService {
 
 		if (!contentElementType) return;
 
-		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(resource, cardElementProps);
+		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
+			resource,
+			cardElementProps,
+			parser.options.inputFormat
+		);
 
 		if (!resourceBody) return;
 
