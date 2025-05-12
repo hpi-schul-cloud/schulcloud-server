@@ -196,17 +196,7 @@ describe('UniventionLDAPStrategy', () => {
 			const expectedSearchOptions = {
 				filter: 'univentionObjectType=users/user',
 				scope: 'sub',
-				attributes: [
-					'givenName',
-					'sn',
-					'mailPrimaryAdress',
-					'mail',
-					'dn',
-					'entryUUID',
-					'uid',
-					'objectClass',
-					'SchulCloudAdmin',
-				],
+				attributes: ['givenName', 'sn', 'mail', 'dn', 'entryUUID', 'uid', 'objectClass', 'SchulCloudAdmin'],
 			};
 			expect(ldapServiceMock.searchCollection).to.have.been.calledWith(
 				mockLDAPConfig,
