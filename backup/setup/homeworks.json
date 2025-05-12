@@ -1475,5 +1475,133 @@
 			"$date": "2020-11-05T08:37:37.270Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "681a1fe55640b0702d7e26b9"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"name": "Aufgabe ",
+		"description": "<p>Aufgabestellung Inhalt</p>",
+		"dueDate": null,
+		"availableDate": {
+			"$date": "2025-05-06T14:42:45.583Z"
+		},
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"courseId": {
+			"$oid": "681a1e5c5640b0702d7e25af"
+		},
+		"lessonId": null,
+		"maxTeamMembers": null,
+		"archived": [],
+		"createdAt": {
+			"$date": "2025-05-06T14:42:45.635Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-06T14:43:00.050Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "681b5fc75974fcb0abce9d08"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"name": "task with file",
+		"description": "",
+		"dueDate": null,
+		"availableDate": {
+			"$date": "2025-05-07T13:27:00Z"
+		},
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"courseId": {
+			"$oid": "681a1e5c5640b0702d7e25af"
+		},
+		"lessonId": {
+			"$oid": "681a1fa85640b0702d7e25ec"
+		},
+		"maxTeamMembers": null,
+		"archived": [],
+		"createdAt": {
+			"$date": "2025-05-07T13:27:35.654Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-07T13:27:35.654Z"
+		},
+		"__v": 0,
+		"private": false,
+		"publicSubmissions": false,
+		"teamSubmissions": false
+	},
+	{
+		"_id": {
+			"$oid": "681dfac589002b0ee99a9e6a"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"name": "KI-Aufgabe",
+		"description": "",
+		"dueDate": null,
+		"availableDate": {
+			"$date": "2025-05-09T12:53:00Z"
+		},
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"courseId": null,
+		"lessonId": null,
+		"private": true,
+		"maxTeamMembers": null,
+		"archived": [],
+		"createdAt": {
+			"$date": "2025-05-09T12:53:25.449Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T12:53:25.449Z"
+		},
+		"__v": 0,
+		"publicSubmissions": false,
+		"teamSubmissions": false
+	},
+	{
+		"_id": {
+			"$oid": "681e02c589002b0ee99aa1f0"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"name": "Aufgabe zum Thema 1",
+		"description": "<p>Hier ist die aufgabe zum Thema 1</p>",
+		"dueDate": null,
+		"availableDate": {
+			"$date": "2025-05-09T13:27:33.512Z"
+		},
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"courseId": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"lessonId": {
+			"$oid": "681e027389002b0ee99aa120"
+		},
+		"maxTeamMembers": null,
+		"archived": [],
+		"createdAt": {
+			"$date": "2025-05-09T13:27:33.557Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:27:33.557Z"
+		},
+		"__v": 0
 	}
 ]

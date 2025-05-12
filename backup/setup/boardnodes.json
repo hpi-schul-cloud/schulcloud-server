@@ -70,5 +70,2960 @@
 		},
 		"title": "CY Deleted Tool",
 		"deletedElementType": "externalTool"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b138945ce807e9024a0"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:19.955Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T07:16:08.325Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Herzlich willkommen!",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "list",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b138945ce807e9024a1"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:19.964Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:19.964Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b138945ce807e9024a2"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:19.967Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T14:27:26.465Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681c7b138945ce807e9024a1,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "👋 Und Hallo!",
+		"height": 1434
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a3"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.007Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T14:27:25.507Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681c7b138945ce807e9024a1,681c7b138945ce807e9024a2,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Erstellt mit Microsoft Bing Image Creator - Prompt: Ein junger Schüler steht vor einem Portal. Das Portal ist futuristisch und ist auf der einen Seite rot und hell auf der anderen Seite blau und dunkel.</p><p><strong>Für wen ist der Kurs?</strong></p><p>Der Kurs richtet sich an alle Lehrerinnen und Lehrer unabhängig von Fächerhintergründen, die ihre Grundkenntnisse zum Thema KI aufbauen möchten. Wir stellen Ihnen verschiedene Tools und Möglichkeiten vor, die Sie direkt für Ihre Unterrichtsvorbereitung nutzen können.<br />Außerdem können Sie die Inhalte des Kurses jederzeit für Ihren eigenen Unterricht verwenden.</p><p> </p><p><strong>Zielstellung des Kurses?</strong></p><ul><li>Verständnis schaffen zu KI-Themen</li><li>Aufzeigen von Anwendungsfeldern</li><li>Grundkenntnisse zu KI im Bildungsbereich</li><li>Möglichkeiten des Einbezugs in den Unterricht</li></ul><p> </p><p><strong>Übersicht im Kursboard</strong></p><p>Im Kurs-Board finden Sie übersichtlich alle Inhalte, Lernziele und weiterführenden Links des Kurses, sodass sie schnell einen Einstieg in die Thematik - auch eigenständig - finden können. <br />In den Kurs-Themen steigen wir inhaltlich jeweils tiefer ein.</p><p> </p><p><strong>Autorenschaft, Titel und Lizenz</strong></p><p><strong>Autor</strong>:  Schulcloud-Verbund mit den Verbundparteien Brandenburg, Niedersachen, Thüringen (<a target=\"_blank\" href=\"https://schulcloud-verbund.de/impressum-datenschutz/\">https://schulcloud-verbund.de/impressum-datenschutz/</a>) und Dataport AöR</p><p><strong>Titel</strong>: Chancen und Risiken von KI im Schulkontext</p><p><strong>Lizenz: </strong>CC BY SA 4.0. Wenn nicht anders angegeben, können Sie die hier vorgestellten Inhalte für Ihren Unterricht verwenden. Bitte beachten Sie dazu die Hinweise im Kurs-Thema: Quellen, Urheberrechte &amp; Lizenzen.</p><p><strong>Ursprungsort</strong>: <a target=\"_blank\" href=\"https://schulcloud-thueringen.de/rooms-overview?import=KtZG5zQz3byM\">https://schulcloud-thueringen.de/rooms-overview?import=KtZG5zQz3byM</a> </p><p> </p><p>Wir wünschen Ihnen viel Spaß mit dem Kurs!</p><p> </p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a4"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.017Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:29.774Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 1 : Grundlagen - Was ist KI",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a5"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.019Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.019Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a6"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.021Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:21.828Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,681c7b148945ce807e9024a5,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "❓ Was ist eigentlich \"KI\"?",
+		"height": 1332
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a7"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.049Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:19.999Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,681c7b148945ce807e9024a5,681c7b148945ce807e9024a6,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit deepai.org - Prompt: What is AI?</i></p><p>“<strong>KI</strong>” ist natürlich nur eine Abkürzung und steht für “<strong>Künstliche Intelligenz</strong>”.  Im englischsprachigen Raum spricht man von AI = Artificial Intelligence.</p><p>Aber was soll das sein? <br />Stellen Sie sich vor, Sie haben einen Roboter 🤖 oder ein Computerprogramm 💻, das Aufgaben erledigen kann, die normalerweise ein Mensch tun würde, wie das Spielen eines Schachspiels ♟, das Verstehen und Beantworten von Fragen in deutscher Sprache oder das Erkennen von Bildern 🖼. <br />Wenn ein Roboter oder ein Programm solche Dinge tun kann, wäre dies ein Beispiel für Künstliche Intelligenz. </p><p>Künstliche Intelligenz ist eine Technologie, die es Computern ermöglicht, eigenständig Probleme und Aufgaben zu lösen und sich sogar selbst weiterzuentwickeln. </p><p>So wie auch wir ganz natürlich lernen und denken können, wird versucht, diese Fähigkeiten auf den Computer zu übertragen, damit er eben künstlich intelligent wird. Das gelingt, indem Computer mit sehr großen Mengen von Daten gefüttert werden. Durch Algorithmen (das sind Vorgehensweisen zur Lösung von Problemen) können von der KI dann Muster und Gesetzmäßigkeiten erkannt und angewendet werden.</p><p>KI findet schon in vielen Bereichen ihren Einsatz. Hier ein kurzer Überblick:</p><ul><li>als virtuelle Helfer für komplexe Fragen (z.B. als Chatbot)</li><li>zur Erstellung von Texten, (Bewegt-)Bildern, Präsentationen, Programmcode u.v.m.</li><li>zur Sprachübersetzung</li><li>zur Bilderkennung (z.B. Hunderassen oder auch im Medizinbereich für Krankheiten oder zur Gesichtserkennung am Smartphone)</li><li>um Empfehlungen zu geben: z.B. auf Netflix, Amazon, Facebook</li><li>um Dateien zu filtern: z.B. Spam-E-Mails oder Viren</li><li>um Daten zu analysieren: z.B. Kundendaten, in der Formel 1 oder aus dem Weltall</li><li>für selbstfahrende Autos</li><li>u.v.m.</li></ul><p> </p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a8"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.054Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.054Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024a9"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.056Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:10.946Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,681c7b148945ce807e9024a8,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "❓ Wie funktioniert eine KI?",
+		"height": 3672
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024aa"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.072Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:08.957Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,681c7b148945ce807e9024a8,681c7b148945ce807e9024a9,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Es gibt verschiedene Möglichkeiten, eine KI zu entwickeln. Sie kann auf programmierten Abläufen basieren oder durch maschinelles Lernen erzeugt werden.</p><p>Bei programmierten Abläufen reagiert das Programm auf im Vorfeld definierte Situationen. Beispielsweise kann beim TicTacToe spielen die folgende Situation fest einprogrammiert haben.</p><p>Wenn diese Situation vorliegt, dann setze das X links in die mittlere Zeile. Die KI kann in dem Fall nur so intelligent sein, wie ihr Erschaffer bzw. ihre Erschafferin. Aufgrund der vorher zu definierenden Situationen, kann diese Form der KI nur auf sehr einfache Anwendungen angewendet werden. Beim Spiel Schach oder beim Spiel Go gibt es extrem viele Situationen, die nicht mehr manuell erfasst werden können. Für solche Anwendungsfälle sind andere Strategien nötig, eine ist das Maschinelle Lernen.</p><p> Maschine Learning</p><p>Das maschinelle Lernen ist ein Teilgebiet der Künstlichen Intelligenz. Dabei lernt die Maschine, Schritt für Schritt wie ein Mensch zu denken. Die Maschine lernt dabei aus Beispielen und Erfahrungen.</p><p>Supervised Learning, Unsupervised Learning oder Reinforcement Learning beschreibt, wie der Lernprozess aussehen kann.</p><p> Supervised Learning</p><p>Beim Supervised Learning, auch überwachtes Lernen genannt, werden Trainings- und Testdaten für einen Lernprozess benötigt. Die Trainingsdaten enthalten auch die Ergebnisse. Die KI versucht nun einen Algorithmus zu finden, der anhand der Trainingsdaten das entsprechende Ergebnis findet.</p><p>Ein sehr anschauliches Beispiel stellen das <a target=\"_blank\" href=\"https://www.aiunplugged.org/\">Gute-Äffchen-Böse-Äffchen-Spiel</a> dar. (Quelle: AI Unplugged CC BY NC Stefan Seegerer / Annabel Lindner, Link: <a target=\"_blank\" href=\"https://www.aiunplugged.org/\">https://www.aiunplugged.org/</a>)</p><p>Es gibt Trainingsdaten, anhand derer der Algorithmus trainiert wird. Anhand der Eingaben (Aussehen des Affen) und mit dem Ergebnis (beißt oder beißt nicht) kann der Algorithmus verfeinert werden.</p><p>Hier im Beispiel wird der Algorithmus als Entscheidungsbaum dargestellt.</p><p>Der Entscheidungsbaum dient hier als einfaches Beispiel zur Darstellung eines Algorithmus.</p><p>Nun kann mit den Testdaten überprüft werden, wie gut das Modell funktioniert. Das Ergebnis beißt oder beißt nicht wurde dabei anhand des Entscheidungsbaums ermittelt. Der Algorithmus liefert nicht immer das korrekte Ergebnis, da auch immer neue bisher unbekannte Eingabedaten dazukommen, die in den Trainingsdaten nicht vorhanden waren. Je besser der Algorithmus ist, desto kleiner ist die Fehlerrate.</p><p>Anwendungen:</p><ul><li>Erkennen einer Katze im Bild</li><li>Erkennen von Krebs anhand von Röntgenbildern</li></ul><p><s> Unsupervised Learning</s></p><p>Beim Unsupervised Learning, oder auch unüberwachtes Lernen genannt, gibt es nur Eingabedaten, jedoch ohne dass ein Ergebnis feststeht. Mit Unsupervised Learning können Daten in nicht vordefinierten Clustern gruppiert werden.</p><p>Anwendungen: </p><ul><li>Gruppieren von Katzen- und Hundebildern,</li><li>Erkennung von Anomalien,</li><li>Ermitteln von Zusammenhängen zwischen Wörtern in einer Sprache</li></ul><p> Reinforcement Learning</p><p>Reinforcement Learning benutzt Belohnungen. Zu Beginn existiert ein Umfeld ohne Informationen. Der Algorithmus testet bestimmte Strategien, die durch positive oder negative Rückmeldungen verbessert werden. Das Spiel Schlag das Krokodil von Stefan Seegerer zeigt die Funktionsweise von Reinforcement Learning auf: <a target=\"_blank\" href=\"https://www.stefanseegerer.de/schlag-das-krokodil/\">https://www.stefanseegerer.de/schlag-das-krokodil/</a> (Quelle: Verstärkendes Lernen - Schlag den Computer CC BY NC SA 4.0 Stefan Seegerer).</p><p>Die KI spielt dabei das Krokodil und lernt von Runde zu Runde durch negative Rückmeldung, welche Strategie zum Sieg führt. In der jeweiligen Situation werden alle möglichen Züge aufgezeigt. Per Zufall wird ein möglicher Zug bestimmt. Führte der Zug zur Niederlage, wird dieser Zug beim nächsten Mal nicht mehr ausgewählt (der Punkt mit der entsprechenden Farbe wird entfernt).</p><p> Deep Learning</p><p>Deep Learning ist ein Teilgebiet des maschinellen Lernens. Es werden neuronale Netze verwendet. Ein neuronales Netz besteht aus Input-Neuronen und Output-Neuronen. Dazwischen liegen hidden-Neuronen. Die Neuronen sind in Schichten zusammengefasst. Gibt es mehrere Schichten mit hidden-Neuronen, so spricht man von Deep Learning.</p><p>Funktionsweise eines neuronalen Netzes:</p><p>Quelle: Künstliche Intelligenz in der Mammadiagnostik. Radiologe 60, 56–63 (2020). <a target=\"_blank\" href=\"https://doi.org/10.1007/s00117-019-00615-y\">https://doi.org/10.1007/s00117-019-00615-y</a>  CC BY 4.0 Bennani-Baiti, B., Baltzer, P.A.T. </p><p>Statt des Entscheidungsbaums aus dem Beispiel der Beißenden Affen und dem überwachten Lernen soll nun ein neuronales Netz trainiert werden. Die Bilddaten werden dazu an die Eingabeschicht übermittelt. Z.B. könnte an das erste Neuron der Eingabeschicht die Augenform und an die zweite die Mundform übertragen werden. Anhand der Trainingsdaten wird nun das neuronale Netz trainiert und die Verbindungen in den versteckten Sichten bilden sich. Eine Verbindung zwischen zwei Neuronen ist im Prinzip eine mathematische Funktion, die vom neuronalen Netz selbstständig gefunden und immer wieder verbessert und somit verändert wird. Die Ausgabeschicht gibt aus, ob der Affe beißt oder nicht.</p><p><strong>Vertiefende Information:</strong> <br />Ein interessanter und kurzweiliger Vortrag zum Thema Funktionsweise von Neuronalen Netzen von Annika Rüll (Bundesamt für Sicherheit in der Informationstechnik (BSI)) findet sich hier: <a target=\"_blank\" href=\"https://media.ccc.de/v/37c3-11784-lass_mal_das_innere_eines_neuronalen_netzes_ansehen\">https://media.ccc.de/v/37c3-11784-lass_mal_das_innere_eines_neuronalen_netzes_ansehen</a></p><p> </p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ab"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.081Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.084Z"
+		},
+		"path": ",681c7b148945ce807e9024a4,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ac"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.083Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:31.745Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 2: Anwendungsfelder und ausgewählte Beispiele von KI im Schulkontext",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ad"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.086Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.086Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ae"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.087Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:45.225Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024ad,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "👨‍🏫 Einsatzebenen von KI in der Schule",
+		"height": 2612
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024af"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.098Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:42.112Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024ad,681c7b148945ce807e9024ae,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Schulunterricht mit KI, Hologrammen und High-Tech</i></p><p>Künstliche Intelligenz hat bereits Einzug in viele unserer Lebensbereiche gehalten. Teilweise direkt erfahrbar, teilweise im Hintergrund. Aber kaum noch wegzudenken. Und auch in Schulen kann KI bereits auf <strong>unterschiedlichste Weise eingesetzt</strong> werden und das Lehren, Lernen und Verwalten potenziell weiter revolutionieren.</p><p>Grundsätzlich lassen sich <strong>drei Einsatzebenen</strong> von Künstlicher Intelligenz im schulischen Bildungsbereich definieren.</p><p> </p><p>Auf allen diesen Ebenen bieten KI-Systeme die Möglichkeit, mehr oder weniger automatisiert Steuerungsprozesse, Lehr- und Lernprozesse, Entscheidungsprozesse oder auch Prognoseprozesse zu unterstützen.</p><p>Die <strong>Mikro-Ebene</strong> betrifft dabei das individuelle Aneignen von Wissen sowie das Üben der Schüler und Schülerinnen und beinhaltet u.a. Kommunikation und Kollaboration, Tests und Selbstevaluation, Übung/Hausaufgaben/Training, Lernen (selbstgesteuert) und Lernen (regelbasiert/konzeptbasiert). Technologisch betrachtet stehen hier digitale Lernumgebungen (bzw. Plattformen) oder Kollaborationsnetzwerke im Zentrum, die aufgrund intelligenter Analysen der Daten Rückschlüsse bezüglich des Lernverhaltens erlauben. In diesem Zusammenhang spricht man auch von Learning Analytics. Auf Basis der Analysen können anhand der ermittelten Lernmuster, Schwächen und Stärken spezifische Lernaufgaben auf die Lernenden angepasst werden, aber auch Kompetenz- und Leistungsprofile erstellt werden. Auch Virtual und Augmented Reality können den Unterricht hier bereichern.</p><p>Experten sehen das Potenzial der KI vor allem als Lern-Buddy für Schülerinnen und Schüler sowie zur Bereitstellung von individuellen Lernerfahrungen und verorten die größten Chancen in den Bereichen Mathematik, Naturwissenschaften, Spracherwerb, Geschichte, Kunst und Deutsch. Vorausgesetzt ist hier, dass die Lehrerinnen und Lehrer entsprechend für den Einsatz vorbereitet werden, um so das Potenzial zu heben.</p><p>Auf der nächsthöheren Ebene - der <strong>Meso-Ebene</strong> - findet das Lehren, der Unterricht und das Prüfen (Klassenarbeiten, Tests) auf Ebene der Klassen bzw. Gruppen statt. Zudem werden hier auch Lernprozesse organisiert. Neben der Organisation von Klassen sind hier u.a. das Tutoring bzw. binnendifferenzierte, individuelle Förderung, Lernstandsanalysen, Lerngruppen, Beratung und Elternarbeit angesiedelt. Die KI kann hier u.a. dahingehend unterstützen, Materialien anhand des aktuellen Lernstands sowie automatisierte Prüfungsauswertungen bereitzustellen. Die Lehrer und Lehrerinnen können zusätzlich Empfehlungen bezüglich der Leistungen der Schüler und Schülerinnen erhalten.</p><p>Die Potenziale der Entlastung von Lehrkräften werden von Experten derzeit vor allem in der Unterrichtsvorbereitung, der Erleichterung der Materialerstellung sowie in der Evaluation von Leistungen (Korrekturarbeit, Tests etc.) gesehen. Vorausgesetzt sind hier Regelungen des Datenschutzes und des Urheberrechts.</p><p>Die oberste Ebene stellt die <strong>Makro-Ebene</strong> dar. Das dazugehörige Einsatzfeld lässt sich hier kurz überschreiben mit den Begriffen Organisation und Administration. Im Mittelpunkt stehen Steuerungs- und Planungsprozesse der Schule selbst bzw. die Schulorganisation. Neben allgemeiner schulplanerischer Aufgaben (u.a. Stunden- und Vertretungsplanung, Ressourcen-/Personalplanung, Raumplanung) sind hier auch Evaluationen und Leistungsanalysen auf Schulebene, Prognosen sowie Wirtschaftlichkeitsrechnungen zu nennen. KI kann hier umfangreiche Daten aufbereiten und so die Situation in Klassen, Schulen und Schulsystemen evaluieren und vergleichen. Dieser Prozess wird auch als Educational Data Mining bezeichnet. Auf Basis Künstlicher Intelligenz sind umfangreiche Diagnosen der Schuldaten anhand diverser Messdaten und Indikatoren möglich, die jederzeit zur Verfügung gestellt werden können. Eine Anreicherung der Daten durch Sensoren oder Bildaufzeichnungen ist hier ebenfalls möglich. KI bietet dabei als Chance Effizienzpotenziale und damit Entlastung, setzt dafür aber zuvor auch die digitale Transformation von Schulprozessen voraus.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b0"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.104Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.104Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b1"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.106Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:55.535Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024b0,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "🤝 Anwendungen im Schulalltag",
+		"height": 2270
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b2"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.153Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:37:53.924Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024b0,681c7b148945ce807e9024b1,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Was sind aber nun konkret die wesentlichen KI-Systeme?</p><p>Derzeit lassen sich vor allem die nachfolgenden <strong>KI-Systeme im Schulumfeld\"</strong> anführen:</p><p>Künstliche Intelligenz bietet große Potenziale, die Unterrichtsgestaltung zu erleichtern, den Lernprozess der Schülerinnen und Schüler zu begleiten und die Kompetenzentwicklung zu fördern. Für all diese Anwendungsfälle sollen jeweils nachfolgend konkrete Beispiel angeführt werden:</p><table><thead><tr><th> </th><th>Anwendung</th><th>Beschreibung</th><th>Beispiel</th></tr></thead><tbody><tr><td><strong>Unterrichtsgestaltung</strong></td><td>KI-Tools, die Lehrkräfte bei der Planung, Durchführung und Reflexion des Unterrichts unterstützen</td><td>Diese KI-Tools können z. B. Lehrmaterialien generieren, anpassen oder empfehlen, Lernziele formulieren oder überprüfen, Feedback geben oder einholen, oder den Unterrichtsverlauf dokumentieren oder analysieren.</td><td><i>Chat PDF</i> ist ein KI-Tool, das es ermöglicht, mit PDF-Dateien zu chatten und entsprechende Anfragen zu stellen. Man kann z. B. Fragen zum Inhalt einer PDF stellen oder sogar Aufgaben zu einem Thema generieren lassen. Chat PDF kann im Unterricht eingesetzt werden, um z. B. die Unterrichtsvorbereitung und die Erstellung von Arbeitsblättern zu erleichtern.</td></tr><tr><td><strong>Lernprozessbegleitung</strong></td><td>KI-Tools, die Schülerinnen und Schüler bei der Gestaltung, Durchführung und Reflexion ihres individuellen Lernprozesses unterstützen</td><td>Diese KI-Tools können z. B. Lerninhalte generieren, anpassen oder empfehlen, Lernfortschritte messen oder visualisieren, Lernstrategien vorschlagen oder fördern, oder Lernmotivation steigern oder erhalten.</td><td><i>DeepL Write</i> ist ein KI-Tool, das dabei hilft, Texte zu verbessern. Man gibt einfach einen Text ein, und man bekommt direkt Verbesserungsvorschläge angezeigt. DeepL Write kann im Unterricht eingesetzt werden, um z. B. den eigenen Schreibstil zu verbessern, Rechtschreibfehler schnell und einfach zu korrigieren oder Feedback zu geben.</td></tr><tr><td><strong>Kompetenzentwicklung</strong></td><td>KI-Tools, die Schülerinnen und Schüler bei der Entwicklung von fachlichen, überfachlichen und digitalen Kompetenzen unterstützen</td><td>Diese KI-Tools können z. B. fachspezifische Inhalte vermitteln, erklären oder vertiefen, kreative, kritische oder kollaborative Fähigkeiten anregen, fördern oder bewerten, oder digitale Medienkompetenz oder KI-Kompetenz vermitteln, fördern oder bewerten.</td><td><i>Textomap</i> ist ein KI-Tool, das Karten zu verschiedenen Themen erstellen kann. Man gibt einfach ein Thema ein oder lässt sich von ChatGPT Texte erstellen, und Textomap generiert daraus eine Karte. Textomap kann im Unterricht eingesetzt werden, um z. B. eine visuelle Darstellung von Informationen zu bieten, die besonders für Fächer wie Erdkunde oder Wirtschaft nützlich ist.</td></tr></tbody></table><p><i>Die Inhalte der Tabelle orientieren sich u.a. an der folgenden Publikation der Telekom-Stiftung: </i><a target=\"_blank\" href=\"https://www.telekom-stiftung.de/sites/default/files/files/media/publications/KI%20Bildung%20Schlussbericht.pdf\"><i>https://www.telekom-stiftung.de/sites/default/files/files/media/publications/KI%20Bildung%20Schlussbericht.pdf</i></a><i>, S. 13 ff.</i></p><p>Darüber hinaus kann KI auch einen motivierenden Einfluss auf Schülerinnen und Schüler haben: So bietet KI eine Reihe von Möglichkeiten der multimedialen Aufbereitung von Inhalten sowie eine Integration von Gamification-Ansätzen, die ein höheres Engagement und eine höhere Produktivität ermöglichen. Durch die individuelle Anpassung der Lerninhalte können Erfolgserlebnisse gefördert und Überforderung vermieden werden.</p><p><strong>Tipp:</strong> Sie wollen weitere Tools kennenlernen? Auf der nachfolgenden Seite finden sie einen Überblick über entsprechende Werkzeuge. Natürlich ist das Angebot deutlich größer und wächst stetig, sodass wir hier nur Anregungen geben können.</p><p><strong>Wichtiger Hinweis</strong>: Der Einsatz von KI in Schulen wirft unter anderem <i>ethische, rechtliche und datenschutzrechtliche Fragen</i> auf. Das <strong>Kapitel 5</strong> widmet sich dem Thema aus rechtlicher Sicht.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b3"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.163Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.163Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b4"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.166Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:05.380Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024b3,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "📌 Ausgewählte KI-Tools im Überblick",
+		"height": 3261
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b5"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.211Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:02.077Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024b3,681c7b148945ce807e9024b4,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Die nachfolgende Tabelle soll Ihnen einen kurzen Überblick über relevante KI-Systeme geben. Fortlaufend schreitet die Entwicklung voran, sodass schlicht unzählige Tools zur Verfügung stehen und diese Übersicht nur einen Auszug und eine Momentaufnahme darstellen kann, um Anregungen zu geben. </p><p><strong>Unser Tipp:</strong> Testen Sie auch vergleichbare Tools. Eventuell sind diese besser für Ihre Zwecke geeignet. In vielen Fällen findet sich zu kostenpflichtigen Varianten auch eine kostenlose Alternative.</p><table><thead><tr><th>Tool</th><th>Beschreibung</th><th>Verwendungszweck/Fach</th><th>Link</th></tr></thead><tbody><tr><td><strong>Bilderstellung</strong></td><td> </td><td> </td><td> </td></tr><tr><td><i>Dall-E</i></td><td>Text-zu-Bild-Generator, gehört zur Kategorie generativer KI</td><td>Wird zur Erstellung von Bildern, Grafiken, Logos etc. verwendet. Eignet sich fächerübergreifend zur Visualisierung. Auch für den Kunstunterricht von besonderem Interesse.</td><td><a target=\"_blank\" href=\"https://labs.openai.com/\">https://labs.openai.com/</a></td></tr><tr><td><i>Bing Image Creator</i></td><td>Text-zu-Bild-Generator, gehört zur Kategorie generativer KI</td><td>Nutzt Dall-E. Wird zur Erstellung von Bildern, Grafiken, Logos etc. verwendet. Eignet sich fächerübergreifend zur Visualisierung. Auch für den Kunstunterricht von besonderem Interesse.</td><td><a target=\"_blank\" href=\"https://www.bing.com/create\">https://www.bing.com/create</a></td></tr><tr><td><i>Ideogram</i></td><td>Text-zu-Bild-Generator, gehört zur Kategorie generativer KI </td><td>Kann wie Dall-E visuellen Content generieren und gleichzeitig vorgegebene Texte ins Bild einsetzen. Eignet sich fächerübergreifend zur Visualisierung. Auch für den Kunstunterricht von besonderem Interesse.</td><td><a target=\"_blank\" href=\"https://ideogram.ai/\">https://ideogram.ai/</a></td></tr><tr><td>Midjourney</td><td>Text-zu-Bild-Generator, gehört zur Kategorie generativer KI</td><td>wie Ideogram und Dall-E, jedoch kostenpflichtig nutzbar. Eignet sich fächerübergreifend zur Visualisierung. Auch für den Kunstunterricht von besonderem Interesse.</td><td><a target=\"_blank\" href=\"https://www.midjourney.com/\">https://www.midjourney.com</a></td></tr><tr><td>Adobe Firefly</td><td>Text-zu-Bild-Generator, gehört zur Kategorie generativer KI</td><td>wie Ideogram und Dall-E, jedoch kostenpflichtig nutzbar. Eher für professionelle Schulzwecke geeignet.</td><td><a target=\"_blank\" href=\"https://firefly.adobe.com/\">https://firefly.adobe.com/</a></td></tr><tr><td><strong>Textgenerierung</strong></td><td> </td><td> </td><td> </td></tr><tr><td><i>OpenAI GPT-3</i></td><td>Fortgeschrittenes Sprachmodell von OpenAI</td><td>Generierung von Texten, Konversations-KIs und Sprachverarbeitung. Kann fächerübergreifend eingesetzt werden.</td><td><a target=\"_blank\" href=\"https://chat.openai.com/\">https://chat.openai.com</a></td></tr><tr><td><i>Google Gemini</i></td><td>Fortgeschrittenes Sprachmodell von Google</td><td>Generierung von Texten, Konversations-KIs und Sprachverarbeitung. Kann fächerübergreifend eingesetzt werden.</td><td><a target=\"_blank\" href=\"https://gemini.google.com/app\">https://gemini.google.com/app</a></td></tr><tr><td><i>Perplexity AI</i></td><td>Textgenerator mit Quellenangaben, gehört zur Kategorie generativer KI</td><td>Wird zur Erstellung von Informationstexten zu einem bestimmten Thema verwendet, die Richtigkeit und Herkunft der Informationen können überprüft werden. Kann fächerübergreifend eingesetzt werden.</td><td><a target=\"_blank\" href=\"https://perplexity.ai/\">https://perplexity.ai/</a></td></tr><tr><td><i>Textomap</i></td><td>Text-zu-Karte-Generator, gehört zur Kategorie generativer KI</td><td>Wird zur Erstellung von Karten zu verschiedenen Themen verwendet, die eine visuelle Darstellung von Informationen bieten. Kann fächerübergreifend eingesetzt werden. Für Geographie und Politik von besonderem Interesse.</td><td><a target=\"_blank\" href=\"https://textomap.com/\">https://textomap.com/</a></td></tr><tr><td><i>Chat PDF</i></td><td>PDF-zu-Chat-Generator, gehört zur Kategorie generativer KI</td><td>Wird zur Interaktion mit PDF-Dateien verwendet, Fragen zum Inhalt oder Aufgaben zu einem Thema können gestellt oder generiert werden. Kann fächerübergreifend eingesetzt werden.</td><td><a target=\"_blank\" href=\"https://chatpdf.com/\">https://chatpdf.com/</a></td></tr><tr><td><i>SlidesGPT</i></td><td>Text-zu-Präsentation-Generator, gehört zur Kategorie generativer KI</td><td>Wird zur Erstellung von Präsentationsfolien zu einem bestimmten Thema verwendet, die eine komplette Präsentation bieten. Kann fächerübergreifend eingesetzt werden.</td><td><a target=\"_blank\" href=\"https://slidesgpt.com/\">https://slidesgpt.com/</a></td></tr><tr><td><i>DeepL Write</i></td><td>Textverbesserer, gehört zur Kategorie generativer KI</td><td>Wird zur Verbesserung von Texten verwendet, Verbesserungsvorschläge zu Grammatik, Rechtschreibung oder Stil werden angezeigt. Von besonderem Interesse für das Fach Deutsch.</td><td><a target=\"_blank\" href=\"https://deepl.com/write\">https://deepl.com/write</a></td></tr><tr><td><strong>Audio / Stimmgeneratoren</strong></td><td> </td><td> </td><td> </td></tr><tr><td><i>FakeYou</i></td><td>Online-Tool - Text-to-Speech</td><td>Generierung von Audiodateien aus Texteingaben</td><td><a target=\"_blank\" href=\"https://fakeyou.com/tts\">https://fakeyou.com/tts</a></td></tr><tr><td><i>SPEECHGEN.IO</i></td><td>Online-Tool - Text-to-Speech</td><td>Generierung von Audiodateien aus Texteingaben</td><td><a target=\"_blank\" href=\"https://speechgen.io/de/\">https://speechgen.io/de/</a></td></tr><tr><td><strong>Feedback-Tools</strong></td><td> </td><td> </td><td> </td></tr><tr><td><i>Fiete.ai</i></td><td>Online-Feedback-Tool + App</td><td>Erstellung von Aufgaben mit KI-basierten Rückmeldungen zu Abgaben/Einreichungen. Kann fächerübergreifend eingesetzt werden.</td><td><a target=\"_blank\" href=\"https://www.fiete.ai/\">https://www.fiete.ai/</a></td></tr><tr><td><strong>Übersetzungs-Tools</strong></td><td> </td><td> </td><td> </td></tr><tr><td><i>DeepL</i></td><td>Online-Fremdsprachen-Übersetzer + App</td><td>Grammatikalische korrekte Übersetzungen von Texten und Homepages von und in diverse Sprachen. Für den Fremdsprachenunterricht von besonderem Interesse.</td><td><a target=\"_blank\" href=\"https://www.deepl.com/translator\">https://www.deepl.com/translator</a></td></tr></tbody></table><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b6"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.216Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.216Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,",
+		"level": 1,
+		"position": 3,
+		"type": "column",
+		"title": "4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b7"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.218Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:16.986Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024b6,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "📺 Videos zum Thema",
+		"height": 1069
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b8"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.226Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:12.082Z"
+		},
+		"path": ",681c7b148945ce807e9024ac,681c7b148945ce807e9024b6,681c7b148945ce807e9024b7,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Tauchen Sie gerne noch weiter in die Materie ein. Eine Reihe von Videobeiträgen hat sich inzwischen mit der Thematik beschäftigt. Dabei kommen diverse Experten und Expertinnen zu Wort. Es lohnt sich, hier den ein oder anderen Beitrag anzuschauen. Viel Spaß dabei!</p><p><strong>funk - MrWissen2go: Machen Chat GPT &amp; Co. die Schule überflüssig?</strong> - 24.11.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n\">https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n</a></p><p><strong>BR Fernsehen - Frankenschau aktuell: Künstliche Intelligenz in der Schule -</strong> 32.05.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/embed/Y3JpZDovL2JyLmRlL3ZpZGVvLzg0OTRlOWFkLWY3MDQtNDcwNS05ODBmLWRjNGM4Y2FmYTUyOA\">https://www.ardmediathek.de/embed/Y3JpZDovL2JyLmRlL3ZpZGVvLzg0OTRlOWFkLWY3MDQtNDcwNS05ODBmLWRjNGM4Y2FmYTUyOA</a></p><p><strong>SWR - SWR Aktuell Rheinland-Pfalz - Was verändert die künstliche Intelligenz an Schulen?</strong> - 07.03.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/swr-aktuell-rheinland-pfalz/was-veraendert-die-kuenstliche-intelligenz-an-schulen/swr-rp/Y3JpZDovL3N3ci5kZS9hZXgvbzE4MjA0OTM\">https://www.ardmediathek.de/video/swr-aktuell-rheinland-pfalz/was-veraendert-die-kuenstliche-intelligenz-an-schulen/swr-rp/Y3JpZDovL3N3ci5kZS9hZXgvbzE4MjA0OTM</a></p><p><strong>BR - ALP – Keynote in Zusammenarbeit mit der ALP - Umbruch - Wie wird KI die Schule verändern?</strong> - 6.11.2022: <a target=\"_blank\" href=\"https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html\">https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html</a></p><p><strong>ARD - Planet Wissen: Künstliche Intelligenz - Wie sie unser Leben lenkt</strong>- 26.10.2023: <a target=\"_blank\" href=\"https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html\">https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html</a></p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024b9"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.234Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:32.639Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 3: Bedienungskompetenz - Voraussetzungen für die Nutzung von KI",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ba"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.237Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.237Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024bb"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.241Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:42.688Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,681c7b148945ce807e9024ba,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "👨‍🏫 Einsatzfelder von ChatGPT in der Schulpraxis",
+		"height": 1847
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024bc"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.253Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:41.340Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,681c7b148945ce807e9024ba,681c7b148945ce807e9024bb,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Lehrer nutzt professionell KI</i></p><p>Wie Sie bereits im Kapitel 2 erfahren haben, kann KI für ganz unterschiedliche Zwecke im Schulalltag genutzt werden. Vertiefend möchten wir in diesem Abschnitt darauf eingehen, wie Lehrerinnen und Lehrer ganz konkret ChatGPT einsetzen können:</p><ul><li><strong>Unterstützung bei der Vorbereitung von Unterrichtsmaterial:</strong> Lehrkräfte können ChatGPT nutzen, um zusätzliche Informationen zu einem Thema zu erhalten, das sie im Unterricht behandeln möchten. Sie können Fragen stellen, um zusätzliche Perspektiven oder Ressourcen zu erhalten, die den Unterricht bereichern.</li><li><strong>Individuelle Unterstützung für Schülerinnen und Schüler:</strong> ChatGPT kann genutzt werden, um auf individuelle Fragen von Schülerinnen und Schülern einzugehen, sei es zur Klärung von Konzepten oder zur Bereitstellung zusätzlicher Materialien, um das Verständnis zu vertiefen. Eine Binnendifferenzierung wird erleichtert, entweder in der Vorbereitung und sogar live im Unterricht.</li><li><strong>Sprachpraxis und Schreibunterstützung:</strong> Lehrkräfte können ChatGPT einsetzen, um Schülerinnen und Schülern beim Üben von Sprachkenntnissen oder beim Verbessern ihrer Schreibfertigkeiten zu unterstützen. ChatGPT kann Feedback zu Aufsätzen oder Antworten auf sprachliche Fragen geben. Es können z.B. Beispieltexte in verschiedenen Varianten erstellt und anschließend verglichen werden.</li><li><strong>Kreative Anregungen und Diskussionen:</strong> Lehrkräfte können ChatGPT nutzen, um kreative Ideen oder Diskussionsanregungen für den Unterricht zu erhalten. Sie können Fragen stellen, um verschiedene Perspektiven oder Herangehensweisen zu einem Thema zu erhalten, was den Unterricht interessanter gestalten kann.</li><li><strong>Interview mit einer historischen Person simulieren lassen:</strong> Das Interview kann live im Unterricht geführt werden. Hier sollte möglichst deutlich der Kontext vorgegeben werden, um ein authentisches Erlebnis zu ermöglichen.</li><li><strong>Unterstützung bei der Informationsrecherche:</strong> ChatGPT kann Schülerinnen und Schülern helfen, relevante Informationen zu recherchieren, indem es Fragen zu einem bestimmten Thema beantwortet oder Ressourcen empfiehlt, die für die Erstellung von Präsentationen oder Arbeiten nützlich sein könnten. Hier ist jedoch zu beachten, dass die aktuell freie Version von ChatGPT nicht über ganz aktuelle Informationen verfügt.</li></ul><p>Es ist wichtig, dass Lehrerinnen und Lehrer bei der Nutzung von ChatGPT im Unterricht die Grenzen der Technologie berücksichtigen und die Antworten sorgfältig überprüfen, um sicherzustellen, dass sie den Lernzielen und pädagogischen Standards entsprechen.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024bd"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.259Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.259Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024be"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.261Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:46.287Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,681c7b148945ce807e9024bd,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💡 Tipps und Hinweise für Prompts",
+		"height": 1255
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024bf"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.270Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:45.627Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,681c7b148945ce807e9024bd,681c7b148945ce807e9024be,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Bezüglich ChatGPT-Prompts sind hier einige spezifische Hinweise, die helfen können:</p><ul><li><strong>Klare Fragen stellen: </strong>Formulieren Sie klare und präzise Fragen, um genau die Informationen oder die Art der Antwort zu erhalten, die Sie benötigen.</li><li><strong>Kontext bereitstellen: </strong>Geben Sie ausreichend Kontext oder Hintergrundinformationen, damit ChatGPT den Zusammenhang besser versteht und eine relevante Antwort generieren kann.</li><li><strong>Offen für Kreativität bleiben:</strong> Manchmal können offene Fragen zu interessanteren und vielschichtigeren Antworten führen. Lassen Sie daher Raum für kreative Interpretationen.</li><li><strong>Spezifität: </strong>Je spezifischer dein Prompt ist, desto genauer und fokussierter wird die Antwort sein. Versuchen Sie, die Frage so präzise wie möglich zu formulieren.</li><li><strong>Einschränkungen oder Anforderungen angeben:</strong> Wenn es bestimmte Einschränkungen oder Anforderungen gibt, die die Antwort beeinflussen sollen (z. B. eine Antwort in Form eines Dialogs oder einer Geschichte), sollten Sie diese im Prompt klar angeben.</li><li><strong>Klare Erwartungen: </strong>Formulieren Sie den Prompt höflich und klar, um eine freundliche Interaktion mit dem Chatbot zu fördern und die Erwartungen zu verdeutlichen.</li><li><strong>Vielfalt in den Prompts: </strong>Versuchen Sie verschiedene Varianten auszuprobieren, um das optimale Ergebnis zu erzielen.</li></ul><p>Indem Sie diese Punkte berücksichtigen, können Sie sicherstellen, dass Ihre Prompts informativ, klar und inspirierend sind, um gute Antworten von ChatGPT zu erhalten.</p><ul><li>Digitale Profis:<a target=\"_blank\" href=\"https://www.youtube.com/watch?v=uk7FjaQ9Z1A\"> 30 MINUTEN CHATGPT CRASHKURS - Wie funktioniert ChatGPT? Wie verwendet man ChatGPT?</a> <i>(Hier wird auf ein Youtube-Video verlinkt. Bitte prüfen Sie vor der Nutzung, ob diese in Ihrem Bundesland bzw. an Ihrer Schule freigegeben ist.)</i></li></ul><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c0"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.278Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.278Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c1"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.279Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:49.747Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,681c7b148945ce807e9024c0,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💡 Unterrichtsmaterial mit ChatGPT erstellen",
+		"height": 2410
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c2"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.292Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:38:48.674Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,681c7b148945ce807e9024c0,681c7b148945ce807e9024c1,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Die Qualität des Arbeitsauftrags (prompt) ist für das Ergebnis des Einsatzes einer Künstlichen Intelligenz entscheidend. Ein einfacher Prompt sollte dann zu einem komplexen Promt ausgebaut werden. In <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=uk7FjaQ9Z1A\">diesem Video</a>  <i>(Hier wird auf ein Youtube-Video verlinkt. Bitte prüfen Sie vor der Nutzung, ob diese in Ihrem Bundesland bzw. an Ihrer Schule freigegeben ist)</i> wird das anhand der Erstellung eines Textes über die Nordsee für eine Klasse 5 demonstriert.</p><p>Der einfache Prompt Schreibe mir einen Text zum Thema \"Leben an der Nordsee\" produziert einen ersten, aber noch wenig zielgerechten Text. Um die Verwendbarkeit im Unterricht zu erhöhen, kann die Anweisung deutlich spezifischer gestellt werden, z.B. so: Schreibe mir einen Text zum Thema \"Leben an der Nordsee\"; Themen: Ebbe und Flut, Lebensraum Wattenmeer; Zielgruppe: Klasse 5; einfache Sprache, sachlich; strukturiert mit Zwischenüberschriften; Länge 500-600 Wörter - so wird der Text inhaltlich und sprachlich passend.</p><p>Bei den komplexen Prompts sind der Fantasie des Erstellers keine Grenzen gesetzt. Es lohnt sich, hier ein wenig zu experimentieren.</p><ul><li>Vielleicht soll der Text ja nicht sachlich sein, sondern eine Geschichte enthalten.</li><li>Der Text kann für eine andere Altersgruppe angepasst werden.</li><li>Der Text kann ggf. auch in anderen Sprachen erstellt werden.</li><li>Für schwächere Schülerinnen und Schüler kann eine kürzere Variante erstellt werden.</li></ul><p>In dem Beispiel im Video werden auch passende Aufgaben zum Text erstellt. Auch hier gilt wieder, dass die Qualität des Prompts entscheidend ist: Schreibe 5 Fragen mit Lösungen zum Text; Unterteile dabei nach Reproduktion, Reorganisation und Reflexion. Alles Weitere <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=uk7FjaQ9Z1A\">im Video</a>. <i>(Hier wird auf ein Youtube-Video verlinkt. Bitte prüfen Sie vor der Nutzung, ob diese in Ihrem Bundesland bzw. an Ihrer Schule freigegeben ist.)</i></p><p>Eine weitere Möglichkeit wäre es, in sprachlichen Fächern gezielt Übungen zu komplexeren grammatikalischen Phänomenen erstellen zu lassen. Ein häufiges Problem in Oberstufenklausuren sind Unsicherheiten im Gebrauch des bestimmten Artikels. Entsprechende Übungen passen meist nicht in den inhaltlichen Kontext. Mit einem entsprechend spezifischen Prompt lassen sich passende Übungen erstellen:</p><p>Erstelle mir eine Übung mit 15 Sätzen für einen Oberstufenkurs Englisch. Es soll der Gebrauch des bestimmten Artikels geübt werden. Wann muss \"the\" verwendet werden und wann nicht? Beider Varianten sollen gleichmäßig gewichtet auftreten. Die Aufgaben sollen eine eindeutige Lösung haben. Verwende das Thema Globalisierung. Gib die Lösungen mit Begründung im Anschluss auf Englisch an.</p><p>Als Ergebnis produziert ChatGPT eine entsprechende Übung (hier auf 5 Sätze begrenzt):</p><ul><li>(1) ___ Globalization has impacted economies worldwide.</li><li>Critics often discuss (2) ___ impact of globalization on cultures.</li><li>There's a debate about (3) ___ role of globalization in inequality.</li><li>(4) ___ interconnectedness of economies has increased due to globalization.</li><li>(5) ___ rapid pace of change caused by globalization is undeniable.</li></ul><ol><li>No article: \"Globalization has impacted\" - no specific globalization is mentioned.</li><li>The: \"Critics often discuss the impact\" - this refers to a specific impact.</li><li>No article: \"Debate about role of globalization\" - a general discussion about the role of globalization.</li><li>The: \"The interconnectedness of economies\" - specific interconnection of economies is referred to.</li><li>No article: \"Rapid pace of change\" - a general rapid pace of change.</li></ol><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c3"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.300Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.304Z"
+		},
+		"path": ",681c7b148945ce807e9024b9,",
+		"level": 1,
+		"position": 3,
+		"type": "column",
+		"title": "4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c4"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.303Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:33.520Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 4: Auswirkung von KI im Schulkontext",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c5"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.310Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.310Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c6"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.313Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:05.061Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,681c7b148945ce807e9024c5,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💫 Eine Schule ohne Lehrkräfte?",
+		"height": 3217
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c7"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.330Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:03.877Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,681c7b148945ce807e9024c5,681c7b148945ce807e9024c6,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Über die Auswirkungen von KI in der Schule wurde zuletzt viel geschrieben und spekuliert. Oftmals wurde sogar die Zukunft der Lehrerinnen und Lehrer zur Diskussion gestellt. Nun, nutzen wir die Gelegenheit und befragen wir die KI einmal selber zum Thema: \"Ok, ChatGPT, wird KI die Lehrerinnen und Lehrer in Zukunft ersetzen?\"</p><p>\"<i>Als AI-Assistent kann ich sagen, dass KI das Potenzial hat, den Bildungsbereich zu unterstützen und zu verbessern. Es gibt bereits KI-gestützte Lernplattformen und Tools, die Schülerinnen und Schülern individuelle Unterstützung bieten können. Dennoch ist es unwahrscheinlich, dass KI-Lehrerinnen und -Lehrer vollständig ersetzen wird. Die menschliche Interaktion, Empathie und pädagogische Fähigkeiten sind nach wie vor von großer Bedeutung, um eine ganzheitliche Bildung zu gewährleisten. KI kann jedoch als Ergänzung dienen, um den Lernprozess zu optimieren und personalisierte Lernmöglichkeiten anzubieten.</i>\" Quelle ChatGPT, abgerufen zuletzt am 27.11.2023, um 14:46 Uhr</p><p>Ersetzen soll die KI Lehrerinnen und Lehrer also nicht, so zumindest die Selbsteinschätzung. Vielmehr stecke in diesen Programmen eine zukunftsweisende Ressource und eine Chance für den Unterricht. Doch stimmt das, ist KI eine Bereicherung für den Unterricht und eine Unterstützung für Lehrkräfte? Schauen wir uns die Möglichkeiten von KI einmal genauer an.</p><ol><li>Automatisierung von Aufgaben: Künstliche Intelligenz kann Lehrkräfte bei der Automatisierung von Aufgaben wie der Bewertung von Tests und Hausaufgaben unterstützen. Außerdem ist es möglich, durch KI Lerninhalte generieren zu lassen. Das spart Zeit und erhöht die Effizienz der Vor- und Nachbereitung.</li><li>Personalisierung des Lernens: Künstliche Intelligenz kann Lehrkräfte dabei unterstützen, den Unterricht auf die individuellen Bedürfnisse und Fähigkeiten jedes Schülers und jeder Schülerin anzupassen, indem sie Daten über das Lernverhalten und die Leistung der Schülerinnen und Schüler sammelt und analysiert. Das Stichwort hierfür lautet \"Learning Analytics\", das sie bereits aus dem Kapitel 2 kennen und wird folgendermaßen verstanden: \"Learning analytics is the measurement, collection, analysis and reporting of data about learners and their contexts, for purposes of understanding and optimizing learning and the environments in which it occurs” (George Siemens). Quelle:<a target=\"_blank\" href=\"https://ki-campus.org/sites/default/files/2023-09/KI-Campus_Manuskript_LeAs_FUB.pdf\">https://ki-campus.org/sites/default/files/2023-09/KI-Campus_Manuskript_LeAs_FUB.pdf</a> Es geht hierbei also um das Messen, Sammeln uns Analysieren der Lerndaten von Schülerinnen und Schülern in ihren jeweiligen Lernkontexten. Daraus lassen sich Schlussfolgerungen auf zielgerichtete Lernwege sowie eine optimale Lernumgebung ziehen.</li><li>Erweiterung des Lehrplans: Künstliche Intelligenz kann Lehrer und Lehrerinnen dabei unterstützen, den Lehrplan zu erweitern und neue Lerninhalte und -methoden zu integrieren, um den Schülerinnen und Schülern ein breiteres Spektrum an Wissen und Fähigkeiten zu vermitteln.</li></ol><p>Diese Möglichkeiten haben aber eine grundlegende Veränderung in der pädagogisch-didaktischen Selbstwahrnehmung der Lehrkraft zur Folge. Die Künstliche Intelligenz beschreibt es oben bereits selber. Die Rolle der Lehrkraft wird sich durch KI verändern, indem sie ihn von der Rolle des Wissensvermittlers zu einem Coach und Mentor für die Schülerinnen und Schüler macht, der sie bei der Entwicklung von Fähigkeiten wie kritischem Denken und Problemlösung unterstützt. Perspektivisch werden also neben den fachlichen mehr und mehr die sozialen Kompetenzen einer Lehrkraft in der Vordergrund treten.</p><p>Quelle: <a target=\"_blank\" href=\"https://www.bpb.de/lernen/digitale-bildung/werkstatt/256629/ideen-zur-rolle-von-kuenstlicher-intelligenz-im-klassenzimmer-der-zukunft/\">https://www.bpb.de/lernen/digitale-bildung/werkstatt/256629/ideen-zur-rolle-von-kuenstlicher-intelligenz-im-klassenzimmer-der-zukunft/</a>, abgerufen zuletzt am 27.11.2023, um 14:46 Uhr</p><p>Im folgenden Beitrag wird sich dieser Frage ganz praktisch angenommen und von einem menschlichen und einem \"künstlichen\" Experten diskutiert: <a target=\"_blank\" href=\"https://www.br.de/nachrichten/netzwelt/ki-in-der-schule-ersatz-oder-ergaenzung-fuer-lehrer,TWbbTRR\">https://www.br.de/nachrichten/netzwelt/ki-in-der-schule-ersatz-oder-ergaenzung-fuer-lehrer,TWbbTRR</a></p><p>Abschließend lässt sich sagen, dass die Nutzung von KI in Schule und Unterricht umfassende Herausforderungen für den Lehrerberuf mit sich bringen werden - und diese beginnen schon in der Lehrerausbildung. Lehrkräfte werden fortan lernen müssen, wie sie die Technologie effektiv einsetzen und mit den Daten umgehen können, die sie generiert. Letztlich müssen sie aber auch ihre (Lehrer-) Rolle an diese neuen Gegebenheiten anpassen. So kann es gelingen, dass KI eine Bereicherung oder gar eine Entlastung für den Unterricht und die Lehrerinnen und Lehrer darstellen kann. Dabei darf aber auch nicht vergessen werden, dass es im Sinne der pädagogisch-didaktischen Verantwortung eine zentrale Aufgabe von Lehrkräften werden wird, einen reflektierten Umgang mit den neuen Möglichkeiten unter Schülerinnen und Schülern zu fördern und deren Medienkompetenz weiter zu stärken. Grund genug, um im nächsten Abschnitt einen Blick auf die Schülerschaft zu wagen.</p><hr /><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c8"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.340Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.340Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024c9"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.347Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:07.918Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,681c7b148945ce807e9024c8,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "👨‍🏫 Eine Einladung zum Schummeln? - Die Auswirkungen von KI auf Schülerinnen und Schüler",
+		"height": 2716
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ca"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.363Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:06.536Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,681c7b148945ce807e9024c8,681c7b148945ce807e9024c9,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Der Traum wohl eines jeden Schülers bzw. einer jeden Schülerin ist es, Hausaufgaben in Sekundenschnelle erledigt zu bekommen oder in Prüfungen immer die richtige Antwort zu wissen. Dieser Traum scheint nun zum Greifen nahe - durch KI. Doch ist die Verwendung Künstlicher Intelligenz im Unterricht einzig eine Einladung zum \"digitalen\" Spicken? Das ist sicherlich zu eindimensional betrachtet. Unbestritten ist jedoch, dass sich mit dem Einsatz von KI im Unterricht auch Auswirkungen auf die Schülerinnen und Schüler ergeben werden. Im Folgenden sollen mögliche Aspekte etwas genauer beleuchtet werden.</p><ol><li><strong>Verbesserte Lernmöglichkeiten:</strong> Künstliche Intelligenz kann dazu beitragen, personalisierte Lernprogramme zu erstellen, die auf die individuellen Bedürfnisse und Fähigkeiten einer jeden Schülerin bzw. eines jeden Schülers zugeschnitten sind. Durch das zielgerichtete Ansprechen der Lernkanäle soll der Lernerfolg signifikant verbessert werden. Künstliche Intelligenz unterstützt damit das <i>Adaptive Lernen</i>, indem es auf Grundlage der o. g. Rahmenbedingungen personalisierte Lernpläne für Schülerinnen und Schüler generieren kann.</li><li><strong>Feedback-Kultur: </strong>Es gelingt Lehrerinnen und Lehrern nicht immer, in jeder Unterrichtsstunde individualisierte Rückmeldungen über den Lernfortschritt an die Schülerinnen und Schüler weiterzugeben. Durch automatisierte Bewertungen und Feedback-Systeme können KI-gestützte Programme diese Aufgabe übernehmen und unmittelbare Rückmeldungen an Schülerinnen und Schüler geben. So erhalten sie eine individualisierte Aussage zu ihrem Lernstand und im optimalen Falle ebenfalls Fördermechanismen.</li><li><strong>Praktische Lernhilfe:</strong> Künstliche Intelligenz kann auch eine Anlaufstelle für Schülerinnen und Schüler werden, wenn sich Fragen oder Probleme auftun. Z.B. könnten sich Nicht-Mutter-Sprachler Texte in sekundenschnelle übersetzten lassen, um so zu überprüfen, ob sie die deutsche Ausgabe verstanden haben. Grammatikalische Besonderheiten ließen sich ebenso kenntlich machen, wie mathematische Funktionen. Grundlegend können KI auch Sprach- und Schreibhilfen für Schülerinnen und Schüler mit Unterstützungsbedarf darstellen. Es gilt aber zu berücksichtigen, dass es immer einer didaktischen Begründung des Einsatzes im Unterricht bedarf, sodass die Systeme nicht ausschließlicher Verwendung unterliegen.</li></ol><p>Es zeigt sich also, dass die Verwendung von Künstlicher Intelligenz auch Auswirkungen auf die Lernenden im unterrichtlichen Kontext haben wird. Darüber hinaus werden aber auch neue Kompetenzen an die Schülerinnen und Schüler herangetragen werden müssen. In der Schule werden die Grundsteine für die spätere Berufswahl gelegt. Durch Künstliche Intelligenz befindet sich die Arbeitswelt jedoch gerade in einem starken Wandel. Neue Berufe werden entstehen und sich neue Karrieremöglichkeiten auftun. Schülerinnen und Schüler müssen daher auch auf die grundlegenden Anforderungen ihrer zukünftigen Arbeitswelt vorbereitet werden. Das Eingangs gewählte Beispiel birgt gewissermaßen eine grundlegende Problematik von KI in sich - das Missbrauchpotential. Die Verantwortung für den Umgang mit den Programmen obliegt aber letztlich beim Anwender bzw. der Anwenderin. Daher müssen Schülerinnen und Schüler lernen, wie man ethisch und verantwortungsvoll mit Künstlicher Intelligenz umgeht.</p><p>Und wie könnte nun ein KI-gestützter Schultag für Schülerinnen und Schüler aussehen? Die Initiative D21 ist dieser Frage nachgegangen und hat ein fiktives Szenario eines postmodernen Schultages entworfen. Zusammen mit dem 15-jährigen Alex aus Brandenburg darf ein digitalisierter Unterrichtstag erlebt werden und schließlich wird auch die KI EDU vorgestellt, die das Lernen der Schülerinnen und Schüler in dieser zukünftigen Welt unterstützt.</p><p>Initiative D21: Denkimpuls Digitale Bildung #01 | Einsatz von Künstlicher Intelligenz im Schulunterricht, <a target=\"_blank\" href=\"https://initiatived21.de/uploads/03_Studien-Publikationen/Denkimpulse-Bildung/01-KI-in-der-Schule/d21-denkimpuls-bildung01-schule_ki.pdf\">https://initiatived21.de/uploads/03_Studien-Publikationen/Denkimpulse-Bildung/01-KI-in-der-Schule/d21-denkimpuls-bildung01-schule_ki.pdf</a> - abgerufen am 27.11.2023.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024cb"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.378Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.382Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024cc"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.381Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.381Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,681c7b148945ce807e9024cb,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "KI in der Schulpraxis mit Regina Schulz",
+		"height": 150
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024cd"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.396Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.420Z"
+		},
+		"path": ",681c7b148945ce807e9024c4,681c7b148945ce807e9024cb,681c7b148945ce807e9024cc,",
+		"level": 3,
+		"position": 0,
+		"type": "link-element",
+		"title": "KI in der Schulpraxis mit Regina Schulz",
+		"url": "https://www.bpb.de/mediathek/podcasts/541292/ki-in-der-schulpraxis-mit-regina-schulz/",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ce"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.426Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:35.064Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 5: Rechtliche Grundlagen zur Nutzung von KI im Unterricht",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024cf"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.429Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.429Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d0"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.431Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:26.408Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024cf,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "❓ Alles länderspezifisch oder was?",
+		"height": 1487
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d1"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.438Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:24.967Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024cf,681c7b148945ce807e9024d0,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Rechtliche Hintergründe KI</i></p><p><strong>Einige Bildungsministerien haben bereits Handlungsleitfäden zur Nutzung von textgenerierenden KI-Anwendungen an Schulen veröffentlicht. Sollten Sie daher Interesse daran haben, KI-Anwendungen in Ihrem Unterricht einzusetzen, möchten wir als Erstes empfehlen auf den Websites Ihres Bildungsministeriums nach landesspezifischen Richtlinien zu recherchieren. In diesem Beitrag sind generell geltende Vorgaben zusammengefasst.</strong></p><p>Grundsätzlich gilt: Beim Einsatz von KI-Anwendungen im schulischen Kontext sind diverse rechtliche Aspekte zu berücksichtigen, insbesondere in Bezug auf die Verarbeitung, Auswertung und mögliche Weitergabe personenbezogener Daten. Die genaue Bewertung dieser Aspekte gestaltet sich jedoch als herausfordernd, da die Anwendungsmöglichkeiten und Nutzungsbedingungen von KI-Anwendungen variieren können.</p><p>Unabhängig von diesen Unterschieden gilt es sicherzustellen, dass der Einsatz von KI-Anwendungen im Unterricht im Einklang mit den geltenden Datenschutzbestimmungen erfolgt, ähnlich wie bei der Nutzung von Online-Plattformen oder Apps. Die Verantwortung für die Einhaltung des Datenschutzes in der schulischen Umgebung liegt bei der Schulleitung. Es ist entscheidend sorgfältig zu prüfen, inwiefern personenbezogene Daten der Nutzenden erfasst werden und ob möglicherweise technische oder organisatorische Schutzmaßnahmen erforderlich sind. Eine Datenverarbeitung durch KI-Anwendungen fällt nur dann unter den Geltungsbereich der Datenschutz-Grundverordnung (DS-GVO), wenn dabei personenbezogene Daten verarbeitet werden, wie in Artikel 2 Absatz 1 der DS-GVO festgelegt ist.</p><p>Informationen darüber, welche Daten von einem KI-Anbieter verarbeitet werden, sind in der Datenschutzerklärung und den Allgemeinen Geschäftsbedingungen zu finden. Diese Daten können beispielsweise bei der Kontoerstellung benötigt werden (wobei eventuelle Altersbeschränkungen berücksichtigt werden müssen) oder während der tatsächlichen Nutzung der Anwendung automatisch generiert werden. Daher ist es von großer Bedeutung, dass der Anbieter transparent über seine Datenverarbeitungspraktiken informiert und insbesondere über die Rechte in Bezug auf die Löschung von Daten aufklärt.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d2"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.445Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.445Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d3"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.448Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:31.184Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024d2,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💡 Check-Liste: 10 Tipps für den Einsatz von KI im Unterricht",
+		"height": 2372
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d4"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.460Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:29.938Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024d2,681c7b148945ce807e9024d3,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Der Einsatz von Künstlicher Intelligenz im Bildungsbereich eröffnet zahlreiche Möglichkeiten, den Unterricht zu optimieren und Schülerinnen und Schülern ein individuelleres Lernumfeld zu bieten. Allerdings ist es wichtig, die rechtlichen Rahmenbedingungen zu beachten, um Datenschutz, Ethik und die Rechte der Beteiligten zu wahren.</p><p><strong>Hier sind 10 Tipps für Lehrerinnen und Lehrer, die KI im Unterricht einsetzen möchten:</strong></p><p><strong>1. Datenschutz und Datenschutzgrundverordnung (DSGVO):</strong></p><ul><li>Achten Sie darauf, personenbezogene Daten der Schülerinnen und Schüler gemäß den Bestimmungen der DSGVO zu verarbeiten.</li><li>Informieren Sie die Schülerinnen und Schüler sowie deren Eltern über die Art und den Umfang der Datenerhebung und -verarbeitung.</li></ul><p><strong>2. Einwilligung:</strong></p><ul><li>Holen Sie die Einwilligung der Schülerinnen und Schüler oder ihrer Eltern ein, wenn personenbezogene Daten verarbeitet werden, insbesondere bei der Nutzung von KI-Tools, die individuelle Lernprofile erstellen.</li></ul><p><strong>3. Anonymisierung und Pseudonymisierung:</strong></p><ul><li>Versuchen Sie, personenbezogene Daten so weit wie möglich zu anonymisieren oder zu pseudonymisieren, um die Privatsphäre der Schülerinnen und Schüler zu schützen.</li></ul><p><strong>4. Transparenz:</strong></p><ul><li>Stellen Sie sicher, dass der Einsatz von KI im Unterricht transparent ist. Erklären Sie den Schülerinnen und Schülern, wie KI-Tools funktionieren und welche Daten sie verwenden.</li></ul><p><strong>5. Diskriminierungsfreie KI:</strong></p><ul><li>Vermeiden Sie den Einsatz von KI-Systemen, die diskriminierende oder voreingenommene Ergebnisse liefern könnten. Überprüfen Sie regelmäßig die Algorithmen und Datenquellen, um Diskriminierung zu verhindern.</li></ul><p><strong>6. Haftung und Verantwortlichkeit:</strong></p><ul><li>Klären Sie die Verantwortlichkeiten im Zusammenhang mit dem Einsatz von KI im Unterricht. Lehrkräfte sollten sich bewusst sein, dass sie für die Auswahl und den Einsatz von KI-Tools verantwortlich sind.</li></ul><p><strong>7. Urheberrecht:</strong></p><ul><li>Beachten Sie das Urheberrecht beim Einsatz von KI-generierten Materialien. Nicht alles, was von KI erstellt wird, ist urheberrechtlich unbedenklich.</li></ul><p><strong>8. Ethik und Moral:</strong></p><ul><li>Denken Sie darüber nach, wie ethische und moralische Fragen im Zusammenhang mit KI im Unterricht behandelt werden können. Diskutieren Sie diese Fragen offen und sensibilisieren Sie die Schülerinnen und Schüler dafür.</li></ul><p><strong>9. Fortbildung:</strong></p><ul><li>Besuchen Sie Schulungen zur sachgerechten Nutzung von KI im Unterricht an, damit Sie die rechtlichen und ethischen Aspekte verstehen und umsetzen können.</li></ul><p><strong>10. Evaluation und Überwachung:</strong></p><ul><li>Überprüfen Sie regelmäßig den Einsatz von KI-Tools im Unterricht, um sicherzustellen, dass sie den Bildungszielen entsprechen und den rechtlichen Anforderungen genügen. Es ist wichtig zu betonen, dass der Einsatz von KI im Bildungsbereich immense Vorteile bieten kann, solange er verantwortungsbewusst und unter Beachtung der rechtlichen Bestimmungen erfolgt. Lehrkräfte sollten sich daher stets über aktuelle Gesetze und Richtlinien informieren und diese in ihrer pädagogischen Arbeit berücksichtigen.</li></ul><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d5"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.467Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.467Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d6"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.473Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:34.704Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024d5,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💡 ChatGPT &amp; Datenschutz: Ein Überblick",
+		"height": 1578
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d7"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.484Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:33.495Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024d5,681c7b148945ce807e9024d6,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Der Chatbot ChatGPT ist das wohl bekannteste Beispiel und hat die Diskussion rund um das Thema KI in Schule im Dezember 2022 losgetreten. Aus diesem Grund wird an dieser Stelle ein Blick auf das Thema Datenschutz und Chatbot am Beispiel ChatGPT geworfen.</p><p>Zusammengefasst sollte bei der schulischen Nutzung von ChatGPT mit Bedacht vorgegangen werden, wobei das Alter der Schülerinnen und Schüler und die Umstände der Nutzung berücksichtigt werden müssen, da dies die Grenzen der Nutzung bestimmt.</p><p>Aufgrund der Herkunft von ChatGPT als US-amerikanischem Anbieter unterliegt die Plattform dem US-amerikanischen Recht und ist verpflichtet, Nutzerdaten auf Anfrage von Ermittlungsbehörden offenzulegen. Die Server für den Betrieb und das Training von ChatGPT befinden sich in den USA, selbst wenn ein globales Netzwerk von Cloudflare-Servern als Schutzschicht dient, um die Hauptserver zu sichern und Missbrauch zu verhindern. Daher sind sämtliche Nutzerdaten unter direkter Zugriffsgewalt US-amerikanischer Behörden. Es ist anzunehmen, dass die von den Nutzenden über Prompts in ChatGPT eingegebenen Daten, ihr Feedback und die erhaltenen Antworten in der nicht-API-Version unverschlüsselt auf der Plattform gespeichert sind. Dies ist erforderlich, damit der Anbieter die Plattform trainieren und Missbrauch überwachen kann. Neben den Inhaltsdaten fallen auch Kontodaten sowie übliche Logdaten und Metadaten zur Nutzung der Plattform an, die es ermöglichen, Nutzer potenziell identifizierbaren Personen zuzuordnen. Die Nutzung von ChatGPT ist ausdrücklich erst ab 18 Jahren gestattet, und die Erstellung eines Kontos erfordert die Angabe einer Mobilfunknummer, die einer individuellen Person zugeordnet ist. Daher ist eine anonyme Nutzung mit einem persönlichen Konto nicht möglich, und Dritte könnten Nutzer potenziell identifizieren. Obwohl der Anbieter angibt, die personenbezogenen Daten der Nutzenden zu schützen, gibt es für Nutzenden aus dem EU-Raum keine verbindlichen Zusagen im Sinne der Datenschutz-Grundverordnung (DS-GVO) in Bezug auf Betroffenenrechte wie das Löschen von Daten. Daten, die einmal eingegeben wurden, könnten langfristig auf den Servern des Anbieters verbleiben, auch nach Löschung eines Kontos. Daten, die in das Training eingeflossen sind, dürften unlöschbar sein.</p><p>Weiterführende Informationen hat der Datenschutzbeauftragte Dirk Thiede auf <a target=\"_blank\" href=\"https://unterrichten.digital/2023/01/23/chatgpt-datenschutz-unterricht-schule/\">https://unterrichten.digita</a>l zusammengefasst.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d8"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.495Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.495Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,",
+		"level": 1,
+		"position": 3,
+		"type": "column",
+		"title": "4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024d9"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.500Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:38.350Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024d8,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "👩‍⚖️ ChatGPT &amp; Datenschutz: Betrachtung verschiedener Einsatzbedingungen für den Unterricht",
+		"height": 1601
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024da"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.511Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:36.081Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024d8,681c7b148945ce807e9024d9,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Im Folgenden sind vier verschiedene Einsatzszenarien/-bedingungen von ChatGPT für den Unterricht dargestellt, die der Datenschutzbeauftragte Dirk Thiede auf <a target=\"_blank\" href=\"https://unterrichten.digital/2023/01/23/chatgpt-datenschutz-unterricht-schule/\">https://unterrichten.digita</a>l zusammengefasst hat:</p><p><strong>1. Ideale Einsatzbedingungen</strong></p><p>Die Schule wählt einen Anbieter aus, der ChatGPT über seinen API-Schlüssel zur Verfügung stellt. Ein Vertrag zur Auftragsverarbeitung wird zwischen der Schule und dem Anbieter abgeschlossen, wobei die Datenschutzvereinbarung zwischen dem Anbieter und OpenAI als Unterauftragsverhältnis dient.</p><p><strong>2. Gute Einsatzbedingungen</strong></p><p>Schülerinnen und Schüler in höheren Schulstufen oder an beruflichen Schulen entwickeln im Rahmen ihres Fachunterrichts eigene Anwendungen, die über die Schulschnittstelle auf ChatGPT zugreifen. Die Anwendung wird entweder lokal oder über die geschlossene schulische Plattform für Schülerinnen und Schüler bereitgestellt. In diesem Fall schließt die Schule eine Datenschutzvereinbarung mit OpenAI ab.</p><p><strong>3. Angemessene Einsatzbedingungen</strong></p><p>Schülerinnen und Schüler ab 18 Jahren können ChatGPT mit ihren persönlichen Konten im schulischen Unterricht optional nutzen. Schülerinnen und Schüler, die die Plattform nicht nutzen möchten, dürfen dadurch keine Nachteile in ihrer Leistungsbewertung erfahren.</p><p>Lehrkräfte können auf eigene Initiative hin persönliche Konten erstellen, unabhängig davon, ob es sich um private oder schulische E-Mail-Adressen und Mobilfunknummern handelt. Sie agieren als Vermittler zwischen ChatGPT und den Schülerinnen und Schülern. Sie nehmen Prompts entgegen, geben sie ein und besprechen die Antworten gemeinsam. Lehrkräfte können sich mit einem von ihnen erstellten persönlichen Konto auf einem nicht personalisierten Schülergerät der Schule anmelden und den Schülerinnen und Schülern die eigenständige Nutzung gestatten.</p><p><strong>4. Unvertretbare Einsatzbedingungen</strong></p><p>Lehrkräfte teilen Schülerinnen und Schülern die Zugangsdaten zu einem von ihnen erstellten persönlichen Konto mit, und diese verwenden ChatGPT auf privaten Endgeräten oder personalisierten schulischen Geräten. Schülerinnen und Schüler unter 18 Jahren verwenden im Unterricht ihre persönlichen ChatGPT-Konten oder erstellen im Unterricht ein Konto mit Zustimmung ihrer Erziehungsberechtigten.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024db"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.517Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.517Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,",
+		"level": 1,
+		"position": 4,
+		"type": "column",
+		"title": "5"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024dc"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.519Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:42.320Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024db,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "📌 Weiterführende Links und Informationen",
+		"height": 570
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024dd"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.527Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:39:41.121Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024db,681c7b148945ce807e9024dc,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>🌍 Dirk Thiede (2023). Gastbeitrag auf Unterrichten.Digital. ChatGPT und der Datenschutz – eine aktuelle Einschätzung (März 2023). Abgerufen am 22.11.2023 von <a target=\"_blank\" href=\"https://unterrichten.digital/2023/01/23/chatgpt-datenschutz-unterricht-schule/\">https://unterrichten.digital/2023/01/23/chatgpt-datenschutz-unterricht-schule/</a></p><p>📃 Ministerium für Bildung, Jugend und Sport des Landes Brandenburg <a target=\"_blank\" href=\"https://mbjs.brandenburg.de/sixcms/media.php/140/handlungsleitfaden_zur_nutzung_von_textgenerierenden_ki-systemen.pdf\">Handlungsleitfaden zur Nutzung von textgenerierenden KI-Anwendungen an Schulen im Land Brandenburg</a></p><p>📃 Ministerium für Schule und Bildung des Landes Nordrhein-Westfalen <a target=\"_blank\" href=\"https://www.schulministerium.nrw/system/files/media/document/file/handlungsleitfaden_ki_msb_nrw_230223.pdf\">Umgang mit textgenerierenden KI-Systemen. Ein Handlungsleitfaden</a></p><p>📃 Senatsverwaltung für Bildung, Jugend und Familie <a target=\"_blank\" href=\"https://www.berlin.de/sen/bjf/service/presse/pressearchiv-2023/pressemitteilung.1316517.php\">Empfehlungen für den Umgang mit KI-Anwendungen an Beispiel von ChatGPT</a></p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024de"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.534Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.534Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,",
+		"level": 1,
+		"position": 5,
+		"type": "column",
+		"title": "6"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024df"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.538Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.538Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024de,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "KI weitere Sammlung - Ergänzende Themen",
+		"height": 150
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e0"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.546Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.548Z"
+		},
+		"path": ",681c7b148945ce807e9024ce,681c7b148945ce807e9024de,681c7b148945ce807e9024df,",
+		"level": 3,
+		"position": 0,
+		"type": "link-element",
+		"title": "KI weitere Sammlung - Ergänzende Themen",
+		"url": "https://ew-858.dbc.dbildungscloud.dev/etherpad/p/g.RLUKlu0YCH6fKuxx$30d4ab422abc8c71298b5a0a",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e1"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.551Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:35.936Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 6: KI und Desinformation am Beispiel",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e2"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.553Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.553Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e3"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.557Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:08.201Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024e2,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💡 KI und Desinformation",
+		"height": 1316
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e4"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.569Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:07.023Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024e2,681c7b148945ce807e9024e3,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Neben den genannten Potenzialen Künstlicher Intelligenz (KI) für den Kontext Schule aber auch unseren Alltag, behandeln wir in diesem Kapitel eine der großen Herausforderungen, mit der es sich gilt hinsichtlich der Schattenseiten von KI auseinanderzusetzen.</p><p><i>Erstellt mit deepai.org - Prompt: </i>A machine which produces disinformation and fake news</p><p><strong>Desinformation</strong> - eine Bezeichnung, die häufig synonym mit den Begriffen „Fake News“ oder \"Misinformation\" verwendet wird. Eine klare Differenzierung der Begrifflichkeiten ist nicht ganz einfach (vgl. Hoffmann 2023), weshalb wir auch in diesem Kurs einen Versuch der detaillierten Abgrenzung nicht weiterverfolgen. Im Kern bedeuten sie alle drei eine falsche oder irreführende Information, die bewusst verbreitet wird, um öffentliche Meinung zu beeinflussen. Ziel ist dabei nicht immer, dass sich diese Falschinformation auch tatsächlich als neue Wahrheit durchsetzt, sondern vielmehr der Aufbau eines langfristig angelegten Konstruktes, das Menschen in ihrem Alltag verunsichern soll. Die Flut an Desinformation, die uns jeden Tag begegnet, soll idealerweise in ihrer Fülle den Eindruck erwecken, dass man in einer von Medien und Information durchdrungenen Lebenswelt eigentlich nichts und niemandem mehr glauben und trauen kann (ebd.).</p><p><strong>Desinformation ≠ fehlerhafte Information</strong></p><p>Achtung: Unbeabsichtigte Fehler oder kritische Überspitzungen, wie beispielsweise Schreibfehler, Zeitungsenten oder Satiren, sind nicht automatisch mit Desinformation gleich zu setzen. Entscheidend ist der Faktor der bewussten Irreführung, um einer Person oder Personengruppe zu schaden. Das folgende Schaubild von Wolf-Dieter Rühl (2017) stellt dieses Unterscheidungsmerkmal anschaulich dar.</p><p><strong>Quelle:</strong> Schaubild von Wolf-Dieter Rühl, „Measuring Fake News – Die Methode“, Stiftung Neue Verantwortung e. V., Berlin Dezember 2017, S. 3. (Aus: <a target=\"_blank\" href=\"https://www.stiftung-nv.de/sites/default/files/fake_news_methodenpapier_deutsch.pdf\">https://www.stiftung-nv.de/sites/default/files/fake_news_methodenpapier_deutsch.pdf</a> ; 19.01.2024)</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e5"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.578Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.578Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e6"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.581Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:12.576Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024e5,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💡 Deepfakes - KI generierte Desinformation",
+		"height": 1834
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e7"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.593Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:11.720Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024e5,681c7b148945ce807e9024e6,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Digitale, kreative Inhalte können heute leicht und in großen Mengen erstellt werden. Gleichzeitig eröffnet diese Möglichkeit aber auch neue Wege, um Inhalte und Informationen bewusst zu manipulieren. KI wird heute schon aktiv eingesetzt, täuschend echte Fälschungen von Bild-, Audio- und Videomaterial zu erstellen – etwa in Form sogenannter „Deepfakes“. Diese Fälschungen können mithilfe künstlicher, neuronaler Netzwerke weitgehend autonom erzeugt werden.</p><p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Ein Deepfake in Form eines Videos im Stil von René Magritte.</i></p><p><strong>Fakes in Bild und Ton</strong></p><p>Ein „Deepfake“ oder auch „Deep Fake“ ist ein Bild oder Video, das mit Hilfe von künstlicher Intelligenz erstellt wurde und echt aussieht, es aber nicht ist. Die Methoden und Techniken des Machine- und Deep-Learnings, die dabei zum Einsatz kommen, werden geläufig ebenfalls mit dem Begriff bezeichnet. Deepfakes werden verwendet, um Kunst- und Anschauungsobjekte zu schaffen oder eben auch um Mittel zur Diskreditierung, Manipulation und Propaganda zu erzeugen. Vorwiegend werden dabei Personen in digitalen Aufnahmen und Videos inszeniert, in denen sie so nie in Wirklichkeit aufgetreten sind. Beispielsweise können Gesichter bekannter Schauspielerinnen und Schauspieler in pornografische Inhalte eingebettet werden oder reale Aufnahmen von Personen werden durch manipulierte Sätze neu synchronisiert und täuschend echt mit KI nachbearbeitet, um einen Fake möglichst natürlich aussehen zu lassen (vgl. Gabler 2024; klicksafe 2023).</p><p>Programme, die auf Deep-Learning-Technologien zur Gestaltung KI-generierter Bilder und Videos basieren, sind im Internet in großer Zahl verfügbar. Und sie können, bedingt durch eine meist einfache Nutzungsoberfläche, auch von Laien ohne technisches Fachwissen bedient werden. So auch für missbräuchliche Zwecke (vgl. BMBF 2021).<br /> </p><p><strong>Wie Deepfakes konkret aussehen?</strong><br />Das verdeutlichen die folgenden zwei Video-Beispiele der Sendung Terra X (ZDF 2022) und BuzzFeed (2018).</p><p>📺 <strong>ZDF (2022): Wie funktionieren Deepfakes?</strong> Terra X; Zweites Deutsches Fernsehen (ZDF) - Mediathek, Mainz.<br />Hochgeladen am 14.06.2022 I 02:22Min. <strong>Externer LINK zur ZDF-Mediathek: </strong><a target=\"_blank\" href=\"https://www.zdf.de/dokumentation/terra-x/terra-x-deepfakes-100.html\"><strong>https://www.zdf.de/dokumentation/terra-x/terra-x-deepfakes-100.html</strong></a><strong> </strong>(abgerufen am 19.01.2024)</p><p>📺 <strong>BuzzFeed (2018): You Won’t Believe What Obama Says In This Video! 😉.</strong> BuzzFeed, ID Metropolen News GmbH, Hamm. YouTube-Video. Hochgeladen am 17.04.2018 I 01:12Min. <strong>Externer LINK zur Webseite von BuzzFeed: </strong><a target=\"_blank\" href=\"https://www.buzzfeed.com/watch/video/52602\"><strong>https://www.buzzfeed.com/watch/video/52602</strong></a><strong> </strong>(abgerufen am 19.01.2024) <i>(Hier wird auf ein Youtube-Video verlinkt. Bitte prüfen Sie vor der Nutzung, ob diese in Ihrem Bundesland bzw. an Ihrer Schule freigegeben ist.)</i></p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e8"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.600Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.600Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024e9"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.602Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:17.577Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024e8,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "🔍 Fakten checken!",
+		"height": 2194
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ea"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.613Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:15.874Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024e8,681c7b148945ce807e9024e9,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><strong>Was kann man in einer von KI beeinflussten Lebenswelt denn eigentlich noch glauben...?</strong></p><p>Eine ganze Menge! Als Individuen sind wir der Fülle an weltweit existierenden Desinformationen keineswegs ausgeliefert. Um allerdings gut gewappnet zu sein, gilt es sich grundlegend bewusst zu werden, dass hinter allen Handlungen und Inhalten - seien sie in der analogen oder virtuellen Realität produziert - auch immer Personen oder Gruppen stehen, die diese Handlungen absichtsvoll ausführen bzw. Inhalte absichtsvoll erstellt haben. Eine solche \"Absicht\" muss nicht zwingend diskreditierend, propagandistisch oder manipulierend sein. Auch unterhaltende und belustigende Videos, informierende Clips, Magazine, Nachrichtensendung oder beeindruckende Kunstwerke sind immer absichtsvoll</p><p>Im Sinne einer vollumfänglichen \"Informationskompetenz\" (vgl. u.a. NLQ 2024, Saferinternet 2024) ist entscheidend, eine Sensibilität für irreführende Inhalte zu entwickeln. Eine gesunde Portion Skepsis, ein Verständnis für Erscheinungsformen sowie die Ziele und Mechaniken, die hinter der Erstellung von Fakes stecken, sind bedeutsam, um Desinformation zu erkennen und sich nicht täuschen zu lassen. Das folgende Schaubild (bpb 2023) und die darunter angeführten \"10 Tipps zum Erkennen von Desinformation\" von MIMIKAMA (2023) können dabei als alltagspraktische Leitfäden fungieren.</p><p><strong>👑💀FAKE oder nicht FAKE</strong></p><p><strong>Direkter LINK der bpb (2023) zum Download des Schaubildes als PDF-Dokument:</strong> <a target=\"_blank\" href=\"https://www.bpb.de/system/files/dokument_pdf/6524_flowchart_Fakenews_erkennen_DINA4_230310.pdf?download=1\">https://www.bpb.de/system/files/dokument_pdf/6524_flowchart_Fakenews_erkennen_DINA4_230310.pdf?download=1</a></p><p><strong>Quelle: </strong>bpb (2023)</p><hr /><p><strong> 10 Tipps zum Erkennen von Desinformation</strong></p><ol><li><strong>Quellen überprüfen:</strong> Achten Sie darauf, woher die Nachricht kommt. Vertrauenswürdige Quellen haben oft einen guten Ruf in Bezug auf Genauigkeit.<br /> </li><li><strong>Autor recherchieren:</strong> Finden Sie heraus, wer der Autor ist und ob er eine zuverlässige Historie hat.<br /> </li><li><strong>Aktualität prüfen:</strong> Stellen Sie sicher, dass die Nachricht aktuell ist und nicht aus dem Kontext gerissen wurde.<br /> </li><li><strong>Übertriebene Schlagzeilen hinterfragen:</strong> Seien Sie skeptisch gegenüber sensationellen oder übertriebenen Titeln.<br /> </li><li><strong>Faktenprüfung nutzen:</strong> Suchen Sie nach der Geschichte auf Faktenprüfungs-Websites.<br /> </li><li><strong>Bilder überprüfen:</strong> Verwenden Sie eine umgekehrte Bildersuche, um zu sehen, wo das Bild noch verwendet wird und ob es vielleicht aus dem Kontext gerissen wurde.<br /> </li><li><strong>Expertenmeinungen suchen:</strong> Sehen Sie, was Experten zum Thema sagen.<br /> </li><li><strong>Quervergleiche anstellen:</strong> Lesen Sie Berichte über das gleiche Thema aus verschiedenen Quellen.<br /> </li><li><strong>Logik und Plausibilität bewerten:</strong> Überlegen Sie, ob die Nachricht logisch und plausibel ist.<br /> </li><li><strong>Auf eigene Voreingenommenheit achten:</strong> Reflektieren Sie, ob Ihre eigene Meinung Ihre Beurteilung der Nachricht beeinflusst.<br /> </li></ol><p><strong>Quelle:</strong> MIMIKAMA (2023)</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024eb"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.625Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.625Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 3,
+		"type": "column",
+		"title": "4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ec"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.628Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:22.107Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024eb,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "🔍 Deepfakes und KI generierte Inhalte erkennen",
+		"height": 2107
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ed"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.640Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:20.368Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024eb,681c7b148945ce807e9024ec,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Ein Detektiv auf der Suche nach den Fakten.</i></p><p>Hinsichtlich KI-generierter Desinformation ist es bedeutsam, digitalen Inhalten mit einer sensiblen Lesart zu begegnen. Insbesondere Desinformation wie die genannten Deepfakes lassen sich manchmal schon mit wenigen prüfenden Blicken erkennen. Die folgenden Prüfschritte und Tipps machen deutlich: Das einzuüben ist eigentlich gar nicht so schwer.</p><p><strong>Deepfakes in drei Schritten checken</strong></p><p>Folgendes Video von CORRECTIV (2023) zeigt, wie man mit nur drei Prüfschritten mit KI erstellte bzw. manipulierte Bilder oder Videos erkennen kann.</p><p>📺 <strong>CORRECTIV (2023): Lass dich nicht täuschen! So erkennst du Deepfakes. </strong>CORRECTIV.Faktencheck, Berlin.<br />Hochgeladen am 20.04.2023 I 01:57Min. <strong>Externer LINK zum Video: </strong><a target=\"_blank\" href=\"https://www.youtube.com/watch?v=GoxD7odyXTk&amp;list=PL2IVZYzgpfPp8eKO9Ihmvv0d6es-Godi3&amp;t=116s\"><strong>https://www.youtube.com/watch?v=GoxD7odyXTk&amp;list=PL2IVZYzgpfPp8eKO9Ihmvv0d6es-Godi3&amp;t=116s</strong></a> (abgerufen am 19.01.2024)  <i>(Hier wird auf ein Youtube-Video verlinkt. Bitte prüfen Sie vor der Nutzung, ob diese in Ihrem Bundesland bzw. an Ihrer Schule freigegeben ist.)</i><br /> </p><p><strong>10 grundlegende Tipps zum Erkennen von Deepfakes: </strong> Nicht immer lassen sich Fakes auf Anhieb erkennen, was eine ausführliche Prüfung erforderlich macht. Die nachstehenden 10 Tipps zur Prüfung von Deepfakes (und mit KI erstellter Desinformation) sind hierbei unterstützend.<br /> </p><ol><li><strong>Unnatürliche Bewegungen erkennen:</strong> Achten Sie auf ungewöhnliche Gesichts- oder Körperbewegungen.<br /> </li><li><strong>Audioqualität analysieren:</strong> Hören Sie genau hin, ob die Stimme unnatürlich oder verzerrt klingt.<br /> </li><li><strong>Gesichtsausdrücke überprüfen:</strong> Sehen Sie nach, ob die Mimik mit der gesprochenen Sprache übereinstimmt.<br /> </li><li><strong>Bildqualität beurteilen:</strong> Achten Sie auf Unstimmigkeiten in der Bildqualität, wie unscharfe Bereiche um Gesichter.<br /> </li><li><strong>Reflektionen in den Augen:</strong> Überprüfen Sie, ob die Reflektionen in den Augen natürlich aussehen.<br /> </li><li><strong>Hintergrundkonsistenz:</strong> Achten Sie darauf, ob der Hintergrund und die Person im Video konsistent erscheinen.<br /> </li><li><strong>Spezialisierte Software nutzen:</strong> Verwenden Sie Software oder Apps, die auf die Erkennung von Deepfakes spezialisiert sind.<br /> </li><li><strong>Quelle hinterfragen:</strong> Überprüfen Sie, woher das Video stammt und ob es von einer vertrauenswürdigen Quelle verbreitet wird.<br /> </li><li><strong>Expertenmeinungen einholen:</strong> Suchen Sie nach Analysen von Experten, die sich auf digitale Medien und Deepfake-Technologie spezialisiert haben.<br /> </li><li><strong>Gesunder Menschenverstand anwenden:</strong> Wenn etwas zu unglaublich klingt oder aussieht, ist es möglicherweise gefälscht. Vertrauen Sie Ihrem Instinkt.<br /> </li></ol><p><strong>Quelle: </strong>MIMIKAMA (2023)</p><hr /><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ee"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.650Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.650Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 4,
+		"type": "column",
+		"title": "5"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ef"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.656Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:30.125Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024ee,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "🔍 Die Bilder-Rückwärtssuche",
+		"height": 1324
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f0"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.668Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:28.939Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024ee,681c7b148945ce807e9024ef,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Die \"Rückwärtssuche\" ist eine effektive Methode, den möglichen Ursprung eines Bildes herauszufinden. Entsprechend lässt sich in Zusammenhang mit KI-generierten Inhalten ermittelt, ob sich ein dargestellter Sachverhalt tatsächlich so zugetragen hat oder ob das Bild und dessen Darstellung aus einem Kontext gerissen oder gar verfälscht wurde.</p><p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Ein Spürhund mit wilder Mähne sucht nach Bildern in einem vollgestopften Aktenschrank.</i></p><p><strong>Bilder rückwärts suchen</strong><br />In folgendem Video erläutert die Journalistin und Faktencheckerin Cristina Helberg das grundlegende Verfahren der Rückwärtssuche am Beispiel der Suchmaschine \"Google\".</p><p>📺 <strong>Weitklick (2022): Mit Fakten gegen Fakes: Wie funktioniert eine Bilderrückwärtssuche? mit Cristina Helberg.</strong> Freiwillige Selbstkontrolle Multimedia-Dienstanbieter (FSM) - Projekt \"Weitklick\", Berlin. YouTube-Video - hochgeladen am 02.08.2022 I 02:24Min.<br /><a target=\"_blank\" href=\"https://www.youtube.com/watch?v=_ygNG6_zApk\"><strong>Externer LINK zum Video: https://www.youtube.com/watch?v=_ygNG6_zApk</strong></a> (abgerufen am 19.01.2024) <i>(Hier wird auf ein Youtube-Video verlinkt. Bitte prüfen Sie vor der Nutzung, ob diese in Ihrem Bundesland bzw. an Ihrer Schule freigegeben ist.)</i><br /> </p><p>Die Methode wird auch in folgenden Beitrag des Teams von CORRECTIV nochmals in einzelnen Bildern erläutert.</p><p><a target=\"_blank\" href=\"https://correctiv.org/faktencheck/hintergrund/2022/04/01/so-funktioniert-die-bilderrueckwaertssuche/\"><strong>Externer LINK zur Webseite von CORRECTIV: https://correctiv.org/faktencheck/hintergrund/2022/04/01/so-funktioniert-die-bilderrueckwaertssuche/</strong></a><strong> </strong>(abgerufen am 19.01.2024)</p><p><strong>Ergänzung: Videos rückwärts suchen</strong><br />Für die Rückwärtssuche von Videos kann das eben beschriebene Verfahren gleichermaßen angewendet werden. In diesem Fall müssen lediglich einzelne Bilder des zu prüfenden Videos in Form von Screenshots angefertigt werden. Diese werden in der Folge auf die Seite der Suchmaschine als Einzel-Bilder hochgeladen und können auf den jeweiligen Kontext und ihre Echtheit hin überprüft werden.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f1"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.680Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.680Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 5,
+		"type": "column",
+		"title": "6"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f2"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.686Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:33.267Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024f1,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "👨‍🏫 Eine Lerneinheit für den Unterricht",
+		"height": 1020
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f3"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.699Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:32.506Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024f1,681c7b148945ce807e9024f2,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit Microsoft Bing Image Creator. Prompt: Ein Schüler und eine Schülerin stehen vor einer futuristischen Landschaft und schauen sich eine Landkarte an.</i></p><p>Im Verbund der Länder Brandenburg, Niedersachsen, Thüringen und der Dataport AöR wurde im Dezember 2023 eine umfangreiche Lerneinheit zur Thematik \"Deepfakes\" entwickelt. Darin begeben Sie sich als Lehrkraft mit Ihren Schülerinnen und Schülern auf eine abenteuerliche Reise durch die \"World of Deepfakes\", um Antworten auf die Fragen zu finden, wie Desinformationen sicher entlarvt werden können und welchen Einfluss KI auf das Entstehen und die Verbreitung von Desinformationen hat.</p><p>Insofern Sie über einen Zugang zur Thüringer Schulcloud, Niedersächsischen Bildungscloud oder Schul-Cloud Brandenburg verfügen, können Sie über untenstehende Import-LINKs die Lerneinheit bei sich in das System hineinladen und sofort mit Ihrer Klasse durchführen. Wir wünschen viel Freude bei der Bearbeitung und eine gute Reise 🤓🗺️🧭.</p><p>🔍👾 World of Deepfakes - Deepfakes entlarven</p><p><i><strong>Thüringer Schulcloud</strong></i> Import-LINK: <br /><a target=\"_blank\" href=\"https://schulcloud-thueringen.de/rooms-overview?import=5lKYzvA5i3In\">https://schulcloud-thueringen.de/rooms-overview?import=5lKYzvA5i3In</a></p><p><i><strong>Niedersächsiche Bildungscloud</strong></i> Import-LINK:<br /><a target=\"_blank\" href=\"https://niedersachsen.cloud/rooms-overview?import=g9WUwuT0zKuM\">https://niedersachsen.cloud/rooms-overview?import=g9WUwuT0zKuM</a></p><p><i><strong>Schul-Cloud Brandenburg</strong></i> Import-LINK:<br /><a target=\"_blank\" href=\"https://brandenburg.cloud/rooms-overview?import=EnjRBFpX_ucw\">https://brandenburg.cloud/rooms-overview?import=EnjRBFpX_ucw</a></p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f4"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.713Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.713Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,",
+		"level": 1,
+		"position": 6,
+		"type": "column",
+		"title": "7"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f5"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.718Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.718Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024f4,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "📌 Weiterführende Inhalte für die aktive Medienarbeit",
+		"height": 150
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f6"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.738Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:36.261Z"
+		},
+		"path": ",681c7b148945ce807e9024e1,681c7b148945ce807e9024f4,681c7b148945ce807e9024f5,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Die Möglichkeiten, mit Hilfe von KI Desinformation zu generieren, sind in den vergangenen Jahren immer größer - und insbesondere für Laien immer zugänglicher geworden. Entsprechend wird die Thematik schon länger breit diskutiert. Abschließend für dieses Kapitel haben wir Ihnen eine Reihe an Filmbeiträgen und Verweisen zusammengestellt, die für die aktive Medienarbeit innerhalb Ihres Unterrichts unterstützend sein können. Durch Klick auf unten stehende Links gelangen Sie direkt zu den extern verfügbaren Inhalten.</p><p><strong>Viel Spaß beim Erkunden der einzelnen Seiten und Angebote.</strong></p><hr /><p><strong>Film-Beiträge:</strong><br />📺 <strong>Missbrauch mit KI: So gefährlich sind Deepfakes</strong><br />\"exactly\" vom 18.09.2023 I 20:51Min.<br />Externer LINK zur ARD-Mediathek: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/exactly/missbrauch-mit-ki-so-gefaehrlich-sind-deepfakes/mdr-fernsehen/Y3JpZDovL21kci5kZS9zZW5kdW5nLzI4MjA0MS8yMDIzMDkxODA4MDAvbWRycGx1cy1zZW5kdW5nLTc0MDQ\">https://www.ardmediathek.de/video/exactly/missbrauch-mit-ki-so-gefaehrlich-sind-deepfakes/mdr-fernsehen/Y3JpZDovL21kci5kZS9zZW5kdW5nLzI4MjA0MS8yMDIzMDkxODA4MDAvbWRycGx1cy1zZW5kdW5nLTc0MDQ</a></p><p>Kurzbeschreibung: Sie sind täuschend echt! Bei Deepfakes werden Fotos und Videos durch künstliche Intelligenz manipuliert. Das MDR-Format \"exactly\" berichtet über Betroffene solcher Taten und fragt, wie man sich gegen die Manipulation wehren kann.</p><p>📺 <strong>Deep-Fake-Videos als Gefahr</strong><br />„Wissen vor 8 - Zukunft“ vom 02.10.2023 I 03:00Min.<br />Externer LINK zur ARD-Mediathek: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/wissen-vor-8-zukunft/deep-fake-videos-als-gefahr/das-erste/Y3JpZDovL2Rhc2Vyc3RlLmRlL3dpc3NlbiB2b3IgOCAtIHp1a3VuZnQvMjAyMy0xMC0wMl8xOS00NS1NRVNa\">https://www.ardmediathek.de/video/wissen-vor-8-zukunft/deep-fake-videos-als-gefahr/das-erste/Y3JpZDovL2Rhc2Vyc3RlLmRlL3dpc3NlbiB2b3IgOCAtIHp1a3VuZnQvMjAyMy0xMC0wMl8xOS00NS1NRVNa</a></p><p>Kurzbeschreibung: Videos, in denen Personen von einer künstlichen Intelligenz täuschend echt nachgebildet werden, werden zu einer immer größeren Gefahr. Welche Folgen das für uns alle haben kann, wurde im September 2023 in einem Kurz-Video des Formats \"Wissen vor 8\" thematisiert.</p><p>📺 <strong>KI und Medien: Wie Künstliche Intelligenz uns alle täuschen kann</strong><br />„ZAPP“ vom 10.05.2023 I 17:34Min.<br />Externer LINK zur ARD-Mediathek: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/zapp/ki-und-medien-wie-kuenstliche-intelligenz-uns-alle-taeuschen-kann/ndr/Y3JpZDovL25kci5kZS81MV8yMDIzLTA1LTAzLTE3LTAw\">https://www.ardmediathek.de/video/zapp/ki-und-medien-wie-kuenstliche-intelligenz-uns-alle-taeuschen-kann/ndr/Y3JpZDovL25kci5kZS81MV8yMDIzLTA1LTAzLTE3LTAw</a></p><p>Kurzbeschreibung: Das Medienmagazin „ZAPP“ hat dieses Thema im Mai 2023 beleuchtet und dabei die Auswirkungen verdeutlicht, die KI-generierte Fake-Inhalte auf Politik und Gesellschaft haben können.</p><p>📺<strong> Deepfakes – der Manipulation ausgeliefert?</strong><br />Leschs Kosmos vom 13.04.2021<br />Externer LINK zur ZDF-Mediathek: <a target=\"_blank\" href=\"https://www.zdf.de/wissen/leschs-kosmos/deepfakes-der-manipulation-ausgeliefert-100.html\">https://www.zdf.de/wissen/leschs-kosmos/deepfakes-der-manipulation-ausgeliefert-100.html</a></p><p>Kurzbeschreibung: Mit Hilfe von KI lassen sich Videos heute nahezu perfekt manipulieren, sodass Menschen scheinbar Dinge sagen oder tun, die sie nie gesagt oder getan haben. Manipulationen erreichen eine neue Dimension. Wie groß ist die Gefahr? Dieser Frage ging die Sendung „Leschs Kosmos“ im April 2021 auf den Grund.</p><hr /><p><strong>Webseiten für Faktenchecks:</strong><br /><strong>ARD-Faktenfinder</strong> LINK zur Homepage: <a target=\"_blank\" href=\"https://www.tagesschau.de/faktenfinder\">https://www.tagesschau.de/faktenfinder</a></p><p><strong>Correctiv Faktencheck</strong> LINK zur Homepage: <a target=\"_blank\" href=\"https://correctiv.org/faktencheck/\">https://correctiv.org/faktencheck/</a></p><p><strong>AFP Faktencheck</strong> LINK zur Homepage: <a target=\"_blank\" href=\"https://faktencheck.afp.com/list\">https://faktencheck.afp.com/list</a></p><p><strong>SWR Fake-Finder</strong> I Südwestrundfunk - Anstalt des öffentlichen Rechts LINK zur Homepage: <a target=\"_blank\" href=\"https://swrfakefinder.de/\">https://swrfakefinder.de/</a></p><hr /><p><strong>Weiterführende Inhalte:</strong><br /><strong>Desinformation und Meinung - von Deepfakes bis Fake News - Informationen &amp; Tipps</strong> I klicksafe.de LINK zur Homepage: <a target=\"_blank\" href=\"https://www.klicksafe.de/desinformation-und-meinung\">https://www.klicksafe.de/desinformation-und-meinung</a></p><p><strong>Spotlight Aluhut - Interaktive Lernbausteine</strong> I Niedersächsisches Landesinstitut für schulische Qualitätsentwicklung (NLQ) LINK zur Homepage: <a target=\"_blank\" href=\"https://apps.medienberatung.online/verschwoerungstheorien/\">https://apps.medienberatung.online/verschwoerungstheorien/</a></p><p><strong>BadNews!</strong> I DROG LINK zur Homepage: <a target=\"_blank\" href=\"https://www.getbadnews.de/\">https://www.getbadnews.de/</a></p><p><strong>WDR Deepfake Quiz</strong> I Westdeutscher Rundfunk (WDR) LINK zur Homepage: <a target=\"_blank\" href=\"https://data.wdr.de/ddj/deepfake-quiz-erkennen-sie-alle-ki-bilder/\">https://data.wdr.de/ddj/deepfake-quiz-erkennen-sie-alle-ki-bilder/</a></p><p><strong>Der News-Test</strong> I Bundeszentrale für politische Bildung; Medienanstalt Berlin-Brandenburg; Landesanstalt für Medien NRW LINK zur Homepage: <a target=\"_blank\" href=\"https://www.bpb.de/lernen/medienpaedagogik/328637/der-newstest/\">https://www.bpb.de/lernen/medienpaedagogik/328637/der-newstest/</a></p><p><strong>\"Fake News\" erkennen lernen: Unterrichtsmaterial für die Schule</strong> I Norddeutscher Rundfunk LINK zur Homepage: <a target=\"_blank\" href=\"https://www.ndr.de/ratgeber/medienkompetenz/Fake-News-erkennen-lernen-Unterrichtsmaterial-fuer-die-Schule,fakenews218.html\">https://www.ndr.de/ratgeber/medienkompetenz/Fake-News-erkennen-lernen-Unterrichtsmaterial-fuer-die-Schule,fakenews218.html</a></p><p><strong>Fit For News - Online-Selbstlernkurse zu News-Medien und Social Media</strong> I Europäisches Institut für Journalismus- und Kommunikationsforschung) LINK zur Homepage: <a target=\"_blank\" href=\"https://top.fitfornews.de/\">https://top.fitfornews.de/</a></p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f7"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.750Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:37.474Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kapitel 7: Vorausschau in die Zukunft - Eine hell oder dunkle Zukunft?",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f8"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.758Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.758Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024f9"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.763Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:59.450Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e9024f8,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "💫 Schule und KI - zwischen Utopie und Dystopie",
+		"height": 1187
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024fa"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.771Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:40:58.454Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e9024f8,681c7b148945ce807e9024f9,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Künstliche Intelligenz (KI) ist eine der revolutionärsten und zugleich herausforderndsten Technologien unserer Zeit. Sie eröffnet uns ungeahnte Möglichkeiten für die Gestaltung von Bildung, Forschung und Gesellschaft, birgt aber auch Risiken für die Werte, die Normen und die Rechte unseres Zusammenlebens. Wie wird KI die Schule von morgen verändern? Wird sie den Unterricht bereichern oder behindern, die Lehrkräfte entlasten oder entmachten, die Schülerinnen und Schüler fördern oder diskriminieren? Welche Zukunftsszenarien sind vorstellbar und erstrebenswert?!</p><p>In diesem Kapitel wollen wir einige mögliche Szenarien entwerfen, wie KI den Schulkontext beeinflussen könnte. Dabei werden wir sowohl die helle als auch die dunkle Seite der Macht aufzeigen, die KI in sich trägt. Wir werden die Chancen und Risiken von KI in der Schule aus verschiedenen Blickwinkeln betrachten. Unser Ziel ist es, ein kritisches und reflektiertes Verständnis von KI in der Schule zu entwickeln und Impulse für eine ethische und zukunftsorientierte Nutzung von KI im Bildungsbereich zu geben.</p><p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Zeige im Kontrast eine Welt mit positiven und negativen Effekten von KI und stelle dies mit Farbschema dar. </i> </p><p>Denn letztlich liegt es an uns Menschen, ob wir eine dunkle oder eine helle Zukunft mit KI schaffen. Wir können nicht die Augen vor den Potenzialen (sowohl guten als auch schlechten) verschließen, die KI bietet, sondern müssen uns aktiv und bewusst mit ihnen auseinandersetzen. Nur so können wir möglichst viel Kontrolle über die Entwicklung behalten und sicherstellen, dass KI im Schulkontext dem Wohl und dem Lernen aller dient.</p><hr /><p> </p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024fb"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.785Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.785Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024fc"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.794Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:03.104Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e9024fb,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "🌌 Die dunkle Seite der Macht",
+		"height": 3047
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024fd"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.802Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:02.081Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e9024fb,681c7b148945ce807e9024fc,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Man stelle sich folgende <strong>dystopische Situation</strong> vor: Der 15-Jährige Schüler Max erhält von seinem Neurolink-Hirnchip den Impuls aufzuwachen. Der Unterricht beginnt in 15 Minuten. Er macht sich fertig und loggt sich mit Hilfe seiner drahtlosen Schnittstelle in sein virtuelles Ich ein. Klassen finden nur noch im Internet statt. Seine Mitschülerinnen und Mitschüler sind für ihn Avatare. Die Biostunde wird von Monsanto gesponsored, die im Gegenzug Daten der Schülerinnen und Schüler auswerten und kommerziell nutzen dürfen. Max hat Glück und gehört zu den Kindern, die das Potenzial von KI für ihre Bildung voll nutzen können, während sein bester Freund Tobias nur eingeschränkten Zugriff darauf hat. Den Eltern von Tobias fehlen dafür auch die finanziellen Mittel.</p><p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: \"A futuristic vision of a 15 year old male student that is using AI\"</i></p><p>Wenn wir uns die dunkle Seite anschauen, ergeben sich aus der Nutzung von Künstlicher Intelligenz im Schulkontext potenziell einige Risiken. Unter anderem sind die folgenden Nachteile denkbar:</p><p><strong>Entfremdung von Schülerinnen und Schülern:</strong> Wenn die Entwicklung bei den KI-Systemen weiterhin so rasant voranschreitet, ist es denkbar, dass eine Automatisierung von Aufgaben im Bildungsbereich dazu führen könnte, dass Lehrerinnen und Lehrer durch KI-Systeme teilweise ersetzt werden. Der Fachkräftemangel könnte diesen Prozess zusätzlich beschleunigen. Da Schulen ein sozialer Ort sind, könnte eine zunehmende Automatisierung zu einer Entfremdung der Schülerinnen und Schüler führen, die den persönlichen Kontakt und Austausch zu den Lehrkräften vermissen. Gleichzeitig fehlt KI-Systemen das menschliche Gefühl, einschätzen zu können, ob Schülerinnen und Schüler außerhalb des fachlichen Kontexts Unterstützung benötigen.</p><p><strong>Ungerechtigkeit und Ungleichheit</strong>: Wie dies auch bereits in der Vergangenheit im Umgang mit Technologien der Fall war, können auch KI-basierte Bildungssysteme zu weiteren Bildungsungleichheiten führen. So können Schülerinnen und Schüler mit Zugang zu neuesten Technologien und Ressourcen stärker von den Vorteilen dieser Systeme profitieren, als solche, deren Zugang hier z.B. aus finanziellen Gründen eingeschränkt ist. Eine Verschärfung bestehender Ungleichheiten wäre daher denkbar.</p><p><strong>Datenschutz und Sicherheitsrisiken:</strong> KI benötigt Daten, um einen gewünschten Output zu liefern. Viele Daten. Die Implementierung von KI in Schulen kann daher zur Sammlung und Speicherung von Daten von Schülerinnen und Schülern führen. Damit einher gehen potenzielle Datenschutzrisiken, da nie 100 % ausgeschlossen werden kann, dass die Daten nicht in die falschen Hände geraten oder für nicht autorisierte Zwecke missbraucht werden können.</p><p><strong>Reduzierte Kreativität und kritisches Denken:</strong> Eine starke Ausrichtung der Lehrpläne und Lernmethoden auf KI-Systeme können dazu führen, dass Schülerinnen und Schüler weniger stark kreatives und kritisches Denken erlernen und sich stattdessen darauf beschränken, vordefinierte Probleme nach einem standardisierten Muster oder Prompts zu lösen.</p><p><strong>Abhängigkeit von Technologie:</strong> Die immer stärkere Implementierung von KI geht auch mit einer fortschreitenden Abhängigkeit von KI-Systemen in Schulen einher. Dies könnte dazu führen, dass Schülerinnen und Schüler sowie Lehrerinnen und Lehrer derart stark auf die Technologie angewiesen sind, dass bei technischen Problemen oder Ausfällen der Unterricht erheblich gestört wird.</p><p><strong>Mangel an sozialen Fähigkeiten:</strong> Lernen ist in der Vergangenheit auch immer ein sozialer Prozess gewesen. Schülerinnen und Schüler sind durch KI-Tools zunehmend weniger darauf angewiesen mit anderen zusammenzuarbeiten, da sie die KI-Systeme selbst bedienen können. Wenn Schülerinnen und Schüler vermehrt auf KI-Systeme setzen, um Wissen zu erwerben, könnte das gleichzeitig auch dazu führen, dass ihre sozialen Fähigkeiten und die Fähigkeit zur Zusammenarbeit mit anderen abnehmen.</p><p><strong>Intransparenz, Fake News und Bias:</strong> KI-Systeme können intransparent sein und Biasses enthalten, je nachdem mit welchen Datensätzen sie trainiert wurden. Dies könnte zu unfairen oder falschen Bewertungen oder einer problematischen Wissensaufnahme führen. So können Fake-News und gezielte Desinformation, die kaum von der Realität zu unterscheiden sind, dazu führen, dass Schülerinnen und Schüler ein falsches Bild der Realität erhalten und daraus entsprechend fehlerhafte Schlüsse ziehen. Wenn Sie sich näher mit diesem Aspekt beschäftigen wollen, schauen Sie gerne nochmal in Kapitel 6 nach.</p><p>Es sei hier betont, dass es sich hier mehr um ein Gedankenexperiment handelt, als eine Vorhersage, was KI in Schulen an negativen Szenarien bewirken könnte. Durch verantwortungsvolle und ethische Richtlinien für die Nutzung von KI im Bildungsbereich können eine positive Entwicklung gesteuert werden und die Vorteile dabei maximiert werden.</p><hr /><p> </p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024fe"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.809Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.809Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e9024ff"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.814Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:05.521Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e9024fe,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "🌟 Die helle Seite der Macht",
+		"height": 3890
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902500"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.830Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:04.550Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e9024fe,681c7b148945ce807e9024ff,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Man stelle sich die folgende <strong>fiktive Situation</strong> vor:</p><p>Die 14-Jährige Schülerin Lisa wird sanft geweckt von Vogelgezwitscher und einem simulierten Sonnenaufgang ihres Bildschirms. Sie zieht ihre Brille auf, im Head-Up-Display wird ihr Stundenplan angezeigt, vor 5 Minuten kam die Meldung, dass die erste Stunde Englisch ausfällt, stattdessen erhält sie direkt eine Aufgabe, die sie zu Hause in ihrer Schulcloud bearbeiten kann. Außerdem findet sie heute relevante Zusatzinformationen vom Wetter, der Busabfahrt und was es in der Kantine gibt. Auch bekommt sie die Erinnerung, dass nächste Woche ein Klassenausflug stattfindet und sie bis dahin noch eine Aufgabe vorbereiten und die Einverständniserklärung der Eltern digital einreichen muss.</p><p>Lisa frühstückt und macht sich fertig. Sie nutzt die Zeit und setzt sich direkt an ihren Schreibtisch. Ihr freundlicher Schulcloud-Tutor Tommy, sie kennen sich seit der Grundschule, erscheint virtuell (Augmentend Reality) neben ihr am Schreibtisch und erklärt die Aufgabe und wertet sie im Anschluss direkt aus. Lisa erhält als neues Todo einige Vokabeln zu wiederholen und sich noch einmal mit den Vergangenheitsformen auseinanderzusetzen. Dafür hat ihre Schulcloud schon das richtige Lernspiel parat, mit der sie alles Weitere lernen kann. Wenn sie mag, kann sie auch direkt mit ihren Klassenkameraden gemeinsam lernen.</p><p>Anschließend geht’s zur Schule, wo Lisa sich schon auf ihre Freunde freut. Im Kunstunterricht sollen in Vorbereitung für den Klassenausflug zum Planetarium Bilder mit einem KI-Tool erstellt werden, die einen fiktiven Wunschplaneten der Schülerinnen und Schüler zeigen. In Geschichte tauchen sie dank Virtual Reality in immersive Welten ein und erkunden eine mittelalterliche Burg genauso wie die die Kriegsschauplätze des 2. Weltkriegs. Lisa: \"Ich finde es total spannend Geschichte so hautnah zu erleben. Fast zum Anfassen!\"</p><p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: \"A futuristic vision of a happy 14 year old female student which is using Augmented Reality Glasses and is learning with her hologram learning buddy that looks like a robot\"</i></p><p>Jetzt und in Zukunft bieten sich durch den gezielten Einsatz von künstlicher Intelligenz im Schulkontext vielversprechende Möglichkeiten und Vorteile, die die Bildung nachhaltig verbessern könnten. Potenzielle positive Entwicklungen sind unter anderem:</p><p><strong>Individualisiertes Lernen und sofortiges Feedback:</strong> Dank KI können für Schülerinnen und Schüler automatisiert personalisierte Lernpfade (z.B. nach Schwierigkeitsgrad) generiert werden, die den Lernerfolg optimal unterstützen. Indem die Tools den Fortschritt und die Bedürfnisse der Schülerinnen und Schüler analysieren, können solche individuellen Lehrpläne und Übungen gezielt bereitgestellt werden. Dies erlaubt eine Binnendifferenzierung und Förderung von Schülerinnen und Schülern. Zudem kann KI den Nutzerinnen und Nutzern direkt Feedback geben und dabei helfen, gemachte Fehler zu verstehen, zu korrigieren und dadurch helfen, schneller zum Lernerfolg zu kommen.</p><p><strong>Verbesserte Lernergebnisse und Erfolgserlebnisse:</strong> KI-Systeme sind hochgradig anpassungsfähig und flexibel. Schülerinnen und Schüler können in ihrem eigenen Tempo lernen, in der Schule oder von zu Hause aus und durch Gamification und ähnliche Ansätze Schwierigkeiten in bestimmten Bereichen überwinden, was den Bildungserfolg steigern kann und Erfolgserlebnisse hervorrufen kann.</p><p><strong>Erweitertes, immersives und spielerisches Lernen:</strong> Virtuelle Realität (VR) und Augmented Reality (AR) können mithilfe von KI das Lernen durch besondere immersive Erfahrungen auf ein neues Level heben. Schülerinnen und Schüler können spielerisch und hautnah in vergangene Welten oder z.B. die chemischen Elemente eintauchen und sich dort sicher bewegen und experimentieren.</p><p><strong>Anregung von Kreativität und kritischem Denken:</strong> KI kann von Schlülerinnen und Schülern gezielt eingesetzt werden, um routinemäßige Aufgaben zu lösen - das können z.B. sich wiederholende Aufgaben sein, die auch in der zukünftigen Arbeitswelt an KI ausgelagert werden. Zum Beispiel standardisierte Tabellen, Berechnungen oder Auswertungen. Stattdessen können sich die Schülerinnen und Schüler auf anspruchsvollere und kreative Problemlösungsaufgaben fokussieren und sich damit ein kritisches und kreatives Denken aneignen.</p><p><strong>Vereinfachter Zugang zu Ressourcen:</strong> Mit Hilfe von KI kann der Zugang zu Bildungsinhalten und -ressourcen verbessert werden. Weiterführende Informationen und Online-Kurse ermöglichen es Schülerinnen und Schülern jederzeit und von überall auf der Welt auf Bildungsinhalte zuzugreifen. Hierbei können auch über die üblichen Lehrpläne hinausgehende Inhalte thematisiert werden (z.B. Tipps für Bewerbungen, Finanz-/Steuerwissen).</p><p><strong>Zeitersparnis für Lehrkräfte:</strong> Lehrerinnen und Lehrer können sich auf das Wesentliche ihrer pädagogischen und didaktischen Tätigkeiten konzentrieren, indem KI ihnen administrative Aufgaben abnehmen kann. Auch können Aufgaben über KI-Tools erstellt und automatisch die Antworten von Schülerinnen und Schülern ausgewertet werden. Dies schafft mehr Raum und mehr Zeit für eine individuellere Betreuung vor Ort.</p><p><strong>Bessere Transparenz für Lehrkräfte:</strong> KI-Systeme können Lehrerinnen und Lehrern Einblicke in den Lernstand ihrer Schülerinnen und Schüler geben. </p><p><strong>Zugänglichkeit und Inklusion:</strong> KI kann Schülerinnen und Schülern mit besonderen Bedürfnissen unterstützen, noch besser am Schulalltag teilzuhaben. Zum Beispiel durch automatische Übersetzungen oder Vorlesefunktionen. Damit können Inklusion und Chancengleichheit gefördert werden.</p><p><strong>Effizienz und Ressourcenersparnis:</strong> Durch eine Automatisierung bietet KI eine Mögichkeit der Kostenersparnis, in dem die Betriebskosten von Schulen gesenkt werden können und Verwaltungsprozesse effizienter gestalten werden können.</p><p><strong>Forschung und Entwicklung:</strong> Auch Schulen können durch KI-Nutzung dazu beitragen, die Forschung voranzutreiben, um innovative Bildungsmethoden zu erforschen und weiterzuentwickeln.</p><p>KI könnte Bildung demnach also gerechter, effizienter und effektiver machen. Um das sicherzustellen und die Vorteile zu nutzen, müssen aber Leitplanken gesetzt werden, sodass ein ethischer und verantwortungsvoller Rahmen gewährleistet ist. Solche rechtlichen Leitplanken finden Sie unter anderem im Kapitel 5.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902501"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.842Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.842Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,",
+		"level": 1,
+		"position": 3,
+		"type": "column",
+		"title": "4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902502"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.845Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.845Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e902501,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "Geogebra Verlauf",
+		"height": 150
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902503"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.851Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.853Z"
+		},
+		"path": ",681c7b148945ce807e9024f7,681c7b148945ce807e902501,681c7b148945ce807e902502,",
+		"level": 3,
+		"position": 0,
+		"type": "link-element",
+		"title": "Geogebra Verlauf",
+		"url": "https://www.geogebra.org/m/",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902504"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.855Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:38.181Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Quellen Urheberrechte &amp; Lizenzen",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902505"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.860Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.860Z"
+		},
+		"path": ",681c7b148945ce807e902504,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902506"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.863Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:31.785Z"
+		},
+		"path": ",681c7b148945ce807e902504,681c7b148945ce807e902505,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "📌 Quellenangaben der Kapitel 1 bis 7",
+		"height": 11893
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902507"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.881Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:31.038Z"
+		},
+		"path": ",681c7b148945ce807e902504,681c7b148945ce807e902505,681c7b148945ce807e902506,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i>Erstellt mit Microsoft Bing Image Creator - Prompt: Zeige eine riesige Liste von Quellen in einem wissenschaftlichen Dokument</i></p><p> </p><p><strong>Kapitel 1: Grundlagen - Was ist KI?</strong></p><p>AI Unplugged von Annabel Lindner und Stefan Seegerer, CC BY NC <a target=\"_blank\" href=\"https://lernen.cloud/go/link?url=https%3A%2F%2Fwww.aiunplugged.org%2F&amp;checksum=0211cb3&amp;tracking_type=rich_text_item_link&amp;tracking_id=60162d9c-4ad8-4dc0-a1ee-3501626979b3&amp;tracking_course_id=8a2793be-bd22-4525-aedf-7a7168e8c169\">https://www.aiunplugged.org/</a></p><p>Bild des neuronalen Netzes (CC BY) <a target=\"_blank\" href=\"https://lernen.cloud/go/link?url=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3ASchematische_Darstellung_eines_neuronalen_Netzwerks.webp&amp;checksum=c6e8e86&amp;tracking_type=rich_text_item_link&amp;tracking_id=60162d9c-4ad8-4dc0-a1ee-3501626979b3&amp;tracking_course_id=8a2793be-bd22-4525-aedf-7a7168e8c169\">https://commons.wikimedia.org/wiki/File:Schematische_Darstellung_eines_neuronalen_Netzwerks.webp</a></p><p><a target=\"_blank\" href=\"https://lernen.cloud/go/link?url=https%3A%2F%2Fmedia.ccc.de%2Fv%2F37c3-11784-lass_mal_das_innere_eines_neuronalen_netzes_ansehen&amp;checksum=c93214b&amp;tracking_type=rich_text_item_link&amp;tracking_id=60162d9c-4ad8-4dc0-a1ee-3501626979b3&amp;tracking_course_id=8a2793be-bd22-4525-aedf-7a7168e8c169\">https://media.ccc.de/v/37c3-11784-lass_mal_das_innere_eines_neuronalen_netzes_ansehen</a></p><p>Die restlichen Bilder wurden mit KI erstellt: Microsoft Bing Image Creator (<a target=\"_blank\" href=\"https://www.bing.com/images/create\">https://www.bing.com/images/create</a>), Jan. 2024</p><p>MDR: Was genau ist Künstliche Intelligenz? (14.06.2023): https://www.mdr.de/wissen/was-ist-ki-kuenstliche-intelligenz-100.html </p><p>Heise: Was ist Künstliche Intelligenz? (08.06.2023): https://www.heise.de/tipps-tricks/Was-ist-Kuenstliche-Intelligenz-9164474.html</p><p>WFB: Was ist Künstliche Intelligenz? (11.04.2023): https://www.wfb-bremen.de/de/page/stories/digitalisierung-industrie40/was-ist-kuenstliche-intelligenz-definition-ki</p><p>Bundesministerium für Wirtschaft und Klimaschutz - Digitalie Technologien - Künstliche Intelligenz (2023): https://www.digitale-technologien.de/DT/Navigation/DE/Themen/KuenstlicheIntelligenz/KuenstlicheIntelligenz.html</p><p>Fraunhofer IKS - Künstliche Intelligenz (KI) und maschinelles Lernen: https://www.iks.fraunhofer.de/de/themen/kuenstliche-intelligenz.html  </p><p>Planet Wissen (2023) - Computer und Roboter- Künstliche Intelligenz: https://www.planet-wissen.de/technik/computer_und_roboter/kuenstliche_intelligenz/index.html</p><p>Heise (01.06.2023) - Diese vier Arten von Künstlicher Intelligenz gibt es: https://www.heise.de/tipps-tricks/Diese-vier-Arten-von-KI-gibt-es-9076579.html</p><p><strong>Kapitel 2: Anwendungsfelder und ausgewählte Beispiele von KI im Schulkontext</strong></p><p>Alle Bilder wurden mit KI erstellt: Microsoft Bing Image Creator (<a target=\"_blank\" href=\"https://www.bing.com/images/create\">https://www.bing.com/images/create</a>), Nov./Dez. 2023</p><p>Informationen über ChatGPT 3.5, 4, Google Bard und Bing Chat unter Nutzung der jeweiligen KI selbst, Verifizierung durch dort hinterlegte Quellen: - ChatGPT 3.5: Frage an Bing Chat (ChatGPT 4) mit dem Prompt: \"Was ist ChatGPT 3.5?\": <a target=\"_blank\" href=\"https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx\">https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx</a> - ChatGPT 4: Frage an Bing Chat (ChatGPT 4): Prompt: \"Was ist ChatGPT 4?\": <a target=\"_blank\" href=\"https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx\">https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx</a> - Google Bard: Frage an Google Bard mit dem Prompt: \"Was ist Google Bard und wieviele Parameter wurden genutzt?\": <a target=\"_blank\" href=\"https://bard.google.com/chat\">https://bard.google.com/chat</a> - Bing Chat: Frage an Bing Chat (Chat GPT 4) mit dem Prompt: \"Was ist Bing Chat?\": <a target=\"_blank\" href=\"https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx\">https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx</a> - Übergreifend: Frage an Bing Chat (ChatGPT 4) mit dem Prompt: \"Wie unterscheiden sich ChatGPT 3.5, ChatGPT 4, Google Bard und Bing Chat?\": <a target=\"_blank\" href=\"https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx\">https://www.bing.com/search?q=Bing+AI&amp;showconv=1&amp;FORM=hpcodx</a></p><p>MDR: Was genau ist Künstliche Intelligenz? (14.06.2023): <a target=\"_blank\" href=\"https://www.mdr.de/wissen/was-ist-ki-kuenstliche-intelligenz-100.html\">https://www.mdr.de/wissen/was-ist-ki-kuenstliche-intelligenz-100.html</a></p><p>Planet Wissen (2023) - Computer und Roboter- Künstliche Intelligenz: <a target=\"_blank\" href=\"https://www.planet-wissen.de/technik/computer_und_roboter/kuenstliche_intelligenz/index.html\">https://www.planet-wissen.de/technik/computer_und_roboter/kuenstliche_intelligenz/index.html</a></p><p>Heise: Was ist Künstliche Intelligenz? (08.06.2023): <a target=\"_blank\" href=\"https://www.heise.de/tipps-tricks/Was-ist-Kuenstliche-Intelligenz-9164474.html\">https://www.heise.de/tipps-tricks/Was-ist-Kuenstliche-Intelligenz-9164474.html</a></p><p>Bundesministerium für Wirtschaft und Klimaschutz - Digitale Technologien - Künstliche Intelligenz (2023): <a target=\"_blank\" href=\"https://www.digitale-technologien.de/DT/Navigation/DE/Themen/KuenstlicheIntelligenz/KuenstlicheIntelligenz.html\">https://www.digitale-technologien.de/DT/Navigation/DE/Themen/KuenstlicheIntelligenz/KuenstlicheIntelligenz.html</a></p><p>Fraunhofer IKS - Künstliche Intelligenz (KI) und maschinelles Lernen: <a target=\"_blank\" href=\"https://www.iks.fraunhofer.de/de/themen/kuenstliche-intelligenz.html\">https://www.iks.fraunhofer.de/de/themen/kuenstliche-intelligenz.html</a></p><p>WFB: Was ist Künstliche Intelligenz? (11.04.2023): <a target=\"_blank\" href=\"https://www.wfb-bremen.de/de/page/stories/digitalisierung-industrie40/was-ist-kuenstliche-intelligenz-definition-ki\">https://www.wfb-bremen.de/de/page/stories/digitalisierung-industrie40/was-ist-kuenstliche-intelligenz-definition-ki</a></p><p>Landeszentrale für politische Bildung Nordrhein-Westfalen (2022): Was ist eigentlich Künstliche Intelligenz - KI?.Lizenz: CC BY-SA 4.0: <a target=\"_blank\" href=\"https://www.politische-bildung.nrw.de/digitale-medien/titelverzeichnis/details/medien/ki-clip\">https://www.politische-bildung.nrw.de/digitale-medien/titelverzeichnis/details/medien/ki-clip</a></p><p>WDR Planet Schule (26.04.2023): Was ist Künstliche Intelligenz?: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/planet-schule/was-ist-kuenstliche-intelligenz/wdr/Y3JpZDovL3N3ci5kZS9hZXgvbzE4NDM3NjY\">https://www.ardmediathek.de/video/planet-schule/was-ist-kuenstliche-intelligenz/wdr/Y3JpZDovL3N3ci5kZS9hZXgvbzE4NDM3NjY</a></p><p>ARD - Planet Wissen: Künstliche Intelligenz - Wie sie unser Leben lenkt - 26.10.2023: <a target=\"_blank\" href=\"https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html\">https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html</a></p><p>Deutsche Telekom Stiftung, mmb Institut – Gesellschaft für Medien- und Kompetenzforschung mbH - Schlussbericht KI@Bildung: Lehren und Lernen in der Schule mit Werkzeugen Künstlicher Intelligenz - Juni 2021: <a target=\"_blank\" href=\"https://www.telekom-stiftung.de/sites/default/files/files/media/publications/KI%20Bildung%20Schlussbericht.pdf\">https://www.telekom-stiftung.de/sites/default/files/files/media/publications/KI%20Bildung%20Schlussbericht.pdf</a></p><p>BR - ALP – Keynote in Zusammenarbeit mit der ALP - Umbruch - Wie wird KI die Schule verändern? - 6.11.2022: <a target=\"_blank\" href=\"https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html\">https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html</a></p><p>Deutsche Telekom Stiftung – mmb Institut – Gesellschaft für Medien- und Kompetenzforschung mbH und Deutsches Forschungszentrum für Künstliche Intelligenz GmbH (DFKI): Schule und KI – Nov. 2023: <a target=\"_blank\" href=\"https://www.telekom-stiftung.de/sites/default/files/files/Leitfaden-Schule-und-KI.pdf\">https://www.telekom-stiftung.de/sites/default/files/files/Leitfaden-Schule-und-KI.pdf</a> und <a target=\"_blank\" href=\"https://www.telekom-stiftung.de/sites/default/files/files/Zusammenfassung-Schule-und-k%C3%BCnstliche-Intelligenz.pdf\">https://www.telekom-stiftung.de/sites/default/files/files/Zusammenfassung-Schule-und-k%C3%BCnstliche-Intelligenz.pdf</a></p><p>funk - MrWissen2go: Machen Chat GPT &amp; Co. die Schule überflüssig? - 24.11.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n\">https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n</a></p><p>BR Fernsehen - Frankenschau aktuell: Künstliche Intelligenz in der Schule - 32.05.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/embed/Y3JpZDovL2JyLmRlL3ZpZGVvLzg0OTRlOWFkLWY3MDQtNDcwNS05ODBmLWRjNGM4Y2FmYTUyOA\">https://www.ardmediathek.de/embed/Y3JpZDovL2JyLmRlL3ZpZGVvLzg0OTRlOWFkLWY3MDQtNDcwNS05ODBmLWRjNGM4Y2FmYTUyOA</a></p><p>SWR - SWR Aktuell Rheinland-Pfalz - Was verändert die künstliche Intelligenz an Schulen? - 07.03.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/swr-aktuell-rheinland-pfalz/was-veraendert-die-kuenstliche-intelligenz-an-schulen/swr-rp/Y3JpZDovL3N3ci5kZS9hZXgvbzE4MjA0OTM\">https://www.ardmediathek.de/video/swr-aktuell-rheinland-pfalz/was-veraendert-die-kuenstliche-intelligenz-an-schulen/swr-rp/Y3JpZDovL3N3ci5kZS9hZXgvbzE4MjA0OTM</a></p><p>BR - ALP – Keynote in Zusammenarbeit mit der ALP - Umbruch - Wie wird KI die Schule verändern? - 6.11.2022: <a target=\"_blank\" href=\"https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html\">https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html</a></p><p>ARD - Planet Wissen: Künstliche Intelligenz - Wie sie unser Leben lenkt- 26.10.2023: <a target=\"_blank\" href=\"https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html\">https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html</a></p><p><strong>Kapitel 3: Bedienungskompetenz - Voraussetzungen für die Nutzung von KI</strong></p><p><strong>Kapitel 4: Auswirkungen von KI im Schulkontext</strong></p><p>Frage an ChatGPT mit dem Prompt: Ok, ChatGPT, wird KI die Lehrerinnen und Lehrer in Zukunft ersetzen?, abgerufen zuletzt am 27.11.2023, um 14:46 Uhr.</p><p>BR Fernsehen - Nachrichten - Netzwelt: KI in der Schule Ersatz oder Ergänzung für den Lehrer?, <a target=\"_blank\" href=\"https://www.br.de/nachrichten/netzwelt/ki-in-der-schule-ersatz-oder-ergaenzung-fuer-lehrer,TWbbTRR\">https://www.br.de/nachrichten/netzwelt/ki-in-der-schule-ersatz-oder-ergaenzung-fuer-lehrer,TWbbTRR</a>, abgerufen am 30.11.2023.</p><p>Freie Universität Berlin: KI-Campus: <a target=\"_blank\" href=\"https://ki-campus.org/sites/default/files/2023-09/KI-Campus_Manuskript_LeAs_FUB.pdf\">https://ki-campus.org/sites/default/files/2023-09/KI-Campus_Manuskript_LeAs_FUB.pdf</a> Abgerufen am 23.11.2023.</p><p>Bundeszentrale für politische Bildung (2017): Ideen zur Rolle von künstlicher Intelligenz im Klassenzimmer der Zukunft, <a target=\"_blank\" href=\"https://www.bpb.de/lernen/digitale-bildung/werkstatt/256629/ideen-zur-rolle-von-kuenstlicher-intelligenz-im-klassenzimmer-der-zukunft/\">https://www.bpb.de/lernen/digitale-bildung/werkstatt/256629/ideen-zur-rolle-von-kuenstlicher-intelligenz-im-klassenzimmer-der-zukunft/</a>, abgerufen zuletzt am 27.11.2023, um 14:46 Uhr.</p><p>Mr. Wissen2go: Machen Chat GPT &amp; Co. die Schule überflüssig? <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n\">https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n</a>, abgerufen am 24.11.2023.</p><p>Initiative D21: Denkimpuls Digitale Bildung #01 | Einsatz von Künstlicher Intelligenz im Schulunterricht, https://initiatived21.de/uploads/03_Studien-Publikationen/Denkimpulse-Bildung/01-KI-in-der-Schule/d21-denkimpuls-bildung01-schule_ki.pdf, abgerufen am 27.11.2023.</p><p>Universität Stuttgart: ChatGPT: Die Bots und die Lehrkräfte – wie verändert KI die Schulen? https://www.uni-stuttgart.de/universitaet/aktuelles/meldungen/Wie-veraendert-KI-die-Schule/, abgerufen am 27.11.2023, dazu der Livestream: https://www.youtube.com/watch?v=4xM4MyLmRAs</p><p><strong>Kapitel 5: Rechtliche Grundlagen zur Nutzung von KI im Unterricht</strong></p><p>Alle Bilder wurden mit KI erstellt: Microsoft Bing Image Creator (<a target=\"_blank\" href=\"https://www.bing.com/images/create\">https://www.bing.com/images/create</a>), Nov./Dez. 2023</p><p>Dirk Thiede (2023). Gastbeitrag auf Unterrichten.Digital. ChatGPT und der Datenschutz – eine aktuelle Einschätzung (März 2023). Abgerufen am 22.11.2023 von <a target=\"_blank\" href=\"https://unterrichten.digital/2023/01/23/chatgpt-datenschutz-unterricht-schule/\">https://unterrichten.digital/2023/01/23/chatgpt-datenschutz-unterricht-schule/</a></p><p>Ministerium für Bildung, Jugend und Sport des Landes Brandenburg (2023). Handlungsleitfaden zur Nutzung von textgenerierenden KI-Anwendungen an Schulen im Land Brandenburg. Abgerufen am 22.11.2023 von <a target=\"_blank\" href=\"https://mbjs.brandenburg.de/sixcms/media.php/140/handlungsleitfaden_zur_nutzung_von_textgenerierenden_ki-systemen.pdf\">https://mbjs.brandenburg.de/sixcms/media.php/140/handlungsleitfaden_zur_nutzung_von_textgenerierenden_ki-systemen.pdf</a></p><p>Ministerium für Schule und Bildung des Landes Nordrhein-Westfalen (2023). Umgang mit textgenerierenden KI-Systemen. Ein Handlungsleitfaden. Abgerufen am 22.11.2023 von <a target=\"_blank\" href=\"https://www.schulministerium.nrw/system/files/media/document/file/handlungsleitfaden_ki_msb_nrw_230223.pdf\">https://www.schulministerium.nrw/system/files/media/document/file/handlungsleitfaden_ki_msb_nrw_230223.pdf</a></p><p>Senatsverwaltung für Bildung, Jugend und Familie (2023). Empfehlungen für den Umgang mit KI-Anwendungen an Beispiel von ChatGPT. Abgerufen am 22.11.2023 von <a target=\"_blank\" href=\"https://www.berlin.de/sen/bjf/service/presse/pressearchiv-2023/pressemitteilung.1316517.php\">https://www.berlin.de/sen/bjf/service/presse/pressearchiv-2023/pressemitteilung.1316517.php</a></p><p><strong>Kapitel 6: KI und Desinformation am Beispiel Deep Fakes</strong></p><p>Alle Bilder wurden mit KI erstellt: Microsoft Bing Image Creator (<a target=\"_blank\" href=\"https://www.bing.com/images/create\">https://www.bing.com/images/create</a>), Jan. 2024</p><p>BMBF (2021). Forschung gegen Desinformation im Internet. SAFER INTERNET DAY. Bundesministerium für Bildung und Forschung, Berlin. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.bmbf.de/bmbf/de/home/_documents/forschung-gegen-desinformation-im-internet.html\">https://www.bmbf.de/bmbf/de/home/_documents/forschung-gegen-desinformation-im-internet.html</a></p><p>bpb (2023). Ist diese Meldung ein Fake? Team \"Forschen mit Grafstat\" - Westfälische Wilhelms-Universität Münster; Bundeszentrale für politische Bildung, Bonn. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.bpb.de/themen/medien-journalismus/desinformation/519735/ist-diese-meldung-ein-fake/\">https://www.bpb.de/themen/medien-journalismus/desinformation/519735/ist-diese-meldung-ein-fake/</a></p><p>BuzzFeed (2018). You Won’t Believe What Obama Says In This Video! 😉. BuzzFeed, ID Metropolen News GmbH, Hamm. YouTube-Video. Hochgeladen am 17.04.2018 I 01:12Min. Externer LINK zu YouTube. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=cQ54GDm1eL0\">https://www.youtube.com/watch?v=cQ54GDm1eL0</a></p><p>CORRECTIV (2024). Lass dich nicht täuschen! So erkennst du Deepfakes. CORRECTIV.Faktencheck, Berlin. YouTube-Video - hochgeladen am 20.04.2023 I 01:57Min. Externer LINK zum YouTube-Video. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=GoxD7odyXTk&amp;list=PL2IVZYzgpfPp8eKO9Ihmvv0d6es-Godi3&amp;t=116s\">https://www.youtube.com/watch?v=GoxD7odyXTk&amp;list=PL2IVZYzgpfPp8eKO9Ihmvv0d6es-Godi3&amp;t=116s</a></p><p>Gabler (2024). Deepfake Definition: Was ist \"Deepfake\"?. Gabler Wirtschaftslexikon, Springer Gabler, Wiesbaden. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://wirtschaftslexikon.gabler.de/definition/deepfake-120960\">https://wirtschaftslexikon.gabler.de/definition/deepfake-120960</a></p><p>Hoffmann, Christian Pieter (2023). Fake News, Misinformation, Desinformation. Aus: Informationen zur politischen Bildung Nr. 335/2023; Bundeszentrale für politische Bildung, Bonn. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.bpb.de/shop/zeitschriften/izpb/medienkompetenz-355/539986/fake-news-misinformation-desinformation/\">https://www.bpb.de/shop/zeitschriften/izpb/medienkompetenz-355/539986/fake-news-misinformation-desinformation/</a></p><p>klicksafe (2023). Desinformation und Meinung von Deepfakes bis Fake News – Informationen &amp; Tipps: Deepfakes. klicksafe.de, Ludwigshafen. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.klicksafe.de/desinformation-und-meinung/deepfakes\">https://www.klicksafe.de/desinformation-und-meinung/deepfakes</a></p><p>MIMIKAMA (2023). So entlarven Sie Fake News und Deepfakes! mimikama – Verein zur Aufklärung über Internetmissbrauch, Wien. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://steadyhq.com/de/mimikama/posts/3e401fac-17a5-42d5-88cb-1068713cd5f4\">https://steadyhq.com/de/mimikama/posts/3e401fac-17a5-42d5-88cb-1068713cd5f4</a></p><p>MDR (2023). Missbrauch mit KI: So gefährlich sind Deepfakes. MDR - Mitteldeutscher Rundfunk. Sendung exactly, Leipzig. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/exactly/missbrauch-mit-ki-so-gefaehrlich-sind-deepfakes/mdr-fernsehen/Y3JpZDovL21kci5kZS9zZW5kdW5nLzI4MjA0MS8yMDIzMDkxODA4MDAvbWRycGx1cy1zZW5kdW5nLTc0MDQ\">https://www.ardmediathek.de/video/exactly/missbrauch-mit-ki-so-gefaehrlich-sind-deepfakes/mdr-fernsehen/Y3JpZDovL21kci5kZS9zZW5kdW5nLzI4MjA0MS8yMDIzMDkxODA4MDAvbWRycGx1cy1zZW5kdW5nLTc0MDQ</a></p><p>NDR (2023). KI und Medien: Wie Künstliche Intelligenz uns alle täuschen kann. NDR – Norddeutscher Rundfunk; Magazin ZAPP, Hamburg. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/zapp/ki-und-medien-wie-kuenstliche-intelligenz-uns-alle-taeuschen-kann/ndr/Y3JpZDovL25kci5kZS81MV8yMDIzLTA1LTAzLTE3LTAw\">https://www.ardmediathek.de/video/zapp/ki-und-medien-wie-kuenstliche-intelligenz-uns-alle-taeuschen-kann/ndr/Y3JpZDovL25kci5kZS81MV8yMDIzLTA1LTAzLTE3LTAw</a></p><p>NDR (2023). Deep-Fake-Videos als Gefahr. NDR – Norddeutscher Rundfunk; Magazin Wissen vor 8, Hamburg. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/wissen-vor-8-zukunft/deep-fake-videos-als-gefahr/das-erste/Y3JpZDovL2Rhc2Vyc3RlLmRlL3dpc3NlbiB2b3IgOCAtIHp1a3VuZnQvMjAyMy0xMC0wMl8xOS00NS1NRVNa\">https://www.ardmediathek.de/video/wissen-vor-8-zukunft/deep-fake-videos-als-gefahr/das-erste/Y3JpZDovL2Rhc2Vyc3RlLmRlL3dpc3NlbiB2b3IgOCAtIHp1a3VuZnQvMjAyMy0xMC0wMl8xOS00NS1NRVNa</a></p><p>NLQ (2024). Medien und Informationskompetenz. Niedersächsisches Landesinstitut für schulische Qualitätsentwicklung (NLQ) - Fachbereich Medienbildung, Hildesheim. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://ormedien.nline.nibis.de/nibis.php?menid=169\">https://ormedien.nline.nibis.de/nibis.php?menid=169</a></p><p>Rühl, Wolf-Dieter (2017). Measuring Fake News – Die Methode. Stiftung Neue Verantwortung e. V., Berlin. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.stiftung-nv.de/sites/default/files/fake_news_methodenpapier_deutsch.pdf\">https://www.stiftung-nv.de/sites/default/files/fake_news_methodenpapier_deutsch.pdf</a></p><p>Saferinternet (2024). Was bedeutet Informationskompetenz? Saferinternet.at, Wien. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.saferinternet.at/faq/informationskompetenz/was-bedeutet-informationskompetenz\">https://www.saferinternet.at/faq/informationskompetenz/was-bedeutet-informationskompetenz</a></p><p>Weitklick (2022). Mit Fakten gegen Fakes: Wie funktioniert eine Bilderrückwärtssuche? mit Cristina Helberg. Freiwillige Selbstkontrolle Multimedia-Dienstanbieter (FSM) - Projekt \"Weitklick\", Berlin. YouTube-Video - hochgeladen am 02.08.2022 I 02:24Min. Externer LINK zum YouTube-Video. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.youtube.com/watch?v=_ygNG6_zApk\">https://www.youtube.com/watch?v=_ygNG6_zApk</a></p><p>ZDF (2022). Wie funktionieren Deepfakes? Terra X; Zweites Deutsches Fernsehen (ZDF) - Mediathek, Mainz. Hochgeladen am 14.06.2022 I 02:22Min. Externer LINK zur ZDF-Mediathek. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.zdf.de/dokumentation/terra-x/terra-x-deepfakes-100.html\">https://www.zdf.de/dokumentation/terra-x/terra-x-deepfakes-100.html</a></p><p>ZDF (2021). Deepfakes – der Manipulation ausgeliefert? Leschs Kosmos; Zweites Deutsches Fernsehen (ZDF) - Mediathek, Mainz. Hochgeladen am 13.04.2021 I 30:33Min. Externer LINK zur ZDF-Mediathek. Abgerufen am 19.01.2024 von <a target=\"_blank\" href=\"https://www.zdf.de/wissen/leschs-kosmos/deepfakes-der-manipulation-ausgeliefert-100.html\">https://www.zdf.de/wissen/leschs-kosmos/deepfakes-der-manipulation-ausgeliefert-100.html</a></p><p><strong>Kapitel 7: Vorausschau in die Zukunft - Eine helle oder dunkle Zukunft?</strong></p><p>Alle Bilder wurden mit KI erstellt: Microsoft Bing Image Creator (<a target=\"_blank\" href=\"https://www.bing.com/images/create\">https://www.bing.com/images/create</a>), Nov./Dez. 2023</p><p>NDR (29.06.2023): Künstliche Intelligenz: Was ist Gefahr, was übertriebene Furcht?: <a target=\"_blank\" href=\"https://www.ndr.de/kultur/Kuenstliche-Intelligenz-Was-ist-Gefahr-was-uebertriebene-Furcht,ki234.html\">https://www.ndr.de/kultur/Kuenstliche-Intelligenz-Was-ist-Gefahr-was-uebertriebene-Furcht,ki234.html</a></p><p>NDR (01.06.2023): Künstliche Intelligenz: Wo bleibt die Moral?: <a target=\"_blank\" href=\"https://www.ndr.de/kultur/Kuenstliche-Intelligenz-Wo-bleibt-die-Moral,ki214.html\">https://www.ndr.de/kultur/Kuenstliche-Intelligenz-Wo-bleibt-die-Moral,ki214.html</a></p><p>Europäisches Parlament (29.09.2020): Künstliche Intelligenz: Chancen und Risiken: <a target=\"_blank\" href=\"https://www.europarl.europa.eu/news/de/headlines/society/20200918STO87404/kunstliche-intelligenz-chancen-und-risiken\">https://www.europarl.europa.eu/news/de/headlines/society/20200918STO87404/kunstliche-intelligenz-chancen-und-risiken</a></p><p>ARD Planet Wissen (26.10.2023): Künstliche Intelligenz - Wie sie unser Leben lenkt: <a target=\"_blank\" href=\"https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html\">https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html</a></p><p>BR - ALP – Keynote in Zusammenarbeit mit der ALP - Umbruch - Wie wird KI die Schule verändern? - 6.11.2022: <a target=\"_blank\" href=\"https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html\">https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html</a></p><p>Deutsche Telekom Stiftung – mmb Institut – Gesellschaft für Medien- und Kompetenzforschung mbH und Deutsches Forschungszentrum für Künstliche Intelligenz GmbH (DFKI): Schule und KI – Nov. 2023: <a target=\"_blank\" href=\"https://www.telekom-stiftung.de/sites/default/files/files/Leitfaden-Schule-und-KI.pdf\">https://www.telekom-stiftung.de/sites/default/files/files/Leitfaden-Schule-und-KI.pdf</a> und <a target=\"_blank\" href=\"https://www.telekom-stiftung.de/sites/default/files/files/Zusammenfassung-Schule-und-k%C3%BCnstliche-Intelligenz.pdf\">https://www.telekom-stiftung.de/sites/default/files/files/Zusammenfassung-Schule-und-k%C3%BCnstliche-Intelligenz.pdf</a></p><p>funk - MrWissen2go: Machen Chat GPT &amp; Co. die Schule überflüssig? - 24.11.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n\">https://www.ardmediathek.de/video/mrwissen2go/machen-chat-gpt-und-co-die-schule-ueberfluessig/funk/Y3JpZDovL2Z1bmsubmV0Lzg0MjMvdmlkZW8vMTkzMzU4Ny9zZW5kdW5n</a></p><p>BR Fernsehen - Frankenschau aktuell: Künstliche Intelligenz in der Schule - 32.05.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/embed/Y3JpZDovL2JyLmRlL3ZpZGVvLzg0OTRlOWFkLWY3MDQtNDcwNS05ODBmLWRjNGM4Y2FmYTUyOA\">https://www.ardmediathek.de/embed/Y3JpZDovL2JyLmRlL3ZpZGVvLzg0OTRlOWFkLWY3MDQtNDcwNS05ODBmLWRjNGM4Y2FmYTUyOA</a></p><p>SWR - SWR Aktuell Rheinland-Pfalz - Was verändert die künstliche Intelligenz an Schulen? - 07.03.2023: <a target=\"_blank\" href=\"https://www.ardmediathek.de/video/swr-aktuell-rheinland-pfalz/was-veraendert-die-kuenstliche-intelligenz-an-schulen/swr-rp/Y3JpZDovL3N3ci5kZS9hZXgvbzE4MjA0OTM\">https://www.ardmediathek.de/video/swr-aktuell-rheinland-pfalz/was-veraendert-die-kuenstliche-intelligenz-an-schulen/swr-rp/Y3JpZDovL3N3ci5kZS9hZXgvbzE4MjA0OTM</a></p><p>BR - ALP – Keynote in Zusammenarbeit mit der ALP - Umbruch - Wie wird KI die Schule verändern? - 6.11.2022: <a target=\"_blank\" href=\"https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html\">https://www.br.de/medienkompetenzprojekte/inhalt/br-macht-schule/umbruch-wie-wird-ki-die-schule-veraendern-keynote-100.html</a></p><p>ARD - Planet Wissen: Künstliche Intelligenz - Wie sie unser Leben lenkt- 26.10.2023: <a target=\"_blank\" href=\"https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html\">https://www.planet-wissen.de/video-kuenstliche-intelligenz--wie-sie-unser-leben-lenkt-100.html</a></p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902508"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.895Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.895Z"
+		},
+		"path": ",681c7b148945ce807e902504,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "2"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902509"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.898Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:36.185Z"
+		},
+		"path": ",681c7b148945ce807e902504,681c7b148945ce807e902508,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "Urheber",
+		"height": 455
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e90250a"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.907Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:35.565Z"
+		},
+		"path": ",681c7b148945ce807e902504,681c7b148945ce807e902508,681c7b148945ce807e902509,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p><i><strong>Vorschlag für die Namensnennung bei Weitergabe:</strong></i><br />Schulcloud-Verbund mit den Verbundparteien Brandenburg, Niedersachen, Thüringen (<a target=\"_blank\" href=\"https://schulcloud-verbund.de/impressum-datenschutz/\">https://schulcloud-verbund.de/impressum-datenschutz/)</a> und Dataport AöR (2024): Chancen und Risiken von KI im Schulkontext - Stand 03/2024.</p><p>Die Inhalte dieser Lerneinheit sind in Teilen durch die im vorstehenden Verzeichnis genannten Quellen inspiriert. Einzelne Ideen dieser Quellen finden sich in veränderter Form in den Themenabschnitten wieder. Für die Erstellung der Bilder wurde u.a. auf KI mittels Bing Image Creator zurückgegriffen.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e90250b"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.913Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.913Z"
+		},
+		"path": ",681c7b148945ce807e902504,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "3"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e90250c"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.915Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.915Z"
+		},
+		"path": ",681c7b148945ce807e902504,681c7b148945ce807e90250b,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "📌 Lizenzen und Rechte",
+		"height": 150
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e90250d"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.921Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:38.278Z"
+		},
+		"path": ",681c7b148945ce807e902504,681c7b148945ce807e90250b,681c7b148945ce807e90250c,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Diese Lerneinheit steht - so nicht anders angegeben und mit Ausnahme von Logos und Screenshots sowie der KI-generierten Bilder - unter der <strong>Lizenz CC BY SA 4.0</strong>. Der rechtsverbindliche Lizenzvertrag findet sich unter <a target=\"_blank\" href=\"https://creativecommons.org/licenses/by-sa/4.0/\">https://creativecommons.org/licenses/by-sa/4.0/ </a> Die Inhalte dürfen bearbeitet und die bearbeitete Fassung für den Unterricht genutzt werden, insofern der Urheber des Materials auch benannt wird.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e90250e"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.927Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:39.299Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Aufgaben",
+		"contextType": "course",
+		"context": {
+			"$oid": "681c7b138945ce807e90249f"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e90250f"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.929Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:36:20.929Z"
+		},
+		"path": ",681c7b148945ce807e90250e,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "1"
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902510"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.932Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:52.732Z"
+		},
+		"path": ",681c7b148945ce807e90250e,681c7b148945ce807e90250f,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"title": "Welche AI-Image-Generator gibt es?",
+		"height": 178
+	},
+	{
+		"_id": {
+			"$oid": "681c7b148945ce807e902511"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T09:36:20.938Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T09:41:51.681Z"
+		},
+		"path": ",681c7b148945ce807e90250e,681c7b148945ce807e90250f,681c7b148945ce807e902510,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Finde heraus welche AI-Image-Generator es gibt und probiere sie auch aus und kategorisiere sie nach Leistung.</p><p> </p>",
+		"inputFormat": "richTextCk4"
+	},
+	{
+		"_id": {
+			"$oid": "681cbf32f967742d6f9d4d73"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T14:26:58.239Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T14:27:55.860Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "Spalte 2"
+	},
+	{
+		"_id": {
+			"$oid": "681cbf35f967742d6f9d4d74"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T14:27:01.996Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T14:28:19.991Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681cbf35f967742d6f9d4d75,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>ein PDF</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681cbf35f967742d6f9d4d75"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T14:27:01.996Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T14:28:57.515Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 351,
+		"title": "Spalte 2 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681cbf87f967742d6f9d4d76"
+		},
+		"createdAt": {
+			"$date": "2025-05-08T14:28:23.385Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-08T14:28:54.740Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681cbf35f967742d6f9d4d75,",
+		"level": 3,
+		"position": 1,
+		"type": "file-element",
+		"caption": "Beispiel Beschreibung",
+		"alternativeText": ""
+	},
+	{
+		"_id": {
+			"$oid": "681dfc7a89002b0ee99aa003"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:00:42.314Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:00:42.314Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681dfc7a89002b0ee99aa004,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681dfc7a89002b0ee99aa004"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:00:42.314Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:00:53.670Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,",
+		"level": 2,
+		"position": 1,
+		"type": "card",
+		"height": 150,
+		"title": "Spalte 2 Karte 2"
+	},
+	{
+		"_id": {
+			"$oid": "681dfc8789002b0ee99aa005"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:00:55.962Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:00:55.962Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681dfc7a89002b0ee99aa004,",
+		"level": 3,
+		"position": 1,
+		"type": "file-element",
+		"caption": "",
+		"alternativeText": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e02e289002b0ee99aa28a"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:28:02.327Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:06:27.320Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Einspaltigenbereich",
+		"contextType": "course",
+		"context": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"layout": "list",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681e02f489002b0ee99aa28c"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:28:20.979Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:28:29.096Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "Abschnitt 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e02fe89002b0ee99aa28d"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:28:30.418Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:06:09.394Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>text zum Abschnitt 1  Karte 1 und Bild und pdf</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e02fe89002b0ee99aa28e"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:28:30.418Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:30:04.502Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 559,
+		"title": "Abschnitt1 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e032089002b0ee99aa28f"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:29:04.283Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:29:32.203Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
+		"level": 3,
+		"position": 1,
+		"type": "file-element",
+		"caption": "Ein Bild in Abschnitt 1 Karte 1",
+		"alternativeText": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e034389002b0ee99aa290"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:29:39.229Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:30:02.488Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
+		"level": 3,
+		"position": 2,
+		"type": "file-element",
+		"caption": "Ein PDF Abschnitt 1 Karte 1",
+		"alternativeText": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e035c89002b0ee99aa291"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:30:04.199Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:30:12.209Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "Abschnitt 2"
+	},
+	{
+		"_id": {
+			"$oid": "681e036889002b0ee99aa292"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:30:16.419Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:30:16.419Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e036889002b0ee99aa293,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e036889002b0ee99aa293"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:30:16.419Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:30:34.459Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,",
+		"level": 2,
+		"position": 1,
+		"type": "card",
+		"height": 118,
+		"title": "Abschnitt 1 Karte 2 Leer"
+	},
+	{
+		"_id": {
+			"$oid": "681e037a89002b0ee99aa294"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:30:34.961Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:37:15.649Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e035c89002b0ee99aa291,681e037a89002b0ee99aa295,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e037a89002b0ee99aa295"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:30:34.961Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:37:17.108Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e035c89002b0ee99aa291,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 297,
+		"title": "Abschnitt 2 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e038789002b0ee99aa296"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:30:47.288Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:30:47.288Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e035c89002b0ee99aa291,681e037a89002b0ee99aa295,",
+		"level": 3,
+		"position": 1,
+		"type": "collaborative-text-editor"
+	},
+	{
+		"_id": {
+			"$oid": "681e04b489002b0ee99aa297"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:35:48.647Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:36:28.323Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e035c89002b0ee99aa291,681e037a89002b0ee99aa295,",
+		"level": 3,
+		"position": 2,
+		"type": "link-element",
+		"title": "Wikipedia – Die freie Enzyklopädie",
+		"url": "https://de.wikipedia.org/wiki/Wikipedia:Hauptseite",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e051689002b0ee99aa298"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:37:26.584Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:06:41.868Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Mehrspaltigenbereich",
+		"contextType": "course",
+		"context": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681e052889002b0ee99aa29a"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:37:44.839Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:37:51.209Z"
+		},
+		"path": ",681e051689002b0ee99aa298,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "Spalte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e053089002b0ee99aa29b"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:37:52.458Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:37:57.769Z"
+		},
+		"path": ",681e051689002b0ee99aa298,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "Spalte 2"
+	},
+	{
+		"_id": {
+			"$oid": "681e053789002b0ee99aa29c"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:37:59.206Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:38:08.284Z"
+		},
+		"path": ",681e051689002b0ee99aa298,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "Spalte 3"
+	},
+	{
+		"_id": {
+			"$oid": "681e054189002b0ee99aa29d"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:38:09.625Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:43:12.339Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>pdf Datei Whiteboard</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e054189002b0ee99aa29e"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:38:09.625Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:27:03.199Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 920,
+		"title": "Spalte 1 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e054e89002b0ee99aa29f"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:38:22.691Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:43:24.899Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Word Datei Etherpad</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e054e89002b0ee99aa2a0"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:38:22.691Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:43:01.509Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 490,
+		"title": "Spalte 2 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e055989002b0ee99aa2a1"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:38:33.250Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:41:47.593Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,681e055989002b0ee99aa2a2,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Link</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e055989002b0ee99aa2a2"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:38:33.250Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:41:48.883Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 203,
+		"title": "Spalte 3 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "681e05fd89002b0ee99aa2a3"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:41:17.140Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:41:23.340Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 1,
+		"type": "file-element",
+		"caption": " ",
+		"alternativeText": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e060989002b0ee99aa2a4"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:41:29.179Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:41:32.991Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
+		"level": 3,
+		"position": 1,
+		"type": "file-element",
+		"caption": " ",
+		"alternativeText": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e061289002b0ee99aa2a5"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:41:38.170Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:41:43.125Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,681e055989002b0ee99aa2a2,",
+		"level": 3,
+		"position": 1,
+		"type": "link-element",
+		"title": "Wikipedia – Die freie Enzyklopädie",
+		"url": "https://de.wikipedia.org/wiki/Wikipedia:Hauptseite",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e064989002b0ee99aa2a6"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:42:33.370Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:42:33.370Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 2,
+		"type": "drawing-element",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "681e066489002b0ee99aa33e"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T13:43:00.253Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:43:00.253Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
+		"level": 3,
+		"position": 2,
+		"type": "collaborative-text-editor"
+	},
+	{
+		"_id": {
+			"$oid": "681e0c0289002b0ee99aa33f"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T14:06:58.333Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:07:28.187Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,681e0c0289002b0ee99aa340,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>h5p</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "681e0c0289002b0ee99aa340"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T14:06:58.333Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:07:29.581Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,",
+		"level": 2,
+		"position": 1,
+		"type": "card",
+		"height": 118,
+		"title": "Spalte 3 Karte 2"
+	},
+	{
+		"_id": {
+			"$oid": "681e0c1289002b0ee99aa341"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T14:07:14.468Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:07:14.468Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,681e0c0289002b0ee99aa340,",
+		"level": 3,
+		"position": 1,
+		"type": "h5p-element"
+	},
+	{
+		"_id": {
+			"$oid": "681e0c5989002b0ee99aa3f4"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T14:08:25.908Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:08:50.460Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "einspaltiger Bereich ohne Inhalt",
+		"contextType": "course",
+		"context": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"layout": "list",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "681e0c7a89002b0ee99aa3f6"
+		},
+		"createdAt": {
+			"$date": "2025-05-09T14:08:58.250Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:09:20.999Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Mehrsplaltiger Bereich ohne Inhalt",
+		"contextType": "course",
+		"context": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "68219d8d69f69c81430aa558"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T07:04:45.504Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T07:04:45.504Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,68219d8d69f69c81430aa559,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "68219d8d69f69c81430aa559"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T07:04:45.504Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T07:05:31.453Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,",
+		"level": 2,
+		"position": 2,
+		"type": "card",
+		"height": 118,
+		"title": "Spalte 3 Karte 3"
+	},
+	{
+		"_id": {
+			"$oid": "68219db669f69c81430aa55a"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T07:05:26.928Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T07:06:06.433Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,68219d8d69f69c81430aa559,",
+		"level": 3,
+		"position": 1,
+		"type": "external-tool",
+		"contextExternalTool": {
+			"$oid": "68219dde69f69c81430aa55c"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "68219e1e69f69c81430aa55d"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T07:07:10.930Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:26:57.598Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 3,
+		"type": "rich-text-element",
+		"text": "<p>text nach pdf und Whiteborad danach kommt Link und Abgabe</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6821daa137752ce145e64133"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:25:21.490Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:25:28.358Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 4,
+		"type": "link-element",
+		"title": "Wikipedia – Die freie Enzyklopädie",
+		"url": "https://de.wikipedia.org/wiki/Wikipedia:Hauptseite",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "6821dac237752ce145e64134"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:25:54.011Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:26:33.813Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 5,
+		"type": "submission-container-element",
+		"dueDate": {
+			"$date": "2035-05-24T10:00:00Z"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "6821db1937752ce145e64135"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:27:21.392Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:40:51.895Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Mehrspaltig Bereich2",
+		"contextType": "course",
+		"context": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "6821db1b37752ce145e64137"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:27:23.780Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:27:49.159Z"
+		},
+		"path": ",6821db1937752ce145e64135,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "Spalte1"
+	},
+	{
+		"_id": {
+			"$oid": "6821db3537752ce145e64138"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:27:49.804Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:28:46.043Z"
+		},
+		"path": ",6821db1937752ce145e64135,",
+		"level": 1,
+		"position": 1,
+		"type": "column",
+		"title": "Spalte 2 leer"
+	},
+	{
+		"_id": {
+			"$oid": "6821db3b37752ce145e64139"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:27:55.294Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:27:59.970Z"
+		},
+		"path": ",6821db1937752ce145e64135,",
+		"level": 1,
+		"position": 2,
+		"type": "column",
+		"title": "Spalte 3"
+	},
+	{
+		"_id": {
+			"$oid": "6821db4037752ce145e6413a"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:28:00.308Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:28:04.841Z"
+		},
+		"path": ",6821db1937752ce145e64135,",
+		"level": 1,
+		"position": 3,
+		"type": "column",
+		"title": "Spalte4"
+	},
+	{
+		"_id": {
+			"$oid": "6821db4537752ce145e6413b"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:28:05.804Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:28:40.118Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db1b37752ce145e64137,6821db4537752ce145e6413c,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Text Karte 1 spalte 1</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6821db4537752ce145e6413c"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:28:05.804Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:28:19.082Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db1b37752ce145e64137,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 118,
+		"title": "Spalte1 Karte1 "
+	},
+	{
+		"_id": {
+			"$oid": "6821db7137752ce145e6413d"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:28:49.107Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:29:23.592Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db3b37752ce145e64139,6821db7137752ce145e6413e,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>text Karte 1 Spalte 3</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6821db7137752ce145e6413e"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:28:49.107Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:29:24.932Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db3b37752ce145e64139,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 118,
+		"title": "Spalte3 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "6821db9737752ce145e6413f"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:29:27.936Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:30:08.843Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db4037752ce145e6413a,6821db9737752ce145e64140,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>Text zu karte1 Spalte 4 danach ein Link</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6821db9737752ce145e64140"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:29:27.936Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:30:23.418Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db4037752ce145e6413a,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 203,
+		"title": "Spalte4 Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "6821dbc437752ce145e64141"
+		},
+		"createdAt": {
+			"$date": "2025-05-12T11:30:12.006Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:30:17.272Z"
+		},
+		"path": ",6821db1937752ce145e64135,6821db4037752ce145e6413a,6821db9737752ce145e64140,",
+		"level": 3,
+		"position": 1,
+		"type": "link-element",
+		"title": "Wikipedia – Die freie Enzyklopädie",
+		"url": "https://de.wikipedia.org/wiki/Wikipedia:Hauptseite",
+		"description": ""
 	}
 ]
