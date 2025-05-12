@@ -3,13 +3,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Submission, Task } from '@modules/task/repo';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -44,12 +37,6 @@ describe('LessonService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
@@ -154,59 +141,6 @@ describe('LessonService', () => {
 
 				expect(result).toHaveLength(2);
 				expect(result).toEqual(lessons);
-			});
-		});
-	});
-
-	describe('deleteUserData', () => {
-		describe('when deleting by userId', () => {
-			const setup = () => {
-				const userId = new ObjectId();
-				const contentExample: ComponentProperties = {
-					title: 'title',
-					hidden: false,
-					user: userId,
-					component: ComponentType.TEXT,
-					content: { text: 'test of content' },
-				};
-				const lesson1 = lessonFactory.buildWithId({ contents: [contentExample] });
-				const lesson2 = lessonFactory.buildWithId({ contents: [contentExample] });
-
-				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
-				lessonRepo.removeUserReference.mockResolvedValue(2);
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
-					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [lesson1.id, lesson2.id]),
-				]);
-
-				return {
-					expectedResult,
-					userId,
-				};
-			};
-
-			it('should call lessonRepo.findByUserId', async () => {
-				const { userId } = setup();
-
-				await lessonService.deleteUserData(userId.toHexString());
-
-				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
-			});
-
-			it('should call lessonRepo.removeUserReference', async () => {
-				const { userId } = setup();
-
-				await lessonService.deleteUserData(userId.toHexString());
-
-				expect(lessonRepo.removeUserReference).toBeCalledWith(userId.toHexString());
-			});
-
-			it('should update lessons without deleted user', async () => {
-				const { expectedResult, userId } = setup();
-
-				const result = await lessonService.deleteUserData(userId.toHexString());
-
-				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
