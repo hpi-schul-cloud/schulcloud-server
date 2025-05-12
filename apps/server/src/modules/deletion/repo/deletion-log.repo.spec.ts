@@ -71,13 +71,26 @@ describe(DeletionLogRepo.name, () => {
 				return { domainObject, deletionLogId, expectedDomainObject };
 			};
 
-			it('should create a new deletionLog', async () => {
-				const { domainObject, deletionLogId, expectedDomainObject } = setup();
-				await repo.create(domainObject);
+			describe('when a single deletionLog is given', () => {
+				it('should create a new deletionLog', async () => {
+					const { domainObject, deletionLogId, expectedDomainObject } = setup();
+					await repo.create(domainObject);
 
-				const result = await repo.findById(deletionLogId);
+					const result = await repo.findById(deletionLogId);
 
-				expect(result).toEqual(expect.objectContaining(expectedDomainObject));
+					expect(result).toEqual(expect.objectContaining(expectedDomainObject));
+				});
+			});
+
+			describe('when an array of deletionLogs is given', () => {
+				it('should create a new deletionLog', async () => {
+					const { domainObject, deletionLogId, expectedDomainObject } = setup();
+					await repo.create([domainObject]);
+
+					const result = await repo.findById(deletionLogId);
+
+					expect(result).toEqual(expect.objectContaining(expectedDomainObject));
+				});
 			});
 		});
 	});

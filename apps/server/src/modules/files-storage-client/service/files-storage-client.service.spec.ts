@@ -4,7 +4,6 @@ import { StorageLocation } from '@infra/files-storage-client';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { UserDeletionInjectionService } from '@modules/deletion';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task } from '@modules/task/repo';
@@ -35,12 +34,6 @@ describe('FilesStorageClientAdapterService', () => {
 				{
 					provide: FilesStorageProducer,
 					useValue: createMock<FilesStorageProducer>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
@@ -209,40 +202,6 @@ describe('FilesStorageClientAdapterService', () => {
 				const { recordId } = setup();
 
 				await expect(service.deleteFiles([recordId])).rejects.toThrowError();
-			});
-		});
-	});
-
-	describe('removeCreatorIdFromFileRecords', () => {
-		describe('when creatorId is deleted successfully', () => {
-			const setup = () => {
-				const creatorId = new ObjectId().toHexString();
-
-				return { creatorId };
-			};
-
-			it('Should call client.removeCreatorIdFromFileRecords', async () => {
-				const { creatorId } = setup();
-
-				await service.deleteUserData(creatorId);
-
-				expect(client.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(creatorId);
-			});
-		});
-
-		describe('when error is thrown', () => {
-			const setup = () => {
-				const creatorId = new ObjectId().toHexString();
-
-				client.removeCreatorIdFromFileRecords.mockRejectedValue(new Error());
-
-				return { creatorId };
-			};
-
-			it('Should call error mapper if throw an error.', async () => {
-				const { creatorId } = setup();
-
-				await expect(service.deleteUserData(creatorId)).rejects.toThrowError();
 			});
 		});
 	});

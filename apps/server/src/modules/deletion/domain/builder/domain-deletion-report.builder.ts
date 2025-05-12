@@ -3,7 +3,7 @@ import { DomainOperationReport } from '../interface/domain-operation-report';
 import { DomainName } from '../types/domain-name.enum';
 
 export class DomainDeletionReportBuilder {
-	static build(
+	public static build(
 		domain: DomainName,
 		operations: DomainOperationReport[],
 		subdomainOperations?: DomainDeletionReport[]
