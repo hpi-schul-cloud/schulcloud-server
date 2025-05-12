@@ -20,6 +20,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
@@ -31,7 +32,6 @@ import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
-import { RoomIdResponse } from './dto/response/room-id.response';
 import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-link-list.response';
 import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
@@ -281,22 +281,29 @@ export class RoomController {
 		return Promise.resolve(response);
 	}
 
-	@Post(':roomId/duplicate')
+	@Post(':roomId/copy')
 	@ApiOperation({
-		summary: ' creates a copy of the given room. Can only be used if you are the owner or admin of the origin room',
+		summary: 'Creates a copy of the given room. Restricted to Room Owner and Admin',
 	})
-	@ApiResponse({ status: HttpStatus.OK, description: 'successfully duplicated', type: String })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns the copy status of a duplicated room',
+		type: CopyApiResponse,
+	})
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	public async duplicateRoom(
+	public async copyRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
-	): Promise<RoomIdResponse> {
-		await this.roomUc.duplicateRoom(currentUser.userId, urlParams.roomId);
-		// replace response if service is implemented
-		return { id: currentUser.userId };
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId, currentUser.schoolId);
+
+		const copyResponse = CopyMapper.mapToResponse(copyStatus);
+
+		return copyResponse;
 	}
 }
