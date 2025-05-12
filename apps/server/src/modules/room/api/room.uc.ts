@@ -18,6 +18,7 @@ import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
+import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -144,6 +145,7 @@ export class RoomUc {
 	): Promise<RoomRole> {
 		this.checkFeatureEnabled();
 		await this.checkRoomAuthorizationByIds(currentUserId, roomId, Action.write, [Permission.ROOM_MEMBERS_ADD]);
+		await this.checkUsersAccessible(currentUserId, userIds);
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, userIds);
 		return roleName;
 	}
@@ -307,4 +309,31 @@ export class RoomUc {
 
 		return permissions;
 	}
+
+	private async checkUsersAccessible(currentUserId: EntityId, userIds: Array<EntityId>): Promise<void> {
+		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const foundUsers = await this.userService.findByIds(userIds);
+
+		const isUserAccessibleFilter = this.createUserAccessibleFilter(currentUser);
+
+		const foundAndAccessibleIds = foundUsers.filter(isUserAccessibleFilter).map(this.userToId);
+		const notAccessibleUserIds = this.removeMatchingIds(userIds, foundAndAccessibleIds);
+
+		if (notAccessibleUserIds.length > 0) {
+			throw new UserToAddToRoomNotFoundLoggableException(notAccessibleUserIds);
+		}
+	}
+
+	private removeMatchingIds(original: EntityId[], toRemove: EntityId[]): EntityId[] {
+		return original.filter((item) => !toRemove.includes(item));
+	}
+
+	private createUserAccessibleFilter =
+		(currentUser: User) =>
+		(user: UserDo): boolean =>
+			this.authorizationService.hasPermission(currentUser, user, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+	private userToId = (user: UserDo): string => user.id || '';
 }
