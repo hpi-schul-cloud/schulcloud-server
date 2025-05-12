@@ -1,29 +1,13 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Logger } from '@core/logger';
+import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { EntityId } from '@shared/domain/types';
-import { Logger } from '@core/logger';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
-import {
-	DataDeletionDomainOperationLoggable,
-	DeletionService,
-	DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	StatusModel,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 @Injectable()
-export class ClassService implements DeletionService {
-	constructor(
-		private readonly classesRepo: ClassesRepo,
-		private readonly logger: Logger,
-		userDeletionInjectionService: UserDeletionInjectionService
-	) {
+export class ClassService {
+	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
 		this.logger.setContext(ClassService.name);
-		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
@@ -54,44 +38,5 @@ export class ClassService implements DeletionService {
 			throw new NotFoundLoggableException(Class.name, { id });
 		}
 		return clazz;
-	}
-
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Deleting data from Classes',
-				DomainName.CLASS,
-				userId,
-				StatusModel.PENDING
-			)
-		);
-
-		if (!userId) {
-			throw new InternalServerErrorException('User id is missing');
-		}
-
-		const classes = await this.classesRepo.findAllByUserId(userId);
-		const numberOfUpdatedClasses = await this.classesRepo.removeUserReference(userId);
-
-		const result = DomainDeletionReportBuilder.build(DomainName.CLASS, [
-			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedClasses, this.getClassesId(classes)),
-		]);
-
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Successfully removed user data from Classes',
-				DomainName.CLASS,
-				userId,
-				StatusModel.FINISHED,
-				numberOfUpdatedClasses,
-				0
-			)
-		);
-
-		return result;
-	}
-
-	private getClassesId(classes: Class[]): EntityId[] {
-		return classes.map((item) => item.id);
 	}
 }
