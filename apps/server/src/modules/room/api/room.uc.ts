@@ -314,21 +314,21 @@ export class RoomUc {
 		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
 		const foundUsers = await this.userService.findByIds(userIds);
 
-		const isUserAccessible = this.getUserAccessibleFunction(currentUser);
+		const isUserAccessibleFilter = this.createUserAccessibleFilter(currentUser);
 
-		const foundAndAccessibleIds = foundUsers.filter(isUserAccessible).map(this.userToId);
-		const notAccessibleUserIds = this.removeIdsFrom(userIds, foundAndAccessibleIds);
+		const foundAndAccessibleIds = foundUsers.filter(isUserAccessibleFilter).map(this.userToId);
+		const notAccessibleUserIds = this.removeMatchingIds(userIds, foundAndAccessibleIds);
 
 		if (notAccessibleUserIds.length > 0) {
 			throw new UserToAddToRoomNotFoundLoggableException(notAccessibleUserIds);
 		}
 	}
 
-	private removeIdsFrom(original: EntityId[], toRemove: EntityId[]): EntityId[] {
+	private removeMatchingIds(original: EntityId[], toRemove: EntityId[]): EntityId[] {
 		return original.filter((item) => !toRemove.includes(item));
 	}
 
-	private getUserAccessibleFunction =
+	private createUserAccessibleFilter =
 		(currentUser: User) =>
 		(user: UserDo): boolean =>
 			this.authorizationService.hasPermission(currentUser, user, {
