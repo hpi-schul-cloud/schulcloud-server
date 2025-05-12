@@ -39,8 +39,7 @@ export class BiloMetadataSyncStrategy implements MediaSourceSyncStrategy {
 
 		const metadataItems: BiloMediaQueryDataResponse[] = await this.biloMediaClientAdapter.fetchMediaMetadata(
 			mediumIds,
-			mediaSource,
-			false
+			mediaSource
 		);
 
 		const report: MediaSourceSyncReport = await this.syncExternalToolMediaMetadata(externalTools, metadataItems);

@@ -1,5 +1,4 @@
 import { LoggerModule } from '@core/logger';
-import { CacheWrapperModule } from '@infra/cache';
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -22,7 +21,6 @@ import { OAuthService, OauthSessionTokenService } from './service';
 		UserModule,
 		ProvisioningModule,
 		SystemModule,
-		CacheWrapperModule,
 		UserLoginMigrationModule,
 		LegacySchoolModule,
 		OauthAdapterModule,

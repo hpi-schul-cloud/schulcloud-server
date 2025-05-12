@@ -19,6 +19,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
 import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
+import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
@@ -261,10 +262,10 @@ describe('Room Invitation Link Controller (API)', () => {
 							const linkId = new ObjectId().toHexString();
 
 							const response = await loggedInClient.post(`/${linkId}`);
-							const body = response.body as { message: string };
+							const body = response.body as RoomInvitationLinkError;
 
 							expect(response.status).toBe(httpStatus);
-							expect(body.message).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
+							expect(body.details?.validationMessage).toEqual(RoomInvitationLinkValidationError.INVALID_LINK);
 						});
 					});
 				}
