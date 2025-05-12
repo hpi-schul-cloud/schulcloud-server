@@ -13,7 +13,6 @@ import {
 	SystemRule,
 	TaskRule,
 	TeamRule,
-	UserEntityRule,
 	UserLoginMigrationRule,
 	UserRule,
 } from './rules';
@@ -31,7 +30,6 @@ import {
 		TaskRule,
 		TeamRule,
 		UserRule,
-		UserEntityRule,
 		UserLoginMigrationRule,
 		LegacySchoolRule,
 		SystemRule,

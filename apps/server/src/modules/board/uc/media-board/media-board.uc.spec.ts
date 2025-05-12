@@ -11,6 +11,7 @@ import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardUc } from './media-board.uc';
+import { UserService } from '@modules/user';
 
 describe(MediaBoardUc.name, () => {
 	let module: TestingModule;
@@ -32,6 +33,10 @@ describe(MediaBoardUc.name, () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
 				},
 				{
 					provide: MediaBoardService,
