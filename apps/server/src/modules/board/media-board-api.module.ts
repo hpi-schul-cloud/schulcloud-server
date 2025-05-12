@@ -1,8 +1,9 @@
+import { LoggerModule } from '@core/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { SchoolLicenseModule } from '@modules/school-license';
+import { UserModule } from '@modules/user';
 import { UserLicenseModule } from '@modules/user-license';
 import { forwardRef, Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
 import { ToolModule } from '../tool';
 import { BoardModule } from './board.module';
 import { MediaBoardController, MediaElementController, MediaLineController } from './controller';
@@ -14,6 +15,7 @@ import { MediaAvailableLineUc, MediaBoardUc, MediaElementUc, MediaLineUc } from 
 	imports: [
 		BoardModule,
 		LoggerModule,
+		UserModule,
 		forwardRef(() => AuthorizationModule),
 		MediaBoardModule,
 		ToolModule,
