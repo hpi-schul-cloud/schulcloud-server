@@ -3,10 +3,9 @@ import { RoleModule } from '@modules/role';
 import { Module } from '@nestjs/common';
 import { UserController, UserUc } from './api';
 import { UserModule } from './user.module';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
-	imports: [UserModule, RoleModule, AccountModule, DeletionModule],
+	imports: [UserModule, RoleModule, AccountModule],
 	controllers: [UserController],
 	providers: [UserUc],
 })

@@ -5,16 +5,17 @@ import { EntityId } from '@shared/domain/types';
 import { DeletionLog } from '../domain/do';
 import { DeletionLogEntity } from './entity';
 import { DeletionLogMapper } from './mapper';
+import { EntityName, Utils } from '@mikro-orm/core';
 
 @Injectable()
 export class DeletionLogRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	get entityName() {
+	get entityName(): EntityName<DeletionLogEntity> {
 		return DeletionLogEntity;
 	}
 
-	async findById(deletionLogId: EntityId): Promise<DeletionLog> {
+	public async findById(deletionLogId: EntityId): Promise<DeletionLog> {
 		const deletionLog: DeletionLogEntity = await this.em.findOneOrFail(DeletionLogEntity, {
 			id: deletionLogId,
 		});
@@ -24,7 +25,7 @@ export class DeletionLogRepo {
 		return mapped;
 	}
 
-	async findAllByDeletionRequestId(deletionRequestId: EntityId): Promise<DeletionLog[]> {
+	public async findAllByDeletionRequestId(deletionRequestId: EntityId): Promise<DeletionLog[]> {
 		const deletionLogEntities: DeletionLogEntity[] = await this.em.find(DeletionLogEntity, {
 			deletionRequestId: new ObjectId(deletionRequestId),
 		});
@@ -34,9 +35,14 @@ export class DeletionLogRepo {
 		return mapped;
 	}
 
-	async create(deletionLog: DeletionLog): Promise<void> {
-		const deletionLogEntity: DeletionLogEntity = DeletionLogMapper.mapToEntity(deletionLog);
-		this.em.persist(deletionLogEntity);
+	public async create(deletionLog: DeletionLog | DeletionLog[]): Promise<void> {
+		const deletionLogs = Utils.asArray(deletionLog);
+
+		deletionLogs.forEach((domainObject) => {
+			const deletionLogEntity: DeletionLogEntity = DeletionLogMapper.mapToEntity(domainObject);
+			this.em.persist(deletionLogEntity);
+		});
+
 		await this.em.flush();
 	}
 }

@@ -10,8 +10,8 @@ import { SchoolModule } from '@modules/school';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
-import { DeletionModule } from '@modules/deletion';
 
+import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonCartridgeFileValidatorPipe } from '../common-cartridge/controller/utils';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
@@ -23,13 +23,8 @@ import {
 	LegacyBoardRepo,
 } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
-import {
-	BoardCopyService,
-	CommonCartridgeImportService,
-	CourseCopyService,
-	CourseRoomsService,
-	DashboardService,
-} from './service';
+import { DeleteUserDashboardDataStep } from './saga';
+import { BoardCopyService, CommonCartridgeImportService, CourseCopyService, CourseRoomsService } from './service';
 
 /**
  * @deprecated - the learnroom module is deprecated and will be removed in the future
@@ -49,7 +44,7 @@ import {
 		SchoolModule,
 		GroupModule,
 		RoleModule,
-		DeletionModule,
+		SagaModule,
 	],
 	providers: [
 		{
@@ -63,11 +58,11 @@ import {
 		CourseCopyService,
 		DashboardElementRepo,
 		DashboardModelMapper,
-		DashboardService,
 		LegacyBoardRepo,
 		CourseRoomsService,
 		ColumnBoardNodeRepo,
+		DeleteUserDashboardDataStep,
 	],
-	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService, DashboardService],
+	exports: [CourseCopyService, CourseRoomsService, CommonCartridgeImportService],
 })
 export class LearnroomModule {}
