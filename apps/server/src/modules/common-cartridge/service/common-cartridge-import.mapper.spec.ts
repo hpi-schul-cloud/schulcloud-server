@@ -72,13 +72,14 @@ describe('CommonCartridgeImportMapper', () => {
 					resourceType: 'webLink',
 				});
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
-
-				return result;
+				return { resource, cardElementProps };
 			};
 
 			it('should return link body', () => {
-				const result = setup();
+				const { resource, cardElementProps } = setup();
+
+				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
+
 				expect(result).toEqual({
 					type: 'link',
 					content: {
@@ -110,13 +111,13 @@ describe('CommonCartridgeImportMapper', () => {
 					resourceType: 'webContent',
 				});
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
-
-				return result;
+				return { resource, cardElementProps };
 			};
 
 			it('should return rich text body', () => {
-				const result = setup();
+				const { resource, cardElementProps } = setup();
+
+				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
 
 				expect(result).toEqual({
 					type: 'richText',
@@ -146,13 +147,13 @@ describe('CommonCartridgeImportMapper', () => {
 					resourceType: 'webContent',
 				});
 
-				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
-
-				return result;
+				return { resource, cardElementProps };
 			};
 
 			it('should return undefined for unknown resource type', () => {
-				const result = setup();
+				const { resource, cardElementProps } = setup();
+
+				const result = sut.mapResourceToContentBody(resource, cardElementProps, InputFormat.RICH_TEXT_CK4);
 
 				expect(result).toEqual(undefined);
 			});
