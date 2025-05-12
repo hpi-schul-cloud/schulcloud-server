@@ -1,5 +1,4 @@
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
@@ -15,11 +14,13 @@ import {
 } from '../../domain';
 import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
+import { UserService } from '@modules/user';
 
 @Injectable()
 export class MediaBoardUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly boardNodePermissionService: BoardNodePermissionService,
 		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
@@ -30,12 +31,13 @@ export class MediaBoardUc {
 	public async getMediaBoardForUser(userId: EntityId): Promise<MediaBoard> {
 		this.checkFeatureEnabled();
 
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, user, AuthorizationContextBuilder.read([]));
+		const currentUser = await this.authorizationService.getUserWithPermissions(userId);
+		const userDo = await this.userService.findById(userId);
+		this.authorizationService.checkPermission(currentUser, userDo, AuthorizationContextBuilder.read([]));
 
 		const context: BoardExternalReference = {
 			type: BoardExternalReferenceType.User,
-			id: user.id,
+			id: currentUser.id,
 		};
 
 		const existingBoards: MediaBoard[] = await this.mediaBoardService.findByExternalReference(context);
