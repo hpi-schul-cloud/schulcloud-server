@@ -1,13 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import {
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -15,7 +8,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
 import { pseudonymFactory } from '../testing';
@@ -40,12 +32,6 @@ describe('PseudonymService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: UserDeletionInjectionService,
-					useValue: createMock<UserDeletionInjectionService>({
-						injectUserDeletionService: jest.fn(),
-					}),
 				},
 			],
 		}).compile();
@@ -344,50 +330,6 @@ describe('PseudonymService', () => {
 				const result = await service.findByUserId(user.id as string);
 
 				expect(result).toHaveLength(0);
-			});
-		});
-	});
-
-	describe('deleteUserData', () => {
-		describe('when user is missing', () => {
-			const setup = () => {
-				const user = userDoFactory.build({ id: undefined });
-
-				return {
-					user,
-				};
-			};
-
-			it('should throw an error', async () => {
-				const { user } = setup();
-
-				await expect(service.deleteUserData(user.id as string)).rejects.toThrowError(InternalServerErrorException);
-			});
-		});
-
-		describe('when deleting by userId', () => {
-			const setup = () => {
-				const user = userDoFactory.buildWithId();
-				const pseudonymsDeleted = [new ObjectId().toHexString(), new ObjectId().toHexString()];
-
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, pseudonymsDeleted.length, [...pseudonymsDeleted]),
-				]);
-
-				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(pseudonymsDeleted);
-
-				return {
-					expectedResult,
-					user,
-				};
-			};
-
-			it('should delete pseudonyms by userId', async () => {
-				const { expectedResult, user } = setup();
-
-				const result = await service.deleteUserData(user.id as string);
-
-				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

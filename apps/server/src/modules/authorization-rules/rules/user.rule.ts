@@ -1,9 +1,10 @@
 import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class UserRule implements Rule<User> {
+export class UserRule implements Rule<UserDo> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -12,15 +13,20 @@ export class UserRule implements Rule<User> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof User;
+		const isMatched = object instanceof UserDo;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: User, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: UserDo, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		const isOwner = user === entity;
 
-		return hasPermission || isOwner;
+		const isHimself = user.id === entity.id;
+		const isUsersSchool = user.school.id === entity.schoolId;
+		const isDiscoverable = entity.discoverable || false;
+
+		const isVisible = isHimself || isUsersSchool || isDiscoverable;
+
+		return hasPermission && isVisible;
 	}
 }

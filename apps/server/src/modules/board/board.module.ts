@@ -5,6 +5,7 @@ import { CollaborativeTextEditorModule } from '@modules/collaborative-text-edito
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { SagaModule } from '@modules/saga';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
@@ -14,6 +15,7 @@ import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
 import { BoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
+import { DeleteUserBoardDataStep } from './saga';
 import {
 	BoardCommonToolService,
 	BoardNodeAuthorizableService,
@@ -21,7 +23,6 @@ import {
 	ColumnBoardService,
 	ContextExternalToolDeletedEventHandlerService,
 	MediaBoardService,
-	BoardUserDeleteService,
 } from './service';
 import {
 	BoardContextService,
@@ -33,7 +34,6 @@ import {
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
 	imports: [
@@ -51,7 +51,7 @@ import { DeletionModule } from '@modules/deletion';
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomMembershipModule,
-		DeletionModule,
+		SagaModule,
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
@@ -70,10 +70,10 @@ import { DeletionModule } from '@modules/deletion';
 		ColumnBoardLinkService,
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
-		BoardUserDeleteService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
 		MediaBoardService,
+		DeleteUserBoardDataStep,
 	],
 	exports: [
 		BoardNodeAuthorizableService,
