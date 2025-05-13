@@ -1,8 +1,19 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum } from 'class-validator';
+import { ExternalToolMediumStatus } from '../../../enum';
 
 export class ExternalToolMediumResponse {
+	@ApiProperty({
+		description: 'The type of the medium',
+		required: true,
+		enum: ExternalToolMediumStatus,
+		enumName: 'ExternalToolMediumStatus',
+	})
+	@IsEnum(ExternalToolMediumStatus)
+	public status!: ExternalToolMediumStatus;
+
 	@ApiProperty({ type: String, description: 'Id of the medium' })
-	public mediumId!: string;
+	public mediumId?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'Publisher of the medium' })
 	public publisher?: string;
@@ -14,6 +25,7 @@ export class ExternalToolMediumResponse {
 	public modifiedAt?: Date;
 
 	constructor(props: ExternalToolMediumResponse) {
+		this.status = props.status;
 		this.mediumId = props.mediumId;
 		this.publisher = props.publisher;
 		this.mediaSourceId = props.mediaSourceId;

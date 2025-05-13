@@ -3,7 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { ToolConfig } from '../../tool-config';
-import { ExternalTool } from '../domain';
+import { ExternalTool, ExternalToolMedium } from '../domain';
+import { ExternalToolMediumStatus } from '../enum';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
@@ -28,6 +29,10 @@ export class ExternalToolValidationService {
 
 		if (externalTool.isPreferred) {
 			await this.validatePreferredTool(externalTool);
+		}
+
+		if (externalTool.medium) {
+			this.validateToolMedium(externalTool.medium);
 		}
 	}
 
@@ -64,6 +69,10 @@ export class ExternalToolValidationService {
 
 		if (externalTool.isPreferred) {
 			await this.validatePreferredTool(externalTool);
+		}
+
+		if (externalTool.medium) {
+			this.validateToolMedium(externalTool.medium);
 		}
 	}
 
@@ -123,6 +132,39 @@ export class ExternalToolValidationService {
 			throw new ValidationError(
 				`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
 			);
+		}
+	}
+
+	private validateToolMedium(medium: ExternalToolMedium): void {
+		const { status, mediaSourceId, mediumId } = medium;
+		switch (status) {
+			case ExternalToolMediumStatus.ACTIVE:
+				if (!mediaSourceId) {
+					throw new ValidationError(`tool_medium_status_active: This medium is active but is missing a media source.`);
+				}
+				if (!mediumId) {
+					throw new ValidationError(
+						`tool_medium_status_active: This medium is active but is not linked to an exter	nal medium.`
+					);
+				}
+				break;
+			case ExternalToolMediumStatus.DRAFT:
+				if (!mediaSourceId) {
+					throw new ValidationError(`tool_medium_status_draft: This medium is a draft but is missing a media source.`);
+				}
+				break;
+			case ExternalToolMediumStatus.TEMPLATE:
+				if (!mediaSourceId) {
+					throw new ValidationError(`tool_medium_status_template: This template is missing a media source.`);
+				}
+				if (mediumId) {
+					throw new ValidationError(
+						`tool_medium_status_template: This template cannot be linked to a specific medium.`
+					);
+				}
+				break;
+			default:
+				throw new ValidationError(`tool_medium_status: This medium status must be one of: active, draft or template.`);
 		}
 	}
 }

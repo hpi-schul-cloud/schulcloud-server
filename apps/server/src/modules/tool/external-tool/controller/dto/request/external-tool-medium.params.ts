@@ -1,11 +1,22 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ExternalToolMediumStatus } from '../../../enum';
 
 export class ExternalToolMediumParams {
+	@ApiProperty({
+		description: 'The status of the medium',
+		required: true,
+		enum: ExternalToolMediumStatus,
+		enumName: 'ExternalToolMediumStatus',
+	})
+	@IsEnum(ExternalToolMediumStatus)
+	public status!: ExternalToolMediumStatus;
+
 	@IsString()
+	@IsOptional()
 	@IsNotEmpty()
 	@ApiProperty({ type: String, description: 'Id of the medium' })
-	public mediumId!: string;
+	public mediumId?: string;
 
 	@IsString()
 	@IsOptional()
