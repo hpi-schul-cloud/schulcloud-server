@@ -92,26 +92,35 @@ export class RoomInvitationLinkUc {
 	public async useLink(userId: EntityId, linkId: string): Promise<EntityId> {
 		this.checkFeatureEnabled();
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-
-		const [roomInvitationLink] = await this.roomInvitationLinkService.findByIds([linkId]);
+		const [user, roomInvitationLink] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.roomInvitationLinkService.findById(linkId),
+		]);
 
 		await this.checkValidity(roomInvitationLink, user);
-
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(
-			roomInvitationLink.roomId
-		);
-		const isAlreadyMember = roomMembershipAuthorizable.members.some((member) => member.userId === user.id);
-		if (!isAlreadyMember) {
-			await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId]);
-			await this.roomMembershipService.changeRoleOfRoomMembers(
-				roomInvitationLink.roomId,
-				[userId],
-				roomInvitationLink.startingRole
-			);
-		}
+		await this.addUserToRoom(roomInvitationLink, userId);
 
 		return roomInvitationLink.roomId;
+	}
+
+	private async addUserToRoom(roomInvitationLink: RoomInvitationLink, userId: string): Promise<void> {
+		const isAlreadyMember = await this.isAlreadyMember(roomInvitationLink.roomId, userId);
+		if (isAlreadyMember) {
+			return;
+		}
+
+		// TODO: add member directly with role param
+		await this.roomMembershipService.addMembersToRoom(roomInvitationLink.roomId, [userId] /* role */);
+		await this.roomMembershipService.changeRoleOfRoomMembers(
+			roomInvitationLink.roomId,
+			[userId],
+			roomInvitationLink.startingRole
+		);
+	}
+
+	private async isAlreadyMember(roomId: EntityId, userId: EntityId): Promise<boolean> {
+		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
+		return roomMembershipAuthorizable.members.some((member) => member.userId === userId);
 	}
 
 	private checkFeatureEnabled(): void {
