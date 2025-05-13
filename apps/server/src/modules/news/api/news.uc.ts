@@ -15,6 +15,12 @@ import { News, NewsRepo, NewsTargetFilter } from '../repo';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 
+/**
+ * TODO:
+ * NewsUc methods should be refactored to use a service
+ * instead of implementing logic themselves.
+ */
+
 @Injectable()
 export class NewsUc {
 	constructor(
@@ -153,7 +159,11 @@ export class NewsUc {
 		return id;
 	}
 
-	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: NewsPermission[]) {
+	private async getPermittedTargets(
+		userId: EntityId,
+		scope: INewsScope | undefined,
+		permissions: NewsPermission[]
+	): Promise<NewsTargetFilter[]> {
 		let targets: NewsTargetFilter[];
 
 		if (scope?.target == null) {
