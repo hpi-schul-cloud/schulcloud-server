@@ -279,11 +279,7 @@ describe(TspFetchService.name, () => {
 			it('should log a AxiosErrorLoggable as warning', async () => {
 				const { system } = setup();
 
-				await sut.fetchTspSchools(system, 1);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
-					new AxiosErrorLoggable(new AxiosError(), 'TSP_FETCH_ERROR')
-				);
+				await expect(sut.fetchTspSchools(system, 1)).rejects.toThrow(AxiosErrorLoggable);
 			});
 		});
 
@@ -313,9 +309,11 @@ describe(TspFetchService.name, () => {
 			it('should log a ErrorLoggable as warning', async () => {
 				const { system } = setup();
 
-				await sut.fetchTspSchools(system, 1);
+				await expect(() => sut.fetchTspSchools(system, 1)).rejects.toThrow(Error);
 
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
+				/* const result = await sut.fetchTspSchools(system, 1);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error())); */
 			});
 		});
 	});
@@ -346,12 +344,14 @@ describe(TspFetchService.name, () => {
 			it('should throw an OauthConfigMissingLoggableException into domainErrorHandler', async () => {
 				const { system } = setup();
 
-				const result = await sut.fetchTspSchools(system, 1);
+				await expect(sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
+
+				/* const result = await sut.fetchTspSchools(system, 1);
 				expect(result).toStrictEqual([]);
 
 				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
 					new ErrorLoggable(new OauthConfigMissingLoggableException(system.id))
-				);
+				); */
 			});
 		});
 	});
