@@ -1,4 +1,3 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
@@ -15,7 +14,6 @@ import { SchoolRule } from './school.rule';
 
 describe('SchoolRule', () => {
 	let rule: SchoolRule;
-	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 	let injectionService: AuthorizationInjectionService;
 	let module: TestingModule;
 
@@ -23,25 +21,12 @@ describe('SchoolRule', () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
-			providers: [
-				SchoolRule,
-				{ provide: AuthorizationHelper, useValue: createMock<AuthorizationHelper>() },
-				AuthorizationInjectionService,
-			],
+			providers: [SchoolRule, AuthorizationHelper, AuthorizationInjectionService],
 		}).compile();
 
 		rule = await module.get(SchoolRule);
-		authorizationHelper = await module.get(AuthorizationHelper);
 		injectionService = await module.get(AuthorizationInjectionService);
 	});
-
-	const setupSchoolAndUser = () => {
-		const school = schoolFactory.build();
-		const user = userFactory.build({ school: schoolEntityFactory.buildWithId(undefined, school.id) });
-		const superUser = userFactory.asSuperhero([Permission.SCHOOL_EDIT_ALL]).build();
-
-		return { school, user, superUser };
-	};
 
 	afterEach(() => {
 		jest.clearAllMocks();
@@ -60,7 +45,9 @@ describe('SchoolRule', () => {
 	describe('isApplicable', () => {
 		describe('when object is instance of School', () => {
 			const setup = () => {
-				const { user, school } = setupSchoolAndUser();
+				const school = schoolFactory.build();
+				const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+				const user = userFactory.buildWithId({ school: schoolEntity });
 
 				return { user, school };
 			};
@@ -76,7 +63,7 @@ describe('SchoolRule', () => {
 
 		describe('when object is not instance of School', () => {
 			const setup = () => {
-				const { user } = setupSchoolAndUser();
+				const user = userFactory.buildWithId();
 				const someRandomObject = { foo: 'bar' };
 
 				return { user, someRandomObject };
@@ -93,81 +80,170 @@ describe('SchoolRule', () => {
 	});
 
 	describe('hasPermission', () => {
-		describe('when user has required permissions and it is her school', () => {
-			const setup = () => {
-				const { user, school } = setupSchoolAndUser();
-				const context = AuthorizationContextBuilder.read([]);
+		describe('Given a read operation is requested', () => {
+			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_VIEW', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS])
+						.buildWithId({ school: schoolEntity });
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+					return { user, school, context };
+				};
 
-				return { user, school, context };
-			};
+				it('should be return true', () => {
+					const { user, school, context } = setup();
 
-			it('should return true', () => {
-				const { user, school, context } = setup();
+					const result = rule.hasPermission(user, school, context);
 
-				const result = rule.hasPermission(user, school, context);
-
-				expect(result).toBe(true);
+					expect(result).toBe(true);
+				});
 			});
-		});
 
-		describe('when user does not have required permissions', () => {
-			const setup = () => {
-				const { user, school } = setupSchoolAndUser();
-				const context = AuthorizationContextBuilder.read([]);
+			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_EDIT', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS])
+						.buildWithId({ school: schoolEntity });
+					return { user, school, context };
+				};
 
-				authorizationHelper.hasAllPermissions.mockReturnValue(false);
+				it('should be return false', () => {
+					const { user, school, context } = setup();
 
-				return { user, school, context };
-			};
+					const result = rule.hasPermission(user, school, context);
 
-			it('should return false', () => {
-				const { user, school, context } = setup();
-
-				const result = rule.hasPermission(user, school, context);
-
-				expect(result).toBe(false);
+					expect(result).toBe(false);
+				});
 			});
-		});
 
-		describe('when it is not the users school', () => {
-			const setup = () => {
-				const { user } = setupSchoolAndUser();
-				const someOtherSchool = schoolFactory.build();
-				const context = AuthorizationContextBuilder.read([]);
+			describe('when user has SCHOOL_VIEW', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_VIEW])
+						.buildWithId({ school: schoolEntity });
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+					return { user, school, context };
+				};
 
-				return { user, someOtherSchool, context };
-			};
+				it('should be return true', () => {
+					const { user, school, context } = setup();
 
-			it('should return false', () => {
-				const { user, someOtherSchool, context } = setup();
+					const result = rule.hasPermission(user, school, context);
 
-				const result = rule.hasPermission(user, someOtherSchool, context);
-
-				expect(result).toBe(false);
+					expect(result).toBe(true);
+				});
 			});
-		});
 
-		describe('when the user has super powers', () => {
-			const setup = () => {
-				const { superUser } = setupSchoolAndUser();
-				const someOtherSchool = schoolFactory.build();
-				const context = AuthorizationContextBuilder.read([]);
+			describe('when user has no required permission', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory.withPermissionsInRole([]).buildWithId({ school: schoolEntity });
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+					return { user, school, context };
+				};
 
-				return { superUser, someOtherSchool, context };
-			};
+				it('should be return false', () => {
+					const { user, school, context } = setup();
 
-			it('should return true', () => {
-				const { superUser, someOtherSchool, context } = setup();
+					const result = rule.hasPermission(user, school, context);
 
-				const result = rule.hasPermission(superUser, someOtherSchool, context);
+					expect(result).toBe(false);
+				});
+			});
 
-				expect(result).toBe(true);
+			describe('when school is user school', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_VIEW])
+						.buildWithId({ school: schoolEntity });
+
+					return { user, school, context };
+				};
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when school is user not school', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([]);
+					const school = schoolFactory.build();
+					const otherSchoolEntity = schoolEntityFactory.buildWithId();
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_VIEW])
+						.buildWithId({ school: otherSchoolEntity });
+
+					return { user, school, context };
+				};
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when additional required permission is passed and user has it.', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([Permission.TEST_ONLY]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_VIEW, Permission.TEST_ONLY])
+						.buildWithId({ school: schoolEntity });
+
+					return { user, school, context };
+				};
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when additional required permission is passed but user do not have it.', () => {
+				const setup = () => {
+					const context = AuthorizationContextBuilder.read([Permission.TEST_ONLY]);
+					const school = schoolFactory.build();
+					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const user = userFactory
+						.withPermissionsInRole([Permission.SCHOOL_VIEW])
+						.buildWithId({ school: schoolEntity });
+
+					return { user, school, context };
+				};
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
 			});
 		});
 	});

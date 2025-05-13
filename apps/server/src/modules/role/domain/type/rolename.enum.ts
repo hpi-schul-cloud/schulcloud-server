@@ -26,6 +26,7 @@ export enum RoleName {
 	TEAMMEMBER = 'teammember',
 	TEAMOWNER = 'teamowner',
 	USER = 'user',
+	RANDOMSYSTEMUSER = 'randomSystemUser',
 }
 export type IUserRoleName =
 	| RoleName.ADMINISTRATOR

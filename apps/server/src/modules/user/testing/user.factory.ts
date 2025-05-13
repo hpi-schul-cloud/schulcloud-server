@@ -12,6 +12,7 @@ import {
 	superheroPermissions,
 	teacherPermissions,
 	userPermissions,
+	defaultSystemUserPermissions,
 } from '@testing/user-role-permissions';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
@@ -58,6 +59,13 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 		return this.params(params);
 	}
 
+	public withPermissionsInRole(permissions: Permission[] = []): this {
+		const role = roleFactory.buildWithId({ permissions });
+		const params: DeepPartial<UserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
 	public asStudent(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, studentPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.STUDENT });
@@ -88,6 +96,16 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 	public asSuperhero(additionalPermissions: Permission[] = []): this {
 		const permissions = _.union(userPermissions, superheroPermissions, additionalPermissions);
 		const role = roleFactory.buildWithId({ permissions, name: RoleName.SUPERHERO });
+
+		const params: DeepPartial<UserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	public asSystemUser(requiredAdditionalPermissions: Permission[]): this {
+		const permissions = _.union(defaultSystemUserPermissions, requiredAdditionalPermissions);
+
+		const role = roleFactory.buildWithId({ permissions, name: RoleName.RANDOMSYSTEMUSER });
 
 		const params: DeepPartial<UserProperties> = { roles: [role] };
 

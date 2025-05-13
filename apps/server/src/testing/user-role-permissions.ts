@@ -35,6 +35,7 @@ export const userPermissions = [
 	Permission.COURSEGROUP_CREATE,
 	Permission.COURSEGROUP_EDIT,
 	Permission.SYSTEM_VIEW,
+	Permission.SCHOOL_VIEW,
 	Permission.HOMEWORK_VIEW,
 	Permission.HOMEWORK_EDIT,
 	Permission.COMMENTS_VIEW,
@@ -153,7 +154,11 @@ export const superheroPermissions = [
 	Permission.USER_LOGIN_MIGRATION_FORCE,
 	Permission.USER_LOGIN_MIGRATION_ROLLBACK,
 	Permission.INSTANCE_VIEW,
+	Permission.INSTANCE_EDIT,
+	Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 	Permission.CREATE_SUPPORT_JWT,
 	Permission.TEACHER_LIST,
 	Permission.MEDIA_SOURCE_ADMIN,
 ];
+
+export const defaultSystemUserPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];
