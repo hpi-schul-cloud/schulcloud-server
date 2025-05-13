@@ -1,4 +1,9 @@
-import { ContentElementType, LinkElementContentBody, RichTextElementContentBody } from '@infra/cards-client';
+import {
+	ContentElementType,
+	FileElementContentBody,
+	LinkElementContentBody,
+	RichTextElementContentBody,
+} from '@infra/cards-client';
 import { InputFormat } from '@shared/domain/types';
 import {
 	CommonCartridgeImportOrganizationProps,
@@ -6,7 +11,10 @@ import {
 	CommonCartridgeImportWebContentResourceProps,
 } from '..';
 import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
-import { CommonCartridgeWebLinkResourceProps } from '../import/common-cartridge-import.types';
+import {
+	CommonCartridgeFileResourceProps,
+	CommonCartridgeWebLinkResourceProps,
+} from '../import/common-cartridge-import.types';
 
 export class CommonCartridgeImportMapper {
 	public mapResourceTypeToContentElementType(
@@ -17,6 +25,8 @@ export class CommonCartridgeImportMapper {
 				return 'link';
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				return 'richText';
+			case CommonCartridgeResourceTypeV1P1.FILE:
+				return 'file';
 			default:
 				return undefined;
 		}
@@ -25,7 +35,7 @@ export class CommonCartridgeImportMapper {
 	public mapResourceToContentBody(
 		resource: CommonCartridgeImportResourceProps,
 		cardElementProps: CommonCartridgeImportOrganizationProps
-	): LinkElementContentBody | RichTextElementContentBody | undefined {
+	): LinkElementContentBody | RichTextElementContentBody | FileElementContentBody | undefined {
 		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
 			const linkContentBody: LinkElementContentBody = this.createLinkFromResource(resource);
 
@@ -39,6 +49,12 @@ export class CommonCartridgeImportMapper {
 			const richTextBody: RichTextElementContentBody = this.createTextFromHtmlResource(resource);
 
 			return richTextBody;
+		}
+
+		if (resource.type === CommonCartridgeResourceTypeV1P1.FILE) {
+			const fileContentBody: FileElementContentBody = this.createFileFromResource(resource);
+
+			return fileContentBody;
 		}
 
 		return undefined;
@@ -71,5 +87,17 @@ export class CommonCartridgeImportMapper {
 		};
 
 		return linkBody;
+	}
+
+	private createFileFromResource(resource: CommonCartridgeFileResourceProps): FileElementContentBody {
+		const fileBody: FileElementContentBody = {
+			type: 'file',
+			content: {
+				caption: resource.fileName,
+				alternativeText: '',
+			},
+		};
+
+		return fileBody;
 	}
 }

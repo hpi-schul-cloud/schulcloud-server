@@ -4,6 +4,7 @@ import AdmZip from 'adm-zip';
 import { JSDOM } from 'jsdom';
 import { CommonCartridgeResourceTypeV1P1 } from './common-cartridge-import.enums';
 import {
+	CommonCartridgeFileResourceProps,
 	CommonCartridgeOrganizationProps,
 	CommonCartridgeResourceProps,
 	CommonCartridgeWebContentResourceProps,
@@ -28,7 +29,11 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				return this.createWebContentResource(content, inputFormat);
+				if (this.checkFileType(organization.resourcePath)) {
+					return this.createFileContentResource(content, organization.resourcePath);
+				} else {
+					return this.createWebContentResource(content, inputFormat);
+				}
 			default:
 				return undefined;
 		}
@@ -82,6 +87,61 @@ export class CommonCartridgeResourceFactory {
 			return parser;
 		} catch (error) {
 			return undefined;
+		}
+	}
+
+	private createFileContentResource(
+		content: string,
+		resourcePath: string
+	): CommonCartridgeFileResourceProps | undefined {
+		const fileName = resourcePath.split('/').pop() ?? 'unnamed';
+		const buffer = Buffer.from(content, 'utf-8');
+		const file = new File([buffer], fileName, { type: this.getMimeType(fileName) });
+
+		return {
+			type: CommonCartridgeResourceTypeV1P1.FILE,
+			href: resourcePath,
+			fileName,
+			file,
+		};
+	}
+
+	private checkFileType(resourcePath: string): boolean {
+		const allowedExtensions = ['.xml', '.html', '.zip', '.pdf', '.docx', '.pptx', '.xlsx', '.txt', '.csv', '.json'];
+
+		return allowedExtensions.some((ext) => resourcePath.endsWith(ext));
+	}
+
+	private getMimeType(fileName: string): string {
+		const mimeType = fileName.split('.').pop()?.toLowerCase();
+
+		if (!mimeType) {
+			return 'application/octet-stream';
+		}
+
+		switch (mimeType) {
+			case 'xml':
+				return 'application/xml';
+			case 'html':
+				return 'text/html';
+			case 'zip':
+				return 'application/zip';
+			case 'pdf':
+				return 'application/pdf';
+			case 'docx':
+				return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+			case 'pptx':
+				return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+			case 'xlsx':
+				return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+			case 'txt':
+				return 'text/plain';
+			case 'csv':
+				return 'text/csv';
+			case 'json':
+				return 'application/json';
+			default:
+				return 'application/octet-stream';
 		}
 	}
 }
