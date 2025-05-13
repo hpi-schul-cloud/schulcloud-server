@@ -934,5 +934,200 @@
 			"$date": "2020-11-05T11:16:12.973Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "681a1fa85640b0702d7e25ec"
+		},
+		"name": "Thema Titel",
+		"date": {
+			"$date": "1999-12-31T23:07:00Z"
+		},
+		"time": {
+			"$date": "2025-05-05T22:00:00Z"
+		},
+		"contents": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "geoGebra",
+				"title": "Geogebra inhalt",
+				"content": {
+					"materialId": "https://www.geogebra.org/m/tjgmjdfq"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "681a1fab5640b0702d7e2634"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "text",
+				"title": "Text Inhalt ",
+				"content": {
+					"text": "<p><strong>TEXT BOLD</strong></p><p><i>TEXT KURSIVE</i></p><p><u>TEXT UNDERLINED</u></p><ol><li>Aufzählung</li><li>weitere Aufzählung</li></ol>"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "681a1fab5640b0702d7e2635"
+				}
+			}
+		],
+		"materialIds": [],
+		"courseId": {
+			"$oid": "681a1e5c5640b0702d7e25af"
+		},
+		"hidden": false,
+		"isCopyFrom": null,
+		"position": 0,
+		"createdAt": {
+			"$date": "2025-05-06T14:41:44.474Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-06T14:42:09.949Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "681e027389002b0ee99aa120"
+		},
+		"name": "Thema 1",
+		"date": {
+			"$date": "1999-12-31T23:07:00Z"
+		},
+		"time": {
+			"$date": "2025-05-08T22:00:00Z"
+		},
+		"contents": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "text",
+				"title": "Text Inhalt",
+				"content": {
+					"text": "<p>text </p>"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "681e027d89002b0ee99aa16a"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "geoGebra",
+				"title": "GeoGebra Inhalt",
+				"content": {
+					"materialId": "ddmw3cwq"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "681e027d89002b0ee99aa16b"
+				}
+			}
+		],
+		"materialIds": [],
+		"courseId": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"hidden": false,
+		"isCopyFrom": null,
+		"position": 0,
+		"createdAt": {
+			"$date": "2025-05-09T13:26:11.494Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T13:26:41.510Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "681e0c4489002b0ee99aa37b"
+		},
+		"name": "Thema ohne Inhalt",
+		"date": {
+			"$date": "1999-12-31T23:07:00Z"
+		},
+		"time": {
+			"$date": "2025-05-08T22:00:00Z"
+		},
+		"contents": [],
+		"materialIds": [],
+		"courseId": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"hidden": false,
+		"isCopyFrom": null,
+		"position": 1,
+		"createdAt": {
+			"$date": "2025-05-09T14:08:04.109Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-09T14:08:16.833Z"
+		},
+		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6821de7337752ce145e64195"
+		},
+		"name": "Thema ohne aufgabe",
+		"date": {
+			"$date": "1999-12-31T23:07:00Z"
+		},
+		"time": {
+			"$date": "2025-05-11T22:00:00Z"
+		},
+		"contents": [
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "text",
+				"title": "Text Inhalt",
+				"content": {
+					"text": "<p>Text here</p>"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "6821de9837752ce145e64256"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "geoGebra",
+				"title": "GeoGebra Inhalt",
+				"content": {
+					"materialId": "evvwkhsg"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "6821de9837752ce145e64257"
+				}
+			}
+		],
+		"materialIds": [],
+		"courseId": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"hidden": false,
+		"isCopyFrom": null,
+		"position": 2,
+		"createdAt": {
+			"$date": "2025-05-12T11:41:39.647Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-12T11:42:38.818Z"
+		},
+		"__v": 0
 	}
 ]

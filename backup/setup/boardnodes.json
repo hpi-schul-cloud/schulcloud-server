@@ -2050,13 +2050,13 @@
 			"$date": "2025-05-08T14:27:01.996Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-08T14:28:19.991Z"
+			"$date": "2025-05-13T13:25:49.781Z"
 		},
 		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681cbf35f967742d6f9d4d75,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "<p>ein PDF</p>",
+		"text": "<p>ein Text</p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2067,31 +2067,14 @@
 			"$date": "2025-05-08T14:27:01.996Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-08T14:28:57.515Z"
+			"$date": "2025-05-13T13:25:42.268Z"
 		},
 		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 351,
+		"height": 118,
 		"title": "Spalte 2 Karte 1"
-	},
-	{
-		"_id": {
-			"$oid": "681cbf87f967742d6f9d4d76"
-		},
-		"createdAt": {
-			"$date": "2025-05-08T14:28:23.385Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-08T14:28:54.740Z"
-		},
-		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681cbf35f967742d6f9d4d75,",
-		"level": 3,
-		"position": 1,
-		"type": "file-element",
-		"caption": "Beispiel Beschreibung",
-		"alternativeText": ""
 	},
 	{
 		"_id": {
@@ -2101,13 +2084,13 @@
 			"$date": "2025-05-09T13:00:42.314Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:00:42.314Z"
+			"$date": "2025-05-13T13:26:27.252Z"
 		},
 		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681dfc7a89002b0ee99aa004,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "",
+		"text": "<p>google L</p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2118,31 +2101,14 @@
 			"$date": "2025-05-09T13:00:42.314Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:00:53.670Z"
+			"$date": "2025-05-13T13:25:55.406Z"
 		},
 		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,",
 		"level": 2,
 		"position": 1,
 		"type": "card",
-		"height": 150,
+		"height": 175,
 		"title": "Spalte 2 Karte 2"
-	},
-	{
-		"_id": {
-			"$oid": "681dfc8789002b0ee99aa005"
-		},
-		"createdAt": {
-			"$date": "2025-05-09T13:00:55.962Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-09T13:00:55.962Z"
-		},
-		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681dfc7a89002b0ee99aa004,",
-		"level": 3,
-		"position": 1,
-		"type": "file-element",
-		"caption": "",
-		"alternativeText": ""
 	},
 	{
 		"_id": {
@@ -2445,13 +2411,13 @@
 			"$date": "2025-05-09T13:38:09.625Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:43:12.339Z"
+			"$date": "2025-05-13T13:32:09.512Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "<p>pdf Datei Whiteboard</p>",
+		"text": "<p>Whiteboard</p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2462,13 +2428,13 @@
 			"$date": "2025-05-09T13:38:09.625Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T11:27:03.199Z"
+			"$date": "2025-05-13T13:32:40.862Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 920,
+		"height": 672,
 		"title": "Spalte 1 Karte 1"
 	},
 	{
@@ -2479,13 +2445,13 @@
 			"$date": "2025-05-09T13:38:22.691Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:43:24.899Z"
+			"$date": "2025-05-13T13:33:15.239Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "<p>Word Datei Etherpad</p>",
+		"text": "<p>Etherpad:</p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2496,13 +2462,13 @@
 			"$date": "2025-05-09T13:38:22.691Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:43:01.509Z"
+			"$date": "2025-05-13T13:33:34.463Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 490,
+		"height": 386,
 		"title": "Spalte 2 Karte 1"
 	},
 	{
@@ -2541,40 +2507,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "681e05fd89002b0ee99aa2a3"
-		},
-		"createdAt": {
-			"$date": "2025-05-09T13:41:17.140Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-09T13:41:23.340Z"
-		},
-		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
-		"level": 3,
-		"position": 1,
-		"type": "file-element",
-		"caption": " ",
-		"alternativeText": ""
-	},
-	{
-		"_id": {
-			"$oid": "681e060989002b0ee99aa2a4"
-		},
-		"createdAt": {
-			"$date": "2025-05-09T13:41:29.179Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-09T13:41:32.991Z"
-		},
-		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
-		"level": 3,
-		"position": 1,
-		"type": "file-element",
-		"caption": " ",
-		"alternativeText": ""
-	},
-	{
-		"_id": {
 			"$oid": "681e061289002b0ee99aa2a5"
 		},
 		"createdAt": {
@@ -2599,11 +2531,11 @@
 			"$date": "2025-05-09T13:42:33.370Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:42:33.370Z"
+			"$date": "2025-05-13T13:32:35.274Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
 		"level": 3,
-		"position": 2,
+		"position": 1,
 		"type": "drawing-element",
 		"description": ""
 	},
@@ -2615,11 +2547,11 @@
 			"$date": "2025-05-09T13:43:00.253Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:43:00.253Z"
+			"$date": "2025-05-13T13:33:18.346Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
 		"level": 3,
-		"position": 2,
+		"position": 1,
 		"type": "collaborative-text-editor"
 	},
 	{
@@ -2775,13 +2707,13 @@
 			"$date": "2025-05-12T07:07:10.930Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T11:26:57.598Z"
+			"$date": "2025-05-13T13:32:35.275Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
 		"level": 3,
-		"position": 3,
+		"position": 2,
 		"type": "rich-text-element",
-		"text": "<p>text nach pdf und Whiteborad danach kommt Link und Abgabe</p>",
+		"text": "<p>text nach Whiteborad danach kommt Link und Abgabe</p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2792,11 +2724,11 @@
 			"$date": "2025-05-12T11:25:21.490Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T11:25:28.358Z"
+			"$date": "2025-05-13T13:32:35.275Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
 		"level": 3,
-		"position": 4,
+		"position": 3,
 		"type": "link-element",
 		"title": "Wikipedia – Die freie Enzyklopädie",
 		"url": "https://de.wikipedia.org/wiki/Wikipedia:Hauptseite",
@@ -2810,11 +2742,11 @@
 			"$date": "2025-05-12T11:25:54.011Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T11:26:33.813Z"
+			"$date": "2025-05-13T13:32:35.275Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
 		"level": 3,
-		"position": 5,
+		"position": 4,
 		"type": "submission-container-element",
 		"dueDate": {
 			"$date": "2035-05-24T10:00:00Z"
@@ -3125,5 +3057,40 @@
 		"position": 3,
 		"type": "card",
 		"height": 118
+	},
+	{
+		"_id": {
+			"$oid": "68234866bf49849d15c4c9f3"
+		},
+		"createdAt": {
+			"$date": "2025-05-13T13:25:58.562Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-13T13:26:15.001Z"
+		},
+		"path": ",681c7b138945ce807e9024a0,681cbf32f967742d6f9d4d73,681dfc7a89002b0ee99aa004,",
+		"level": 3,
+		"position": 1,
+		"type": "link-element",
+		"title": "Google",
+		"url": "https://www.google.com/",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "68234a23d9f0e6176dd7f319"
+		},
+		"createdAt": {
+			"$date": "2025-05-13T13:33:23.017Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-13T13:33:32.435Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053089002b0ee99aa29b,681e054e89002b0ee99aa2a0,",
+		"level": 3,
+		"position": 2,
+		"type": "rich-text-element",
+		"text": "<p>text nach Etherpad</p>",
+		"inputFormat": "richTextCk5"
 	}
 ]
