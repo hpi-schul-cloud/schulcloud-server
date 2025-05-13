@@ -81,17 +81,24 @@ describe('SchoolRule', () => {
 
 	describe('hasPermission', () => {
 		describe('Given a read operation is requested', () => {
-			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_VIEW', () => {
-				const setup = () => {
-					const context = AuthorizationContextBuilder.read([]);
-					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
-					const user = userFactory
-						.withPermissionsInRole([Permission.SCHOOL_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS])
-						.buildWithId({ school: schoolEntity });
+			const createParamsFromUserAndContextPermissions = (
+				userPermissions: Permission[],
+				additionalContextPermissions: Permission[] = []
+			) => {
+				const context = AuthorizationContextBuilder.read(additionalContextPermissions);
+				const school = schoolFactory.build();
+				const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+				const user = userFactory.withPermissionsInRole(userPermissions).buildWithId({ school: schoolEntity });
 
-					return { user, school, context };
-				};
+				return { user, school, context };
+			};
+
+			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_VIEW', () => {
+				const setup = () =>
+					createParamsFromUserAndContextPermissions([
+						Permission.SCHOOL_VIEW,
+						Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+					]);
 
 				it('should be return true', () => {
 					const { user, school, context } = setup();
@@ -103,15 +110,11 @@ describe('SchoolRule', () => {
 			});
 
 			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_EDIT', () => {
-				const setup = () => {
-					const context = AuthorizationContextBuilder.read([]);
-					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
-					const user = userFactory
-						.withPermissionsInRole([Permission.SCHOOL_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS])
-						.buildWithId({ school: schoolEntity });
-					return { user, school, context };
-				};
+				const setup = () =>
+					createParamsFromUserAndContextPermissions([
+						Permission.SCHOOL_EDIT,
+						Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+					]);
 
 				it('should be return false', () => {
 					const { user, school, context } = setup();
@@ -123,16 +126,7 @@ describe('SchoolRule', () => {
 			});
 
 			describe('when user has SCHOOL_VIEW', () => {
-				const setup = () => {
-					const context = AuthorizationContextBuilder.read([]);
-					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
-					const user = userFactory
-						.withPermissionsInRole([Permission.SCHOOL_VIEW])
-						.buildWithId({ school: schoolEntity });
-
-					return { user, school, context };
-				};
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.SCHOOL_VIEW]);
 
 				it('should be return true', () => {
 					const { user, school, context } = setup();
@@ -143,15 +137,20 @@ describe('SchoolRule', () => {
 				});
 			});
 
-			describe('when user has no required permission', () => {
-				const setup = () => {
-					const context = AuthorizationContextBuilder.read([]);
-					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
-					const user = userFactory.withPermissionsInRole([]).buildWithId({ school: schoolEntity });
+			describe('when user has SCHOOL_EDIT', () => {
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.SCHOOL_EDIT]);
 
-					return { user, school, context };
-				};
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when user has no required permission', () => {
+				const setup = () => createParamsFromUserAndContextPermissions([]);
 
 				it('should be return false', () => {
 					const { user, school, context } = setup();
@@ -163,18 +162,9 @@ describe('SchoolRule', () => {
 			});
 
 			describe('when school is user school', () => {
-				const setup = () => {
-					const context = AuthorizationContextBuilder.read([]);
-					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
-					const user = userFactory
-						.withPermissionsInRole([Permission.SCHOOL_VIEW])
-						.buildWithId({ school: schoolEntity });
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.SCHOOL_VIEW]);
 
-					return { user, school, context };
-				};
-
-				it('should be return false', () => {
+				it('should be return true', () => {
 					const { user, school, context } = setup();
 
 					const result = rule.hasPermission(user, school, context);
@@ -205,18 +195,13 @@ describe('SchoolRule', () => {
 			});
 
 			describe('when additional required permission is passed and user has it.', () => {
-				const setup = () => {
-					const context = AuthorizationContextBuilder.read([Permission.TEST_ONLY]);
-					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
-					const user = userFactory
-						.withPermissionsInRole([Permission.SCHOOL_VIEW, Permission.TEST_ONLY])
-						.buildWithId({ school: schoolEntity });
+				const setup = () =>
+					createParamsFromUserAndContextPermissions(
+						[Permission.SCHOOL_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS, Permission.TEST_ONLY],
+						[Permission.TEST_ONLY]
+					);
 
-					return { user, school, context };
-				};
-
-				it('should be return false', () => {
+				it('should be return true', () => {
 					const { user, school, context } = setup();
 
 					const result = rule.hasPermission(user, school, context);
@@ -226,16 +211,158 @@ describe('SchoolRule', () => {
 			});
 
 			describe('when additional required permission is passed but user do not have it.', () => {
+				const setup = () =>
+					createParamsFromUserAndContextPermissions(
+						[Permission.SCHOOL_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS],
+						[Permission.TEST_ONLY]
+					);
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+		});
+
+		describe('Given a write operation is requested', () => {
+			const createParamsFromUserAndContextPermissions = (
+				userPermissions: Permission[],
+				additionalContextPermissions: Permission[] = []
+			) => {
+				const context = AuthorizationContextBuilder.write(additionalContextPermissions);
+				const school = schoolFactory.build();
+				const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+				const user = userFactory.withPermissionsInRole(userPermissions).buildWithId({ school: schoolEntity });
+
+				return { user, school, context };
+			};
+
+			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_VIEW', () => {
+				const setup = () =>
+					createParamsFromUserAndContextPermissions([
+						Permission.SCHOOL_VIEW,
+						Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+					]);
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS and SCHOOL_EDIT', () => {
+				const setup = () =>
+					createParamsFromUserAndContextPermissions([
+						Permission.SCHOOL_EDIT,
+						Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+					]);
+
+				it('should be return true', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when user has SCHOOL_VIEW', () => {
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.SCHOOL_VIEW]);
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when user has SCHOOL_EDIT', () => {
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.SCHOOL_EDIT]);
+
+				it('should be return true', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when user has no required permission', () => {
+				const setup = () => createParamsFromUserAndContextPermissions([]);
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when school is user school', () => {
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.SCHOOL_EDIT]);
+
+				it('should be return true', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when school is user not school', () => {
 				const setup = () => {
-					const context = AuthorizationContextBuilder.read([Permission.TEST_ONLY]);
+					const context = AuthorizationContextBuilder.read([]);
 					const school = schoolFactory.build();
-					const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
+					const otherSchoolEntity = schoolEntityFactory.buildWithId();
 					const user = userFactory
 						.withPermissionsInRole([Permission.SCHOOL_VIEW])
-						.buildWithId({ school: schoolEntity });
+						.buildWithId({ school: otherSchoolEntity });
 
 					return { user, school, context };
 				};
+
+				it('should be return false', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when additional required permission is passed and user has it.', () => {
+				const setup = () =>
+					createParamsFromUserAndContextPermissions(
+						[Permission.SCHOOL_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS, Permission.TEST_ONLY],
+						[Permission.TEST_ONLY]
+					);
+
+				it('should be return true', () => {
+					const { user, school, context } = setup();
+
+					const result = rule.hasPermission(user, school, context);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when additional required permission is passed but user do not have it.', () => {
+				const setup = () =>
+					createParamsFromUserAndContextPermissions(
+						[Permission.SCHOOL_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS],
+						[Permission.TEST_ONLY]
+					);
 
 				it('should be return false', () => {
 					const { user, school, context } = setup();
