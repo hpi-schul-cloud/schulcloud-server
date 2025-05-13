@@ -93,6 +93,12 @@ export class SingleFileParams {
 	public fileRecordId!: EntityId;
 }
 
+export class MultiFileParams {
+	@ApiProperty()
+	@IsMongoId({ each: true })
+	public fileRecordIds!: EntityId[];
+}
+
 export class RenameFileParams {
 	@ApiProperty()
 	@IsString()
