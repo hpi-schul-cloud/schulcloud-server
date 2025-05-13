@@ -11,68 +11,68 @@ export class GetH5PContentParams {
 	@ApiPropertyOptional({ enum: LanguageType, enumName: 'LanguageType' })
 	@IsEnum(LanguageType)
 	@IsOptional()
-	language?: LanguageType;
+	public language?: LanguageType;
 
 	@ApiProperty()
 	@IsMongoId()
-	contentId!: string;
+	public contentId!: string;
 }
 
 export class GetH5PEditorParamsCreate {
 	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
 	@IsEnum(LanguageType)
-	language!: LanguageType;
+	public language!: LanguageType;
 }
 
 export class GetH5PEditorParams {
 	@ApiProperty()
 	@IsMongoId()
-	contentId!: string;
+	public contentId!: string;
 
 	@ApiProperty({ enum: LanguageType, enumName: 'LanguageType' })
 	@IsEnum(LanguageType)
-	language!: LanguageType;
+	public language!: LanguageType;
 }
 
 export class SaveH5PEditorParams {
 	@ApiProperty()
 	@IsMongoId()
-	contentId!: string;
+	public contentId!: string;
 }
 
 export class PostH5PContentParams {
 	@ApiProperty()
 	@IsMongoId()
-	contentId!: string;
+	public contentId!: string;
 
 	@ApiProperty()
 	@IsNotEmpty()
-	params!: unknown;
+	public params!: unknown;
 
 	@ApiProperty()
 	@IsNotEmpty()
-	metadata!: IContentMetadata;
+	public metadata!: IContentMetadata;
 
 	@ApiProperty()
 	@IsString()
 	@SanitizeHtml()
 	@IsNotEmpty()
-	mainLibraryUbername!: string;
+	public mainLibraryUbername!: string;
 }
 
 export class PostH5PContentCreateParams {
 	@ApiProperty({ enum: H5PContentParentType, enumName: 'H5PContentParentType' })
 	@IsEnum(H5PContentParentType)
-	parentType!: H5PContentParentType;
+	public parentType!: H5PContentParentType;
 
 	@ApiProperty()
 	@IsMongoId()
-	parentId!: EntityId;
+	public parentId!: EntityId;
 
 	@ApiProperty()
 	@IsNotEmpty()
 	@IsObject()
-	params!: {
+	public params!: {
 		params: unknown;
 		metadata: IContentMetadata;
 	};
@@ -80,5 +80,5 @@ export class PostH5PContentCreateParams {
 	@ApiProperty()
 	@IsString()
 	@IsNotEmpty()
-	library!: string;
+	public library!: string;
 }
