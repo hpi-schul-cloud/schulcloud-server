@@ -6,9 +6,9 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
-import { RoleName } from '@modules/role';
-import { User } from '@modules/user/repo';
+import type { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 
 @Injectable()
 export class InstanceRule implements Rule<Instance> {
@@ -25,16 +25,46 @@ export class InstanceRule implements Rule<Instance> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Instance, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	public hasPermission(user: User, instance: Instance, context: AuthorizationContext): boolean {
+		let hasPermission = false;
 
-		// As temporary solution until the user with write access to instance added as group, we must check the role.
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, instance, context);
+		}
 		if (context.action === Action.write) {
-			const hasRole = this.authorizationHelper.hasRole(user, RoleName.SUPERHERO);
-
-			return hasPermission && hasRole;
+			hasPermission = this.hasWriteAccess(user, instance, context);
 		}
 
 		return hasPermission;
+	}
+
+	private hasReadAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
+		/**
+		 * @notImplemented Currently we have no user relations in instance.
+		 */
+		const hasReadPermission = false;
+
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceReadOperationPermission || hasReadPermission;
+	}
+
+	private hasWriteAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
+		/**
+		 * @notImplemented Currently we have no user relations in instance.
+		 */
+		const hasWritePermission = false;
+
+		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.INSTANCE_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceWriteOperationPermission || hasWritePermission;
 	}
 }
