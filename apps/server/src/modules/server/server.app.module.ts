@@ -23,8 +23,10 @@ import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MeApiModule } from '@modules/me/me-api.module';
+import { MediumMetadataApiModule } from '@modules/medium-metadata';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
+import { OAuthApiModule } from '@modules/oauth/oauth-api.module';
 import { OauthProviderApiModule } from '@modules/oauth-provider/oauth-provider-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
@@ -53,7 +55,6 @@ import { SchoolLicenseApiModule } from '../school-license/school-license-api.mod
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
-import { MediumMetadataApiModule } from '../medium-metadata/medium-metadata-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -111,6 +112,7 @@ const serverModules = [
 	RoomApiModule,
 	RosterModule,
 	ShdApiModule,
+	OAuthApiModule,
 ];
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
