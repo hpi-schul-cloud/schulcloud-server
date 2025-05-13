@@ -1,6 +1,6 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get } from '@nestjs/common';
-import { ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiNotFoundResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OAuthSessionTokenExpirationResponse } from './dto';
 import { OAuthSessionTokenMapper } from './mapper';
 import { OAuthUc } from './oauth.uc';
@@ -12,7 +12,8 @@ export class OAuthController {
 	constructor(private readonly oauthUc: OAuthUc) {}
 
 	@ApiOperation({ summary: 'Get the expiration date of the current oauth session token of the user' })
-	@ApiNotFoundResponse()
+	@ApiNotFoundResponse({ description: 'User has no oauth session token or the token had expired' })
+	@ApiForbiddenResponse({ description: 'The feature flag for external system logout is not enabled' })
 	@Get('/session-token/expiration')
 	public async getSessionTokenExpiration(
 		@CurrentUser() user: ICurrentUser

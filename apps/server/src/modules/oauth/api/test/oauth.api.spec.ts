@@ -1,18 +1,20 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
-import { ServerTestModule } from '@modules/server';
+import { ServerConfig, serverConfig, ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { TestConfigHelper } from '@testing/test-config.helper';
 import { UUID } from 'bson';
 
 describe('OAuth Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let testConfigHelper: TestConfigHelper<ServerConfig>;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -24,10 +26,14 @@ describe('OAuth Controller (API)', () => {
 		em = app.get(EntityManager);
 
 		testApiClient = new TestApiClient(app, 'oauth');
+
+		const config = serverConfig();
+		testConfigHelper = new TestConfigHelper(config);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+		testConfigHelper.set('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED', true);
 	});
 
 	afterAll(async () => {
@@ -40,6 +46,36 @@ describe('OAuth Controller (API)', () => {
 				const response = await testApiClient.get('/session-token/expiration');
 
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is disabled', () => {
+			const setup = async () => {
+				const system = systemEntityFactory.withOauthConfig().build();
+
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+					externalId: new UUID().toString(),
+					systemId: system.id,
+				});
+
+				await em.persistAndFlush([studentAccount, studentUser, system]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				testConfigHelper.set('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED', false);
+
+				return {
+					loggedInClient,
+				};
+			};
+
+			it('should return a 403 error', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get('/session-token/expiration');
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 
