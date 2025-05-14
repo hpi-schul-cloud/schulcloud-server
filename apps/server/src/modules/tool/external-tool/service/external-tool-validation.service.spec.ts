@@ -5,6 +5,7 @@ import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
 import { ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
+import { ExternalToolMediumStatus } from '../enum';
 import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
@@ -356,6 +357,254 @@ describe(ExternalToolValidationService.name, () => {
 					const result: Promise<void> = service.validateCreate(externalTool);
 
 					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+		});
+
+		describe('when the external tool has medium ', () => {
+			describe('when the medium is in status active', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withMedium().build();
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					return {
+						externalTool,
+					};
+				};
+
+				it('should not throw an validation error', async () => {
+					const { externalTool } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				describe('when the medium is in status active but has no mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.withMedium({ mediumId: undefined }).build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_active: This medium is active but is not linked to an external medium.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+
+				describe('when the medium is in status active but has no mediaSourceId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory.withMedium({ mediaSourceId: undefined }).build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_active: This medium is active but is missing a media source.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+
+			describe('when the medium is in status draft', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+						.build();
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					return {
+						externalTool,
+					};
+				};
+
+				it('should not throw an validation error', async () => {
+					const { externalTool } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				describe('when the medium is in status draft but has no mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT, mediumId: undefined })
+							.build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_draft: This medium is draft but is not linked to an external medium.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+
+				describe('when the medium is in status draft but has no mediaSourceId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT, mediaSourceId: undefined })
+							.build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_draft: This medium is draft but is missing a media source.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+			});
+
+			describe('when the medium is in status template', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined })
+						.build();
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					return {
+						externalTool,
+					};
+				};
+
+				it('should not throw an validation error', async () => {
+					const { externalTool } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				describe('when the medium is in status template but has mediumId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+							.build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_template: This template cannot be linked to a specific medium.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
+				});
+
+				describe('when the medium is in status template but has no mediaSourceId', () => {
+					const setup = () => {
+						const externalTool: ExternalTool = externalToolFactory
+							.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediaSourceId: undefined, mediumId: undefined })
+							.build();
+
+						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+						configService.get.mockReturnValue(10);
+
+						const expectedError = new ValidationError(
+							`tool_medium_status_template: This template is missing a media source.`
+						);
+
+						return {
+							externalTool,
+							expectedError,
+						};
+					};
+
+					it('should throw an validation error', async () => {
+						const { externalTool, expectedError } = setup();
+
+						const result: Promise<void> = service.validateCreate(externalTool);
+
+						await expect(result).rejects.toThrow(expectedError);
+					});
 				});
 			});
 		});

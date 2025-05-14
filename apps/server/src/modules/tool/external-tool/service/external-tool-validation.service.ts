@@ -144,13 +144,18 @@ export class ExternalToolValidationService {
 				}
 				if (!mediumId) {
 					throw new ValidationError(
-						`tool_medium_status_active: This medium is active but is not linked to an exter	nal medium.`
+						`tool_medium_status_active: This medium is active but is not linked to an external medium.`
 					);
 				}
 				break;
 			case ExternalToolMediumStatus.DRAFT:
 				if (!mediaSourceId) {
 					throw new ValidationError(`tool_medium_status_draft: This medium is a draft but is missing a media source.`);
+				}
+				if (!mediumId) {
+					throw new ValidationError(
+						`tool_medium_status_draft: This medium is a draft but is not linked to an external medium.`
+					);
 				}
 				break;
 			case ExternalToolMediumStatus.TEMPLATE:
