@@ -9,10 +9,11 @@ import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { ICurrentUser } from '@infra/auth-guard';
 
-const DEPTH_CARD_ELEMENTS = 3;
-const DEPTH_CARD = 2;
-const DEPTH_COLUMN = 1;
 const DEPTH_BOARD = 0;
+const DEPTH_COLUMN = 1;
+const DEPTH_CARD = 2;
+const DEPTH_CARD_ELEMENTS = 3;
+
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -183,7 +184,11 @@ export class CommonCartridgeImportService {
 
 		if (!contentElementType) return;
 
-		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(resource, cardElementProps);
+		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
+			resource,
+			cardElementProps,
+			parser.options.inputFormat
+		);
 
 		if (!resourceBody) return;
 		// fileStorage adapter upload(storageLocationId: schoolId, storageLocation: 'school', parentId: card Id, parentType: card, file: File)

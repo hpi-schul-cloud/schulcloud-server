@@ -34,10 +34,11 @@ export class CommonCartridgeImportMapper {
 
 	public mapResourceToContentBody(
 		resource: CommonCartridgeImportResourceProps,
-		cardElementProps: CommonCartridgeImportOrganizationProps
+		cardElementProps: CommonCartridgeImportOrganizationProps,
+		inputFormat: InputFormat
 	): LinkElementContentBody | RichTextElementContentBody | FileElementContentBody | undefined {
 		if (resource.type === CommonCartridgeResourceTypeV1P1.WEB_LINK) {
-			const linkContentBody: LinkElementContentBody = this.createLinkFromResource(resource);
+			const linkContentBody = this.createLinkFromResource(resource);
 
 			return linkContentBody;
 		}
@@ -46,7 +47,7 @@ export class CommonCartridgeImportMapper {
 			resource.type === CommonCartridgeResourceTypeV1P1.WEB_CONTENT &&
 			cardElementProps.resourcePath.endsWith('.html')
 		) {
-			const richTextBody: RichTextElementContentBody = this.createTextFromHtmlResource(resource);
+			const richTextBody = this.createTextFromHtmlResource(resource, inputFormat);
 
 			return richTextBody;
 		}
@@ -61,12 +62,13 @@ export class CommonCartridgeImportMapper {
 	}
 
 	private createTextFromHtmlResource(
-		resource: CommonCartridgeImportWebContentResourceProps
+		resource: CommonCartridgeImportWebContentResourceProps,
+		inputFormat: InputFormat
 	): RichTextElementContentBody {
 		const richTextBody: RichTextElementContentBody = {
 			type: 'richText',
 			content: {
-				inputFormat: InputFormat.RICH_TEXT_CK4, // TODO use config
+				inputFormat,
 				text: resource.html,
 			},
 		};

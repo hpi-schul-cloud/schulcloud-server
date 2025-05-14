@@ -1,14 +1,5 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	DeletionService,
-	DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
@@ -26,10 +17,8 @@ import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,
 	DeletedAccountWithUserIdLoggable,
-	DeletedUserDataLoggable,
 	DeletingAccountLoggable,
 	DeletingAccountWithUserIdLoggable,
-	DeletingUserDataLoggable,
 	IdmCallbackLoggableException,
 	SavedAccountLoggable,
 	SavingAccountLoggable,
@@ -50,7 +39,7 @@ type UserPreferences = {
 };
 
 @Injectable()
-export class AccountService extends AbstractAccountService implements DeletionService {
+export class AccountService extends AbstractAccountService {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -59,8 +48,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
-		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
-		userDeletionInjectionService: UserDeletionInjectionService
+		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -69,7 +57,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		} else {
 			this.accountImpl = accountDb;
 		}
-		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount): Promise<void> {
@@ -430,19 +417,6 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		});
 
 		return deletedAccounts;
-	}
-
-	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
-		this.logger.debug(new DeletingUserDataLoggable(userId));
-		const deletedAccounts = await this.deleteByUserId(userId);
-
-		const result = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, deletedAccounts.length, deletedAccounts),
-		]);
-
-		this.logger.debug(new DeletedUserDataLoggable(userId));
-
-		return result;
 	}
 
 	/**
