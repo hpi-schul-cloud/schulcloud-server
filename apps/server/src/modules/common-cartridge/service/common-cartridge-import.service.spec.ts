@@ -6,7 +6,7 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-parser.factory';
+import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 

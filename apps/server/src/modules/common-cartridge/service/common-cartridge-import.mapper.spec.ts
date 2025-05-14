@@ -7,7 +7,7 @@ import {
 	CommonCartridgeWebContentResourceProps,
 	CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
-import { commonCartridgeOrganizationPropsFactory } from '../testing/common-cartridge-parser.factory';
+import { commonCartridgeOrganizationPropsFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 describe('CommonCartridgeImportMapper', () => {

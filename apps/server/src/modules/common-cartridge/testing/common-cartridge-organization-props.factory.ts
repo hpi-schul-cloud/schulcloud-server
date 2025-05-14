@@ -49,7 +49,7 @@ export const commonCartridgeOrganizationPropsFactory = CommonCartridgeOrganizati
 		const parentPath = parent?.path;
 
 		const pathDepth = parentDepth !== undefined ? parentDepth + 1 : params.pathDepth ?? 0;
-		const path = !!parentPath ? `${parentPath}/${id}` : params.path ?? id;
+		const path = parentPath ? `${parentPath}/${id}` : params.path ?? id;
 
 		return {
 			pathDepth,
