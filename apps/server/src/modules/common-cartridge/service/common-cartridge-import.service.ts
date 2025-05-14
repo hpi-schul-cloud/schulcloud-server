@@ -186,20 +186,20 @@ export class CommonCartridgeImportService {
 		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(resource, cardElementProps);
 
 		if (!resourceBody) return;
-
-		if ('file' in resource && resource.file) {
-			try {
-				await this.fileClient.upload(schoolId, 'school', cardId, 'boardnodes', resource.file);
-			} catch (error) {
-				throw new Error(`Error uploading file: ${resource.file.name}`);
-			}
-		}
 		// fileStorage adapter upload(storageLocationId: schoolId, storageLocation: 'school', parentId: card Id, parentType: card, file: File)
 		// const fileRecord = this.fileClient.upload(schoolId, 'school', cardId, 'boardnodes', resource.file);
 
 		const contentElement = await this.cardClient.createCardElement(cardId, {
 			type: contentElementType,
 		});
+
+		if ('file' in resource && resource.file) {
+			try {
+				await this.fileClient.upload(schoolId, 'school', contentElement.id, 'boardnodes', resource.file);
+			} catch (error) {
+				throw new Error(`Error uploading file: ${resource.file.name}`);
+			}
+		}
 
 		await this.cardClient.updateCardElement(contentElement.id, {
 			data: resourceBody,
