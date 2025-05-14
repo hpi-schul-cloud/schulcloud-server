@@ -6,13 +6,9 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-parser.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
-import {
-	commonCartridgeOrganizationPropsFactory,
-	joinCommonCartridgeOrganizationPath,
-} from '../testing/common-cartridge-parser.factory';
 
 jest.mock('../import/common-cartridge-file-parser');
 
@@ -81,62 +77,28 @@ describe(CommonCartridgeImportService.name, () => {
 		const elementId = faker.string.uuid();
 		const file = Buffer.from('');
 		commonCartridgeFileParser.getTitle.mockReturnValue('test course');
-		commonCartridgeFileParser.getOrganizations.mockReturnValue([
-			commonCartridgeOrganizationPropsFactory.build({
-				title: 'Mock Board',
-				identifier: boardId,
-				path: boardId,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 1,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId),
-				identifier: columnId,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 2,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId, cardId),
-				identifier: cardId,
-				isResource: true,
-				resourcePath: 'https://www.webcontent.html',
-				resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 3,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId, cardId, elementId),
-				identifier: elementId,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 1,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId2),
-				identifier: columnId2,
-				isResource: true,
-				resourcePath: faker.system.filePath(),
-				resourceType: faker.lorem.word(),
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 2,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId2, cardId),
-				identifier: cardId,
-				isResource: true,
-				resourcePath: 'https://www.weblink.com',
-				resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 3,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId2, cardId, elementId),
-				identifier: elementId,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 2,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId, cardId),
-				identifier: cardId,
-			}),
-			commonCartridgeOrganizationPropsFactory.build({
-				pathDepth: 3,
-				path: joinCommonCartridgeOrganizationPath(boardId, columnId, cardId, elementId),
-				identifier: elementId,
-			}),
-		]);
+
+		const board = organizationFactory.withIdentifier(boardId).withTitle('Mock Board').build();
+		const column = organizationFactory.withIdentifier(columnId).withParent(board).build();
+		const card = organizationFactory
+			.withIdentifier(cardId)
+			.withParent(column)
+			.withWebContent('https://www.webcontent.html')
+			.build();
+		const element = organizationFactory.withIdentifier(elementId).withParent(card).build();
+		const column2 = organizationFactory.withIdentifier(columnId2).withParent(board).withResource().build();
+		const card2 = organizationFactory
+			.withIdentifier(cardId)
+			.withParent(column2)
+			.withWebLink('https://www.weblink.com')
+			.build();
+
+		const element2 = organizationFactory.withIdentifier(elementId).withParent(card2).build();
+		const card3 = organizationFactory.withIdentifier(cardId).withParent(column).build();
+		const element3 = organizationFactory.withIdentifier(elementId).withParent(card3).build();
+
+		const orgs = [board, column, card, element, column2, card2, element2, card3, element3];
+		commonCartridgeFileParser.getOrganizations.mockReturnValue(orgs);
 
 		coursesClientAdapterMock.createCourse.mockResolvedValueOnce({ courseId: faker.string.uuid() });
 
