@@ -71,6 +71,6 @@ export class CommonCartridgeController {
 		@UploadedFile(CommonCartridgeFileValidatorPipe)
 		file: Express.Multer.File
 	): Promise<void> {
-		await this.commonCartridgeUC.importCourse(file.buffer);
+		await this.commonCartridgeUC.importCourse(file.buffer, currentUser);
 	}
 }

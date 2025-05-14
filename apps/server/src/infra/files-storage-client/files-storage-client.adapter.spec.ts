@@ -1,15 +1,15 @@
+import { ErrorLogger, Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ErrorLogger, Logger } from '@core/logger';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import type { Request } from 'express';
 import { from, throwError } from 'rxjs';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FileApi } from './generated';
+import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
@@ -120,6 +120,79 @@ describe(FilesStorageClientAdapter.name, () => {
 				const { fileRecordId, fileName } = setup();
 
 				const result = await sut.download(fileRecordId, fileName);
+
+				expect(result).toBeNull();
+				expect(errorLoggerMock.error).toBeCalled();
+			});
+		});
+	});
+
+	describe('upload', () => {
+		describe('when upload succeeds', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = faker.helpers.arrayElement(Object.values(StorageLocation.SCHOOL)) as StorageLocation;
+				const parentId = 'parent-id';
+				const parentType = faker.helpers.arrayElement(Object.values(FileRecordParentType));
+				const file = new File([], 'test.txt', { type: 'text/plain', lastModified: Date.now() });
+				const options = { headers: { Authorization: `Bearer ${faker.string.alphanumeric(42)}` } };
+
+				const response = axiosResponseFactory.build({ data: { parentId } });
+
+				httpServiceMock.post.mockReturnValue(from([response]));
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file,
+					options,
+				};
+			};
+
+			it('should return the response data', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, file, options } = setup();
+
+				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+
+				expect(result).toBeDefined();
+				expect(httpServiceMock.post).toBeCalledWith(expect.any(String), expect.any(FormData), {
+					headers: {
+						Authorization: expect.any(String),
+					},
+				});
+				expect(result?.parentId).toEqual(parentId);
+			});
+		});
+
+		describe('when upload fails', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = faker.helpers.arrayElement(Object.values(StorageLocation.SCHOOL)) as StorageLocation;
+				const parentId = 'parent-id';
+				const parentType = faker.helpers.arrayElement(Object.values(FileRecordParentType));
+				const file = new File([], 'test.txt', { type: 'text/plain', lastModified: Date.now() });
+				const options = { headers: { Authorization: `Bearer ${faker.string.alphanumeric(42)}` } };
+
+				httpServiceMock.post.mockReturnValue(throwError(() => new Error('error')));
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					file,
+					options,
+				};
+			};
+
+			it('should return null', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, file, options } = setup();
+
+				const result = await sut.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
 
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalled();
