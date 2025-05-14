@@ -30,7 +30,7 @@ export class CommonCartridgeResourceFactory {
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				if (this.checkFileType(organization.resourcePath)) {
-					return this.createFileContentResource(content, organization.resourcePath);
+					return this.createFileContentResource(content);
 				} else {
 					return this.createWebContentResource(content, inputFormat);
 				}
@@ -90,12 +90,15 @@ export class CommonCartridgeResourceFactory {
 		}
 	}
 
-	private createFileContentResource(
-		content: string,
-		resourcePath: string
-	): CommonCartridgeFileResourceProps | undefined {
+	private createFileContentResource(resourcePath: string): CommonCartridgeFileResourceProps | undefined {
 		const fileName = resourcePath.split('/').pop() ?? 'unnamed';
-		const buffer = Buffer.from(content, 'utf-8');
+		const zipEntry = this.archive.getEntry(resourcePath);
+		const buffer = zipEntry?.getData();
+
+		if (!(buffer instanceof Buffer) || buffer.length === 0) {
+			return undefined;
+		}
+
 		const file = new File([buffer], fileName, { type: this.getMimeType(fileName) });
 
 		return {
