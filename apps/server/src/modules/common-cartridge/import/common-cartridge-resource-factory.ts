@@ -30,7 +30,7 @@ export class CommonCartridgeResourceFactory {
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
 				if (this.checkFileType(organization.resourcePath)) {
-					return this.createFileContentResource(content);
+					return this.createFileContentResource(organization.resourcePath);
 				} else {
 					return this.createWebContentResource(content, inputFormat);
 				}
