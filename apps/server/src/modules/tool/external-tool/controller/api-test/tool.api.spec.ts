@@ -518,6 +518,7 @@ describe('ToolController (API)', () => {
 			medium: {
 				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'mediumId',
+				mediaSourceId: 'mediaSourceId',
 				publisher: 'publisher',
 			},
 			isPreferred: false,
@@ -599,6 +600,7 @@ describe('ToolController (API)', () => {
 					openNewTab: true,
 					medium: {
 						status: ExternalToolMediumStatus.ACTIVE,
+						mediaSourceId: params.medium?.mediaSourceId ?? '',
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
 					},
