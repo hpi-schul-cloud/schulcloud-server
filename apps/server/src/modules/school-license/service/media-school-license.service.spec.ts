@@ -8,6 +8,7 @@ import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ExternalToolMediumStatus } from '../../tool/external-tool/enum';
 import { MediaSchoolLicense } from '../domain';
 import { SchoolLicenseType } from '../enum';
 import { BuildMediaSchoolLicenseFailedLoggable, SchoolNumberNotFoundLoggableException } from '../loggable';
@@ -176,6 +177,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		describe('when school has license', () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
+					status: ExternalToolMediumStatus.ACTIVE,
 					mediumId: 'mediumId',
 					mediaSourceId: 'mediaSourceId',
 				};
@@ -206,6 +208,7 @@ describe(MediaSchoolLicenseService.name, () => {
 		describe('when school has license without sourceId', () => {
 			const setup = () => {
 				const toolMedium: ExternalToolMedium = {
+					status: ExternalToolMediumStatus.ACTIVE,
 					mediumId: 'mediumId',
 				};
 				const medium = mediaSchoolLicenseFactory.build({
@@ -232,7 +235,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when school has not the correct license', () => {
 			const setup = () => {
-				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const medium: ExternalToolMedium = { status: ExternalToolMediumStatus.ACTIVE, mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaSchoolLicense[] = mediaSchoolLicenseFactory.buildList(2);
 
 				return {
@@ -252,7 +255,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 		describe('when school has no licenses', () => {
 			const setup = () => {
-				const medium: ExternalToolMedium = { mediumId: 'mediumId' };
+				const medium: ExternalToolMedium = { status: ExternalToolMediumStatus.ACTIVE, mediumId: 'mediumId' };
 				const mediaUserLicenses: MediaSchoolLicense[] = [];
 
 				return {
