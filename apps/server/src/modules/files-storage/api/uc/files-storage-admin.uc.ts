@@ -22,6 +22,7 @@ export class FilesStorageAdminUC {
 	}
 
 	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<number> {
+		// TODO: Export auth api client and use CAN_EXECUTE_INSTANCE_OPERATION instead of INSTANCE_VIEW
 		const context = AuthorizationContextBuilder.write([
 			AuthorizationContextParamsRequiredPermissions.INSTANCE_VIEW,
 			AuthorizationContextParamsRequiredPermissions.FILESTORAGE_REMOVE,

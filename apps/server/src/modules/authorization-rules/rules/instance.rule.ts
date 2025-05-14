@@ -40,7 +40,7 @@ export class InstanceRule implements Rule<Instance> {
 
 	private hasReadAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
 		/**
-		 * @notImplemented Currently we have no user relations in instance.
+		 * @notImplemented Currently we do not have user relations in instance.
 		 */
 		const hasReadPermission = false;
 
@@ -55,7 +55,7 @@ export class InstanceRule implements Rule<Instance> {
 
 	private hasWriteAccess(user: User, instance: Instance, context: AuthorizationContext): boolean {
 		/**
-		 * @notImplemented Currently we have no user relations in instance.
+		 * @notImplemented Currently we do not have user relations in instance.
 		 */
 		const hasWritePermission = false;
 

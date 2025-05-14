@@ -45,7 +45,7 @@ describe('SchoolRule', () => {
 	describe('isApplicable', () => {
 		describe('when object is instance of School', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolFactory.build();
 				const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
 				const user = userFactory.buildWithId({ school: schoolEntity });
 
@@ -261,7 +261,7 @@ describe('SchoolRule', () => {
 				additionalContextPermissions: Permission[] = []
 			) => {
 				const context = AuthorizationContextBuilder.write(additionalContextPermissions);
-				const school = schoolFactory.buildWithId();
+				const school = schoolFactory.build();
 				const schoolEntity = schoolEntityFactory.buildWithId(undefined, school.id);
 				const user = userFactory.withPermissionsInRole(userPermissions).buildWithId({ school: schoolEntity });
 
