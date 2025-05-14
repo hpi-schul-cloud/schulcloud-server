@@ -23,6 +23,7 @@ import {
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
+import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolEntity } from '../../repo';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import {
@@ -260,6 +261,7 @@ describe('ToolController (API)', () => {
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
 			medium: {
+				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'medium:1',
 				mediaSourceId: 'source:1',
 			},
@@ -514,6 +516,7 @@ describe('ToolController (API)', () => {
 			thumbnailUrl: 'https://link.to-my-thumbnail2.com',
 			openNewTab: true,
 			medium: {
+				status: ExternalToolMediumStatus.ACTIVE,
 				mediumId: 'mediumId',
 				publisher: 'publisher',
 			},
@@ -595,6 +598,7 @@ describe('ToolController (API)', () => {
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
 					medium: {
+						status: ExternalToolMediumStatus.ACTIVE,
 						mediumId: params.medium?.mediumId ?? '',
 						publisher: params.medium?.publisher,
 					},
