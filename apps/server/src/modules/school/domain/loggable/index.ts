@@ -4,3 +4,7 @@ export * from './school-has-no-system.loggable-exception';
 export * from './schoolyear-no-years-left.loggable';
 export * from './system-can-not-be-deleted.loggable-exception';
 export * from './system-not-found.loggable-exception';
+export * from './school-in-user-migration.loggable-exception';
+export * from './school-already-in-next-year.loggable-exception';
+export * from './school-already-in-maintenance.loggable-exception';
+export * from './school-not-in-maintenance.loggable-exception';

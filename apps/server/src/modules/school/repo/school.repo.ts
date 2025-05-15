@@ -1,11 +1,12 @@
 import { FindOptions } from '@mikro-orm/core';
 import { AutoPath, EntityData, EntityName } from '@mikro-orm/core/typings';
+import type { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../domain';
-import { SchoolEntityMapper } from './mapper/school.entity.mapper';
+import { SchoolEntityMapper } from './mapper';
 import { SchoolEntity } from './school.entity';
 import { SchoolScope } from './scope/school.scope';
 
@@ -69,6 +70,24 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		const schools = SchoolEntityMapper.mapToDos(entities);
 
 		return schools;
+	}
+
+	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
+		const entity: SchoolEntity | null = await this.em.findOne(
+			SchoolEntity,
+			{ id: schoolId },
+			{ populate: ['systems'] }
+		);
+
+		if (!entity) {
+			return false;
+		}
+
+		const hasLdapSystem: boolean = entity.systems
+			.getItems()
+			.some((system: SystemEntity): boolean => system.type === 'ldap' && !!system.ldapConfig?.active);
+
+		return hasLdapSystem;
 	}
 
 	protected mapDOToEntityProperties(domainObject: School): EntityData<SchoolEntity> {

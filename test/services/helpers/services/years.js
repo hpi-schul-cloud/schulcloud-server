@@ -19,8 +19,13 @@ const create = async (
 		endDate: yearLogic.getDefaultEndDate(createName(false)),
 	}
 ) => {
-	const year = await Year.create(data);
-	createdYears.push(year._id);
+	let year = await Year.findOne({ name: data.name });
+
+	if (!year) {
+		year = await Year.create(data);
+		createdYears.push(year._id);
+	}
+
 	return year;
 };
 

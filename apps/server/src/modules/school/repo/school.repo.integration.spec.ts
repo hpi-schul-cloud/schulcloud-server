@@ -351,4 +351,103 @@ describe('SchoolMikroOrmRepo', () => {
 			});
 		});
 	});
+
+	describe('hasLdapSystem', () => {
+		describe('when the school has an active ldap system', () => {
+			const setup = async () => {
+				const systems = systemEntityFactory.withLdapConfig({ active: true }).buildList(1);
+				const school = schoolEntityFactory.buildWithId({ systems });
+
+				await em.persistAndFlush([school]);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should return true', async () => {
+				const { school } = await setup();
+
+				const result = await repo.hasLdapSystem(school.id);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the school has an inactive ldap system', () => {
+			const setup = async () => {
+				const systems = systemEntityFactory.withLdapConfig({ active: false }).buildList(1);
+				const school = schoolEntityFactory.buildWithId({ systems });
+
+				await em.persistAndFlush([school]);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should return false', async () => {
+				const { school } = await setup();
+
+				const result = await repo.hasLdapSystem(school.id);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the school has no ldap system', () => {
+			const setup = async () => {
+				const systems = systemEntityFactory.withOauthConfig().buildList(1);
+				const school = schoolEntityFactory.buildWithId({ systems });
+
+				await em.persistAndFlush([school]);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should return false', async () => {
+				const { school } = await setup();
+
+				const result = await repo.hasLdapSystem(school.id);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the school has no systems', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId({ systems: [] });
+
+				await em.persistAndFlush([school]);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should return false', async () => {
+				const { school } = await setup();
+
+				const result = await repo.hasLdapSystem(school.id);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when school entity is not found', () => {
+			it('should return false', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const result = await repo.hasLdapSystem(someId);
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
 });

@@ -203,4 +203,10 @@ export class SchoolService {
 			(configValue === 'opt-out' && enableStudentTeamCreation !== false)
 		);
 	}
+
+	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
+		const hasLdapSystem: boolean = await this.schoolRepo.hasLdapSystem(schoolId);
+
+		return hasLdapSystem;
+	}
 }

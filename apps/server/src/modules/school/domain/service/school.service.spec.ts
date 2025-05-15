@@ -815,4 +815,46 @@ describe('SchoolService', () => {
 			});
 		});
 	});
+
+	describe('hasLdapSystem', () => {
+		describe('when the school has an ldap system', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				schoolRepo.hasLdapSystem.mockResolvedValueOnce(true);
+
+				return {
+					school,
+				};
+			};
+
+			it('should return the existing school', async () => {
+				const { school } = setup();
+
+				const result = await service.hasLdapSystem(school.id);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the school has no ldap system', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+
+				schoolRepo.hasLdapSystem.mockResolvedValueOnce(false);
+
+				return {
+					school,
+				};
+			};
+
+			it('should return the existing school', async () => {
+				const { school } = setup();
+
+				const result = await service.hasLdapSystem(school.id);
+
+				expect(result).toEqual(false);
+			});
+		});
+	});
 });
