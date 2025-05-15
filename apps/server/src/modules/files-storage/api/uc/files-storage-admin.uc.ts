@@ -21,14 +21,13 @@ export class FilesStorageAdminUC {
 		this.logger.setContext(FilesStorageAdminUC.name);
 	}
 
-	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<number> {
-		// TODO: Export auth api client and use CAN_EXECUTE_INSTANCE_OPERATION instead of INSTANCE_VIEW
-		const context = AuthorizationContextBuilder.write([
-			AuthorizationContextParamsRequiredPermissions.INSTANCE_VIEW,
+	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<number> { 
+		const contextForAllowOnlyInstanceOperation = AuthorizationContextBuilder.write([
+			AuthorizationContextParamsRequiredPermissions.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			AuthorizationContextParamsRequiredPermissions.FILESTORAGE_REMOVE,
 		]);
 
-		await this.checkPermission(params.storageLocation, params.storageLocationId, context);
+		await this.checkPermission(params.storageLocation, params.storageLocationId, contextForAllowOnlyInstanceOperation);
 		const result = await this.filesStorageAdminService.markForDeleteByStorageLocation(params);
 
 		return result;
