@@ -36,7 +36,7 @@ describe('POST /rooms/:roomId/copy', () => {
 	beforeEach(async () => {
 		await cleanupCollections(em);
 		config.FEATURE_ROOMS_ENABLED = true;
-		config.FEATURE_ROOMS_DUPLICATION_ENABLED = true;
+		config.FEATURE_ROOM_COPY_ENABLED = true;
 	});
 
 	afterAll(async () => {
@@ -52,7 +52,7 @@ describe('POST /rooms/:roomId/copy', () => {
 
 	describe('when the feature is disabled', () => {
 		const setup = async () => {
-			config.FEATURE_ROOMS_DUPLICATION_ENABLED = false;
+			config.FEATURE_ROOM_COPY_ENABLED = false;
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			await em.persistAndFlush([teacherAccount, teacherUser]);

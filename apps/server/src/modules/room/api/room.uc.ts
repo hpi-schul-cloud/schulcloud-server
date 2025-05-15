@@ -10,7 +10,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CopyStatus, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyStatus, CopyElementType, CopyStatusEnum, CopyHelperService } from '@modules/copy-helper';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -20,6 +20,7 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
+import { StorageLocation } from '@infra/files-storage-client';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -32,7 +33,8 @@ export class RoomUc {
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly copyService: CopyHelperService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {
@@ -118,9 +120,9 @@ export class RoomUc {
 
 	public async copyRoom(userId: EntityId, roomId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
-		this.checkFeatureRoomsDuplicationEnabled();
+		this.checkFeatureRoomCopyEnabled();
 
-		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
+		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_COPY]);
 
 		const originalRoom = await this.roomService.getSingleRoom(roomId);
 
@@ -128,18 +130,56 @@ export class RoomUc {
 			// TODO
 		}
 
-		// TODO implement room copy in Saga module
+		const copyName = await this.deriveCopyName(userId, originalRoom.name);
+		const copyRoom = await this.roomService.createRoom({
+			name: copyName,
+			color: originalRoom.color,
+			startDate: originalRoom.startDate,
+			endDate: originalRoom.endDate,
+			schoolId: originalRoom.schoolId, // TODO schoolId // user.schoolId
+		});
+		await this.roomMembershipService.createNewRoomMembership(copyRoom.id, userId);
+		const copyRoomBoards = await this.copyRoomBoards(userId, roomId, copyRoom);
+
+		// TODO implement room copy in Saga
 		const copyStatus: CopyStatus = {
-			id: roomId,
-			title: originalRoom.name,
+			id: copyRoom.id,
+			title: copyRoom.name,
 			type: CopyElementType.ROOM,
 			status: CopyStatusEnum.SUCCESS,
-			elements: [],
-			copyEntity: originalRoom,
+			elements: copyRoomBoards,
+			copyEntity: copyRoom,
 			originalEntity: originalRoom,
 		};
 
 		return copyStatus;
+	}
+
+	private async copyRoomBoards(userId: EntityId, originalRoomId: EntityId, copyRoom: Room): Promise<CopyStatus[]> {
+		const boards = await this.columnBoardService.findByExternalReference(
+			{
+				type: BoardExternalReferenceType.Room,
+				id: originalRoomId,
+			},
+			0
+		);
+		const storageLocationReference = { id: copyRoom.schoolId, type: StorageLocation.SCHOOL };
+		const copyStatues = await Promise.all(
+			boards.map((board) =>
+				this.columnBoardService.copyColumnBoard({
+					originalColumnBoardId: board.id,
+					targetExternalReference: {
+						type: BoardExternalReferenceType.Room,
+						id: copyRoom.id,
+					},
+					sourceStorageLocationReference: storageLocationReference,
+					targetStorageLocationReference: storageLocationReference,
+					userId,
+					targetSchoolId: copyRoom.schoolId,
+				})
+			)
+		);
+		return copyStatues;
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
@@ -222,9 +262,9 @@ export class RoomUc {
 		}
 	}
 
-	private checkFeatureRoomsDuplicationEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_DUPLICATION_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_DUPLICATION_ENABLED');
+	private checkFeatureRoomCopyEnabled(): void {
+		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
+			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
 		}
 	}
 
@@ -370,4 +410,13 @@ export class RoomUc {
 				requiredPermissions: [],
 			});
 	private userToId = (user: UserDo): string => user.id || '';
+
+	private async deriveCopyName(userId: EntityId, originalRoomName: string): Promise<string> {
+		const authorizedRoomIds = await this.getAuthorizedRoomIds(userId, Action.read);
+		const existingRooms = await this.roomService.getRoomsByIds(authorizedRoomIds, {});
+		const existingNames = existingRooms.data.map((room: Room) => room.name);
+		const newName = this.copyService.deriveCopyName(originalRoomName, existingNames);
+
+		return newName;
+	}
 }
