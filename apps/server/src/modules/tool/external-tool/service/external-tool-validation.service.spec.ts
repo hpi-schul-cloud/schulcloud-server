@@ -375,7 +375,7 @@ describe(ExternalToolValidationService.name, () => {
 					};
 				};
 
-				it('should not throw an validation error', async () => {
+				it('should not throw a validation error', async () => {
 					const { externalTool } = setup();
 
 					const result: Promise<void> = service.validateCreate(externalTool);
@@ -402,7 +402,7 @@ describe(ExternalToolValidationService.name, () => {
 						};
 					};
 
-					it('should throw an validation error', async () => {
+					it('should throw a validation error', async () => {
 						const { externalTool, expectedError } = setup();
 
 						const result: Promise<void> = service.validateCreate(externalTool);
@@ -430,7 +430,7 @@ describe(ExternalToolValidationService.name, () => {
 						};
 					};
 
-					it('should throw an validation error', async () => {
+					it('should throw a validation error', async () => {
 						const { externalTool, expectedError } = setup();
 
 						const result: Promise<void> = service.validateCreate(externalTool);
@@ -455,7 +455,7 @@ describe(ExternalToolValidationService.name, () => {
 					};
 				};
 
-				it('should not throw an validation error', async () => {
+				it('should not throw a validation error', async () => {
 					const { externalTool } = setup();
 
 					const result: Promise<void> = service.validateCreate(externalTool);
@@ -475,7 +475,7 @@ describe(ExternalToolValidationService.name, () => {
 						configService.get.mockReturnValue(10);
 
 						const expectedError = new ValidationError(
-							`tool_medium_status_draft: This medium is draft but is not linked to an external medium.`
+							`tool_medium_status_draft: This medium is a draft but is not linked to an external medium.`
 						);
 
 						return {
@@ -484,7 +484,7 @@ describe(ExternalToolValidationService.name, () => {
 						};
 					};
 
-					it('should throw an validation error', async () => {
+					it('should throw a validation error', async () => {
 						const { externalTool, expectedError } = setup();
 
 						const result: Promise<void> = service.validateCreate(externalTool);
@@ -505,7 +505,7 @@ describe(ExternalToolValidationService.name, () => {
 						configService.get.mockReturnValue(10);
 
 						const expectedError = new ValidationError(
-							`tool_medium_status_draft: This medium is draft but is missing a media source.`
+							`tool_medium_status_draft: This medium is a draft but is missing a media source.`
 						);
 
 						return {
@@ -539,7 +539,7 @@ describe(ExternalToolValidationService.name, () => {
 					};
 				};
 
-				it('should not throw an validation error', async () => {
+				it('should not throw a validation error', async () => {
 					const { externalTool } = setup();
 
 					const result: Promise<void> = service.validateCreate(externalTool);
@@ -550,7 +550,7 @@ describe(ExternalToolValidationService.name, () => {
 				describe('when the medium is in status template but has mediumId', () => {
 					const setup = () => {
 						const externalTool: ExternalTool = externalToolFactory
-							.withMedium({ status: ExternalToolMediumStatus.DRAFT })
+							.withMedium({ status: ExternalToolMediumStatus.TEMPLATE })
 							.build();
 
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
@@ -568,7 +568,7 @@ describe(ExternalToolValidationService.name, () => {
 						};
 					};
 
-					it('should throw an validation error', async () => {
+					it('should throw a validation error', async () => {
 						const { externalTool, expectedError } = setup();
 
 						const result: Promise<void> = service.validateCreate(externalTool);
@@ -598,7 +598,7 @@ describe(ExternalToolValidationService.name, () => {
 						};
 					};
 
-					it('should throw an validation error', async () => {
+					it('should throw a validation error', async () => {
 						const { externalTool, expectedError } = setup();
 
 						const result: Promise<void> = service.validateCreate(externalTool);
