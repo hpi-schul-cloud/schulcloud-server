@@ -7,10 +7,11 @@ import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parse
 import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
-const DEPTH_CARD_ELEMENTS = 3;
-const DEPTH_CARD = 2;
-const DEPTH_COLUMN = 1;
 const DEPTH_BOARD = 0;
+const DEPTH_COLUMN = 1;
+const DEPTH_CARD = 2;
+const DEPTH_CARD_ELEMENTS = 3;
+
 @Injectable()
 export class CommonCartridgeImportService {
 	constructor(
@@ -166,7 +167,11 @@ export class CommonCartridgeImportService {
 
 		if (!contentElementType) return;
 
-		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(resource, cardElementProps);
+		const resourceBody = this.commonCartridgeImportMapper.mapResourceToContentBody(
+			resource,
+			cardElementProps,
+			parser.options.inputFormat
+		);
 
 		if (!resourceBody) return;
 
