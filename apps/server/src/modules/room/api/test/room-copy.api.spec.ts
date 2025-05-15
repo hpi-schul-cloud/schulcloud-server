@@ -11,8 +11,12 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { CopyStatus } from '@modules/copy-helper';
+import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
+import { BoardExternalReference, BoardExternalReferenceType } from '@modules/board';
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
+import { FilterQuery } from '@mikro-orm/core';
 import { RoomEntity } from '../../repo';
-import { CopyStatus } from '../../../copy-helper';
 
 describe('POST /rooms/:roomId/copy', () => {
 	let app: INestApplication;
@@ -143,7 +147,7 @@ describe('POST /rooms/:roomId/copy', () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-			const room = roomEntityFactory.build();
+			const room = roomEntityFactory.build({ name: 'test' });
 			const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const userGroup = groupEntityFactory.buildWithId({
@@ -182,8 +186,8 @@ describe('POST /rooms/:roomId/copy', () => {
 
 		it('should return copy status', async () => {
 			const { loggedInClient, room } = await setup();
-			// TODO
-			const expectedResponse = { status: 'success', title: 'room #3', type: 'ROOM' };
+
+			const expectedResponse = { status: 'success', title: 'test (1)', type: 'ROOM' };
 
 			const response = await loggedInClient.post(`${room.id}/copy`);
 			expect(response.body as CopyStatus).toMatchObject(expectedResponse);
@@ -196,12 +200,32 @@ describe('POST /rooms/:roomId/copy', () => {
 
 			const copiedRoomId = (response.body as CopyStatus).id;
 
-			// TODO
-			// expect(room.id).not.toBe(copiedRoomId);
+			expect(room.id).not.toBe(copiedRoomId);
 
 			const copiedRoom = await em.findOneOrFail(RoomEntity, { id: copiedRoomId });
 
 			expect(copiedRoom).toBeDefined();
+		});
+
+		it('should copy the room boards', async () => {
+			const { loggedInClient, room } = await setup();
+
+			const columnBoardNode = columnBoardEntityFactory.build({
+				context: { id: room.id, type: BoardExternalReferenceType.Room },
+			});
+			await em.persistAndFlush([columnBoardNode]);
+
+			const response = await loggedInClient.post(`${room.id}/copy`);
+
+			const copiedRoomId = (response.body as CopyStatus).id;
+
+			const copiedBoard = await em.findOneOrFail(BoardNodeEntity, {
+				context: {
+					_contextId: new ObjectId(copiedRoomId),
+					_contextType: BoardExternalReferenceType.Room,
+				} as FilterQuery<BoardExternalReference>,
+			});
+			expect(copiedBoard).toBeDefined();
 		});
 	});
 });
