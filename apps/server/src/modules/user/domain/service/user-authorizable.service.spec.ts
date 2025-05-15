@@ -3,14 +3,16 @@ import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modul
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { User, UserMikroOrmRepo } from '../../repo';
-import { userFactory } from '../../testing';
+import { userDoFactory, userFactory } from '../../testing';
 import { UserAuthorizableService } from './user-authorizable.service';
+import { UserService } from './user.service';
 
 describe(UserAuthorizableService.name, () => {
 	let module: TestingModule;
 	let service: UserAuthorizableService;
 
 	let userRepo: DeepMocked<UserMikroOrmRepo>;
+	let userService: DeepMocked<UserService>;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
@@ -21,12 +23,17 @@ describe(UserAuthorizableService.name, () => {
 					provide: UserMikroOrmRepo,
 					useValue: createMock<UserMikroOrmRepo>(),
 				},
+				{
+					provide: UserService,
+					useValue: createMock<UserService>(),
+				},
 				AuthorizationInjectionService,
 			],
 		}).compile();
 
 		service = module.get(UserAuthorizableService);
 		userRepo = module.get(UserMikroOrmRepo);
+		userService = module.get(UserService);
 		injectionService = module.get(AuthorizationInjectionService);
 		await setupEntities([User]);
 	});
@@ -52,9 +59,9 @@ describe(UserAuthorizableService.name, () => {
 	describe('findById', () => {
 		describe('when id is given', () => {
 			const setup = () => {
-				const user = userFactory.build();
+				const user = userDoFactory.buildWithId();
 
-				userRepo.findById.mockResolvedValue(user);
+				userService.findById.mockResolvedValue(user);
 
 				return {
 					user,
@@ -64,7 +71,7 @@ describe(UserAuthorizableService.name, () => {
 			it('should return a user', async () => {
 				const { user } = setup();
 
-				const result = await service.findById(user.id);
+				const result = await service.findById(user.id as string);
 
 				expect(result).toEqual(user);
 			});

@@ -15,7 +15,6 @@ import {
 } from './controller';
 import { BoardNodePermissionService } from './service';
 import { BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
-import { DeletionModule } from '@modules/deletion';
 
 @Module({
 	imports: [
@@ -26,7 +25,6 @@ import { DeletionModule } from '@modules/deletion';
 		RoomModule,
 		forwardRef(() => AuthorizationModule),
 		BoardContextApiHelperModule,
-		DeletionModule,
 	],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
 	providers: [BoardUc, BoardNodePermissionService, ColumnUc, CardUc, ElementUc, SubmissionItemUc],

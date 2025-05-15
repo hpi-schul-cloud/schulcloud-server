@@ -25,6 +25,16 @@ export class FileRecordMikroOrmRepo implements FileRecordRepo {
 		return fileRecord;
 	}
 
+	public async findMultipleById(
+		ids: EntityId[],
+		options?: IFindOptions<FileRecordEntity>
+	): Promise<Counted<FileRecord[]>> {
+		const scope = new FileRecordScope().byFileRecordIds(ids).byMarkedForDelete(false);
+		const result = await this.findAndCount(scope, options);
+
+		return result;
+	}
+
 	public async findOneByIdMarkedForDelete(id: EntityId): Promise<FileRecord> {
 		const scope = new FileRecordScope().byFileRecordId(id).byMarkedForDelete(true);
 		const fileRecord = await this.findOneOrFail(scope);

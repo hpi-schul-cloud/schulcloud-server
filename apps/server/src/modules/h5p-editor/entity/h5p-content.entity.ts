@@ -104,7 +104,8 @@ export class ContentMetadata implements IContentMetadata {
 }
 
 export enum H5PContentParentType {
-	'Lesson' = 'lessons',
+	Lesson = 'lessons',
+	BoardElement = 'board-element',
 }
 
 export interface H5PContentProperties {
