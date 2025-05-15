@@ -1000,7 +1000,7 @@
 			"$date": "1999-12-31T23:07:00Z"
 		},
 		"time": {
-			"$date": "2025-05-08T22:00:00Z"
+			"$date": "2025-05-14T22:00:00Z"
 		},
 		"contents": [
 			{
@@ -1014,7 +1014,7 @@
 				},
 				"hidden": false,
 				"_id": {
-					"$oid": "681e027d89002b0ee99aa16a"
+					"$oid": "6825b3f7f3d1ca38b16043e4"
 				}
 			},
 			{
@@ -1028,7 +1028,18 @@
 				},
 				"hidden": false,
 				"_id": {
-					"$oid": "681e027d89002b0ee99aa16b"
+					"$oid": "6825b3f7f3d1ca38b16043e5"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "resources",
+				"title": "Lern-Material Abschnitt",
+				"hidden": false,
+				"_id": {
+					"$oid": "6825b3f7f3d1ca38b16043e6"
 				}
 			}
 		],
@@ -1043,7 +1054,7 @@
 			"$date": "2025-05-09T13:26:11.494Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:26:41.510Z"
+			"$date": "2025-05-15T09:29:27.078Z"
 		},
 		"__v": 0
 	},
