@@ -27,7 +27,7 @@ export class ColumnBoardCopyService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
-	async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
+	public async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
 		const originalBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, params.originalColumnBoardId);
 
 		this.checkSupportedExternalReferenceType(params.targetExternalReference.type);
@@ -63,7 +63,7 @@ export class ColumnBoardCopyService {
 		return copyStatus;
 	}
 
-	private checkSupportedExternalReferenceType(type: BoardExternalReferenceType) {
+	private checkSupportedExternalReferenceType(type: BoardExternalReferenceType): void {
 		/* istanbul ignore next */
 		if (type !== BoardExternalReferenceType.Course && type !== BoardExternalReferenceType.Room) {
 			throw new NotImplementedException('Only room and course external reference types are supported');
