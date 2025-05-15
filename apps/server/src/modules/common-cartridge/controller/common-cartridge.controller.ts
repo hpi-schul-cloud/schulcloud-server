@@ -59,7 +59,7 @@ export class CommonCartridgeController {
 	@Post('import')
 	@UseInterceptors(FileInterceptor('file'))
 	@ApiOperation({ summary: 'Imports a course from a Common Cartridge file.' })
-	@ApiConsumes('multipart/form-data')
+	@ApiConsumes('application/octet-stream')
 	@ApiProduces('application/json')
 	@ApiBody({ type: CommonCartridgeImportBodyParams, required: true })
 	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
