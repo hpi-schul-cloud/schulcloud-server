@@ -25,7 +25,6 @@ import {
 import { Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeImportBodyParams, CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
-import { CommonCartridgeFileValidatorPipe } from './utils';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -68,7 +67,7 @@ export class CommonCartridgeController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async importCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@UploadedFile(CommonCartridgeFileValidatorPipe)
+		@UploadedFile()
 		file: Express.Multer.File
 	): Promise<void> {
 		await this.commonCartridgeUC.importCourse(file.buffer);
