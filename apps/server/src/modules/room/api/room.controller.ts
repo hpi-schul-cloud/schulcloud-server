@@ -17,8 +17,10 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
@@ -277,5 +279,31 @@ export class RoomController {
 		const response = new RoomMemberListResponse(members);
 
 		return Promise.resolve(response);
+	}
+
+	@Post(':roomId/copy')
+	@ApiOperation({
+		summary: 'Creates a copy of the given room. Restricted to Room Owner and Admin',
+	})
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns the copy status of a duplicated room',
+		type: CopyApiResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	public async copyRoom(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId, currentUser.schoolId);
+
+		const copyResponse = CopyMapper.mapToResponse(copyStatus);
+
+		return copyResponse;
 	}
 }

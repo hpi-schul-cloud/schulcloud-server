@@ -1,17 +1,6 @@
 import { Logger } from '@core/logger';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
-import {
-	DataDeletionDomainOperationLoggable,
-	DeletionService,
-	DomainDeletionReport,
-	DomainDeletionReportBuilder,
-	DomainName,
-	DomainOperationReportBuilder,
-	OperationType,
-	StatusModel,
-	UserDeletionInjectionService,
-} from '@modules/deletion';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserDo } from '@modules/user';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -22,14 +11,9 @@ import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
 
 @Injectable()
-export class PseudonymService implements DeletionService {
-	constructor(
-		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
-		private readonly logger: Logger,
-		userDeletionInjectionService: UserDeletionInjectionService
-	) {
+export class PseudonymService {
+	constructor(private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo, private readonly logger: Logger) {
 		this.logger.setContext(PseudonymService.name);
-		userDeletionInjectionService.injectUserDeletionService(this);
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDo, tool: ExternalTool): Promise<Pseudonym> {
@@ -72,39 +56,6 @@ export class PseudonymService implements DeletionService {
 		}
 
 		return pseudonym;
-	}
-
-	public async deleteUserData(userId: string): Promise<DomainDeletionReport> {
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Deleting user data from Pseudonyms',
-				DomainName.PSEUDONYMS,
-				userId,
-				StatusModel.PENDING
-			)
-		);
-		if (!userId) {
-			throw new InternalServerErrorException('User id is missing');
-		}
-
-		const deletedPseudonymIds = await this.externalToolPseudonymRepo.deletePseudonymsByUserId(userId);
-
-		const result = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
-			DomainOperationReportBuilder.build(OperationType.DELETE, deletedPseudonymIds.length, deletedPseudonymIds),
-		]);
-
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Successfully deleted user data from Pseudonyms',
-				DomainName.PSEUDONYMS,
-				userId,
-				StatusModel.FINISHED,
-				0,
-				deletedPseudonymIds.length
-			)
-		);
-
-		return result;
 	}
 
 	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
