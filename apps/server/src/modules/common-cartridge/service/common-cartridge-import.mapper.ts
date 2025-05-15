@@ -95,7 +95,7 @@ export class CommonCartridgeImportMapper {
 		const fileBody: FileElementContentBody = {
 			type: 'file',
 			content: {
-				caption: resource.fileName,
+				caption: resource.description,
 				alternativeText: '',
 			},
 		};

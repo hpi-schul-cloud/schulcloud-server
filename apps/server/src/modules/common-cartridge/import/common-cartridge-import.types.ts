@@ -41,6 +41,7 @@ export type CommonCartridgeFileResourceProps = {
 	href: string;
 	fileName: string;
 	file: File;
+	description: string;
 };
 
 export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeResourceTypeV1P1.UNKNOWN };
