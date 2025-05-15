@@ -181,12 +181,6 @@ export class SchoolService {
 		});
 	}
 
-	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
-		const hasLdapSystem: boolean = await this.schoolRepo.hasLdapSystem(schoolId);
-
-		return hasLdapSystem;
-	}
-
 	// TODO: The logic for setting this feature should better be part of the creation of a school object.
 	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
 	private addInstanceFeatures(school: School): School {
@@ -208,5 +202,11 @@ export class SchoolService {
 			// because it being undefined means that the school has not opted out yet.
 			(configValue === 'opt-out' && enableStudentTeamCreation !== false)
 		);
+	}
+
+	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
+		const hasLdapSystem: boolean = await this.schoolRepo.hasLdapSystem(schoolId);
+
+		return hasLdapSystem;
 	}
 }

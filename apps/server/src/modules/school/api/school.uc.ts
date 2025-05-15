@@ -231,6 +231,9 @@ export class SchoolUc {
 			this.schoolYearService.getAllSchoolYears(),
 		]);
 
+		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
 		if (school.inUserMigration) {
 			throw new SchoolInUserMigrationLoggableException(school);
 		}
@@ -238,9 +241,6 @@ export class SchoolUc {
 		if (this.isSchoolAlreadyInNextYear(school)) {
 			throw new SchoolAlreadyInNextYearLoggableException(school);
 		}
-
-		const authContext = AuthorizationContextBuilder.read([]);
-		this.authorizationService.checkPermission(user, school, authContext);
 
 		const schoolUsesLdap: boolean = await this.schoolService.hasLdapSystem(school.id);
 
