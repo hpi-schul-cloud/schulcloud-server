@@ -1583,7 +1583,7 @@
 		"description": "<p>Hier ist die aufgabe zum Thema 1</p>",
 		"dueDate": null,
 		"availableDate": {
-			"$date": "2025-05-09T13:27:33.512Z"
+			"$date": "2025-05-09T13:27:00Z"
 		},
 		"teacherId": {
 			"$oid": "0000d231816abba584714c9e"
@@ -1592,7 +1592,7 @@
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"lessonId": {
-			"$oid": "681e027389002b0ee99aa120"
+			"$oid": "6821de7337752ce145e64195"
 		},
 		"maxTeamMembers": null,
 		"archived": [],
@@ -1602,6 +1602,9 @@
 		"updatedAt": {
 			"$date": "2025-05-09T13:27:33.557Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"private": false,
+		"publicSubmissions": false,
+		"teamSubmissions": false
 	}
 ]

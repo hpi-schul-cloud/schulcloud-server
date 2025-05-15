@@ -995,7 +995,7 @@
 		"_id": {
 			"$oid": "681e027389002b0ee99aa120"
 		},
-		"name": "Thema 1",
+		"name": "Thema Ohne Aufgabe",
 		"date": {
 			"$date": "1999-12-31T23:07:00Z"
 		},
@@ -1014,7 +1014,7 @@
 				},
 				"hidden": false,
 				"_id": {
-					"$oid": "6825b3f7f3d1ca38b16043e4"
+					"$oid": "6825e5e37c78a25d25b76eda"
 				}
 			},
 			{
@@ -1028,18 +1028,35 @@
 				},
 				"hidden": false,
 				"_id": {
-					"$oid": "6825b3f7f3d1ca38b16043e5"
+					"$oid": "6825e5e37c78a25d25b76edb"
 				}
 			},
 			{
 				"user": {
 					"$oid": "0000d231816abba584714c9e"
 				},
-				"component": "resources",
-				"title": "Lern-Material Abschnitt",
+				"component": "geoGebra",
+				"title": "GeoGebra Inhalt 2",
+				"content": {
+					"materialId": "ddmw3cwq"
+				},
 				"hidden": false,
 				"_id": {
-					"$oid": "6825b3f7f3d1ca38b16043e6"
+					"$oid": "6825e5e37c78a25d25b76edc"
+				}
+			},
+			{
+				"user": {
+					"$oid": "0000d231816abba584714c9e"
+				},
+				"component": "geoGebra",
+				"title": "GeoGebra Inhalt 3",
+				"content": {
+					"materialId": "ddmw3cwq"
+				},
+				"hidden": false,
+				"_id": {
+					"$oid": "6825e5e37c78a25d25b76edd"
 				}
 			}
 		],
@@ -1054,7 +1071,7 @@
 			"$date": "2025-05-09T13:26:11.494Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-15T09:29:27.078Z"
+			"$date": "2025-05-15T13:02:27.714Z"
 		},
 		"__v": 0
 	},
@@ -1089,12 +1106,12 @@
 		"_id": {
 			"$oid": "6821de7337752ce145e64195"
 		},
-		"name": "Thema ohne aufgabe",
+		"name": "Thema 1 Mit Aufgabe ",
 		"date": {
 			"$date": "1999-12-31T23:07:00Z"
 		},
 		"time": {
-			"$date": "2025-05-11T22:00:00Z"
+			"$date": "2025-05-14T22:00:00Z"
 		},
 		"contents": [
 			{
@@ -1104,11 +1121,11 @@
 				"component": "text",
 				"title": "Text Inhalt",
 				"content": {
-					"text": "<p>Text here</p>"
+					"text": "<p>Text here:</p><ol><li><strong>Bold Text</strong></li><li><i>Kursive Text</i></li><li><i><strong>Bold Kursive Text</strong></i></li><li><u>untergestrichen Text</u></li><li><sup>Hochgestelt Text</sup></li><li><sub>Tiefgestellt Text</sub></li><li><span style=\"background-color:#E91E63\"><strong>Bold Rote Hintergrund Text</strong></span></li><li><span style=\"color:#E91E63\"><i>Kursive Rote Farbe Text</i></span></li></ol><h2>Header Text 1</h2><h3>Header Text 2</h3><p>Header Text 3</p><p>3X3 Tabelle:</p><figure class=\"table\"><table><tbody><tr><td>11</td><td>12</td><td>13</td></tr><tr><td>21</td><td>22</td><td>23</td></tr><tr><td>31</td><td>32</td><td>33</td></tr></tbody></table></figure>"
 				},
 				"hidden": false,
 				"_id": {
-					"$oid": "6821de9837752ce145e64256"
+					"$oid": "6825dbeefd0ced18edebe693"
 				}
 			},
 			{
@@ -1122,7 +1139,7 @@
 				},
 				"hidden": false,
 				"_id": {
-					"$oid": "6821de9837752ce145e64257"
+					"$oid": "6825dbeefd0ced18edebe694"
 				}
 			}
 		],
@@ -1137,7 +1154,7 @@
 			"$date": "2025-05-12T11:41:39.647Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T11:42:38.818Z"
+			"$date": "2025-05-15T12:19:58.397Z"
 		},
 		"__v": 0
 	}

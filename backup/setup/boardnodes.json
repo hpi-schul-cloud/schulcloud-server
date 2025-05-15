@@ -2638,13 +2638,13 @@
 			"$date": "2025-05-12T07:04:45.504Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-15T09:33:49.698Z"
+			"$date": "2025-05-15T11:26:25.789Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,",
 		"level": 2,
 		"position": 2,
 		"type": "card",
-		"height": 176,
+		"height": 289,
 		"title": "Spalte 3 Karte 3"
 	},
 	{
@@ -3208,5 +3208,92 @@
 		"contextExternalTool": {
 			"$oid": "6825bb834fb59fe30f59d0e9"
 		}
+	},
+	{
+		"_id": {
+			"$oid": "6825cf60815b2eaee57cf6a4"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T11:26:24.253Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T11:26:24.253Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,68219d8d69f69c81430aa559,",
+		"level": 3,
+		"position": 4,
+		"type": "external-tool"
+	},
+	{
+		"_id": {
+			"$oid": "6825d0f9e03addbde2cb8db7"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T11:33:13.342Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T12:10:16.741Z"
+		},
+		"path": ",",
+		"level": 0,
+		"position": 0,
+		"type": "column-board",
+		"title": "Kurs-Bereich",
+		"contextType": "course",
+		"context": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"layout": "columns",
+		"isVisible": true
+	},
+	{
+		"_id": {
+			"$oid": "6825e6247c78a25d25b76f12"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T13:03:32.300Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T13:03:54.264Z"
+		},
+		"path": ",6825d0f9e03addbde2cb8db7,",
+		"level": 1,
+		"position": 0,
+		"type": "column",
+		"title": "Spalte 1"
+	},
+	{
+		"_id": {
+			"$oid": "6825e63a7c78a25d25b76f13"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T13:03:54.873Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T13:05:01.845Z"
+		},
+		"path": ",6825d0f9e03addbde2cb8db7,6825e6247c78a25d25b76f12,6825e63a7c78a25d25b76f14,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<p>das ist eine Karte in mehrspaltigen Bereich Ohne Titel</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6825e63a7c78a25d25b76f14"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T13:03:54.874Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T13:05:03.204Z"
+		},
+		"path": ",6825d0f9e03addbde2cb8db7,6825e6247c78a25d25b76f12,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 125,
+		"title": "Karte 1"
 	}
 ]
