@@ -1,4 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { ClassService } from '@modules/class';
 import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -23,6 +24,7 @@ import { YearsResponseMapper } from './mapper/years.response.mapper';
 export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly classService: ClassService,
 		private readonly schoolService: SchoolService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly userService: UserService
@@ -141,7 +143,7 @@ export class SchoolUc {
 
 		this.checkHasPermissionToAccessTeachers(user);
 
-		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.TEACHER_LIST]);
+		const isUserOfSchool = this.isSchoolInternalUserWithPermission(user, school, [Permission.TEACHER_LIST]);
 
 		let result: Page<UserDo>;
 		if (isUserOfSchool) {
@@ -160,13 +162,17 @@ export class SchoolUc {
 			this.authorizationService.getUserWithPermissions(userId),
 		]);
 
-		this.checkHasPermissionToAccessStudents(user);
-
-		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.STUDENT_LIST]);
+		const isUserOfSchoolAndHasPermissionToSeeStudents = this.isSchoolInternalUserWithPermission(user, school, [
+			Permission.STUDENT_LIST,
+		]);
 
 		let result: Page<UserDo> = { data: [], total: 0 };
-		if (isUserOfSchool) {
+		if (isUserOfSchoolAndHasPermissionToSeeStudents) {
 			result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		} else {
+			const attendeeIds = await this.getStudentsOfTeacherClasses(schoolId, userId);
+			const users = await this.userService.findByIds(attendeeIds);
+			result = { data: users, total: users.length };
 		}
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
@@ -177,13 +183,22 @@ export class SchoolUc {
 		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
 	}
 
-	private checkHasPermissionToAccessStudents(user: User) {
-		this.authorizationService.checkAllPermissions(user, [Permission.STUDENT_LIST]);
-	}
-
-	private isSchoolInternalUser(user: User, school: School, permissions: Permission[]): boolean {
+	private isSchoolInternalUserWithPermission(user: User, school: School, permissions: Permission[]): boolean {
 		const authContext = AuthorizationContextBuilder.read(permissions);
 		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
 		return isUserOfSchool;
+	}
+
+	private async getStudentsOfTeacherClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+		const classes = await this.classService.findClassesForSchool(schoolId);
+
+		const allowedClasses = classes.filter((clazz) => {
+			return clazz.teacherIds.some((teacherId) => teacherId === userId);
+		});
+		const attendeeIds = allowedClasses.flatMap((clazz) => {
+			return clazz.userIds;
+		});
+
+		return attendeeIds;
 	}
 }
