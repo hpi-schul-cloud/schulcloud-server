@@ -2156,13 +2156,13 @@
 			"$date": "2025-05-09T13:28:30.418Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T14:06:09.394Z"
+			"$date": "2025-05-15T10:02:09.676Z"
 		},
 		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "<p>text zum Abschnitt 1  Karte 1 und Bild und pdf</p>",
+		"text": "<p>text zum Abschnitt 1 </p><p><strong>Text Bold</strong></p><p><i>sdfsgsdgdfdgf</i></p><p><i><strong>dgmglknbycxb</strong></i></p><p><span style=\"color:#388E3C\"><i><s>dfdfbbbmn nxxbm </s></i></span></p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2173,48 +2173,14 @@
 			"$date": "2025-05-09T13:28:30.418Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-09T13:30:04.502Z"
+			"$date": "2025-05-15T10:02:15.432Z"
 		},
 		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 559,
+		"height": 298,
 		"title": "Abschnitt1 Karte 1"
-	},
-	{
-		"_id": {
-			"$oid": "681e032089002b0ee99aa28f"
-		},
-		"createdAt": {
-			"$date": "2025-05-09T13:29:04.283Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-09T13:29:32.203Z"
-		},
-		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
-		"level": 3,
-		"position": 1,
-		"type": "file-element",
-		"caption": "Ein Bild in Abschnitt 1 Karte 1",
-		"alternativeText": ""
-	},
-	{
-		"_id": {
-			"$oid": "681e034389002b0ee99aa290"
-		},
-		"createdAt": {
-			"$date": "2025-05-09T13:29:39.229Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-09T13:30:02.488Z"
-		},
-		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
-		"level": 3,
-		"position": 2,
-		"type": "file-element",
-		"caption": "Ein PDF Abschnitt 1 Karte 1",
-		"alternativeText": ""
 	},
 	{
 		"_id": {
@@ -2428,13 +2394,13 @@
 			"$date": "2025-05-09T13:38:09.625Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-13T13:32:40.862Z"
+			"$date": "2025-05-15T09:39:59.360Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 672,
+		"height": 1223,
 		"title": "Spalte 1 Karte 1"
 	},
 	{
@@ -2655,13 +2621,13 @@
 			"$date": "2025-05-12T07:04:45.504Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T07:04:45.504Z"
+			"$date": "2025-05-15T09:33:47.889Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,68219d8d69f69c81430aa559,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "",
+		"text": "<p>openstreetMap externe Tools</p>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -2672,13 +2638,13 @@
 			"$date": "2025-05-12T07:04:45.504Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-12T07:05:31.453Z"
+			"$date": "2025-05-15T09:33:49.698Z"
 		},
 		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,",
 		"level": 2,
 		"position": 2,
 		"type": "card",
-		"height": 118,
+		"height": 176,
 		"title": "Spalte 3 Karte 3"
 	},
 	{
@@ -3092,5 +3058,155 @@
 		"type": "rich-text-element",
 		"text": "<p>text nach Etherpad</p>",
 		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6825b54af3d1ca38b1604435"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:35:06.966Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:35:40.292Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 5,
+		"type": "rich-text-element",
+		"text": "<p>jetzt kommt Etherpad und Whiteboard nochmal</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6825b572f3d1ca38b1604436"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:35:46.352Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:35:46.352Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 6,
+		"type": "collaborative-text-editor"
+	},
+	{
+		"_id": {
+			"$oid": "6825b576f3d1ca38b1604437"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:35:50.354Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:35:50.354Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 7,
+		"type": "drawing-element",
+		"description": ""
+	},
+	{
+		"_id": {
+			"$oid": "6825b66ff3d1ca38b1604438"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:39:59.080Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:39:59.080Z"
+		},
+		"path": ",681e051689002b0ee99aa298,",
+		"level": 1,
+		"position": 3,
+		"type": "column"
+	},
+	{
+		"_id": {
+			"$oid": "6825b674f3d1ca38b1604439"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:40:04.798Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:47:05.605Z"
+		},
+		"path": ",681e051689002b0ee99aa298,6825b66ff3d1ca38b1604438,6825b674f3d1ca38b160443a,",
+		"level": 3,
+		"position": 0,
+		"type": "rich-text-element",
+		"text": "<h4>Header 1</h4><h5>Header 2</h5><p> </p><ol><li><strong>Bold Text</strong></li><li><i><strong>Bold Kursive Text </strong></i></li><li><i>Kursive Text</i></li><li><s>durchgestrichen Text</s></li></ol><h4>Tabelle:</h4><figure class=\"table\"><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></figure>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6825b674f3d1ca38b160443a"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:40:04.798Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:47:08.659Z"
+		},
+		"path": ",681e051689002b0ee99aa298,6825b66ff3d1ca38b1604438,",
+		"level": 2,
+		"position": 0,
+		"type": "card",
+		"height": 468,
+		"title": "Text Inhalt Spalte ohne Title "
+	},
+	{
+		"_id": {
+			"$oid": "6825b8834fb59fe30f59d0e3"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:48:51.718Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:49:29.808Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,68219d8d69f69c81430aa559,",
+		"level": 3,
+		"position": 3,
+		"type": "external-tool",
+		"contextExternalTool": {
+			"$oid": "6825b89a4fb59fe30f59d0e5"
+		}
+	},
+	{
+		"_id": {
+			"$oid": "6825b8a14fb59fe30f59d0e6"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T09:49:21.522Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T09:49:39.368Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e053789002b0ee99aa29c,68219d8d69f69c81430aa559,",
+		"level": 3,
+		"position": 2,
+		"type": "rich-text-element",
+		"text": "<p>Translate external Tool</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "6825bb214fb59fe30f59d0e7"
+		},
+		"createdAt": {
+			"$date": "2025-05-15T10:00:01.335Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-15T10:02:09.676Z"
+		},
+		"path": ",681e02e289002b0ee99aa28a,681e02f489002b0ee99aa28c,681e02fe89002b0ee99aa28e,",
+		"level": 3,
+		"position": 1,
+		"type": "external-tool",
+		"contextExternalTool": {
+			"$oid": "6825bb834fb59fe30f59d0e9"
+		}
 	}
 ]
