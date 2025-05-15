@@ -41,6 +41,7 @@ export const AuthorizationContextParamsAction = {
 
 export type AuthorizationContextParamsAction = typeof AuthorizationContextParamsAction[keyof typeof AuthorizationContextParamsAction];
 export const AuthorizationContextParamsRequiredPermissions = {
+    __TEST__: '___TEST___',
     ACCOUNT_CREATE: 'ACCOUNT_CREATE',
     ACCOUNT_DELETE: 'ACCOUNT_DELETE',
     ACCOUNT_EDIT: 'ACCOUNT_EDIT',
@@ -54,6 +55,7 @@ export const AuthorizationContextParamsRequiredPermissions = {
     CALENDAR_CREATE: 'CALENDAR_CREATE',
     CALENDAR_EDIT: 'CALENDAR_EDIT',
     CALENDAR_VIEW: 'CALENDAR_VIEW',
+    CAN_EXECUTE_INSTANCE_OPERATIONS: 'CAN_EXECUTE_INSTANCE_OPERATIONS',
     CHANGE_TEAM_ROLES: 'CHANGE_TEAM_ROLES',
     CLASS_CREATE: 'CLASS_CREATE',
     CLASS_EDIT: 'CLASS_EDIT',
@@ -114,6 +116,7 @@ export const AuthorizationContextParamsRequiredPermissions = {
     IMPORT_USER_UPDATE: 'IMPORT_USER_UPDATE',
     IMPORT_USER_VIEW: 'IMPORT_USER_VIEW',
     INSTANCE_VIEW: 'INSTANCE_VIEW',
+    INSTANCE_EDIT: 'INSTANCE_EDIT',
     INVITE_ADMINISTRATORS: 'INVITE_ADMINISTRATORS',
     INVITE_EXPERTS: 'INVITE_EXPERTS',
     JOIN_MEETING: 'JOIN_MEETING',
@@ -160,7 +163,6 @@ export const AuthorizationContextParamsRequiredPermissions = {
     SCHOOL_CHAT_MANAGE: 'SCHOOL_CHAT_MANAGE',
     SCHOOL_CREATE: 'SCHOOL_CREATE',
     SCHOOL_EDIT: 'SCHOOL_EDIT',
-    SCHOOL_EDIT_ALL: 'SCHOOL_EDIT_ALL',
     SCHOOL_LOGO_MANAGE: 'SCHOOL_LOGO_MANAGE',
     SCHOOL_NEWS_EDIT: 'SCHOOL_NEWS_EDIT',
     SCHOOL_PERMISSION_CHANGE: 'SCHOOL_PERMISSION_CHANGE',
@@ -169,6 +171,7 @@ export const AuthorizationContextParamsRequiredPermissions = {
     SCHOOL_SYSTEM_EDIT: 'SCHOOL_SYSTEM_EDIT',
     SCHOOL_SYSTEM_VIEW: 'SCHOOL_SYSTEM_VIEW',
     SCHOOL_TOOL_ADMIN: 'SCHOOL_TOOL_ADMIN',
+    SCHOOL_VIEW: 'SCHOOL_VIEW',
     SCOPE_PERMISSIONS_VIEW: 'SCOPE_PERMISSIONS_VIEW',
     START_MEETING: 'START_MEETING',
     STUDENT_CREATE: 'STUDENT_CREATE',
