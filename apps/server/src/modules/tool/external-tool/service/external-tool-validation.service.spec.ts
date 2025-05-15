@@ -362,6 +362,34 @@ describe(ExternalToolValidationService.name, () => {
 		});
 
 		describe('when the external tool has medium ', () => {
+			describe('when the medium has no status', () => {
+				const setup = () => {
+					const externalTool: ExternalTool = externalToolFactory.withMedium({ status: undefined }).build();
+
+					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
+
+					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
+					configService.get.mockReturnValue(10);
+
+					const expectedError = new ValidationError(
+						`tool_medium_status: This medium status must be one of: active, draft or template.`
+					);
+
+					return {
+						externalTool,
+						expectedError,
+					};
+				};
+
+				it('should throw a validation error', async () => {
+					const { externalTool, expectedError } = setup();
+
+					const result: Promise<void> = service.validateCreate(externalTool);
+
+					await expect(result).rejects.toThrow(expectedError);
+				});
+			});
+
 			describe('when the medium is in status active', () => {
 				const setup = () => {
 					const externalTool: ExternalTool = externalToolFactory.withMedium().build();
