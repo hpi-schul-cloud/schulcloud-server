@@ -266,6 +266,59 @@ describe('School Controller (API)', () => {
 				expect(response.status).toEqual(HttpStatus.OK);
 			});
 		});
+
+		describe('when user is in requested school and the school is in user migration', () => {
+			const setup = async () => {
+				const schoolYears = schoolYearEntityFactory.withStartYear(2002).buildList(3);
+				const systems = systemEntityFactory.withLdapConfig().buildList(1);
+				const school = schoolEntityFactory.build({
+					currentYear: schoolYears[1],
+					systems,
+					inMaintenanceSince: new Date(),
+					inUserMigration: true,
+				});
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				em.clear();
+
+				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
+					return {
+						id: schoolYear.id,
+						name: schoolYear.name,
+						startDate: schoolYear.startDate.toISOString(),
+						endDate: schoolYear.endDate.toISOString(),
+					};
+				});
+
+				const expectedResponse: DateToString<MaintenanceResponse> = {
+					schoolUsesLdap: false,
+					maintenance: {
+						active: false,
+						startDate: undefined,
+					},
+					currentYear: schoolYearResponses[1],
+					nextYear: schoolYearResponses[2],
+				};
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					schoolId: school.id,
+					loggedInClient,
+					expectedResponse,
+				};
+			};
+
+			it('should return the school maintenance status without activated maintenance and without ldap', async () => {
+				const { schoolId, loggedInClient, expectedResponse } = await setup();
+
+				const response = await loggedInClient.get(`${schoolId}/maintenance`);
+
+				expect(response.body).toEqual(expectedResponse);
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+		});
 	});
 
 	describe('setMaintenanceStatus', () => {
@@ -362,7 +415,7 @@ describe('School Controller (API)', () => {
 
 		describe('when the school is in user migration', () => {
 			const setup = async () => {
-				const school = schoolEntityFactory.build({ inUserMigration: true });
+				const school = schoolEntityFactory.build({ inUserMigration: true, inMaintenanceSince: new Date() });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([school, adminAccount, adminUser]);
