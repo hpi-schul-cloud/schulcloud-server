@@ -111,7 +111,7 @@ export class CommonCartridgeResourceFactory {
 	}
 
 	private checkFileType(resourcePath: string): boolean {
-		const allowedExtensions = ['.xml', '.html', '.zip', '.pdf', '.docx', '.pptx', '.xlsx', '.txt', '.csv', '.json'];
+		const allowedExtensions = ['.xml', '.zip', '.pdf', '.docx', '.pptx', '.xlsx', '.txt', '.csv', '.json'];
 
 		return allowedExtensions.some((ext) => resourcePath.endsWith(ext));
 	}
@@ -126,8 +126,6 @@ export class CommonCartridgeResourceFactory {
 		switch (mimeType) {
 			case 'xml':
 				return 'application/xml';
-			case 'html':
-				return 'text/html';
 			case 'zip':
 				return 'application/zip';
 			case 'pdf':

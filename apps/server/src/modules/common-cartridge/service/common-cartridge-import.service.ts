@@ -1,10 +1,14 @@
 import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
-import { CardClientAdapter } from '@infra/cards-client';
+import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Injectable } from '@nestjs/common';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { CommonCartridgeOrganizationProps, DEFAULT_FILE_PARSER_OPTIONS } from '../import/common-cartridge-import.types';
+import {
+	CommonCartridgeFileResourceProps,
+	CommonCartridgeOrganizationProps,
+	DEFAULT_FILE_PARSER_OPTIONS,
+} from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { ICurrentUser } from '@infra/auth-guard';
@@ -116,7 +120,22 @@ export class CommonCartridgeImportService {
 		const columnResponse = await this.boardsClient.createBoardColumn(boardId);
 		await this.columnClient.updateBoardColumnTitle(columnResponse.id, { title: columnProps.title });
 
-		await this.createCards(parser, columnResponse, columnProps, currentUser);
+		const cards = parser
+			.getOrganizations()
+			.filter(
+				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
+			);
+		const cardsWithResource = cards.filter((card) => card.isResource);
+
+		for await (const card of cardsWithResource) {
+			await this.createCardElementWithResource(parser, columnResponse, card, currentUser);
+		}
+
+		const cardsWithoutResource = cards.filter((card) => !card.isResource);
+
+		for await (const card of cardsWithoutResource) {
+			await this.createCard(parser, columnResponse, card, currentUser);
+		}
 	}
 
 	private async createCardElementWithResource(
@@ -128,21 +147,6 @@ export class CommonCartridgeImportService {
 		const card = await this.columnClient.createCard(columnResponse.id, {});
 
 		await this.createCardElement(parser, card.id, cardProps, currentUser);
-	}
-
-	private async createCards(
-		parser: CommonCartridgeFileParser,
-		columnResponse: ColumnResponse,
-		column: CommonCartridgeOrganizationProps,
-		currentUser: ICurrentUser
-	): Promise<void> {
-		const cards = parser
-			.getOrganizations()
-			.filter((organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(column.path));
-
-		for await (const card of cards) {
-			await this.createCard(parser, columnResponse, card, currentUser);
-		}
 	}
 
 	private async createCard(
@@ -172,8 +176,6 @@ export class CommonCartridgeImportService {
 		cardElementProps: CommonCartridgeOrganizationProps,
 		currentUser: ICurrentUser
 	): Promise<void> {
-		const { schoolId } = currentUser;
-
 		if (!cardElementProps.isResource) return;
 
 		const resource = parser.getResource(cardElementProps);
@@ -191,23 +193,31 @@ export class CommonCartridgeImportService {
 		);
 
 		if (!resourceBody) return;
-		// fileStorage adapter upload(storageLocationId: schoolId, storageLocation: 'school', parentId: card Id, parentType: card, file: File)
-		// const fileRecord = this.fileClient.upload(schoolId, 'school', cardId, 'boardnodes', resource.file);
 
 		const contentElement = await this.cardClient.createCardElement(cardId, {
 			type: contentElementType,
 		});
 
-		if ('file' in resource && resource.file) {
-			try {
-				await this.fileClient.upload(schoolId, 'school', contentElement.id, 'boardnodes', resource.file);
-			} catch (error) {
-				throw new Error(`Error uploading file: ${resource.file.name}`);
-			}
+		if (resource.type === 'file') {
+			await this.uploadFile(currentUser, resource, contentElement);
 		}
 
 		await this.cardClient.updateCardElement(contentElement.id, {
 			data: resourceBody,
 		});
+	}
+
+	private async uploadFile(
+		currentUser: ICurrentUser,
+		resource: CommonCartridgeFileResourceProps,
+		cardElement: CardControllerCreateElement201Response
+	): Promise<void> {
+		const { schoolId } = currentUser;
+
+		try {
+			await this.fileClient.upload(schoolId, 'school', cardElement.id, 'boardnodes', resource.file);
+		} catch (error) {
+			throw new Error(`Error uploading file: ${String(error)}`);
+		}
 	}
 }
