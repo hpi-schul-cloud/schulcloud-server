@@ -27,11 +27,7 @@ export class TspFetchService {
 
 			return data;
 		} catch (e) {
-			if (e instanceof AxiosError) {
-				throw new AxiosErrorLoggable(e, 'TSP_FETCH_SCHOOLS_ERROR');
-			} else {
-				throw e;
-			}
+			this.handleFetchError(e, 'TSP_FETCH_SCHOOLS_ERROR');
 		}
 	}
 
@@ -45,11 +41,7 @@ export class TspFetchService {
 
 			return data;
 		} catch (e) {
-			if (e instanceof AxiosError) {
-				throw new AxiosErrorLoggable(e, 'TSP_FETCH_TEACHERS_ERROR');
-			} else {
-				throw e;
-			}
+			this.handleFetchError(e, 'TSP_FETCH_TEACHERS_ERROR');
 		}
 	}
 
@@ -63,11 +55,7 @@ export class TspFetchService {
 
 			return data;
 		} catch (e) {
-			if (e instanceof AxiosError) {
-				throw new AxiosErrorLoggable(e, 'TSP_FETCH_STUDENTS_ERROR');
-			} else {
-				throw e;
-			}
+			this.handleFetchError(e, 'TSP_FETCH_STUDENTS_ERROR');
 		}
 	}
 
@@ -81,33 +69,17 @@ export class TspFetchService {
 
 			return data;
 		} catch (e) {
-			if (e instanceof AxiosError) {
-				throw new AxiosErrorLoggable(e, 'TSP_FETCH_CLASSES_ERROR');
-			} else {
-				throw e;
-			}
+			this.handleFetchError(e, 'TSP_FETCH_CLASSES_ERROR');
 		}
 	}
 
-	/* private async fetchTsp<T>(
-		system: System,
-		fetchFunction: (client: ExportApiInterface) => Promise<AxiosResponse<T>>
-	): Promise<T> {
-		try {
-			const client = this.createClient(system);
-
-			const response = await fetchFunction(client);
-			const { data } = response;
-
-			return data;
-		} catch (e) {
-			if (e instanceof AxiosError) {
-				throw new AxiosErrorLoggable(e, 'TSP_FETCH_ERROR');
-			} else {
-				throw e;
-			}
+	private handleFetchError(e: unknown, type: string): never {
+		if (e instanceof AxiosError) {
+			throw new AxiosErrorLoggable(e, type);
+		} else {
+			throw e;
 		}
-	} */
+	}
 
 	private formatChangeDate(daysToFetch: number): string {
 		let lastChange: Moment;
