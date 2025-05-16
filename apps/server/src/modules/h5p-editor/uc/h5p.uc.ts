@@ -1,5 +1,6 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import {
+	AuthorizationBodyParamsReferenceType,
 	AuthorizationClientAdapter,
 	AuthorizationContextBuilder,
 	AuthorizationContextParams,
@@ -31,7 +32,7 @@ import {
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
-import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
+import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PContentParentType } from '../entity';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
@@ -56,13 +57,16 @@ export class H5PEditorUc {
 		parentType: H5PContentParentType,
 		parentId: EntityId,
 		context: AuthorizationContextParams
-	) {
-		const allowedType = H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
+	): Promise<void> {
+		const allowedType: AuthorizationBodyParamsReferenceType =
+			H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
+
 		await this.authorizationClientAdapter.checkPermissionsByReference(allowedType, parentId, context);
 	}
 
-	private fakeUndefinedAsString = () => {
+	private fakeUndefinedAsString = (): string => {
 		const value = undefined as unknown as string;
+
 		return value;
 	};
 
@@ -168,14 +172,14 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
+	public async getContentParameters(contentId: string, currentUser: ICurrentUser): Promise<H5PContentResponse> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user = this.changeUserType(currentUser);
 
 		try {
-			const result = await this.h5pAjaxEndpoint.getContentParameters(contentId, user);
+			const result: H5PContentResponse = await this.h5pAjaxEndpoint.getContentParameters(contentId, user);
 
 			return result;
 		} catch (err) {
@@ -318,8 +322,8 @@ export class H5PEditorUc {
 	): Promise<{ id: string; metadata: IContentMetadata }> {
 		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
-		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
-		const fakeAsString = this.fakeUndefinedAsString();
+		const user: LumiUserWithContentData = this.createAugmentedLumiUser(currentUser, parentType, parentId);
+		const fakeAsString: string = this.fakeUndefinedAsString();
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
 			fakeAsString, // Lumi typings are wrong because they dont "use strict", this method actually accepts both string and undefined
@@ -343,7 +347,7 @@ export class H5PEditorUc {
 	): Promise<{ id: string; metadata: IContentMetadata }> {
 		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.write([]));
 
-		const user = this.createAugmentedLumiUser(currentUser, parentType, parentId);
+		const user: LumiUserWithContentData = this.createAugmentedLumiUser(currentUser, parentType, parentId);
 
 		const newContentId = await this.h5pEditor.saveOrUpdateContentReturnMetaData(
 			contentId,
@@ -371,8 +375,8 @@ export class H5PEditorUc {
 		currentUser: ICurrentUser,
 		contentParentType: H5PContentParentType,
 		contentParentId: EntityId
-	) {
-		const user = new LumiUserWithContentData(this.changeUserType(currentUser), {
+	): LumiUserWithContentData {
+		const user: LumiUserWithContentData = new LumiUserWithContentData(this.changeUserType(currentUser), {
 			parentType: contentParentType,
 			parentId: contentParentId,
 			schoolId: currentUser.schoolId,
