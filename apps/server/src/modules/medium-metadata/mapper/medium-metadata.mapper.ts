@@ -13,7 +13,7 @@ export class MediumMetadataMapper {
 			description: metadataItem.description,
 			publisher: metadataItem.publisher,
 			logoUrl: metadataItem.cover.href,
-			previewLogoUrl: metadataItem.coverSmall.href,
+			previewLogoUrl: metadataItem.cover.href,
 			modifiedAt: new Date(metadataItem.modified),
 		});
 

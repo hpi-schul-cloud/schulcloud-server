@@ -135,7 +135,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 							...externalTool.getProps(),
 							name: metadataItems[i].title,
 							description: metadataItems[i].description,
-							logoUrl: metadataItems[i].coverSmall.href,
+							logoUrl: metadataItems[i].cover.href,
 							thumbnail: undefined,
 							medium: {
 								...externalTool.getProps().medium,
@@ -221,7 +221,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 								...externalTool.getProps(),
 								name: metadataItems[i].title,
 								description: metadataItems[i].description,
-								logoUrl: metadataItems[i].coverSmall.href,
+								logoUrl: metadataItems[i].cover.href,
 								logo: base64Logo,
 								thumbnail: undefined,
 								medium: {
@@ -281,7 +281,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					const externalTools = mediums.map((medium: ExternalToolMedium) => externalToolFactory.build({ medium }));
 
 					const metadataItems: BiloMediaQueryDataResponse[] = externalTools.map((externalTool: ExternalTool) => {
-						const coverSmall: BiloLinkResponse = {
+						const cover: BiloLinkResponse = {
 							href: externalTool.logoUrl as string,
 							rel: 'src',
 						};
@@ -291,7 +291,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 							description: externalTool.description,
 							publisher: undefined,
 							modified: externalTool.medium?.metadataModifiedAt?.getTime() as number,
-							coverSmall,
+							cover,
 						});
 					});
 
@@ -347,7 +347,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 					const externalTools = mediums.map((medium: ExternalToolMedium) => externalToolFactory.build({ medium }));
 
 					const metadataItems: BiloMediaQueryDataResponse[] = externalTools.map((externalTool: ExternalTool) => {
-						const coverSmall: BiloLinkResponse = {
+						const cover: BiloLinkResponse = {
 							href: externalTool.logoUrl as string,
 							rel: 'src',
 						};
@@ -357,7 +357,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 							description: `other-${externalTool.description as string}`,
 							publisher: undefined,
 							modified: externalTool.medium?.metadataModifiedAt?.getTime() as number,
-							coverSmall,
+							cover,
 						});
 					});
 
@@ -458,11 +458,11 @@ describe(BiloMetadataSyncStrategy.name, () => {
 				const badBiloMetadata: BiloMediaQueryDataResponse[] = [
 					biloMediaQueryDataResponseFactory.build({
 						id: externalTools[1].medium?.mediumId,
-						coverSmall: undefined,
+						cover: undefined,
 					}),
 					biloMediaQueryDataResponseFactory.build({
 						id: externalTools[2].medium?.mediumId,
-						coverSmall: undefined,
+						cover: undefined,
 					}),
 				];
 
@@ -475,7 +475,7 @@ describe(BiloMetadataSyncStrategy.name, () => {
 							...externalTools[0].getProps(),
 							name: metadataItems.title,
 							description: metadataItems.description,
-							logoUrl: metadataItems.coverSmall.href,
+							logoUrl: metadataItems.cover.href,
 							thumbnail: undefined,
 							medium: {
 								...externalTools[0].getProps().medium,

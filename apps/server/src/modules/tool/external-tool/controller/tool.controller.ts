@@ -208,8 +208,15 @@ export class ToolController {
 		const externalToolLogo: ExternalToolLogo = await this.externalToolLogoService.getExternalToolBinaryLogo(
 			params.externalToolId
 		);
+
 		res.setHeader('Content-Type', externalToolLogo.contentType);
 		res.setHeader('Cache-Control', 'must-revalidate');
+		res.setHeader('X-Content-Type-Options', 'nosniff');
+		res.setHeader('Content-Disposition', 'attachment');
+		res.setHeader(
+			'Content-Security-Policy',
+			"default-src 'none'; script-src 'none'; connect-src 'none'; base-uri 'none'; form-action 'none'; object-src 'none'; frame-ancestors 'none'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self' data:"
+		);
 		res.send(externalToolLogo.logo);
 	}
 

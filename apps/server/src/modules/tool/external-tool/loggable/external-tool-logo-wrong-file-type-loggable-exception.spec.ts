@@ -15,7 +15,7 @@ describe('ExternalToolLogoWrongFileTypeLoggableException', () => {
 
 			expect(message).toEqual({
 				type: 'EXTERNAL_TOOL_LOGO_WRONG_FILE_TYPE',
-				message: 'External tool logo has the wrong file type. Only JPEG, PNG and GIF files are supported.',
+				message: 'External tool logo has the wrong file type. Only JPEG, PNG, SVG and GIF files are supported.',
 				stack: loggable.stack,
 			});
 		});

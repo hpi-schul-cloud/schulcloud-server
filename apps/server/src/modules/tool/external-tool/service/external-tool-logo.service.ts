@@ -14,15 +14,9 @@ import {
 	ExternalToolLogoNotFoundLoggableException,
 	ExternalToolLogoSizeExceededLoggableException,
 	ExternalToolLogoWrongFileTypeLoggableException,
+	ExternalToolLogoWrongFormatLoggableException,
 } from '../loggable';
 import { ExternalToolService } from './external-tool.service';
-
-const base64ImageTypeSignatures: Record<string, ImageMimeType> = {
-	'/9j/': ImageMimeType.JPEG,
-	iVBORw0KGgo: ImageMimeType.PNG,
-	R0lGODdh: ImageMimeType.GIF,
-	R0lGODlh: ImageMimeType.GIF,
-};
 
 @Injectable()
 export class ExternalToolLogoService {
@@ -76,18 +70,29 @@ export class ExternalToolLogoService {
 			const response: AxiosResponse<ArrayBuffer> = await lastValueFrom(
 				this.httpService.get(logoUrl, { responseType: 'arraybuffer' })
 			);
-			this.logger.info(new ExternalToolLogoFetchedLoggable(logoUrl));
+			this.logger.debug(new ExternalToolLogoFetchedLoggable(logoUrl));
 
 			const buffer: Buffer = Buffer.from(response.data);
 
 			const logoBase64: string = buffer.toString('base64');
 
-			this.detectAndValidateLogoImageType(logoBase64);
+			let contentType: string | undefined;
+			if (logoUrl.startsWith('data:')) {
+				const [header] = logoUrl.split(';', 1);
 
-			return logoBase64;
+				contentType = header.substring(5);
+			} else {
+				contentType = response.headers['content-type'] as string | undefined;
+			}
+
+			if (!contentType || !Object.values(ImageMimeType).includes(contentType as ImageMimeType)) {
+				throw new ExternalToolLogoWrongFileTypeLoggableException();
+			}
+
+			return `data:${contentType};base64,${logoBase64}`;
 		} catch (error) {
 			if (error instanceof ExternalToolLogoWrongFileTypeLoggableException) {
-				throw new ExternalToolLogoWrongFileTypeLoggableException();
+				throw error;
 			} else if (error instanceof HttpException) {
 				throw new ExternalToolLogoFetchFailedLoggableException(logoUrl, error.getStatus());
 			} else {
@@ -103,25 +108,18 @@ export class ExternalToolLogoService {
 			throw new ExternalToolLogoNotFoundLoggableException(toolId);
 		}
 
+		if (!tool.logo.startsWith('data:')) {
+			throw new ExternalToolLogoWrongFormatLoggableException(toolId);
+		}
+
+		const [header, data] = tool.logo.split(',');
+		const contentType: string = header.split(';')[0].split(':')[1];
+
 		const externalToolLogo: ExternalToolLogo = new ExternalToolLogo({
-			contentType: this.detectAndValidateLogoImageType(tool.logo).valueOf(),
-			logo: Buffer.from(tool.logo, 'base64'),
+			contentType,
+			logo: Buffer.from(data, 'base64'),
 		});
 
 		return externalToolLogo;
-	}
-
-	public detectAndValidateLogoImageType(base64Image: string): ImageMimeType {
-		const detectedSignature: string | undefined = Object.keys(base64ImageTypeSignatures).find((signature: string) =>
-			base64Image.startsWith(signature)
-		);
-
-		if (!detectedSignature) {
-			throw new ExternalToolLogoWrongFileTypeLoggableException();
-		}
-
-		const contentType: ImageMimeType = base64ImageTypeSignatures[detectedSignature];
-
-		return contentType;
 	}
 }
