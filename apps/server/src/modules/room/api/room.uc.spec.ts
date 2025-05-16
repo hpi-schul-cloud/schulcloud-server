@@ -11,6 +11,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
+import { CopyHelperService } from '@modules/copy-helper';
 import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
@@ -54,6 +55,10 @@ describe('RoomUc', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
+				},
+				{
+					provide: CopyHelperService,
+					useValue: createMock<CopyHelperService>(),
 				},
 			],
 		}).compile();
