@@ -18,4 +18,5 @@ export enum DomainName {
 	SUBMISSIONS = 'submissions',
 	NEWS = 'news',
 	CALENDAR = 'calendar',
+	ROOM = 'room',
 }

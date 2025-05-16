@@ -1,5 +1,6 @@
 import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,
 	Controller,
@@ -20,7 +21,6 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
-import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import { Room } from '../domain';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
@@ -39,6 +39,7 @@ import { RoomMemberListResponse } from './dto/response/room-member-list.response
 import { RoomRoleResponse } from './dto/response/room-role.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
+import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
 
@@ -46,7 +47,11 @@ import { RoomUc } from './room.uc';
 @JwtAuthentication()
 @Controller('rooms')
 export class RoomController {
-	constructor(private readonly roomUc: RoomUc, private readonly roomInvitationLinkUc: RoomInvitationLinkUc) {}
+	constructor(
+		private readonly roomUc: RoomUc,
+		private readonly roomCopyUc: RoomCopyUc,
+		private readonly roomInvitationLinkUc: RoomInvitationLinkUc
+	) {}
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of rooms.' })
@@ -300,7 +305,7 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.roomUc.copyRoom(currentUser.userId, urlParams.roomId, currentUser.schoolId);
+		const copyStatus = await this.roomCopyUc.copyRoom(currentUser.userId, urlParams.roomId, currentUser.schoolId);
 
 		const copyResponse = CopyMapper.mapToResponse(copyStatus);
 

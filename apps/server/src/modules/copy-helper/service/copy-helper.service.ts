@@ -3,11 +3,12 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 import { CopyDictionary, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
-const isAtLeastPartialSuccessfull = (status) => status === CopyStatusEnum.PARTIAL || status === CopyStatusEnum.SUCCESS;
+const isAtLeastPartialSuccessfull = (status: CopyStatusEnum): boolean =>
+	status === CopyStatusEnum.PARTIAL || status === CopyStatusEnum.SUCCESS;
 
 @Injectable()
 export class CopyHelperService {
-	deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
+	public deriveStatusFromElements(elements: CopyStatus[]): CopyStatusEnum {
 		for (const element of elements) {
 			if (element.elements?.length) {
 				element.status = this.deriveStatusFromElements(element.elements);
@@ -31,7 +32,7 @@ export class CopyHelperService {
 		return CopyStatusEnum.SUCCESS;
 	}
 
-	deriveCopyName(name: string, existingNames: string[] = []): string {
+	public deriveCopyName(name: string, existingNames: string[] = []): string {
 		if (!existingNames.includes(name)) {
 			return name;
 		}
@@ -48,7 +49,7 @@ export class CopyHelperService {
 		return composedName;
 	}
 
-	buildCopyEntityDict(status: CopyStatus): CopyDictionary {
+	public buildCopyEntityDict(status: CopyStatus): CopyDictionary {
 		const map = new Map<EntityId, AuthorizableObject>();
 		status.elements?.forEach((elementStatus: CopyStatus) => {
 			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));

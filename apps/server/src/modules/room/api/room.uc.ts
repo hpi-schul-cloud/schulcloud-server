@@ -10,7 +10,6 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CopyStatus, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { Room, RoomService } from '../domain';
 import { RoomConfig } from '../room.config';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -116,32 +115,6 @@ export class RoomUc {
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 	}
 
-	public async copyRoom(userId: EntityId, roomId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
-		this.checkFeatureEnabled();
-		this.checkFeatureRoomsDuplicationEnabled();
-
-		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_DUPLICATE]);
-
-		const originalRoom = await this.roomService.getSingleRoom(roomId);
-
-		if (schoolId !== originalRoom.schoolId) {
-			// TODO
-		}
-
-		// TODO implement room copy in Saga module
-		const copyStatus: CopyStatus = {
-			id: roomId,
-			title: originalRoom.name,
-			type: CopyElementType.ROOM,
-			status: CopyStatusEnum.SUCCESS,
-			elements: [],
-			copyEntity: originalRoom,
-			originalEntity: originalRoom,
-		};
-
-		return copyStatus;
-	}
-
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
 		this.checkFeatureEnabled();
 		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
@@ -219,12 +192,6 @@ export class RoomUc {
 	private checkFeatureEnabled(): void {
 		if (!this.configService.get('FEATURE_ROOMS_ENABLED', { infer: true })) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_ENABLED');
-		}
-	}
-
-	private checkFeatureRoomsDuplicationEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOMS_DUPLICATION_ENABLED', { infer: true })) {
-			throw new FeatureDisabledLoggableException('FEATURE_ROOMS_DUPLICATION_ENABLED');
 		}
 	}
 

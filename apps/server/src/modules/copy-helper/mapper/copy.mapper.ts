@@ -10,7 +10,7 @@ import { CopyApiResponse } from '../dto/copy.response';
 import { CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 export class CopyMapper {
-	static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
+	public static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {
 		const dto = new CopyApiResponse({
 			title: copyStatus.title,
 			type: copyStatus.type,
@@ -35,7 +35,7 @@ export class CopyMapper {
 		return dto;
 	}
 
-	static mapLessonCopyToDomain(params: LessonCopyApiParams, userId: EntityId): LessonCopyParentParams {
+	public static mapLessonCopyToDomain(params: LessonCopyApiParams, userId: EntityId): LessonCopyParentParams {
 		const dto = {
 			courseId: params.courseId,
 			userId,
@@ -44,7 +44,7 @@ export class CopyMapper {
 		return dto;
 	}
 
-	static mapTaskCopyToDomain(params: TaskCopyApiParams, userId: EntityId): TaskCopyParentParams {
+	public static mapTaskCopyToDomain(params: TaskCopyApiParams, userId: EntityId): TaskCopyParentParams {
 		const dto = {
 			courseId: params.courseId,
 			lessonId: params.lessonId,

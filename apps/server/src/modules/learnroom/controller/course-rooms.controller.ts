@@ -32,7 +32,7 @@ export class CourseRoomsController {
 	) {}
 
 	@Get(':roomId/board')
-	async getRoomBoard(
+	public async getRoomBoard(
 		@Param() urlParams: CourseRoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SingleColumnBoardResponse> {
@@ -42,7 +42,7 @@ export class CourseRoomsController {
 	}
 
 	@Patch(':roomId/elements/:elementId/visibility')
-	async patchElementVisibility(
+	public async patchElementVisibility(
 		@Param() urlParams: CourseRoomElementUrlParams,
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -56,7 +56,7 @@ export class CourseRoomsController {
 	}
 
 	@Patch(':roomId/board/order')
-	async patchOrderingOfElements(
+	public async patchOrderingOfElements(
 		@Param() urlParams: CourseRoomUrlParams,
 		@Body() params: PatchOrderParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -66,7 +66,7 @@ export class CourseRoomsController {
 
 	@Post(':roomId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyCourse(
+	public async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseRoomUrlParams
 	): Promise<CopyApiResponse> {
@@ -77,7 +77,7 @@ export class CourseRoomsController {
 
 	@Post('lessons/:lessonId/copy')
 	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
-	async copyLesson(
+	public async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,
 		@Body() params: LessonCopyApiParams
