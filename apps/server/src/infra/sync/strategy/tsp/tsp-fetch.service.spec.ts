@@ -1,5 +1,4 @@
-import { DomainErrorHandler } from '@core/error';
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -27,7 +26,6 @@ describe(TspFetchService.name, () => {
 	let module: TestingModule;
 	let sut: TspFetchService;
 	let tspClientFactory: DeepMocked<TspClientFactory>;
-	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,16 +35,11 @@ describe(TspFetchService.name, () => {
 					provide: TspClientFactory,
 					useValue: createMock<TspClientFactory>(),
 				},
-				{
-					provide: DomainErrorHandler,
-					useValue: createMock<DomainErrorHandler>(),
-				},
 			],
 		}).compile();
 
 		sut = module.get(TspFetchService);
 		tspClientFactory = module.get(TspClientFactory);
-		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
@@ -310,10 +303,6 @@ describe(TspFetchService.name, () => {
 				const { system } = setup();
 
 				await expect(() => sut.fetchTspSchools(system, 1)).rejects.toThrow(Error);
-
-				/* const result = await sut.fetchTspSchools(system, 1);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error())); */
 			});
 		});
 	});
@@ -345,13 +334,6 @@ describe(TspFetchService.name, () => {
 				const { system } = setup();
 
 				await expect(sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
-
-				/* const result = await sut.fetchTspSchools(system, 1);
-				expect(result).toStrictEqual([]);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
-					new ErrorLoggable(new OauthConfigMissingLoggableException(system.id))
-				); */
 			});
 		});
 	});
