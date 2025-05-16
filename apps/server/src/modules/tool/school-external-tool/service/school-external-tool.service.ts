@@ -8,8 +8,8 @@ import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { ToolConfig } from '../../tool-config';
 import { SchoolExternalTool, SchoolExternalToolConfigurationStatus, SchoolExternalToolMedium } from '../domain';
-import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolRepo } from '../repo';
+import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolService {
@@ -112,6 +112,7 @@ export class SchoolExternalToolService {
 		}
 
 		const medium: SchoolExternalToolMedium = new SchoolExternalToolMedium({
+			status: externalTool.medium.status,
 			mediumId: externalTool.medium.mediumId,
 			mediaSourceId: externalTool.medium.mediaSourceId,
 			mediaSourceName,

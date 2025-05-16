@@ -1,5 +1,9 @@
+import { ExternalToolMediumStatus } from '../enum';
+
 export interface ExternalToolMediumProps {
-	mediumId: string;
+	status: ExternalToolMediumStatus;
+
+	mediumId?: string;
 
 	publisher?: string;
 
@@ -9,15 +13,18 @@ export interface ExternalToolMediumProps {
 }
 
 export class ExternalToolMedium {
-	mediumId: string;
+	public status: ExternalToolMediumStatus;
 
-	publisher?: string;
+	public mediumId?: string;
 
-	mediaSourceId?: string;
+	public publisher?: string;
 
-	metadataModifiedAt?: Date;
+	public mediaSourceId?: string;
+
+	public metadataModifiedAt?: Date;
 
 	constructor(props: ExternalToolMediumProps) {
+		this.status = props.status;
 		this.mediumId = props.mediumId;
 		this.publisher = props.publisher;
 		this.mediaSourceId = props.mediaSourceId;
