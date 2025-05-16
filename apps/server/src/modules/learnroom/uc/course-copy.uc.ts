@@ -14,7 +14,7 @@ export class CourseCopyUC {
 		private readonly courseCopyService: CourseCopyService
 	) {}
 
-	async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
+	public async copyCourse(userId: EntityId, courseId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureEnabled();
 
 		const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
@@ -25,7 +25,7 @@ export class CourseCopyUC {
 		return result;
 	}
 
-	private checkFeatureEnabled() {
+	private checkFeatureEnabled(): void {
 		// @hpi-schul-cloud/commons is deprecated way to get envirements
 		const enabled = Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean;
 		if (!enabled) {

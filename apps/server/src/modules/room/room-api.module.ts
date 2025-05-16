@@ -1,13 +1,16 @@
-import { AuthorizationModule } from '@modules/authorization';
-import { Module } from '@nestjs/common';
 import { LoggerModule } from '@core/logger';
+import { AuthorizationModule } from '@modules/authorization';
+import { CopyHelperModule } from '@modules/copy-helper';
+import { SagaModule } from '@modules/saga';
+import { SchoolModule } from '@modules/school';
+import { Module } from '@nestjs/common';
 import { BoardModule } from '../board';
 import { RoomMembershipModule } from '../room-membership/room-membership.module';
 import { UserModule } from '../user';
 import { RoomController, RoomInvitationLinkController, RoomInvitationLinkUc, RoomUc } from './api';
+import { RoomCopyUc } from './api/room-copy.uc';
 import { RoomModule } from './room.module';
-import { SchoolModule } from '@modules/school';
-import { CopyHelperModule } from '@modules/copy-helper';
+import { CopyRoomStep } from './saga';
 
 @Module({
 	imports: [
@@ -19,8 +22,9 @@ import { CopyHelperModule } from '@modules/copy-helper';
 		UserModule,
 		SchoolModule,
 		CopyHelperModule,
+		SagaModule,
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
-	providers: [RoomUc, RoomInvitationLinkUc],
+	providers: [RoomUc, RoomInvitationLinkUc, RoomCopyUc, CopyRoomStep],
 })
 export class RoomApiModule {}
