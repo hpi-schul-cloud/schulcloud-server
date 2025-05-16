@@ -32,7 +32,7 @@ import {
 import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
-import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from '../controller/dto';
+import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5PContentParentType } from '../entity';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
@@ -172,14 +172,14 @@ export class H5PEditorUc {
 		}
 	}
 
-	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
+	public async getContentParameters(contentId: string, currentUser: ICurrentUser): Promise<H5PContentResponse> {
 		const { parentType, parentId } = await this.h5pContentRepo.findById(contentId);
 		await this.checkContentPermission(parentType, parentId, AuthorizationContextBuilder.read([]));
 
 		const user = this.changeUserType(currentUser);
 
 		try {
-			const result = await this.h5pAjaxEndpoint.getContentParameters(contentId, user);
+			const result: H5PContentResponse = await this.h5pAjaxEndpoint.getContentParameters(contentId, user);
 
 			return result;
 		} catch (err) {
