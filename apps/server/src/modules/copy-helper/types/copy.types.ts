@@ -12,6 +12,7 @@ export type CopyStatus = {
 };
 
 export enum CopyElementType {
+	ROOM = 'ROOM',
 	BOARD = 'BOARD',
 	CARD = 'CARD',
 	COLLABORATIVE_TEXT_EDITOR_ELEMENT = 'COLLABORATIVE_TEXT_EDITOR_ELEMENT',

@@ -37,6 +37,7 @@ import {
 	GetH5PContentParams,
 	GetH5PEditorParams,
 	GetH5PEditorParamsCreate,
+	H5PContentResponse,
 	LibraryFileUrlParams,
 	PostH5PContentCreateParams,
 	SaveH5PEditorParams,
@@ -81,8 +82,11 @@ export class H5PEditorController {
 	}
 
 	@Get('params/:id')
-	public async getContentParameters(@Param('id') id: string, @CurrentUser() currentUser: ICurrentUser) {
-		const content = await this.h5pEditorUc.getContentParameters(id, currentUser);
+	public async getContentParameters(
+		@Param('id') id: string,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<H5PContentResponse> {
+		const content: H5PContentResponse = await this.h5pEditorUc.getContentParameters(id, currentUser);
 
 		return content;
 	}

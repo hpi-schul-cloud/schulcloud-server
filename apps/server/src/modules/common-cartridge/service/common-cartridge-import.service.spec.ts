@@ -6,7 +6,7 @@ import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { CommonCartridgeResourceTypeV1P1 } from '../import/common-cartridge-import.enums';
+import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
@@ -19,7 +19,7 @@ describe(CommonCartridgeImportService.name, () => {
 	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let columnClientAdapterMock: DeepMocked<ColumnClientAdapter>;
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
-	let commonCartridgeFileParser: jest.Mocked<CommonCartridgeFileParser>;
+	let commonCartridgeFileParser: DeepMocked<CommonCartridgeFileParser>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -69,115 +69,47 @@ describe(CommonCartridgeImportService.name, () => {
 		expect(sut).toBeDefined();
 	});
 
+	const setupBase = () => {
+		const boardId = faker.string.uuid();
+		const columnId = faker.string.uuid();
+		const columnId2 = faker.string.uuid();
+		const cardId = faker.string.uuid();
+		const elementId = faker.string.uuid();
+		const file = Buffer.from('');
+		commonCartridgeFileParser.getTitle.mockReturnValue('test course');
+
+		const board = organizationFactory.withIdentifier(boardId).withTitle('Mock Board').build();
+		const column = organizationFactory.withIdentifier(columnId).withParent(board).build();
+		const card = organizationFactory
+			.withIdentifier(cardId)
+			.withParent(column)
+			.withWebContent('https://www.webcontent.html')
+			.build();
+		const element = organizationFactory.withIdentifier(elementId).withParent(card).build();
+		const column2 = organizationFactory.withIdentifier(columnId2).withParent(board).withResource().build();
+		const card2 = organizationFactory
+			.withIdentifier(cardId)
+			.withParent(column2)
+			.withWebLink('https://www.weblink.com')
+			.build();
+
+		const element2 = organizationFactory.withIdentifier(elementId).withParent(card2).build();
+		const card3 = organizationFactory.withIdentifier(cardId).withParent(column).build();
+		const element3 = organizationFactory.withIdentifier(elementId).withParent(card3).build();
+
+		const orgs = [board, column, card, element, column2, card2, element2, card3, element3];
+		commonCartridgeFileParser.getOrganizations.mockReturnValue(orgs);
+
+		coursesClientAdapterMock.createCourse.mockResolvedValueOnce({ courseId: faker.string.uuid() });
+
+		boardsClientAdapterMock.createBoard.mockResolvedValueOnce({ id: boardId });
+
+		return { file };
+	};
+
 	describe('importFile', () => {
 		describe('when importing a file', () => {
-			const setup = () => {
-				const boardId = faker.string.uuid();
-				const columnId = faker.string.uuid();
-				const columnId2 = faker.string.uuid();
-				const cardId = faker.string.uuid();
-				const elementId = faker.string.uuid();
-				const file = Buffer.from('');
-				commonCartridgeFileParser.getTitle.mockReturnValue('test course');
-				commonCartridgeFileParser.getOrganizations.mockReturnValue([
-					{
-						pathDepth: 0,
-						title: 'Mock Board',
-						identifier: boardId,
-						path: boardId,
-						isInlined: false,
-						isResource: false,
-						resourcePath: '',
-						resourceType: '',
-					},
-					{
-						pathDepth: 1,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId}`,
-						identifier: columnId,
-						isInlined: false,
-						isResource: false,
-						resourcePath: faker.system.filePath(),
-						resourceType: faker.lorem.word(),
-					},
-					{
-						pathDepth: 2,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId}/${cardId}`,
-						identifier: cardId,
-						isInlined: false,
-						isResource: true,
-						resourcePath: 'https://www.webcontent.html',
-						resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					},
-					{
-						pathDepth: 3,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId}/${cardId}/${elementId}`,
-						identifier: elementId,
-						isInlined: false,
-						isResource: false,
-						resourcePath: 'https://www.webcontent.html',
-						resourceType: CommonCartridgeResourceTypeV1P1.WEB_CONTENT,
-					},
-					{
-						pathDepth: 1,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId2}`,
-						identifier: columnId2,
-						isInlined: false,
-						isResource: true,
-						resourcePath: faker.system.filePath(),
-						resourceType: faker.lorem.word(),
-					},
-					{
-						pathDepth: 2,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId2}/${cardId}`,
-						identifier: cardId,
-						isInlined: false,
-						isResource: true,
-						resourcePath: 'https://www.weblink.com',
-						resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-					},
-					{
-						pathDepth: 3,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId2}/${cardId}/${elementId}`,
-						identifier: elementId,
-						isInlined: false,
-						isResource: false,
-						resourcePath: 'https://www.weblink.com',
-						resourceType: CommonCartridgeResourceTypeV1P1.WEB_LINK,
-					},
-					{
-						pathDepth: 2,
-						title: 'card without resource',
-						path: `${boardId}/${columnId}/${cardId}`,
-						identifier: cardId,
-						isInlined: false,
-						isResource: false,
-						resourcePath: faker.system.filePath(),
-						resourceType: CommonCartridgeResourceTypeV1P1.UNKNOWN,
-					},
-					{
-						pathDepth: 3,
-						title: faker.lorem.words(),
-						path: `${boardId}/${columnId}/${cardId}/${elementId}`,
-						identifier: elementId,
-						isInlined: false,
-						isResource: false,
-						resourcePath: faker.system.filePath(),
-						resourceType: CommonCartridgeResourceTypeV1P1.UNKNOWN,
-					},
-				]);
-
-				coursesClientAdapterMock.createCourse.mockResolvedValue({ courseId: faker.string.uuid() });
-
-				boardsClientAdapterMock.createBoard.mockResolvedValue({ id: boardId });
-
-				return { file };
-			};
+			const setup = () => setupBase();
 
 			it('should create a course', async () => {
 				const { file } = setup();
@@ -185,15 +117,6 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importFile(file);
 
 				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'test course' });
-			});
-
-			it('should give Untitled Course as title if no title is found', async () => {
-				const { file } = setup();
-				commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
-
-				await sut.importFile(file);
-
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'Untitled Course' });
 			});
 
 			it('should create a board', async () => {
@@ -234,6 +157,24 @@ describe(CommonCartridgeImportService.name, () => {
 
 				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
 				expect(cardClientAdapterMock.updateCardTitle).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('when no title is given', () => {
+			const setup = () => {
+				const { file } = setupBase();
+
+				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);
+
+				return { file };
+			};
+
+			it(`should give 'Untitled Course' as title`, async () => {
+				const { file } = setup();
+
+				await sut.importFile(file);
+
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ title: 'Untitled Course' });
 			});
 		});
 	});
