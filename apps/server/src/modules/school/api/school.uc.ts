@@ -178,7 +178,7 @@ export class SchoolUc {
 	}
 
 	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
-		const attendeeIds = await this.getStudentIdsOfTeacherClasses(schoolId, userId);
+		const attendeeIds = await this.getStudentIdsOfUsersClasses(schoolId, userId);
 		const users = await this.userService.findByIds(attendeeIds);
 		const result = { data: users, total: users.length };
 		return result;
@@ -204,11 +204,11 @@ export class SchoolUc {
 		return isUserOfSchool;
 	}
 
-	private async getStudentIdsOfTeacherClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
-		const classes = await this.classService.findClassesForSchool(schoolId);
+	private async getStudentIdsOfUsersClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+		const classes = await this.classService.findAllByUserId(userId);
 
-		const allowedClasses = classes.filter((clazz) => clazz.teacherIds.some((teacherId) => teacherId === userId));
-		const attendeeIds = allowedClasses.flatMap((clazz) => clazz.userIds);
+		const classesOfSchool = classes.filter((clazz) => clazz.schoolId === schoolId);
+		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.userIds);
 
 		return attendeeIds;
 	}
