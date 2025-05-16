@@ -1,4 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { ClassService } from '@modules/class';
 import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -23,6 +24,7 @@ import { YearsResponseMapper } from './mapper/years.response.mapper';
 export class SchoolUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
+		private readonly classService: ClassService,
 		private readonly schoolService: SchoolService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly userService: UserService
@@ -141,7 +143,7 @@ export class SchoolUc {
 
 		this.checkHasPermissionToAccessTeachers(user);
 
-		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.TEACHER_LIST]);
+		const isUserOfSchool = this.isSchoolInternalUserWithPermission(user, school, [Permission.TEACHER_LIST]);
 
 		let result: Page<UserDo>;
 		if (isUserOfSchool) {
@@ -155,35 +157,59 @@ export class SchoolUc {
 	}
 
 	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
-		const [school, user] = await Promise.all([
-			this.schoolService.getSchoolById(schoolId),
-			this.authorizationService.getUserWithPermissions(userId),
-		]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		this.checkHasPermissionToAccessStudents(user);
-
-		const isUserOfSchool = this.isSchoolInternalUser(user, school, [Permission.STUDENT_LIST]);
-
-		let result: Page<UserDo> = { data: [], total: 0 };
-		if (isUserOfSchool) {
-			result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		let result: Page<UserDo>;
+		if (this.isUserOfSchool(user, schoolId) && this.hasPermissionToListStudents(user)) {
+			result = await this.getAllStudentsOfSchool(schoolId);
+		} else if (this.isUserOfSchool(user, schoolId)) {
+			result = await this.getAllStudentsFromUsersClasses(userId, schoolId);
+		} else {
+			result = { data: [], total: 0 };
 		}
 
 		const responseDto = SchoolUserResponseMapper.mapToListResponse(result);
 		return responseDto;
 	}
 
-	private checkHasPermissionToAccessTeachers(user: User) {
+	private async getAllStudentsOfSchool(schoolId: EntityId): Promise<Page<UserDo>> {
+		const result = await this.userService.findBySchoolRole(schoolId, RoleName.STUDENT);
+		return result;
+	}
+
+	private async getAllStudentsFromUsersClasses(userId: EntityId, schoolId: EntityId): Promise<Page<UserDo>> {
+		const attendeeIds = await this.getStudentIdsOfUsersClasses(schoolId, userId);
+		const users = await this.userService.findByIds(attendeeIds);
+		const result = { data: users, total: users.length };
+		return result;
+	}
+
+	private checkHasPermissionToAccessTeachers(user: User): void {
 		this.authorizationService.checkAllPermissions(user, [Permission.TEACHER_LIST]);
 	}
 
-	private checkHasPermissionToAccessStudents(user: User) {
-		this.authorizationService.checkAllPermissions(user, [Permission.STUDENT_LIST]);
+	private isUserOfSchool(user: User, schoolId: EntityId): boolean {
+		const isUserOfSchool = user.school.id === schoolId;
+		return isUserOfSchool;
 	}
 
-	private isSchoolInternalUser(user: User, school: School, permissions: Permission[]): boolean {
+	private hasPermissionToListStudents(user: User): boolean {
+		const hasPermission = this.authorizationService.hasAllPermissions(user, [Permission.STUDENT_LIST]);
+		return hasPermission;
+	}
+
+	private isSchoolInternalUserWithPermission(user: User, school: School, permissions: Permission[]): boolean {
 		const authContext = AuthorizationContextBuilder.read(permissions);
 		const isUserOfSchool = this.authorizationService.hasPermission(user, school, authContext);
 		return isUserOfSchool;
+	}
+
+	private async getStudentIdsOfUsersClasses(schoolId: EntityId, userId: EntityId): Promise<EntityId[]> {
+		const classes = await this.classService.findAllByUserId(userId);
+
+		const classesOfSchool = classes.filter((clazz) => clazz.schoolId === schoolId);
+		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.userIds);
+
+		return attendeeIds;
 	}
 }

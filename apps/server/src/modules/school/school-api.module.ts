@@ -3,9 +3,10 @@ import { Module } from '@nestjs/common';
 import { SchoolController, SchoolUc } from './api';
 import { SchoolModule } from './school.module';
 import { UserModule } from '../user';
+import { ClassModule } from '@modules/class';
 
 @Module({
-	imports: [SchoolModule, AuthorizationModule, UserModule],
+	imports: [SchoolModule, AuthorizationModule, ClassModule, UserModule],
 	controllers: [SchoolController],
 	providers: [SchoolUc],
 })
