@@ -158,11 +158,13 @@ export class SchoolUc {
 
 	public async getSchoolStudents(schoolId: EntityId, userId: EntityId): Promise<SchoolUserListResponse> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const isUserOfSchool = this.isUserOfSchool(user, schoolId);
+		const isAllowedToListStudents = this.hasPermissionToListStudents(user);
 
 		let result: Page<UserDo>;
-		if (this.isUserOfSchool(user, schoolId) && this.hasPermissionToListStudents(user)) {
+		if (isUserOfSchool && isAllowedToListStudents) {
 			result = await this.getAllStudentsOfSchool(schoolId);
-		} else if (this.isUserOfSchool(user, schoolId)) {
+		} else if (isUserOfSchool) {
 			result = await this.getAllStudentsFromUsersClasses(userId, schoolId);
 		} else {
 			result = { data: [], total: 0 };
