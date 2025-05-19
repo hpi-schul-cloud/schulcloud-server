@@ -11,6 +11,7 @@ import { RoomController, RoomInvitationLinkController, RoomInvitationLinkUc, Roo
 import { RoomCopyUc } from './api/room-copy.uc';
 import { RoomModule } from './room.module';
 import { CopyRoomStep } from './saga';
+import { RoomHelperService } from './service';
 
 @Module({
 	imports: [
@@ -25,6 +26,6 @@ import { CopyRoomStep } from './saga';
 		SagaModule,
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
-	providers: [RoomUc, RoomInvitationLinkUc, RoomCopyUc, CopyRoomStep],
+	providers: [RoomUc, RoomInvitationLinkUc, RoomCopyUc, CopyRoomStep, RoomHelperService],
 })
 export class RoomApiModule {}
