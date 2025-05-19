@@ -35,7 +35,9 @@ export class Migration20250318124252 extends Migration {
 			}
 		);
 
-		console.info('Added permissions INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW and removed SCHOOL_EDIT_ALL.');
+		console.info(
+			'Added permissions INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW and removed SCHOOL_EDIT_ALL.'
+		);
 	}
 
 	public async down(): Promise<void> {
