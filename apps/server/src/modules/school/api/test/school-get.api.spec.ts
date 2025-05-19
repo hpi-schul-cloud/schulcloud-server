@@ -42,7 +42,7 @@ describe('School Controller (API)', () => {
 			it('should return 401', async () => {
 				const someId = new ObjectId().toHexString();
 
-				const response = await testApiClient.get(`id/${someId}}`);
+				const response = await testApiClient.get(`id/${someId}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});

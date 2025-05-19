@@ -9,6 +9,13 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import {
+	SchoolAlreadyInMaintenanceLoggableException,
+	SchoolAlreadyInNextYearLoggableException,
+	SchoolInUserMigrationLoggableException,
+	SchoolNotInMaintenanceLoggableException,
+} from '../domain/loggable';
+import {
+	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
 	SchoolForLdapLoginResponse,
@@ -17,8 +24,13 @@ import {
 	SchoolUpdateBodyParams,
 	SchoolUserListResponse,
 } from './dto';
-import { SchoolResponseMapper, SchoolUserResponseMapper, SystemResponseMapper } from './mapper';
-import { YearsResponseMapper } from './mapper/years.response.mapper';
+import {
+	MaintenanceResponseMapper,
+	SchoolResponseMapper,
+	SchoolUserResponseMapper,
+	SystemResponseMapper,
+	YearsResponseMapper,
+} from './mapper';
 
 @Injectable()
 export class SchoolUc {
@@ -213,5 +225,111 @@ export class SchoolUc {
 		const attendeeIds = classesOfSchool.flatMap((clazz) => clazz.userIds);
 
 		return attendeeIds;
+	}
+
+	public async getMaintenanceStatus(schoolId: EntityId, userId: EntityId): Promise<MaintenanceResponse> {
+		const [school, user, schoolYears, schoolUsesLdap] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+			this.schoolService.hasLdapSystem(schoolId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.read([]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		const maintenanceStatus: MaintenanceResponse = this.mapToMaintenanceResponseDto(
+			school,
+			schoolYears,
+			schoolUsesLdap
+		);
+
+		return maintenanceStatus;
+	}
+
+	public async setMaintenanceStatus(
+		schoolId: EntityId,
+		userId: EntityId,
+		maintenance: boolean
+	): Promise<MaintenanceResponse> {
+		const [school, user, schoolYears, schoolUsesLdap] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+			this.schoolService.hasLdapSystem(schoolId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		if (school.inUserMigration) {
+			throw new SchoolInUserMigrationLoggableException(school);
+		}
+
+		if (this.isSchoolAlreadyInNextYear(school)) {
+			throw new SchoolAlreadyInNextYearLoggableException(school);
+		}
+
+		if (maintenance) {
+			if (school.isInMaintenance()) {
+				throw new SchoolAlreadyInMaintenanceLoggableException(school);
+			}
+
+			if (schoolUsesLdap) {
+				school.inMaintenanceSince = new Date();
+			} else {
+				this.bumpYear(school, schoolYears);
+			}
+		} else {
+			if (!school.isInMaintenance()) {
+				throw new SchoolNotInMaintenanceLoggableException(school);
+			}
+
+			this.bumpYear(school, schoolYears);
+		}
+
+		const savedSchool: School = await this.schoolService.save(school);
+
+		const maintenanceStatus: MaintenanceResponse = this.mapToMaintenanceResponseDto(
+			savedSchool,
+			schoolYears,
+			schoolUsesLdap
+		);
+
+		return maintenanceStatus;
+	}
+
+	private isSchoolAlreadyInNextYear(school: School): boolean {
+		return !!school.currentYear && new Date().getFullYear() <= school.currentYear.startDate.getFullYear();
+	}
+
+	private bumpYear(school: School, schoolYears: SchoolYear[]): void {
+		const { nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+
+		school.currentYear = nextYear;
+		school.inMaintenanceSince = undefined;
+	}
+
+	private mapToMaintenanceResponseDto(
+		school: School,
+		schoolYears: SchoolYear[],
+		schoolUsesLdap: boolean
+	): MaintenanceResponse {
+		const { activeYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+
+		const response: MaintenanceResponse = MaintenanceResponseMapper.mapToResponse(
+			school,
+			schoolUsesLdap,
+			activeYear,
+			nextYear
+		);
+
+		if (school.inUserMigration) {
+			response.schoolUsesLdap = false;
+			response.maintenance.active = false;
+			response.maintenance.startDate = undefined;
+		}
+
+		return response;
 	}
 }

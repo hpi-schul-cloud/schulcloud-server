@@ -1,7 +1,7 @@
 export class ExternalToolLogo {
-	logo: Buffer;
+	public logo: Buffer;
 
-	contentType: string;
+	public contentType: string;
 
 	constructor(externalToolLogo: ExternalToolLogo) {
 		this.logo = externalToolLogo.logo;
