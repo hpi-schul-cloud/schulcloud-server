@@ -16,7 +16,7 @@ import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-r
 import { CantPassOwnershipToStudentLoggableException } from './loggables/cant-pass-ownership-to-student.error.loggable';
 import { CantPassOwnershipToUserNotInRoomLoggableException } from './loggables/cant-pass-ownership-to-user-not-in-room.error.loggable';
 import { UserToAddToRoomNotFoundLoggableException } from './loggables/user-not-found.error.loggable';
-import { RoomHelperService } from '../service';
+import { RoomPermissionService } from './service';
 
 type BaseContext = { roomAuthorizable: RoomMembershipAuthorizable; currentUser: User };
 type OwnershipContext = BaseContext & { targetUser: UserDo };
@@ -29,7 +29,7 @@ export class RoomUc {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly roomHelperService: RoomHelperService
+		private readonly roomHelperService: RoomPermissionService
 	) {}
 
 	public async getRooms(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<Room>> {

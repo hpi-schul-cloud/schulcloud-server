@@ -14,7 +14,7 @@ import { Room, RoomService } from '../domain';
 import { RoomColor } from '../domain/type';
 import { roomFactory } from '../testing';
 import { RoomUc } from './room.uc';
-import { RoomHelperService } from '../service';
+import { RoomPermissionService } from './service';
 
 describe('RoomUc', () => {
 	let module: TestingModule;
@@ -52,8 +52,8 @@ describe('RoomUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: RoomHelperService,
-					useValue: createMock<RoomHelperService>(),
+					provide: RoomPermissionService,
+					useValue: createMock<RoomPermissionService>(),
 				},
 			],
 		}).compile();

@@ -4,11 +4,11 @@ import { SagaService } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { RoomHelperService } from '../service/room.helper';
+import { RoomPermissionService } from './service/room-permission.service';
 
 @Injectable()
 export class RoomCopyUc {
-	constructor(private readonly roomHelperService: RoomHelperService, private readonly sagaService: SagaService) {}
+	constructor(private readonly roomHelperService: RoomPermissionService, private readonly sagaService: SagaService) {}
 
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
 		this.roomHelperService.checkFeatureRoomsEnabled();

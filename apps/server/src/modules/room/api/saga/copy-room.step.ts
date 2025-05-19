@@ -1,11 +1,11 @@
 import { Logger } from '@core/logger';
-import { Action, AuthorizationService } from '@modules/authorization';
-import { CopyHelperService } from '@modules/copy-helper';
-import { RoomMembershipService } from '@modules/room-membership';
-import { ModuleName, SagaService, SagaStep } from '@modules/saga';
+import { Action, AuthorizationService } from '../../../authorization';
+import { CopyHelperService } from '../../../copy-helper';
+import { RoomMembershipService } from '../../../room-membership';
+import { ModuleName, SagaService, SagaStep } from '../../../saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Room, RoomService } from '../domain';
+import { Room, RoomService } from '../../domain';
 
 @Injectable()
 export class CopyRoomStep extends SagaStep<'copyRoom'> {

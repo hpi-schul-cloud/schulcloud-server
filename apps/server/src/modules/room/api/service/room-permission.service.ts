@@ -1,14 +1,14 @@
 import { EntityId } from '@shared/domain/types';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '../../../authorization';
 import { Permission } from '@shared/domain/interface';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomMembershipAuthorizable, RoomMembershipService } from '../../../room-membership';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { RoomConfig } from '../room.config';
+import { RoomConfig } from '../../room.config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 
 @Injectable()
-export class RoomHelperService {
+export class RoomPermissionService {
 	constructor(
 		private readonly configService: ConfigService<RoomConfig, true>,
 		private readonly roomMembershipService: RoomMembershipService,
