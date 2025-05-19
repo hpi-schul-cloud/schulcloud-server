@@ -11,6 +11,8 @@ import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { InstanceRule } from './instance.rule';
 
+const TEST_PERMISSION = 'TEST_PERMISSION' as Permission;
+
 describe(InstanceRule.name, () => {
 	let module: TestingModule;
 	let rule: InstanceRule;
@@ -163,8 +165,8 @@ describe(InstanceRule.name, () => {
 			describe('when additional required permission is passed and user with CAN_EXECUTE_INSTANCE_OPERATIONS has it.', () => {
 				const setup = () =>
 					createParamsFromUserAndContextPermissions(
-						[Permission.INSTANCE_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS, Permission.TEST_ONLY],
-						[Permission.TEST_ONLY]
+						[Permission.INSTANCE_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS, TEST_PERMISSION],
+						[TEST_PERMISSION]
 					);
 
 				it('should be return true', () => {
@@ -180,7 +182,7 @@ describe(InstanceRule.name, () => {
 				const setup = () =>
 					createParamsFromUserAndContextPermissions(
 						[Permission.INSTANCE_VIEW, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS],
-						[Permission.TEST_ONLY]
+						[TEST_PERMISSION]
 					);
 
 				it('should be return false', () => {
@@ -194,10 +196,7 @@ describe(InstanceRule.name, () => {
 
 			describe('when additional required permission is passed and user has it.', () => {
 				const setup = () =>
-					createParamsFromUserAndContextPermissions(
-						[Permission.INSTANCE_VIEW, Permission.TEST_ONLY],
-						[Permission.TEST_ONLY]
-					);
+					createParamsFromUserAndContextPermissions([Permission.INSTANCE_VIEW, TEST_PERMISSION], [TEST_PERMISSION]);
 
 				it('should be return false, because it is not implemented', () => {
 					const { user, instance, context } = setup();
@@ -209,8 +208,7 @@ describe(InstanceRule.name, () => {
 			});
 
 			describe('when additional required permission is passed but user do not have it.', () => {
-				const setup = () =>
-					createParamsFromUserAndContextPermissions([Permission.INSTANCE_VIEW], [Permission.TEST_ONLY]);
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.INSTANCE_VIEW], [TEST_PERMISSION]);
 
 				it('should be return false', () => {
 					const { user, instance, context } = setup();
@@ -305,8 +303,8 @@ describe(InstanceRule.name, () => {
 			describe('when additional required permission is passed and user with CAN_EXECUTE_INSTANCE_OPERATIONS has it.', () => {
 				const setup = () =>
 					createParamsFromUserAndContextPermissions(
-						[Permission.INSTANCE_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS, Permission.TEST_ONLY],
-						[Permission.TEST_ONLY]
+						[Permission.INSTANCE_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS, TEST_PERMISSION],
+						[TEST_PERMISSION]
 					);
 
 				it('should be return true', () => {
@@ -322,7 +320,7 @@ describe(InstanceRule.name, () => {
 				const setup = () =>
 					createParamsFromUserAndContextPermissions(
 						[Permission.INSTANCE_EDIT, Permission.CAN_EXECUTE_INSTANCE_OPERATIONS],
-						[Permission.TEST_ONLY]
+						[TEST_PERMISSION]
 					);
 
 				it('should be return false', () => {
@@ -336,10 +334,7 @@ describe(InstanceRule.name, () => {
 
 			describe('when additional required permission is passed and user has it.', () => {
 				const setup = () =>
-					createParamsFromUserAndContextPermissions(
-						[Permission.INSTANCE_EDIT, Permission.TEST_ONLY],
-						[Permission.TEST_ONLY]
-					);
+					createParamsFromUserAndContextPermissions([Permission.INSTANCE_EDIT, TEST_PERMISSION], [TEST_PERMISSION]);
 
 				it('should be return false, because it is not implemented', () => {
 					const { user, instance, context } = setup();
@@ -351,8 +346,7 @@ describe(InstanceRule.name, () => {
 			});
 
 			describe('when additional required permission is passed but user do not have it.', () => {
-				const setup = () =>
-					createParamsFromUserAndContextPermissions([Permission.INSTANCE_EDIT], [Permission.TEST_ONLY]);
+				const setup = () => createParamsFromUserAndContextPermissions([Permission.INSTANCE_EDIT], [TEST_PERMISSION]);
 
 				it('should be return false, because it is not implemented', () => {
 					const { user, instance, context } = setup();

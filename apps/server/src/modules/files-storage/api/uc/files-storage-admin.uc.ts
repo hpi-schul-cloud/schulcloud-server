@@ -21,7 +21,7 @@ export class FilesStorageAdminUC {
 		this.logger.setContext(FilesStorageAdminUC.name);
 	}
 
-	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<number> { 
+	public async deleteByStorageLocation(params: StorageLocationParamsDto): Promise<number> {
 		const contextForAllowOnlyInstanceOperation = AuthorizationContextBuilder.write([
 			AuthorizationContextParamsRequiredPermissions.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			AuthorizationContextParamsRequiredPermissions.FILESTORAGE_REMOVE,
