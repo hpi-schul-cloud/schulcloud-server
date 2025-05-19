@@ -73,7 +73,7 @@ export class Migration20250318124252 extends Migration {
 		);
 
 		console.info(
-			'Rollback: Added SCHOOL_EDIT_ALL and remove INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW.'
+			'Rollback: Added permission SCHOOL_EDIT_ALL and removed INSTANCE_EDIT, CAN_EXECUTE_INSTANCE_OPERATIONS, SCHOOL_VIEW.'
 		);
 	}
 }
