@@ -4,6 +4,8 @@ import {
 	Controller,
 	ForbiddenException,
 	Get,
+	HttpCode,
+	HttpStatus,
 	NotFoundException,
 	Param,
 	Patch,
@@ -12,7 +14,6 @@ import {
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
-	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiNotFoundResponse,
 	ApiOkResponse,
@@ -162,12 +163,13 @@ export class SchoolController {
 
 	@Post('/:schoolId/maintenance')
 	@ApiOperation({ summary: 'Sets the school into maintenance or puts it into the next year' })
-	@ApiCreatedResponse({ type: MaintenanceResponse })
+	@ApiOkResponse({ type: MaintenanceResponse })
 	@ApiNotFoundResponse()
 	@ApiForbiddenResponse()
 	@ApiBadRequestResponse()
 	@ApiUnprocessableEntityResponse()
 	@JwtAuthentication()
+	@HttpCode(HttpStatus.OK)
 	public async setMaintenanceStatus(
 		@Param() urlParams: SchoolUrlParams,
 		@Body() bodyParams: MaintenanceParams,

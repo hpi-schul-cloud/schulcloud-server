@@ -200,16 +200,15 @@ export class SchoolUc {
 	}
 
 	public async getMaintenanceStatus(schoolId: EntityId, userId: EntityId): Promise<MaintenanceResponse> {
-		const [school, user, schoolYears] = await Promise.all([
+		const [school, user, schoolYears, schoolUsesLdap] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
 			this.schoolYearService.getAllSchoolYears(),
+			this.schoolService.hasLdapSystem(schoolId),
 		]);
 
 		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
-
-		const schoolUsesLdap: boolean = await this.schoolService.hasLdapSystem(school.id);
 
 		const maintenanceStatus: MaintenanceResponse = this.mapToMaintenanceResponseDto(
 			school,
@@ -225,10 +224,11 @@ export class SchoolUc {
 		userId: EntityId,
 		maintenance: boolean
 	): Promise<MaintenanceResponse> {
-		const [school, user, schoolYears] = await Promise.all([
+		const [school, user, schoolYears, schoolUsesLdap] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
 			this.schoolYearService.getAllSchoolYears(),
+			this.schoolService.hasLdapSystem(schoolId),
 		]);
 
 		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
@@ -241,8 +241,6 @@ export class SchoolUc {
 		if (this.isSchoolAlreadyInNextYear(school)) {
 			throw new SchoolAlreadyInNextYearLoggableException(school);
 		}
-
-		const schoolUsesLdap: boolean = await this.schoolService.hasLdapSystem(school.id);
 
 		if (maintenance) {
 			if (school.isInMaintenance()) {
