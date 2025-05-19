@@ -113,35 +113,4 @@ export class CommonCartridgeResourceFactory {
 	private isFile(resourcePath: string): boolean {
 		return !resourcePath.endsWith('.html');
 	}
-
-	private getMimeType(fileName: string): string {
-		const mimeType = fileName.split('.').pop()?.toLowerCase();
-
-		if (!mimeType) {
-			return 'application/octet-stream';
-		}
-
-		switch (mimeType) {
-			case 'xml':
-				return 'application/xml';
-			case 'zip':
-				return 'application/zip';
-			case 'pdf':
-				return 'application/pdf';
-			case 'docx':
-				return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-			case 'pptx':
-				return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
-			case 'xlsx':
-				return 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-			case 'txt':
-				return 'text/plain';
-			case 'csv':
-				return 'text/csv';
-			case 'json':
-				return 'application/json';
-			default:
-				return 'application/octet-stream';
-		}
-	}
 }
