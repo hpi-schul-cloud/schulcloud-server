@@ -30,8 +30,7 @@ export class SchoolRule implements Rule<School> {
 
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, school, context);
-		}
-		if (context.action === Action.write) {
+		} else if (context.action === Action.write) {
 			hasPermission = this.hasWriteAccess(user, school, context);
 		}
 

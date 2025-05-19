@@ -30,8 +30,7 @@ export class InstanceRule implements Rule<Instance> {
 
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, instance, context);
-		}
-		if (context.action === Action.write) {
+		} else if (context.action === Action.write) {
 			hasPermission = this.hasWriteAccess(user, instance, context);
 		}
 
