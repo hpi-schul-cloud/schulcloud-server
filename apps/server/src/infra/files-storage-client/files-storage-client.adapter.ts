@@ -66,8 +66,8 @@ export class FilesStorageClientAdapter {
 	): Promise<FileRecordResponse | null> {
 		try {
 			// INFO: we need to upload the file to the files storage service without using the generated client,
-			// because the generated client does not support uploading files as FormData.
-			// const response = await this.api.upload(storageLocationId, storageLocation, parentId, parentType, file, options);
+			// because the generated client does not support uploading files as FormData. Otherwise files with
+			// binary content would be corrupted like pdfs, zip files, etc.
 
 			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
 

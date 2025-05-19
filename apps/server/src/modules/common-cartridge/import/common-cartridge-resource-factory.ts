@@ -29,7 +29,7 @@ export class CommonCartridgeResourceFactory {
 			case CommonCartridgeResourceTypeV1P1.WEB_LINK:
 				return this.createWebLinkResource(content, title);
 			case CommonCartridgeResourceTypeV1P1.WEB_CONTENT:
-				if (this.checkFileType(organization.resourcePath)) {
+				if (this.isFile(organization.resourcePath)) {
 					return this.createFileContentResource(organization.resourcePath, title);
 				} else {
 					return this.createWebContentResource(content, inputFormat);
@@ -99,7 +99,7 @@ export class CommonCartridgeResourceFactory {
 			return undefined;
 		}
 
-		const file = new File([buffer], fileName, { type: this.getMimeType(fileName) });
+		const file = new File([buffer], fileName, {});
 
 		return {
 			type: CommonCartridgeResourceTypeV1P1.FILE,
@@ -110,10 +110,8 @@ export class CommonCartridgeResourceFactory {
 		};
 	}
 
-	private checkFileType(resourcePath: string): boolean {
-		const allowedExtensions = ['.xml', '.zip', '.pdf', '.docx', '.pptx', '.xlsx', '.txt', '.csv', '.json'];
-
-		return allowedExtensions.some((ext) => resourcePath.endsWith(ext));
+	private isFile(resourcePath: string): boolean {
+		return !resourcePath.endsWith('.html');
 	}
 
 	private getMimeType(fileName: string): string {
