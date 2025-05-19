@@ -1606,5 +1606,35 @@
 		"private": false,
 		"publicSubmissions": false,
 		"teamSubmissions": false
+	},
+	{
+		"_id": {
+			"$oid": "682b2eff4625037831d537ee"
+		},
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"name": "Aufgabe nicht zum Thema zugewiesen",
+		"description": "<p>Beschreibung der Aufgabe: gehört zu kein Thema (Topic)</p>",
+		"dueDate": null,
+		"availableDate": {
+			"$date": "2025-05-19T13:15:43.397Z"
+		},
+		"teacherId": {
+			"$oid": "0000d231816abba584714c9e"
+		},
+		"courseId": {
+			"$oid": "681e018089002b0ee99aa0af"
+		},
+		"lessonId": null,
+		"maxTeamMembers": null,
+		"archived": [],
+		"createdAt": {
+			"$date": "2025-05-19T13:15:43.473Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-19T13:15:43.473Z"
+		},
+		"__v": 0
 	}
 ]
