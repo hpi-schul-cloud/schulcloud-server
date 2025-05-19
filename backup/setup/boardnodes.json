@@ -3130,13 +3130,13 @@
 			"$date": "2025-05-15T09:40:04.798Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-15T09:47:05.605Z"
+			"$date": "2025-05-19T14:00:30.875Z"
 		},
 		"path": ",681e051689002b0ee99aa298,6825b66ff3d1ca38b1604438,6825b674f3d1ca38b160443a,",
 		"level": 3,
 		"position": 0,
 		"type": "rich-text-element",
-		"text": "<h4>Header 1</h4><h5>Header 2</h5><p> </p><ol><li><strong>Bold Text</strong></li><li><i><strong>Bold Kursive Text </strong></i></li><li><i>Kursive Text</i></li><li><s>durchgestrichen Text</s></li></ol><h4>Tabelle:</h4><figure class=\"table\"><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></figure>",
+		"text": "<h4>Header 1</h4><h5>Header 2</h5><p> </p><ol><li><strong>Bold Text</strong></li><li><i><strong>Bold Kursive Text </strong></i></li><li><i>Kursive Text</i></li><li><s>durchgestrichen Text</s></li><li><sup>Hochgestellte Text</sup></li><li>Tiefergestellte Text</li><li>Link:<a target=\"_blank\" rel=\"noopener noreferrer\" href=\"https://www.google.com/\">https://www.google.com/</a></li></ol><ul><li>₽</li><li>©</li><li>®</li><li>🔚</li></ul><p>Horizontale Linie:</p><hr /><h4>Tabelle:</h4><figure class=\"table\"><table><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr><tr><td>7</td><td>8</td><td>9</td></tr></tbody></table></figure>",
 		"inputFormat": "richTextCk5"
 	},
 	{
@@ -3147,13 +3147,13 @@
 			"$date": "2025-05-15T09:40:04.798Z"
 		},
 		"updatedAt": {
-			"$date": "2025-05-15T09:47:08.659Z"
+			"$date": "2025-05-19T14:01:05.022Z"
 		},
 		"path": ",681e051689002b0ee99aa298,6825b66ff3d1ca38b1604438,",
 		"level": 2,
 		"position": 0,
 		"type": "card",
-		"height": 468,
+		"height": 682,
 		"title": "Text Inhalt Spalte ohne Title "
 	},
 	{
@@ -3295,5 +3295,37 @@
 		"type": "card",
 		"height": 125,
 		"title": "Karte 1"
+	},
+	{
+		"_id": {
+			"$oid": "682b39aeb610209a27355fad"
+		},
+		"createdAt": {
+			"$date": "2025-05-19T14:01:18.170Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-19T14:01:47.335Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 8,
+		"type": "rich-text-element",
+		"text": "<p>danach kommt ein Etherpad als Letztes</p>",
+		"inputFormat": "richTextCk5"
+	},
+	{
+		"_id": {
+			"$oid": "682b39cfb610209a27355fae"
+		},
+		"createdAt": {
+			"$date": "2025-05-19T14:01:51.870Z"
+		},
+		"updatedAt": {
+			"$date": "2025-05-19T14:01:51.870Z"
+		},
+		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
+		"level": 3,
+		"position": 9,
+		"type": "collaborative-text-editor"
 	}
 ]
