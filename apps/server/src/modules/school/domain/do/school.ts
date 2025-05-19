@@ -20,8 +20,12 @@ interface SchoolInfo {
 }
 
 export class School extends DomainObject<SchoolProps> {
-	get currentYear() {
+	get currentYear(): SchoolYear | undefined {
 		return this.props.currentYear;
+	}
+
+	set currentYear(value: SchoolYear | undefined) {
+		this.props.currentYear = value;
 	}
 
 	get systems(): EntityId[] {
@@ -50,6 +54,18 @@ export class School extends DomainObject<SchoolProps> {
 
 	set name(name: string) {
 		this.props.name = name;
+	}
+
+	get inMaintenanceSince(): Date | undefined {
+		return this.props.inMaintenanceSince;
+	}
+
+	set inMaintenanceSince(value: Date | undefined) {
+		this.props.inMaintenanceSince = value;
+	}
+
+	get inUserMigration(): boolean | undefined {
+		return this.props.inUserMigration;
 	}
 
 	public getInfo(): SchoolInfo {
