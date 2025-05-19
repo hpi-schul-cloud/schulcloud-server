@@ -173,7 +173,7 @@ describe('SchoolRule', () => {
 				});
 			});
 
-			describe('when school is user not school', () => {
+			describe('when school is not the user's school', () => {
 				const setup = () => {
 					const context = AuthorizationContextBuilder.read([]);
 					const school = schoolFactory.build();
