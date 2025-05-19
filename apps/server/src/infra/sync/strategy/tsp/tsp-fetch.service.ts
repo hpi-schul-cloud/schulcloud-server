@@ -1,5 +1,4 @@
-import { DomainErrorHandler } from '@core/error';
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,
@@ -11,64 +10,75 @@ import {
 import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { System } from '@modules/system';
 import { Injectable } from '@nestjs/common';
-import { AxiosError, AxiosResponse } from 'axios';
+import { AxiosError } from 'axios';
 import moment, { Moment } from 'moment';
 
 @Injectable()
 export class TspFetchService {
-	constructor(
-		private readonly tspClientFactory: TspClientFactory,
-		private readonly domainErrorHandler: DomainErrorHandler
-	) {}
+	constructor(private readonly tspClientFactory: TspClientFactory) {}
 
-	public fetchTspSchools(system: System, daysToFetch: number): Promise<RobjExportSchule[]> {
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const schools = this.fetchTsp(system, (client) => client.exportSchuleList(lastChangeDate), []);
-
-		return schools;
-	}
-
-	public fetchTspTeachers(system: System, daysToFetch: number): Promise<RobjExportLehrer[]> {
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const teachers = this.fetchTsp(system, (client) => client.exportLehrerList(lastChangeDate), []);
-
-		return teachers;
-	}
-
-	public fetchTspStudents(system: System, daysToFetch: number): Promise<RobjExportSchueler[]> {
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const students = this.fetchTsp(system, (client) => client.exportSchuelerList(lastChangeDate), []);
-
-		return students;
-	}
-
-	public fetchTspClasses(system: System, daysToFetch: number): Promise<RobjExportKlasse[]> {
-		const lastChangeDate = this.formatChangeDate(daysToFetch);
-		const classes = this.fetchTsp(system, (client) => client.exportKlasseList(lastChangeDate), []);
-
-		return classes;
-	}
-
-	private async fetchTsp<T>(
-		system: System,
-		fetchFunction: (client: ExportApiInterface) => Promise<AxiosResponse<T>>,
-		defaultValue: T
-	): Promise<T> {
+	public async fetchTspSchools(system: System, daysToFetch: number): Promise<RobjExportSchule[]> {
 		try {
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
 			const client = this.createClient(system);
 
-			const response = await fetchFunction(client);
+			const response = await client.exportSchuleList(lastChangeDate);
 			const { data } = response;
 
 			return data;
 		} catch (e) {
-			if (e instanceof AxiosError) {
-				this.domainErrorHandler.exec(new AxiosErrorLoggable(e, 'TSP_FETCH_ERROR'));
-			} else {
-				this.domainErrorHandler.exec(new ErrorLoggable(e));
-			}
+			this.handleFetchError(e, 'TSP_FETCH_SCHOOLS_ERROR');
 		}
-		return defaultValue;
+	}
+
+	public async fetchTspTeachers(system: System, daysToFetch: number): Promise<RobjExportLehrer[]> {
+		try {
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const client = this.createClient(system);
+
+			const response = await client.exportLehrerList(lastChangeDate);
+			const { data } = response;
+
+			return data;
+		} catch (e) {
+			this.handleFetchError(e, 'TSP_FETCH_TEACHERS_ERROR');
+		}
+	}
+
+	public async fetchTspStudents(system: System, daysToFetch: number): Promise<RobjExportSchueler[]> {
+		try {
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const client = this.createClient(system);
+
+			const response = await client.exportSchuelerList(lastChangeDate);
+			const { data } = response;
+
+			return data;
+		} catch (e) {
+			this.handleFetchError(e, 'TSP_FETCH_STUDENTS_ERROR');
+		}
+	}
+
+	public async fetchTspClasses(system: System, daysToFetch: number): Promise<RobjExportKlasse[]> {
+		try {
+			const lastChangeDate = this.formatChangeDate(daysToFetch);
+			const client = this.createClient(system);
+
+			const response = await client.exportKlasseList(lastChangeDate);
+			const { data } = response;
+
+			return data;
+		} catch (e) {
+			this.handleFetchError(e, 'TSP_FETCH_CLASSES_ERROR');
+		}
+	}
+
+	private handleFetchError(e: unknown, type: string): never {
+		if (e instanceof AxiosError) {
+			throw new AxiosErrorLoggable(e, type);
+		} else {
+			throw e;
+		}
 	}
 
 	private formatChangeDate(daysToFetch: number): string {
