@@ -39,6 +39,7 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 	}
 
 	private async copyRoom(userId: EntityId, roomId: EntityId, newName?: string): Promise<Room> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const originalRoom = await this.roomService.getSingleRoom(roomId);
 
 		const copyName = newName ?? (await this.deriveCopyName(userId, originalRoom.name));
@@ -47,7 +48,7 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 			color: originalRoom.color,
 			startDate: originalRoom.startDate,
 			endDate: originalRoom.endDate,
-			schoolId: originalRoom.schoolId, // TODO schoolId // user.schoolId
+			schoolId: user.school.id,
 		});
 		await this.roomMembershipService.createNewRoomMembership(roomCopied.id, userId);
 

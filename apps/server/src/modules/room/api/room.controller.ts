@@ -305,7 +305,7 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<CopyApiResponse> {
-		const copyStatus = await this.roomCopyUc.copyRoom(currentUser.userId, urlParams.roomId, currentUser.schoolId);
+		const copyStatus = await this.roomCopyUc.copyRoom(currentUser.userId, urlParams.roomId);
 
 		const copyResponse = CopyMapper.mapToResponse(copyStatus);
 

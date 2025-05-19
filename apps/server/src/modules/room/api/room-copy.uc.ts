@@ -21,17 +21,11 @@ export class RoomCopyUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	public async copyRoom(userId: EntityId, roomId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
+	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
 		this.checkFeatureRoomsEnabled();
 		this.checkFeatureRoomCopyEnabled();
 
 		await this.checkRoomAuthorizationByIds(userId, roomId, Action.write, [Permission.ROOM_COPY]);
-
-		const originalRoom = await this.roomService.getSingleRoom(roomId);
-
-		if (schoolId !== originalRoom.schoolId) {
-			throw new ValidationError(`Invalid schoolId: ${schoolId} for room ${roomId}. Expected: ${originalRoom.schoolId}`);
-		}
 
 		const { roomCopied, boardsCopied } = await this.sagaService.executeSaga('roomCopy', { userId, roomId });
 
