@@ -49,13 +49,17 @@ describe('School Controller (API)', () => {
 		testConfigHelper.reset();
 	});
 
-	const mapUsersWithSchoolName = (users: User[], schoolName: string) =>
-		users.map((user) => ({
-			id: user.id,
-			firstName: user.firstName,
-			lastName: user.lastName,
-			schoolName,
-		}));
+	const mapUsersWithSchoolName = (users: User[], schoolName: string) => {
+		const members = users.map((user) => {
+			return {
+				id: user.id,
+				firstName: user.firstName,
+				lastName: user.lastName,
+				schoolName,
+			};
+		});
+		return members;
+	};
 
 	describe('get Teachers', () => {
 		describe('when no user is logged in', () => {
