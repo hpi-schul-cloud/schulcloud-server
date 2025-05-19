@@ -147,7 +147,7 @@ describe('POST /rooms/:roomId/copy', () => {
 			const school = schoolEntityFactory.buildWithId();
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-			const room = roomEntityFactory.build({ name: 'test' });
+			const room = roomEntityFactory.build({ name: 'test', schoolId: school.id });
 			const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const userGroup = groupEntityFactory.buildWithId({
