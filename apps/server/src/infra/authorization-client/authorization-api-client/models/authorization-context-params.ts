@@ -41,7 +41,6 @@ export const AuthorizationContextParamsAction = {
 
 export type AuthorizationContextParamsAction = typeof AuthorizationContextParamsAction[keyof typeof AuthorizationContextParamsAction];
 export const AuthorizationContextParamsRequiredPermissions = {
-    __TEST__: '___TEST___',
     ACCOUNT_CREATE: 'ACCOUNT_CREATE',
     ACCOUNT_DELETE: 'ACCOUNT_DELETE',
     ACCOUNT_EDIT: 'ACCOUNT_EDIT',
