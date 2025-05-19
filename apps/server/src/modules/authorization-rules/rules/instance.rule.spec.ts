@@ -115,7 +115,7 @@ describe(InstanceRule.name, () => {
 						Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 					]);
 
-				it('should be return false', () => {
+				it('should return false', () => {
 					const { user, instance, context } = setup();
 
 					const result = rule.hasPermission(user, instance, context);
