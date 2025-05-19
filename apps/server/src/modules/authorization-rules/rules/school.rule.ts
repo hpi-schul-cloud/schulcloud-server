@@ -7,7 +7,7 @@ import {
 } from '@modules/authorization';
 import { School } from '@modules/school';
 import type { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
@@ -32,6 +32,8 @@ export class SchoolRule implements Rule<School> {
 			hasPermission = this.hasReadAccess(user, school, context);
 		} else if (context.action === Action.write) {
 			hasPermission = this.hasWriteAccess(user, school, context);
+		} else {
+			throw new NotImplementedException();
 		}
 
 		return hasPermission;

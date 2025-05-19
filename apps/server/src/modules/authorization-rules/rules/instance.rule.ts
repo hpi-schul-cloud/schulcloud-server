@@ -7,7 +7,7 @@ import {
 } from '@modules/authorization';
 import { Instance } from '@modules/instance';
 import type { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 
 @Injectable()
@@ -32,6 +32,8 @@ export class InstanceRule implements Rule<Instance> {
 			hasPermission = this.hasReadAccess(user, instance, context);
 		} else if (context.action === Action.write) {
 			hasPermission = this.hasWriteAccess(user, instance, context);
+		} else {
+			throw new NotImplementedException();
 		}
 
 		return hasPermission;

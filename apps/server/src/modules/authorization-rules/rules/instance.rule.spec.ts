@@ -1,4 +1,5 @@
 import {
+	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -10,6 +11,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { InstanceRule } from './instance.rule';
+import { NotImplementedException } from '@nestjs/common';
 
 const TEST_PERMISSION = 'TEST_PERMISSION' as Permission;
 
@@ -82,6 +84,25 @@ describe(InstanceRule.name, () => {
 	});
 
 	describe('hasPermission', () => {
+		describe('Given a invalid operation is requested', () => {
+			const setup = () => {
+				const user = userFactory.withPermissionsInRole([Permission.INSTANCE_VIEW]).buildWithId();
+				const instance = instanceFactory.build();
+				const context = {
+					action: 'test',
+					requiredPermissions: [],
+				} as unknown as AuthorizationContext;
+
+				return { user, instance, context };
+			};
+
+			it('should throw not implemented', () => {
+				const { user, instance, context } = setup();
+
+				expect(() => rule.hasPermission(user, instance, context)).toThrowError(new NotImplementedException());
+			});
+		});
+
 		describe('Given a read operation is requested', () => {
 			const createParamsFromUserAndContextPermissions = (
 				userPermissions: Permission[],
