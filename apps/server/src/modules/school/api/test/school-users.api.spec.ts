@@ -49,14 +49,13 @@ describe('School Controller (API)', () => {
 		testConfigHelper.reset();
 	});
 
-	const mapUsersWithSchoolName = (users: User[], schoolName: string) => {
-		return users.map((user) => ({
+	const mapUsersWithSchoolName = (users: User[], schoolName: string) =>
+		users.map((user) => ({
 			id: user.id,
 			firstName: user.firstName,
 			lastName: user.lastName,
 			schoolName,
 		}));
-	};
 
 	describe('get Teachers', () => {
 		describe('when no user is logged in', () => {
@@ -281,7 +280,7 @@ describe('School Controller (API)', () => {
 				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', true);
 			});
 
-			const setup = async (includeTeacherAsStudent: boolean = false) => {
+			const setup = async (includeTeacherAsStudent = false) => {
 				const school = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { studentUser } = UserAndAccountTestFactory.buildStudent({ school });
