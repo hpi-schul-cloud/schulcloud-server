@@ -6,18 +6,16 @@ import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { MediumMetadataDto, MediumMetadataService } from '@modules/medium-metadata';
 import { MediumMetadataMapper } from '@modules/medium-metadata/mapper';
+import { MediumMetadataLogoService } from '@modules/medium-metadata/service/medium-metadata-logo.service';
 import { ExternalTool, ExternalToolService } from '@modules/tool';
 import { ExternalToolLogoService, ExternalToolValidationService } from '@modules/tool/external-tool';
-import {
-	ExternalToolLogoSizeExceededLoggableException,
-	ExternalToolLogoWrongFileTypeLoggableException,
-} from '@modules/tool/external-tool/loggable';
+import { ExternalToolLogoSizeExceededLoggableException } from '@modules/tool/external-tool/loggable';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { ImageMimeType } from '@shared/domain/types';
 import { MediaSourceSyncReport } from '../../interface';
-import { MediaMetadataSyncFailedLoggable } from '../../loggable';
+import { MediaMetadataSyncFailedLoggable, UnknownLogoFileTypeLoggableException } from '../../loggable';
 import { mediaSourceSyncOperationReportFactory, mediaSourceSyncReportFactory } from '../../testing';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../../types';
 import { VidisMetadataSyncStrategy } from './vidis-metadata-sync.strategy';
@@ -28,6 +26,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let mediumMetadataService: DeepMocked<MediumMetadataService>;
+	let mediumMetadataLogoService: DeepMocked<MediumMetadataLogoService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
 	let externalToolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logger: DeepMocked<Logger>;
@@ -43,6 +42,10 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				{
 					provide: MediumMetadataService,
 					useValue: createMock<MediumMetadataService>(),
+				},
+				{
+					provide: MediumMetadataLogoService,
+					useValue: createMock<MediumMetadataLogoService>(),
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -62,6 +65,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 		strategy = module.get(VidisMetadataSyncStrategy);
 		externalToolService = module.get(ExternalToolService);
 		mediumMetadataService = module.get(MediumMetadataService);
+		mediumMetadataLogoService = module.get(MediumMetadataLogoService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 		externalToolValidationService = module.get(ExternalToolValidationService);
 		logger = module.get(Logger);
@@ -114,7 +118,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 								...externalTools[i].getProps(),
 								name: metadataItems[i].name,
 								description: metadataItems[i].description,
-								logo: metadataItems[i].logo,
+								logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataItems[i].logo as string}`,
 								logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItems[i].logo as string}`,
 							},
 							externalTools[i].id
@@ -123,7 +127,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce(metadataItems);
-					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValue(mockedLogoImageType);
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValue(mockedLogoImageType);
 
 					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
 						.withOthersEmpty({ totalCount: offerItems.length, successCount: offerItems.length })
@@ -196,7 +200,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
-					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
 
 					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
 						.withOthersEmpty({ totalCount: 1, successCount: 1 })
@@ -262,7 +266,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 					const updatedExternalTool = externalToolFactory.buildWithId(
 						{
 							...externalTool.getProps(),
-							logo: metadataItem.logo,
+							logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 							description: metadataItem.description,
 						},
@@ -271,7 +275,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
-					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
 
 					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
 						.withOthersEmpty({ totalCount: 1, successCount: 1 })
@@ -392,7 +396,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 						{
 							...externalTool.getProps(),
 							description: metadataItem.description,
-							logo: metadataItem.logo,
+							logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 							logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataItem.logo as string}`,
 						},
 						externalTool.id
@@ -400,7 +404,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
-					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(mockedLogoImageType);
 
 					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
 						.withOthersEmpty({ totalCount: 1, successCount: 1 })
@@ -534,13 +538,9 @@ describe(VidisMetadataSyncStrategy.name, () => {
 						externalTool.id
 					);
 
-					const wrongFileTypeException = new ExternalToolLogoWrongFileTypeLoggableException();
-
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
-					externalToolLogoService.detectAndValidateLogoImageType.mockImplementationOnce(() => {
-						throw wrongFileTypeException;
-					});
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(undefined);
 
 					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory
 						.withOthersEmpty({ totalCount: 1, partialCount: 1 })
@@ -560,7 +560,6 @@ describe(VidisMetadataSyncStrategy.name, () => {
 						updatedExternalTool,
 						expectedSyncReport,
 						expectedOperations,
-						wrongFileTypeException,
 					};
 				};
 
@@ -574,7 +573,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 				});
 
 				it('should log an MediaMetadataSyncFailedLoggable as warning log', async () => {
-					const { mediaSource, updatedExternalTool, wrongFileTypeException } = setup();
+					const { mediaSource, updatedExternalTool } = setup();
 
 					await strategy.syncAllMediaMetadata(mediaSource);
 
@@ -582,7 +581,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 						new MediaMetadataSyncFailedLoggable(
 							updatedExternalTool.medium?.mediumId as string,
 							mediaSource.format as MediaSourceDataFormat,
-							wrongFileTypeException
+							new UnknownLogoFileTypeLoggableException()
 						)
 					);
 				});
@@ -624,7 +623,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce([metadataItem]);
-					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(ImageMimeType.PNG);
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValueOnce(ImageMimeType.PNG);
 					externalToolLogoService.validateLogoSize.mockImplementationOnce(() => {
 						throw logoSizeExceededException;
 					});
@@ -714,7 +713,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 								...toolWithoutError.getProps(),
 								name: metadataWithoutError.name,
 								description: metadataWithoutError.description,
-								logo: metadataWithoutError.logo,
+								logo: `data:${mockedLogoImageType.valueOf()};base64,${metadataWithoutError.logo as string}`,
 								logoUrl: `data:${mockedLogoImageType.valueOf()};base64,${metadataWithoutError.logo as string}`,
 							},
 							toolWithoutError.id
@@ -725,7 +724,7 @@ describe(VidisMetadataSyncStrategy.name, () => {
 
 					externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce(externalTools);
 					mediumMetadataService.getMetadataItems.mockResolvedValueOnce(metadataItems);
-					externalToolLogoService.detectAndValidateLogoImageType.mockReturnValue(mockedLogoImageType);
+					mediumMetadataLogoService.detectAndValidateLogoImageType.mockReturnValue(mockedLogoImageType);
 					externalToolValidationService.validateUpdate.mockRejectedValueOnce(error);
 
 					const expectedSyncReport: Partial<MediaSourceSyncReport> = mediaSourceSyncReportFactory

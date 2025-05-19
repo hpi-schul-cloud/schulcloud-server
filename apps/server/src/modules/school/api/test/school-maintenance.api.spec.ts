@@ -508,7 +508,7 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.post(`${schoolId}/maintenance`, { maintenance: true });
 
 				expect(response.body).toEqual(expectedResponse);
-				expect(response.status).toEqual(HttpStatus.CREATED);
+				expect(response.status).toEqual(HttpStatus.OK);
 			});
 		});
 
@@ -556,7 +556,7 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.post(`${schoolId}/maintenance`, { maintenance: true });
 
 				expect(response.body).toEqual(expectedResponse);
-				expect(response.status).toEqual(HttpStatus.CREATED);
+				expect(response.status).toEqual(HttpStatus.OK);
 			});
 		});
 
@@ -639,7 +639,7 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.post(`${schoolId}/maintenance`, { maintenance: false });
 
 				expect(response.body).toEqual(expectedResponse);
-				expect(response.status).toEqual(HttpStatus.CREATED);
+				expect(response.status).toEqual(HttpStatus.OK);
 			});
 		});
 
