@@ -84,7 +84,7 @@ describe('MediumMetadataController (API)', () => {
 					description: biloMediaMetaData.data.description,
 					publisher: biloMediaMetaData.data.publisher,
 					logoUrl: biloMediaMetaData.data.cover.href,
-					previewLogoUrl: biloMediaMetaData.data.coverSmall.href,
+					previewLogoUrl: biloMediaMetaData.data.cover.href,
 					modifiedAt: new Date(biloMediaMetaData.data.modified).toISOString(),
 				});
 			});
