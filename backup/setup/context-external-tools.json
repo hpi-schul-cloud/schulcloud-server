@@ -12,9 +12,7 @@
 		"schoolTool": {
 			"$oid": "644a46e5d0a8301e6cf25d86"
 		},
-		"contextId": {
-			"$oid": "0000dcfbfb5c7a3f00bf21ab"
-		},
+		"contextId": { "$oid" : "0000dcfbfb5c7a3f00bf21ab" },
 		"contextType": "course",
 		"displayName": "Google-Suche",
 		"parameters": [
@@ -28,95 +26,11 @@
 		"_id": {
 			"$oid": "647de3cfab79fd5bd57e68f4"
 		},
-		"contextId": {
-			"$oid": "0000dcfbfb5c7a3f00bf21ab"
-		},
+		"contextId": { "$oid" : "0000dcfbfb5c7a3f00bf21ab" },
 		"contextType": "course",
 		"parameters": [],
 		"schoolTool": {
 			"$oid": "647de374cf6a427b9d39e5ba"
 		}
-	},
-	{
-		"_id": {
-			"$oid": "68219dde69f69c81430aa55c"
-		},
-		"createdAt": {
-			"$date": "2025-05-12T07:06:06.232Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-12T07:06:06.232Z"
-		},
-		"schoolTool": {
-			"$oid": "65fd9882cb3d21d77bee50a7"
-		},
-		"contextId": {
-			"$oid": "68219db669f69c81430aa55a"
-		},
-		"contextType": "boardElement",
-		"displayName": "OpenstreetMap",
-		"parameters": [
-			{
-				"name": "mlat",
-				"value": "52.40847"
-			},
-			{
-				"name": "mlon",
-				"value": "9.80823"
-			},
-			{
-				"name": "zoom",
-				"value": "19"
-			}
-		]
-	},
-	{
-		"_id": {
-			"$oid": "6825b89a4fb59fe30f59d0e5"
-		},
-		"createdAt": {
-			"$date": "2025-05-15T09:49:14.334Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-15T09:49:14.334Z"
-		},
-		"schoolTool": {
-			"$oid": "65fd9dd2cb3d21d77bee50af"
-		},
-		"contextId": {
-			"$oid": "6825b8834fb59fe30f59d0e3"
-		},
-		"contextType": "boardElement",
-		"displayName": "Translate ",
-		"parameters": []
-	},
-	{
-		"_id": {
-			"$oid": "6825bb834fb59fe30f59d0e9"
-		},
-		"createdAt": {
-			"$date": "2025-05-15T10:02:19.210Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-15T10:02:19.212Z"
-		},
-		"schoolTool": {
-			"$oid": "65fd9bfdcb3d21d77bee50ac"
-		},
-		"contextId": {
-			"$oid": "6825bb214fb59fe30f59d0e7"
-		},
-		"contextType": "boardElement",
-		"displayName": "Der Weg zum Office",
-		"parameters": [
-			{
-				"name": "from",
-				"value": "Sahlkamp 1, 30179 Hannover"
-			},
-			{
-				"name": "to",
-				"value": "Podbielskistraße 386, 30659 Hannover"
-			}
-		]
 	}
 ]
