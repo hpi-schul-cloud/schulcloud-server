@@ -1,6 +1,5 @@
 import { MediaSourceLicenseType } from '@modules/media-source';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum } from 'class-validator';
 import { ExternalToolMediumStatus } from '../../../external-tool/enum';
 
 export class SchoolExternalToolMediumResponse {
@@ -10,10 +9,9 @@ export class SchoolExternalToolMediumResponse {
 		enum: ExternalToolMediumStatus,
 		enumName: 'ExternalToolMediumStatus',
 	})
-	@IsEnum(ExternalToolMediumStatus)
 	public status: ExternalToolMediumStatus;
 
-	@ApiProperty({ description: 'Id of the medium' })
+	@ApiPropertyOptional({ description: 'Id of the medium' })
 	public mediumId?: string;
 
 	@ApiPropertyOptional({ description: 'The id of the media source' })
