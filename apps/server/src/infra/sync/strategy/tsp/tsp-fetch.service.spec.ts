@@ -1,5 +1,4 @@
-import { DomainErrorHandler } from '@core/error';
-import { AxiosErrorLoggable, ErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -27,7 +26,6 @@ describe(TspFetchService.name, () => {
 	let module: TestingModule;
 	let sut: TspFetchService;
 	let tspClientFactory: DeepMocked<TspClientFactory>;
-	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,16 +35,11 @@ describe(TspFetchService.name, () => {
 					provide: TspClientFactory,
 					useValue: createMock<TspClientFactory>(),
 				},
-				{
-					provide: DomainErrorHandler,
-					useValue: createMock<DomainErrorHandler>(),
-				},
 			],
 		}).compile();
 
 		sut = module.get(TspFetchService);
 		tspClientFactory = module.get(TspClientFactory);
-		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
@@ -100,10 +93,10 @@ describe(TspFetchService.name, () => {
 		});
 
 		const exportApiMock = createMock<ExportApiInterface>();
-		exportApiMock.exportSchuleList.mockResolvedValueOnce(responseSchools);
-		exportApiMock.exportLehrerList.mockResolvedValueOnce(responseTeachers);
-		exportApiMock.exportSchuelerList.mockResolvedValueOnce(responseStudents);
-		exportApiMock.exportKlasseList.mockResolvedValueOnce(responseClasses);
+		exportApiMock.exportSchuleList.mockResolvedValue(responseSchools);
+		exportApiMock.exportLehrerList.mockResolvedValue(responseTeachers);
+		exportApiMock.exportSchuelerList.mockResolvedValue(responseStudents);
+		exportApiMock.exportKlasseList.mockResolvedValue(responseClasses);
 
 		tspClientFactory.createExportClient.mockReturnValueOnce(exportApiMock);
 
@@ -150,6 +143,15 @@ describe(TspFetchService.name, () => {
 				expect(schools).toBeDefined();
 				expect(schools).toBeInstanceOf(Array);
 			});
+
+			it('should throw error on fail', async () => {
+				const { system, exportApiMock } = setupTspClient();
+				exportApiMock.exportSchuleList.mockImplementation(() => {
+					throw new AxiosError();
+				});
+
+				await expect(sut.fetchTspSchools(system, 1)).rejects.toThrow(AxiosErrorLoggable);
+			});
 		});
 	});
 
@@ -182,6 +184,15 @@ describe(TspFetchService.name, () => {
 
 				expect(teachers).toBeDefined();
 				expect(teachers).toBeInstanceOf(Array);
+			});
+
+			it('should throw error on fail', async () => {
+				const { system, exportApiMock } = setupTspClient();
+				exportApiMock.exportLehrerList.mockImplementation(() => {
+					throw new AxiosError();
+				});
+
+				await expect(sut.fetchTspTeachers(system, 1)).rejects.toThrow(AxiosErrorLoggable);
 			});
 		});
 	});
@@ -216,6 +227,15 @@ describe(TspFetchService.name, () => {
 				expect(students).toBeDefined();
 				expect(students).toBeInstanceOf(Array);
 			});
+
+			it('should throw error on fail', async () => {
+				const { system, exportApiMock } = setupTspClient();
+				exportApiMock.exportSchuelerList.mockImplementation(() => {
+					throw new AxiosError();
+				});
+
+				await expect(sut.fetchTspStudents(system, 1)).rejects.toThrow(AxiosErrorLoggable);
+			});
 		});
 	});
 
@@ -249,6 +269,15 @@ describe(TspFetchService.name, () => {
 				expect(classes).toBeDefined();
 				expect(classes).toBeInstanceOf(Array);
 			});
+
+			it('should throw error on fail', async () => {
+				const { system, exportApiMock } = setupTspClient();
+				exportApiMock.exportKlasseList.mockImplementation(() => {
+					throw new AxiosError();
+				});
+
+				await expect(sut.fetchTspClasses(system, 1)).rejects.toThrow(AxiosErrorLoggable);
+			});
 		});
 	});
 
@@ -276,14 +305,10 @@ describe(TspFetchService.name, () => {
 				};
 			};
 
-			it('should log a AxiosErrorLoggable as warning', async () => {
+			it('should throw a AxiosErrorLoggable', async () => {
 				const { system } = setup();
 
-				await sut.fetchTspSchools(system, 1);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
-					new AxiosErrorLoggable(new AxiosError(), 'TSP_FETCH_ERROR')
-				);
+				await expect(sut.fetchTspSchools(system, 1)).rejects.toThrow(AxiosErrorLoggable);
 			});
 		});
 
@@ -313,9 +338,7 @@ describe(TspFetchService.name, () => {
 			it('should log a ErrorLoggable as warning', async () => {
 				const { system } = setup();
 
-				await sut.fetchTspSchools(system, 1);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(new ErrorLoggable(new Error()));
+				await expect(() => sut.fetchTspSchools(system, 1)).rejects.toThrow(Error);
 			});
 		});
 	});
@@ -346,12 +369,7 @@ describe(TspFetchService.name, () => {
 			it('should throw an OauthConfigMissingLoggableException into domainErrorHandler', async () => {
 				const { system } = setup();
 
-				const result = await sut.fetchTspSchools(system, 1);
-				expect(result).toStrictEqual([]);
-
-				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
-					new ErrorLoggable(new OauthConfigMissingLoggableException(system.id))
-				);
+				await expect(sut.fetchTspSchools(system, 1)).rejects.toThrow(OauthConfigMissingLoggableException);
 			});
 		});
 	});
