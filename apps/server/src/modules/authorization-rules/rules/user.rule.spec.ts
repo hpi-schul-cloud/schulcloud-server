@@ -52,12 +52,14 @@ describe('UserRule', () => {
 		const user = userFactory.buildWithId({ roles: [role], school });
 		const entity = userDoFactory.buildWithId();
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
+		configServiceMock.get.mockReturnValue('opt-in');
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	describe('when a user accesses himself', () => {
 		const setup = () => {
+			configServiceMock.get.mockReturnValue('opt-in');
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
@@ -80,6 +82,7 @@ describe('UserRule', () => {
 
 	describe('when accessing a user of the same school', () => {
 		const setup = () => {
+			configServiceMock.get.mockReturnValue('opt-in');
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
