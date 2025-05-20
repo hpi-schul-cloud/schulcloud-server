@@ -13,3 +13,5 @@ export * from './school-year.response';
 export * from './school.response';
 export * from './system-for-ldap-login.response';
 export * from './years.response';
+export * from './maintenance.response';
+export * from './maintenance-status.response';
