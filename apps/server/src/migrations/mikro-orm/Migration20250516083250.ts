@@ -1,10 +1,22 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { ExternalToolEntity } from '../../modules/tool/external-tool/repo';
+
+type ExternalToolEntity = {
+	medium: {
+		mediumId: string;
+		mediaSourceId: string;
+	};
+};
 
 export class Migration20250516083250 extends Migration {
 	public async up(): Promise<void> {
-		console.info('Dropping --externalToolMediumUniqueIndex-- index for external tool medium');
-		await this.getCollection<ExternalToolEntity>('external-tools').dropIndex('externalToolMediumUniqueIndex');
+		const indexExists = await this.getCollection<ExternalToolEntity>('external-tools').indexExists(
+			'externalToolMediumUniqueIndex'
+		);
+
+		if (indexExists) {
+			await this.getCollection<ExternalToolEntity>('external-tools').dropIndex('externalToolMediumUniqueIndex');
+			console.info('Dropped --externalToolMediumUniqueIndex-- index for external tool medium');
+		}
 
 		await this.getCollection<ExternalToolEntity>('external-tools').createIndex(
 			{
