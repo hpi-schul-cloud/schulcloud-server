@@ -137,37 +137,29 @@ export class ExternalToolValidationService {
 
 	private validateToolMedium(medium: ExternalToolMedium): void {
 		const { status, mediaSourceId, mediumId } = medium;
+
+		const errorPrefix = (s: string): string => `tool_medium_status_${s.toLowerCase()}`;
+
 		switch (status) {
 			case ExternalToolMediumStatus.ACTIVE:
-				if (!mediaSourceId) {
-					throw new ValidationError(`tool_medium_status_active: This medium is active but is missing a media source.`);
-				}
-				if (!mediumId) {
-					throw new ValidationError(
-						`tool_medium_status_active: This medium is active but is not linked to an external medium.`
-					);
-				}
-				break;
 			case ExternalToolMediumStatus.DRAFT:
 				if (!mediaSourceId) {
-					throw new ValidationError(`tool_medium_status_draft: This medium is a draft but is missing a media source.`);
+					throw new ValidationError(
+						`${errorPrefix(status)}: This medium is ${status.toLowerCase()} but is missing a media source.`
+					);
 				}
 				if (!mediumId) {
 					throw new ValidationError(
-						`tool_medium_status_draft: This medium is a draft but is not linked to an external medium.`
+						`${errorPrefix(status)}: This medium is ${status.toLowerCase()} but is not linked to an external medium.`
 					);
 				}
 				break;
 			case ExternalToolMediumStatus.TEMPLATE:
-				if (!mediaSourceId) {
-					throw new ValidationError(`tool_medium_status_template: This template is missing a media source.`);
-				}
 				if (mediumId) {
-					throw new ValidationError(
-						`tool_medium_status_template: This template cannot be linked to a specific medium.`
-					);
+					throw new ValidationError(`${errorPrefix(status)}: This template cannot be linked to a specific medium.`);
 				}
 				break;
+
 			default:
 				throw new ValidationError(`tool_medium_status: This medium status must be one of: active, draft or template.`);
 		}
